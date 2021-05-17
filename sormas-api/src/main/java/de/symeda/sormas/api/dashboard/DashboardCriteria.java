@@ -15,8 +15,8 @@ public class DashboardCriteria extends BaseCriteria implements Serializable {
 	private DistrictReferenceDto district;
 	private Disease disease;
 	private CriteriaDateType newCaseDateType;
-	private Date newCaseDateFrom;
-	private Date newCaseDateTo;
+	private Date dateFrom;
+	private Date dateTo;
 
 	private boolean includeNoCases;
 
@@ -56,17 +56,17 @@ public class DashboardCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public Date getNewCaseDateFrom() {
-		return newCaseDateFrom;
+	public Date getDateFrom() {
+		return dateFrom;
 	}
 
-	public Date getNewCaseDateTo() {
-		return newCaseDateTo;
+	public Date getDateTo() {
+		return dateTo;
 	}
 
-	public DashboardCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo) {
-		this.newCaseDateFrom = newCaseDateFrom;
-		this.newCaseDateTo = newCaseDateTo;
+	public DashboardCriteria dateBetween(Date dateFrom, Date dateTo) {
+		this.dateFrom = dateFrom;
+		this.dateTo = dateTo;
 		return this;
 	}
 

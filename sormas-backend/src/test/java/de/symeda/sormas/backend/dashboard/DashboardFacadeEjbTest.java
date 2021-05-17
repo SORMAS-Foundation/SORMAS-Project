@@ -15,7 +15,6 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
-import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
@@ -60,7 +59,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 			.district(caze.getDistrict())
 			.disease(caze.getDisease())
 			.newCaseDateType(NewCaseDateType.MOST_RELEVANT)
-			.newCaseDateBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1));
+			.dateBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1));
 
 		List<DashboardCaseDto> dashboardCaseDtos = getDashboardFacade().getCases(dashboardCriteria);
 
@@ -91,11 +90,10 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 			rdcf.district);
 
 		List<DashboardEventDto> dashboardEventDtos = getDashboardFacade().getNewEvents(
-			new EventCriteria().region(event.getEventLocation().getRegion())
+			new DashboardCriteria().region(event.getEventLocation().getRegion())
 				.district(event.getEventLocation().getDistrict())
 				.disease(event.getDisease())
-				.eventDateType(null)
-				.eventDateBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1)));
+				.dateBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1)));
 
 		// List should have one entry
 		assertEquals(1, dashboardEventDtos.size());

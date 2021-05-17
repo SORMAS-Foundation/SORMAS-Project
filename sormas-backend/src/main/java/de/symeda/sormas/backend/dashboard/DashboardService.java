@@ -16,7 +16,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -24,19 +23,13 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
-import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
@@ -45,14 +38,10 @@ import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventGroup;
-import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.event.EventService;
-import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -155,7 +144,7 @@ public class DashboardService {
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
-		Predicate dateFilter = buildQuarantineDateFilter(cb, caze, dashboardCriteria.getNewCaseDateFrom(), dashboardCriteria.getNewCaseDateTo());
+		Predicate dateFilter = buildQuarantineDateFilter(cb, caze, dashboardCriteria.getDateFrom(), dashboardCriteria.getDateTo());
 		if (filter != null) {
 			filter = cb.and(filter, dateFilter);
 		} else {
@@ -251,7 +240,7 @@ public class DashboardService {
 		return resultMap;
 	}
 
-	public List<DashboardEventDto> getNewEvents(EventCriteria eventCriteria) {
+	public List<DashboardEventDto> getNewEvents(DashboardCriteria dashboardCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
@@ -260,7 +249,7 @@ public class DashboardService {
 		Join<Location, District> eventDistrict = eventLocation.join(Location.DISTRICT, JoinType.LEFT);
 
 		Predicate filter = eventService.createDefaultFilter(cb, event);
-		filter = CriteriaBuilderHelper.and(cb, filter, eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event)));
+		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, new EventQueryContext(cb, cq, event)));
 		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(cb, cq, event));
 
 		List<DashboardEventDto> result;
@@ -294,7 +283,7 @@ public class DashboardService {
 		return result;
 	}
 
-	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
+	public Map<EventStatus, Long> getEventCountByStatus(DashboardCriteria dashboardCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Event> event = cq.from(Event.class);
@@ -304,7 +293,7 @@ public class DashboardService {
 		cq.groupBy(event.get(Event.EVENT_STATUS));
 
 		Predicate filter = eventService.createDefaultFilter(cb, event);
-		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(eventCriteria, eventQueryContext));
+		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
 		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(cb, cq, event));
 
 		if (filter != null)
@@ -337,7 +326,7 @@ public class DashboardService {
 		if (dashboardCriteria.getDistrict() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(district.get(District.UUID), dashboardCriteria.getDistrict().getUuid()));
 		}
-		if (dashboardCriteria.getNewCaseDateFrom() != null && dashboardCriteria.getNewCaseDateTo() != null) {
+		if (dashboardCriteria.getDateFrom() != null && dashboardCriteria.getDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
@@ -345,8 +334,8 @@ public class DashboardService {
 					cq,
 					cb,
 					from,
-					DateHelper.getStartOfDay(dashboardCriteria.getNewCaseDateFrom()),
-					DateHelper.getEndOfDay(dashboardCriteria.getNewCaseDateTo()),
+					DateHelper.getStartOfDay(dashboardCriteria.getDateFrom()),
+					DateHelper.getEndOfDay(dashboardCriteria.getDateTo()),
 					dashboardCriteria.getNewCaseDateType()));
 		}
 		if (!dashboardCriteria.shouldIncludeNoCases()) {
@@ -379,215 +368,42 @@ public class DashboardService {
 		return filter;
 	}
 
-	private Predicate buildEventCriteriaFilter(EventCriteria eventCriteria, EventQueryContext eventQueryContext) {
+	private Predicate buildEventCriteriaFilter(DashboardCriteria dashboardCriteria, EventQueryContext eventQueryContext) {
 
 		CriteriaBuilder cb = eventQueryContext.getCriteriaBuilder();
 		From<?, Event> from = eventQueryContext.getRoot();
 
 		Predicate filter = null;
-		if (eventCriteria.getReportingUserRole() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.isMember(eventCriteria.getReportingUserRole(), from.join(Event.REPORTING_USER, JoinType.LEFT).get(User.USER_ROLES)));
+		if (dashboardCriteria.getDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE), dashboardCriteria.getDisease()));
 		}
-		if (eventCriteria.getDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE), eventCriteria.getDisease()));
-		}
-		if (eventCriteria.getEventStatus() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
-		}
-		if (eventCriteria.getRiskLevel() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.RISK_LEVEL), eventCriteria.getRiskLevel()));
-		}
-		if (eventCriteria.getEventInvestigationStatus() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(from.get(Event.EVENT_INVESTIGATION_STATUS), eventCriteria.getEventInvestigationStatus()));
-		}
-		if (eventCriteria.getEventManagementStatus() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.EVENT_MANAGEMENT_STATUS), eventCriteria.getEventManagementStatus()));
-		}
-		if (eventCriteria.getTypeOfPlace() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.TYPE_OF_PLACE), eventCriteria.getTypeOfPlace()));
-		}
-		if (eventCriteria.getRelevanceStatus() != null) {
-			if (eventCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Event.ARCHIVED), false), cb.isNull(from.get(Event.ARCHIVED))));
-			} else if (eventCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.ARCHIVED), true));
-			}
-		}
-		if (eventCriteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DELETED), eventCriteria.getDeleted()));
-		}
-		if (eventCriteria.getRegion() != null) {
+		if (dashboardCriteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(
 					from.join(Event.EVENT_LOCATION, JoinType.LEFT).join(Location.REGION, JoinType.LEFT).get(Region.UUID),
-					eventCriteria.getRegion().getUuid()));
+					dashboardCriteria.getRegion().getUuid()));
 		}
-		if (eventCriteria.getDistrict() != null) {
+		if (dashboardCriteria.getDistrict() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(
 					from.join(Event.EVENT_LOCATION, JoinType.LEFT).join(Location.DISTRICT, JoinType.LEFT).get(District.UUID),
-					eventCriteria.getDistrict().getUuid()));
-		}
-		if (eventCriteria.getCommunity() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.equal(
-					from.join(Event.EVENT_LOCATION, JoinType.LEFT).join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID),
-					eventCriteria.getCommunity().getUuid()));
+					dashboardCriteria.getDistrict().getUuid()));
 		}
 
-		if (eventCriteria.getEventEvolutionDateFrom() != null && eventCriteria.getEventEvolutionDateTo() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.between(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateFrom(), eventCriteria.getEventEvolutionDateTo()));
-		} else if (eventCriteria.getEventEvolutionDateFrom() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateFrom()));
-		} else if (eventCriteria.getEventEvolutionDateTo() != null) {
-			filter =
-				CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Event.EVOLUTION_DATE), eventCriteria.getEventEvolutionDateTo()));
-		}
-		if (eventCriteria.getResponsibleUser() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.equal(from.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID), eventCriteria.getResponsibleUser().getUuid()));
-		}
-		if (StringUtils.isNotEmpty(eventCriteria.getFreeText())) {
-			String[] textFilters = eventCriteria.getFreeText().split("\\s+");
-			for (String textFilter : textFilters) {
-				if (DataHelper.isNullOrEmpty(textFilter)) {
-					continue;
-				}
-
-				Predicate likeFilters = cb.or(
-					CriteriaBuilderHelper.ilike(cb, from.get(Event.UUID), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EXTERNAL_ID), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EXTERNAL_TOKEN), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EVENT_TITLE), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EVENT_DESC), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.SRC_FIRST_NAME), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.SRC_LAST_NAME), textFilter),
-					CriteriaBuilderHelper.ilike(cb, from.get(Event.SRC_EMAIL), textFilter),
-					CriteriaBuilderHelper.ilike(cb, from.get(Event.SRC_TEL_NO), textFilter));
-				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
-			}
-		}
-		if (StringUtils.isNotEmpty(eventCriteria.getFreeTextEventParticipants())) {
-			Join<Event, EventParticipant> eventParticipantJoin = from.join(Event.EVENT_PERSONS, JoinType.LEFT);
-			Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.LEFT);
-
-			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, eventQueryContext.getQuery(), personJoin);
-
-			String[] textFilters = eventCriteria.getFreeTextEventParticipants().split("\\s+");
-
-			for (String textFilter : textFilters) {
-				if (DataHelper.isNullOrEmpty(textFilter)) {
-					continue;
-				}
-
-				Predicate likeFilters = cb.or(
-					CriteriaBuilderHelper.ilike(cb, eventParticipantJoin.get(EventParticipant.UUID), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, personJoin.get(Person.FIRST_NAME), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, personJoin.get(Person.LAST_NAME), textFilter),
-					CriteriaBuilderHelper.ilike(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
-					CriteriaBuilderHelper.ilike(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
-						textFilter));
-				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
-			}
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
-		}
-		if (StringUtils.isNotEmpty(eventCriteria.getFreeTextEventGroups())) {
-			Join<Event, EventGroup> eventGroupJoin = from.join(Event.EVENT_GROUPS, JoinType.LEFT);
-
-			String[] textFilters = eventCriteria.getFreeTextEventGroups().split("\\s+");
-			for (String textFilter : textFilters) {
-				if (DataHelper.isNullOrEmpty(textFilter)) {
-					continue;
-				}
-
-				Predicate likeFilters = cb.or(
-					CriteriaBuilderHelper.ilike(cb, eventGroupJoin.get(EventGroup.UUID), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, eventGroupJoin.get(EventGroup.NAME), textFilter));
-				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
-			}
-		}
-
-		if (eventCriteria.getSrcType() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.SRC_TYPE), eventCriteria.getSrcType()));
-		}
-
-		if (eventCriteria.getCaze() != null) {
-			Join<Event, EventParticipant> eventParticipantJoin = from.join(Event.EVENT_PERSONS, JoinType.LEFT);
-			Join<EventParticipant, Case> caseJoin = eventParticipantJoin.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
-
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(caseJoin.get(Case.UUID), eventCriteria.getCaze().getUuid()));
-
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
-		}
-		if (eventCriteria.getPerson() != null) {
-			Join<Event, EventParticipant> eventParticipantJoin = from.join(Event.EVENT_PERSONS, JoinType.LEFT);
-			Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.LEFT);
-
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.in(personJoin.get(Person.UUID)).value(eventCriteria.getPerson().getUuid()),
-				cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
-		}
-		if (eventCriteria.getFacilityType() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(from.join(Event.EVENT_LOCATION).get(Location.FACILITY_TYPE), eventCriteria.getFacilityType()));
-		}
-		if (eventCriteria.getFacility() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.equal(from.join(Event.EVENT_LOCATION).join(Location.FACILITY).get(Facility.UUID), eventCriteria.getFacility().getUuid()));
-		}
-		if (eventCriteria.getSuperordinateEvent() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.equal(from.get(Event.SUPERORDINATE_EVENT).get(AbstractDomainObject.UUID), eventCriteria.getSuperordinateEvent().getUuid()));
-		}
-		if (eventCriteria.getEventGroup() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(from.join(Event.EVENT_GROUPS).get(EventGroup.UUID), eventCriteria.getEventGroup().getUuid()));
-		}
-		if (CollectionUtils.isNotEmpty(eventCriteria.getExcludedUuids())) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.not(from.get(AbstractDomainObject.UUID).in(eventCriteria.getExcludedUuids())));
-		}
-		if (Boolean.TRUE.equals(eventCriteria.getHasNoSuperordinateEvent())) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(Event.SUPERORDINATE_EVENT)));
-		}
-
-		filter = CriteriaBuilderHelper.and(cb, filter, createEventDateFilter(eventQueryContext.getQuery(), cb, from, eventCriteria));
+		filter = CriteriaBuilderHelper.and(cb, filter, createEventDateFilter(eventQueryContext.getQuery(), cb, from, dashboardCriteria));
 
 		return filter;
 	}
 
-	private Predicate createEventDateFilter(CriteriaQuery<?> cq, CriteriaBuilder cb, From<?, Event> from, EventCriteria eventCriteria) {
+	private Predicate createEventDateFilter(CriteriaQuery<?> cq, CriteriaBuilder cb, From<?, Event> from, DashboardCriteria dashboardCriteria) {
 		Predicate filter = null;
 
-		Date eventDateFrom = eventCriteria.getEventDateFrom();
-		Date eventDateTo = eventCriteria.getEventDateTo();
+		Date eventDateFrom = dashboardCriteria.getDateFrom();
+		Date eventDateTo = dashboardCriteria.getDateTo();
 
 		Predicate eventDateFilter = null;
 

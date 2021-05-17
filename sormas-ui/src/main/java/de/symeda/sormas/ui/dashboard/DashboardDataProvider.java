@@ -35,7 +35,6 @@ import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
-import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -107,11 +106,8 @@ public class DashboardDataProvider {
 
 	private void refreshDataForQuarantinedCases() {
 
-		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(region)
-			.district(district)
-			.disease(disease)
-			.newCaseDateType(newCaseDateType)
-			.newCaseDateBetween(fromDate, toDate);
+		DashboardCriteria dashboardCriteria =
+			new DashboardCriteria().region(region).district(district).disease(disease).newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);
 		List<DashboardQuarantineDataDto> casesInQuarantineDtos = FacadeProvider.getDashboardFacade().getQuarantineData(dashboardCriteria);
 
 		setCasesInQuarantineCount((long) casesInQuarantineDtos.size());
@@ -132,7 +128,7 @@ public class DashboardDataProvider {
 
 	private void refreshDataForConvertedContactsToCase() {
 		DashboardCriteria dashboardCriteria =
-			new DashboardCriteria().region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate);
+			new DashboardCriteria().region(region).district(district).disease(disease).dateBetween(fromDate, toDate);
 		setContactsConvertedToCaseCount(FacadeProvider.getDashboardFacade().countCasesConvertedFromContacts(dashboardCriteria));
 	}
 
@@ -155,13 +151,13 @@ public class DashboardDataProvider {
 				.district(district)
 				.disease(disease)
 				.newCaseDateType(newCaseDateType)
-				.newCaseDateBetween(fromDate, toDate)
+				.dateBetween(fromDate, toDate)
 				.includeNoCases();
 			setCases(FacadeProvider.getDashboardFacade().getCases(dashboardCriteria));
 			setCasesCountByClassification(FacadeProvider.getDashboardFacade().getCasesCountByClassification(dashboardCriteria));
 			setLastReportedDistrict(FacadeProvider.getDashboardFacade().getLastReportedDistrictName(dashboardCriteria));
 
-			dashboardCriteria.newCaseDateBetween(previousFromDate, previousToDate);
+			dashboardCriteria.dateBetween(previousFromDate, previousToDate);
 			setPreviousCases(FacadeProvider.getDashboardFacade().getCases(dashboardCriteria));
 
 			if (getDashboardType() != DashboardType.CONTACTS) {
@@ -174,12 +170,10 @@ public class DashboardDataProvider {
 		}
 
 		// Events
-		EventCriteria eventCriteria = new EventCriteria();
-		eventCriteria.region(region).district(district).disease(disease).eventDateType(null).eventDateBetween(fromDate, toDate);
-		setEvents(FacadeProvider.getDashboardFacade().getNewEvents(eventCriteria));
-
-		eventCriteria.eventDateBetween(fromDate, toDate);
-		setEventCountByStatus(FacadeProvider.getDashboardFacade().getEventCountByStatus(eventCriteria));
+		DashboardCriteria dashboardCriteria =
+			new DashboardCriteria().region(region).district(district).disease(disease).dateBetween(fromDate, toDate);
+		setEvents(FacadeProvider.getDashboardFacade().getNewEvents(dashboardCriteria));
+		setEventCountByStatus(FacadeProvider.getDashboardFacade().getEventCountByStatus(dashboardCriteria));
 
 		setOutbreakDistrictCount(
 			FacadeProvider.getOutbreakFacade()

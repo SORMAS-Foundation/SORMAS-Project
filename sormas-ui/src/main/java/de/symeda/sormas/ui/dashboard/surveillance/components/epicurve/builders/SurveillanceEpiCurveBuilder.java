@@ -91,11 +91,11 @@ public abstract class SurveillanceEpiCurveBuilder {
 
 	protected DashboardCriteria setNewCaseDatesInCaseCriteria(Date date, DashboardCriteria dashboardCriteria) {
 		if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-			dashboardCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
+			dashboardCriteria.dateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
 		} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
-			dashboardCriteria.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date));
+			dashboardCriteria.dateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date));
 		} else {
-			dashboardCriteria.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
+			dashboardCriteria.dateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
 		}
 		return dashboardCriteria;
 	}
