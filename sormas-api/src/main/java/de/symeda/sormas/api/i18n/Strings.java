@@ -828,6 +828,7 @@ public interface Strings {
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	String messageExportFailed = "messageExportFailed";
+	String messageExternalLabResultsAdapterNotFound = "messageExternalLabResultsAdapterNotFound";
 	String messageFacilitiesArchived = "messageFacilitiesArchived";
 	String messageFacilitiesDearchived = "messageFacilitiesDearchived";
 	String messageFacilitiesDearchivingNotPossible = "messageFacilitiesDearchivingNotPossible";
@@ -851,7 +852,6 @@ public interface Strings {
 	String messageImportSuccessful = "messageImportSuccessful";
 	String messageIncompleteGpsCoordinates = "messageIncompleteGpsCoordinates";
 	String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
-	String messageLabMessageDownloadFailed = "messageLabMessageDownloadFailed";
 	String messageLabMessagesDeleted = "messageLabMessagesDeleted";
 	String messageLabMessagesDeleteProcessed = "messageLabMessagesDeleteProcessed";
 	String messageLaboratoriesArchived = "messageLaboratoriesArchived";

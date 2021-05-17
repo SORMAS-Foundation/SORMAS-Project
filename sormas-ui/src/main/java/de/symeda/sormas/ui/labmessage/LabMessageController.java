@@ -944,7 +944,7 @@ public class LabMessageController {
 		} catch (NamingException e) {
 			new Notification(
 					I18nProperties.getString(Strings.headingLabMessageDownload),
-					I18nProperties.getString(Strings.messageLabMessageDownloadFailed),
+					I18nProperties.getString(Strings.messageExternalLabResultsAdapterNotFound),
 					Notification.Type.ERROR_MESSAGE,
 					false).show(Page.getCurrent());
 			logger.error(e.getMessage());
