@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -26,7 +25,7 @@ public interface DashboardFacade {
 
 	long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria);
 
-	Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria);
+	Map<PresentCondition, Long> getCaseCountPerPersonCondition(DashboardCriteria dashboardCriteria);
 
-	Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria);
+	Map<CaseClassification, Long> getCaseCountPerClassification(DashboardCriteria dashboardCriteria);
 }

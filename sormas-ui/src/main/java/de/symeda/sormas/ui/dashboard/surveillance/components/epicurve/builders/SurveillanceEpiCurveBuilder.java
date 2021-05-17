@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -22,7 +22,7 @@ public abstract class SurveillanceEpiCurveBuilder {
 		hcjs = new StringBuilder();
 	}
 
-	public String buildFrom(List<Date> filteredDates, CaseCriteria caseCriteria) {
+	public String buildFrom(List<Date> filteredDates, DashboardCriteria dashboardCriteria) {
 		//@formatter:off
         hcjs.append(
             "var options = {"
@@ -61,7 +61,7 @@ public abstract class SurveillanceEpiCurveBuilder {
 			+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
 		//@formatter:on
 
-		List<EpiCurveSeriesElement> elements = buildEpiCurveSeriesElements(filteredDates, caseCriteria);
+		List<EpiCurveSeriesElement> elements = buildEpiCurveSeriesElements(filteredDates, dashboardCriteria);
 		buildSeries(elements);
 		hcjs.append(", ");
 
@@ -89,15 +89,15 @@ public abstract class SurveillanceEpiCurveBuilder {
 		return hcjs.toString();
 	}
 
-	protected CaseCriteria setNewCaseDatesInCaseCriteria(Date date, CaseCriteria caseCriteria) {
+	protected DashboardCriteria setNewCaseDatesInCaseCriteria(Date date, DashboardCriteria dashboardCriteria) {
 		if (epiCurveGrouping == EpiCurveGrouping.DAY) {
-			caseCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
+			dashboardCriteria.newCaseDateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
 		} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
-			caseCriteria.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date));
+			dashboardCriteria.newCaseDateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date));
 		} else {
-			caseCriteria.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
+			dashboardCriteria.newCaseDateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
 		}
-		return caseCriteria;
+		return dashboardCriteria;
 	}
 
 	protected void buildSeries(List<EpiCurveSeriesElement> elements) {
@@ -149,5 +149,5 @@ public abstract class SurveillanceEpiCurveBuilder {
 		return newLabels;
 	}
 
-	abstract List<EpiCurveSeriesElement> buildEpiCurveSeriesElements(List<Date> filteredDates, CaseCriteria caseCriteria);
+	abstract List<EpiCurveSeriesElement> buildEpiCurveSeriesElements(List<Date> filteredDates, DashboardCriteria dashboardCriteria);
 }

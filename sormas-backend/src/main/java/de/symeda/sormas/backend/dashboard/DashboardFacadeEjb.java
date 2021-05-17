@@ -10,7 +10,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
@@ -62,13 +61,13 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria) {
-		return dashboardService.getCaseCountPerPersonCondition(caseCriteria);
+	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(DashboardCriteria dashboardCriteria) {
+		return dashboardService.getCaseCountPerPersonCondition(dashboardCriteria);
 	}
 
 	@Override
-	public Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria) {
-		return dashboardService.getCaseCountPerClassification(caseCriteria);
+	public Map<CaseClassification, Long> getCaseCountPerClassification(DashboardCriteria dashboardCriteria) {
+		return dashboardService.getCaseCountPerClassification(dashboardCriteria);
 	}
 
 	@LocalBean

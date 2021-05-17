@@ -24,7 +24,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
@@ -207,7 +206,7 @@ public class DashboardService {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria) {
+	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(DashboardCriteria dashboardCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -218,7 +217,7 @@ public class DashboardService {
 		Join<Case, Person> person = joins.getPerson();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
-		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
+		Predicate criteriaFilter = createCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
@@ -234,7 +233,7 @@ public class DashboardService {
 		return resultMap;
 	}
 
-	public Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria) {
+	public Map<CaseClassification, Long> getCaseCountPerClassification(DashboardCriteria dashboardCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -242,7 +241,7 @@ public class DashboardService {
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
-		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
+		Predicate criteriaFilter = createCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
 		if (filter != null) {
