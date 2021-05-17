@@ -17,9 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -33,10 +36,9 @@ import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 
@@ -51,8 +53,8 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		+ fluidRowLocs(FacilityDto.STREET, FacilityDto.HOUSE_NUMBER)
 		+ fluidRowLocs(FacilityDto.ADDITIONAL_INFORMATION, FacilityDto.POSTAL_CODE)
 		+ fluidRowLocs(FacilityDto.AREA_TYPE, FacilityDto.CITY)
-		+fluidRowLocs(FacilityDto.CONTACT_PERSON_FIRST_NAME, FacilityDto.CONTACT_PERSON_LAST_NAME)
-		+fluidRowLocs(FacilityDto.CONTACT_PERSON_PHONE, FacilityDto.CONTACT_PERSON_EMAIL)
+		+ fluidRowLocs(FacilityDto.CONTACT_PERSON_FIRST_NAME, FacilityDto.CONTACT_PERSON_LAST_NAME)
+		+ fluidRowLocs(FacilityDto.CONTACT_PERSON_PHONE, FacilityDto.CONTACT_PERSON_EMAIL)
 		+ fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE)
 		+ fluidRowLocs(RegionDto.EXTERNAL_ID);
 
@@ -74,7 +76,7 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 	@Override
 	protected void addFields() {
 		addField(FacilityDto.NAME, TextField.class);
-		typeGroup = new ComboBox();
+		typeGroup = ComboBoxHelper.createComboBoxV7();
 		typeGroup.setId("typeGroup");
 		typeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		typeGroup.addItems(FacilityTypeGroup.values());

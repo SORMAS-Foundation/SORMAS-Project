@@ -33,6 +33,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
@@ -168,7 +169,7 @@ public class CountriesView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(searchField);
 
-		subcontinentFilter = new ComboBox();
+		subcontinentFilter = ComboBoxHelper.createComboBoxV7();
 		subcontinentFilter.setId(CountryDto.SUBCONTINENT);
 		subcontinentFilter.setWidth(140, Unit.PIXELS);
 		subcontinentFilter.setCaption(I18nProperties.getPrefixCaption(CountryDto.I18N_PREFIX, CountryDto.SUBCONTINENT));
@@ -192,7 +193,7 @@ public class CountriesView extends AbstractConfigurationView {
 		{
 			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
-				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
