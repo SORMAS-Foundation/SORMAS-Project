@@ -45,7 +45,6 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
@@ -71,7 +70,6 @@ public class DashboardService {
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
-		Join<Case, Symptoms> symptoms = joins.getSymptoms();
 		Join<Case, Person> person = joins.getPerson();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
@@ -89,10 +87,8 @@ public class DashboardService {
 				caze.get(Case.ID),
 				caze.get(Case.UUID),
 				caze.get(Case.REPORT_DATE),
-				symptoms.get(Symptoms.ONSET_DATE),
 				caze.get(Case.CASE_CLASSIFICATION),
 				caze.get(Case.DISEASE),
-				caze.get(Case.INVESTIGATION_STATUS),
 				person.get(Person.PRESENT_CONDITION),
 				person.get(Person.CAUSE_OF_DEATH_DISEASE));
 

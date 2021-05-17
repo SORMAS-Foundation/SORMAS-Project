@@ -22,7 +22,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.person.PresentCondition;
 
 public class DashboardCaseDto implements Serializable {
@@ -34,10 +33,8 @@ public class DashboardCaseDto implements Serializable {
 	private long id;
 	private String uuid;
 	private Date reportDate;
-	private Date onsetDate;
 	private CaseClassification caseClassification;
 	private Disease disease;
-	private InvestigationStatus investigationStatus;
 	private PresentCondition casePersonCondition;
 	private Disease causeOfDeathDisease;
 
@@ -45,20 +42,16 @@ public class DashboardCaseDto implements Serializable {
 		long id,
 		String uuid,
 		Date reportDate,
-		Date onsetDate,
 		CaseClassification caseClassification,
 		Disease disease,
-		InvestigationStatus investigationStatus,
 		PresentCondition casePersonCondition,
 		Disease causeOfDeathDisease) {
 
 		this.id = id;
 		this.uuid = uuid;
 		this.reportDate = reportDate;
-		this.onsetDate = onsetDate;
 		this.caseClassification = caseClassification;
 		this.disease = disease;
-		this.investigationStatus = investigationStatus;
 		this.casePersonCondition = casePersonCondition;
 		this.causeOfDeathDisease = causeOfDeathDisease;
 	}
@@ -87,14 +80,6 @@ public class DashboardCaseDto implements Serializable {
 		this.reportDate = reportDate;
 	}
 
-	public Date getOnsetDate() {
-		return onsetDate;
-	}
-
-	public void setOnsetDate(Date onsetDate) {
-		this.onsetDate = onsetDate;
-	}
-
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
@@ -109,14 +94,6 @@ public class DashboardCaseDto implements Serializable {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
-	}
-
-	public InvestigationStatus getInvestigationStatus() {
-		return investigationStatus;
-	}
-
-	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
-		this.investigationStatus = investigationStatus;
 	}
 
 	public PresentCondition getCasePersonCondition() {
