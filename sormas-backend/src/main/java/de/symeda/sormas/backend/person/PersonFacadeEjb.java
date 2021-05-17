@@ -873,33 +873,16 @@ public class PersonFacadeEjb implements PersonFacade {
 					&& newPerson.getDeathDate() != null
 					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
 					&& newPerson.getCauseOfDeathDisease() != null) {
-					for (Case personCase : personCases) {
-						if (personCase.getOutcome() != CaseOutcome.DECEASED
-							&& (personCase.getReportDate().before(DateHelper.addDays(newPerson.getDeathDate(), 30))
-								&& personCase.getReportDate().before(DateHelper.subtractDays(newPerson.getDeathDate(), 30)))) {
-							CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
-							personCase.setOutcome(CaseOutcome.DECEASED);
-							personCase.setOutcomeDate(newPerson.getDeathDate());
-							caseFacade.onCaseChanged(existingCase, personCase);
-						}
-					}
-				}
-				// not sure what do do with the leftover code below
-				for (Case personCase : personCases) {
-					if (newPerson.getPresentCondition().isDeceased()) {
 
-						if (personCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
-							CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
-							personCase.setOutcome(CaseOutcome.DECEASED);
-							personCase.setOutcomeDate(newPerson.getDeathDate() != null ? newPerson.getDeathDate() : new Date());
-							// Attention: this may lead to infinite recursion when not properly implemented
-							caseFacade.onCaseChanged(existingCase, personCase);
-						}
-					} else if (personCase.getOutcome() == CaseOutcome.DECEASED) {
+					// update the latest associated case
+					Collections.sort(personCases, (c1, c2) -> c1.getReportDate().after(c2.getReportDate()) ? 1 : -1);
+					Case personCase = personCases.get(0);
+					if (personCase.getOutcome() != CaseOutcome.DECEASED
+						&& (personCase.getReportDate().before(DateHelper.addDays(newPerson.getDeathDate(), 30))
+							&& personCase.getReportDate().before(DateHelper.subtractDays(newPerson.getDeathDate(), 30)))) {
 						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
-						personCase.setOutcome(CaseOutcome.NO_OUTCOME);
-						personCase.setOutcomeDate(null);
-						// Attention: this may lead to infinite recursion when not properly implemented
+						personCase.setOutcome(CaseOutcome.DECEASED);
+						personCase.setOutcomeDate(newPerson.getDeathDate());
 						caseFacade.onCaseChanged(existingCase, personCase);
 					}
 				}
