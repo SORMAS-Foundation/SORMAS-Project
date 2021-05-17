@@ -207,10 +207,7 @@ public class DashboardService {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(
-		CaseCriteria caseCriteria,
-		boolean excludeSharedCases,
-		boolean excludeCasesFromContacts) {
+	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -220,8 +217,7 @@ public class DashboardService {
 
 		Join<Case, Person> person = joins.getPerson();
 
-		Predicate filter =
-			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 

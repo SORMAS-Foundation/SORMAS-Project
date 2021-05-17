@@ -49,11 +49,8 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(
-		CaseCriteria caseCriteria,
-		boolean excludeSharedCases,
-		boolean excludeCasesFromContacts) {
-		return dashboardService.getCaseCountPerPersonCondition(caseCriteria, excludeSharedCases, excludeCasesFromContacts);
+	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria) {
+		return dashboardService.getCaseCountPerPersonCondition(caseCriteria);
 	}
 
 	@Override

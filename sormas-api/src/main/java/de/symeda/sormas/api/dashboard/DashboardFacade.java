@@ -26,8 +26,5 @@ public interface DashboardFacade {
 
 	long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria);
 
-	Map<PresentCondition, Long> getCaseCountPerPersonCondition(
-		CaseCriteria caseCriteria,
-		boolean excludeSharedCases,
-		boolean excludeCasesFromContacts);
+	Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria);
 }
