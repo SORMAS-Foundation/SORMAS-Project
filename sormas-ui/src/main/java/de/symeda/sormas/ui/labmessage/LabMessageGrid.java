@@ -1,5 +1,24 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.labmessage;
 
+import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -7,7 +26,10 @@ import java.util.stream.Collectors;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -16,8 +38,10 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -32,9 +56,13 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 
 	private static final long serialVersionUID = 1772731113092823534L;
 
+	private static final String COLUMN_DOWNLOAD = "download";
 	private static final String COLUMN_PROCESS = "process";
 	private static final String SHOW_MESSAGE = "show_message";
 
+	private static final String PDF_FILENAME_FORMAT = "sormas_lab_message_%s_%s.pdf";
+
+	@SuppressWarnings("unchecked")
 	public LabMessageGrid(LabMessageCriteria criteria) {
 		super(LabMessageIndexDto.class);
 		setSizeFull();
@@ -52,10 +80,16 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 
 		addShowColumn(e -> ControllerProvider.getLabMessageController().showLabMessage(e.getUuid(), this::reload));
 
-		addComponentColumn(indexDto -> indexDto.getStatus().isProcessable() ? ButtonHelper.createButton(Captions.labMessageProcess, e -> {
-			ControllerProvider.getLabMessageController().processLabMessage(indexDto.getUuid());
-		}, ValoTheme.BUTTON_PRIMARY) : null).setId(COLUMN_PROCESS);
+		addComponentColumn(
+			indexDto -> indexDto.getStatus().isProcessable()
+				? ButtonHelper.createButton(
+					Captions.labMessageProcess,
+					e -> ControllerProvider.getLabMessageController().processLabMessage(indexDto.getUuid()),
+					ValoTheme.BUTTON_PRIMARY)
+				: null).setId(COLUMN_PROCESS);
 
+		addComponentColumn(this::buildDownloadButton).setId(COLUMN_DOWNLOAD);
+		
 		setColumns(
 			SHOW_MESSAGE,
 			LabMessageIndexDto.UUID,
@@ -68,13 +102,15 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			LabMessageIndexDto.PERSON_LAST_NAME,
 			LabMessageIndexDto.PERSON_POSTAL_CODE,
 			LabMessageIndexDto.STATUS,
-			COLUMN_PROCESS);
+			COLUMN_PROCESS,
+			COLUMN_DOWNLOAD);
 
 		((Column<LabMessageIndexDto, String>) getColumn(LabMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<LabMessageIndexDto, Date>) getColumn(LabMessageIndexDto.MESSAGE_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
 
 		getColumn(COLUMN_PROCESS).setSortable(false);
+		getColumn(COLUMN_DOWNLOAD).setSortable(false);
 
 		for (Grid.Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(LabMessageIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
@@ -88,7 +124,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		editColumn.setSortable(false);
 		editColumn.setWidth(20);
 
-		addItemClickListener(new ShowDetailsListener<>(SHOW_MESSAGE, e -> handler.accept(e)));
+		addItemClickListener(new ShowDetailsListener<>(SHOW_MESSAGE, handler));
 	}
 
 	public void setEagerDataProvider() {
@@ -127,5 +163,20 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 
 	public void updateProcessColumnVisibility(boolean visible) {
 		getColumn(LabMessageGrid.COLUMN_PROCESS).setHidden(!visible);
+	}
+
+	private Button buildDownloadButton(LabMessageIndexDto labMessage) {
+		Button downloadButton = new Button(VaadinIcons.DOWNLOAD);
+		downloadButton.setDescription(I18nProperties.getString(Strings.headingLabMessageDownload));
+		final String fileName = String.format(PDF_FILENAME_FORMAT, DataHelper.getShortUuid(labMessage.getUuid()), DateHelper.formatDateForExport(new Date()));
+
+		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> ControllerProvider.getLabMessageController().convertToPDF(labMessage.getUuid()).map(ByteArrayInputStream::new).orElse(null), fileName);
+		streamResource.setMIMEType("text/pdf");
+
+		FileDownloader fileDownloader = new FileDownloader(streamResource);
+		fileDownloader.extend(downloadButton);
+		fileDownloader.setFileDownloadResource(streamResource);
+
+		return downloadButton;
 	}
 }
