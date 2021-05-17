@@ -32,7 +32,7 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 
 		for (int i = 0; i < filteredDates.size(); i++) {
 			caseCriteria = setNewCaseDatesInCaseCriteria(filteredDates.get(i), caseCriteria);
-			Map<CaseClassification, Long> caseCounts = FacadeProvider.getCaseFacade().getCaseCountPerClassification(caseCriteria, true, true);
+			Map<CaseClassification, Long> caseCounts = FacadeProvider.getDashboardFacade().getCaseCountPerClassification(caseCriteria);
 
 			confirmedNumbers[i] = caseCounts.getOrDefault(CaseClassification.CONFIRMED, 0L).intValue();
 			probableNumbers[i] = caseCounts.getOrDefault(CaseClassification.PROBABLE, 0L).intValue();

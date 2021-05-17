@@ -49,11 +49,6 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria) {
-		return dashboardService.getCaseCountPerPersonCondition(caseCriteria);
-	}
-
-	@Override
 	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(List<DashboardCaseDto> cases) {
 		if (cases.isEmpty()) {
 			return Collections.emptyMap();
@@ -64,6 +59,16 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	@Override
 	public long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria) {
 		return dashboardService.countCasesConvertedFromContacts(dashboardCriteria);
+	}
+
+	@Override
+	public Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria) {
+		return dashboardService.getCaseCountPerPersonCondition(caseCriteria);
+	}
+
+	@Override
+	public Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria) {
+		return dashboardService.getCaseCountPerClassification(caseCriteria);
 	}
 
 	@LocalBean
