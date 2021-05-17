@@ -1,4 +1,4 @@
-@Sanity @Person
+@Sanity @Person @API
 Feature: Check Person RestApi endpoints
 
   Scenario: Create a new event
