@@ -171,7 +171,7 @@ public class DevModeView extends AbstractConfigurationView {
 		HorizontalLayout horizontalLayout = new HorizontalLayout();
 		horizontalLayout.setSpacing(true);
 
-		Button btnResetEnumCache = new Button(I18nProperties.getCaption(Captions.actionResetEnumCache), e -> {
+		Button btnResetEnumCache = ButtonHelper.createButton((Captions.actionResetEnumCache), e -> {
 			FacadeProvider.getCustomizableEnumFacade().loadData();
 		});
 
