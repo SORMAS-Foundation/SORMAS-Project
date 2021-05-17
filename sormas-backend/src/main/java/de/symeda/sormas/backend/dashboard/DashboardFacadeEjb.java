@@ -13,7 +13,10 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
+import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
+import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
@@ -63,6 +66,16 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	@Override
 	public Map<PresentCondition, Integer> getCasesCountPerPersonCondition(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getCasesCountPerPersonCondition(dashboardCriteria);
+	}
+
+	@Override
+	public List<DashboardEventDto> getNewEvents(EventCriteria eventCriteria) {
+		return dashboardService.getNewEvents(eventCriteria);
+	}
+
+	@Override
+	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
+		return dashboardService.getEventCountByStatus(eventCriteria);
 	}
 
 	@LocalBean

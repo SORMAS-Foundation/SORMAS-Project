@@ -27,6 +27,9 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
+import de.symeda.sormas.api.dashboard.DashboardEventDto;
+import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -35,6 +38,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -51,6 +55,9 @@ public class DashboardService {
 
 	@EJB
 	private CaseService caseService;
+
+	@EJB
+	private EventService eventService;
 
 	public List<DashboardCaseDto> getCases(DashboardCriteria dashboardCriteria) {
 
@@ -227,6 +234,14 @@ public class DashboardService {
 		Map<PresentCondition, Integer> resultMap = results.stream()
 			.collect(Collectors.toMap(e -> e[0] != null ? (PresentCondition) e[0] : PresentCondition.UNKNOWN, e -> ((Number) e[1]).intValue()));
 		return resultMap;
+	}
+
+	public List<DashboardEventDto> getNewEvents(EventCriteria eventCriteria) {
+		return eventService.getNewEventsForDashboard(eventCriteria);
+	}
+
+	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
+		return eventService.getEventCountByStatus(eventCriteria);
 	}
 
 	private <T extends AbstractDomainObject> Predicate createCaseCriteriaFilter(

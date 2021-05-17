@@ -33,8 +33,8 @@ import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
+import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
-import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
@@ -176,10 +176,10 @@ public class DashboardDataProvider {
 		// Events
 		EventCriteria eventCriteria = new EventCriteria();
 		eventCriteria.region(region).district(district).disease(disease).eventDateType(null).eventDateBetween(fromDate, toDate);
-		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria));
+		setEvents(FacadeProvider.getDashboardFacade().getNewEvents(eventCriteria));
 
 		eventCriteria.eventDateBetween(fromDate, toDate);
-		setEventCountByStatus(FacadeProvider.getEventFacade().getEventCountByStatus(eventCriteria));
+		setEventCountByStatus(FacadeProvider.getDashboardFacade().getEventCountByStatus(eventCriteria));
 
 		setOutbreakDistrictCount(
 			FacadeProvider.getOutbreakFacade()
