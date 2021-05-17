@@ -59,6 +59,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -875,7 +876,10 @@ public class PersonFacadeEjb implements PersonFacade {
 					&& newPerson.getCauseOfDeathDisease() != null) {
 
 					// update the latest associated case
-					Collections.sort(personCases, (c1, c2) -> c1.getReportDate().after(c2.getReportDate()) ? 1 : -1);
+					Collections.sort(
+						personCases,
+						(c1, c2) -> CaseLogic.getStartDate(c1.getSymptoms().getOnsetDate(), c1.getReportDate())
+							.after(CaseLogic.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getReportDate())) ? 1 : -1);
 					Case personCase = personCases.get(0);
 					if (personCase.getOutcome() != CaseOutcome.DECEASED
 						&& (personCase.getReportDate().before(DateHelper.addDays(newPerson.getDeathDate(), 30))
