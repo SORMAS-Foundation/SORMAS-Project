@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestResultType;

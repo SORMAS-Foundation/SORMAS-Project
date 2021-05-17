@@ -18,7 +18,7 @@
  * ******************************************************************************
  */
 
-package de.symeda.sormas.api.contact;
+package de.symeda.sormas.api.dashboard;
 
 import java.io.Serializable;
 import java.util.Date;

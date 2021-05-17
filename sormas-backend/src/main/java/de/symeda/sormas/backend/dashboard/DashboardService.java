@@ -24,10 +24,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
+import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -90,7 +90,9 @@ public class DashboardService {
 				caze.get(Case.CASE_CLASSIFICATION),
 				caze.get(Case.DISEASE),
 				person.get(Person.PRESENT_CONDITION),
-				person.get(Person.CAUSE_OF_DEATH_DISEASE));
+				person.get(Person.CAUSE_OF_DEATH_DISEASE),
+				caze.get(Case.QUARANTINE_FROM),
+				caze.get(Case.QUARANTINE_TO));
 
 			result = em.createQuery(cq).getResultList();
 		} else {
