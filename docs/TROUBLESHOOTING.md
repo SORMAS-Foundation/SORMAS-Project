@@ -14,6 +14,8 @@ If for some reason the Android App is not building correctly (for example due to
 - Invalidate Caches (File -> Invalidate Caches / Restart...)
 - Wipe your Android VM (AVD Manager -> Wipe Data)
 
+If you get this exception: `Unable to load class 'javax.xml.bind.JAXBException'`, the reason is most likely a faulty JDK version. For the androidapp, you need Java JDK 8. To change the JDK, go to File -> Project Structure -> JDK Location and select a valid JDK (on Linux, check the folder `/usr/lib/jvm` and/or install if necessary: `sudo apt install openjdk-8-jdk`)
+
 ## IDE Troubleshooting: eclipse
 
 ### Deployment Problems

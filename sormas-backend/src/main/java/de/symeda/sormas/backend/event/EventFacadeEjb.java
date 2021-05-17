@@ -222,6 +222,10 @@ public class EventFacadeEjb implements EventFacade {
 
 		restorePseudonymizedDto(dto, existingEvent, existingDto, pseudonymizer);
 
+		if (dto.getReportDateTime() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
+		}
+
 		Event event = fromDto(dto, checkChangeDate);
 		eventService.ensurePersisted(event);
 
@@ -1137,8 +1141,11 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String eventUuid) {
 		return eventService.exists(
-			(cb, eventRoot) -> CriteriaBuilderHelper
-				.and(cb, cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken), cb.notEqual(eventRoot.get(Event.UUID), eventUuid)));
+			(cb, eventRoot) -> CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken),
+				cb.notEqual(eventRoot.get(Event.UUID), eventUuid),
+				cb.notEqual(eventRoot.get(Event.DELETED), Boolean.TRUE)));
 	}
 
 	@Override

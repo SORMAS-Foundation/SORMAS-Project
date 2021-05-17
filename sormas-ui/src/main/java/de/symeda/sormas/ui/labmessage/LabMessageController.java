@@ -640,6 +640,7 @@ public class LabMessageController {
 			sampleDto.setLabSampleID(labMessageDto.getLabSampleId());
 		}
 		sampleDto.setSampleMaterial(labMessageDto.getSampleMaterial());
+		sampleDto.setSampleMaterialText(labMessageDto.getSampleMaterialText());
 		sampleDto.setSpecimenCondition(SpecimenCondition.ADEQUATE);
 		sampleDto.setLab(getLabReference(labMessageDto));
 		sampleDto.setLabDetails(labMessageDto.getTestLabName());

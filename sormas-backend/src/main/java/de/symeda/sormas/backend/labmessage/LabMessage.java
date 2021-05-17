@@ -38,6 +38,7 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
 	public static final String LAB_SAMPLE_ID = "labSampleId";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
+	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String TEST_LAB_NAME = "testLabName";
 	public static final String TEST_LAB_EXTERNAL_ID = "testLabExternalId";
 	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
@@ -70,6 +71,7 @@ public class LabMessage extends AbstractDomainObject {
 	private Date sampleReceivedDate;
 	private String labSampleId;
 	private SampleMaterial sampleMaterial;
+	private String sampleMaterialText;
 	private String testLabName;
 	private String testLabExternalId;
 	private String testLabPostalCode;
@@ -143,6 +145,16 @@ public class LabMessage extends AbstractDomainObject {
 
 	public void setSampleMaterial(SampleMaterial sampleMaterial) {
 		this.sampleMaterial = sampleMaterial;
+	}
+
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getSampleMaterialText() {
+		return sampleMaterialText;
+	}
+
+	public void setSampleMaterialText(String sampleMaterialText) {
+		this.sampleMaterialText = sampleMaterialText;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)

@@ -15,6 +15,11 @@
 
 package de.symeda.sormas.app.pathogentest.edit;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
+
+import java.util.Date;
+
 import android.content.Context;
 import android.database.SQLException;
 import android.os.AsyncTask;
@@ -24,11 +29,11 @@ import android.view.Menu;
 
 import androidx.annotation.NonNull;
 
-import java.util.Date;
-
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -36,7 +41,6 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.disease.DiseaseVariant;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
@@ -47,9 +51,6 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.Bundler;
-
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 
@@ -135,17 +136,15 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 			DiseaseVariant caseDiseaseVariant = associatedCase.getDiseaseVariant();
 			DiseaseVariant newDiseaseVariant = pathogenTestToSave.getTestedDiseaseVariant();
 			if (pathogenTestToSave.getTestResult() == PathogenTestResultType.POSITIVE
-					&& pathogenTestToSave.getTestResultVerified() == true
-					&& newDiseaseVariant != null
-					&& newDiseaseVariant != caseDiseaseVariant) {
+				&& pathogenTestToSave.getTestResultVerified()
+				&& !DataHelper.equal(newDiseaseVariant, caseDiseaseVariant)) {
 
 				String heading = I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant);
 				String subHeading = I18nProperties.getString(Strings.messageUpdateCaseWithNewDiseaseVariant);
 				int positiveButtonTextResId = R.string.yes;
 				int negativeButtonTextResId = R.string.no;
 
-				ConfirmationDialog dlg =
-						new ConfirmationDialog(this, heading, subHeading, positiveButtonTextResId, negativeButtonTextResId);
+				ConfirmationDialog dlg = new ConfirmationDialog(this, heading, subHeading, positiveButtonTextResId, negativeButtonTextResId);
 				dlg.setCancelable(false);
 				dlg.setNegativeCallback(() -> {
 					save(pathogenTestToSave);
@@ -161,6 +160,8 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 					save(pathogenTestToSave);
 				});
 				dlg.show();
+			} else {
+				save(pathogenTestToSave);
 			}
 		}
 	}

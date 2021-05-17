@@ -44,6 +44,7 @@ import javax.validation.ValidationException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -262,6 +263,13 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	public Page<UserDto> getIndexPage(UserCriteria userCriteria, int offset, int size, List<SortProperty> sortProperties) {
+		List<UserDto> userIndexList = getIndexList(userCriteria, offset, size, sortProperties);
+		long totalElementCount = count(userCriteria);
+		return new Page<>(userIndexList, offset, size, totalElementCount);
+	}
+
+	@Override
 	public List<UserDto> getAllAfter(Date date) {
 		return userService.getAllAfter(date, null).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
@@ -323,7 +331,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserDto> getIndexList(UserCriteria userCriteria, int first, int max, List<SortProperty> sortProperties) {
+	public List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(User.class);
@@ -335,7 +343,11 @@ public class UserFacadeEjb implements UserFacade {
 		// TODO: We'll need a user filter for users at some point, to make sure that users can edit their own details,
 		// but not those of others
 
-		Predicate filter = userService.buildCriteriaFilter(userCriteria, cb, user);
+		Predicate filter = null;
+
+		if (userCriteria != null) {
+			filter = userService.buildCriteriaFilter(userCriteria, cb, user);
+		}
 
 		if (filter != null) {
 			/*
@@ -382,7 +394,12 @@ public class UserFacadeEjb implements UserFacade {
 
 		cq.select(user);
 
-		List<User> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<User> resultList;
+		if (first != null && max != null) {
+			resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			resultList = em.createQuery(cq).getResultList();
+		}
 		return resultList.stream().map(u -> toDto(u)).collect(Collectors.toList());
 	}
 
@@ -393,7 +410,11 @@ public class UserFacadeEjb implements UserFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<User> root = cq.from(User.class);
 
-		Predicate filter = userService.buildCriteriaFilter(userCriteria, cb, root);
+		Predicate filter = null;
+
+		if (userCriteria != null) {
+			filter = userService.buildCriteriaFilter(userCriteria, cb, root);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -534,7 +555,32 @@ public class UserFacadeEjb implements UserFacade {
 				return Collections.emptyList();
 			}
 		}
+	}
 
+	public void enableUsers(List<String> userUuids) {
+		updateActiveState(userUuids, true);
+	}
+
+	@Override
+	public void disableUsers(List<String> userUuids) {
+		updateActiveState(userUuids, false);
+	}
+
+	private void updateActiveState(List<String> userUuids, boolean active) {
+		List<User> users = userService.getByUuids(userUuids);
+		for (User user : users) {
+			User oldUser;
+			try {
+				oldUser = (User) BeanUtils.cloneBean(user);
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Invalid bean access", e);
+			}
+
+			user.setActive(active);
+			userService.ensurePersisted(user);
+
+			userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
+		}
 	}
 
 	@LocalBean

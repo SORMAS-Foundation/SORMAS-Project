@@ -152,10 +152,6 @@ public class ImportFacadeEjb implements ImportFacade {
 		PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE,
 		PersonDto.PLACE_OF_BIRTH_REGION,
 		PersonDto.GESTATION_AGE_AT_BIRTH,
-		PersonDto.BIRTH_DATE,
-		PersonDto.BIRTH_DATE_MM,
-		PersonDto.BIRTH_DATE_DD,
-		PersonDto.BIRTH_DATE_YYYY,
 		PersonDto.BIRTH_WEIGHT,
 		PersonDto.PRESENT_CONDITION,
 		PersonDto.DEATH_DATE,
@@ -225,6 +221,11 @@ public class ImportFacadeEjb implements ImportFacade {
 		writeTemplate(Paths.get(getCaseImportTemplateFilePath()), importColumns, true);
 	}
 
+	private void addPrimaryPhoneAndEmail(char separator, List<ImportColumn> importColumns) {
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.PHONE, String.class, separator));
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.EMAIL_ADDRESS, String.class, separator));
+	}
+
 	@Override
 	public void generateEventImportTemplateFile() throws IOException {
 
@@ -265,6 +266,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.DISTRICT, String.class, separator));
 
 		appendListOfFields(importColumns, PersonDto.class, "person.", separator);
+		addPrimaryPhoneAndEmail(separator, importColumns);
 
 		importColumns =
 			importColumns.stream().filter(column -> keepColumn(column, PERSON_PREFIX, PERSON_COLUMNS_TO_REMOVE)).collect(Collectors.toList());
@@ -734,6 +736,7 @@ public class ImportFacadeEjb implements ImportFacade {
 					PersonDto.class,
 					StringUtils.isEmpty(prefix) ? field.getName() + "." : prefix + field.getName() + ".",
 					separator);
+				addPrimaryPhoneAndEmail(separator, importColumns);
 			} else {
 				importColumns.add(ImportColumn.from(clazz, prefix + field.getName(), field.getType(), separator));
 			}

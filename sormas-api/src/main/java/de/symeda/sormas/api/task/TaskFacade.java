@@ -28,6 +28,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -66,4 +67,10 @@ public interface TaskFacade {
 	List<TaskIndexDto> getIndexList(TaskCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	void sendNewAndDueTaskMessages();
+
+	void updateArchived(List<String> taskUuids, boolean archived);
+
+	List<DistrictReferenceDto> getDistrictsByTaskUuids(List<String> taskUuids, Long limit);
+
+	List<String> getArchivedUuidsSince(Date since);
 }
