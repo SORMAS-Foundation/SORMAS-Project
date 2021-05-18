@@ -867,6 +867,12 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		// Update cases if present condition has changed
 		if (existingPerson != null) {
+			// sort cases based on recency
+			Collections.sort(
+				personCases,
+				(c1, c2) -> CaseLogic.getStartDate(c1.getSymptoms().getOnsetDate(), c1.getReportDate())
+					.after(CaseLogic.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getReportDate())) ? 1 : -1);
+
 			if (newPerson.getPresentCondition() != null && existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
 				// Update case list after previous onCaseChanged
 				personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
@@ -876,10 +882,6 @@ public class PersonFacadeEjb implements PersonFacade {
 					&& newPerson.getCauseOfDeathDisease() != null) {
 
 					// update the latest associated case
-					Collections.sort(
-						personCases,
-						(c1, c2) -> CaseLogic.getStartDate(c1.getSymptoms().getOnsetDate(), c1.getReportDate())
-							.after(CaseLogic.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getReportDate())) ? 1 : -1);
 					Case personCase = personCases.get(0);
 					if (personCase.getOutcome() != CaseOutcome.DECEASED
 						&& (personCase.getReportDate().before(DateHelper.addDays(newPerson.getDeathDate(), 30))
@@ -890,7 +892,23 @@ public class PersonFacadeEjb implements PersonFacade {
 						caseFacade.onCaseChanged(existingCase, personCase);
 					}
 				}
+			} else if (newPerson.getPresentCondition() != null
+				&& newPerson.getPresentCondition().isDeceased()
+				&& newPerson.getDeathDate() != existingPerson.getDeathDate()) {
+				// only Deathdate has changed
+				if (newPerson.getDeathDate() != null) {
+					// update the latest associated case
+					Case personCase = personCases.get(0);
+					if (personCase.getOutcome() == CaseOutcome.DECEASED) {
+						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+						personCase.setOutcomeDate(newPerson.getDeathDate());
+						caseFacade.onCaseChanged(existingCase, personCase);
+					} else {
+						newPerson.setDeathDate(personCase.getOutcomeDate());
+					}
+				}
 			}
+			// FIXME: handle cases where a person is put back alive
 		}
 
 		// Set approximate age if it hasn't been set before
