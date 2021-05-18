@@ -15,11 +15,13 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
+import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -97,5 +99,76 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 		// List should have one entry
 		assertEquals(1, dashboardEventDtos.size());
+	}
+
+	@Test
+	public void testDiseaseBurdenForDashboard() {
+
+		Date referenceDate = new Date();
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		CommunityDto community2 = creator.createCommunity("Community2", rdcf.district);
+		TestDataCreator.RDCF rdcf2 = new TestDataCreator.RDCF(
+			rdcf.region,
+			rdcf.district,
+			community2.toReference(),
+			creator.createFacility("Facility2", rdcf.region, rdcf.district, community2.toReference()).toReference());
+
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateHelper.subtractDays(referenceDate, 2),
+			rdcf);
+
+		PersonDto cazePerson2 = creator.createPerson("Case", "Person2");
+		CaseDataDto caze2 = creator.createCase(
+			user.toReference(),
+			cazePerson2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateHelper.addDays(referenceDate, 1),
+			rdcf2);
+
+		PersonDto cazePerson3 = creator.createPerson("Case", "Person3");
+		CaseDataDto caze3 = creator.createCase(
+			user.toReference(),
+			cazePerson3.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateHelper.addDays(referenceDate, 2),
+			rdcf);
+
+		PersonDto cazePerson4 = creator.createPerson("Case", "Person4");
+		CaseDataDto caze4 = creator.createCase(
+			user.toReference(),
+			cazePerson4.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			referenceDate,
+			rdcf2);
+
+		List<DiseaseBurdenDto> diseaseBurdenForDashboard = getDashboardFacade().getDiseaseBurden(
+			rdcf.region,
+			rdcf.district,
+			DateHelper.getStartOfDay(referenceDate),
+			DateHelper.getEndOfDay(DateHelper.addDays(referenceDate, 10)),
+			DateHelper.getStartOfDay(DateHelper.subtractDays(referenceDate, 10)),
+			DateHelper.getEndOfDay(DateHelper.subtractDays(referenceDate, 1)),
+			NewCaseDateType.MOST_RELEVANT);
+
+		DiseaseBurdenDto evdBurden = diseaseBurdenForDashboard.stream().filter(dto -> dto.getDisease() == Disease.EVD).findFirst().get();
+		assertEquals(new Long(3), evdBurden.getCaseCount());
+		assertEquals(new Long(1), evdBurden.getPreviousCaseCount());
+		assertEquals(rdcf.district.getCaption(), evdBurden.getLastReportedDistrictName());
 	}
 }
