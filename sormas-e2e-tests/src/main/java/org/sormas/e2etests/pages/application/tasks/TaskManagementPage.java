@@ -16,13 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pages.application;
+package org.sormas.e2etests.pages.application.tasks;
 
 import org.openqa.selenium.By;
 
-public class NavBarPage {
-  public static final By CASES_BUTTON = By.cssSelector("div#cases");
-  public static final By CONTACTS_BUTTON = By.cssSelector("div#contacts");
-  public static final By EVENTS_BUTTON = By.cssSelector("div#events");
-  public static final By TASKS_BUTTON = By.cssSelector("div#tasks");
+public class TaskManagementPage {
+  public static final By NEW_TASK_BUTTON = By.cssSelector("div#taskNewTask");
+  public static final String EDIT_BUTTON_XPATH_BY_TEXT =
+      "//td[contains(text(),'%s')]/../td/span[contains(@class, 'v-icon-edit')]";
 }

@@ -16,13 +16,29 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pages.application;
+package org.sormas.e2etests.pojo;
 
-import org.openqa.selenium.By;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 
-public class NavBarPage {
-  public static final By CASES_BUTTON = By.cssSelector("div#cases");
-  public static final By CONTACTS_BUTTON = By.cssSelector("div#contacts");
-  public static final By EVENTS_BUTTON = By.cssSelector("div#events");
-  public static final By TASKS_BUTTON = By.cssSelector("div#tasks");
+@Builder(toBuilder = true, builderClassName = "Builder")
+@Value
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@NonNull
+public class Task {
+  String taskContext;
+  String taskType;
+  LocalDate suggestedStartDate;
+  LocalTime suggestedStartTime;
+  LocalDate dueDateDate;
+  LocalTime dueDateTime;
+  String assignedTo;
+  String priority;
+  String commentsOnTask;
+  String commentsOnExecution;
+  String taskStatus;
 }

@@ -57,6 +57,7 @@ dependencies {
 	implementation("io.rest-assured:rest-assured:$restAssured")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonDatatypeJdk8")
 	implementation("com.fasterxml.jackson.core:jackson-core:$jacksonDatatypeJdk8")
+	implementation group: 'org.assertj', name: 'assertj-core', version: assertjCore
 }
 
 task format(type: GoogleJavaFormat) {

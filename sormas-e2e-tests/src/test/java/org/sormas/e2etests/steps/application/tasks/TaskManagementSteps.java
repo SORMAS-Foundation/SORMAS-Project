@@ -16,32 +16,33 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.steps.web.application;
+package org.sormas.e2etests.steps.application.tasks;
+
+import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.EDIT_BUTTON_XPATH_BY_TEXT;
+import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.NEW_TASK_BUTTON;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.NavBarPage;
 
-public class NavBarSteps implements En {
+public class TaskManagementSteps implements En {
 
   @Inject
-  public NavBarSteps(WebDriverHelpers webDriverHelpers) {
+  public TaskManagementSteps(WebDriverHelpers webDriverHelpers) {
 
     When(
-        "^I click on the Cases button from navbar$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CASES_BUTTON));
+        "^I click on the NEW TASK button$",
+        () ->
+            webDriverHelpers.clickWhileOtherButtonIsDisplayed(NEW_TASK_BUTTON, TASK_TYPE_COMBOBOX));
 
     When(
-        "^I click on the Contacts button from navbar$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONTACTS_BUTTON));
-
-    When(
-        "^I click on the Events button from navbar$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON));
-
-    When(
-        "^I click on the Tasks button from navbar$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.TASKS_BUTTON));
+        "^I open last created task$",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                By.xpath(
+                    String.format(
+                        EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask()))));
   }
 }
