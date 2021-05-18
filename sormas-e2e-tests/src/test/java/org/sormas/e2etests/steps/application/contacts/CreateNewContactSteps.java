@@ -118,7 +118,7 @@ public class CreateNewContactSteps implements En {
 
     public void fillDateOfReport(LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
-        webDriverHelpers.clearWebElement(DATE_OF_REPORT_INPUT);  // TO BE DISCUSSED
+        webDriverHelpers.clearWebElement(DATE_OF_REPORT_INPUT);
         webDriverHelpers.fillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
     }
 

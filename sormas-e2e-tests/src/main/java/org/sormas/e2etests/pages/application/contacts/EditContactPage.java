@@ -34,5 +34,8 @@ public class EditContactPage {
   public static final By ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT = By.cssSelector("#contactProximityDetails");
   public static final By RELATIONSHIP_WITH_CASE_COMBOBOX = By.cssSelector("#relationToCase input");
   public static final By DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT = By.cssSelector("#description");
+  public static final String RETURNING_TRAVELER_OPTIONS_LIST_ID = "returningTraveler";
+  public static final String TYPE_OF_CONTACT_OPTIONS_LIST_ID = "contactProximity";
+  public static final String CONTACT_CATEGORY_OPTIONS_LIST_ID = "contactCategory";
 
 }
