@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.dashboard;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -183,6 +185,47 @@ public class DashboardService {
 		} catch (NoResultException e) {
 			return "";
 		}
+	}
+
+	public Map<Disease, District> getLastReportedDistrictByDisease(DashboardCriteria dashboardCriteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> caze = cq.from(Case.class);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		Join<Case, District> districtJoin = joins.getDistrict();
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+
+		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		Expression<Number> maxReportDate = cb.max(caze.get(Case.REPORT_DATE));
+		Expression<Number> maxCreationDate = cb.max(caze.get(Case.CREATION_DATE));
+		cq.multiselect(caze.get(Case.DISEASE), districtJoin);
+		cq.groupBy(caze.get(Case.DISEASE), districtJoin);
+
+		List<Order> order = new ArrayList<>();
+		order.add(cb.desc(maxReportDate));
+		order.add(cb.desc(maxCreationDate));
+		cq.orderBy(order);
+
+		List<Object[]> results = em.createQuery(cq).getResultList();
+
+		Map<Disease, District> resultMap = new HashMap<>();
+		for (Object[] e : results) {
+			Disease disease = (Disease) e[0];
+			if (!resultMap.containsKey(disease)) {
+				District district = (District) e[1];
+				resultMap.put(disease, district);
+			}
+		}
+
+		return resultMap;
 	}
 
 	public long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria) {

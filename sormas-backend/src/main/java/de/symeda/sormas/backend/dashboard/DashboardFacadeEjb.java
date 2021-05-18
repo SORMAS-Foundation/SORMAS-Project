@@ -28,7 +28,6 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
@@ -40,8 +39,6 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 @Stateless(name = "DashboardFacade")
 public class DashboardFacadeEjb implements DashboardFacade {
 
-	@EJB
-	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
 	@EJB
@@ -136,7 +133,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		}
 
 		//last report district
-		Map<Disease, District> lastReportedDistricts = caseFacade.getLastReportedDistrictByDisease(caseCriteria, true);
+		Map<Disease, District> lastReportedDistricts = dashboardService.getLastReportedDistrictByDisease(dashboardCriteria);
 
 		//case fatalities
 		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(caseCriteria, true, true);

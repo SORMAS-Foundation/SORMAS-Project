@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1132,50 +1131,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return randomGenerator.ints(count, 0, uuids.size()).mapToObj(i -> new CaseReferenceDto(uuids.get(i))).collect(Collectors.toList());
-	}
-
-	public Map<Disease, District> getLastReportedDistrictByDisease(CaseCriteria caseCriteria, boolean excludeCasesFromContacts) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Case> caze = cq.from(Case.class);
-		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
-		Join<Case, District> districtJoin = joins.getDistrict();
-
-		Predicate filter =
-			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
-
-		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, caseQueryContext));
-		filter =
-			CriteriaBuilderHelper.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		Expression<Number> maxReportDate = cb.max(caze.get(Case.REPORT_DATE));
-		Expression<Number> maxCreationDate = cb.max(caze.get(Case.CREATION_DATE));
-		cq.multiselect(caze.get(Case.DISEASE), districtJoin);
-		cq.groupBy(caze.get(Case.DISEASE), districtJoin);
-
-		List<Order> order = new ArrayList<>();
-		order.add(cb.desc(maxReportDate));
-		order.add(cb.desc(maxCreationDate));
-		cq.orderBy(order);
-
-		List<Object[]> results = em.createQuery(cq).getResultList();
-
-		Map<Disease, District> resultMap = new HashMap<>();
-		for (Object[] e : results) {
-			Disease disease = (Disease) e[0];
-			if (!resultMap.containsKey(disease)) {
-				District district = (District) e[1];
-				resultMap.put(disease, district);
-			}
-		}
-
-		return resultMap;
 	}
 
 	@Override
