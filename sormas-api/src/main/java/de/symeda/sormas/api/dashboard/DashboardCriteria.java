@@ -74,8 +74,8 @@ public class DashboardCriteria extends BaseCriteria implements Serializable {
 		return includeNotACaseClassification;
 	}
 
-	public DashboardCriteria includeNotACaseClassification() {
-		this.includeNotACaseClassification = true;
+	public DashboardCriteria includeNotACaseClassification(boolean includeNotACaseClassification) {
+		this.includeNotACaseClassification = includeNotACaseClassification;
 		return this;
 	}
 }

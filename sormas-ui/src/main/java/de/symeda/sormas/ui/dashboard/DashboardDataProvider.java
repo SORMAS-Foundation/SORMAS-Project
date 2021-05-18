@@ -187,10 +187,8 @@ public class DashboardDataProvider {
 				.district(district)
 				.disease(disease)
 				.newCaseDateType(newCaseDateType)
-				.dateBetween(fromDate, toDate)
-				.includeNotACaseClassification();
+				.dateBetween(fromDate, toDate);
 			setCases(FacadeProvider.getDashboardFacade().getCases(dashboardCriteria));
-			setCasesCountByClassification(FacadeProvider.getDashboardFacade().getCasesCountByClassification(dashboardCriteria));
 			setLastReportedDistrict(FacadeProvider.getDashboardFacade().getLastReportedDistrictName(dashboardCriteria));
 
 			dashboardCriteria.dateBetween(previousFromDate, previousToDate);
@@ -199,6 +197,9 @@ public class DashboardDataProvider {
 			if (getDashboardType() != DashboardType.CONTACTS) {
 				setTestResultCountByResultType(FacadeProvider.getDashboardFacade().getTestResultCountByResultType(getCases()));
 			}
+
+			dashboardCriteria.dateBetween(fromDate, toDate).includeNotACaseClassification(true);
+			setCasesCountByClassification(FacadeProvider.getDashboardFacade().getCasesCountByClassification(dashboardCriteria));
 		}
 
 		if (this.disease == null || getDashboardType() == DashboardType.CONTACTS) {
