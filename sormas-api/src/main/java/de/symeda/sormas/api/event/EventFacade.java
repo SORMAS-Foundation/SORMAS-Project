@@ -39,11 +39,7 @@ public interface EventFacade {
 
 	List<EventDto> getAllActiveEventsAfter(Date date);
 
-	List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria);
-
 	Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria);
-
-	Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria);
 
 	EventDto getEventByUuid(String uuid);
 

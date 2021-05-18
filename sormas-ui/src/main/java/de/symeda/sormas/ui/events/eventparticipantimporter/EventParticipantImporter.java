@@ -183,7 +183,7 @@ public class EventParticipantImporter extends DataImporter {
 
 						// get first eventparticipant for event and person
 						EventParticipantCriteria eventParticipantCriteria =
-							new EventParticipantCriteria().person(newPerson.toReference()).event(event);
+							new EventParticipantCriteria().withPerson(newPerson.toReference()).withEvent(event);
 						EventParticipantDto pickedEventParticipant = eventParticipantFacade.getFirst(eventParticipantCriteria);
 
 						if (pickedEventParticipant != null) {
@@ -215,7 +215,7 @@ public class EventParticipantImporter extends DataImporter {
 				} else if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
 					return ImportLineResult.SKIPPED;
 				} else {
-					PersonDto savedPerson = personFacade.savePerson(newPerson);
+					PersonDto savedPerson = personFacade.savePersonAndNotifyExternalJournal(newPerson);
 					newEventParticipant.setPerson(savedPerson);
 
 					eventParticipantFacade.saveEventParticipant(newEventParticipant);

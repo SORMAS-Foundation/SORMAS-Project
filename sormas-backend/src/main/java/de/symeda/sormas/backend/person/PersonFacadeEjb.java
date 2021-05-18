@@ -95,9 +95,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
@@ -127,7 +125,6 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
@@ -216,36 +213,6 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Case> root = cq.from(Case.class);
-
-		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
-		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
-		Join<Case, Person> person = joins.getPerson();
-
-		Predicate filter =
-			caseService.createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(excludeCasesFromContacts));
-		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, caseQueryContext));
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.multiselect(person.get(Person.CAUSE_OF_DEATH_DISEASE), cb.count(person));
-		cq.groupBy(person.get(Person.CAUSE_OF_DEATH_DISEASE));
-
-		List<Object[]> results = em.createQuery(cq).getResultList();
-
-		Map<Disease, Long> outbreaks = results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
-
-		return outbreaks;
-	}
-
-	@Override
 	public List<PersonDto> getPersonsAfter(Date date) {
 		final User user = userService.getCurrentUser();
 		if (user == null) {
@@ -286,12 +253,14 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public JournalPersonDto getPersonForJournal(String uuid) {
 		PersonDto detailedPerson = getPersonByUuid(uuid);
+		return getPersonForJournal(detailedPerson);
+	}
+
+	public JournalPersonDto getPersonForJournal(PersonDto detailedPerson) {
 		//only specific attributes of the person shall be returned:
 		if (detailedPerson != null) {
 			JournalPersonDto exportPerson = new JournalPersonDto();
 			exportPerson.setUuid(detailedPerson.getUuid());
-			exportPerson.setEmailAddress(getJournalEmailAddress(detailedPerson));
-			exportPerson.setPhone(getJournalPhoneNumber(detailedPerson));
 			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
 			exportPerson.setFirstName(detailedPerson.getFirstName());
 			exportPerson.setLastName(detailedPerson.getLastName());
@@ -299,48 +268,72 @@ public class PersonFacadeEjb implements PersonFacade {
 			exportPerson.setBirthdateMM(detailedPerson.getBirthdateMM());
 			exportPerson.setBirthdateDD(detailedPerson.getBirthdateDD());
 			exportPerson.setSex(detailedPerson.getSex());
-			exportPerson.setLatestFollowUpEndDate(getLatestFollowUpEndDateByUuid(uuid));
-			exportPerson.setFollowUpStatus(getMostRelevantFollowUpStatusByUuid(uuid));
+			exportPerson.setLatestFollowUpEndDate(getLatestFollowUpEndDateByUuid(detailedPerson.getUuid()));
+			exportPerson.setFollowUpStatus(getMostRelevantFollowUpStatusByUuid(detailedPerson.getUuid()));
+
+			Pair<String, String> contactDetails = getContactDetails(detailedPerson);
+			exportPerson.setEmailAddress(contactDetails.getElement0());
+			exportPerson.setPhone(formatPhoneNumber(contactDetails.getElement1()));
+
 			return exportPerson;
 		} else {
 			return null;
 		}
 	}
 
-	public String getJournalEmailAddress(PersonDto person) {
+	/**
+	 *
+	 * @param personDto a detailed person object
+	 * @return a pair with element0=emailAddress and element1=phone
+	 */
+	public Pair<String, String> getContactDetails(PersonDto personDto) {
+		String primaryEmailAddress = getEmailAddress(personDto, true);
+		String primaryPhone = getPhone(personDto, true);
+
+		if (!StringUtils.isBlank(primaryEmailAddress) || !StringUtils.isBlank(primaryPhone)) {
+			return Pair.createPair(primaryEmailAddress, primaryPhone);
+		} else {
+			String nonPrimaryEmailAddress = getEmailAddress(personDto, false);
+			String nonPrimaryPhone = getPhone(personDto, false);
+
+			return Pair.createPair(nonPrimaryEmailAddress, nonPrimaryPhone);
+		}
+	}
+
+	public String getEmailAddress(PersonDto person, boolean onlyPrimary) {
 		try {
-			return person.getEmailAddress(false);
+			return person.getEmailAddress(onlyPrimary);
 		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
 			return StringUtils.EMPTY;
 		}
 	}
 
-	public String getJournalPhoneNumber(PersonDto person) {
+	public String getPhone(PersonDto person, boolean onlyPrimary) {
 		try {
-			String phoneNumber = person.getPhone(false);
-			if (StringUtils.EMPTY.equals(phoneNumber)) {
-				return StringUtils.EMPTY;
-			}
-
-			try {
-				PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-				Phonenumber.PhoneNumber numberProto = phoneUtil.parse(phoneNumber, "DE");
-				return phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
-			} catch (NumberParseException e) {
-				return phoneNumber;
-			}
-
+			return person.getPhone(onlyPrimary);
 		} catch (PersonDto.SeveralNonPrimaryContactDetailsException e) {
 			return StringUtils.EMPTY;
+		}
+	}
+
+
+
+	public String formatPhoneNumber(String phoneNumber) {
+		try {
+			PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+			Phonenumber.PhoneNumber numberProto = phoneUtil.parse(phoneNumber, "DE");
+			return phoneUtil.format(numberProto, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+		} catch (NumberParseException e) {
+			return phoneNumber;
 		}
 	}
 
 	@Override
-	public PersonDto savePerson(@Valid PersonDto source) throws ValidationRuntimeException {
-		return savePerson(source, true);
+	public PersonDto savePersonAndNotifyExternalJournal(@Valid PersonDto source) throws ValidationRuntimeException {
+		return savePersonAndNotifyExternalJournal(source, true);
 	}
 
-	public PersonDto savePerson(PersonDto source, boolean checkChangeDate) throws ValidationRuntimeException {
+	public PersonDto savePersonAndNotifyExternalJournal(PersonDto source, boolean checkChangeDate) throws ValidationRuntimeException {
 		Person person = personService.getByUuid(source.getUuid());
 
 		PersonDto existingPerson = toDto(person);
@@ -351,10 +344,32 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		if (existingPerson != null && existingPerson.isEnrolledInExternalJournal()) {
 			externalJournalService.validateExternalJournalPerson(source);
-			externalJournalService.handleExternalJournalPersonUpdate(source.toReference());
+			externalJournalService.handleExternalJournalPersonUpdateAsync(source.toReference());
 		}
 
 		person = fillOrBuildEntity(source, person, checkChangeDate);
+
+		personService.ensurePersisted(person);
+
+		onPersonChanged(existingPerson, person);
+
+		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || isPersonInJurisdiction(person));
+	}
+
+	public PersonDto savePerson(PersonDto source) throws ValidationRuntimeException {
+		Person person = personService.getByUuid(source.getUuid());
+
+		PersonDto existingPerson = toDto(person);
+
+		restorePseudonymizedDto(source, person, existingPerson);
+
+		validate(source);
+
+		if (existingPerson != null && existingPerson.isEnrolledInExternalJournal()) {
+			externalJournalService.validateExternalJournalPerson(source);
+		}
+
+		person = fillOrBuildEntity(source, person, true);
 
 		personService.ensurePersisted(person);
 
@@ -621,7 +636,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	public boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status) {
 		PersonDto person = getPersonByUuid(personUuid);
 		person.setSymptomJournalStatus(status);
-		savePerson(person);
+		savePersonAndNotifyExternalJournal(person);
 		return true;
 	}
 
