@@ -42,7 +42,11 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 		return event;
 	}
 
-	public EventParticipantCriteria event(EventReferenceDto event) {
+	public void setEvent(EventReferenceDto event) {
+		this.event = event;
+	}
+
+	public EventParticipantCriteria withEvent(EventReferenceDto event) {
 		this.event = event;
 		return this;
 	}
@@ -52,17 +56,16 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 		return person;
 	}
 
-	public EventParticipantCriteria setPerson(PersonReferenceDto person) {
+	public void setPerson(PersonReferenceDto person) {
+		this.person = person;
+	}
+
+	public EventParticipantCriteria withPerson(PersonReferenceDto person) {
 		this.person = person;
 		return this;
 	}
 
-	public EventParticipantCriteria person(PersonReferenceDto person) {
-		this.person = person;
-		return this;
-	}
-
-	public EventParticipantCriteria freeText(String freeText) {
+	public EventParticipantCriteria withFreeText(String freeText) {
 		this.freeText = freeText;
 		return this;
 	}
@@ -76,93 +79,133 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 		return freeText;
 	}
 
+	public EventParticipantCriteria withBirthdateYYYY(Integer birthdateYYYY) {
+		this.birthdateYYYY = birthdateYYYY;
+		return this;
+	}
+
+	public EventParticipantCriteria withBirthdateMM(Integer birthdateMM) {
+		this.birthdateMM = birthdateMM;
+		return this;
+	}
+
+	public EventParticipantCriteria withBirthdateDD(Integer birthdateDD) {
+		this.birthdateDD = birthdateDD;
+		return this;
+	}
+
+	public EventParticipantCriteria withOnlyCountContactsWithSourceCaseInEvent(Boolean onlyCountContactsWithSourceCaseInEvent) {
+		this.onlyCountContactsWithSourceCaseInEvent = onlyCountContactsWithSourceCaseInEvent;
+		return this;
+	}
+
+	public EventParticipantCriteria withDisease(Disease disease) {
+		this.disease = disease;
+		return this;
+	}
+
+	public EventParticipantCriteria withPathogenTestResult(PathogenTestResultType pathogenTestResult) {
+		this.pathogenTestResult = pathogenTestResult;
+		return this;
+	}
+
+	public EventParticipantCriteria withVaccination(Vaccination vaccination) {
+		this.vaccination = vaccination;
+		return this;
+	}
+
+	public EventParticipantCriteria withRelevantDate(Date relevantDate) {
+		this.relevantDate = relevantDate;
+		return this;
+	}
+
+	public EventParticipantCriteria withExcludePseudonymized(Boolean excludePseudonymized) {
+		this.excludePseudonymized = excludePseudonymized;
+		return this;
+	}
+
+	public EventParticipantCriteria withNoResultingCase(Boolean noResultingCase) {
+		this.noResultingCase = noResultingCase;
+		return this;
+	}
+
 	public Integer getBirthdateYYYY() {
 		return birthdateYYYY;
 	}
 
-	public EventParticipantCriteria setBirthdateYYYY(Integer birthdateYYYY) {
+	public void setBirthdateYYYY(Integer birthdateYYYY) {
 		this.birthdateYYYY = birthdateYYYY;
-		return this;
 	}
 
 	public Integer getBirthdateMM() {
 		return birthdateMM;
 	}
 
-	public EventParticipantCriteria setBirthdateMM(Integer birthdateMM) {
+	public void setBirthdateMM(Integer birthdateMM) {
 		this.birthdateMM = birthdateMM;
-		return this;
 	}
 
 	public Integer getBirthdateDD() {
 		return birthdateDD;
 	}
 
-	public EventParticipantCriteria setBirthdateDD(Integer birthdateDD) {
+	public void setBirthdateDD(Integer birthdateDD) {
 		this.birthdateDD = birthdateDD;
-		return this;
 	}
 
 	public Boolean getOnlyCountContactsWithSourceCaseInEvent() {
 		return onlyCountContactsWithSourceCaseInEvent;
 	}
 
-	public EventParticipantCriteria setOnlyCountContactsWithSourceCaseInEvent(Boolean onlyCountContactsWithSourceCaseInEvent) {
+	public void setOnlyCountContactsWithSourceCaseInEvent(Boolean onlyCountContactsWithSourceCaseInEvent) {
 		this.onlyCountContactsWithSourceCaseInEvent = onlyCountContactsWithSourceCaseInEvent;
-		return this;
 	}
 
 	public Disease getDisease() {
 		return disease;
 	}
 
-	public EventParticipantCriteria setDisease(Disease disease) {
+	public void setDisease(Disease disease) {
 		this.disease = disease;
-		return this;
 	}
 
 	public PathogenTestResultType getPathogenTestResult() {
 		return pathogenTestResult;
 	}
 
-	public EventParticipantCriteria setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
+	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
 		this.pathogenTestResult = pathogenTestResult;
-		return this;
 	}
 
 	public Vaccination getVaccination() {
 		return vaccination;
 	}
 
-	public EventParticipantCriteria setVaccination(Vaccination vaccination) {
+	public void setVaccination(Vaccination vaccination) {
 		this.vaccination = vaccination;
-		return this;
 	}
 
 	public Date getRelevantDate() {
 		return relevantDate;
 	}
 
-	public EventParticipantCriteria setRelevantDate(Date relevantDate) {
+	public void setRelevantDate(Date relevantDate) {
 		this.relevantDate = relevantDate;
-		return this;
 	}
 
 	public Boolean getExcludePseudonymized() {
 		return excludePseudonymized;
 	}
 
-	public EventParticipantCriteria setExcludePseudonymized(Boolean excludePseudonymized) {
+	public void setExcludePseudonymized(Boolean excludePseudonymized) {
 		this.excludePseudonymized = excludePseudonymized;
-		return this;
 	}
 
 	public Boolean getNoResultingCase() {
 		return noResultingCase;
 	}
 
-	public EventParticipantCriteria setNoResultingCase(Boolean noResultingCase) {
+	public void setNoResultingCase(Boolean noResultingCase) {
 		this.noResultingCase = noResultingCase;
-		return this;
 	}
 }
