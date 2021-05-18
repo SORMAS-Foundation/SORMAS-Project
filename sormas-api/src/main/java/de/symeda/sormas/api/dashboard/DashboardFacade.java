@@ -35,10 +35,10 @@ public interface DashboardFacade {
 	Map<EventStatus, Long> getEventCountByStatus(DashboardCriteria dashboardCriteria);
 
 	List<DiseaseBurdenDto> getDiseaseBurden(
-		RegionReferenceDto regionRef,
-		DistrictReferenceDto districtRef,
-		Date from,
-		Date to,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		Date fromDate,
+		Date toDate,
 		Date previousFromDate,
 		Date previousToDate,
 		NewCaseDateType newCaseDateType);

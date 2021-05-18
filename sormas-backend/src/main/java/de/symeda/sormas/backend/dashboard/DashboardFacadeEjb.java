@@ -104,31 +104,33 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	@Override
 	public List<DiseaseBurdenDto> getDiseaseBurden(
-		RegionReferenceDto regionRef,
-		DistrictReferenceDto districtRef,
-		Date from,
-		Date to,
-		Date previousFrom,
-		Date previousTo,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		Date fromDate,
+		Date toDate,
+		Date previousFromDate,
+		Date previousToDate,
 		NewCaseDateType newCaseDateType) {
 
 		//diseases
 		List<Disease> diseases = diseaseConfigurationFacade.getAllDiseases(true, true, true);
 
 		//new cases
-		CaseCriteria caseCriteria = new CaseCriteria().newCaseDateBetween(from, to, newCaseDateType).region(regionRef).district(districtRef);
+		CaseCriteria caseCriteria = new CaseCriteria().newCaseDateBetween(fromDate, toDate, newCaseDateType).region(region).district(district);
 
-		Map<Disease, Long> newCases = caseFacade.getCaseCountByDisease(caseCriteria, true, true);
+		DashboardCriteria dashboardCriteria =
+			new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);
+		Map<Disease, Long> newCases = dashboardService.getCaseCountByDisease(dashboardCriteria);
 
 		//events
 		Map<Disease, Long> events = eventFacade
-			.getEventCountByDisease(new EventCriteria().region(regionRef).district(districtRef).eventDateType(null).eventDateBetween(from, to));
+			.getEventCountByDisease(new EventCriteria().region(region).district(district).eventDateType(null).eventDateBetween(fromDate, toDate));
 
 		//outbreaks
 		Map<Disease, Long> outbreakDistrictsCount;
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.OUTBREAKS)) {
 			outbreakDistrictsCount = outbreakFacade
-				.getOutbreakDistrictCountByDisease(new OutbreakCriteria().region(regionRef).district(districtRef).reportedBetween(from, to));
+				.getOutbreakDistrictCountByDisease(new OutbreakCriteria().region(region).district(district).reportedBetween(fromDate, toDate));
 		} else {
 			outbreakDistrictsCount = new HashMap<>();
 		}
@@ -140,8 +142,8 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(caseCriteria, true, true);
 
 		//previous cases
-		caseCriteria.newCaseDateBetween(previousFrom, previousTo, newCaseDateType);
-		Map<Disease, Long> previousCases = caseFacade.getCaseCountByDisease(caseCriteria, true, true);
+		dashboardCriteria.dateBetween(previousFromDate, previousToDate);
+		Map<Disease, Long> previousCases = dashboardService.getCaseCountByDisease(dashboardCriteria);
 
 		//build diseasesBurden
 		List<DiseaseBurdenDto> diseasesBurden = diseases.stream().map(disease -> {
