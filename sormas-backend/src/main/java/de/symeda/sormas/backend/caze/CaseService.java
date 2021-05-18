@@ -1304,7 +1304,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
 		Root<Case> caseRoot = cq.from(Case.class);
 
-		cq.where(cb.equal(caseRoot.get(Case.EXTERNAL_ID), externalId));
+		cq.where(cb.equal(caseRoot.get(Case.EXTERNAL_ID), externalId), cb.equal(caseRoot.get(Case.DELETED), Boolean.FALSE));
 
 		return em.createQuery(cq).getResultList();
 	}
