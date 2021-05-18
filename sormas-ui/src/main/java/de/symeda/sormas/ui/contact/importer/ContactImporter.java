@@ -178,7 +178,7 @@ public class ContactImporter extends DataImporter {
 				} else if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
 					return ImportLineResult.SKIPPED;
 				} else {
-					final PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
+					final PersonDto savedPerson = FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(newPerson);
 					newContactTemp.setPerson(savedPerson.toReference());
 
 					ContactDto newContact = newContactTemp;

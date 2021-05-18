@@ -43,7 +43,9 @@ public interface PersonFacade {
 
 	JournalPersonDto getPersonForJournal(String uuid);
 
-	PersonDto savePerson(@Valid PersonDto dto);
+	PersonDto savePersonAndNotifyExternalJournal(@Valid PersonDto dto);
+
+	PersonDto savePerson(@Valid PersonDto source);
 
 	void validate(PersonDto dto);
 

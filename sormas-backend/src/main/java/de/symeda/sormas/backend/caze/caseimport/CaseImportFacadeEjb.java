@@ -221,7 +221,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 				return ImportLineResultDto.errorResult(I18nProperties.getString(Strings.messageEpidNumberWarning));
 			}
 
-			PersonDto savedPerson = personFacade.savePerson(person);
+			PersonDto savedPerson = personFacade.savePersonAndNotifyExternalJournal(person);
 			caze.setPerson(savedPerson.toReference());
 			// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 			// Should be changed when doing #2265

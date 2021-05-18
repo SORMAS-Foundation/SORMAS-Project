@@ -783,7 +783,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		default:
 			throw new NoSuchElementException(DataHelper.toStringNullable(contactClassification));
 		}
-		externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
+		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		ensurePersisted(contact);
 	}
 
@@ -863,14 +863,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			contact.setFollowUpStatusChangeDate(null);
 			contact.setFollowUpStatusChangeUser(null);
 		}
-		externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
+		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		ensurePersisted(contact);
 	}
 
 	public void cancelFollowUp(Contact contact, String comment) {
 		contact.setFollowUpStatus(FollowUpStatus.CANCELED);
 		contact.setFollowUpComment(comment);
-		externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
+		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		ensurePersisted(contact);
 	}
 
@@ -1310,7 +1310,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		exposureService.removeContactFromExposures(contact.getId());
 
 		// Notify external journal if necessary
-		externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
+		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		super.delete(contact);
 	}
 

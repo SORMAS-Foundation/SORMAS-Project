@@ -857,7 +857,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		contacts = contactService.getAllByResultingCase(caze);
 		for (Contact contact : contacts) {
 			contact.setResultingCase(null);
-			externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
+			externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 			contactService.ensurePersisted(contact);
 		}
 
@@ -1239,7 +1239,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			caze.setFollowUpStatusChangeUser(null);
 		}
 
-		externalJournalService.handleExternalJournalPersonUpdate(caze.getPerson().toReference());
+		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 		ensurePersisted(caze);
 	}
 
