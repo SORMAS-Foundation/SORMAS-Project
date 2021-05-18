@@ -13,7 +13,6 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
@@ -32,7 +31,6 @@ import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 
@@ -41,12 +39,13 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	@EJB
 	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
+
 	@EJB
 	private OutbreakFacadeEjb.OutbreakFacadeEjbLocal outbreakFacade;
-	@EJB
-	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
+
 	@EJB
 	private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+
 	@EJB
 	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
@@ -113,8 +112,6 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		List<Disease> diseases = diseaseConfigurationFacade.getAllDiseases(true, true, true);
 
 		//new cases
-		CaseCriteria caseCriteria = new CaseCriteria().newCaseDateBetween(fromDate, toDate, newCaseDateType).region(region).district(district);
-
 		DashboardCriteria dashboardCriteria =
 			new DashboardCriteria().region(region).district(district).newCaseDateType(newCaseDateType).dateBetween(fromDate, toDate);
 		Map<Disease, Long> newCases = dashboardService.getCaseCountByDisease(dashboardCriteria);
@@ -136,7 +133,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		Map<Disease, District> lastReportedDistricts = dashboardService.getLastReportedDistrictByDisease(dashboardCriteria);
 
 		//case fatalities
-		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(caseCriteria, true, true);
+		Map<Disease, Long> caseFatalities = dashboardService.getDeathCountByDisease(dashboardCriteria);
 
 		//previous cases
 		dashboardCriteria.dateBetween(previousFromDate, previousToDate);

@@ -228,6 +228,34 @@ public class DashboardService {
 		return resultMap;
 	}
 
+	public Map<Disease, Long> getDeathCountByDisease(DashboardCriteria dashboardCriteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Case> root = cq.from(Case.class);
+
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
+		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		Join<Case, Person> person = joins.getPerson();
+
+		Predicate filter = caseService.createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		filter = CriteriaBuilderHelper.and(cb, filter, createCaseCriteriaFilter(dashboardCriteria, caseQueryContext));
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.multiselect(person.get(Person.CAUSE_OF_DEATH_DISEASE), cb.count(person));
+		cq.groupBy(person.get(Person.CAUSE_OF_DEATH_DISEASE));
+
+		List<Object[]> results = em.createQuery(cq).getResultList();
+
+		Map<Disease, Long> outbreaks = results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
+
+		return outbreaks;
+	}
+
 	public long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
