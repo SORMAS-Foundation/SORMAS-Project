@@ -82,7 +82,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(5, eventParticipantFacade.count(new EventParticipantCriteria().event(eventRef)));
+		assertEquals(5, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
 		List<EventParticipantDto> eventParticipants = eventParticipantFacade.getAllActiveEventParticipantsByEvent(eventRef.getUuid());
 		for (EventParticipantDto eventParticipant : eventParticipants) {
 			assertNotNull(eventParticipant.getRegion());
@@ -151,11 +151,11 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		EventParticipantIndexDto importedEventParticipant =
-			eventParticipantFacade.getIndexList(new EventParticipantCriteria().event(eventRef), null, null, null).get(0);
+			eventParticipantFacade.getIndexList(new EventParticipantCriteria().withEvent(eventRef), null, null, null).get(0);
 		PersonDto importedPerson = getPersonFacade().getPersonByUuid(importedEventParticipant.getPersonUuid());
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(1, eventParticipantFacade.count(new EventParticipantCriteria().event(eventRef)));
+		assertEquals(1, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
 		assertEquals(person.getUuid(), importedEventParticipant.getPersonUuid());
 		assertEquals(person.getFirstName(), importedPerson.getFirstName());
 		assertEquals(person.getLastName(), importedPerson.getLastName());
@@ -215,10 +215,10 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		EventParticipantIndexDto importedEventParticipant =
-			eventParticipantFacade.getIndexList(new EventParticipantCriteria().event(eventRef), null, null, null).get(0);
+			eventParticipantFacade.getIndexList(new EventParticipantCriteria().withEvent(eventRef), null, null, null).get(0);
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(1, eventParticipantFacade.count(new EventParticipantCriteria().event(eventRef)));
+		assertEquals(1, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
 		assertEquals(person.getUuid(), importedEventParticipant.getPersonUuid());
 		assertEquals(eventParticipant.getUuid(), importedEventParticipant.getUuid());
 		assertEquals("description 1", importedEventParticipant.getInvolvementDescription());
@@ -264,10 +264,10 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		EventParticipantIndexDto importedEventParticipant =
-			eventParticipantFacade.getIndexList(new EventParticipantCriteria().event(eventRef), null, null, null).get(0);
+			eventParticipantFacade.getIndexList(new EventParticipantCriteria().withEvent(eventRef), null, null, null).get(0);
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(1, eventParticipantFacade.count(new EventParticipantCriteria().event(eventRef)));
+		assertEquals(1, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
 		assertNotEquals(person.getUuid(), importedEventParticipant.getPersonUuid());
 		assertEquals(2, getPersonFacade().getAllUuids().size());
 	}
@@ -313,7 +313,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(0, eventParticipantFacade.count(new EventParticipantCriteria().event(eventRef)));
+		assertEquals(0, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
 		assertEquals(0, getPersonFacade().getAllUuids().size());
 	}
 
@@ -346,7 +346,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
-		assertEquals(5, eventParticipantFacade.count(new EventParticipantCriteria().event(eventRef)));
+		assertEquals(5, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
 	}
 
 	private static class EventParticipantImporterExtension extends EventParticipantImporter {
