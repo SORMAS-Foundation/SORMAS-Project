@@ -15,29 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
-package org.sormas.e2etests.steps.application;
+package org.sormas.e2etests.steps.api;
 
 import cucumber.api.java8.En;
+import java.util.List;
 import javax.inject.Inject;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.helpers.api.PersonsHelper;
+import org.sormas.e2etests.pojo.Person;
+import org.sormas.e2etests.state.ApiState;
 
-public class NavBarSteps implements En {
+public class PersonSteps implements En {
 
   @Inject
-  public NavBarSteps(WebDriverHelpers webDriverHelpers) {
+  public PersonSteps(PersonsHelper personsHelper, ApiState apiState) {
 
     When(
-        "^I click on the Cases button from navbar$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CASES_BUTTON));
+        "API: I receive the person",
+        () -> {
+          List<String> personUuids = apiState.getResponse().jsonPath().get();
+          personsHelper.getPersonByUuid(personUuids.get(4717));
+          Person person = apiState.getResponse().as(Person.class);
+        });
 
-    When(
-        "^I click on the Contacts button from navbar$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONTACTS_BUTTON));
-
-    When(
-        "^I click on the Events button from navbar$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON));
+    When("API: I receive all person ids", personsHelper::getAllPersonUuid);
   }
 }

@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.steps.application.events;
+package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ADD_PARTICIPANT_BUTTON;

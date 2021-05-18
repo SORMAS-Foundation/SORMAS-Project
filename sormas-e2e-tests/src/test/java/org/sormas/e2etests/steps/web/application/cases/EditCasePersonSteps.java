@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.steps.application.cases;
+package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.*;
