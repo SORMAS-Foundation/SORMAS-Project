@@ -23,20 +23,21 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 import com.google.common.truth.Truth;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.function.Predicate;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NotFoundException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 
 @Slf4j
 public class WebDriverHelpers {
 
+  public static final By SELECTED_RADIO_BUTTOn =
+      By.xpath("ancestor::div[@role='radiogroup']//input[@checked]/following-sibling::label");
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 10;
 
   private final BaseSteps baseSteps;
@@ -96,6 +97,11 @@ public class WebDriverHelpers {
     waitUntilElementIsVisibleAndClickable(selector);
     WebElement webElement = baseSteps.getDriver().findElement(selector);
     webElement.sendKeys(text);
+  }
+
+  public void clearAndFillInWebElement(By selector, String text) {
+    clearWebElement(selector);
+    fillInWebElement(selector, text);
   }
 
   @SneakyThrows
@@ -238,5 +244,26 @@ public class WebDriverHelpers {
             assertWithMessage("Number of identified element should be %s", number)
                 .that(getNumberOfElements(selector))
                 .isAtLeast(number));
+  }
+
+  public String getCheckedOptionFromHorizontalOptionGroup(By options) {
+    waitUntilIdentifiedElementIsPresent(options);
+    return baseSteps.getDriver().findElement(options).findElement(SELECTED_RADIO_BUTTOn).getText();
+  }
+
+  public void clearWebElement(By selector) {
+    Instant start = Instant.now();
+    waitUntilElementIsVisibleAndClickable(selector);
+    WebElement webElement = baseSteps.getDriver().findElement(selector);
+    while (!"".contentEquals(getValueFromWebElement(selector))) {
+      log.debug("Deleted char: {}", getValueFromWebElement(selector));
+      webElement.clear();
+      webElement.sendKeys((Keys.chord(Keys.SHIFT, Keys.END)));
+      webElement.sendKeys(Keys.chord(Keys.BACK_SPACE));
+      webElement.click();
+      if (Instant.now().isAfter(start.plus(1, ChronoUnit.MINUTES))) {
+        throw new Error("The field didn't clear");
+      }
+    }
   }
 }

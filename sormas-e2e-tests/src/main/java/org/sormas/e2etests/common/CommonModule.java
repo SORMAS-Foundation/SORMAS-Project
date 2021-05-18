@@ -24,6 +24,7 @@ import com.google.inject.PrivateModule;
 import com.google.inject.Provides;
 import java.util.Locale;
 import javax.inject.Singleton;
+import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.ui.DriverManager;
 
 public class CommonModule extends PrivateModule {
@@ -39,5 +40,12 @@ public class CommonModule extends PrivateModule {
   @Exposed
   Faker provideFaker() {
     return new Faker(Locale.GERMANY);
+  }
+
+  @Provides
+  @Singleton
+  @Exposed
+  SoftAssertions provideSoftAssertions() {
+    return new SoftAssertions();
   }
 }

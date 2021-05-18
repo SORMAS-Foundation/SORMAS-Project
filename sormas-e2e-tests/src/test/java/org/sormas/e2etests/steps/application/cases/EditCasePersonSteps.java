@@ -33,16 +33,16 @@ public class EditCasePersonSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   protected Case aCase;
+  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM/d/yyyy");
 
   @Inject
-  public EditCasePersonSteps(WebDriverHelpers webDriverHelpers) {
+  public EditCasePersonSteps(final WebDriverHelpers webDriverHelpers, final SoftAssertions softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I check the created data is correctly displayed on Edit case person page",
         () -> {
           aCase = collectCasePersonData();
-          SoftAssertions softly = new SoftAssertions();
           softly.assertThat(aCase.getFirstName()).isEqualTo(CreateNewCaseSteps.caze.getFirstName());
           softly.assertThat(aCase.getLastName()).isEqualTo(CreateNewCaseSteps.caze.getLastName());
           softly
@@ -85,11 +85,10 @@ public class EditCasePersonSteps implements En {
   }
 
   public LocalDate getUserBirthDate() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM/d/yyyy");
-    String year = webDriverHelpers.getValueFromWebElement(DATE_OF_BIRTH_YEAR_INPUT);
-    String month = webDriverHelpers.getValueFromWebElement(DATE_OF_BIRTH_MONTH_INPUT);
-    String day = webDriverHelpers.getValueFromWebElement(DATE_OF_BIRTH_DAY_INPUT);
-    String date = month + "/" + day + "/" + year;
-    return LocalDate.parse(date, formatter);
+    final String year = webDriverHelpers.getValueFromWebElement(DATE_OF_BIRTH_YEAR_INPUT);
+    final String month = webDriverHelpers.getValueFromWebElement(DATE_OF_BIRTH_MONTH_INPUT);
+    final String day = webDriverHelpers.getValueFromWebElement(DATE_OF_BIRTH_DAY_INPUT);
+    final String date = month + "/" + day + "/" + year;
+    return LocalDate.parse(date, DATE_FORMATTER);
   }
 }
