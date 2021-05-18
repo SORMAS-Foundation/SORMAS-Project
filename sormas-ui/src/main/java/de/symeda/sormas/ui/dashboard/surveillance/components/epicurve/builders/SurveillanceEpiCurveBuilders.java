@@ -1,7 +1,7 @@
-package de.symeda.sormas.ui.dashboard.surveillance.epicurve;
+package de.symeda.sormas.ui.dashboard.surveillance.components.epicurve.builders;
 
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
-import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceEpiCurveMode;
+import de.symeda.sormas.ui.dashboard.surveillance.components.epicurve.SurveillanceEpiCurveMode;
 
 public class SurveillanceEpiCurveBuilders {
 

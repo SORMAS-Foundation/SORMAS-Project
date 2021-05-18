@@ -15,12 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.event;
+package de.symeda.sormas.api.dashboard;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.EventInvestigationStatus;
+import de.symeda.sormas.api.event.EventJurisdictionDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 
 public class DashboardEventDto implements Serializable {

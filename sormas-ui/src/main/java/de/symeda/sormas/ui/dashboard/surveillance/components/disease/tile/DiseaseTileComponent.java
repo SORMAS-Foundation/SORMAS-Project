@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.dashboard.surveillance;
+package de.symeda.sormas.ui.dashboard.surveillance.components.disease.tile;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -155,43 +155,17 @@ public class DiseaseTileComponent extends VerticalLayout {
 		layout.setSpacing(false);
 		CssStyles.style(layout, CssStyles.BACKGROUND_HIGHLIGHT);
 
-		HorizontalLayout statsItem = createStatsItem(
-			I18nProperties.getCaption(Captions.dashboardLastReport) + ": ",
-			district.length() == 0 ? I18nProperties.getString(Strings.none) : district,
-			false,
-			true);
+		StatsItem statsItem =
+			new StatsItem.Builder(Captions.dashboardLastReport, district.length() == 0 ? I18nProperties.getString(Strings.none) : district)
+				.singleColumn(true)
+				.build();
 		CssStyles.style(statsItem, CssStyles.VSPACE_TOP_4);
 		layout.addComponent(statsItem);
-		layout.addComponent(createStatsItem(I18nProperties.getCaption(Captions.dashboardFatalities), fatalities.toString(), fatalities > 0, false));
-		statsItem = createStatsItem(I18nProperties.getCaption(Captions.DiseaseBurden_eventCount), events.toString(), false, false);
+		layout.addComponent(new StatsItem.Builder(Captions.dashboardFatalities, fatalities).critical(fatalities > 0).build());
+		statsItem = new StatsItem.Builder(Captions.DiseaseBurden_eventCount, events).build();
 		CssStyles.style(statsItem, CssStyles.VSPACE_4);
 		layout.addComponent(statsItem);
 
 		addComponent(layout);
-	}
-
-	private HorizontalLayout createStatsItem(String label, String value, boolean isCritical, boolean singleColumn) {
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setMargin(false);
-		layout.setSpacing(false);
-
-		Label nameLabel = new Label(label);
-		CssStyles.style(nameLabel, CssStyles.LABEL_PRIMARY, isCritical ? CssStyles.LABEL_CRITICAL : "", CssStyles.HSPACE_LEFT_3);
-		layout.addComponent(nameLabel);
-		if (!singleColumn) {
-			layout.setExpandRatio(nameLabel, 1);
-		}
-
-		Label valueLabel = new Label(value);
-		CssStyles.style(
-			valueLabel,
-			CssStyles.LABEL_PRIMARY,
-			isCritical ? CssStyles.LABEL_CRITICAL : "",
-			singleColumn ? CssStyles.HSPACE_LEFT_5 : CssStyles.ALIGN_CENTER);
-		layout.addComponent(valueLabel);
-		layout.setExpandRatio(valueLabel, singleColumn ? 1f : 0.65f);
-
-		return layout;
 	}
 }

@@ -1,14 +1,14 @@
-package de.symeda.sormas.ui.dashboard.surveillance.epicurve;
+package de.symeda.sormas.ui.dashboard.surveillance.components.epicurve.builders;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
@@ -22,7 +22,7 @@ public abstract class SurveillanceEpiCurveBuilder {
 		hcjs = new StringBuilder();
 	}
 
-	public String buildFrom(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider) {
+	public String buildFrom(List<Date> filteredDates, DashboardCriteria dashboardCriteria) {
 		//@formatter:off
         hcjs.append(
             "var options = {"
@@ -61,7 +61,9 @@ public abstract class SurveillanceEpiCurveBuilder {
 			+ "color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white' } } },");
 		//@formatter:on
 
-		buildEpiCurve(filteredDates, dashboardDataProvider);
+		List<EpiCurveSeriesElement> elements = buildEpiCurveSeriesElements(filteredDates, dashboardCriteria);
+		buildSeries(elements);
+		hcjs.append(", ");
 
 		//@formatter:off
 		hcjs.append("exporting: {\n" +
@@ -87,6 +89,47 @@ public abstract class SurveillanceEpiCurveBuilder {
 		return hcjs.toString();
 	}
 
+	protected DashboardCriteria setNewCaseDatesInCaseCriteria(Date date, DashboardCriteria dashboardCriteria) {
+		if (epiCurveGrouping == EpiCurveGrouping.DAY) {
+			dashboardCriteria.dateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
+		} else if (epiCurveGrouping == EpiCurveGrouping.WEEK) {
+			dashboardCriteria.dateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date));
+		} else {
+			dashboardCriteria.dateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
+		}
+		return dashboardCriteria;
+	}
+
+	protected void buildSeries(List<EpiCurveSeriesElement> elements) {
+		hcjs.append("series: [");
+		for (int i = 0; i < elements.size(); i++) {
+			if (i > 0) {
+				hcjs.append(", ");
+			}
+			buildSeriesElement(elements.get(i));
+		}
+		hcjs.append("]");
+	}
+
+	private void buildSeriesElement(EpiCurveSeriesElement element) {
+		hcjs.append("{ name: '")
+			.append(element.getCaption())
+			.append("', color: '")
+			.append(element.getColor())
+			.append("', dataLabels: { allowOverlap: false },  data: [");
+		buildDataObject(element.getValues());
+		hcjs.append("]}");
+	}
+
+	private void buildDataObject(int[] values) {
+		for (int i = 0; i < values.length; i++) {
+			if (i > 0) {
+				hcjs.append(", ");
+			}
+			hcjs.append(values[i]);
+		}
+	}
+
 	private List<String> buildLabels(List<Date> filteredDates) {
 		List<String> newLabels = new ArrayList<>();
 		Calendar calendar = Calendar.getInstance();
@@ -106,5 +149,5 @@ public abstract class SurveillanceEpiCurveBuilder {
 		return newLabels;
 	}
 
-	abstract void buildEpiCurve(List<Date> filteredDates, DashboardDataProvider dashboardDataProvider);
+	abstract List<EpiCurveSeriesElement> buildEpiCurveSeriesElements(List<Date> filteredDates, DashboardCriteria dashboardCriteria);
 }

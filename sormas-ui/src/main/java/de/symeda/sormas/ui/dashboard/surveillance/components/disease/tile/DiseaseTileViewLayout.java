@@ -15,44 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.dashboard.surveillance;
+package de.symeda.sormas.ui.dashboard.surveillance.components.disease.tile;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
-import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 
 public class DiseaseTileViewLayout extends CssLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
-
-	private DashboardDataProvider dashboardDataProvider;
-
-	public DiseaseTileViewLayout(DashboardDataProvider dashboardDataProvider) {
-		this.dashboardDataProvider = dashboardDataProvider;
-	}
 
 	@Override
 	protected String getCss(Component c) {
 		return "margin-left: 18px; margin-bottom: 18px;";
 	}
 
-	public void refresh(int limitDiseasesCount) {
-		List<DiseaseBurdenDto> diseasesBurden = dashboardDataProvider.getDiseasesBurden();
-
-		// sort, limit and filter
-		Stream<DiseaseBurdenDto> diseasesBurdenStream =
-			diseasesBurden.stream().sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount()));
-		if (limitDiseasesCount > 0) {
-			diseasesBurdenStream = diseasesBurdenStream.limit(limitDiseasesCount);
-		}
-		diseasesBurden = diseasesBurdenStream.collect(Collectors.toList());
-
+	public void refresh(List<DiseaseBurdenDto> diseasesBurden) {
 		this.removeAllComponents();
 
 		for (DiseaseBurdenDto diseaseBurden : diseasesBurden) {
