@@ -19,10 +19,16 @@ import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import android.content.ComponentName;
+import org.hzi.sormas.lbds.core.http.HttpContainer;
+import org.hzi.sormas.lbds.core.http.HttpMethod;
+import org.hzi.sormas.lbds.messaging.LbdsPropagateKexToLbdsIntent;
+import org.hzi.sormas.lbds.messaging.LbdsRelated;
+import org.hzi.sormas.lbds.messaging.LbdsSendIntent;
+
+import com.google.gson.Gson;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,8 +40,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.gson.Gson;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.person.PersonDto;
@@ -68,10 +72,6 @@ import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
-import org.hzi.sormas.lbds.core.http.HttpMethod;
-import org.hzi.sormas.lbds.messaging.LbdsPropagateKexToLbdsIntent;
-import org.hzi.sormas.lbds.messaging.LbdsRelated;
-import org.hzi.sormas.lbds.messaging.LbdsSendIntent;
 
 /**
  * TODO SettingsFragment should probably not be a BaseLandingFragment, but a BaseFragment
@@ -301,7 +301,6 @@ public class SettingsFragment extends BaseLandingFragment {
 			e.printStackTrace();
 		}
 
-		/*
 		PersonDto target = new PersonDto();
 		PersonDao personDao = DatabaseHelper.getPersonDao();
 		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
@@ -313,12 +312,10 @@ public class SettingsFragment extends BaseLandingFragment {
 		personDtoHelper.fillInnerFromAdo(target, firstEntry);
 		resetFields(target);
 		String payload = new Gson().toJson(target);
-
 		HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, "http://localhost:6080/sormas-rest/persons/push", payload);
-		Intent intent = new LbdsSendIntent(method, "gemerkter aesSecret?");
-
+		Intent intent = new LbdsSendIntent(new HttpContainer(method), "");
 		intent.setComponent(LbdsRelated.componentName);
-		ComponentName c = getContext().startForegroundService(intent);*/
+		ContextCompat.startForegroundService(getContext(), intent);
 	}
 
 	private void resetFields(PersonDto personDto) {
