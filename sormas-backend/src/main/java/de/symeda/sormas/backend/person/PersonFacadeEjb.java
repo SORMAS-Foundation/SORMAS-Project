@@ -893,8 +893,8 @@ public class PersonFacadeEjb implements PersonFacade {
 					}
 				} else if (!newPerson.getPresentCondition().isDeceased() && existingPerson.getPresentCondition().isDeceased()) {
 					// Person was put "back alive"
-					// update the latest associated case, if it was set to deceased
-					if (personCase.getOutcome() == CaseOutcome.DECEASED) {
+					// update the latest associated case, if it was set to deceased && and if the case-disease was also the causeofdeath-disease
+					if (personCase.getOutcome() == CaseOutcome.DECEASED && personCase.getDisease() == existingPerson.getCauseOfDeathDisease()) {
 						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 						personCase.setOutcome(CaseOutcome.NO_OUTCOME);
 						personCase.setOutcomeDate(null);
@@ -903,18 +903,15 @@ public class PersonFacadeEjb implements PersonFacade {
 				}
 			} else if (newPerson.getPresentCondition() != null
 				&& newPerson.getPresentCondition().isDeceased()
-				&& newPerson.getDeathDate() != existingPerson.getDeathDate()) {
+				&& newPerson.getDeathDate() != existingPerson.getDeathDate()
+				&& newPerson.getDeathDate() != null) {
 				// only Deathdate has changed
-				if (newPerson.getDeathDate() != null) {
-					// update the latest associated case
-					Case personCase = personCases.get(0);
-					if (personCase.getOutcome() == CaseOutcome.DECEASED) {
-						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
-						personCase.setOutcomeDate(newPerson.getDeathDate());
-						caseFacade.onCaseChanged(existingCase, personCase);
-					} else {
-						newPerson.setDeathDate(personCase.getOutcomeDate());
-					}
+				// update the latest associated case to the new deathdate, if the previous outcome date matches the previous deathdate
+				Case personCase = personCases.get(0);
+				if (personCase.getOutcome() == CaseOutcome.DECEASED && personCase.getOutcomeDate() == existingPerson.getDeathDate()) {
+					CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+					personCase.setOutcomeDate(newPerson.getDeathDate());
+					caseFacade.onCaseChanged(existingCase, personCase);
 				}
 			}
 		}

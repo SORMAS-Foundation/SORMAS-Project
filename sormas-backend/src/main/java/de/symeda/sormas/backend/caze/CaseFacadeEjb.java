@@ -2395,14 +2395,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			&& newCase.getOutcome() == CaseOutcome.DECEASED
 			&& (newCase.getPerson().getPresentCondition() == PresentCondition.DEAD
 				|| newCase.getPerson().getPresentCondition() == PresentCondition.BURIED)
-			&& existingCase.getOutcomeDate() != newCase.getOutcomeDate()) {
+			&& existingCase.getOutcomeDate() != newCase.getOutcomeDate()
+			&& newCase.getOutcomeDate() != null) {
 			// outcomeDate was changed, but person & case are considered dead
-			if (newCase.getOutcomeDate() != null) {
+			if (existingCase.getOutcomeDate() == newCase.getPerson().getDeathDate()) {
+				// update the deathdate of the person, if the previous outcomedate equals the previous deathdate
 				PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
 				newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
 				personFacade.onPersonChanged(existingPerson, newCase.getPerson());
-			} else {
-				newCase.setOutcomeDate(newCase.getPerson().getDeathDate());
 			}
 		}
 	}
