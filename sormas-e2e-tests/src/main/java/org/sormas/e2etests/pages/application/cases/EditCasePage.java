@@ -29,9 +29,12 @@ public class EditCasePage {
       By.cssSelector("#facilityOrHome input[checked] + label");
   public static final By PLACE_DESCRIPTION_INPUT = By.cssSelector("#healthFacilityDetails");
   public static final By EXTERNAL_ID_INPUT = By.id("externalID");
+  public static final By UUID_INPUT = By.id("uuid");
   public static final By DISEASE_INPUT = By.cssSelector("#disease input");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot-view-header .v-slot-primary div");
   public static final By CASE_SAVED_MESSAGE = By.xpath("//*[contains(text(),'Case saved')]");
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");
+  public static final By NEW_TASK_BUTTON = By.cssSelector("div#taskNewTask");
+  public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit-task']");
 }

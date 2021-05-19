@@ -35,6 +35,7 @@ public class Case {
   LocalDate dateOfSymptomOnset;
   String disease;
   String externalId;
+  String uuid;
   String facilityCategory;
   String facilityType;
   String firstName;
