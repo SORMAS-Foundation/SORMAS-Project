@@ -52,6 +52,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String VACCINATION = "vaccination";
+	public static final String RELATION_TO_CASE = "relationToCase";
 	public static final String QUARANTINE_TYPE = "quarantineType";
 	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
 	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT = "quarantineOrderedOfficialDocument";
@@ -99,6 +100,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	 */
 	private SymptomJournalStatus symptomJournalStatus;
 	private Vaccination vaccination;
+	private ContactRelation relationToCase;
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
 	private Boolean deleted = Boolean.FALSE;
@@ -353,6 +355,14 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setVaccination(Vaccination vaccination) {
 		this.vaccination = vaccination;
+	}
+
+	public ContactRelation getRelationToCase() {
+		return relationToCase;
+	}
+
+	public void setRelationToCase(ContactRelation relationToCase) {
+		this.relationToCase = relationToCase;
 	}
 
 	public Boolean getFollowUpUntilToPrecise() {

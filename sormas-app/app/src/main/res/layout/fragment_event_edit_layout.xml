@@ -75,10 +75,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/event_reportDateTime"
                     style="@style/ControlFirstOfTwoColumnsStyle"
-                    app:value="@{data.reportDateTime}" />
+                    app:required="true"
+                    app:allowedDaysInFuture="0"
+                    app:value="@={data.reportDateTime}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_reportingUser"

@@ -156,8 +156,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		final ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
 		contactSimilarityCriteria.setDisease(Disease.CORONAVIRUS);
 		contactSimilarityCriteria.setPerson(new PersonReferenceDto(contactPerson.getUuid()));
-		contactSimilarityCriteria.setCaze(new CaseReferenceDto(caze.getUuid()));
-		contactSimilarityCriteria.setLastContactDate(new Date());
+		contactSimilarityCriteria.withCaze(new CaseReferenceDto(caze.getUuid()));
 		contactSimilarityCriteria.setLastContactDate(new Date());
 		contactSimilarityCriteria.setReportDate(new Date());
 
@@ -961,7 +960,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactPerson.getAddress().setHouseNumber("Test number");
 		contactPerson.getAddress().setAdditionalInformation("Test information");
 		contactPerson.getAddress().setPostalCode("1234");
-		getPersonFacade().savePerson(contactPerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(contactPerson);
 
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);

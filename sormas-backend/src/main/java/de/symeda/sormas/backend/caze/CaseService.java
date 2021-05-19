@@ -93,22 +93,17 @@ import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
@@ -139,14 +134,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private PersonFacadeEjbLocal personFacade;
-	@EJB
-	private PersonService personService;
-	@EJB
-	private EventParticipantService eventParticipantService;
-	@EJB
-	private HospitalizationService hospitalizationService;
-	@EJB
 	private EpiDataService epiDataService;
 	@EJB
 	private UserService userService;
@@ -166,8 +153,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
-	@EJB
-	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
 
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
@@ -857,7 +842,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		contacts = contactService.getAllByResultingCase(caze);
 		for (Contact contact : contacts) {
 			contact.setResultingCase(null);
-			externalJournalService.handleExternalJournalPersonUpdate(contact.getPerson().toReference());
+			externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 			contactService.ensurePersisted(contact);
 		}
 
@@ -1033,7 +1018,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
 				Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
 				Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
-				contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, cq, contactRoot));
+				contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, contactRoot));
 				contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
 				filter = CriteriaBuilderHelper.or(cb, filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
 			}
@@ -1075,7 +1060,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 * By default (if {@code dateType} is null), this logic looks at the {@link Symptoms#onsetDate} first or, if this is null,
 	 * the {@link Case#reportDate}.
 	 */
-	private Predicate createNewCaseFilter(
+	public Predicate createNewCaseFilter(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		From<?, Case> caze,
@@ -1239,7 +1224,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			caze.setFollowUpStatusChangeUser(null);
 		}
 
-		externalJournalService.handleExternalJournalPersonUpdate(caze.getPerson().toReference());
+		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 		ensurePersisted(caze);
 	}
 
@@ -1294,6 +1279,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Case, Person> personJoin = caseRoot.join(Case.PERSON, JoinType.LEFT);
 
 		cq.where(personJoin.get(AbstractDomainObject.UUID).in(personUuids));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<Case> getByExternalId(String externalId) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+
+		cq.where(cb.equal(caseRoot.get(Case.EXTERNAL_ID), externalId), cb.equal(caseRoot.get(Case.DELETED), Boolean.FALSE));
 
 		return em.createQuery(cq).getResultList();
 	}

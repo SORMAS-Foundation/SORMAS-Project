@@ -402,7 +402,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		person.setAddress(newAddress);
 
-		getPersonFacade().savePerson(person);
+		getPersonFacade().savePersonAndNotifyExternalJournal(person);
 	}
 
 	private void updatePersonPseudonymizedDto() {
@@ -430,7 +430,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		person.setAddress(newAddress);
 
-		getPersonFacade().savePerson(person);
+		getPersonFacade().savePersonAndNotifyExternalJournal(person);
 	}
 
 	private void assertNotPseudonymized(PersonDto person) {

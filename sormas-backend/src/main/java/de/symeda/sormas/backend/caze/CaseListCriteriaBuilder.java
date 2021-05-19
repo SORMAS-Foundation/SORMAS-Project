@@ -314,6 +314,12 @@ public class CaseListCriteriaBuilder {
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
 		case CaseIndexDetailedDto.SYMPTOM_ONSET_DATE:
 			return Collections.singletonList(joins.getSymptoms().get(Symptoms.ONSET_DATE));
+		case CaseIndexDetailedDto.RESPONSIBLE_REGION:
+			return Collections.singletonList(joins.getResponsibleRegion().get(Region.NAME));
+		case CaseIndexDetailedDto.RESPONSIBLE_DISTRICT:
+			return Collections.singletonList(joins.getResponsibleDistrict().get(District.NAME));
+		case CaseIndexDetailedDto.RESPONSIBLE_COMMUNITY:
+			return Collections.singletonList(joins.getResponsibleCommunity().get(Community.NAME));
 		default:
 			return getIndexOrders(sortProperty, caze, joins, cb);
 		}

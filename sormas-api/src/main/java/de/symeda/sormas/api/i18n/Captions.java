@@ -709,7 +709,6 @@ public interface Captions {
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
 	String dashboardCanceledFollowUp = "dashboardCanceledFollowUp";
 	String dashboardCanceledFollowUpShort = "dashboardCanceledFollowUpShort";
-	String dashboardCaseFatalityRate = "dashboardCaseFatalityRate";
 	String dashboardCaseFatalityRateShort = "dashboardCaseFatalityRateShort";
 	String dashboardCasesIn = "dashboardCasesIn";
 	String dashboardComparedTo = "dashboardComparedTo";
@@ -718,6 +717,8 @@ public interface Captions {
 	String dashboardCompletedFollowUpShort = "dashboardCompletedFollowUpShort";
 	String dashboardConfirmed = "dashboardConfirmed";
 	String dashboardConfirmedContact = "dashboardConfirmedContact";
+	String dashboardConfirmedNoSymptoms = "dashboardConfirmedNoSymptoms";
+	String dashboardConfirmedUnknownSymptoms = "dashboardConfirmedUnknownSymptoms";
 	String dashboardContactClassificationChart = "dashboardContactClassificationChart";
 	String dashboardConvertedToCase = "dashboardConvertedToCase";
 	String dashboardCooperative = "dashboardCooperative";
@@ -750,7 +751,6 @@ public interface Captions {
 	String dashboardIndeterminate = "dashboardIndeterminate";
 	String dashboardInvestigated = "dashboardInvestigated";
 	String dashboardLastReport = "dashboardLastReport";
-	String dashboardLastReportedDistrict = "dashboardLastReportedDistrict";
 	String dashboardLastVisitGt48 = "dashboardLastVisitGt48";
 	String dashboardLastVisitLt24 = "dashboardLastVisitLt24";
 	String dashboardLastVisitLt48 = "dashboardLastVisitLt48";
@@ -782,7 +782,6 @@ public interface Captions {
 	String dashboardNumberOfContacts = "dashboardNumberOfContacts";
 	String dashboardOneDay = "dashboardOneDay";
 	String dashboardOutbreak = "dashboardOutbreak";
-	String dashboardOutbreakDistricts = "dashboardOutbreakDistricts";
 	String dashboardPending = "dashboardPending";
 	String dashboardPeriodBefore = "dashboardPeriodBefore";
 	String dashboardPositive = "dashboardPositive";
@@ -823,6 +822,7 @@ public interface Captions {
 	String dashboardUncooperative = "dashboardUncooperative";
 	String dashboardUnderFollowUp = "dashboardUnderFollowUp";
 	String dashboardUnderFollowUpShort = "dashboardUnderFollowUpShort";
+	String dashboardUnknown = "dashboardUnknown";
 	String dashboardViewAsBarChart = "dashboardViewAsBarChart";
 	String dashboardViewAsColumnChart = "dashboardViewAsColumnChart";
 	String dashboardWeekBefore = "dashboardWeekBefore";

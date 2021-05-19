@@ -147,6 +147,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		return sampleService.getByUuid(sampleRef.getUuid())
 			.getPathogenTests()
 			.stream()
+			.filter(p -> !p.isDeleted())
 			.map(p -> convertToDto(p, pseudonymizer))
 			.collect(Collectors.toList());
 	}

@@ -218,7 +218,8 @@ public class ContactListCriteriaBuilder {
 			joins.getAddress().get(Location.POSTAL_CODE),
 			((Selection<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
 			joins.getReportingUser().get(User.FIRST_NAME),
-			joins.getReportingUser().get(User.LAST_NAME));
+			joins.getReportingUser().get(User.LAST_NAME),
+			contact.get(Contact.RELATION_TO_CASE));
 		indexSelection.addAll(selections);
 
 		return indexSelection;
@@ -245,6 +246,8 @@ public class ContactListCriteriaBuilder {
 			return Collections.singletonList(joins.getAddress().get(sortProperty.propertyName));
 		case ContactIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
+		case ContactIndexDetailedDto.RELATION_TO_CASE:
+			return Collections.singletonList(contact.get(Contact.RELATION_TO_CASE));
 		default:
 			return this.getIndexOrders(sortProperty, contact, joins, cb);
 		}

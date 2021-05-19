@@ -311,6 +311,7 @@ public interface Strings {
 	String headingCaseComparison = "headingCaseComparison";
 	String headingCaseConversion = "headingCaseConversion";
 	String headingCaseData = "headingCaseData";
+	String headingCaseFatalityRate = "headingCaseFatalityRate";
 	String headingCaseImport = "headingCaseImport";
 	String headingCaseResponsibleJurisidction = "headingCaseResponsibleJurisidction";
 	String headingCasesArchived = "headingCasesArchived";
@@ -319,6 +320,7 @@ public interface Strings {
 	String headingCasesGuide = "headingCasesGuide";
 	String headingCasesInQuarantine = "headingCasesInQuarantine";
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
+	String headingCasesResultingFromContacts = "headingCasesResultingFromContacts";
 	String headingCaseStatusMap = "headingCaseStatusMap";
 	String headingCaution = "headingCaution";
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
@@ -346,7 +348,6 @@ public interface Strings {
 	String headingContactMergeGuide = "headingContactMergeGuide";
 	String headingContactsArchived = "headingContactsArchived";
 	String headingContactsCancelFollowUp = "headingContactsCancelFollowUp";
-	String headingContactsConvertedToCase = "headingContactsConvertedToCase";
 	String headingContactsDeleted = "headingContactsDeleted";
 	String headingContactsInQuarantine = "headingContactsInQuarantine";
 	String headingContactsLostToFollowUp = "headingContactsLostToFollowUp";
@@ -435,6 +436,7 @@ public interface Strings {
 	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
+	String headingFatalities = "headingFatalities";
 	String headingFetchLabMessages = "headingFetchLabMessages";
 	String headingFileExists = "headingFileExists";
 	String headingFilters = "headingFilters";
@@ -474,9 +476,11 @@ public interface Strings {
 	String headingInformationSource = "headingInformationSource";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
+	String headingLabMessageDownload = "headingLabMessageDownload";
 	String headingLabMessagesDeleted = "headingLabMessagesDeleted";
 	String headingLabMessagesDeleteProcessed = "headingLabMessagesDeleteProcessed";
 	String headingLaboratorySample = "headingLaboratorySample";
+	String headingLastReportedDistrict = "headingLastReportedDistrict";
 	String headingLineListing = "headingLineListing";
 	String headingLineListingImport = "headingLineListingImport";
 	String headingLocation = "headingLocation";
@@ -511,6 +515,7 @@ public interface Strings {
 	String headingNoTreatmentsSelected = "headingNoTreatmentsSelected";
 	String headingNoUsersSelected = "headingNoUsersSelected";
 	String headingNoVisitsSelected = "headingNoVisitsSelected";
+	String headingOutbreakDistricts = "headingOutbreakDistricts";
 	String headingOutbreakIn = "headingOutbreakIn";
 	String headingPaperFormDates = "headingPaperFormDates";
 	String headingPathogenTestsDeleted = "headingPathogenTestsDeleted";
@@ -866,6 +871,7 @@ public interface Strings {
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";
 	String messageExportFailed = "messageExportFailed";
+	String messageExternalLabResultsAdapterNotFound = "messageExternalLabResultsAdapterNotFound";
 	String messageFacilitiesArchived = "messageFacilitiesArchived";
 	String messageFacilitiesDearchived = "messageFacilitiesDearchived";
 	String messageFacilitiesDearchivingNotPossible = "messageFacilitiesDearchivingNotPossible";

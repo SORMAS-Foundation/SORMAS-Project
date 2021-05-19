@@ -150,7 +150,9 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.MATERNAL_HISTORY),
 					params);
 			}
-			if (!caze.checkIsUnreferredPortHealthCase() && !UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_HOSPITALIZATION)
+				&& !caze.checkIsUnreferredPortHealthCase()
+				&& !UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 				menu.addView(
 					HospitalizationView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION),
@@ -164,23 +166,29 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PORT_HEALTH_INFO),
 					params);
 			}
-			menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
-			if (caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_SYMPTOMS)) {
+				menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
+			}
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA) && caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
 				menu.addView(CaseEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 			}
-			if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_THERAPY)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
 		}
 
-		if (caseFollowupEnabled && caze.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
+		if (caseFollowupEnabled
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_FOLLOW_UP)
+			&& caze.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 			menu.addView(CaseVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.VISITS), params);
 		}
 
 		if (showExtraMenuEntries) {
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_FOLLOW_UP)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
 				&& !caze.checkIsUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
 				menu.addView(

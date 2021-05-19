@@ -59,6 +59,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
@@ -195,7 +196,7 @@ public class UsersView extends AbstractView {
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 
-		activeFilter = new ComboBox();
+		activeFilter = ComboBoxHelper.createComboBoxV7();
 		activeFilter.setId(UserDto.ACTIVE);
 		activeFilter.setWidth(200, Unit.PIXELS);
 		activeFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
@@ -209,7 +210,7 @@ public class UsersView extends AbstractView {
 		});
 		filterLayout.addComponent(activeFilter);
 
-		userRolesFilter = new ComboBox();
+		userRolesFilter = ComboBoxHelper.createComboBoxV7();
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
@@ -222,7 +223,7 @@ public class UsersView extends AbstractView {
 
 		UserDto user = UserProvider.getCurrent().getUser();
 
-		regionFilter = new ComboBox();
+		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(CaseDataDto.REGION);
 
 		if (user.getRegion() == null) {
@@ -242,7 +243,7 @@ public class UsersView extends AbstractView {
 			filterLayout.addComponent(regionFilter);
 		}
 
-		districtFilter = new ComboBox();
+		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(CaseDataDto.DISTRICT);
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
@@ -286,10 +287,12 @@ public class UsersView extends AbstractView {
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionEnable), VaadinIcons.CHECK_SQUARE_O, selectedItem -> {
-						ControllerProvider.getUserController().enableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+						ControllerProvider.getUserController()
+							.enableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 					}, true),
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDisable), VaadinIcons.THIN_SQUARE, selectedItem -> {
-						ControllerProvider.getUserController().disableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+						ControllerProvider.getUserController()
+							.disableAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 					}, true));
 
 				bulkOperationsDropdown.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());

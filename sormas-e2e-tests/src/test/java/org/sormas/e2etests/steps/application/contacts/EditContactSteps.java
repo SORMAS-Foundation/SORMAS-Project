@@ -18,15 +18,15 @@
 
 package org.sormas.e2etests.steps.application.contacts;
 
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
+
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.Contact;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 
 public class EditContactSteps implements En {
 
@@ -40,34 +40,61 @@ public class EditContactSteps implements En {
     When(
         "I check the created data is correctly displayed on Edit Contact page",
         () -> {
-            aContact = collectContactData();
-            SoftAssertions softly = new SoftAssertions();
-            softly.assertThat(aContact.getFirstName())
+          aContact = collectContactData();
+          SoftAssertions softly = new SoftAssertions();
+          softly
+              .assertThat(aContact.getFirstName())
               .isEqualToIgnoringCase(CreateNewContactSteps.contact.getFirstName());
-            softly.assertThat(aContact.getLastName())
+          softly
+              .assertThat(aContact.getLastName())
               .isEqualToIgnoringCase(CreateNewContactSteps.contact.getLastName());
-            softly.assertThat(aContact.getReturningTraveler()).isEqualToIgnoringCase(CreateNewContactSteps.contact.getReturningTraveler());
-            softly.assertThat(aContact.getReportDate())
+          softly
+              .assertThat(aContact.getReturningTraveler())
+              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getReturningTraveler());
+          softly
+              .assertThat(aContact.getReportDate())
               .isEqualTo(CreateNewContactSteps.contact.getReportDate());
-            softly.assertThat(aContact.getDiseaseOfSourceCase())
+          softly
+              .assertThat(aContact.getDiseaseOfSourceCase())
               .isEqualTo(CreateNewContactSteps.contact.getDiseaseOfSourceCase());
-            softly.assertThat(aContact.getCaseIdInExternalSystem())
+          softly
+              .assertThat(aContact.getCaseIdInExternalSystem())
               .isEqualTo(CreateNewContactSteps.contact.getCaseIdInExternalSystem());
-            softly.assertThat(aContact.getDateOfLastContact())
+          softly
+              .assertThat(aContact.getDateOfLastContact())
               .isEqualTo(CreateNewContactSteps.contact.getDateOfLastContact());
-            softly.assertThat(aContact.getCaseOrEventInformation())
+          softly
+              .assertThat(aContact.getCaseOrEventInformation())
               .isEqualTo(CreateNewContactSteps.contact.getCaseOrEventInformation());
-            softly.assertThat(aContact.getResponsibleRegion()).isEqualTo(CreateNewContactSteps.contact.getResponsibleRegion());
-            softly.assertThat(aContact.getResponsibleDistrict()).isEqualTo(CreateNewContactSteps.contact.getResponsibleDistrict());
-            softly.assertThat(aContact.getResponsibleCommunity()).isEqualTo(CreateNewContactSteps.contact.getResponsibleCommunity());
-            softly.assertThat(
-                    aContact.getAdditionalInformationOnContactType().equalsIgnoreCase(CreateNewContactSteps.contact.getAdditionalInformationOnContactType()))
+          softly
+              .assertThat(aContact.getResponsibleRegion())
+              .isEqualTo(CreateNewContactSteps.contact.getResponsibleRegion());
+          softly
+              .assertThat(aContact.getResponsibleDistrict())
+              .isEqualTo(CreateNewContactSteps.contact.getResponsibleDistrict());
+          softly
+              .assertThat(aContact.getResponsibleCommunity())
+              .isEqualTo(CreateNewContactSteps.contact.getResponsibleCommunity());
+          softly
+              .assertThat(
+                  aContact
+                      .getAdditionalInformationOnContactType()
+                      .equalsIgnoreCase(
+                          CreateNewContactSteps.contact.getAdditionalInformationOnContactType()))
               .isTrue();
-            softly.assertThat(aContact.getTypeOfContact()).isEqualToIgnoringCase(CreateNewContactSteps.contact.getTypeOfContact());
-            softly.assertThat(aContact.getContactCategory()).isEqualToIgnoringCase(CreateNewContactSteps.contact.getContactCategory());
-            softly.assertThat(aContact.getRelationshipWithCase()).isEqualTo(CreateNewContactSteps.contact.getRelationshipWithCase());
-            softly.assertThat(aContact.getDescriptionOfHowContactTookPlace()).isEqualTo(CreateNewContactSteps.contact.getDescriptionOfHowContactTookPlace());
-            softly.assertAll();
+          softly
+              .assertThat(aContact.getTypeOfContact())
+              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getTypeOfContact());
+          softly
+              .assertThat(aContact.getContactCategory())
+              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getContactCategory());
+          softly
+              .assertThat(aContact.getRelationshipWithCase())
+              .isEqualTo(CreateNewContactSteps.contact.getRelationshipWithCase());
+          softly
+              .assertThat(aContact.getDescriptionOfHowContactTookPlace())
+              .isEqualTo(CreateNewContactSteps.contact.getDescriptionOfHowContactTookPlace());
+          softly.assertAll();
         });
   }
 
@@ -75,28 +102,40 @@ public class EditContactSteps implements En {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
-      String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(DATE_OF_LAST_CONTACT_INPUT);
-      LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatter);
+    String collectedLastDateOfContact =
+        webDriverHelpers.getValueFromWebElement(DATE_OF_LAST_CONTACT_INPUT);
+    LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatter);
     Contact contactInfo = getContactInformation();
 
     return Contact.builder()
-            .firstName(contactInfo.getFirstName())
-            .lastName(contactInfo.getLastName())
-            .returningTraveler(webDriverHelpers.getTextOfSelectedWebElementFromList(RETURNING_TRAVELER_OPTIONS_LIST_ID))
-            .reportDate(parsedDateOfReport)
-            .diseaseOfSourceCase(webDriverHelpers.getValueFromWebElement(DISEASE_COMBOBOX))
-            .caseIdInExternalSystem(webDriverHelpers.getValueFromWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT))
-            .dateOfLastContact(parsedLastDateOfContact)
-            .caseOrEventInformation(webDriverHelpers.getValueFromWebElement(CASE_OR_EVENT_INFORMATION_INPUT))
-            .responsibleRegion(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_REGION_COMBOBOX))
-            .responsibleDistrict(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_DISTRICT_COMBOBOX))
-            .responsibleCommunity(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_COMMUNITY_COMBOBOX))
-            .additionalInformationOnContactType(webDriverHelpers.getValueFromWebElement(ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
-            .typeOfContact(webDriverHelpers.getTextOfSelectedWebElementFromList(TYPE_OF_CONTACT_OPTIONS_LIST_ID))
-            .contactCategory(webDriverHelpers.getTextOfSelectedWebElementFromList(CONTACT_CATEGORY_OPTIONS_LIST_ID))
-            .relationshipWithCase(webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_COMBOBOX))
-            .descriptionOfHowContactTookPlace(webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
-            .build();
+        .firstName(contactInfo.getFirstName())
+        .lastName(contactInfo.getLastName())
+        .returningTraveler(
+            webDriverHelpers.getTextOfSelectedWebElementFromList(
+                RETURNING_TRAVELER_OPTIONS_LIST_ID))
+        .reportDate(parsedDateOfReport)
+        .diseaseOfSourceCase(webDriverHelpers.getValueFromWebElement(DISEASE_COMBOBOX))
+        .caseIdInExternalSystem(
+            webDriverHelpers.getValueFromWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT))
+        .dateOfLastContact(parsedLastDateOfContact)
+        .caseOrEventInformation(
+            webDriverHelpers.getValueFromWebElement(CASE_OR_EVENT_INFORMATION_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_REGION_COMBOBOX))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_DISTRICT_COMBOBOX))
+        .responsibleCommunity(
+            webDriverHelpers.getValueFromWebElement(RESPONSIBLE_COMMUNITY_COMBOBOX))
+        .additionalInformationOnContactType(
+            webDriverHelpers.getValueFromWebElement(
+                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        .typeOfContact(
+            webDriverHelpers.getTextOfSelectedWebElementFromList(TYPE_OF_CONTACT_OPTIONS_LIST_ID))
+        .contactCategory(
+            webDriverHelpers.getTextOfSelectedWebElementFromList(CONTACT_CATEGORY_OPTIONS_LIST_ID))
+        .relationshipWithCase(
+            webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_COMBOBOX))
+        .descriptionOfHowContactTookPlace(
+            webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
+        .build();
   }
 
   public Contact getContactInformation() {
@@ -110,5 +149,4 @@ public class EditContactSteps implements En {
         .dateOfBirth(localDate)
         .build();
   }
-
 }

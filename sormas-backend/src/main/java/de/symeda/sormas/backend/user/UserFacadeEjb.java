@@ -557,6 +557,7 @@ public class UserFacadeEjb implements UserFacade {
 		}
 	}
 
+	@Override
 	public void enableUsers(List<String> userUuids) {
 		updateActiveState(userUuids, true);
 	}
@@ -567,6 +568,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	private void updateActiveState(List<String> userUuids, boolean active) {
+
 		List<User> users = userService.getByUuids(userUuids);
 		for (User user : users) {
 			User oldUser;

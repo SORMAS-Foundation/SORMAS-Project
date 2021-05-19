@@ -57,7 +57,7 @@ import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.MapContactDto;
-import de.symeda.sormas.api.event.DashboardEventDto;
+import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -1038,11 +1038,14 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		for (MapCaseDto caze : mapCaseDtos) {
 			LeafletMarker marker = new LeafletMarker();
-			if (caze.getCaseClassification() == CaseClassification.CONFIRMED) {
+			CaseClassification caseClassification = caze.getCaseClassification();
+			if (caseClassification == CaseClassification.CONFIRMED
+				|| caseClassification == CaseClassification.CONFIRMED_NO_SYMPTOMS
+				|| caseClassification == CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS) {
 				marker.setIcon(MarkerIcon.CASE_CONFIRMED);
-			} else if (caze.getCaseClassification() == CaseClassification.PROBABLE) {
+			} else if (caseClassification == CaseClassification.PROBABLE) {
 				marker.setIcon(MarkerIcon.CASE_PROBABLE);
-			} else if (caze.getCaseClassification() == CaseClassification.SUSPECT) {
+			} else if (caseClassification == CaseClassification.SUSPECT) {
 				marker.setIcon(MarkerIcon.CASE_SUSPECT);
 			} else {
 				marker.setIcon(MarkerIcon.CASE_UNCLASSIFIED);

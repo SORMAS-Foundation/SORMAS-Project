@@ -14,7 +14,15 @@
   	&.critical .v-slot {
   	  border-color: $s-critical-color;
   	}
-  	 
+
+    &.critical-transparent .v-slot {
+	  border-color: $s-critical-transparent-color;
+    }
+
+    &.critical-more-transparent .v-slot {
+	  border-color: $s-critical-more-transparent-color;
+    }
+
   	&.relevant .v-slot {
   	  border-color: $s-relevant-color;
   	}

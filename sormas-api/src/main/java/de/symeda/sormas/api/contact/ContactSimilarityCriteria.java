@@ -38,7 +38,11 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 		return person;
 	}
 
-	public ContactSimilarityCriteria setPerson(PersonReferenceDto person) {
+	public void setPerson(PersonReferenceDto person) {
+		this.person = person;
+	}
+
+	public ContactSimilarityCriteria withPerson(PersonReferenceDto person) {
 		this.person = person;
 		return this;
 	}
@@ -47,7 +51,11 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 		return caze;
 	}
 
-	public ContactSimilarityCriteria setCaze(CaseReferenceDto caze) {
+	public void setCaze(CaseReferenceDto caze) {
+		this.caze = caze;
+	}
+
+	public ContactSimilarityCriteria withCaze(CaseReferenceDto caze) {
 		this.caze = caze;
 		return this;
 	}
@@ -56,7 +64,11 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 		return disease;
 	}
 
-	public ContactSimilarityCriteria setDisease(Disease disease) {
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public ContactSimilarityCriteria withDisease(Disease disease) {
 		this.disease = disease;
 		return this;
 	}
@@ -65,34 +77,35 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 		return lastContactDate;
 	}
 
-	public ContactSimilarityCriteria setLastContactDate(Date lastContactDate) {
+	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
-		return this;
 	}
 
 	public Date getReportDate() {
 		return reportDate;
 	}
 
-	public ContactSimilarityCriteria setReportDate(Date reportDate) {
+	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
-		return this;
 	}
 
 	public Date getRelevantDate() {
 		return relevantDate;
 	}
 
-	public ContactSimilarityCriteria setRelevantDate(Date relevantDate) {
+	public void setRelevantDate(Date relevantDate) {
 		this.relevantDate = relevantDate;
-		return this;
 	}
 
 	public ContactClassification getContactClassification() {
 		return contactClassification;
 	}
 
-	public ContactSimilarityCriteria setContactClassification(ContactClassification contactClassification) {
+	public void setContactClassification(ContactClassification contactClassification) {
+		this.contactClassification = contactClassification;
+	}
+
+	public ContactSimilarityCriteria withContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
 		return this;
 	}
@@ -101,7 +114,11 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 		return excludePseudonymized;
 	}
 
-	public ContactSimilarityCriteria setExcludePseudonymized(Boolean excludePseudonymized) {
+	public void setExcludePseudonymized(Boolean excludePseudonymized) {
+		this.excludePseudonymized = excludePseudonymized;
+	}
+
+	public ContactSimilarityCriteria withExcludePseudonymized(Boolean excludePseudonymized) {
 		this.excludePseudonymized = excludePseudonymized;
 		return this;
 	}
@@ -110,7 +127,11 @@ public class ContactSimilarityCriteria extends BaseCriteria implements Cloneable
 		return noResultingCase;
 	}
 
-	public ContactSimilarityCriteria setNoResultingCase(Boolean noResultingCase) {
+	public void setNoResultingCase(Boolean noResultingCase) {
+		this.noResultingCase = noResultingCase;
+	}
+
+	public ContactSimilarityCriteria withNoResultingCase(Boolean noResultingCase) {
 		this.noResultingCase = noResultingCase;
 		return this;
 	}

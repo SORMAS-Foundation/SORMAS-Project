@@ -38,7 +38,7 @@ issues that might block successful web development.
     ```
 
 * Install Gradle
-* Install Allure
+* Install Allure(To check this run `allure serve` from Intellij command line)
 * Install IntelliJ IDEA please follow the steps [here](https://www.jetbrains.com/idea/)
 * Launch IntelliJ IDEA and click on `Import project`
 
@@ -96,18 +96,21 @@ This file a build configuration script defines a project and its tasks.
 
 ````gradle
 
-gradle clean test -Dcucumber.tags="@Login" -Denvironment=performance
+gradlew clean startTests -Dcucumber.tags="@Login" -Denvironment=performance
 
 ````
 
 ## Reporting
 
-Allure is a test report tool provides a nice visual representation of executed
+* Allure is a test report tool provides a nice visual representation of executed
 tests. Reporting requires [test execution](#test-execution) to generate some
 test report data.
-Open `allureReport` folder in a project and click on `index.html` (to review
-the project structure please go [here](#folder-structure-conventions)). A new
+* Open `allureReport` folder in a project and click on `index.html`. A new
 generated report should be opened in the default browser.
+* After running the tests you will be able to find the allure report in the root
+of the project, in the allureReports folder.
+* You can add @issue=ticketNumber
+to link GitHub bugs/tickets
 
 > Allure test report example:
 

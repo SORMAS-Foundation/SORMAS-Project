@@ -22,9 +22,6 @@ import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import com.google.common.truth.Truth;
-import org.openqa.selenium.*;
-import org.sormas.e2etests.common.TimerLite;
-import org.sormas.e2etests.steps.BaseSteps;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -32,10 +29,15 @@ import java.util.function.Predicate;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.*;
+import org.sormas.e2etests.common.TimerLite;
+import org.sormas.e2etests.steps.BaseSteps;
 
 @Slf4j
 public class WebDriverHelpers {
 
+  public static final By SELECTED_RADIO_BUTTOn =
+      By.xpath("ancestor::div[@role='radiogroup']//input[@checked]/following-sibling::label");
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 10;
 
   private final BaseSteps baseSteps;
@@ -97,20 +99,9 @@ public class WebDriverHelpers {
     webElement.sendKeys(text);
   }
 
-  public void clearWebElement(By selector) {
-    Instant start = Instant.now();
-    waitUntilElementIsVisibleAndClickable(selector);
-    WebElement webElement = baseSteps.getDriver().findElement(selector);
-    while (!getValueFromWebElement(selector).contentEquals("")) {
-      log.debug("Deleted char: {}", getValueFromWebElement(selector));
-      webElement.clear();
-      webElement.sendKeys((Keys.chord(Keys.SHIFT, Keys.END)));
-      webElement.sendKeys(Keys.chord(Keys.BACK_SPACE));
-      webElement.click();
-      if (Instant.now().isAfter(start.plus(1, ChronoUnit.MINUTES))) {
-        throw new Error("The field didn't clear");
-      }
-    }
+  public void clearAndFillInWebElement(By selector, String text) {
+    clearWebElement(selector);
+    fillInWebElement(selector, text);
   }
 
   @SneakyThrows
@@ -171,8 +162,8 @@ public class WebDriverHelpers {
   public boolean isElementSelected(By selector) {
     try {
       assertHelpers.assertWithPoll(
-              () ->
-                      Truth.assertThat(baseSteps.getDriver().findElement(selector).isSelected()).isTrue(), 10);
+          () -> Truth.assertThat(baseSteps.getDriver().findElement(selector).isSelected()).isTrue(),
+          10);
     } catch (Exception ignored) {
       return false;
     }
@@ -257,14 +248,22 @@ public class WebDriverHelpers {
         () -> assertThat(getNumberOfElements(selector) > 0).isTrue());
   }
 
-  public String getTextOfSelectedWebElementFromList(String mainDivID){
+  public String getTextOfSelectedWebElementFromList(String mainDivID) {
     String baseXpath = "//*[@id='" + mainDivID + "']/span";
     int numberOfElements = baseSteps.getDriver().findElements(By.xpath(baseXpath)).size();
     String inputLocator = baseXpath.concat("[index]/input");
-    for(int i=1; i <= numberOfElements; i++){
-      WebElement element = baseSteps.getDriver().findElement(By.xpath(inputLocator.replace("index", String.valueOf(i))));
-      if(element.isSelected())
-        return baseSteps.getDriver().findElement(By.xpath(inputLocator.replace("index", String.valueOf(i)).replace("input", "label"))).getText();
+    for (int i = 1; i <= numberOfElements; i++) {
+      WebElement element =
+          baseSteps
+              .getDriver()
+              .findElement(By.xpath(inputLocator.replace("index", String.valueOf(i))));
+      if (element.isSelected())
+        return baseSteps
+            .getDriver()
+            .findElement(
+                By.xpath(
+                    inputLocator.replace("index", String.valueOf(i)).replace("input", "label")))
+            .getText();
     }
     return null;
   }
@@ -276,5 +275,26 @@ public class WebDriverHelpers {
             assertWithMessage("Number of identified element should be %s", number)
                 .that(getNumberOfElements(selector))
                 .isAtLeast(number));
+  }
+
+  public String getCheckedOptionFromHorizontalOptionGroup(By options) {
+    waitUntilIdentifiedElementIsPresent(options);
+    return baseSteps.getDriver().findElement(options).findElement(SELECTED_RADIO_BUTTOn).getText();
+  }
+
+  public void clearWebElement(By selector) {
+    Instant start = Instant.now();
+    waitUntilElementIsVisibleAndClickable(selector);
+    WebElement webElement = baseSteps.getDriver().findElement(selector);
+    while (!"".contentEquals(getValueFromWebElement(selector))) {
+      log.debug("Deleted char: {}", getValueFromWebElement(selector));
+      webElement.clear();
+      webElement.sendKeys((Keys.chord(Keys.SHIFT, Keys.END)));
+      webElement.sendKeys(Keys.chord(Keys.BACK_SPACE));
+      webElement.click();
+      if (Instant.now().isAfter(start.plus(1, ChronoUnit.MINUTES))) {
+        throw new Error("The field didn't clear");
+      }
+    }
   }
 }

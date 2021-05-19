@@ -18,16 +18,15 @@
 
 package org.sormas.e2etests.steps.application.contacts;
 
+import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.*;
+
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.Contact;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.*;
 
 public class EditContactPersonSteps implements En {
 
@@ -41,42 +40,50 @@ public class EditContactPersonSteps implements En {
     When(
         "I check the created data is correctly displayed on Edit Contact Person page",
         () -> {
-            aContact = collectContactData();
-            SoftAssertions softly = new SoftAssertions();
-            softly.assertThat(aContact.getFirstName())
+          aContact = collectContactData();
+          SoftAssertions softly = new SoftAssertions();
+          softly
+              .assertThat(aContact.getFirstName())
               .isEqualToIgnoringCase(CreateNewContactSteps.contact.getFirstName());
-            softly.assertThat(aContact.getLastName())
+          softly
+              .assertThat(aContact.getLastName())
               .isEqualToIgnoringCase(CreateNewContactSteps.contact.getLastName());
-            softly.assertThat(aContact.getDateOfBirth()).isEqualTo(CreateNewContactSteps.contact.getDateOfBirth());
-            softly.assertThat(aContact.getSex()).isEqualTo(CreateNewContactSteps.contact.getSex());
-            softly.assertThat(aContact.getNationalHealthId())
+          softly
+              .assertThat(aContact.getDateOfBirth())
+              .isEqualTo(CreateNewContactSteps.contact.getDateOfBirth());
+          softly.assertThat(aContact.getSex()).isEqualTo(CreateNewContactSteps.contact.getSex());
+          softly
+              .assertThat(aContact.getNationalHealthId())
               .isEqualTo(CreateNewContactSteps.contact.getNationalHealthId());
-            softly.assertThat(aContact.getPassportNumber())
+          softly
+              .assertThat(aContact.getPassportNumber())
               .isEqualTo(CreateNewContactSteps.contact.getPassportNumber());
-            softly.assertThat(aContact.getPrimaryEmailAddress())
+          softly
+              .assertThat(aContact.getPrimaryEmailAddress())
               .isEqualTo(CreateNewContactSteps.contact.getPrimaryEmailAddress());
-            softly.assertThat(aContact.getPrimaryPhoneNumber())
+          softly
+              .assertThat(aContact.getPrimaryPhoneNumber())
               .isEqualTo(CreateNewContactSteps.contact.getPrimaryPhoneNumber());
-            softly.assertAll();
+          softly.assertAll();
         });
   }
 
   public Contact collectContactData() {
-      webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
-      webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
-      webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_UUID);
-      Contact contactInfo = getContactInformation();
+    webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
+    webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
+    webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_UUID);
+    Contact contactInfo = getContactInformation();
 
     return Contact.builder()
-            .firstName(contactInfo.getFirstName())
-            .lastName(contactInfo.getLastName())
-            .dateOfBirth(contactInfo.getDateOfBirth())
-            .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
-            .nationalHealthId(webDriverHelpers.getValueFromWebElement(NATIONAL_HEALTH_ID_INPUT))
-            .passportNumber(webDriverHelpers.getValueFromWebElement(PASSPORT_NUMBER_INPUT))
-            .primaryEmailAddress(webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD))
-            .primaryPhoneNumber(webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD))
-            .build();
+        .firstName(contactInfo.getFirstName())
+        .lastName(contactInfo.getLastName())
+        .dateOfBirth(contactInfo.getDateOfBirth())
+        .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
+        .nationalHealthId(webDriverHelpers.getValueFromWebElement(NATIONAL_HEALTH_ID_INPUT))
+        .passportNumber(webDriverHelpers.getValueFromWebElement(PASSPORT_NUMBER_INPUT))
+        .primaryEmailAddress(webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD))
+        .primaryPhoneNumber(webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD))
+        .build();
   }
 
   public Contact getContactInformation() {
