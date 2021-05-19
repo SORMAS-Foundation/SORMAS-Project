@@ -46,6 +46,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
@@ -122,7 +123,7 @@ public class TherapyView extends AbstractCaseView {
 		filterRow.setMargin(false);
 		filterRow.setSpacing(true);
 		{
-			prescriptionTypeFilter = new ComboBox();
+			prescriptionTypeFilter = ComboBoxHelper.createComboBoxV7();
 			prescriptionTypeFilter.setWidth(140, Unit.PIXELS);
 			prescriptionTypeFilter.setInputPrompt(I18nProperties.getPrefixCaption(PrescriptionDto.I18N_PREFIX, PrescriptionDto.PRESCRIPTION_TYPE));
 			prescriptionTypeFilter.addItems((Object[]) TreatmentType.values());
@@ -193,7 +194,7 @@ public class TherapyView extends AbstractCaseView {
 		filterRow.setMargin(false);
 		filterRow.setSpacing(true);
 		{
-			treatmentTypeFilter = new ComboBox();
+			treatmentTypeFilter = ComboBoxHelper.createComboBoxV7();
 			treatmentTypeFilter.setWidth(140, Unit.PIXELS);
 			treatmentTypeFilter.setInputPrompt(I18nProperties.getPrefixCaption(TreatmentDto.I18N_PREFIX, TreatmentDto.TREATMENT_TYPE));
 			treatmentTypeFilter.addItems((Object[]) TreatmentType.values());

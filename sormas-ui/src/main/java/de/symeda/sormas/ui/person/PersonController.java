@@ -228,8 +228,7 @@ public class PersonController {
 			String personSavedMessage =
 				String.format(I18nProperties.getString(Strings.messagePersonSavedClassificationChanged), newClassification.toString());
 			String notificationMessage = String.format("%s.%s", personSavedMessage, synchronizationMessage);
-			if (responseDto.isSuccess() && responseDto.getErrors().isEmpty()) {
-
+			if (responseDto == null || (responseDto.isSuccess() && responseDto.getErrors().isEmpty())) {
 				Notification notification = new Notification(notificationMessage, Type.WARNING_MESSAGE);
 				notification.setDelayMsec(-1);
 				notification.show(Page.getCurrent());
@@ -239,7 +238,7 @@ public class PersonController {
 		} else {
 			String personSavedMessage = I18nProperties.getString(Strings.messagePersonSaved);
 			String notificationMessage = String.format("%s.%s", personSavedMessage, synchronizationMessage);
-			if (responseDto.isSuccess() && responseDto.getErrors().isEmpty()) {
+			if (responseDto == null || (responseDto.isSuccess() && responseDto.getErrors().isEmpty())) {
 				Notification.show(notificationMessage, Type.WARNING_MESSAGE);
 			} else {
 				VaadinUiUtil.showWarningPopup(notificationMessage);
