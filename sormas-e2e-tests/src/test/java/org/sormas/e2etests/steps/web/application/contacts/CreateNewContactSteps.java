@@ -38,7 +38,7 @@ import org.sormas.e2etests.services.ContactService;
 
 public class CreateNewContactSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
-  protected static Contact contact;
+  public static Contact contact;
 
   @Inject
   public CreateNewContactSteps(WebDriverHelpers webDriverHelpers, ContactService contactService) {
