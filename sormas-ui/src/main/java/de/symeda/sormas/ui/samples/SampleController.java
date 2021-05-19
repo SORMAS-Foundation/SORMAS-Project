@@ -268,14 +268,15 @@ public class SampleController {
 			}
 
 			consumer.accept(savedSample, savedPathogenTest);
-			final EventParticipantReferenceDto eventParticipantRef = newSample.getAssociatedEventParticipant();
+			final EventParticipantReferenceDto eventParticipantRef = savedSample.getAssociatedEventParticipant();
 			if (eventParticipantRef != null) {
 				EventParticipantDto eventParticipant =
 					FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
 				final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
 				Disease testedDisease = pathogenTest.getTestedDisease();
 				if (Objects.equals(event.getDisease(), testedDisease)) {
-					newSample.setPathogenTestResult(testResult); // isn't this without effect if saveSample isn't called?
+					savedSample.setPathogenTestResult(testResult);
+					FacadeProvider.getSampleFacade().saveSample(savedSample);
 				}
 				if (testResult.equals(PathogenTestResultType.POSITIVE) && testResultVerified) {
 					ControllerProvider.getPathogenTestController().showConvertEventParticipantToCaseDialog(eventParticipant, testedDisease);
