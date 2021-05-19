@@ -239,7 +239,6 @@ public class SampleController {
 			newSample.setPathogenTestResult(PathogenTestResultType.PENDING);
 
 			SampleDto savedSample = FacadeProvider.getSampleFacade().saveSample(newSample);
-
 			PathogenTestDto savedPathogenTest = FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
 
 			final CaseReferenceDto associatedCase = newSample.getAssociatedCase();
@@ -250,23 +249,22 @@ public class SampleController {
 
 				if (postSaveCaseDto.getDisease() == pathogenTest.getTestedDisease()
 					&& DataHelper.equal(postSaveCaseDto.getDiseaseVariant(), pathogenTest.getTestedDiseaseVariant())) {
-					// Handle test results for the same disease & variant
 
+					// Handle test results for the same disease & variant
 					savedSample.setPathogenTestResult(pathogenTest.getTestResult());
 					savedSample = FacadeProvider.getSampleFacade().saveSample(savedSample);
 				} else if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
 					&& postSaveCaseDto.getDisease() != pathogenTest.getTestedDisease()) {
-					// Handle positive test results for different diseases
 
+					// Handle positive test results for different diseases
 					// please note, that for the cloned case, the sample will still be set to Pending
 					PathogenTestController.showCaseCloningWithNewDiseaseDialog(postSaveCaseDto, pathogenTest.getTestedDisease());
 				} else if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
 					&& !DataHelper.equal(postSaveCaseDto.getDiseaseVariant(), pathogenTest.getTestedDiseaseVariant())) {
-					// Handle positive test results for different disease variants
 
+					// Handle positive test results for different disease variants
 					showCaseUpdateWithNewDiseaseVariantDialog(postSaveCaseDto, pathogenTest.getTestedDiseaseVariant());
 				}
-
 			}
 
 			consumer.accept(savedSample, savedPathogenTest);
