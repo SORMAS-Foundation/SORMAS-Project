@@ -28,7 +28,6 @@ import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
-import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
 import de.symeda.sormas.backend.event.EventGroupFacadeEjb.EventGroupFacadeEjbLocal;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
@@ -151,7 +150,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 				// In that case it would means that the person related to the event participant were deduped by the user
 				// So no need to persist an already existing person
 				if (existingPerson == null) {
-					personFacade.savePerson(eventParticipant.getPerson());
+					personFacade.savePersonAndNotifyExternalJournal(eventParticipant.getPerson());
 				}
 				eventParticipantFacade.saveEventParticipant(eventParticipant);
 			}

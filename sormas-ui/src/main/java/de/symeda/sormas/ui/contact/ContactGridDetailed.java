@@ -34,7 +34,9 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 
 	@Override
 	protected Stream<String> getColumnList() {
-		return Stream.concat(super.getColumnList(), Stream.of(ContactIndexDetailedDto.CAZE, ContactIndexDetailedDto.REPORTING_USER));
+		return Stream.concat(
+			super.getColumnList(),
+			Stream.of(ContactIndexDetailedDto.CAZE, ContactIndexDetailedDto.REPORTING_USER, ContactIndexDetailedDto.RELATION_TO_CASE));
 	}
 
 	@Override

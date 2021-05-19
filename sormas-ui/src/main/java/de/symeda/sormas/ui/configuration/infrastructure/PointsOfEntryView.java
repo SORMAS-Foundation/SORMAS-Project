@@ -48,6 +48,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.components.SearchField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -190,7 +191,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			grid.reload();
 		}, regionFilter);
 
-		regionFilter = new ComboBox();
+		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(PointOfEntryDto.REGION);
 		regionFilter.setWidth(140, Unit.PIXELS);
 		regionFilter.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.REGION));
@@ -204,7 +205,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(regionFilter);
 
-		districtFilter = new ComboBox();
+		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(PointOfEntryDto.DISTRICT);
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.DISTRICT));
@@ -214,7 +215,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(districtFilter);
 
-		typeFilter = new ComboBox();
+		typeFilter = ComboBoxHelper.createComboBoxV7();
 		typeFilter.setId(PointOfEntryDto.POINT_OF_ENTRY_TYPE);
 		typeFilter.setWidth(140, Unit.PIXELS);
 		typeFilter.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.POINT_OF_ENTRY_TYPE));
@@ -225,7 +226,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(typeFilter);
 
-		activeFilter = new ComboBox();
+		activeFilter = ComboBoxHelper.createComboBoxV7();
 		activeFilter.setId(PointOfEntryDto.ACTIVE);
 		activeFilter.setWidth(140, Unit.PIXELS);
 		activeFilter.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.ACTIVE));
@@ -252,7 +253,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		{
 			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
-				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);

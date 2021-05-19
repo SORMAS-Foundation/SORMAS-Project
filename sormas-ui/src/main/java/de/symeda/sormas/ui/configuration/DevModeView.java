@@ -161,8 +161,23 @@ public class DevModeView extends AbstractConfigurationView {
 		contentLayout.addComponent(createContactGeneratorLayout());
 		contentLayout.addComponent(createEventsGeneratorLayout());
 		contentLayout.addComponent(createSamplesGeneratorLayout());
+		contentLayout.addComponent(createDevButtonsLayout());
 
 		addComponent(contentLayout);
+	}
+
+	private HorizontalLayout createDevButtonsLayout() {
+
+		HorizontalLayout horizontalLayout = new HorizontalLayout();
+		horizontalLayout.setSpacing(true);
+
+		Button btnResetEnumCache = ButtonHelper.createButton((Captions.actionResetEnumCache), e -> {
+			FacadeProvider.getCustomizableEnumFacade().loadData();
+		});
+
+		horizontalLayout.addComponent(btnResetEnumCache);
+
+		return horizontalLayout;
 	}
 
 	private HorizontalLayout createSeedSettingsLayout() {
@@ -943,7 +958,7 @@ public class DevModeView extends AbstractConfigurationView {
 				caze.setReportLon(healthFacility.getLongitude());
 			}
 
-			FacadeProvider.getPersonFacade().savePerson(person);
+			FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(person);
 			FacadeProvider.getCaseFacade().saveCase(caze);
 		}
 
@@ -1197,7 +1212,7 @@ public class DevModeView extends AbstractConfigurationView {
 			// description
 			contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
 
-			FacadeProvider.getPersonFacade().savePerson(person);
+			FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(person);
 			contact = FacadeProvider.getContactFacade().saveContact(contact);
 
 			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())) {
@@ -1212,7 +1227,7 @@ public class DevModeView extends AbstractConfigurationView {
 				&& FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())
 				&& FollowUpStatus.NO_FOLLOW_UP != contact.getFollowUpStatus()) {
 				Date latestFollowUpDate = contact.getFollowUpUntil().before(new Date()) ? contact.getFollowUpUntil() : new Date();
-				Date contactStartDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
+				Date contactStartDate = ContactLogic.getStartDate(contact);
 				int followUpCount = random().nextInt(DateHelper.getDaysBetween(contactStartDate, latestFollowUpDate) + 1);
 				if (followUpCount > 0) {
 					int[] followUpDays = random().ints(1, followUpCount + 1).distinct().limit(followUpCount).toArray();
@@ -1321,7 +1336,7 @@ public class DevModeView extends AbstractConfigurationView {
 				fillEntity(person, referenceDateTime);
 				person.setSymptomJournalStatus(null);
 				setPersonName(person);
-				FacadeProvider.getPersonFacade().savePerson(person);
+				FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(person);
 				eventParticipant.setPerson(person);
 				eventParticipant.setInvolvementDescription("Participant");
 

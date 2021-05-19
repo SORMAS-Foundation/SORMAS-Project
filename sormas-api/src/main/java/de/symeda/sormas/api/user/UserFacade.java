@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -48,7 +49,9 @@ public interface UserFacade {
 
 	List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
 
-	List<UserDto> getIndexList(UserCriteria userCriteria, int first, int max, List<SortProperty> sortProperties);
+	List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	Page<UserDto> getIndexPage(UserCriteria userCriteria, int offset, int size, List<SortProperty> sortProperties);
 
 	long count(UserCriteria userCriteria);
 
@@ -84,4 +87,8 @@ public interface UserFacade {
 	UserSyncResult syncUser(String userUuid);
 
 	List<UserDto> getUsersWithDefaultPassword();
+
+	void enableUsers(List<String> userUuids);
+
+	void disableUsers(List<String> userUuids);
 }

@@ -53,7 +53,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -219,8 +219,7 @@ public class SampleController {
 			}
 
 			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
-			pathogenTest
-				.setTestedDiseaseVariant((DiseaseVariantReferenceDto) (createForm.getField(PathogenTestDto.TESTED_DISEASE_VARIANT)).getValue());
+			pathogenTest.setTestedDiseaseVariant((DiseaseVariant) (createForm.getField(PathogenTestDto.TESTED_DISEASE_VARIANT)).getValue());
 			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
 			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
 			String cqValue = (String) createForm.getField(PathogenTestDto.CQ_VALUE).getValue();
@@ -312,8 +311,8 @@ public class SampleController {
 		Button referOrLinkToOtherLabButton = null;
 		if (dto.getReferredTo() == null) {
 			if (dto.getSamplePurpose() == SamplePurpose.EXTERNAL && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
-				referOrLinkToOtherLabButton = ButtonHelper
-					.createButtonWithCaption("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new ClickListener() {
+				referOrLinkToOtherLabButton =
+					ButtonHelper.createButton("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new ClickListener() {
 
 						private static final long serialVersionUID = 1L;
 
@@ -338,16 +337,15 @@ public class SampleController {
 					+ DateFormatHelper.formatLocalDateTime(referredDto.getSampleDateTime()) + ")"
 				: I18nProperties.getCaption(Captions.sampleReferredTo) + " " + referredDtoLab.toString();
 
-			referOrLinkToOtherLabButton =
-				ButtonHelper.createButtonWithCaption("referOrLinkToOtherLab", referOrLinkToOtherLabButtonCaption, new ClickListener() {
+			referOrLinkToOtherLabButton = ButtonHelper.createButton("referOrLinkToOtherLab", referOrLinkToOtherLabButtonCaption, new ClickListener() {
 
-					private static final long serialVersionUID = 1L;
+				private static final long serialVersionUID = 1L;
 
-					@Override
-					public void buttonClick(ClickEvent event) {
-						navigateToData(dto.getReferredTo().getUuid());
-					}
-				});
+				@Override
+				public void buttonClick(ClickEvent event) {
+					navigateToData(dto.getReferredTo().getUuid());
+				}
+			});
 
 		}
 

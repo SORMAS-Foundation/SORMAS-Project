@@ -67,10 +67,8 @@ import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -339,7 +337,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(1, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 
 		cazePerson.setPhone("40742140797");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		Assert.assertEquals(0, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 	}
@@ -411,50 +409,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetCasesForDashboard() {
-
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
-		CaseDataDto caze2 = creator.createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf2);
-		caze2.setSharedToCountry(true);
-		getCaseFacade().saveCase(caze2);
-
-		CaseCriteria caseCriteria = new CaseCriteria().region(caze.getRegion())
-			.district(caze.getDistrict())
-			.disease(caze.getDisease())
-			.newCaseDateBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1), NewCaseDateType.MOST_RELEVANT);
-
-		List<DashboardCaseDto> dashboardCaseDtos = getCaseFacade().getCasesForDashboard(caseCriteria);
-
-		// List should have only one entry; shared case should not appear
-		assertEquals(1, dashboardCaseDtos.size());
-	}
-
-	@Test
 	public void testMapCaseListCreation() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		PersonDto cazePerson = creator.createPerson("Case", "Person", p -> {
+			p.getAddress().setLatitude(0.0);
+			p.getAddress().setLongitude(0.0);
+		});
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
@@ -463,15 +426,25 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
+
+		Long count = getCaseFacade().countCasesForMap(
+			caze.getRegion(),
+			caze.getDistrict(),
+			caze.getDisease(),
+			DateHelper.subtractDays(new Date(), 1),
+			DateHelper.addDays(new Date(), 1),
+			null);
 
 		List<MapCaseDto> mapCaseDtos = getCaseFacade().getCasesForMap(
 			caze.getRegion(),
 			caze.getDistrict(),
 			caze.getDisease(),
 			DateHelper.subtractDays(new Date(), 1),
-			DateHelper.addDays(new Date(), 1));
+			DateHelper.addDays(new Date(), 1),
+			null);
 
 		// List should have one entry
+		assertEquals((long) count, mapCaseDtos.size());
 		assertEquals(1, mapCaseDtos.size());
 	}
 
@@ -661,7 +634,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 
 		cazePerson.getAddress().setCity("City");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
 		exposure.getLocation().setDetails("Ghana");
@@ -704,7 +677,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				PersonContactDetailDto
 					.build(cazePerson.toReference(), false, PersonContactDetailType.OTHER, null, "SkypeID", "personSkype", "", false, "", ""));
 
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		List<CaseExportDto> results =
 			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
@@ -743,7 +716,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		cazePerson.getAddress().setCity("City");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -883,7 +856,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// person alive again -> case has to be reset to no outcome
 		cazePerson.setPresentCondition(PresentCondition.ALIVE);
-		cazePerson = getPersonFacade().savePerson(cazePerson);
+		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
 		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
@@ -922,7 +895,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// person alive again -> deceased cases have to be set to no outcome
 		cazePerson.setPresentCondition(PresentCondition.ALIVE);
-		cazePerson = getPersonFacade().savePerson(cazePerson);
+		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
 		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
 		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
@@ -953,7 +926,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// case deceased -> person has to set to dead
 		firstCase.setOutcome(CaseOutcome.DECEASED);
 		cazePerson.setPresentCondition(PresentCondition.DEAD);
-		cazePerson = getPersonFacade().savePerson(cazePerson);
+		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		// this should throw an exception
 		exception.expect(OutdatedEntityException.class);
@@ -1078,7 +1051,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Thread.sleep(10L);
 
 		cazePerson.setBurialDate(new Date());
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
@@ -1106,7 +1079,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.getAddress().setStreet("new Street");
 		cazePerson.getAddress().setHouseNumber("new Number");
 		cazePerson.getAddress().setAdditionalInformation("new Information");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
@@ -1196,7 +1169,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		UserReferenceDto otherUserReference = new UserReferenceDto(otherUser.getUuid());
 		PersonDto otherPerson = creator.createPerson("Max", "Smith");
 		otherPerson.setBirthWeight(2);
-		getPersonFacade().savePerson(otherPerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(otherPerson);
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
 		RDCF otherRdcf = creator.createRDCF();
 		CaseDataDto otherCase = creator.createCase(

@@ -59,7 +59,6 @@ import org.apache.commons.lang.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
@@ -178,20 +177,9 @@ public class EventFacadeEjb implements EventFacade {
 		return eventService.getDeletedUuidsSince(since);
 	}
 
-	@Override
-	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
-
-		return eventService.getNewEventsForDashboard(eventCriteria);
-	}
-
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
 
 		return eventService.getEventCountByDisease(eventCriteria);
-	}
-
-	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
-
-		return eventService.getEventCountByStatus(eventCriteria);
 	}
 
 	@Override
@@ -221,6 +209,10 @@ public class EventFacadeEjb implements EventFacade {
 		EventDto existingDto = toDto(existingEvent);
 
 		restorePseudonymizedDto(dto, existingEvent, existingDto, pseudonymizer);
+
+		if (dto.getReportDateTime() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
+		}
 
 		Event event = fromDto(dto, checkChangeDate);
 		eventService.ensurePersisted(event);
@@ -1137,8 +1129,11 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String eventUuid) {
 		return eventService.exists(
-			(cb, eventRoot) -> CriteriaBuilderHelper
-				.and(cb, cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken), cb.notEqual(eventRoot.get(Event.UUID), eventUuid)));
+			(cb, eventRoot) -> CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken),
+				cb.notEqual(eventRoot.get(Event.UUID), eventUuid),
+				cb.notEqual(eventRoot.get(Event.DELETED), Boolean.TRUE)));
 	}
 
 	@Override

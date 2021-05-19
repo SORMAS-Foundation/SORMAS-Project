@@ -63,6 +63,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 		if (!pathogenTests.isEmpty()) {
 			showPage(1);
 		} else {
+			listLayout.removeAllComponents();
 			updatePaginationLayout();
 			Label noPathogenTestsLabel = new Label(I18nProperties.getString(Strings.infoNoPathogenTests));
 			listLayout.addComponent(noPathogenTestsLabel);
@@ -84,8 +85,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
 			listEntry.addEditListener((ClickListener) event -> {
 				if (createOrEditAllowedCallback.get()) {
-					ControllerProvider.getPathogenTestController()
-						.edit(pathogenTest, 0, PathogenTestList.this::reload, onSavedPathogenTest);
+					ControllerProvider.getPathogenTestController().edit(pathogenTest, 0, PathogenTestList.this::reload, onSavedPathogenTest);
 				} else {
 					Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
 				}
@@ -96,8 +96,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 	private void addViewLabMessageButton(PathogenTestListEntry listEntry) {
 		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getByPathogenTestUuid(listEntry.getPathogenTest().getUuid());
 		if (!labMessages.isEmpty()) {
-			listEntry
-				.addAssociatedLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
+			listEntry.addAssociatedLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
 		}
 	}
 }

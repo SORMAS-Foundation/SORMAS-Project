@@ -28,11 +28,17 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
@@ -88,5 +94,15 @@ public class ContactResource extends EntityDtoResource {
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getContactFacade().getDeletedUuidsSince(new Date(since));
+	}
+
+	@POST
+	@Path("/indexList")
+	public Page<ContactIndexDto> getIndexList(
+		@RequestBody CriteriaWithSorting<ContactCriteria> criteriaWithSorting,
+		@QueryParam("offset") int offset,
+		@QueryParam("size") int size) {
+		return FacadeProvider.getContactFacade()
+			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 }

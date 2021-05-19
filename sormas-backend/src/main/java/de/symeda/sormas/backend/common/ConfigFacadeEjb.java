@@ -139,6 +139,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
 
+	private static final String UI_URL = "ui.url";
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Resource(lookup = "sormas/Properties")
@@ -300,6 +302,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getAppLegacyUrl() {
 		return getProperty(APP_LEGACY_URL, null);
+	}
+
+	@Override
+	public String getUiUrl() {
+		return getProperty(UI_URL, null);
 	}
 
 	@Override
@@ -582,12 +589,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getInt(STEP_SIZE_FOR_CSV_EXPORT, 5000);
 	}
 
-	@LocalBean
-	@Stateless
-	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
-
-	}
-
 	@Override
 	public boolean isSmsServiceSetUp() {
 		return !StringUtils.isAnyBlank(getProperty(SMS_AUTH_KEY, null), getProperty(SMS_AUTH_SECRET, null));
@@ -598,4 +599,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(INTERFACE_DEMIS_JNDINAME, null);
 	}
 
+	@LocalBean
+	@Stateless
+	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
+
+	}
 }

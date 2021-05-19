@@ -9,7 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import de.symeda.sormas.ui.SormasUI;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -36,6 +35,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.ui.SormasUI;
 
 public class ExternalJournalUtil {
 
@@ -95,7 +95,7 @@ public class ExternalJournalUtil {
 	}
 
 	private static Button createSymptomJournalRegisterButton(PersonDto person) {
-		Button btnCreateSymptomJournalAccount = new Button(I18nProperties.getCaption(Captions.createSymptomJournalAccountButton));
+		Button btnCreateSymptomJournalAccount = ButtonHelper.createButton(I18nProperties.getCaption(Captions.createSymptomJournalAccountButton));
 		CssStyles.style(btnCreateSymptomJournalAccount, ValoTheme.BUTTON_PRIMARY);
 		btnCreateSymptomJournalAccount.addClickListener(clickEvent -> enrollPatientInSymptomJournal(person));
 		return btnCreateSymptomJournalAccount;
@@ -126,7 +126,7 @@ public class ExternalJournalUtil {
 	}
 
 	private static Button createPatientDiaryRegisterButton(PersonDto person) {
-		Button btnPatientDiaryAccount = new Button(I18nProperties.getCaption(Captions.registerInPatientDiaryButton));
+		Button btnPatientDiaryAccount = ButtonHelper.createButton(I18nProperties.getCaption(Captions.registerInPatientDiaryButton));
 		CssStyles.style(btnPatientDiaryAccount, ValoTheme.BUTTON_PRIMARY);
 		btnPatientDiaryAccount.addClickListener(clickEvent -> enrollPatientInPatientDiary(person));
 		return btnPatientDiaryAccount;
