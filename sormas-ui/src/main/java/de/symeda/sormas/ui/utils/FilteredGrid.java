@@ -71,10 +71,10 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	@Override
 	public GridSelectionModel<T> setSelectionMode(Grid.SelectionMode selectionMode) {
 		GridSelectionModel<T> model = super.setSelectionMode(selectionMode);
-		if (selectionMode == SelectionMode.MULTI) {
+		if (selectionMode == SelectionMode.MULTI && PseudonymizableIndexDto.class.isAssignableFrom(getBeanType())) {
 			addSelectionListener(event -> {
 				event.getAllSelectedItems().forEach(item -> {
-					if (item instanceof PseudonymizableIndexDto && ((PseudonymizableIndexDto) item).isPseudonymized()) {
+					if (((PseudonymizableIndexDto) item).isPseudonymized()) {
 						deselect(item);
 					}
 				});
