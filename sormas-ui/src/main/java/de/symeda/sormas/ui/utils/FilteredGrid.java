@@ -10,10 +10,12 @@ import com.vaadin.data.provider.Query;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializableSupplier;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.components.grid.GridSelectionModel;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
-import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
@@ -64,6 +66,22 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	@Override
 	public void setDataProvider(FetchItemsCallback<T> fetchItems, SerializableSupplier<Integer> sizeCallback) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public GridSelectionModel<T> setSelectionMode(Grid.SelectionMode selectionMode) {
+		GridSelectionModel<T> model = super.setSelectionMode(selectionMode);
+		if (selectionMode == SelectionMode.MULTI) {
+			addSelectionListener(event -> {
+				event.getAllSelectedItems().forEach(item -> {
+					if (item instanceof PseudonymizableIndexDto && ((PseudonymizableIndexDto) item).isPseudonymized()) {
+						deselect(item);
+					}
+				});
+			});
+		}
+		return model;
+
 	}
 
 	public int getItemCount() {
