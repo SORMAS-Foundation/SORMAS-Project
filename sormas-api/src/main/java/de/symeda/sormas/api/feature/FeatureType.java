@@ -10,13 +10,127 @@ import de.symeda.sormas.api.i18n.I18nProperties;
  */
 public enum FeatureType {
 
-	LINE_LISTING(false, false, null),
+	// FEATURE MODULES
 	AGGREGATE_REPORTING(true, true, null),
-	EVENT_SURVEILLANCE(true, true, null),
-	WEEKLY_REPORTING(true, true, null),
+	CAMPAIGNS(true, false, null),
+	CASE_SURVEILANCE(true, true, null),
 	CLINICAL_MANAGEMENT(true, true, null),
-	NATIONAL_CASE_SHARING(true, false, null),
+	CONTACT_TRACING(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	EVENT_SURVEILLANCE(true, true, null),
+	SAMPLES_LAB(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE,
+			EVENT_SURVEILLANCE }),
 	TASK_MANAGEMENT(true, true, null),
+	WEEKLY_REPORTING(true, true, null),
+
+	// FEATURE EXTENSIONS
+	ASSIGN_TASKS_TO_HIGHER_LEVEL(true,
+		true,
+		new FeatureType[] {
+			TASK_MANAGEMENT }),
+	CASE_FOLLOWUP(true,
+		false,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	DOCUMENTS(true,
+		false,
+		new FeatureType[] {
+			CASE_SURVEILANCE,
+			EVENT_SURVEILLANCE }),
+	DOCUMENTS_MULTI_UPLOAD(true,
+			true,
+			new FeatureType[] {
+					DOCUMENTS
+			}),
+	EVENT_GROUPS(true,
+		true,
+		new FeatureType[] {
+			EVENT_SURVEILLANCE }),
+	LAB_MESSAGES(true,
+		false,
+		new FeatureType[] {
+			SAMPLES_LAB }),
+	MANUAL_EXTERNAL_MESSAGES(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	NATIONAL_CASE_SHARING(true,
+		false,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	SURVEILLANCE_REPORTS(true,
+		false,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+
+	// SHOW/HIDE VIEW TAB FEATURES
+	VIEW_TAB_CASES_HOSPITALIZATION(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	VIEW_TAB_CASES_SYMPTOMS(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	VIEW_TAB_CASES_THERAPY(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	VIEW_TAB_CASES_FOLLOW_UP(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	VIEW_TAB_CASES_CLINICAL_COURSE(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	VIEW_TAB_CONTACTS_EPIDEMIOLOGICAL_DATA(true,
+		true,
+		new FeatureType[] {
+			CONTACT_TRACING }),
+	VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS(true,
+		true,
+		new FeatureType[] {
+			CONTACT_TRACING }),
+
+	// ADDITIONAL FEATURES
+	GDPR_CONSENT_POPUP(true, false, null),
+	INFRASTRUCTURE_TYPE_AREA(true, false, null),
+	OUTBREAKS(true, true, null),
+	PERSON_MANAGEMENT(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE,
+			EVENT_SURVEILLANCE }),
+
+	// REGION- AND DISEASE-BASED FEATURES
+	LINE_LISTING(false, false, null),
+
+	// NOTIFICATION CONFIGURATIONS
+	EVENT_GROUPS_MODIFICATION_NOTIFICATIONS(true,
+		false,
+		new FeatureType[] {
+			EVENT_GROUPS }),
+	EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS(true,
+		true,
+		new FeatureType[] {
+			EVENT_SURVEILLANCE }),
+	TASK_NOTIFICATIONS(true,
+		true,
+		new FeatureType[] {
+			TASK_MANAGEMENT }),
+	OTHER_NOTIFICATIONS(true, true, null),
+
+	// TASK GENERATION FEATURES
 	TASK_GENERATION_CASE_SURVEILLANCE(true,
 		true,
 		new FeatureType[] {
@@ -32,47 +146,7 @@ public enum FeatureType {
 	TASK_GENERATION_GENERAL(true,
 		true,
 		new FeatureType[] {
-			TASK_MANAGEMENT }),
-	CAMPAIGNS(true, false, null),
-	CASE_SURVEILANCE(true, true, null),
-	CONTACT_TRACING(true,
-		true,
-		new FeatureType[] {
-			CASE_SURVEILANCE }),
-	SAMPLES_LAB(true,
-		true,
-		new FeatureType[] {
-			CASE_SURVEILANCE,
-			CONTACT_TRACING,
-			EVENT_SURVEILLANCE }),
-	INFRASTRUCTURE_TYPE_AREA(true, false, null),
-	CASE_FOLLOWUP(true, false, null),
-	TASK_NOTIFICATIONS(true,
-		true,
-		new FeatureType[] {
-			TASK_MANAGEMENT }),
-	MANUAL_EXTERNAL_MESSAGES(true, true, null),
-	EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS(true, true, null),
-	OTHER_NOTIFICATIONS(true, true, null),
-	DOCUMENTS(true, false, null),
-	OUTBREAKS(true, true, null),
-	LAB_MESSAGES(true, false, null),
-	ASSIGN_TASKS_TO_HIGHER_LEVEL(true, true, null),
-	SURVEILLANCE_REPORTS(true,
-		false,
-		new FeatureType[] {
-			CASE_SURVEILANCE }),
-	PERSON_MANAGEMENT(true,
-		true,
-		new FeatureType[] {
-			CASE_SURVEILANCE,
-			EVENT_SURVEILLANCE }),
-	GDPR_CONSENT_POPUP(true, false, null),
-	EVENT_GROUPS(true, true, null),
-	EVENT_GROUPS_MODIFICATION_NOTIFICATIONS(true,
-		false,
-		new FeatureType[] {
-			EVENT_GROUPS });
+			TASK_MANAGEMENT });
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

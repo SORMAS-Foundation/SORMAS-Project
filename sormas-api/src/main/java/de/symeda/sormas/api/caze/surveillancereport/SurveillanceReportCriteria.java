@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.api.caze.surveillancereport;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class SurveillanceReportCriteria extends BaseCriteria {
 

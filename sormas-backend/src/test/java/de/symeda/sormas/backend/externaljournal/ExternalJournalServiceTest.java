@@ -181,7 +181,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 		creator.createCase(natUser.toReference(), new PersonReferenceDto(person.getUuid()), rdcf);
 		JournalPersonDto journalPerson = personFacade.getPersonForJournal(person.getUuid());
 
-		assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+		assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson).getElement0());
 
 		// Define relevant changes
 		HashMap<String, Object> relevantChanges = new HashMap<String, Object>() {
@@ -204,28 +204,28 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			setPersonProperty(person, propertyName, relevantChanges.get(propertyName));
 			person = entityManager.merge(person);
-			assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+			assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson).getElement0());
 
 			// Modify the SymptomJournalStatus of the original person
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
 			person = entityManager.merge(person);
-			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson).getElement0());
 
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.REJECTED);
 			person = entityManager.merge(person);
-			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson).getElement0());
 
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.UNREGISTERED);
 			person = entityManager.merge(person);
-			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson).getElement0());
 
 			journalPerson = personFacade.getPersonForJournal(person.getUuid());
 			person.setSymptomJournalStatus(SymptomJournalStatus.ACCEPTED);
 			person = entityManager.merge(person);
-			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+			assertFalse(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson).getElement0());
 
 			// Apply any other relevant change and make sure notification is still considered necessary
 			for (String secondPropertyName : relevantChanges.keySet()) {
@@ -233,7 +233,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 					journalPerson = personFacade.getPersonForJournal(person.getUuid());
 					setPersonProperty(person, secondPropertyName, relevantChanges.get(secondPropertyName));
 					person = entityManager.merge(person);
-					assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson));
+					assertTrue(getExternalJournalService().notifyExternalJournalPersonUpdate(journalPerson).getElement0());
 				}
 			}
 

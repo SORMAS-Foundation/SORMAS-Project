@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.59.2</version>
+	<version>1.60.0</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -802,13 +802,9 @@
 
 			<dependency>
 				<groupId>org.springframework</groupId>
-				<artifactId>spring-expression</artifactId>
-				<version>5.3.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
-				<version>5.3.4</version>
+				<version>4.0.3.RELEASE</version>
+				<!-- downgraded because of missing support in android api 24-->
 			</dependency>
 
 			<dependency>

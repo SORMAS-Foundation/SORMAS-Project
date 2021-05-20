@@ -231,7 +231,7 @@ public class EventParticipantsView extends AbstractEventView {
 	@Override
 	protected void initView(String params) {
 
-		criteria.event(getEventRef());
+		criteria.withEvent(getEventRef());
 
 		if (grid == null) {
 			grid = new EventParticipantsGrid(criteria);

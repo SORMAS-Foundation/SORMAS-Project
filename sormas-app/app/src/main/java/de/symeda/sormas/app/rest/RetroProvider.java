@@ -87,6 +87,7 @@ public final class RetroProvider {
 	private PersonFacadeRetro personFacadeRetro;
 	private CommunityFacadeRetro communityFacadeRetro;
 	private DistrictFacadeRetro districtFacadeRetro;
+	private AreaFacadeRetro areaFacadeRetro;
 	private ContinentFacadeRetro continentFacadeRetro;
 	private SubcontinentFacadeRetro subcontinentFacadeRetro;
 	private CountryFacadeRetro countryFacadeRetro;
@@ -110,7 +111,7 @@ public final class RetroProvider {
 	private AdditionalTestFacadeRetro additionalTestFacadeRetro;
 	private ClinicalVisitFacadeRetro clinicalVisitFacadeRetro;
 	private DiseaseConfigurationFacadeRetro diseaseConfigurationFacadeRetro;
-	private DiseaseVariantFacadeRetro diseaseVariantFacadeRetro;
+	private CustomizableEnumValueFacadeRetro customizableEnumValueFacadeRetro;
 	private InfrastructureFacadeRetro infrastructureFacadeRetro;
 	private CampaignFacadeRetro campaignFacadeRetro;
 	private CampaignFormMetaFacadeRetro campaignFormMetaFacadeRetro;
@@ -511,6 +512,19 @@ public final class RetroProvider {
 		return instance.districtFacadeRetro;
 	}
 
+	public static AreaFacadeRetro getAreaFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.areaFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.areaFacadeRetro == null) {
+					instance.areaFacadeRetro = instance.retrofit.create(AreaFacadeRetro.class);
+				}
+			}
+		}
+		return instance.areaFacadeRetro;
+	}
+
 	public static ContinentFacadeRetro getContinentFacade() throws NoConnectionException {
 		if (instance == null)
 			throw new NoConnectionException();
@@ -810,17 +824,17 @@ public final class RetroProvider {
 		return instance.diseaseConfigurationFacadeRetro;
 	}
 
-	public static DiseaseVariantFacadeRetro getDiseaseVariantFacade() throws NoConnectionException {
+	public static CustomizableEnumValueFacadeRetro getCustomizableEnumValueFacade() throws NoConnectionException {
 		if (instance == null)
 			throw new NoConnectionException();
-		if (instance.diseaseVariantFacadeRetro == null) {
+		if (instance.customizableEnumValueFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
-				if (instance.diseaseVariantFacadeRetro == null) {
-					instance.diseaseVariantFacadeRetro = instance.retrofit.create(DiseaseVariantFacadeRetro.class);
+				if (instance.customizableEnumValueFacadeRetro == null) {
+					instance.customizableEnumValueFacadeRetro = instance.retrofit.create(CustomizableEnumValueFacadeRetro.class);
 				}
 			}
 		}
-		return instance.diseaseVariantFacadeRetro;
+		return instance.customizableEnumValueFacadeRetro;
 	}
 
 	public static FeatureConfigurationFacadeRetro getFeatureConfigurationFacade() throws NoConnectionException {

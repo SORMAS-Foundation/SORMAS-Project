@@ -68,6 +68,7 @@
     <string name="action_markAllAsRead">Označit vše jako přečtené</string>
     <string name="action_new">Nové</string>
     <string name="action_new_case">Nový případ</string>
+    <string name="action_new_campaign_form_data">Nová data formuláře kampaně</string>
     <string name="action_new_contact">Nový kontakt</string>
     <string name="action_new_event">Nová udalost</string>
     <string name="action_new_sample">Nový vzorek</string>
@@ -265,7 +266,7 @@
     <string name="heading_app_update_required">Vyžadována aktualizace aplikace</string>
     <string name="heading_burial">Pohřbení</string>
     <string name="heading_burials_visited">Navštívené pohřby</string>
-    <string name="heading_campaigns_list">Data kampaně</string>
+    <string name="heading_campaigns_list">Seznam dat kampaně</string>
     <string name="heading_case_disease_changed">Nemoc případu se změnila</string>
     <string name="heading_case_edit">Upravit případ</string>
     <string name="heading_case_new">Nový případ</string>
@@ -345,7 +346,7 @@
     <string name="heading_social_events">Sociální události</string>
     <string name="heading_source_case">Zdrojový případ</string>
     <string name="heading_source_of_information">Zdroj informací</string>
-    <string name="heading_surveillance_outbreak">Surveillance Outbreak</string>
+    <string name="heading_surveillance_outbreak">Dohled nad ohniskem nákazy</string>
     <string name="heading_symptoms">Znaky a příznaky</string>
     <string name="heading_sync_conflicts">Konflikty synchronizace</string>
     <string name="heading_synchronization">Synchronizace</string>
@@ -370,6 +371,12 @@
     <string name="heading_contact_tracing_first_contact">První kontakt s trasováním kontaktu</string>
     <string name="heading_exposure">Vystavení nákaze</string>
     <string name="heading_activityAsCase">Aktivita jako případ</string>
+    <string name="heading_campaign_form_data_edit">Upravit data kampaně</string>
+    <string name="heading_campaign_form_data_new">Nová data kampaně</string>
+    <string name="heading_campaign_form_data_read">Číst data kampaně</string>
+    <string name="heading_campaign_form_data_summary">Shrnutí dat kampaně</string>
+    <string name="heading_campaign_form_meta_select">Vybrat formulář kampaně</string>
+    <string name="heading_case_place_of_stay">Místo pobytu</string>
     <string name="hint_add_to_empty_list">Přidejte nový záznam stisknutím symbolu \"+\" v pravém horním rohu.</string>
     <string name="hint_clear">Vymazat</string>
     <string name="hint_create_pin">Vyberte si prosím čtyřmístný PIN kód, který budete používat k ověření při každém otevření aplikace SORMAS.</string>
@@ -428,6 +435,7 @@
     <string name="info_pick_or_create_event">Níže uvedený seznam obsahuje všechny existující události, které mají stejnou chorobu jako aktuální případ z vašeho regionu. Zkontrolujte, zda tato událost patří do tohoto seznamu, nebo vytvořte novou, pokud tomu tak není.</string>
     <string name="info_case_creation_mark_check_box">Tento případ je <b>nový případ</b> a <b>není duplicitní</b> jednoho z výše uvedených případů</string>
     <string name="info_event_creation_mark_check_box">Tato událost je <b>nová událost</b> a <b>není duplicitní</b> jedné z výše uvedených událostí</string>
+    <string name="info_pick_campaign_form_meta">Vyberte prosím formulář kampaně, pro který chcete vložit data!</string>
     <string name="main_menu_cases">Případy</string>
     <string name="main_menu_contacts">Kontakty</string>
     <string name="main_menu_dashboard">Ovládací panel</string>

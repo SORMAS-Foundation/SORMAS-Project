@@ -21,5 +21,5 @@ import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 
 public interface SharedDataProcessor<T extends SormasToSormasEntityDto, U extends SormasToSormasDto<T>, P extends ProcessedData<T>> {
 
-	P processSharedData(U sharedData) throws SormasToSormasValidationException;
+	P processSharedData(U sharedData, T existingData) throws SormasToSormasValidationException;
 }

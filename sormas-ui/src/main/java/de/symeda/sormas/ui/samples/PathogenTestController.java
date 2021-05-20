@@ -36,7 +36,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -114,6 +114,7 @@ public class PathogenTestController {
 			}, I18nProperties.getCaption(PathogenTestDto.I18N_PREFIX));
 		}
 		editView.addCommitListener(popupWindow::close);
+		editView.addDiscardListener(popupWindow::close);
 
 		popupWindow.setContent(editView);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingEditPathogenTestResult));
@@ -145,7 +146,7 @@ public class PathogenTestController {
 		return editView;
 	}
 
-	public static void showCaseUpdateWithNewDiseaseVariantDialog(CaseDataDto existingCaseDto, DiseaseVariantReferenceDto diseaseVariantReferenceDto) {
+	public static void showCaseUpdateWithNewDiseaseVariantDialog(CaseDataDto existingCaseDto, DiseaseVariant diseaseVariant) {
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant),
@@ -156,7 +157,7 @@ public class PathogenTestController {
 			e -> {
 				if (e) {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(existingCaseDto.getUuid());
-					caseDataByUuid.setDiseaseVariant(diseaseVariantReferenceDto);
+					caseDataByUuid.setDiseaseVariant(diseaseVariant);
 					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
 					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
 				}
@@ -319,7 +320,7 @@ public class PathogenTestController {
 			});
 	}
 
-	private void showCaseCloningWithNewDiseaseDialog(CaseDataDto existingCaseDto, Disease disease) {
+	public static void showCaseCloningWithNewDiseaseDialog(CaseDataDto existingCaseDto, Disease disease) {
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.caseCloneCaseWithNewDisease) + " " + I18nProperties.getEnumCaption(disease) + "?",

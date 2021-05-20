@@ -69,10 +69,8 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 			VaadinIcons.OUTBOX,
 			e -> onSendButtonClick(entityName, sendHandler, editComponent),
 			ValoTheme.BUTTON_PRIMARY);
-		ButtonHelper.preventDoubleClick(sendButton);
 
 		Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> deleteHandler.run(), ValoTheme.BUTTON_ICON_ONLY);
-		ButtonHelper.preventDoubleClick(deleteButton);
 
 		HorizontalLayout headerLayout = new HorizontalLayout(header, sendButton, deleteButton);
 		headerLayout.setExpandRatio(sendButton, 1);

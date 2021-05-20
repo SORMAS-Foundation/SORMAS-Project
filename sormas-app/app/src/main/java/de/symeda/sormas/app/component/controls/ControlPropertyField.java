@@ -15,13 +15,6 @@
 
 package de.symeda.sormas.app.component.controls;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -35,6 +28,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.databinding.BindingAdapter;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.R;
@@ -107,7 +107,7 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 	// Instance methods
 
 	private void initializePropertyField(Context context, AttributeSet attrs) {
-		description = I18nProperties.getPrefixDescription(getPropertyIdPrefix(), getSubPropertyId());
+		description = getPrefixDescription();
 
 		if (attrs != null) {
 			TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ControlPropertyField, 0, 0);
@@ -135,8 +135,16 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 		}
 
 		if (StringUtils.isEmpty(caption)) {
-			caption = I18nProperties.getPrefixCaption(getPropertyIdPrefix(), getSubPropertyId());
+			caption = getPrefixCaption();
 		}
+	}
+
+	protected String getPrefixCaption() {
+		return I18nProperties.getPrefixCaption(getPropertyIdPrefix(), getSubPropertyId());
+	}
+
+	protected String getPrefixDescription() {
+		return I18nProperties.getPrefixDescription(getPropertyIdPrefix(), getSubPropertyId());
 	}
 
 	public void addValueChangedListener(ValueChangeListener listener) {
@@ -266,7 +274,10 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 	@Override
 	protected void onFinishInflate() {
 		super.onFinishInflate();
+		initLabel();
+	}
 
+	protected void initLabel() {
 		labelFrame = this.findViewById(R.id.label_frame);
 		label = (TextView) this.findViewById(R.id.label);
 
@@ -582,5 +593,17 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 		"labelCaption" })
 	public static void setLabelCaption(ControlPropertyField field, String labelCaption) {
 		field.setCaption(labelCaption);
+	}
+
+	@BindingAdapter(value = {
+		"enabled" })
+	public static void setEnabled(ControlPropertyField field, Boolean enabled) {
+		boolean isEnabled = Boolean.TRUE.equals(enabled);
+
+		field.setEnabled(isEnabled);
+
+		if(!isEnabled){
+			field.setValue(null);
+		}
 	}
 }

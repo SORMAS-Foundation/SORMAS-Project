@@ -276,6 +276,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
 		Join<EventParticipant, Case> resultingCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
+		Join<EventParticipant, VaccinationInfo> vaccinationInfoJoin = eventParticipant.join(EventParticipant.VACCINATION_INFO, JoinType.LEFT);
 		Join<Object, Object> reportingUser = eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT);
 		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
 
@@ -294,6 +295,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			cb.max(samples.get(Sample.PATHOGEN_TEST_RESULT)),
 			// all samples have the same date, but have to be aggregated
 			cb.max(samples.get(Sample.SAMPLE_DATE_TIME)),
+			vaccinationInfoJoin.get(VaccinationInfo.VACCINATION),
 			reportingUser.get(User.UUID));
 		cq.groupBy(
 			eventParticipant.get(EventParticipant.UUID),
@@ -306,6 +308,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.APPROXIMATE_AGE),
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+			vaccinationInfoJoin.get(VaccinationInfo.VACCINATION),
 			reportingUser.get(User.UUID));
 
 		Subquery<Date> dateSubquery = cq.subquery(Date.class);
@@ -353,6 +356,9 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 					break;
 				case EventParticipantIndexDto.CASE_UUID:
 					expression = resultingCase.get(Case.UUID);
+					break;
+				case EventParticipantIndexDto.VACCINATION:
+					expression = vaccinationInfoJoin.get(VaccinationInfo.VACCINATION);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -853,6 +859,15 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventJoin.get(Event.EVENT_STATUS),
 			eventJoin.get(Event.EVENT_TITLE),
 			eventJoin.get(Event.START_DATE));
+		cq.groupBy(
+			eventParticipantRoot.get(EventParticipant.UUID),
+			personJoin.get(Person.FIRST_NAME),
+			personJoin.get(Person.LAST_NAME),
+			eventParticipantRoot.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+			eventJoin.get(Event.UUID),
+			eventJoin.get(Event.EVENT_STATUS),
+			eventJoin.get(Event.EVENT_TITLE),
+			eventJoin.get(Event.START_DATE));
 
 		final Predicate defaultFilter = eventParticipantService.createDefaultFilter(cb, eventParticipantRoot);
 		final Predicate userFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantRoot);
@@ -863,7 +878,17 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		final Disease disease = criteria.getDisease();
 		final Predicate diseaseFilter = disease != null ? cb.equal(eventJoin.get(Event.DISEASE), disease) : null;
 
-		cq.where(CriteriaBuilderHelper.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter));
+		final Date relevantDate = criteria.getRelevantDate();
+		final Predicate relevantDateFilter = CriteriaBuilderHelper.or(
+			cb,
+			contactService.recentDateFilter(cb, relevantDate, eventJoin.get(Event.START_DATE), 30),
+			contactService.recentDateFilter(cb, relevantDate, eventJoin.get(Event.END_DATE), 30),
+			contactService.recentDateFilter(cb, relevantDate, eventJoin.get(Event.REPORT_DATE_TIME), 30));
+
+		final Predicate noResulingCaseFilter =
+			Boolean.TRUE.equals(criteria.getNoResultingCase()) ? cb.isNull(eventParticipantRoot.get(EventParticipant.RESULTING_CASE)) : null;
+
+		cq.where(CriteriaBuilderHelper.and(cb, defaultFilter, userFilter, samePersonFilter, diseaseFilter, relevantDateFilter, noResulingCaseFilter));
 
 		List<SimilarEventParticipantDto> participants = em.createQuery(cq).getResultList();
 
@@ -873,6 +898,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			participants,
 			p -> eventParticipantJurisdictionChecker.isPseudonymized(p.getUuid()),
 			null);
+
+		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {
+			participants = participants.stream().filter(e -> !e.isPseudonymized()).collect(Collectors.toList());
+		}
 
 		return participants;
 	}

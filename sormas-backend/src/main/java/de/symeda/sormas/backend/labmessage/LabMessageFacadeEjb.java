@@ -25,7 +25,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -102,6 +101,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setStatus(source.getStatus());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setPersonPhone(source.getPersonPhone());
@@ -159,6 +159,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setStatus(source.getStatus());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setTestDateTime(source.getTestDateTime());
@@ -314,14 +315,15 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	/**
-	 * The creation of the currentSystemEvent is in this method. All the rest is outsourced to another method,
-	 * because it shall be done in one transaction. In case of uncaught exceptions, this leaves the systemEvent with status STARTED
-	 * and falls back to standard exception handling.
+	 * This method marks the previously unfinished system events as UNCLEAR(if any exists) and creates a new event with status STARTED.
+	 * If the fetching succeds, the status of the currentSystemEvent is changed to SUCCESS.
+	 * In case of any Exception, the status of the currentSystemEvent is changed to ERROR.
 	 *
 	 * @return An indication whether the fetching of new labMessage was successful. If it was not, an error message meant for UI users.
 	 */
 	@Override
 	public LabMessageFetchResult fetchAndSaveExternalLabMessages() {
+		systemEventFacade.markPreviouslyStartedAsUnclear(SystemEventType.FETCH_LAB_MESSAGES);
 		SystemEventDto currentSystemEvent = initializeFetchEvent();
 		try {
 			return fetchAndSaveExternalLabMessages(currentSystemEvent);
@@ -331,10 +333,12 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		} catch (NamingException e) {
 			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date());
 			return new LabMessageFetchResult(false, NewMessagesState.UNCLEAR, I18nProperties.getString(Strings.errorLabResultsAdapterNotFound));
+		} catch (Exception t) {
+			systemEventFacade.reportError(currentSystemEvent, t.getMessage(), new Date());
+			throw t;
 		}
 	}
 
-	@Transactional
 	protected LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSystemEvent) throws NamingException {
 		Date since = findLastUpdateDate();
 		ExternalMessageResult<List<LabMessageDto>> externalMessageResult = fetchExternalMessages(since);

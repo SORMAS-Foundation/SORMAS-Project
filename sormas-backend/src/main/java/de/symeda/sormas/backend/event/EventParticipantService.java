@@ -46,17 +46,19 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.person.PersonQueryContext;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
+import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless
 @LocalBean
@@ -188,7 +190,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 				Predicate likeFilters = cb.or(
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(cb, (Expression<String>) personQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter));
+					phoneNumberPredicate(
+						cb,
+						(Expression<String>) personQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
+						textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
@@ -205,6 +210,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		if (criteria.getPathogenTestResult() != null) {
 			Join<EventParticipant, Sample> samples = from.join(EventParticipant.SAMPLES, JoinType.LEFT);
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), criteria.getPathogenTestResult()));
+		}
+		if (criteria.getVaccination() != null) {
+			Join<EventParticipant, VaccinationInfo> vaccinationInfoJoin = from.join(EventParticipant.VACCINATION_INFO, JoinType.LEFT);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(vaccinationInfoJoin.get(VaccinationInfo.VACCINATION), criteria.getVaccination()));
+		}
+		if (Boolean.TRUE.equals(criteria.getNoResultingCase())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(EventParticipant.RESULTING_CASE)));
 		}
 
 		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
@@ -400,4 +412,23 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 		return em.createQuery(cq).getResultList();
 	}
+
+	public Predicate isInJurisdictionOrOwned(
+		CriteriaBuilder cb,
+		CriteriaQuery<?> cq,
+		Root<EventParticipant> eventParticipantRoot,
+		EventParticipantJoins joins) {
+
+		final User currentUser = this.getCurrentUser();
+
+		final Predicate reportedByCurrentUser = cb.and(
+			cb.isNotNull(joins.getEventParticipantReportingUser()),
+			cb.equal(joins.getEventParticipantReportingUser().get(User.UUID), currentUser.getUuid()));
+
+		final Predicate jurisdictionPredicate =
+			EventParticipantJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
+
+		return cb.or(reportedByCurrentUser, jurisdictionPredicate);
+	}
+
 }

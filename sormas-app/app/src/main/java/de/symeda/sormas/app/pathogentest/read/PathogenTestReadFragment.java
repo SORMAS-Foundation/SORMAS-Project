@@ -34,6 +34,9 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.databinding.FragmentPathogenTestReadLayoutBinding;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 public class PathogenTestReadFragment extends BaseReadFragment<FragmentPathogenTestReadLayoutBinding, PathogenTest, PathogenTest> {
 
 	private PathogenTest record;

@@ -50,7 +50,7 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 	private SharedDataProcessorHelper dataProcessorHelper;
 
 	@Override
-	public ProcessedEventData processSharedData(SormasToSormasEventDto sharedData) throws SormasToSormasValidationException {
+	public ProcessedEventData processSharedData(SormasToSormasEventDto sharedData, EventDto existingEvent) throws SormasToSormasValidationException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
 		EventDto event = sharedData.getEntity();
@@ -61,7 +61,7 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.Event);
 		eventValidationErrors.addAll(originInfoErrors);
 
-		ValidationErrors eventErrors = processEventData(event);
+		ValidationErrors eventErrors = processEventData(event, existingEvent);
 		eventValidationErrors.addAll(eventErrors);
 
 		if (eventValidationErrors.hasError()) {
@@ -69,13 +69,13 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 		}
 
 		List<EventParticipantDto> eventParticipants = sharedData.getEventParticipants();
-		if (eventParticipants != null) {
+		if (eventParticipants != null && eventParticipants.size() > 0) {
 			Map<String, ValidationErrors> eventParticipantErrors = processEventParticipants(eventParticipants);
 			validationErrors.putAll(eventParticipantErrors);
 		}
 
 		List<SormasToSormasSampleDto> samples = sharedData.getSamples();
-		if (samples != null) {
+		if (samples != null && samples.size() > 0) {
 			Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
 			validationErrors.putAll(sampleErrors);
 		}
@@ -87,11 +87,15 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 		return new ProcessedEventData(event, originInfo, eventParticipants, samples);
 	}
 
-	private ValidationErrors processEventData(EventDto event) {
+	private ValidationErrors processEventData(EventDto event, EventDto existingEvent) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		event.setReportingUser(userService.getCurrentUser().toReference());
-		event.setResponsibleUser(userService.getCurrentUser().toReference());
+		dataProcessorHelper.updateReportingUser(event, existingEvent);
+		if (existingEvent == null) {
+			event.setResponsibleUser(userService.getCurrentUser().toReference());
+		} else {
+			event.setResponsibleUser(existingEvent.getResponsibleUser());
+		}
 
 		LocationDto eventLocation = event.getEventLocation();
 		DataHelper.Pair<SharedDataProcessorHelper.InfrastructureData, List<String>> infrastructureAndErrors =

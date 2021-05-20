@@ -33,6 +33,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ErrorMessage;
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -41,6 +43,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
@@ -56,6 +59,7 @@ import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -74,9 +78,11 @@ import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
+import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -175,7 +181,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			Arrays.asList(LocationDto.ADDRESS_TYPE_DETAILS),
 			Arrays.asList(PersonAddressType.OTHER_ADDRESS));
 
-		facilityTypeGroup = new ComboBox();
+		facilityTypeGroup = ComboBoxHelper.createComboBoxV7();;
 		facilityTypeGroup.setId("typeGroup");
 		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
@@ -215,7 +221,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		contactPersonFirstName = addField(LocationDto.CONTACT_PERSON_FIRST_NAME, TextField.class);
 		contactPersonLastName = addField(LocationDto.CONTACT_PERSON_LAST_NAME, TextField.class);
 		contactPersonPhone = addField(LocationDto.CONTACT_PERSON_PHONE, TextField.class);
+		contactPersonPhone
+			.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, contactPersonPhone.getCaption())));
 		contactPersonEmail = addField(LocationDto.CONTACT_PERSON_EMAIL, TextField.class);
+		contactPersonEmail
+			.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, contactPersonEmail.getCaption())));
 
 		final AccessibleTextField tfLatitude = addField(LocationDto.LATITUDE, AccessibleTextField.class);
 		final AccessibleTextField tfLongitude = addField(LocationDto.LONGITUDE, AccessibleTextField.class);
@@ -336,7 +346,22 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
 			if (districtDto == null) {
 				FieldHelper.removeItems(facility);
+				// Add a visual indictator reminding the user to select a district
+				facility.setComponentError(new ErrorMessage() {
+
+					@Override
+					public ErrorLevel getErrorLevel() {
+						return ErrorLevel.INFO;
+					}
+
+					@Override
+					public String getFormattedHtmlMessage() {
+						return I18nProperties.getString(Strings.infoFacilityNeedsDistrict);
+					}
+				});
 			} else if (facilityType.getValue() != null) {
+				facility.setComponentError(null);
+				facility.markAsDirty();
 				FieldHelper.updateItems(
 					facility,
 					FacadeProvider.getFacilityFacade()
@@ -368,6 +393,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		});
 		facilityType.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
+			facility.setComponentError(null);
+			facility.markAsDirty();
 			if (facilityType.getValue() != null && facilityTypeGroup.getValue() == null) {
 				facilityTypeGroup.setValue(((FacilityType) facilityType.getValue()).getFacilityTypeGroup());
 			}
@@ -391,6 +418,27 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 								true,
 								false));
 				}
+			} else if (facilityType.getValue() != null && district.getValue() == null) {
+				// Add a visual indictator reminding the user to select a district
+				facility.setComponentError(new ErrorMessage() {
+
+					@Override
+					public ErrorLevel getErrorLevel() {
+						return ErrorLevel.INFO;
+					}
+
+					@Override
+					public String getFormattedHtmlMessage() {
+						return I18nProperties.getString(Strings.infoFacilityNeedsDistrict);
+					}
+				});
+			}
+
+			// Only show contactperson-details if at least a faciltytype has been set
+			if (facilityType.getValue() != null) {
+				setFacilityContactPersonFieldsVisible(true, true);
+			} else {
+				setFacilityContactPersonFieldsVisible(false, true);
 			}
 		});
 		facility.addValueChangeListener(e -> {
@@ -491,6 +539,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
 			.<Field<?>> map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
+
+		// Set initial visiblity of facility-contactperson-details (should only be visible if at least a facilityType has been selected)
+		setFacilityContactPersonFieldsVisible(facilityType.getValue() != null, true);
 	}
 
 	private void updateRegionCombo(ComboBox region, ComboBox country) {
@@ -632,16 +683,24 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		facilityDetails.setVisible(visible && areFacilityDetailsRequired());
 		facilityType.setVisible(visible);
 		facilityTypeGroup.setVisible(visible);
-		contactPersonFirstName.setVisible(visible);
-		contactPersonLastName.setVisible(visible);
-		contactPersonPhone.setVisible(visible);
-		contactPersonEmail.setVisible(visible);
+
+		setFacilityContactPersonFieldsVisible(visible && (facilityType.getValue() != null), clearOnHidden);
 
 		if (!visible && clearOnHidden) {
 			facility.clear();
 			facilityDetails.clear();
 			facilityType.clear();
 			facilityTypeGroup.clear();
+		}
+	}
+
+	private void setFacilityContactPersonFieldsVisible(boolean visible, boolean clearOnHidden) {
+		contactPersonFirstName.setVisible(visible);
+		contactPersonLastName.setVisible(visible);
+		contactPersonPhone.setVisible(visible);
+		contactPersonEmail.setVisible(visible);
+
+		if (!visible && clearOnHidden) {
 			contactPersonFirstName.clear();
 			contactPersonLastName.clear();
 			contactPersonPhone.clear();

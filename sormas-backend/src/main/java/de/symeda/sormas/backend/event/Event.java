@@ -1,20 +1,20 @@
-/*******************************************************************************
- * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+/*
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ *  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *  * This program is free software: you can redistribute it and/or modify
+ *  * it under the terms of the GNU General Public License as published by
+ *  * the Free Software Foundation, either version 3 of the License, or
+ *  * (at your option) any later version.
+ *  * This program is distributed in the hope that it will be useful,
+ *  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  * GNU General Public License for more details.
+ *  * You should have received a copy of the GNU General Public License
+ *  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.event;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
@@ -23,6 +23,7 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -39,10 +40,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Type;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
+import de.symeda.sormas.api.event.EpidemiologicalEvidenceDetail;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -51,6 +55,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.HumanTransmissionMode;
 import de.symeda.sormas.api.event.InfectionPathCertainty;
 import de.symeda.sormas.api.event.InstitutionalPartnerType;
+import de.symeda.sormas.api.event.LaboratoryDiagnosticEvidenceDetail;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.MedicallyAssociatedTransmissionMode;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
@@ -65,6 +70,7 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "events")
 @Audited
@@ -189,6 +195,11 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 	private HumanTransmissionMode humanTransmissionMode;
 	private ParenteralTransmissionMode parenteralTransmissionMode;
 	private MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode;
+
+	private YesNoUnknown epidemiologicalEvidence;
+	private Map<EpidemiologicalEvidenceDetail, Boolean> epidemiologicalEvidenceDetails;
+	private YesNoUnknown laboratoryDiagnosticEvidence;
+	private Map<LaboratoryDiagnosticEvidenceDetail, Boolean>  laboratoryDiagnosticEvidenceDetails;
 
 	private List<Task> tasks;
 	private List<EventGroup> eventGroups;
@@ -539,6 +550,44 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 
 	public void setTypeOfPlaceText(String typeOfPlaceText) {
 		this.typeOfPlaceText = typeOfPlaceText;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getEpidemiologicalEvidence() {
+		return epidemiologicalEvidence;
+	}
+
+	public void setEpidemiologicalEvidence(YesNoUnknown epidemiologicalEvidence) {
+		this.epidemiologicalEvidence = epidemiologicalEvidence;
+	}
+
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
+	public Map<EpidemiologicalEvidenceDetail, Boolean> getEpidemiologicalEvidenceDetails() {
+		return epidemiologicalEvidenceDetails;
+	}
+
+	public void setEpidemiologicalEvidenceDetails(Map<EpidemiologicalEvidenceDetail, Boolean> epidemiologicalEvidenceDetails) {
+		this.epidemiologicalEvidenceDetails = epidemiologicalEvidenceDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getLaboratoryDiagnosticEvidence() {
+		return laboratoryDiagnosticEvidence;
+	}
+
+	public void setLaboratoryDiagnosticEvidence(YesNoUnknown laboratoryDiagnosticEvidence) {
+		this.laboratoryDiagnosticEvidence = laboratoryDiagnosticEvidence;
+	}
+
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
+	public Map<LaboratoryDiagnosticEvidenceDetail, Boolean> getLaboratoryDiagnosticEvidenceDetails() {
+		return laboratoryDiagnosticEvidenceDetails;
+	}
+
+	public void setLaboratoryDiagnosticEvidenceDetails(Map<LaboratoryDiagnosticEvidenceDetail, Boolean> laboratoryDiagnosticEvidenceDetails) {
+		this.laboratoryDiagnosticEvidenceDetails = laboratoryDiagnosticEvidenceDetails;
 	}
 
 	@OneToMany(mappedBy = Task.EVENT, fetch = FetchType.LAZY)

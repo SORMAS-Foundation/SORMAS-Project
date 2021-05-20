@@ -52,7 +52,7 @@ println('case search string: ' + caseSearchString)
 // TESTCASE - change case
 WebUI.click(findTestObject('Contacts/ContactInformationView/button_div_Change Case'))
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_confirmationDlg_yes'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/confirmationDlg_yes'))
 
 // WebUI.waitForElementPresent(findTestObject('Contacts/ContactInformationView/changeCaseDlg_input_field'), 2)
 WebUI.delay(1)
@@ -112,7 +112,7 @@ if (checkChangeableEpid) {
 // TESTCASE - discard changes in caseChange Dialog
 WebUI.click(findTestObject('Contacts/ContactInformationView/button_div_Change Case'))
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_confirmationDlg_yes'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/confirmationDlg_yes'))
 
 WebUI.setText(findTestObject('Contacts/ContactInformationView/changeCaseDlg_input_field'), savedEpidNumber)
 

@@ -15,26 +15,29 @@
 
 package de.symeda.sormas.app.backend.campaign.data;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
-
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
+
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.campaign.Campaign;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.region.Area;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -44,136 +47,163 @@ import de.symeda.sormas.app.backend.user.User;
 @DatabaseTable(tableName = CampaignFormData.TABLE_NAME)
 public class CampaignFormData extends PseudonymizableAdo {
 
-	public static final String TABLE_NAME = "campaignFormData";
-	public static final String I18N_PREFIX = "CampaignFormData";
+    public static final String TABLE_NAME = "campaignFormData";
+    public static final String I18N_PREFIX = "CampaignFormData";
 
-	public static final String CAMPAIGN_ID = "campaign_id";
-	public static final String CAMPAIGN_FORM_META_ID = "campaignformmeta_id";
-	public static final String FORM_DATE = "formDate";
+    public static final String CAMPAIGN = "campaign";
+    public static final String FORM_DATE = "formDate";
+	public static final String CAMPAIGN_FORM_META = "campaignformmeta";
 
-	@Column(name = "formValues")
-	private String formValuesJson;
-	private List<CampaignFormDataEntry> formValues;
+    @Column(name = "formValues")
+    private String formValuesJson;
+    private List<CampaignFormDataEntry> formValues;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private Campaign campaign;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private Campaign campaign;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private CampaignFormMeta campaignFormMeta;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private CampaignFormMeta campaignFormMeta;
 
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
-	private Date formDate;
+    @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
+    private Date formDate;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private Region region;
+    @Transient
+    private Area area;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private District district;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private Region region;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private Community community;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private District district;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private User creatingUser;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private Community community;
 
-	@DatabaseField
-	private boolean archived;
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private User creatingUser;
 
-	public String getFormValuesJson() {
-		return formValuesJson;
-	}
+    @DatabaseField
+    private boolean archived;
 
-	public void setFormValuesJson(String formValuesJson) {
-		this.formValuesJson = formValuesJson;
-		this.formValues = null;
-	}
+    /**
+     * JsonRawValue annotation is used to handle this differently when merging data
+     */
+    @JsonRawValue
+    public String getFormValuesJson() {
+        return formValuesJson;
+    }
 
-	@Transient
-	public List<CampaignFormDataEntry> getFormValues() {
-		if (formValues == null) {
-			Gson gson = new Gson();
-			Type type = new TypeToken<Set<CampaignFormDataEntry>>() {
-			}.getType();
-			formValues = gson.fromJson(formValuesJson, type);
-			if (formValues == null) {
-				formValues = new ArrayList<>();
-			}
-		}
-		return formValues;
-	}
+    public void setFormValuesJson(String formValuesJson) {
+        this.formValuesJson = formValuesJson;
+        this.formValues = null;
+    }
 
-	public void setFormValues(List<CampaignFormDataEntry> formValues) {
-		this.formValues = formValues;
-		Gson gson = new Gson();
-		formValuesJson = gson.toJson(formValues);
-	}
+    @Transient
+    public List<CampaignFormDataEntry> getFormValues() {
+        if (formValues == null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<CampaignFormDataEntry>>() {
+            }.getType();
+            formValues = gson.fromJson(formValuesJson, type);
+            if (formValues == null) {
+                formValues = new ArrayList<>();
+            }
+        }
+        return formValues;
+    }
 
-	public Campaign getCampaign() {
-		return campaign;
-	}
+    public void setFormValues(List<CampaignFormDataEntry> formValues) {
+        this.formValues = formValues;
+        Gson gson = new Gson();
+        formValuesJson = gson.toJson(formValues);
+    }
 
-	public void setCampaign(Campaign campaign) {
-		this.campaign = campaign;
-	}
+    public Campaign getCampaign() {
+        return campaign;
+    }
 
-	public CampaignFormMeta getCampaignFormMeta() {
-		return campaignFormMeta;
-	}
+    public void setCampaign(Campaign campaign) {
+        this.campaign = campaign;
+    }
 
-	public void setCampaignFormMeta(CampaignFormMeta campaignFormMeta) {
-		this.campaignFormMeta = campaignFormMeta;
-	}
+    public CampaignFormMeta getCampaignFormMeta() {
+        return campaignFormMeta;
+    }
 
-	public Date getFormDate() {
-		return formDate;
-	}
+    public void setCampaignFormMeta(CampaignFormMeta campaignFormMeta) {
+        this.campaignFormMeta = campaignFormMeta;
+    }
 
-	public void setFormDate(Date formDate) {
-		this.formDate = formDate;
-	}
+    public Date getFormDate() {
+        return formDate;
+    }
 
-	public Region getRegion() {
-		return region;
-	}
+    public void setFormDate(Date formDate) {
+        this.formDate = formDate;
+    }
 
-	public void setRegion(Region region) {
-		this.region = region;
-	}
+    @Transient
+    public Area getArea() {
+        return area;
+    }
 
-	public District getDistrict() {
-		return district;
-	}
+    public void setArea(Area area) {
+        this.area = area;
+    }
 
-	public void setDistrict(District district) {
-		this.district = district;
-	}
+    public Region getRegion() {
+        return region;
+    }
 
-	public Community getCommunity() {
-		return community;
-	}
+    public void setRegion(Region region) {
+        this.region = region;
+        if (region != null) {
+            setArea(region.getArea());
+        }
+    }
 
-	public void setCommunity(Community community) {
-		this.community = community;
-	}
+    public District getDistrict() {
+        return district;
+    }
 
-	public User getCreatingUser() {
-		return creatingUser;
-	}
+    public void setDistrict(District district) {
+        this.district = district;
+    }
 
-	public void setCreatingUser(User creatingUser) {
-		this.creatingUser = creatingUser;
-	}
+    public Community getCommunity() {
+        return community;
+    }
 
-	public boolean isArchived() {
-		return archived;
-	}
+    public void setCommunity(Community community) {
+        this.community = community;
+    }
 
-	public void setArchived(boolean archived) {
-		this.archived = archived;
-	}
+    public User getCreatingUser() {
+        return creatingUser;
+    }
 
-	@Override
-	public String getI18nPrefix() {
-		return I18N_PREFIX;
-	}
+    public void setCreatingUser(User creatingUser) {
+        this.creatingUser = creatingUser;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
+    }
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
+    }
+
+    @Override
+    public String toString() {
+        return DataHelper.toStringNullable(getCampaign()) + " - "
+                + DataHelper.toStringNullable(getCampaignFormMeta())
+                + " - " + DataHelper.toStringNullable((getCommunity()))
+                + " " + DateHelper.formatShortDate(getFormDate());
+    }
 }

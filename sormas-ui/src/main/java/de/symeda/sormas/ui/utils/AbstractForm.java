@@ -12,7 +12,9 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
@@ -226,6 +228,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		field.setId(propertyId);
 		layout.addComponent(field, propertyId);
 		addDefaultAdditionalValidators(field, null);
+		setDefaultAdditionalParameters(field);
 
 		return field;
 	}
@@ -255,6 +258,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		field.setId(propertyId);
 		// Add validators before wrapping field, so the wrapper can access validators
 		addDefaultAdditionalValidators(field, null);
+		setDefaultAdditionalParameters(field);
 		layout.addComponent(fieldWrapper.wrap(field, Captions.numberOfCharacters), propertyId);
 		return field;
 	}
@@ -265,6 +269,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		field.setId(fieldId);
 		formatField(field, fieldId);
 		addDefaultAdditionalValidators(field, dataType);
+		setDefaultAdditionalParameters(field);
 		getContent().addComponent(field, fieldId);
 		customFields.add(field);
 		return field;
@@ -276,6 +281,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		field.setId(fieldId);
 		formatField(field, fieldId, customCaption);
 		addDefaultAdditionalValidators(field, dataType);
+		setDefaultAdditionalParameters(field);
 		getContent().addComponent(field, fieldId);
 		customFields.add(field);
 		return field;
@@ -285,6 +291,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		field.setId(fieldId);
 		formatField(field, fieldId, customCaption);
 		addDefaultAdditionalValidators(field, field.getType());
+		setDefaultAdditionalParameters(field);
 		getContent().addComponent(field, fieldId);
 		customFields.add(field);
 	}
@@ -295,6 +302,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		formatField(field, fieldId, customCaption);
 
 		addDefaultAdditionalValidators(field, dataType);
+		setDefaultAdditionalParameters(field);
 		getContent().addComponent(field, fieldId);
 		customFields.add(field);
 		return field;
@@ -331,6 +339,19 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	protected <F extends Field> F addDefaultAdditionalValidators(F field, Class<?> fieldDataType) {
 		addLengthValidator(field, fieldDataType);
 		addFutureDateValidator(field, 0);
+		return field;
+	}
+
+	@SuppressWarnings("rawtypes")
+	/**
+	 * Add additional Parameters to fields, like setting the filteringMode for ComboBoxes
+	 * 
+	 * @param field
+	 */
+	protected <F extends Field> F setDefaultAdditionalParameters(F field) {
+		if (field instanceof ComboBox) {
+			((ComboBox) field).setFilteringMode(FilteringMode.CONTAINS);
+		}
 		return field;
 	}
 

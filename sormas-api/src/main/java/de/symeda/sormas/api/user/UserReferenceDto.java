@@ -19,6 +19,8 @@ package de.symeda.sormas.api.user;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -76,6 +78,7 @@ public class UserReferenceDto extends ReferenceDto {
 		return lastName;
 	}
 
+	@JsonIgnore
 	public String getShortCaption() {
 		return buildCaption(firstName, lastName, null);
 	}

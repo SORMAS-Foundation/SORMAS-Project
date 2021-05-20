@@ -860,11 +860,11 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		PersonDto casePerson = getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
 		casePerson.setApproximateAge(5);
 		casePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
-		getPersonFacade().savePerson(casePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(casePerson);
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(CaseClassification.NOT_CLASSIFIED, caze.getCaseClassification());
 		casePerson.setApproximateAge(0);
-		getPersonFacade().savePerson(casePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(casePerson);
 		caze.setOutcome(CaseOutcome.DECEASED);
 		caze.getEpiData().getExposures().get(0).setRiskArea(YesNoUnknown.YES);
 		caze = getCaseFacade().saveCase(caze);
@@ -1101,7 +1101,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			PersonDto casePerson = getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
 			casePerson.setApproximateAge(5);
 			casePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
-			getPersonFacade().savePerson(casePerson);
+			getPersonFacade().savePersonAndNotifyExternalJournal(casePerson);
 			caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 			break;
 		case PLAGUE:

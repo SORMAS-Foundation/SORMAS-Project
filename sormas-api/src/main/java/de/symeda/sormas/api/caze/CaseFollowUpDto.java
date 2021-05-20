@@ -27,8 +27,6 @@ public class CaseFollowUpDto extends FollowUpDto {
 
 	private static final long serialVersionUID = -7782443664670559221L;
 
-	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
-
 	private Date symptomsOnsetDate;
 
 	private final CaseJurisdictionDto jurisdiction;
@@ -36,9 +34,12 @@ public class CaseFollowUpDto extends FollowUpDto {
 
 	//@formatter:off
 	public CaseFollowUpDto(String uuid, String personFirstName, String personLastName,
-							  Date reportDate, Date symptomsOnsetDate, Date followUpUntil, SymptomJournalStatus symptomJournalStatus,
-						      Disease disease, String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid,
-							  String caseCommunityUud, String caseHealthFacilityUuid, String casePointOfEntryUuid
+						   Date reportDate, Date symptomsOnsetDate, Date followUpUntil, SymptomJournalStatus symptomJournalStatus,
+						   Disease disease,
+						   String caseReportingUserUuid,
+						   String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid,
+						   String caseRegionUuid, String caseDistrictUuid, String caseCommunityUud,
+						   String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//formatter:on
 		super(uuid, personFirstName, personLastName, reportDate, followUpUntil, disease);
@@ -46,6 +47,7 @@ public class CaseFollowUpDto extends FollowUpDto {
 		this.symptomJournalStatus = symptomJournalStatus;
 		this.jurisdiction = new CaseJurisdictionDto(
 				caseReportingUserUuid,
+				ResponsibleJurisdictionDto.of(responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid),
 				caseRegionUuid,
 				caseDistrictUuid,
 				caseCommunityUud,

@@ -44,7 +44,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -74,7 +74,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.EnumService;
-import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb.DiseaseVariantFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportCellData;
@@ -130,8 +129,6 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private EnumService enumService;
-	@EJB
-	private DiseaseVariantFacadeEjbLocal diseaseVariantFacade;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
 
@@ -224,7 +221,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 				return ImportLineResultDto.errorResult(I18nProperties.getString(Strings.messageEpidNumberWarning));
 			}
 
-			PersonDto savedPerson = personFacade.savePerson(person);
+			PersonDto savedPerson = personFacade.savePersonAndNotifyExternalJournal(person);
 			caze.setPerson(savedPerson.toReference());
 			// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 			// Should be changed when doing #2265
@@ -386,6 +383,12 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 				if (exception != null) {
 					if (exception instanceof ImportErrorException) {
 						importError = exception.getMessage();
+						StringBuilder additionalInfo = new StringBuilder();
+						for (int j = 0; j < entityPropertyPath.length; j++) {
+							additionalInfo.append(" ").append(entityPropertyPath[j]);
+						}
+						importError += additionalInfo;
+						importError += "value:" + value;
 						break;
 					} else if (exception instanceof InvalidColumnException) {
 						invalidColumns.add(((InvalidColumnException) exception).getColumnName());
@@ -523,23 +526,6 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 						} else {
 							pd.getWriteMethod().invoke(currentElement, pointOfEntry.get(0));
 						}
-					} else if (propertyType.isAssignableFrom(DiseaseVariantReferenceDto.class)) {
-						List<DiseaseVariantReferenceDto> variants = diseaseVariantFacade.getByName(entry, caze.getDisease());
-						if (variants.isEmpty()) {
-							throw new ImportErrorException(
-								I18nProperties.getValidationError(
-									Validations.importDiseaseVariantNotExistOrDisease,
-									entry,
-									buildEntityProperty(entryHeaderPath)));
-						} else if (variants.size() > 1) {
-							throw new ImportErrorException(
-								I18nProperties.getValidationError(
-									Validations.importDiseaseVariantNotUniqueForDisease,
-									entry,
-									buildEntityProperty(entryHeaderPath)));
-						} else {
-							pd.getWriteMethod().invoke(currentElement, variants.get(0));
-						}
 					} else {
 						throw new UnsupportedOperationException(
 							I18nProperties.getValidationError(Validations.importCasesPropertyTypeNotAllowed, propertyType.getName()));
@@ -639,7 +625,6 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		Class<?> propertyType = pd.getPropertyType();
 
 		if (propertyType.isEnum()) {
-
 			Enum enumValue = null;
 			Class<Enum> enumType = (Class<Enum>) propertyType;
 			try {
@@ -654,6 +639,17 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 
 			pd.getWriteMethod().invoke(element, enumValue);
 			return true;
+		}
+		if (propertyType.getSuperclass() != null && propertyType.getSuperclass() == CustomizableEnum.class) {
+			try {
+				Object test = propertyType.newInstance();
+				((CustomizableEnum) test).setValue(entry);
+				pd.getWriteMethod().invoke(element, test);
+				return true;
+			} catch (InstantiationException e) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importErrorCustomizableEnumValue, entry, buildEntityProperty(entryHeaderPath)));
+			}
 		}
 		if (propertyType.isAssignableFrom(Date.class)) {
 			pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));

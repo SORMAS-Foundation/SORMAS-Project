@@ -46,6 +46,9 @@ public interface Validations {
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String errorsInForm = "errorsInForm";
 	String exportNoNameSpecified = "exportNoNameSpecified";
+	String externalJournalPersonSynchronizationFailure = "externalJournalPersonSynchronizationFailure";
+	String externalJournalPersonSynchronizationPartial = "externalJournalPersonSynchronizationPartial";
+	String externalJournalPersonSynchronizationSuccess = "externalJournalPersonSynchronizationSuccess";
 	String externalJournalPersonValidationBirthdate = "externalJournalPersonValidationBirthdate";
 	String externalJournalPersonValidationEmail = "externalJournalPersonValidationEmail";
 	String externalJournalPersonValidationEmailTaken = "externalJournalPersonValidationEmailTaken";
@@ -83,6 +86,7 @@ public interface Validations {
 	String importEntryDoesNotExistDbOrDistrict = "importEntryDoesNotExistDbOrDistrict";
 	String importEntryDoesNotExistDbOrRegion = "importEntryDoesNotExistDbOrRegion";
 	String importEntryRegionNotInUsersJurisdiction = "importEntryRegionNotInUsersJurisdiction";
+	String importErrorCustomizableEnumValue = "importErrorCustomizableEnumValue";
 	String importErrorInColumn = "importErrorInColumn";
 	String importEventParticipantsPropertyTypeNotAllowed = "importEventParticipantsPropertyTypeNotAllowed";
 	String importEventsPropertyTypeNotAllowed = "importEventsPropertyTypeNotAllowed";
@@ -105,6 +109,7 @@ public interface Validations {
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String labMessageAlreadyProcessedError = "labMessageAlreadyProcessedError";
+	String labMessagePdfConversionError = "labMessagePdfConversionError";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";
 	String noFacilityInCommunity = "noFacilityInCommunity";
@@ -127,9 +132,7 @@ public interface Validations {
 	String sormasToSormasEventExists = "sormasToSormasEventExists";
 	String sormasToSormasLabMessageExists = "sormasToSormasLabMessageExists";
 	String sormasToSormasOrganizationIdMissing = "sormasToSormasOrganizationIdMissing";
-	String sormasToSormasReturnCaseNotExists = "sormasToSormasReturnCaseNotExists";
-	String sormasToSormasReturnContactNotExists = "sormasToSormasReturnContactNotExists";
-	String sormasToSormasReturnEventNotExists = "sormasToSormasReturnEventNotExists";
+	String sormasToSormasReturnEntityNotExists = "sormasToSormasReturnEntityNotExists";
 	String sormasToSormasSampleExists = "sormasToSormasSampleExists";
 	String sormasToSormasSenderNameMissing = "sormasToSormasSenderNameMissing";
 	String sormasToSormasShareInfoMissing = "sormasToSormasShareInfoMissing";

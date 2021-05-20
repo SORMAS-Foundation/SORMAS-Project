@@ -10,6 +10,8 @@ import javax.ejb.Remote;
 @Remote
 public interface SystemEventFacade {
 
+	boolean existsStartedEvent(SystemEventType type);
+
 	SystemEventDto getLatestSuccessByType(SystemEventType type);
 
 	void saveSystemEvent(SystemEventDto dto);
@@ -22,4 +24,5 @@ public interface SystemEventFacade {
 
 	void reportError(SystemEventDto systemEvent, String errorMessage, Date end);
 
+	void markPreviouslyStartedAsUnclear(SystemEventType type);
 }

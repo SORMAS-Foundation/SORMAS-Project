@@ -1,9 +1,23 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.app.campaign.list;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -14,23 +28,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.Campaign;
+import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.app.backend.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.campaign.edit.CampaignFormDataNewActivity;
+import de.symeda.sormas.app.campaign.edit.CampaignFormMetaDialog;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.databinding.FilterCampaignFormDataListLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
 
-public class CampaignFormDataListActivity extends PagedBaseListActivity {
+public class CampaignFormDataListActivity extends PagedBaseListActivity<CampaignFormData> {
 
     private CampaignFormDataListViewModel model;
     private FilterCampaignFormDataListLayoutBinding filterBinding;
@@ -69,8 +88,8 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
 
         model = ViewModelProviders.of(this).get(CampaignFormDataListViewModel.class);
         model.getCriteria().setCampaign(DatabaseHelper.getCampaignDao().getLastStartedCampaign());
-        model.getCampaigns().observe(this, campaigns -> {
-            adapter.submitList(campaigns);
+        model.getCampaignFormDataList().observe(this, campaignFormDataPagedList -> {
+            adapter.submitList(campaignFormDataPagedList);
             setSetSubHeadingTitleForCampaign(model.getCriteria().getCampaign());
             hidePreloader();
         });
@@ -94,8 +113,8 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
         super.onResume();
         if (getIntent().getBooleanExtra("refreshOnResume", false)) {
             showPreloader();
-            if (model.getCampaigns().getValue() != null) {
-                model.getCampaigns().getValue().getDataSource().invalidate();
+            if (model.getCampaignFormDataList().getValue() != null) {
+                model.getCampaignFormDataList().getValue().getDataSource().invalidate();
             }
         }
     }
@@ -105,7 +124,7 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
         // Reload the list after a synchronization has been done
         return () -> {
             showPreloader();
-            model.getCampaigns().getValue().getDataSource().invalidate();
+            model.getCampaignFormDataList().getValue().getDataSource().invalidate();
         };
     }
 
@@ -121,16 +140,32 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Menu _menu = menu;
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.dashboard_action_menu, menu);
-        menu.findItem(R.id.action_help).setVisible(false);
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.dashboard_action_menu, menu);
+
+        super.onCreateOptionsMenu(menu);
+        getNewMenu().setTitle(R.string.action_new_campaign_form_data);
         return true;
     }
 
     @Override
     protected int getActivityTitle() {
         return R.string.heading_campaigns_list;
+    }
+
+    @Override
+    public void goToNewView() {
+
+        final CampaignFormDataCriteria criteria = model.getCriteria();
+        final CampaignFormMetaDialog campaignFormMetaDialog = new CampaignFormMetaDialog(BaseActivity.getActiveActivity(), criteria.getCampaign());
+        campaignFormMetaDialog.setPositiveCallback(() -> CampaignFormDataNewActivity.startActivity(getContext(), criteria.getCampaign().getUuid(), campaignFormMetaDialog.getCampaignFormMeta().getUuid()));
+        campaignFormMetaDialog.show();
+        campaignFormMetaDialog.setLiveValidationDisabled(true);
+    }
+
+    @Override
+    public boolean isEntryCreateAllowed() {
+        return model.getCriteria().getCampaign() != null && ConfigProvider.hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EDIT);
     }
 
     @Override
@@ -142,8 +177,14 @@ public class CampaignFormDataListActivity extends PagedBaseListActivity {
         filterBinding.campaignFilter.initializeSpinner(campaigns);
         filterBinding.campaignFilter.addValueChangedListener(e -> {
             Campaign campaign = (Campaign) e.getValue();
-            List<Item> forms = campaignFormMetasToItems(DatabaseHelper.getCampaignFormMetaDao().getAllFormsForCampaign(campaign));
-            filterBinding.campaignFormFilter.initializeSpinner(forms);
+            if (campaign != null) {
+                List<Item> forms = campaignFormMetasToItems(campaign.getCampaignFormMetas());
+                filterBinding.campaignFormFilter.initializeSpinner(forms);
+                setSubHeadingTitle(campaign != null ? campaign.getName() : I18nProperties.getCaption(Captions.all));
+                if (getNewMenu() != null) {
+                    getNewMenu().setVisible(isEntryCreateAllowed());
+                }
+            }
         });
 
         pageMenu.addFilter(campaignsFormDataListFilterView);

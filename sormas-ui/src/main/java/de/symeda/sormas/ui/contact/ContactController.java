@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -84,7 +85,12 @@ public class ContactController {
 	}
 
 	public void registerViews(Navigator navigator) {
+		UserProvider userProvider = UserProvider.getCurrent();
+
 		navigator.addView(ContactsView.VIEW_NAME, ContactsView.class);
+		if (userProvider.hasUserRight(UserRight.CASE_MERGE)) {
+			navigator.addView(MergeContactsView.VIEW_NAME, MergeContactsView.class);
+		}
 		navigator.addView(ContactDataView.VIEW_NAME, ContactDataView.class);
 		navigator.addView(ContactPersonView.VIEW_NAME, ContactPersonView.class);
 		navigator.addView(ContactVisitsView.VIEW_NAME, ContactVisitsView.class);
@@ -149,6 +155,16 @@ public class ContactController {
 	public void navigateTo(ContactCriteria contactCriteria) {
 		ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
 		String navigationState = AbstractView.buildNavigationState(ContactsView.VIEW_NAME, contactCriteria);
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void navigateToIndex() {
+		String navigationState = ContactsView.VIEW_NAME;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void navigateToMergeContactsView() {
+		String navigationState = MergeContactsView.VIEW_NAME;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
@@ -268,13 +284,13 @@ public class ContactController {
 					if (dbPerson == null) {
 						PersonDto personDto = PersonDto.build();
 						transferDataToPerson(createForm, personDto);
-						FacadeProvider.getPersonFacade().savePerson(personDto);
+						FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(personDto);
 						dto.setPerson(personDto.toReference());
 						createNewContact(dto, e -> {
 						});
 					} else {
 						transferDataToPerson(createForm, dbPerson);
-						FacadeProvider.getPersonFacade().savePerson(dbPerson);
+						FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(dbPerson);
 						createNewContact(dto, e -> {
 						});
 					}
@@ -297,7 +313,7 @@ public class ContactController {
 										personDto.getAddress().setDistrict(caseDto.getDistrict());
 										personDto.getAddress().setCommunity(caseDto.getCommunity());
 									}
-									FacadeProvider.getPersonFacade().savePerson(personDto);
+									FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(personDto);
 								}
 
 								selectOrCreateContact(
@@ -370,7 +386,7 @@ public class ContactController {
 						personDto.getAddress().setDistrict(caseDto.getDistrict());
 						personDto.getAddress().setCommunity(caseDto.getCommunity());
 					}
-					FacadeProvider.getPersonFacade().savePerson(personDto);
+					FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(personDto);
 				}
 
 				selectOrCreateContact(dto, personDto, I18nProperties.getString(Strings.infoSelectOrCreateContact), selectedContactUuid -> {
@@ -451,7 +467,7 @@ public class ContactController {
 							person.getAddress().setDistrict(caze.getDistrict());
 							person.getAddress().setCommunity(caze.getCommunity());
 						}
-						FacadeProvider.getPersonFacade().savePerson(person);
+						FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(person);
 					}
 
 					dto = FacadeProvider.getContactFacade().saveContact(dto);
@@ -484,9 +500,10 @@ public class ContactController {
 		// Check if cases with multiple districts have been selected
 		String districtUuid = null;
 		for (ContactIndexDto selectedContact : selectedContacts) {
+			String selectedDistrictUuid = selectedContact.getDistrictUuid();
 			if (districtUuid == null) {
-				districtUuid = selectedContact.getDistrictUuid();
-			} else if (!districtUuid.equals(selectedContact.getDistrictUuid())) {
+				districtUuid = selectedDistrictUuid;
+			} else if (!districtUuid.equals(selectedDistrictUuid)) {
 				districtUuid = null;
 				break;
 			}
@@ -689,9 +706,16 @@ public class ContactController {
 		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
 		titleLayout.setSpacing(false);
 
+		HorizontalLayout diseaseLayout = new HorizontalLayout();
 		Label diseaseLabel = new Label(DiseaseHelper.toString(contact.getDisease(), contact.getDiseaseDetails()));
 		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponents(diseaseLabel);
+
+		Label diseaseVariantLabel = new Label(DiseaseHelper.variantInBrackets(contact.getDiseaseVariant()));
+		CssStyles.style(diseaseVariantLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
+
+		diseaseLayout.addComponent(diseaseLabel);
+		diseaseLayout.addComponent(diseaseVariantLabel);
+		titleLayout.addComponents(diseaseLayout);
 
 		Label classificationLabel = new Label(contact.getContactClassification().toString());
 		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);

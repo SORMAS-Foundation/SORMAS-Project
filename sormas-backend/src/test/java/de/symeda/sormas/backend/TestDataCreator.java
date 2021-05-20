@@ -105,7 +105,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.disease.DiseaseVariant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
@@ -179,7 +178,7 @@ public class TestDataCreator {
 			customConfig.accept(person);
 		}
 
-		person = beanTest.getPersonFacade().savePerson(person);
+		person = beanTest.getPersonFacade().savePersonAndNotifyExternalJournal(person);
 
 		return person;
 	}
@@ -225,7 +224,7 @@ public class TestDataCreator {
 			person.setAddress(address);
 		}
 
-		person = beanTest.getPersonFacade().savePerson(person);
+		person = beanTest.getPersonFacade().savePersonAndNotifyExternalJournal(person);
 
 		return person;
 	}
@@ -251,7 +250,7 @@ public class TestDataCreator {
 			customConfig.accept(person);
 		}
 
-		person = beanTest.getPersonFacade().savePerson(person);
+		person = beanTest.getPersonFacade().savePersonAndNotifyExternalJournal(person);
 
 		return person;
 	}
@@ -290,6 +289,10 @@ public class TestDataCreator {
 
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCF rdcf) {
 		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf);
+	}
+
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCF rdcf, Consumer<CaseDataDto> setCustomFields) {
+		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf, setCustomFields);
 	}
 
 	public CaseDataDto createCase(
@@ -471,7 +474,7 @@ public class TestDataCreator {
 		if (caze != null) {
 			contact = ContactDto.build(caze);
 		} else {
-			contact = ContactDto.build(null, disease != null ? disease : Disease.EVD, null);
+			contact = ContactDto.build(null, disease != null ? disease : Disease.EVD, null, null);
 			if (rdcf == null) {
 				rdcf = createRDCF();
 			}
@@ -1386,17 +1389,17 @@ public class TestDataCreator {
 		return labMessage;
 	}
 
-	public DiseaseVariant createDiseaseVariant(String name, Disease disease) {
-
-		DiseaseVariant diseaseVariant = new DiseaseVariant();
-		diseaseVariant.setUuid(DataHelper.createUuid());
-		diseaseVariant.setName(name);
-		diseaseVariant.setDisease(disease);
-
-		beanTest.getDiseaseVariantService().persist(diseaseVariant);
-
-		return diseaseVariant;
-	}
+//	public DiseaseVariant createDiseaseVariant(String name, Disease disease) {
+//
+//		DiseaseVariant diseaseVariant = new DiseaseVariant();
+//		diseaseVariant.setUuid(DataHelper.createUuid());
+//		diseaseVariant.setName(name);
+//		diseaseVariant.setDisease(disease);
+//
+//		beanTest.getDiseaseVariantService().persist(diseaseVariant);
+//
+//		return diseaseVariant;
+//	}
 
 	public ExternalShareInfo createExternalShareInfo(
 		CaseReferenceDto caze,
