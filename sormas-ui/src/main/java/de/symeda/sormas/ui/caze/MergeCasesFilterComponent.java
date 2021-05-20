@@ -85,7 +85,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 
 		dfCreationDateFrom = new DateField();
 		dfCreationDateFrom.setId(CaseCriteria.CREATION_DATE_FROM);
-		dfCreationDateFrom.setWidth(200, Unit.PIXELS);
+		dfCreationDateFrom.setWidth(120, Unit.PIXELS);
 		dfCreationDateFrom.setPlaceholder(I18nProperties.getString(Strings.promptCreationDateFrom));
 		dfCreationDateFrom.setCaption(I18nProperties.getCaption(Captions.creationDate));
 		binder.forField(dfCreationDateFrom).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(CaseCriteria.CREATION_DATE_FROM);
@@ -93,7 +93,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 
 		dfCreationDateTo = new DateField();
 		dfCreationDateTo.setId(CaseCriteria.CREATION_DATE_TO);
-		dfCreationDateTo.setWidth(200, Unit.PIXELS);
+		dfCreationDateTo.setWidth(120, Unit.PIXELS);
 		CssStyles.style(dfCreationDateTo, CssStyles.FORCE_CAPTION);
 		dfCreationDateTo.setPlaceholder(I18nProperties.getString(Strings.promptDateTo));
 		binder.forField(dfCreationDateTo).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(CaseCriteria.CREATION_DATE_TO);
@@ -131,6 +131,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		tfReportingUser.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORTING_USER));
 		binder.bind(tfReportingUser, CaseCriteria.REPORTING_USER_LIKE);
 		firstRowLayout.addComponent(tfReportingUser);
+		firstRowLayout.setExpandRatio(tfReportingUser, 1);
 
 		addComponent(firstRowLayout);
 	}
@@ -208,7 +209,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		thirdRowLayout.addComponent(cbNewCaseDateType);
 
 		dfNewCaseDateFrom.setId(CaseCriteria.NEW_CASE_DATE_FROM);
-		dfNewCaseDateFrom.setWidth(200, Unit.PIXELS);
+		dfNewCaseDateFrom.setWidth(120, Unit.PIXELS);
 		CssStyles.style(dfNewCaseDateFrom, CssStyles.FORCE_CAPTION);
 		dfNewCaseDateFrom.setPlaceholder(I18nProperties.getString(Strings.promptCasesDateFrom));
 		binder.forField(dfNewCaseDateFrom).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(CaseCriteria.NEW_CASE_DATE_FROM);
@@ -216,7 +217,7 @@ public class MergeCasesFilterComponent extends VerticalLayout {
 		thirdRowLayout.addComponent(dfNewCaseDateFrom);
 
 		dfNewCaseDateTo.setId(CaseCriteria.NEW_CASE_DATE_TO);
-		dfNewCaseDateTo.setWidth(200, Unit.PIXELS);
+		dfNewCaseDateTo.setWidth(120, Unit.PIXELS);
 		CssStyles.style(dfNewCaseDateTo, CssStyles.FORCE_CAPTION);
 		dfNewCaseDateTo.setPlaceholder(I18nProperties.getString(Strings.promptDateTo));
 		binder.forField(dfNewCaseDateTo).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(CaseCriteria.NEW_CASE_DATE_TO);
