@@ -25,8 +25,8 @@ import de.symeda.sormas.ui.SormasUI;
 
 public class DocumentMultiFileUpload extends MultiFileUpload {
 
-	public DocumentMultiFileUpload(UploadStartedHandler uploadStartedHandler, UploadFinishedHandler uploadFinishedHandler, UploadStateWindow uploadStateWindow) {
-		super(uploadStartedHandler, uploadFinishedHandler, uploadStateWindow, true);
+	public DocumentMultiFileUpload(UploadStartedHandler uploadStartedHandler, UploadFinishedHandler uploadFinishedHandler, UploadStateWindow uploadStateWindow, boolean multiple) {
+		super(uploadStartedHandler, uploadFinishedHandler, uploadStateWindow, multiple);
 
 		// Need to enable Polling or nothing will happen after selecting a file with the MultiFileUpload input
 		this.addAttachListener(e -> SormasUI.get().access(() -> SormasUI.get().setPollInterval(300)));
