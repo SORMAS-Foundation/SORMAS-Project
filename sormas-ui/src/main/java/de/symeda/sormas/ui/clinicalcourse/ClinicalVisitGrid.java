@@ -5,7 +5,6 @@ import java.util.List;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
-import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.v7.ui.renderers.DateRenderer;
 
@@ -21,11 +20,12 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
+import de.symeda.sormas.ui.utils.PseudonymizableGrid;
 import de.symeda.sormas.ui.utils.V7AbstractGrid;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
-public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVisitCriteria> {
+public class ClinicalVisitGrid extends PseudonymizableGrid implements V7AbstractGrid<ClinicalVisitCriteria> {
 
 	private static final String EDIT_BTN_ID = "edit";
 
