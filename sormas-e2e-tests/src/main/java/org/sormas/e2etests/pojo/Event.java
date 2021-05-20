@@ -15,18 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+package org.sormas.e2etests.pojo;
 
-package org.sormas.e2etests.pages.application.events;
+import lombok.*;
 
-import org.openqa.selenium.By;
-
-public class EventDirectoryPage {
-  public static final By NEW_EVENT_BUTTON = By.id("eventNewEvent");
-  public static final By SEARCH_SPECIFIC_EVENT_BUTTON = By.id("eventSearchSpecificEvent");
-  public static final By SORT_BY_ALL = By.id("all");
-  public static final By SORT_BY_SIGNAL = By.id("status-Signal");
-  public static final By SORT_BY_EVENT = By.id("status-Event");
-  public static final By SORT_BY_SCREENING = By.id("status-Screening");
-  public static final By SORT_BY_CLUSTER = By.id("status-Cluster");
-  public static final By SORT_BY_DROPPED = By.id("status-Dropped");
+@Value
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderClassName = "builder")
+public class Event {
+  String eventId;
 }

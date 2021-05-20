@@ -23,6 +23,7 @@ import org.openqa.selenium.By;
 public class CreateNewEventPage {
   public static final By TITLE_INPUT = By.cssSelector(".popupContent #eventTitle");
   public static final By SAVE_BUTTON = By.id("commit");
+  public static final By DISCARD_BUTTON = By.id("discard");
   public static final By EVENT_STATUS_OPTIONS =
       By.cssSelector("#eventStatus .v-select-option label");
   public static final By RISK_LEVEL_COMBOBOX = By.cssSelector(".popupContent #riskLevel div");
@@ -34,7 +35,7 @@ public class CreateNewEventPage {
   public static final By SIGNAL_EVOLUTION_DATE_INPUT =
       By.cssSelector(".popupContent #evolutionDate input");
   public static final By EVENT_INVESTIGATION_STATUS_OPTIONS =
-      By.cssSelector(".popupContent #eventInvestigationStatus label");
+      By.cssSelector(".popupContent #eventInvestigationStatus .v-select-option label");
   public static final By DISEASE_INPUT = By.cssSelector(".popupContent #disease div");
   public static final By EXTERNAL_ID_INPUT = By.cssSelector(".popupContent #externalId");
   public static final By INTERNAL_ID_INPUT = By.cssSelector(".popupContent #internalId");
@@ -57,4 +58,29 @@ public class CreateNewEventPage {
   public static final By CITY_INPUT = By.cssSelector(".popupContent #city");
   public static final By GPS_LATITUDE_INPUT = By.cssSelector(".popupContent #latitude");
   public static final By GPS_LONGITUDE_INPUT = By.cssSelector(".popupContent #longitude");
+  public static final By PRIMARY_MODE_OF_TRANSMISSION =
+      By.cssSelector(".popupContent #diseaseTransmissionMode");
+  public static final By NOSOCOMIAL = By.cssSelector(".popupContent #nosocomial");
+  public static final By EVENT_INVESTIGATION_START_DATE =
+      By.cssSelector(".popupContent #eventInvestigationStartDate");
+  public static final By EVENT_INVESTIGATION_END_DATE =
+      By.cssSelector(".popupContent #eventInvestigationEndDate");
+  public static final By SOURCE_MEDIA_WEBSITE = By.cssSelector(".popupContent #srcMediaWebsite");
+  public static final By SOURCE_MEDIA_NAME = By.cssSelector(".popupContent #srcMediaName");
+  public static final By SOURCE_MEDIA_DETAILS = By.cssSelector(".popupContent #srcMediaDetails");
+  public static final By SOURCE_FIRST_NAME = By.cssSelector(".popupContent #srcFirstName");
+  public static final By SOURCE_LAST_NAME = By.cssSelector(".popupContent #srcLastName");
+  public static final By SOURCE_TEL_NO = By.cssSelector(".popupContent #srcTelNo");
+  public static final By SOURCE_EMAIL = By.cssSelector(".popupContent #srcEmail");
+  public static final By SOURCE_INSTITUTIONAL_PARTNER =
+      By.cssSelector(".popupContent #srcInstitutionalPartnerType div");
+  public static final By SOURCE_INSTITUTIONAL_PARTNER_DETAILS =
+      By.cssSelector(".popupContent #gwt-uid-276");
+  public static final By SPECIFY_OTHER_EVENT_PLACE = By.cssSelector(".popupContent #typeOfPlaceText div");
+  public static final By MEANS_OF_TRANSPORT = By.cssSelector(".popupContent #meansOfTransport");
+  public static final By CONNECTION_NUMBER = By.cssSelector(".popupContent #connectionNumber");
+  public static final By TRAVEL_DATE = By.cssSelector(".popupContent #travelDate div");
+  public static final By FACILITY_CATEGORY = By.cssSelector(".popupContent #typeGroup div");
+  public static final By FACILITY_TYPE = By.cssSelector(".popupContent #facilityType div");
+  public static final By FACILITY = By.cssSelector(".popupContent #facility div");
 }
