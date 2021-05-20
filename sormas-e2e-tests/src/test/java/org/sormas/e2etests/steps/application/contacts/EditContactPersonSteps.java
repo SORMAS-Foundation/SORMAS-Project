@@ -71,7 +71,6 @@ public class EditContactPersonSteps implements En {
   public Contact collectContactData() {
     webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
     webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
-    webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_UUID_INPUT);
     Contact contactInfo = getContactInformation();
 
     return Contact.builder()
