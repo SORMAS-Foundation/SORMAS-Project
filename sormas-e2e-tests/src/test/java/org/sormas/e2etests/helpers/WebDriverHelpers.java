@@ -20,15 +20,19 @@ package org.sormas.e2etests.helpers;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
+import static java.time.Duration.ofSeconds;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
+import static org.sormas.e2etests.helpers.AssertHelpers.takeScreenshot;
 
 import com.google.common.truth.Truth;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Predicate;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.core.ConditionTimeoutException;
 import org.openqa.selenium.*;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -74,7 +78,6 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementIsVisibleAndClickable(final Object selector, int seconds) {
-
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -94,9 +97,25 @@ public class WebDriverHelpers {
   }
 
   public void fillInWebElement(By selector, String text) {
-    waitUntilElementIsVisibleAndClickable(selector);
-    WebElement webElement = baseSteps.getDriver().findElement(selector);
-    webElement.sendKeys(text);
+    try {
+      await()
+          .pollInterval(ONE_HUNDRED_MILLISECONDS)
+          .ignoreExceptions()
+          .catchUncaughtExceptions()
+          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+          .untilAsserted(
+              () -> {
+                assertThat(baseSteps.getDriver().findElement(selector).isEnabled()).isTrue();
+                assertThat(baseSteps.getDriver().findElement(selector).isDisplayed()).isTrue();
+                scrollToElement(selector);
+                clearWebElement(selector);
+                baseSteps.getDriver().findElement(selector).sendKeys(text);
+                assertThat(getValueFromWebElement(selector)).isEqualTo(text);
+              });
+    } catch (ConditionTimeoutException ignored) {
+      log.error("Unable to click on element identified by locator: {}", selector);
+      throw new TimeoutException("Unable to click on element identified by locator: " + selector);
+    }
   }
 
   public void clearAndFillInWebElement(By selector, String text) {
@@ -119,7 +138,7 @@ public class WebDriverHelpers {
   }
 
   public void clickWhileOtherButtonIsDisplayed(By clickedElement, By waitedSelector) {
-    TimerLite timer = TimerLite.of(Duration.ofSeconds(30));
+    TimerLite timer = TimerLite.of(ofSeconds(30));
     do {
       clickOnWebElementWhichMayNotBePresent(clickedElement, 0);
       if (timer.isTimeUp()) {
@@ -129,12 +148,27 @@ public class WebDriverHelpers {
   }
 
   public void clickOnWebElementBySelectorAndIndex(By selector, int index) {
-    waitForPageLoaded();
-    waitUntilElementIsVisibleAndClickable(selector);
-    WebElement webElement = baseSteps.getDriver().findElements(selector).get(index);
-    scrollToElement(webElement);
-    webElement.click();
-    waitForPageLoaded();
+    try {
+      await()
+          .pollInterval(ONE_HUNDRED_MILLISECONDS)
+          .ignoreExceptions()
+          .catchUncaughtExceptions()
+          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+          .untilAsserted(
+              () -> {
+                assertThat(baseSteps.getDriver().findElements(selector).get(index).isEnabled())
+                    .isTrue();
+                assertThat(baseSteps.getDriver().findElements(selector).get(index).isDisplayed())
+                    .isTrue();
+                scrollToElement(selector);
+                baseSteps.getDriver().findElement(selector).click();
+                waitForPageLoaded();
+              });
+    } catch (ConditionTimeoutException ignored) {
+      log.error("Unable to click on element identified by locator: {}", selector);
+      takeScreenshot(baseSteps.getDriver());
+      throw new TimeoutException("Unable to click on element identified by locator: " + selector);
+    }
   }
 
   public void checkWebElementContainsText(By selector, String text) {
