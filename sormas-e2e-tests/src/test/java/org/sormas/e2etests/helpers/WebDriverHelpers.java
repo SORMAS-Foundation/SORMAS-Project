@@ -37,7 +37,7 @@ import org.sormas.e2etests.steps.BaseSteps;
 public class WebDriverHelpers {
 
   public static final By SELECTED_RADIO_BUTTOn =
-      By.xpath("ancestor::div[@role='radiogroup']//input[@checked]/following-sibling::label");
+      By.xpath("ancestor::div[@role='group']//input[@checked]/following-sibling::label");
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 10;
 
   private final BaseSteps baseSteps;
@@ -159,17 +159,6 @@ public class WebDriverHelpers {
     return true;
   }
 
-  public boolean isElementSelected(By selector) {
-    try {
-      assertHelpers.assertWithPoll(
-          () -> Truth.assertThat(baseSteps.getDriver().findElement(selector).isSelected()).isTrue(),
-          10);
-    } catch (Exception ignored) {
-      return false;
-    }
-    return true;
-  }
-
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {
       baseSteps.getDriver().findElements(byObject).get(index).click();
@@ -246,26 +235,6 @@ public class WebDriverHelpers {
   public void waitUntilIdentifiedElementIsPresent(final By selector) {
     assertHelpers.assertWithPoll15Second(
         () -> assertThat(getNumberOfElements(selector) > 0).isTrue());
-  }
-
-  public String getTextOfSelectedWebElementFromList(String mainDivID) {
-    String baseXpath = "//*[@id='" + mainDivID + "']/span";
-    int numberOfElements = baseSteps.getDriver().findElements(By.xpath(baseXpath)).size();
-    String inputLocator = baseXpath.concat("[index]/input");
-    for (int i = 1; i <= numberOfElements; i++) {
-      WebElement element =
-          baseSteps
-              .getDriver()
-              .findElement(By.xpath(inputLocator.replace("index", String.valueOf(i))));
-      if (element.isSelected())
-        return baseSteps
-            .getDriver()
-            .findElement(
-                By.xpath(
-                    inputLocator.replace("index", String.valueOf(i)).replace("input", "label")))
-            .getText();
-    }
-    return null;
   }
 
   public void waitUntilANumberOfElementsAreVisibleAndClickable(By selector, int number) {

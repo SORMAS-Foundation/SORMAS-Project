@@ -23,7 +23,7 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SEX_COMBOBOX;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -37,6 +37,7 @@ import org.sormas.e2etests.pojo.Contact;
 import org.sormas.e2etests.services.ContactService;
 
 public class CreateNewContactSteps implements En {
+  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static Contact contact;
 
@@ -65,14 +66,14 @@ public class CreateNewContactSteps implements En {
           selectResponsibleRegion(contact.getResponsibleRegion());
           selectResponsibleDistrict(contact.getResponsibleDistrict());
           selectResponsibleCommunity(contact.getResponsibleCommunity());
-          selectTypeOfContact("any");
+          selectTypeOfContact();
           fillAdditionalInformationOnTheTypeOfContact(
               contact.getAdditionalInformationOnContactType());
-          selectContactCategory(contact.getContactCategory());
+          selectContactCategory();
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
   }
 
@@ -121,7 +122,6 @@ public class CreateNewContactSteps implements En {
   }
 
   public void fillDateOfReport(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
     webDriverHelpers.clearWebElement(DATE_OF_REPORT_INPUT);
     webDriverHelpers.fillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
   }
@@ -135,7 +135,6 @@ public class CreateNewContactSteps implements En {
   }
 
   public void fillDateOfLastContact(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_LAST_CONTACT_INPUT, formatter.format(date));
   }
 
@@ -155,16 +154,13 @@ public class CreateNewContactSteps implements En {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX, responsibleCommunity);
   }
 
-  public void selectTypeOfContact(String type) {
-    String typeOfContact = "//label[contains(text(), '" + contact.getTypeOfContact() + "')]";
-    By typeOfContactXpath = By.xpath(typeOfContact.toString());
-    webDriverHelpers.clickOnWebElementBySelector(typeOfContactXpath);
+  public void selectTypeOfContact() {
+    webDriverHelpers.clickWebElementByText(TYPE_OF_CONTACT_OPTIONS, contact.getTypeOfContact());
   }
 
-  public void selectContactCategory(String categoryOption) {
-    String typeOfContact = "//label[contains(text(), '" + categoryOption + "')]";
-    By typeOfContactXpath = By.xpath(typeOfContact);
-    webDriverHelpers.clickOnWebElementBySelector(typeOfContactXpath);
+  public void selectContactCategory() {
+    webDriverHelpers.clickWebElementByText(
+        CONTACT_CATEGORY_OPTIONS, contact.getContactCategory().toUpperCase());
   }
 
   public void fillAdditionalInformationOnTheTypeOfContact(String description) {

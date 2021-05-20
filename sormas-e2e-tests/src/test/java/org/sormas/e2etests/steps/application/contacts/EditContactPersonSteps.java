@@ -35,14 +35,13 @@ public class EditContactPersonSteps implements En {
   protected Contact aContact;
 
   @Inject
-  public EditContactPersonSteps(WebDriverHelpers webDriverHelpers) {
+  public EditContactPersonSteps(WebDriverHelpers webDriverHelpers, final SoftAssertions softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I check the created data is correctly displayed on Edit Contact Person page",
         () -> {
           aContact = collectContactData();
-          SoftAssertions softly = new SoftAssertions();
           softly
               .assertThat(aContact.getFirstName())
               .isEqualToIgnoringCase(CreateNewContactSteps.contact.getFirstName());
@@ -72,7 +71,7 @@ public class EditContactPersonSteps implements En {
   public Contact collectContactData() {
     webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
     webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
-    webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_UUID);
+    webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_UUID_INPUT);
     Contact contactInfo = getContactInformation();
 
     return Contact.builder()

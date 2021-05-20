@@ -30,7 +30,7 @@ import org.sormas.e2etests.pojo.Contact;
 import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
 
 public class EditContactSteps implements En {
-
+  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
   private final WebDriverHelpers webDriverHelpers;
   protected Contact aContact;
 
@@ -100,7 +100,6 @@ public class EditContactSteps implements En {
   }
 
   public Contact collectContactData() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
     String collectedLastDateOfContact =
@@ -112,8 +111,7 @@ public class EditContactSteps implements En {
         .firstName(contactInfo.getFirstName())
         .lastName(contactInfo.getLastName())
         .returningTraveler(
-            webDriverHelpers.getTextOfSelectedWebElementFromList(
-                RETURNING_TRAVELER_OPTIONS_LIST_ID))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RETURNING_TRAVELER_OPTIONS))
         .reportDate(parsedDateOfReport)
         .diseaseOfSourceCase(webDriverHelpers.getValueFromWebElement(DISEASE_COMBOBOX))
         .caseIdInExternalSystem(
@@ -129,9 +127,9 @@ public class EditContactSteps implements En {
             webDriverHelpers.getValueFromWebElement(
                 ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
         .typeOfContact(
-            webDriverHelpers.getTextOfSelectedWebElementFromList(TYPE_OF_CONTACT_OPTIONS_LIST_ID))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
         .contactCategory(
-            webDriverHelpers.getTextOfSelectedWebElementFromList(CONTACT_CATEGORY_OPTIONS_LIST_ID))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
         .relationshipWithCase(
             webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_COMBOBOX))
         .descriptionOfHowContactTookPlace(

@@ -21,7 +21,7 @@ package org.sormas.e2etests.pages.application.contacts;
 import org.openqa.selenium.By;
 
 public class EditContactPage {
-  public static final By UUID = By.id("uuid");
+  public static final By UUID_INPUT = By.id("uuid");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot.v-slot-h2.v-slot-vspace-top-none.v-slot-primary");
   public static final By REPORT_DATE = By.cssSelector("#reportDateTime input");
@@ -38,7 +38,7 @@ public class EditContactPage {
   public static final By RELATIONSHIP_WITH_CASE_COMBOBOX = By.cssSelector("#relationToCase input");
   public static final By DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT =
       By.cssSelector("#description");
-  public static final String RETURNING_TRAVELER_OPTIONS_LIST_ID = "returningTraveler";
-  public static final String TYPE_OF_CONTACT_OPTIONS_LIST_ID = "contactProximity";
-  public static final String CONTACT_CATEGORY_OPTIONS_LIST_ID = "contactCategory";
+  public static final By RETURNING_TRAVELER_OPTIONS = By.cssSelector("#returningTraveler label");
+  public static final By TYPE_OF_CONTACT_OPTIONS = By.cssSelector("#contactProximity label");
+  public static final By CONTACT_CATEGORY_OPTIONS = By.cssSelector("#contactCategory label");
 }
