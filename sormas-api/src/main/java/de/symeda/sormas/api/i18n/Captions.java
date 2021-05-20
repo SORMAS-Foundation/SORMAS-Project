@@ -74,11 +74,13 @@ public interface Captions {
 	String actionNewAction = "actionNewAction";
 	String actionNewEntry = "actionNewEntry";
 	String actionNewForm = "actionNewForm";
+	String actionNo = "actionNo";
 	String actionNoActions = "actionNoActions";
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
 	String actionRemindMeLater = "actionRemindMeLater";
+	String actionResetEnumCache = "actionResetEnumCache";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
@@ -90,6 +92,8 @@ public interface Captions {
 	String actionSkip = "actionSkip";
 	String actionStatusChangeDate = "actionStatusChangeDate";
 	String actionUnclearLabMessage = "actionUnclearLabMessage";
+	String actionYesForAll = "actionYesForAll";
+	String actionYesForSome = "actionYesForSome";
 	String ActivityAsCase_activityAsCaseDate = "ActivityAsCase.activityAsCaseDate";
 	String ActivityAsCase_activityAsCaseType = "ActivityAsCase.activityAsCaseType";
 	String ActivityAsCase_activityAsCaseTypeDetails = "ActivityAsCase.activityAsCaseTypeDetails";
@@ -176,6 +180,9 @@ public interface Captions {
 	String bulkInvestigationStatus = "bulkInvestigationStatus";
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
+	String bulkTaskAssignee = "bulkTaskAssignee";
+	String bulkTaskPriority = "bulkTaskPriority";
+	String bulkTaskStatus = "bulkTaskStatus";
 	String Campaign = "Campaign";
 	String Campaign_area = "Campaign.area";
 	String Campaign_community = "Campaign.community";
@@ -545,6 +552,7 @@ public interface Captions {
 	String Contact_contactOfficerUuid = "Contact.contactOfficerUuid";
 	String Contact_contactProximity = "Contact.contactProximity";
 	String Contact_contactProximityDetails = "Contact.contactProximityDetails";
+	String Contact_contactProximityLongForm = "Contact.contactProximityLongForm";
 	String Contact_contactStatus = "Contact.contactStatus";
 	String Contact_description = "Contact.description";
 	String Contact_disease = "Contact.disease";
@@ -616,6 +624,8 @@ public interface Captions {
 	String contactActiveContacts = "contactActiveContacts";
 	String contactAllContacts = "contactAllContacts";
 	String contactArchivedContacts = "contactArchivedContacts";
+	String contactBackToDirectory = "contactBackToDirectory";
+	String contactCalculateCompleteness = "contactCalculateCompleteness";
 	String contactCancelFollowUp = "contactCancelFollowUp";
 	String contactCaseContacts = "contactCaseContacts";
 	String contactChangeCase = "contactChangeCase";
@@ -643,13 +653,16 @@ public interface Captions {
 	String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
 	String ContactExport_traveled = "ContactExport.traveled";
 	String ContactExport_travelHistory = "ContactExport.travelHistory";
+	String contactFilterWithDifferentRegion = "contactFilterWithDifferentRegion";
 	String contactFollowUpDay = "contactFollowUpDay";
 	String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
 	String contactInludeContactsFromOtherJurisdictions = "contactInludeContactsFromOtherJurisdictions";
 	String contactLostToFollowUp = "contactLostToFollowUp";
+	String contactMergeDuplicates = "contactMergeDuplicates";
 	String contactMinusDays = "contactMinusDays";
 	String contactNewContact = "contactNewContact";
 	String contactNoContactsForEventParticipant = "contactNoContactsForEventParticipant";
+	String contactNumberOfDuplicatesDetected = "contactNumberOfDuplicatesDetected";
 	String contactOnlyFromOtherInstances = "contactOnlyFromOtherInstances";
 	String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
@@ -657,7 +670,9 @@ public interface Captions {
 	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
 	String contactOnlyWithSharedEventWithSourceCase = "contactOnlyWithSharedEventWithSourceCase";
 	String contactOnlyWithSourceCaseInGivenEvent = "contactOnlyWithSourceCaseInGivenEvent";
+	String contactOpenCasesGuide = "contactOpenCasesGuide";
 	String contactOpenContactCase = "contactOpenContactCase";
+	String contactOpenMergeGuide = "contactOpenMergeGuide";
 	String contactPersonPhoneNumber = "contactPersonPhoneNumber";
 	String contactPersonVisits = "contactPersonVisits";
 	String contactPlusDays = "contactPlusDays";
@@ -695,7 +710,6 @@ public interface Captions {
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
 	String dashboardCanceledFollowUp = "dashboardCanceledFollowUp";
 	String dashboardCanceledFollowUpShort = "dashboardCanceledFollowUpShort";
-	String dashboardCaseFatalityRate = "dashboardCaseFatalityRate";
 	String dashboardCaseFatalityRateShort = "dashboardCaseFatalityRateShort";
 	String dashboardCasesIn = "dashboardCasesIn";
 	String dashboardComparedTo = "dashboardComparedTo";
@@ -704,6 +718,8 @@ public interface Captions {
 	String dashboardCompletedFollowUpShort = "dashboardCompletedFollowUpShort";
 	String dashboardConfirmed = "dashboardConfirmed";
 	String dashboardConfirmedContact = "dashboardConfirmedContact";
+	String dashboardConfirmedNoSymptoms = "dashboardConfirmedNoSymptoms";
+	String dashboardConfirmedUnknownSymptoms = "dashboardConfirmedUnknownSymptoms";
 	String dashboardContactClassificationChart = "dashboardContactClassificationChart";
 	String dashboardConvertedToCase = "dashboardConvertedToCase";
 	String dashboardCooperative = "dashboardCooperative";
@@ -736,7 +752,6 @@ public interface Captions {
 	String dashboardIndeterminate = "dashboardIndeterminate";
 	String dashboardInvestigated = "dashboardInvestigated";
 	String dashboardLastReport = "dashboardLastReport";
-	String dashboardLastReportedDistrict = "dashboardLastReportedDistrict";
 	String dashboardLastVisitGt48 = "dashboardLastVisitGt48";
 	String dashboardLastVisitLt24 = "dashboardLastVisitLt24";
 	String dashboardLastVisitLt48 = "dashboardLastVisitLt48";
@@ -768,7 +783,6 @@ public interface Captions {
 	String dashboardNumberOfContacts = "dashboardNumberOfContacts";
 	String dashboardOneDay = "dashboardOneDay";
 	String dashboardOutbreak = "dashboardOutbreak";
-	String dashboardOutbreakDistricts = "dashboardOutbreakDistricts";
 	String dashboardPending = "dashboardPending";
 	String dashboardPeriodBefore = "dashboardPeriodBefore";
 	String dashboardPositive = "dashboardPositive";
@@ -809,6 +823,7 @@ public interface Captions {
 	String dashboardUncooperative = "dashboardUncooperative";
 	String dashboardUnderFollowUp = "dashboardUnderFollowUp";
 	String dashboardUnderFollowUpShort = "dashboardUnderFollowUpShort";
+	String dashboardUnknown = "dashboardUnknown";
 	String dashboardViewAsBarChart = "dashboardViewAsBarChart";
 	String dashboardViewAsColumnChart = "dashboardViewAsColumnChart";
 	String dashboardWeekBefore = "dashboardWeekBefore";
@@ -1092,6 +1107,7 @@ public interface Captions {
 	String ExportConfiguration_NAME = "ExportConfiguration.NAME";
 	String ExportConfiguration_sharedExports = "ExportConfiguration.sharedExports";
 	String ExportConfiguration_sharedToPublic = "ExportConfiguration.sharedToPublic";
+	String exportConfigurationData = "exportConfigurationData";
 	String exportCustom = "exportCustom";
 	String exportDetailed = "exportDetailed";
 	String exportEditExportConfiguration = "exportEditExportConfiguration";
@@ -2014,7 +2030,9 @@ public interface Captions {
 	String Task_priority = "Task.priority";
 	String Task_statusChangeDate = "Task.statusChangeDate";
 	String Task_suggestedStart = "Task.suggestedStart";
+	String Task_taskAssignee = "Task.taskAssignee";
 	String Task_taskContext = "Task.taskContext";
+	String Task_taskPriority = "Task.taskPriority";
 	String Task_taskStatus = "Task.taskStatus";
 	String Task_taskType = "Task.taskType";
 	String taskActiveTasks = "taskActiveTasks";
@@ -2144,6 +2162,7 @@ public interface Captions {
 	String View_contacts_archive = "View.contacts.archive";
 	String View_contacts_data = "View.contacts.data";
 	String View_contacts_epidata = "View.contacts.epidata";
+	String View_contacts_merge = "View.contacts.merge";
 	String View_contacts_person = "View.contacts.person";
 	String View_contacts_sub = "View.contacts.sub";
 	String View_contacts_visits = "View.contacts.visits";

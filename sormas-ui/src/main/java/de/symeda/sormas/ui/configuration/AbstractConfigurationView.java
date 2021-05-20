@@ -45,6 +45,7 @@ import de.symeda.sormas.ui.configuration.infrastructure.components.CountryCombo;
 import de.symeda.sormas.ui.configuration.linelisting.LineListingConfigurationView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
@@ -231,6 +232,6 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			});
 			layout.addComponent(countryFilter);
 		}
-		return countryFilter != null ? countryFilter : new ComboBox();
+		return countryFilter != null ? countryFilter : ComboBoxHelper.createComboBoxV7();
 	}
 }

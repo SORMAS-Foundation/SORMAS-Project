@@ -16,9 +16,17 @@ public interface ExternalLabResultsFacade {
 
 	/**
 	 * 
-	 * @param message
+	 * @param message lab message to be converted
 	 * @return An ExternalMessageResult with a String that is a detailed HTML representation of the original notification
 	 *         from the external lab message server. This HTML must not exceed a width of 550px.
 	 */
 	ExternalMessageResult<String> convertToHTML(LabMessageDto message);
+
+	/**
+	 *
+	 * @param message lab message to be converted
+	 * @return An ExternalMessageResult with a byte array that is a detailed PDF representation of the original notification
+	 * 	 *         from the external lab message server
+	 */
+	ExternalMessageResult<byte[]> convertToPDF(LabMessageDto message);
 }

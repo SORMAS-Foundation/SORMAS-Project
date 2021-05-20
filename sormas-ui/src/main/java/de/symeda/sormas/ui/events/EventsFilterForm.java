@@ -54,6 +54,7 @@ import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -190,7 +191,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER);
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION, isExternalShareEnabled), ACTION_WEEK_AND_DATE_FILTER);
 
-		ComboBox facilityTypeGroupField = new ComboBox();
+		ComboBox facilityTypeGroupField = ComboBoxHelper.createComboBoxV7();
 		facilityTypeGroupField.setId(FACILITY_TYPE_GROUP_FILTER);
 		facilityTypeGroupField.setInputPrompt(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE_GROUP));
 		facilityTypeGroupField

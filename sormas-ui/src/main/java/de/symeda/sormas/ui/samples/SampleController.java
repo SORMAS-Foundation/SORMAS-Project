@@ -53,7 +53,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -202,7 +202,10 @@ public class SampleController {
 			final PathogenTestDto pathogenTest = PathogenTestDto.build(newSample, UserProvider.getCurrent().getUser());
 			pathogenTest.setLab(newSample.getLab());
 			pathogenTest.setTestResult(testResult);
-			newSample.setPathogenTestResult(testResult);
+			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
+			pathogenTest.setTestedDiseaseVariant((DiseaseVariant) (createForm.getField(PathogenTestDto.TESTED_DISEASE_VARIANT)).getValue());
+			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
+			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
 			final Boolean testResultVerified = (Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue();
 			pathogenTest.setTestResultVerified(testResultVerified);
 			pathogenTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
@@ -218,11 +221,6 @@ public class SampleController {
 				pathogenTest.setViaLims(viaLimsField.getValue());
 			}
 
-			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
-			pathogenTest
-				.setTestedDiseaseVariant((DiseaseVariantReferenceDto) (createForm.getField(PathogenTestDto.TESTED_DISEASE_VARIANT)).getValue());
-			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
-			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
 			String cqValue = (String) createForm.getField(PathogenTestDto.CQ_VALUE).getValue();
 			if (cqValue != null && !StringUtils.isBlank(cqValue)) {
 				cqValue = cqValue.replaceAll(",", "."); // Replace , with . to make sure that the value can be parsed
@@ -236,32 +234,49 @@ public class SampleController {
 				}
 			}
 			pathogenTest.setTypingId((String) createForm.getField(PathogenTestDto.TYPING_ID).getValue());
+
+			// set sample test result to pending first
+			newSample.setPathogenTestResult(PathogenTestResultType.PENDING);
+
 			SampleDto savedSample = FacadeProvider.getSampleFacade().saveSample(newSample);
 			PathogenTestDto savedPathogenTest = FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
 
 			final CaseReferenceDto associatedCase = newSample.getAssociatedCase();
-			if (associatedCase != null) {
-				CaseDataDto postSaveCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
-				Runnable caseDiseaseVariantCallback = () -> {
-					if (!DataHelper.equal(pathogenTest.getTestedDiseaseVariant(), postSaveCaseDto.getDiseaseVariant())
-						&& pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
-						&& pathogenTest.getTestResultVerified()) {
-						showCaseUpdateWithNewDiseaseVariantDialog(postSaveCaseDto, pathogenTest.getTestedDiseaseVariant());
-					}
-				};
 
-				caseDiseaseVariantCallback.run();
+			// Handle test results
+			if (associatedCase != null && pathogenTest.getTestResultVerified()) {
+				CaseDataDto postSaveCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+
+				if (postSaveCaseDto.getDisease() == pathogenTest.getTestedDisease()
+					&& DataHelper.equal(postSaveCaseDto.getDiseaseVariant(), pathogenTest.getTestedDiseaseVariant())) {
+
+					// Handle test results for the same disease & variant
+					savedSample.setPathogenTestResult(pathogenTest.getTestResult());
+					savedSample = FacadeProvider.getSampleFacade().saveSample(savedSample);
+				} else if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
+					&& postSaveCaseDto.getDisease() != pathogenTest.getTestedDisease()) {
+
+					// Handle positive test results for different diseases
+					// please note, that for the cloned case, the sample will still be set to Pending
+					PathogenTestController.showCaseCloningWithNewDiseaseDialog(postSaveCaseDto, pathogenTest.getTestedDisease());
+				} else if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
+					&& !DataHelper.equal(postSaveCaseDto.getDiseaseVariant(), pathogenTest.getTestedDiseaseVariant())) {
+
+					// Handle positive test results for different disease variants
+					showCaseUpdateWithNewDiseaseVariantDialog(postSaveCaseDto, pathogenTest.getTestedDiseaseVariant());
+				}
 			}
 
 			consumer.accept(savedSample, savedPathogenTest);
-			final EventParticipantReferenceDto eventParticipantRef = newSample.getAssociatedEventParticipant();
+			final EventParticipantReferenceDto eventParticipantRef = savedSample.getAssociatedEventParticipant();
 			if (eventParticipantRef != null) {
 				EventParticipantDto eventParticipant =
 					FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
 				final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
 				Disease testedDisease = pathogenTest.getTestedDisease();
 				if (Objects.equals(event.getDisease(), testedDisease)) {
-					newSample.setPathogenTestResult(testResult);
+					savedSample.setPathogenTestResult(testResult);
+					FacadeProvider.getSampleFacade().saveSample(savedSample);
 				}
 				if (testResult.equals(PathogenTestResultType.POSITIVE) && testResultVerified) {
 					ControllerProvider.getPathogenTestController().showConvertEventParticipantToCaseDialog(eventParticipant, testedDisease);

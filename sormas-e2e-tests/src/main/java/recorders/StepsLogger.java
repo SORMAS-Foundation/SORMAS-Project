@@ -45,9 +45,14 @@ public class StepsLogger implements StepLifecycleListener {
   public static final String PROCESS_ID_STRING = String.format("[PROCESS_ID:%s]", PROCESS_ID);
   public final List<LogEntry> allLogEntries = new ArrayList<>();
   private static RemoteWebDriver driver;
+  private static boolean isScreenshotEnabled = true;
 
   public static void setRemoteWebDriver(RemoteWebDriver remoteWebDriver) {
     driver = remoteWebDriver;
+  }
+
+  public static void setIsScreenshotEnabled(boolean isScreenshotEnabled) {
+    StepsLogger.isScreenshotEnabled = isScreenshotEnabled;
   }
 
   @Override
@@ -59,11 +64,14 @@ public class StepsLogger implements StepLifecycleListener {
 
   @Override
   public void afterStepUpdate(final StepResult result) {
-    takeScreenshotAfter();
-    attachConsoleLog();
+    if (isScreenshotEnabled && driver != null) {
+      takeScreenshotAfter();
+      attachConsoleLog();
+    }
     stopwatch.stop();
+    isScreenshotEnabled = true;
     log.info(
-        PROCESS_ID_STRING + " Finishing step: " + result.getName() + " and took: " + stopwatch);
+        " {} Finishing step: " + result.getName() + " and took: " + stopwatch, PROCESS_ID_STRING);
   }
 
   @Attachment(value = "After step screenshot", type = "image/png")
