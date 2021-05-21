@@ -203,27 +203,12 @@ public class PersonController {
 	}
 
 	private void savePerson(PersonDto personDto) {
-		PersonDto existingPerson = FacadeProvider.getPersonFacade().getPersonByUuid(personDto.getUuid());
-		List<CaseDataDto> personCases = FacadeProvider.getCaseFacade().getAllCasesOfPerson(personDto.getUuid());
+		DataHelper.Pair<CaseClassification, PersonDto> saveResult = personFacade.savePerson(personDto);
 
-		onPersonChanged(existingPerson, personDto);
-
-		personFacade.savePerson(personDto);
-
-		// Check whether the classification of any of this person's cases has changed
-		CaseClassification newClassification = null;
-		for (CaseDataDto personCase : personCases) {
-			CaseDataDto updatedPersonCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(personCase.getUuid());
-			if (personCase.getCaseClassification() != updatedPersonCase.getCaseClassification()
-				&& updatedPersonCase.getClassificationUser() == null) {
-				newClassification = updatedPersonCase.getCaseClassification();
-				break;
-			}
-		}
-
-		ExternalJournalSyncResponseDto responseDto = FacadeProvider.getExternalJournalFacade().notifyExternalJournal(existingPerson);
+		ExternalJournalSyncResponseDto responseDto = FacadeProvider.getExternalJournalFacade().notifyExternalJournal(saveResult.getElement1());
 		String synchronizationMessage = getSynchronizationMessage(responseDto);
 
+		CaseClassification newClassification = saveResult.getElement0();
 		if (newClassification != null) {
 			String personSavedMessage =
 				String.format(I18nProperties.getString(Strings.messagePersonSavedClassificationChanged), newClassification.toString());

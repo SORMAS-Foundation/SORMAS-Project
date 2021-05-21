@@ -24,10 +24,12 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -43,7 +45,7 @@ public interface PersonFacade {
 
 	PersonDto savePersonAndNotifyExternalJournal(@Valid PersonDto dto);
 
-	PersonDto savePerson(@Valid PersonDto source);
+	DataHelper.Pair<CaseClassification, PersonDto> savePerson(@Valid PersonDto source);
 
 	void validate(PersonDto dto);
 

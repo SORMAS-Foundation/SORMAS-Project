@@ -50,6 +50,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -359,26 +360,56 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public PersonDto savePerson(PersonDto source) throws ValidationRuntimeException {
-		Person person = personService.getByUuid(source.getUuid());
+	public Pair<CaseClassification, PersonDto> savePerson(PersonDto source) throws ValidationRuntimeException {
+		Person existingPerson = personService.getByUuid(source.getUuid());
+		PersonDto existingPersonDto = convertToDto(existingPerson, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || isPersonInJurisdiction(existingPerson));
 
-		PersonDto existingPerson = toDto(person);
+		computeApproximateAgeReferenceDate(existingPersonDto, source);
 
-		restorePseudonymizedDto(source, person, existingPerson);
+		restorePseudonymizedDto(source, existingPerson, existingPersonDto);
 
 		validate(source);
 
-		if (existingPerson != null && existingPerson.isEnrolledInExternalJournal()) {
+		if (existingPersonDto != null && existingPersonDto.isEnrolledInExternalJournal()) {
 			externalJournalService.validateExternalJournalPerson(source);
 		}
 
-		person = fillOrBuildEntity(source, person, true);
+		existingPerson = fillOrBuildEntity(source, existingPerson, true);
 
-		personService.ensurePersisted(person);
+		personService.ensurePersisted(existingPerson);
 
-		onPersonChanged(existingPerson, person);
+		onPersonChanged(existingPersonDto, existingPerson);
 
-		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || isPersonInJurisdiction(person));
+		CaseClassification newClassification = getNewCaseClassification(source);
+
+		return Pair.createPair(newClassification, existingPersonDto);
+	}
+
+	private CaseClassification getNewCaseClassification(PersonDto source) {
+		List<CaseDataDto> personCases = caseFacade.getAllCasesOfPerson(source.getUuid());
+		// Check whether the classification of any of this person's cases has changed
+		for (CaseDataDto personCase : personCases) {
+			CaseDataDto updatedPersonCase = caseFacade.getCaseDataByUuid(personCase.getUuid());
+			if (personCase.getCaseClassification() != updatedPersonCase.getCaseClassification()
+					&& updatedPersonCase.getClassificationUser() == null) {
+				return updatedPersonCase.getCaseClassification();
+			}
+		}
+
+		return null;
+	}
+
+	private void computeApproximateAgeReferenceDate(PersonDto existingPerson, PersonDto changedPerson) {
+		// approximate age reference date
+		if (existingPerson == null
+				|| !DataHelper.equal(changedPerson.getApproximateAge(), existingPerson.getApproximateAge())
+				|| !DataHelper.equal(changedPerson.getApproximateAgeType(), existingPerson.getApproximateAgeType())) {
+			if (changedPerson.getApproximateAge() == null) {
+				changedPerson.setApproximateAgeReferenceDate(null);
+			} else {
+				changedPerson.setApproximateAgeReferenceDate(changedPerson.getDeathDate() != null ? changedPerson.getDeathDate() : new Date());
+			}
+		}
 	}
 
 	@Override
