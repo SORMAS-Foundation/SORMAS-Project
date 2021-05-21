@@ -7,6 +7,7 @@ import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.data.util.PropertyValueGenerator;
+import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.Grid.SelectionModel.HasUserSelectionAllowed;
 import com.vaadin.v7.ui.renderers.DateRenderer;
 
@@ -25,12 +26,11 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
 import de.symeda.sormas.ui.utils.GridButtonRenderer;
 import de.symeda.sormas.ui.utils.PeriodDtoConverter;
-import de.symeda.sormas.ui.utils.PseudonymizableGrid;
 import de.symeda.sormas.ui.utils.V7AbstractGrid;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
-public class PrescriptionGrid extends PseudonymizableGrid implements V7AbstractGrid<PrescriptionCriteria> {
+public class PrescriptionGrid extends Grid implements V7AbstractGrid<PrescriptionCriteria> {
 
 	private static final String EDIT_BTN_ID = "edit";
 	private static final String DOCUMENT_TREATMENT_BTN_ID = "documentTreatment";

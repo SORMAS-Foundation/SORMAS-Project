@@ -5,15 +5,15 @@ import java.util.List;
 import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
+import com.vaadin.v7.ui.Grid;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.SimilarPersonDto;
-import de.symeda.sormas.ui.utils.PseudonymizableGrid;
 import de.symeda.sormas.ui.utils.V7UuidRenderer;
 
-public class EventParticipantSelectionGrid extends PseudonymizableGrid {
+public class EventParticipantSelectionGrid extends Grid {
 
 	public EventParticipantSelectionGrid(List<SimilarEventParticipantDto> eventParticipants) {
 		buildGrid();
