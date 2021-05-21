@@ -21,7 +21,6 @@ package org.sormas.e2etests.pages.application.contacts;
 import org.openqa.selenium.By;
 
 public class EditContactPage {
-  public static final By UUID_INPUT = By.id("uuid");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot.v-slot-h2.v-slot-vspace-top-none.v-slot-primary");
   public static final By REPORT_DATE = By.cssSelector("#reportDateTime input");
@@ -41,4 +40,5 @@ public class EditContactPage {
   public static final By RETURNING_TRAVELER_OPTIONS = By.cssSelector("#returningTraveler label");
   public static final By TYPE_OF_CONTACT_OPTIONS = By.cssSelector("#contactProximity label");
   public static final By CONTACT_CATEGORY_OPTIONS = By.cssSelector("#contactCategory label");
+  public static final By CONTACT_CREATED_POPUP = By.cssSelector(".v-Notification-caption");
 }

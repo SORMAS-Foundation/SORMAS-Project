@@ -42,7 +42,7 @@ public class ContactService {
         .passportNumber(String.valueOf(System.currentTimeMillis()))
         .primaryEmailAddress(faker.internet().emailAddress())
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
-        .returningTraveler("No")
+        .returningTraveler("NO")
         .reportDate(LocalDate.now())
         .diseaseOfSourceCase("COVID-19")
         .caseIdInExternalSystem(UUID.randomUUID().toString())

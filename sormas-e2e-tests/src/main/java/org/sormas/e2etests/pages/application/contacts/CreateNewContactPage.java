@@ -57,6 +57,8 @@ public class CreateNewContactPage {
       By.cssSelector(".v-window #community div");
   public static final By ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT =
       By.cssSelector(".v-window #contactProximityDetails");
+  public static final By TYPE_OF_CONTACT_TRAVELER =
+      By.cssSelector(".popupContent #returningTraveler > span label");
   public static final By TYPE_OF_CONTACT_OPTIONS =
       By.cssSelector(".popupContent #contactProximity > span label");
   public static final By CONTACT_CATEGORY_OPTIONS =

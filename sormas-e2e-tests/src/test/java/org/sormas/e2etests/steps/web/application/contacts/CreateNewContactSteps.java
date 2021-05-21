@@ -23,7 +23,7 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SEX_COMBOBOX;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CREATED_POPUP;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -31,7 +31,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.Contact;
 import org.sormas.e2etests.services.ContactService;
@@ -66,14 +65,14 @@ public class CreateNewContactSteps implements En {
           selectResponsibleRegion(contact.getResponsibleRegion());
           selectResponsibleDistrict(contact.getResponsibleDistrict());
           selectResponsibleCommunity(contact.getResponsibleCommunity());
-          selectTypeOfContact();
+          selectTypeOfContact(contact.getTypeOfContact());
           fillAdditionalInformationOnTheTypeOfContact(
               contact.getAdditionalInformationOnContactType());
-          selectContactCategory();
+          selectContactCategory(contact.getContactCategory().toUpperCase());
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
         });
   }
 
@@ -116,14 +115,11 @@ public class CreateNewContactSteps implements En {
   }
 
   public void selectReturningTraveler(String option) {
-    String optionBox = "//div[@id='returningTraveler']//label[contains(text(),'" + option + "')]";
-    By optionBoxXpath = By.xpath(optionBox);
-    webDriverHelpers.clickOnWebElementBySelector(optionBoxXpath);
+    webDriverHelpers.clickWebElementByText(TYPE_OF_CONTACT_TRAVELER, option);
   }
 
   public void fillDateOfReport(LocalDate date) {
-    webDriverHelpers.clearWebElement(DATE_OF_REPORT_INPUT);
-    webDriverHelpers.fillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
+    webDriverHelpers.clearAndFillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
   }
 
   public void fillDiseaseOfSourceCase(String diseaseOrCase) {
@@ -154,13 +150,12 @@ public class CreateNewContactSteps implements En {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX, responsibleCommunity);
   }
 
-  public void selectTypeOfContact() {
-    webDriverHelpers.clickWebElementByText(TYPE_OF_CONTACT_OPTIONS, contact.getTypeOfContact());
+  public void selectTypeOfContact(String typeOfContact) {
+    webDriverHelpers.clickWebElementByText(TYPE_OF_CONTACT_OPTIONS, typeOfContact);
   }
 
-  public void selectContactCategory() {
-    webDriverHelpers.clickWebElementByText(
-        CONTACT_CATEGORY_OPTIONS, contact.getContactCategory().toUpperCase());
+  public void selectContactCategory(String category) {
+    webDriverHelpers.clickWebElementByText(CONTACT_CATEGORY_OPTIONS, category);
   }
 
   public void fillAdditionalInformationOnTheTypeOfContact(String description) {
