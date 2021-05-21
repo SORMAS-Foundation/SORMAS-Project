@@ -7,4 +7,5 @@ Feature: Create contacts
       And I click on the NEW CONTACT button
       And I create a new contact
       Then I check the created data is correctly displayed on Edit Contact page
+      Then I open Contact Person tab
       And I check the created data is correctly displayed on Edit Contact Person page

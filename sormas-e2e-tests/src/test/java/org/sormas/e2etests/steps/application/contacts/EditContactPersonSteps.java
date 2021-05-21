@@ -26,13 +26,13 @@ import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.Contact;
+import org.sormas.e2etests.pojo.Person;
 import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
 
 public class EditContactPersonSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
-  protected Contact aContact;
+  protected Person aPerson;
 
   @Inject
   public EditContactPersonSteps(WebDriverHelpers webDriverHelpers, final SoftAssertions softly) {
@@ -41,58 +41,56 @@ public class EditContactPersonSteps implements En {
     When(
         "I check the created data is correctly displayed on Edit Contact Person page",
         () -> {
-          aContact = collectContactData();
+          aPerson = collectPersonData();
           softly
-              .assertThat(aContact.getFirstName())
+              .assertThat(aPerson.getFirstName())
               .isEqualToIgnoringCase(CreateNewContactSteps.contact.getFirstName());
           softly
-              .assertThat(aContact.getLastName())
+              .assertThat(aPerson.getLastName())
               .isEqualToIgnoringCase(CreateNewContactSteps.contact.getLastName());
           softly
-              .assertThat(aContact.getDateOfBirth())
+              .assertThat(aPerson.getDateOfBirth())
               .isEqualTo(CreateNewContactSteps.contact.getDateOfBirth());
-          softly.assertThat(aContact.getSex()).isEqualTo(CreateNewContactSteps.contact.getSex());
+          softly.assertThat(aPerson.getSex()).isEqualTo(CreateNewContactSteps.contact.getSex());
           softly
-              .assertThat(aContact.getNationalHealthId())
+              .assertThat(aPerson.getNationalHealthId())
               .isEqualTo(CreateNewContactSteps.contact.getNationalHealthId());
           softly
-              .assertThat(aContact.getPassportNumber())
+              .assertThat(aPerson.getPassportNumber())
               .isEqualTo(CreateNewContactSteps.contact.getPassportNumber());
           softly
-              .assertThat(aContact.getPrimaryEmailAddress())
+              .assertThat(aPerson.getEmailAddress())
               .isEqualTo(CreateNewContactSteps.contact.getPrimaryEmailAddress());
           softly
-              .assertThat(aContact.getPrimaryPhoneNumber())
+              .assertThat(aPerson.getPhoneNumber())
               .isEqualTo(CreateNewContactSteps.contact.getPrimaryPhoneNumber());
           softly.assertAll();
         });
   }
 
-  public Contact collectContactData() {
-    webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
-    webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
-    Contact contactInfo = getContactInformation();
+  public Person collectPersonData() {
+    Person contactInfo = getPersonInformation();
 
-    return Contact.builder()
+    return Person.builder()
         .firstName(contactInfo.getFirstName())
         .lastName(contactInfo.getLastName())
         .dateOfBirth(contactInfo.getDateOfBirth())
         .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .nationalHealthId(webDriverHelpers.getValueFromWebElement(NATIONAL_HEALTH_ID_INPUT))
         .passportNumber(webDriverHelpers.getValueFromWebElement(PASSPORT_NUMBER_INPUT))
-        .primaryEmailAddress(webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD))
-        .primaryPhoneNumber(webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD))
+        .emailAddress(webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD))
+        .phoneNumber(webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD))
         .build();
   }
 
-  public Contact getContactInformation() {
+  public Person getPersonInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
-    String[] contactInfos = contactInfo.split(" ");
-    LocalDate localDate = LocalDate.parse(contactInfos[3].replace(")", ""), formatter);
-    return Contact.builder()
-        .firstName(contactInfos[0])
-        .lastName(contactInfos[1])
+    String[] personInfos = contactInfo.split(" ");
+    LocalDate localDate = LocalDate.parse(personInfos[3].replace(")", ""), formatter);
+    return Person.builder()
+        .firstName(personInfos[0])
+        .lastName(personInfos[1])
         .dateOfBirth(localDate)
         .build();
   }

@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.application.contacts;
 
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -96,6 +97,13 @@ public class EditContactSteps implements En {
               .assertThat(aContact.getDescriptionOfHowContactTookPlace())
               .isEqualTo(CreateNewContactSteps.contact.getDescriptionOfHowContactTookPlace());
           softly.assertAll();
+        });
+
+    When(
+        "I open Contact Person tab",
+        () -> {
+          webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
         });
   }
 

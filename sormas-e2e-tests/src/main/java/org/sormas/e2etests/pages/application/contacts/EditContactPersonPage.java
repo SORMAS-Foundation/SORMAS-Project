@@ -22,7 +22,6 @@ import org.openqa.selenium.By;
 
 public class EditContactPersonPage {
   public static final By CONTACT_PERSON_TAB = By.cssSelector("div#tab-contacts-person");
-  public static final By PERSON_UUID_INPUT = By.cssSelector("#uuid");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot.v-slot-h2.v-slot-vspace-top-none.v-slot-primary");
   public static final By SEX_INPUT = By.cssSelector("#sex input");
