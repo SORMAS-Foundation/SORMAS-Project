@@ -22,4 +22,7 @@ import org.openqa.selenium.By;
 
 public class CaseDirectoryPage {
   public static final By NEW_CASE_BUTTON = By.cssSelector("div#caseNewCase");
+  public static final By FIRST_CASE_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
+  public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT =
+      By.cssSelector("input#nameUuidEpidNumberLike");
 }

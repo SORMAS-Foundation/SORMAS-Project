@@ -25,7 +25,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-@Builder(toBuilder = true, builderClassName = "Builder")
+@Builder(toBuilder = true, builderClassName = "builder")
 @Value
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NonNull

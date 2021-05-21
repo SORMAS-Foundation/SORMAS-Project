@@ -24,7 +24,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-@Builder(toBuilder = true, builderClassName = "Builder")
+@Builder(toBuilder = true, builderClassName = "builder")
 @Value
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NonNull
@@ -35,6 +35,7 @@ public class Case {
   LocalDate dateOfSymptomOnset;
   String disease;
   String externalId;
+  String uuid;
   String facilityCategory;
   String facilityType;
   String firstName;

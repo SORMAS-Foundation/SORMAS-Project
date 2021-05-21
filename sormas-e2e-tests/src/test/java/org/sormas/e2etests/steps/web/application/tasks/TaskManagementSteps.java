@@ -16,16 +16,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.steps.application.tasks;
+package org.sormas.e2etests.steps.web.application.tasks;
 
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
-import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.EDIT_BUTTON_XPATH_BY_TEXT;
-import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.NEW_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.*;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 
 public class TaskManagementSteps implements En {
 
@@ -40,9 +40,18 @@ public class TaskManagementSteps implements En {
     When(
         "^I open last created task$",
         () ->
-            webDriverHelpers.clickOnWebElementBySelector(
+            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 By.xpath(
                     String.format(
-                        EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask()))));
+                        EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask())),
+                TASK_TYPE_COMBOBOX));
+
+    When(
+        "^I search last created task by Case UUID$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERAL_SEARCH_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              GENERAL_SEARCH_INPUT, EditCaseSteps.aCase.getUuid());
+        });
   }
 }

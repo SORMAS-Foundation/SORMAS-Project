@@ -42,6 +42,11 @@ public enum FeatureType {
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			EVENT_SURVEILLANCE }),
+	DOCUMENTS_MULTI_UPLOAD(true,
+			true,
+			new FeatureType[] {
+					DOCUMENTS
+			}),
 	EVENT_GROUPS(true,
 		true,
 		new FeatureType[] {
