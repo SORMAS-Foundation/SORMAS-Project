@@ -255,6 +255,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				.setVisibleWhen(getFieldGroup(), ContactDto.TRACING_APP_DETAILS, ContactDto.TRACING_APP, Arrays.asList(TracingApp.OTHER), true);
 		}
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, NullableOptionGroup.class);
+		contactProximity.setCaption(I18nProperties.getCaption(Captions.Contact_contactProximityLongForm));
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);

@@ -552,6 +552,7 @@ public interface Captions {
 	String Contact_contactOfficerUuid = "Contact.contactOfficerUuid";
 	String Contact_contactProximity = "Contact.contactProximity";
 	String Contact_contactProximityDetails = "Contact.contactProximityDetails";
+	String Contact_contactProximityLongForm = "Contact.contactProximityLongForm";
 	String Contact_contactStatus = "Contact.contactStatus";
 	String Contact_description = "Contact.description";
 	String Contact_disease = "Contact.disease";

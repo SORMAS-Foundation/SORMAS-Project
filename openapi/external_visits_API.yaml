@@ -140,11 +140,18 @@ info:
     \ externl journals about such a change whith first fetching an authentication\
     \ token as descriced in 1., and the using this token for this request:<br><tt>PUT\
     \ [interface.patientdiary.probandsurl]/external-data/[personUUID]</tt><br>The\
-    \ external journal is the expected to refetch the person data via the ``/visits-external/person/{personUuid}``\
-    \ API endpoint described below and save the changes.</li><br><br><li><b>Upload\
-    \ of symptom journal data to SORMAS</b></li><br>For this, the ``/visits-external``\
-    \ API endpoint is to be used. This is described below.<br><br><li><b>Upload of\
-    \ a symptom journal status to SORMAS</b></li><br>For this, the ``/visits-external/person/{personUuid}/status``\
+    \ external journal is expected to refetch the person data via the ``/visits-external/person/{personUuid}``\
+    \ API endpoint described below and save the changes.</li><br>After refetching\
+    \ the person data, the symptom journal does its own internal validation and responds\
+    \ to SORMAS with the synchronization result, containing eventual validation errors.The\
+    \ expected reponse body:<br>{<br>&emsp;\"success\" : [boolean]<br>&emsp;\"message\"\
+    \ : [messageString]<br>&emsp;\"errors\" : [<br>&emsp;&emsp;{[errorKey]:[errorString]}<br>&emsp;]<br>}<br>If\
+    \ the changes were done manually by a user from the person edit form, the synchronization\
+    \ result is shown to the user in a popup window, so that the user can fix eventual\
+    \ errors and resynchronize the person data.<br><li><b>Upload of symptom journal\
+    \ data to SORMAS</b></li><br>For this, the ``/visits-external`` API endpoint is\
+    \ to be used. This is described below.<br><br><li><b>Upload of a symptom journal\
+    \ status to SORMAS</b></li><br>For this, the ``/visits-external/person/{personUuid}/status``\
     \ API endpoint is to be used. This is described below.<br><br><li><b>Opening a\
     \ person in the external journal from within SORMAS</b></li><br>Once the symptom\
     \ journal status of a person is set to REGISTERED or ACCEPTED, the external journal\

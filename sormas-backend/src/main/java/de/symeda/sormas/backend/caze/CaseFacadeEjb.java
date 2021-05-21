@@ -3391,7 +3391,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			caseDto,
 			CaseLogic.getFollowUpStartDate(caseDto, sampleFacade.getByCaseUuids(Collections.singletonList(caseDto.getUuid()))),
 			visitFacade.getVisitsByCase(caseDto.toReference()),
-			diseaseConfigurationFacade.getFollowUpDuration(caseDto.getDisease()),
+			diseaseConfigurationFacade.getCaseFollowUpDuration(caseDto.getDisease()),
 			ignoreOverwrite);
 	}
 
