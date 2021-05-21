@@ -20,15 +20,19 @@ package org.sormas.e2etests.helpers;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
+import static java.time.Duration.ofSeconds;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
+import static org.sormas.e2etests.helpers.AssertHelpers.*;
 
 import com.google.common.truth.Truth;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Predicate;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.core.ConditionTimeoutException;
 import org.openqa.selenium.*;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -38,7 +42,7 @@ public class WebDriverHelpers {
 
   public static final By SELECTED_RADIO_BUTTOn =
       By.xpath("ancestor::div[@role='radiogroup']//input[@checked]/following-sibling::label");
-  public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 10;
+  public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
 
   private final BaseSteps baseSteps;
   private final AssertHelpers assertHelpers;
@@ -66,10 +70,14 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilElementIsVisibleAndClickable(By selector) {
-    waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
+    waitUntilIdentifiedElementIsVisibleAndClickable(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
   }
 
   public void waitUntilIdentifiedElementIsVisibleAndClickable(final Object selector) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
+  }
+
+  public void waitUntilIdentifiedElementIsVisibleAndClickable(final WebElement selector) {
     waitUntilIdentifiedElementIsVisibleAndClickable(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
   }
 
@@ -94,9 +102,36 @@ public class WebDriverHelpers {
   }
 
   public void fillInWebElement(By selector, String text) {
+    try {
+      await()
+          .pollInterval(ONE_HUNDRED_MILLISECONDS)
+          .ignoreExceptions()
+          .catchUncaughtExceptions()
+          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+          .untilAsserted(
+              () -> {
+                assertThat(baseSteps.getDriver().findElement(selector).isEnabled()).isTrue();
+                assertThat(baseSteps.getDriver().findElement(selector).isDisplayed()).isTrue();
+                scrollToElement(selector);
+                clearWebElement(selector);
+                baseSteps.getDriver().findElement(selector).sendKeys(text);
+                assertThat(getValueFromWebElement(selector)).isEqualTo(text);
+              });
+
+    } catch (ConditionTimeoutException ignored) {
+      log.error("Unable to click on element identified by locator: {}", selector);
+      throw new TimeoutException("Unable to click on element identified by locator: " + selector);
+    }
+  }
+
+  public void fillAndSubmitInWebElement(By selector, String text) {
+    fillInWebElement(selector, text);
+    submitInWebElement(selector);
+  }
+
+  public void submitInWebElement(By selector) {
     waitUntilElementIsVisibleAndClickable(selector);
-    WebElement webElement = baseSteps.getDriver().findElement(selector);
-    webElement.sendKeys(text);
+    baseSteps.getDriver().findElement(selector).sendKeys(Keys.chord(Keys.ENTER));
   }
 
   public void clearAndFillInWebElement(By selector, String text) {
@@ -107,10 +142,18 @@ public class WebDriverHelpers {
   @SneakyThrows
   public void selectFromCombobox(By selector, String text) {
     clickOnWebElementBySelector(selector);
+    WebElement comboboxInput =
+        baseSteps
+            .getDriver()
+            .findElement(selector)
+            .findElement(By.xpath("preceding-sibling::input"));
+    comboboxInput.sendKeys(Keys.chord(Keys.BACK_SPACE));
     String comboBoxItemWithText = "//td[@role='listitem']/span[ contains(text(), '" + text + "')]";
-    By dropDownValueXpath = By.xpath(comboBoxItemWithText);
+    waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
+    comboboxInput.sendKeys(text);
     waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestpopup"));
     waitUntilANumberOfElementsAreVisibleAndClickable(By.xpath("//td[@role='listitem']/span"), 1);
+    By dropDownValueXpath = By.xpath(comboBoxItemWithText);
     clickOnWebElementBySelector(dropDownValueXpath);
   }
 
@@ -119,7 +162,7 @@ public class WebDriverHelpers {
   }
 
   public void clickWhileOtherButtonIsDisplayed(By clickedElement, By waitedSelector) {
-    TimerLite timer = TimerLite.of(Duration.ofSeconds(30));
+    TimerLite timer = TimerLite.of(ofSeconds(30));
     do {
       clickOnWebElementWhichMayNotBePresent(clickedElement, 0);
       if (timer.isTimeUp()) {
@@ -129,12 +172,28 @@ public class WebDriverHelpers {
   }
 
   public void clickOnWebElementBySelectorAndIndex(By selector, int index) {
-    waitForPageLoaded();
-    waitUntilElementIsVisibleAndClickable(selector);
-    WebElement webElement = baseSteps.getDriver().findElements(selector).get(index);
-    scrollToElement(webElement);
-    webElement.click();
-    waitForPageLoaded();
+    try {
+      await()
+          .pollInterval(ONE_HUNDRED_MILLISECONDS)
+          .ignoreExceptions()
+          .catchUncaughtExceptions()
+          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+          .untilAsserted(
+              () -> {
+                assertThat(baseSteps.getDriver().findElements(selector).get(index).isEnabled())
+                    .isTrue();
+                assertThat(baseSteps.getDriver().findElements(selector).get(index).isDisplayed())
+                    .isTrue();
+                scrollToElement(selector);
+                baseSteps.getDriver().findElement(selector).click();
+                waitForPageLoaded();
+              });
+
+    } catch (ConditionTimeoutException ignored) {
+      log.error("Unable to click on element identified by locator: {}", selector);
+      takeScreenshot(baseSteps.getDriver());
+      throw new TimeoutException("Unable to click on element identified by locator: " + selector);
+    }
   }
 
   public void checkWebElementContainsText(By selector, String text) {
@@ -168,15 +227,19 @@ public class WebDriverHelpers {
 
   public void scrollToElement(final Object selector) {
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
-    if (selector instanceof WebElement) {
-      javascriptExecutor.executeScript(
-          "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});",
-          selector);
-    } else {
-      waitUntilIdentifiedElementIsPresent((By) selector);
-      javascriptExecutor.executeScript(
-          "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});",
-          baseSteps.getDriver().findElement((By) selector));
+    waitUntilIdentifiedElementIsPresent(selector);
+    try {
+      if (selector instanceof WebElement) {
+        javascriptExecutor.executeScript(
+            "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});",
+            selector);
+      } else {
+        waitUntilIdentifiedElementIsPresent((By) selector);
+        javascriptExecutor.executeScript(
+            "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});",
+            baseSteps.getDriver().findElement((By) selector));
+      }
+    } catch (Exception ignored) {
     }
     waitForPageLoaded();
   }
@@ -232,9 +295,13 @@ public class WebDriverHelpers {
     return baseSteps.getDriver().findElement(byObject).getText();
   }
 
-  public void waitUntilIdentifiedElementIsPresent(final By selector) {
-    assertHelpers.assertWithPoll15Second(
-        () -> assertThat(getNumberOfElements(selector) > 0).isTrue());
+  public void waitUntilIdentifiedElementIsPresent(final Object selector) {
+    if (selector instanceof WebElement) {
+      assertHelpers.assertWithPoll15Second(() -> assertThat(selector).isNotNull());
+    } else {
+      assertHelpers.assertWithPoll15Second(
+          () -> assertThat(getNumberOfElements((By) selector) > 0).isTrue());
+    }
   }
 
   public void waitUntilANumberOfElementsAreVisibleAndClickable(By selector, int number) {
