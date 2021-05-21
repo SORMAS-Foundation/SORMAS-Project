@@ -41,7 +41,7 @@ import org.sormas.e2etests.steps.BaseSteps;
 public class WebDriverHelpers {
 
   public static final By SELECTED_RADIO_BUTTOn =
-      By.xpath("ancestor::div[@role='radiogroup']//input[@checked]/following-sibling::label");
+      By.xpath("ancestor::div[@role='group']//input[@checked]/following-sibling::label");
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
 
   private final BaseSteps baseSteps;
@@ -77,12 +77,7 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsVisibleAndClickable(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
   }
 
-  public void waitUntilIdentifiedElementIsVisibleAndClickable(final WebElement selector) {
-    waitUntilIdentifiedElementIsVisibleAndClickable(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
-  }
-
   public void waitUntilIdentifiedElementIsVisibleAndClickable(final Object selector, int seconds) {
-
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -270,7 +265,7 @@ public class WebDriverHelpers {
   }
 
   public String getValueFromWebElement(By byObject) {
-    waitUntilIdentifiedElementIsVisibleAndClickable(byObject);
+    waitUntilIdentifiedElementIsPresent(byObject);
     scrollToElement(byObject);
     return baseSteps.getDriver().findElement(byObject).getAttribute("value");
   }

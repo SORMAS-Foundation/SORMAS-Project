@@ -15,32 +15,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.sormas.e2etests.pojo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDate;
-import java.util.List;
-import lombok.*;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 
+@Builder(toBuilder = true, builderClassName = "Builder")
 @Value
-@AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@Builder(toBuilder = true, builderClassName = "builder")
-public class Person {
-  String passportNumber;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@NonNull
+public class Contact {
+  String firstName;
   String lastName;
   LocalDate dateOfBirth;
-  boolean covidCodeDelivered;
-  Address address;
   String sex;
-  long creationDate;
-  String uuid;
   String nationalHealthId;
-  String firstName;
-  String emailAddress;
-  String phoneNumber;
-  boolean pseudonymized;
-  long changeDate;
-  boolean hasCovidApp;
-  List<Object> personContactDetails;
-  List<Object> addresses;
+  String passportNumber;
+  String primaryEmailAddress;
+  String primaryPhoneNumber;
+  String returningTraveler;
+  LocalDate reportDate;
+  String diseaseOfSourceCase;
+  String caseIdInExternalSystem;
+  LocalDate dateOfLastContact;
+  String caseOrEventInformation;
+  String responsibleDistrict;
+  String responsibleRegion;
+  String responsibleCommunity;
+  String additionalInformationOnContactType;
+  String typeOfContact;
+  String contactCategory;
+  String relationshipWithCase;
+  String descriptionOfHowContactTookPlace;
 }

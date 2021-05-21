@@ -8,3 +8,5 @@ Feature: Create cases
      When I create a new case with specific data
      Then I check the created data is correctly displayed on Edit case page
       And I check the created data is correctly displayed on Edit case person page
+
+    
