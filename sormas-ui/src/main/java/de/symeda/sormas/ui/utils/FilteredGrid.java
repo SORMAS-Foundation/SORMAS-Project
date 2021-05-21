@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
@@ -10,7 +11,7 @@ import com.vaadin.data.provider.Query;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializableSupplier;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.components.grid.GridSelectionModel;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -68,20 +69,25 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public GridSelectionModel<T> setSelectionMode(Grid.SelectionMode selectionMode) {
-		GridSelectionModel<T> model = super.setSelectionMode(selectionMode);
-		if (selectionMode == SelectionMode.MULTI && PseudonymizableIndexDto.class.isAssignableFrom(getBeanType())) {
-			addSelectionListener(event -> {
-				event.getAllSelectedItems().forEach(item -> {
-					if (((PseudonymizableIndexDto) item).isPseudonymized()) {
-						deselect(item);
+	public void bulkActionHandler(Consumer<Set> callback) {
+		if (PseudonymizableIndexDto.class.isAssignableFrom(getBeanType())
+			&& getSelectedItems().stream().anyMatch(item -> ((PseudonymizableIndexDto) item).isPseudonymized())) {
+
+			VaadinUiUtil.showConfirmationPopup(
+				"Warning",
+				new Label("You cannot use bulk edit actions on pseudonymized entities."),
+				"Deselect and Proceed",
+				"Cancel",
+				640,
+				proceed -> {
+					if (proceed) {
+						getSelectedItems().stream().filter(item -> ((PseudonymizableIndexDto) item).isPseudonymized()).forEach(this::deselect);
+						callback.accept(getSelectedItems());
 					}
 				});
-			});
+		} else {
+			callback.accept(getSelectedItems());
 		}
-		return model;
-
 	}
 
 	public int getItemCount() {
