@@ -362,7 +362,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public Pair<CaseClassification, PersonDto> savePerson(PersonDto source) throws ValidationRuntimeException {
 		Person existingPerson = personService.getByUuid(source.getUuid());
-		PersonDto existingPersonDto = convertToDto(existingPerson, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || isPersonInJurisdiction(existingPerson));
+		PersonDto existingPersonDto = toDto(existingPerson);
 
 		computeApproximateAgeReferenceDate(existingPersonDto, source);
 
