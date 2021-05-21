@@ -2404,6 +2404,22 @@ public class CaseFacadeEjb implements CaseFacade {
 				newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
 				personFacade.onPersonChanged(existingPerson, newCase.getPerson());
 			}
+		} else if (existingCase == null) {
+			// new Case; Still compare persons Condition and caseOutcome
+			if (newCase.getOutcome() == CaseOutcome.DECEASED
+				&& newCase.getPerson().getPresentCondition() != PresentCondition.BURIED
+				&& newCase.getPerson().getPresentCondition() != PresentCondition.DEAD) {
+				// person is alive but case has outcome deceased
+				if (newCase.getOutcomeDate() == null) {
+					newCase.setOutcomeDate(new Date());
+				}
+				PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
+				newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
+				newCase.getPerson().setPresentCondition(PresentCondition.DEAD);
+				newCase.getPerson().setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
+				newCase.getPerson().setCauseOfDeathDisease(newCase.getDisease());
+				personFacade.onPersonChanged(existingPerson, newCase.getPerson());
+			}
 		}
 	}
 

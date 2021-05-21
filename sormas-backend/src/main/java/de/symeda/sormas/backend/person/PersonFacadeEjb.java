@@ -871,11 +871,10 @@ public class PersonFacadeEjb implements PersonFacade {
 			Collections.sort(
 				personCases,
 				(c1, c2) -> CaseLogic.getStartDate(c1.getSymptoms().getOnsetDate(), c1.getReportDate())
-					.after(CaseLogic.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getReportDate())) ? 1 : -1);
+					.before(CaseLogic.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getReportDate())) ? 1 : -1);
 
 			if (newPerson.getPresentCondition() != null && existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
 				// Update case list after previous onCaseChanged
-				personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
 				Case personCase = personCases.get(0);
 				if (newPerson.getPresentCondition().isDeceased()
 					&& newPerson.getDeathDate() != null
@@ -893,6 +892,13 @@ public class PersonFacadeEjb implements PersonFacade {
 					}
 				} else if (!newPerson.getPresentCondition().isDeceased() && existingPerson.getPresentCondition().isDeceased()) {
 					// Person was put "back alive"
+					// make sure other values are set to null
+					newPerson.setCauseOfDeath(null);
+					newPerson.setCauseOfDeathDisease(null);
+					newPerson.setDeathPlaceDescription(null);
+					newPerson.setDeathPlaceType(null);
+					newPerson.setBurialDate(null);
+					newPerson.setCauseOfDeathDisease(null);
 					// update the latest associated case, if it was set to deceased && and if the case-disease was also the causeofdeath-disease
 					if (personCase.getOutcome() == CaseOutcome.DECEASED && personCase.getDisease() == existingPerson.getCauseOfDeathDisease()) {
 						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
