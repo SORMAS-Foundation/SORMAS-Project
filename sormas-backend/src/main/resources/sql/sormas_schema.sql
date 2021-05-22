@@ -7327,4 +7327,15 @@ ALTER TABLE contact ADD CONSTRAINT fk_contact_duplicateof_id FOREIGN KEY (duplic
 
 INSERT INTO schema_version (version_number, comment) VALUES (373, 'Make contacts mergeable #2409');
 
+-- 2021-05-19 Indexing by deleted flag on all containing entities should be applied #5465
+CREATE INDEX IF NOT EXISTS idx_cases_deleted ON cases (deleted);
+CREATE INDEX IF NOT EXISTS idx_contact_deleted ON contact (deleted);
+CREATE INDEX IF NOT EXISTS idx_events_deleted ON events (deleted);
+CREATE INDEX IF NOT EXISTS idx_samples_deleted ON samples (deleted);
+CREATE INDEX IF NOT EXISTS idx_pathogentest_deleted ON pathogentest (deleted);
+CREATE INDEX IF NOT EXISTS idx_campaigns_deleted ON campaigns (deleted);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_deleted ON eventparticipant (deleted);
+CREATE INDEX IF NOT EXISTS idx_documents_deleted ON documents (deleted);
+
+INSERT INTO schema_version (version_number, comment) VALUES (374, 'Indexing by deleted flag on all containing entities should be applied #5465');
 -- *** Insert new sql commands BEFORE this line ***
