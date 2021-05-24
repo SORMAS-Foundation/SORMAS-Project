@@ -51,5 +51,5 @@ public class Contact {
   String contactCategory;
   String relationshipWithCase;
   String descriptionOfHowContactTookPlace;
-  String contactId;
+  String uuid;
 }
