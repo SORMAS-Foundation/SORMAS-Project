@@ -16,14 +16,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pages.application;
+package org.sormas.e2etests.pojo;
 
-import org.openqa.selenium.By;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 
-public class NavBarPage {
-  public static final By CASES_BUTTON = By.cssSelector("div#cases");
-  public static final By CONTACTS_BUTTON = By.cssSelector("div#contacts");
-  public static final By EVENTS_BUTTON = By.cssSelector("div#events");
-  public static final By TASKS_BUTTON = By.cssSelector("div#tasks");
-  public static final By SAMPLE_BUTTON = By.cssSelector("[id=\"samples\"]");
+@Builder(toBuilder = true, builderClassName = "builder")
+@Value
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@NonNull
+public class Sample {
+  String uuid;
+  LocalDate dateOfCollection;
+  LocalTime timeOfCollection;
+  String sampleType;
+  String reasonForSample;
+  long sampleID;
+  String commentsOnSample;
 }

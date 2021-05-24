@@ -16,14 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pages.application;
+package org.sormas.e2etests.pages.application.samples;
 
 import org.openqa.selenium.By;
 
-public class NavBarPage {
-  public static final By CASES_BUTTON = By.cssSelector("div#cases");
-  public static final By CONTACTS_BUTTON = By.cssSelector("div#contacts");
-  public static final By EVENTS_BUTTON = By.cssSelector("div#events");
-  public static final By TASKS_BUTTON = By.cssSelector("div#tasks");
-  public static final By SAMPLE_BUTTON = By.cssSelector("[id=\"samples\"]");
+public class SampleManagementPage {
+  public static final By SAMPLE_SEARCH_INPUT = By.cssSelector("[id='caseCodeIdLike']");
+  public static final By SEARCH_RESULT_SAMPLE = By.cssSelector("[role='gridcell'] a");
+  public static final By SAVE_EDIT_SAMPLE_BUTTON = By.cssSelector("[id='commit']");
 }

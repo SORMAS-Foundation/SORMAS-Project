@@ -38,7 +38,7 @@ public class CaseService {
         .dateOfReport(LocalDate.now())
         .externalId(UUID.randomUUID().toString())
         .disease("COVID-19")
-        .responsibleRegion("Voreingestellte Bundesländer")
+        .responsibleRegion("Voreingestellte")
         .responsibleDistrict("Voreingestellter Landkreis")
         .responsibleCommunity("Voreingestellte Gemeinde")
         .placeOfStay("HOME")
