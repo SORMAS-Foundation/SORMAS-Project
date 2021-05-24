@@ -33,6 +33,7 @@ public class EditContactPersonSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   protected Person aPerson;
+  protected Person detailedPerson;
 
   @Inject
   public EditContactPersonSteps(WebDriverHelpers webDriverHelpers, final SoftAssertions softly) {
@@ -66,6 +67,10 @@ public class EditContactPersonSteps implements En {
               .isEqualTo(CreateNewContactSteps.contact.getPrimaryPhoneNumber());
           softly.assertAll();
         });
+
+    Then("I fill all default empty fields from Contact Person tab", ()-> {
+
+            });
   }
 
   public Person collectPersonData() {

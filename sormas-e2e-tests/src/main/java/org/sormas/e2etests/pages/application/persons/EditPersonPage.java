@@ -16,34 +16,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pages.application.contacts;
+package org.sormas.e2etests.pages.application.persons;
 
 import org.openqa.selenium.By;
 
-public class EditContactPersonPage {
-  public static final By CONTACT_PERSON_TAB = By.cssSelector("div#tab-contacts-person");
-  public static final By USER_INFORMATION =
-      By.cssSelector(".v-slot.v-slot-h2.v-slot-vspace-top-none.v-slot-primary");
-  public static final By SEX_INPUT = By.cssSelector("#sex input");
-  public static final By PASSPORT_NUMBER_INPUT = By.cssSelector("#passportNumber");
-  public static final By NATIONAL_HEALTH_ID_INPUT = By.cssSelector("#nationalHealthId");
-  public static final By EMAIL_FIELD =
-      By.xpath(
-          "//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Email')]/../following-sibling::td//div");
-  public static final By PHONE_FIELD =
-      By.xpath(
-          "//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Phone')]/../following-sibling::td//div");
+public class EditPersonPage {
   public static final By UUID_INPUT = By.cssSelector("#uuid");
   public static final By FIRST_NAME_INPUT = By.cssSelector("#firstName");
   public static final By LAST_NAME_INPUT = By.cssSelector("#lastName");
   public static final By DATE_OF_BIRTH_YEAR_INPUT = By.cssSelector("#birthdateYYYY input");
   public static final By DATE_OF_BIRTH_MONTH_INPUT = By.cssSelector("#birthdateMM input");
   public static final By DATE_OF_BIRTH_DAY_INPUT = By.cssSelector("#birthdateDD input");
+  public static final By SEX_INPUT = By.cssSelector("#sex input");
   public static final By SEX_COMBOBOX = By.cssSelector("[location='sex'] div[role='combobox'] div");
   public static final By SALUTATION_INPUT = By.cssSelector("[location=salutation] input");
   public static final By SALUTATION_COMBOBOX = By.cssSelector("[location=salutation] input + div");
   public static final By PRESENT_CONDITION_INPUT = By.cssSelector("#presentCondition input");
   public static final By PRESENT_CONDITION_COMBOBOX = By.cssSelector("#presentCondition input + div");
+  public static final By PASSPORT_NUMBER_INPUT = By.cssSelector("#passportNumber");
+  public static final By NATIONAL_HEALTH_ID_INPUT = By.cssSelector("#nationalHealthId");
   public static final By EXTERNAL_ID_INPUT = By.cssSelector("#externalId ");
   public static final By EXTERNAL_TOKEN_INPUT = By.cssSelector("#externalToken");
   public static final By TYPE_OF_OCCUPATION_COMBOBOX = By.cssSelector("[location=occupationType] input+div");
@@ -73,4 +64,6 @@ public class EditContactPersonPage {
   public static final By MOTHER_NAME_INPUT = By.cssSelector("#mothersName");
   public static final By FATHER_NAME_INPUT = By.cssSelector("#fathersName");
   public static final By NAMES_OF_GUARDIANS_INPUT = By.cssSelector("#namesOfGuardians");
+  public static final By SAVE_BUTTON = By.cssSelector("#commit");
+
 }
