@@ -74,6 +74,14 @@ public class EditCaseSteps implements En {
     When(
         "I click on first edit Task",
         () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_TASK_BUTTON));
+
+    When(
+        "I click on New Sample",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_SAMPLE_BUTTON));
+
+    When(
+        "I click on edit Sample",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON));
   }
 
   public Case collectCasePersonUuid() {
