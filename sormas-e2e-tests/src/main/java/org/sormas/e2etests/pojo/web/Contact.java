@@ -48,4 +48,5 @@ public class Contact {
   String contactCategory;
   String relationshipWithCase;
   String descriptionOfHowContactTookPlace;
+  String uuid;
 }
