@@ -105,11 +105,11 @@ public class CreateNewSampleSteps implements En {
   }
 
   public void fillSampleID(long sampleID) {
-    webDriverHelpers.clearAndFillInWebElement(FIELD_SAMPLE_ID, String.valueOf(sampleID));
+    webDriverHelpers.clearAndFillInWebElement(FIELD_SAMPLE_ID_INPUT, String.valueOf(sampleID));
   }
 
   public void fillCommentsOnSample(String commentsOnSample) {
-    webDriverHelpers.clearAndFillInWebElement(COMMENT_AREA, commentsOnSample);
+    webDriverHelpers.clearAndFillInWebElement(COMMENT_AREA_INPUT, commentsOnSample);
   }
 
   public Sample collectSampleData() {
@@ -142,10 +142,10 @@ public class CreateNewSampleSteps implements En {
   }
 
   public String getSampleID() {
-    return webDriverHelpers.getValueFromWebElement(FIELD_SAMPLE_ID);
+    return webDriverHelpers.getValueFromWebElement(FIELD_SAMPLE_ID_INPUT);
   }
 
   public String getCommentsOnSample() {
-    return webDriverHelpers.getValueFromWebElement(COMMENT_AREA);
+    return webDriverHelpers.getValueFromWebElement(COMMENT_AREA_INPUT);
   }
 }

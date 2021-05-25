@@ -36,8 +36,8 @@ public class CreateNewSamplePage {
       By.cssSelector("[id='samplingReason'] input");
   public static final By REASON_FOR_SAMPLING_TESTING_COMBOBOX =
       By.cssSelector("[id='samplingReason'] [class='v-filterselect-button']");
-  public static final By FIELD_SAMPLE_ID = By.cssSelector("[id='fieldSampleID']");
-  public static final By COMMENT_AREA = By.cssSelector("[id='comment']");
+  public static final By FIELD_SAMPLE_ID_INPUT = By.cssSelector("[id='fieldSampleID']");
+  public static final By COMMENT_AREA_INPUT = By.cssSelector("[id='comment']");
   public static final By SAVE_SAMPLE_BUTTON =
       By.cssSelector("[class='popupContent'] [id='commit']");
 }
