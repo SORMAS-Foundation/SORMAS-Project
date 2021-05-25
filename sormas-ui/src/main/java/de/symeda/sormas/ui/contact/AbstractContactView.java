@@ -86,11 +86,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-			ExternalJournalUtil.getExternalJournalUiButton(contactPerson).ifPresent(externalJournalButton -> {
-				boolean buttonEnabled = contact.getSormasToSormasOriginInfo() == null || contact.getSormasToSormasOriginInfo().isOwnershipHandedOver();
-				externalJournalButton.setEnabled(buttonEnabled);
-				addComponent(externalJournalButton);
-			});
+			ExternalJournalUtil.getExternalJournalUiButton(contactPerson, contact).ifPresent(getButtonsLayout()::addComponent);
 		}
 	}
 
