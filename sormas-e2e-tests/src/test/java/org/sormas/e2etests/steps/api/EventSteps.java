@@ -15,20 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.state;
+package org.sormas.e2etests.steps.api;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-import io.restassured.response.Response;
-import lombok.Getter;
-import lombok.Setter;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Person;
+import cucumber.api.java8.En;
+import javax.inject.Inject;
+import org.sormas.e2etests.helpers.api.EventHelper;
+import org.sormas.e2etests.pojo.api.Event;
+import org.sormas.e2etests.services.api.EventApiService;
 
-@ScenarioScoped
-@Getter
-@Setter
-public class ApiState {
-  Response response;
-  Person editPerson;
-  Case createdCase;
+public class EventSteps implements En {
+
+  @Inject
+  public EventSteps(EventHelper eventHelper, EventApiService eventApiService) {
+
+    When(
+        "API: I create a new event",
+        () -> {
+          Event eve = eventApiService.buildGeneratedEvent();
+          eventHelper.createEvent(eve);
+        });
+  }
 }

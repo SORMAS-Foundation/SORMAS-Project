@@ -29,7 +29,7 @@ import io.restassured.specification.RequestSpecification;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
-import org.sormas.e2etests.pojo.Request;
+import org.sormas.e2etests.pojo.web.Request;
 import org.sormas.e2etests.state.ApiState;
 
 public class RestAssuredClient {

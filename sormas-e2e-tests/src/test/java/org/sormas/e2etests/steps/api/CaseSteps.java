@@ -17,39 +17,24 @@
  */
 package org.sormas.e2etests.steps.api;
 
-import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
-import java.util.List;
-import java.util.UUID;
 import javax.inject.Inject;
-import org.sormas.e2etests.helpers.api.PersonsHelper;
-import org.sormas.e2etests.pojo.api.Person;
+import org.sormas.e2etests.helpers.api.CaseHelper;
+import org.sormas.e2etests.pojo.api.Case;
+import org.sormas.e2etests.services.api.CaseApiService;
 import org.sormas.e2etests.state.ApiState;
 
-public class PersonSteps implements En {
+public class CaseSteps implements En {
 
   @Inject
-  public PersonSteps(PersonsHelper personsHelper, ApiState apiState, Faker faker) {
+  public CaseSteps(CaseHelper caseHelper, CaseApiService caseApiService, ApiState apiState) {
 
     When(
-        "API: I receive the person",
+        "API: I create a new case",
         () -> {
-          List<String> personUuids = apiState.getResponse().jsonPath().get();
+          Case caze = caseApiService.buildGeneratedCase(apiState.getEditPerson());
+          caseHelper.createCase(caze);
+          apiState.setCreatedCase(caze);
         });
-
-    When(
-        "API: I create a new person",
-        () -> {
-          Person createPersonObject =
-              Person.builder()
-                  .uuid(UUID.randomUUID().toString())
-                  .firstName(faker.name().firstName())
-                  .lastName(faker.name().lastName())
-                  .build();
-          apiState.setEditPerson(createPersonObject);
-          personsHelper.createNewPerson(createPersonObject);
-        });
-
-    When("API: I receive all person ids", personsHelper::getAllPersonUuid);
   }
 }

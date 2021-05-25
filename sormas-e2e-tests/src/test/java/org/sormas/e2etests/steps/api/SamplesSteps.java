@@ -15,32 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo;
+package org.sormas.e2etests.steps.api;
 
-import java.time.LocalDate;
-import java.util.List;
-import lombok.*;
+import cucumber.api.java8.En;
+import javax.inject.Inject;
+import org.sormas.e2etests.helpers.api.SampleHelper;
+import org.sormas.e2etests.pojo.api.Sample;
+import org.sormas.e2etests.services.api.SampleApiService;
+import org.sormas.e2etests.state.ApiState;
 
-@Value
-@AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@Builder(toBuilder = true, builderClassName = "builder")
-public class Person {
-  String passportNumber;
-  String lastName;
-  LocalDate dateOfBirth;
-  boolean covidCodeDelivered;
-  Address address;
-  String sex;
-  long creationDate;
-  String uuid;
-  String nationalHealthId;
-  String firstName;
-  String emailAddress;
-  String phoneNumber;
-  boolean pseudonymized;
-  long changeDate;
-  boolean hasCovidApp;
-  List<Object> personContactDetails;
-  List<Object> addresses;
+public class SamplesSteps implements En {
+
+  @Inject
+  public SamplesSteps(
+      SampleHelper sampleHelper, SampleApiService sampleApiService, ApiState apiState) {
+
+    When(
+        "API: I create a new sample",
+        () -> {
+          Sample sample = sampleApiService.buildGeneratedEvent(apiState.getCreatedCase());
+          sampleHelper.createSample(sample);
+        });
+  }
 }

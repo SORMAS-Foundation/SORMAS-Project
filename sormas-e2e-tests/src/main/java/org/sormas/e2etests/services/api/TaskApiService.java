@@ -15,20 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.state;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-import io.restassured.response.Response;
-import lombok.Getter;
-import lombok.Setter;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Person;
+package org.sormas.e2etests.services.api;
 
-@ScenarioScoped
-@Getter
-@Setter
-public class ApiState {
-  Response response;
-  Person editPerson;
-  Case createdCase;
+import com.google.inject.Inject;
+import java.util.Date;
+import java.util.UUID;
+import org.sormas.e2etests.pojo.api.*;
+
+public class TaskApiService {
+
+  @Inject
+  public TaskApiService() {}
+
+  public Task buildGeneratedTask() {
+    return Task.builder()
+        .uuid(UUID.randomUUID().toString())
+        .taskContext("GENERAL")
+        .taskType("WEEKLY_REPORT_GENERATION")
+        .priority("NORMAL")
+        .dueDate(new Date())
+        .suggestedStart(new Date())
+        .taskStatus("PENDING")
+        .assigneeUser(AssigneeUser.builder().uuid("QKBKF3-EZT5OK-327TUH-NV73SJYY").build())
+        .build();
+  }
 }

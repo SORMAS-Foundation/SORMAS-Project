@@ -15,20 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.state;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-import io.restassured.response.Response;
-import lombok.Getter;
-import lombok.Setter;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Person;
+package org.sormas.e2etests.pojo.web;
 
-@ScenarioScoped
-@Getter
-@Setter
-public class ApiState {
-  Response response;
-  Person editPerson;
-  Case createdCase;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import lombok.*;
+
+@Value
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderClassName = "builder")
+public class Task {
+  String taskContext;
+  String taskType;
+  LocalDate suggestedStartDate;
+  LocalTime suggestedStartTime;
+  LocalDate dueDateDate;
+  LocalTime dueDateTime;
+  String assignedTo;
+  String priority;
+  String commentsOnTask;
+  String commentsOnExecution;
+  String taskStatus;
 }

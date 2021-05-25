@@ -15,20 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.state;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-import io.restassured.response.Response;
-import lombok.Getter;
-import lombok.Setter;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Person;
+package org.sormas.e2etests.services.api;
 
-@ScenarioScoped
-@Getter
-@Setter
-public class ApiState {
-  Response response;
-  Person editPerson;
-  Case createdCase;
+import com.google.inject.Inject;
+import java.util.Date;
+import java.util.UUID;
+import org.sormas.e2etests.pojo.api.*;
+
+public class EventApiService {
+
+  @Inject
+  public EventApiService() {}
+
+  public Event buildGeneratedEvent() {
+    return Event.builder()
+        .uuid(UUID.randomUUID().toString())
+        .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())
+        .eventStatus("SIGNAL")
+        .eventInvestigationStatus("PENDING")
+        .eventTitle(String.valueOf(System.currentTimeMillis()))
+        .startDate(new Date())
+        .reportDateTime(new Date())
+        .eventLocation(EventLocation.builder().uuid(UUID.randomUUID().toString()).build())
+        .build();
+  }
 }
