@@ -24,32 +24,32 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-@Builder(toBuilder = true, builderClassName = "builder")
+@Builder(toBuilder = true, builderClassName = "Builder")
 @Value
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NonNull
-public class Case {
-  String caseOrigin;
-  LocalDate dateOfBirth;
-  LocalDate dateOfReport;
-  LocalDate dateOfSymptomOnset;
-  String disease;
-  String externalId;
-  String uuid;
-  String facilityCategory;
-  String facilityType;
+public class Contact {
   String firstName;
   String lastName;
+  LocalDate dateOfBirth;
+  String sex;
   String nationalHealthId;
   String passportNumber;
-  String placeDescription;
-  String placeOfStay;
-  String pointOfEntry;
-  String presentConditionOfPerson;
   String primaryEmailAddress;
   String primaryPhoneNumber;
-  String responsibleCommunity;
+  String returningTraveler;
+  LocalDate reportDate;
+  String diseaseOfSourceCase;
+  String caseIdInExternalSystem;
+  LocalDate dateOfLastContact;
+  String caseOrEventInformation;
   String responsibleDistrict;
   String responsibleRegion;
-  String sex;
+  String responsibleCommunity;
+  String additionalInformationOnContactType;
+  String typeOfContact;
+  String contactCategory;
+  String relationshipWithCase;
+  String descriptionOfHowContactTookPlace;
+  String uuid;
 }

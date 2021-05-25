@@ -31,7 +31,7 @@ import org.sormas.e2etests.pojo.Case;
 public class EditCaseSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
-  protected Case aCase;
+  public static Case aCase;
 
   @Inject
   public EditCaseSteps(WebDriverHelpers webDriverHelpers) {
@@ -63,6 +63,21 @@ public class EditCaseSteps implements En {
           Truth.assertThat(aCase.getDateOfBirth())
               .isEqualTo(CreateNewCaseSteps.caze.getDateOfBirth());
         });
+
+    When(
+        "I collect the case person UUID displayed on Edit case page",
+        () -> aCase = collectCasePersonUuid());
+
+    When(
+        "I click on New Task", () -> webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_BUTTON));
+
+    When(
+        "I click on first edit Task",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_TASK_BUTTON));
+  }
+
+  public Case collectCasePersonUuid() {
+    return Case.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
   }
 
   public Case collectCasePersonData() {
@@ -77,6 +92,7 @@ public class EditCaseSteps implements En {
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
         .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        .uuid(webDriverHelpers.getTextFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_REGION_INPUT))
         .responsibleDistrict(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_DISTRICT_INPUT))

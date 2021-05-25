@@ -17,6 +17,7 @@
  */
 package org.sormas.e2etests.pojo;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.*;
 
@@ -27,6 +28,7 @@ import lombok.*;
 public class Person {
   String passportNumber;
   String lastName;
+  LocalDate dateOfBirth;
   boolean covidCodeDelivered;
   Address address;
   String sex;
@@ -35,7 +37,7 @@ public class Person {
   String nationalHealthId;
   String firstName;
   String emailAddress;
-  String phone;
+  String phoneNumber;
   boolean pseudonymized;
   long changeDate;
   boolean hasCovidApp;

@@ -18,6 +18,8 @@
 
 package org.sormas.e2etests.steps.web.application;
 
+import static org.sormas.e2etests.enums.TestDataUser.*;
+
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import javax.inject.Named;
@@ -53,12 +55,23 @@ public class LoginSteps implements En {
         "I click on the Log In button",
         () -> webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON));
 
-    Given(
+    When(
         "I log in with the user",
         () -> {
           webDriverHelpers.accessWebSite(environmentUrl);
           webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, "NatUser");
           webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, "NatUser38118");
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+        });
+
+    Given(
+        "I log in as a ([^\"]*)",
+        (String userRole) -> {
+          webDriverHelpers.accessWebSite(environmentUrl);
+          webDriverHelpers.fillInWebElement(
+              LoginPage.USER_NAME_INPUT, gertUserByRole(userRole).getUsername());
+          webDriverHelpers.fillInWebElement(
+              LoginPage.USER_PASSWORD_INPUT, gertUserByRole(userRole).getPassword());
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
         });
   }
