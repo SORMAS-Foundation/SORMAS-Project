@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.steps.application.contacts;
+package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.*;
 
@@ -27,7 +27,6 @@ import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Person;
-import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
 
 public class EditContactPersonSteps implements En {
 
