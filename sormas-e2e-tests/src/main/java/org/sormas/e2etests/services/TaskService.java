@@ -21,7 +21,7 @@ package org.sormas.e2etests.services;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.sormas.e2etests.pojo.Task;
+import org.sormas.e2etests.pojo.web.Task;
 
 public class TaskService {
 

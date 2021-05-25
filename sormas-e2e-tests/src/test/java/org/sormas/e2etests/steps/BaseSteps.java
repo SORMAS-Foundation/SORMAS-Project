@@ -23,7 +23,7 @@ import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import io.qameta.allure.listener.StepLifecycleListener;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -47,16 +47,24 @@ public class BaseSteps implements StepLifecycleListener {
 
   @Before
   public void beforeScenario(Scenario scenario) {
-    driver = driverManager.borrowRemoteWebDriver(scenario.getName());
-    StepsLogger.setRemoteWebDriver(driver);
-    WebDriver.Options options = driver.manage();
-    options.window().maximize();
-    options.timeouts().setScriptTimeout(120, TimeUnit.SECONDS);
-    options.timeouts().pageLoadTimeout(120, TimeUnit.SECONDS);
+    if (isNonApiScenario(scenario)) {
+      driver = driverManager.borrowRemoteWebDriver(scenario.getName());
+      StepsLogger.setRemoteWebDriver(driver);
+      WebDriver.Options options = driver.manage();
+      options.window().maximize();
+      options.timeouts().setScriptTimeout(Duration.ofMinutes(2));
+      options.timeouts().pageLoadTimeout(Duration.ofMinutes(2));
+    }
   }
 
   @After
   public void afterScenario(Scenario scenario) {
-    driverManager.releaseRemoteWebDriver(scenario.getName());
+    if (isNonApiScenario(scenario)) {
+      driverManager.releaseRemoteWebDriver(scenario.getName());
+    }
+  }
+
+  private static boolean isNonApiScenario(Scenario scenario) {
+    return !scenario.getSourceTagNames().contains("@API");
   }
 }

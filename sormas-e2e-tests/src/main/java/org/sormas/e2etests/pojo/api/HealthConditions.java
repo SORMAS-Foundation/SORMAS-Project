@@ -15,20 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.state;
+package org.sormas.e2etests.pojo.api;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-import io.restassured.response.Response;
-import lombok.Getter;
-import lombok.Setter;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Person;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
+import lombok.Builder;
+import lombok.Value;
 
-@ScenarioScoped
-@Getter
-@Setter
-public class ApiState {
-  Response response;
-  Person editPerson;
-  Case createdCase;
+@Value
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderClassName = "builder")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class HealthConditions {
+  Boolean pseudonymized;
+  Long changeDate;
+  Long creationDate;
+  String uuid;
 }

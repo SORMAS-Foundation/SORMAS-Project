@@ -15,30 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
-package org.sormas.e2etests.pojo;
+package org.sormas.e2etests.pojo.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
-@Builder(toBuilder = true, builderClassName = "builder")
 @Value
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderClassName = "builder")
+@Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@NonNull
-public class Task {
-  String taskContext;
-  String taskType;
-  LocalDate suggestedStartDate;
-  LocalTime suggestedStartTime;
-  LocalDate dueDateDate;
-  LocalTime dueDateTime;
-  String assignedTo;
-  String priority;
-  String commentsOnTask;
-  String commentsOnExecution;
-  String taskStatus;
+public class HealthFacility {
+  String uuid;
 }

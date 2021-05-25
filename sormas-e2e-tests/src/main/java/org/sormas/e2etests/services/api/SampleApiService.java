@@ -15,20 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.state;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-import io.restassured.response.Response;
-import lombok.Getter;
-import lombok.Setter;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Person;
+package org.sormas.e2etests.services.api;
 
-@ScenarioScoped
-@Getter
-@Setter
-public class ApiState {
-  Response response;
-  Person editPerson;
-  Case createdCase;
+import com.google.inject.Inject;
+import java.util.Date;
+import java.util.UUID;
+import org.sormas.e2etests.pojo.api.*;
+
+public class SampleApiService {
+
+  @Inject
+  public SampleApiService() {}
+
+  public Sample buildGeneratedEvent(Case caze) {
+    return Sample.builder()
+        .uuid(UUID.randomUUID().toString())
+        .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())
+        .reportDateTime(new Date())
+        .sampleDateTime(new Date())
+        .associatedCase(AssociatedCase.builder().uuid(caze.getUuid()).build())
+        .sampleMaterial("BLOOD")
+        .samplePurpose("EXTERNAL")
+        .pathogenTestResult("PENDING")
+        .lab(Lab.builder().uuid(UUID.randomUUID().toString()).build())
+        .build();
+  }
 }
