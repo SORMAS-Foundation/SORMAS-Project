@@ -1,4 +1,4 @@
-@Sanity @Case
+@Sanity @Case @UI
 Feature: Create cases
 
   Scenario: Create and check a new case data

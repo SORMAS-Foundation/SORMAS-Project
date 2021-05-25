@@ -1,4 +1,4 @@
-@Sanity @Contacts
+@Sanity @Contacts @UI
 Feature: Create contacts
 
   Scenario: Create simple contact

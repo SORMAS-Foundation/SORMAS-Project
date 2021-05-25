@@ -45,7 +45,7 @@ public class BaseSteps implements StepLifecycleListener {
     return driver;
   }
 
-  @Before
+  @Before(value = "@UI")
   public void beforeScenario(Scenario scenario) {
     driver = driverManager.borrowRemoteWebDriver(scenario.getName());
     StepsLogger.setRemoteWebDriver(driver);
@@ -55,7 +55,7 @@ public class BaseSteps implements StepLifecycleListener {
     options.timeouts().pageLoadTimeout(120, TimeUnit.SECONDS);
   }
 
-  @After
+  @After(value = "@UI")
   public void afterScenario(Scenario scenario) {
     driverManager.releaseRemoteWebDriver(scenario.getName());
   }

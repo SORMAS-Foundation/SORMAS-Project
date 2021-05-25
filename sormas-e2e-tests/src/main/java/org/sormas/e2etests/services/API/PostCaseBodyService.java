@@ -15,12 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.constants.api;
 
-public interface Endpoints {
-  String PERSONS = "persons/";
-  String CASES = "cases/";
-  String COMMUNITIES = "communities/";
-  String COUNTRIES = "countries/";
-  String FACILITIES = "facilities/";
+package org.sormas.e2etests.services.API;
+
+public class PostCaseBodyService {
+
+  //  public String generatePostCaseBody() {
+  //    try {
+  //      Map<String, Object> postBody = TestUtils.deserializeFromJson(new
+  // File(POST_CASES_JSON_BODY));
+  //      Map<String, Object> district = (Map<String, Object>) postBody.get("district");
+  //      Map<String, Object> region = (Map<String, Object>) postBody.get("region");
+  //
+  //    } catch (IOException ioe) {
+  //      System.out.println(ioe.getMessage());
+  //      // TestUtils.logError("Could not build the post json body", new AssertionError(ioe));
+  //    }
+  //  }
 }

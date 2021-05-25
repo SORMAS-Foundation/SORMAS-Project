@@ -1,4 +1,4 @@
-@Sanity @Login
+@Sanity @Login @UI
 Feature: Login with different type of users
 
   @issue=5402

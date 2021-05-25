@@ -17,10 +17,6 @@
  */
 package org.sormas.e2etests.constants.api;
 
-public interface Endpoints {
-  String PERSONS = "persons/";
-  String CASES = "cases/";
-  String COMMUNITIES = "communities/";
-  String COUNTRIES = "countries/";
-  String FACILITIES = "facilities/";
+public interface ResourceFiles {
+  String POST_CASES_JSON_BODY = "src/test/resources/JsonFiles/PostCase.json";
 }

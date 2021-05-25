@@ -1,4 +1,4 @@
-@Sanity @Task
+@Sanity @Task @UI
 Feature: Create Tasks
 
   Scenario: Create and check a new case data
