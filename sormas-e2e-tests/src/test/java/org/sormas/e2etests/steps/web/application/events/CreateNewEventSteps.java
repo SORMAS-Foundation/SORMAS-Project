@@ -18,7 +18,9 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.*;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ADD_PARTICIPANT_BUTTON;
 
 import com.github.javafaker.Faker;
@@ -26,11 +28,14 @@ import cucumber.api.java8.En;
 
 import javax.inject.Inject;
 
+import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.Event;
 
 public class CreateNewEventSteps implements En {
 
     private final WebDriverHelpers webDriverHelpers;
+    protected static Event event;
 
     @Inject
     public CreateNewEventSteps(WebDriverHelpers webDriverHelpers) {
@@ -40,11 +45,50 @@ public class CreateNewEventSteps implements En {
                 "^I create a new event",
                 () -> {
                     String timestamp = String.valueOf(System.currentTimeMillis());
-                    webDriverHelpers.fillInWebElement(TITLE_INPUT, "EVENT_AUTOMATION" + timestamp + Faker.instance().name().name());
+                    webDriverHelpers.fillInWebElement(
+                            TITLE_INPUT, "EVENT_AUTOMATION" + timestamp + Faker.instance().name().name());
                     webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
                     webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_PARTICIPANT_BUTTON);
                 });
-
+        When(
+                "^I create a new event with status ([^\"]*)",
+                (String eventStatus) -> {
+                    event = collectEventUuid();
+                    String timestamp = String.valueOf(System.currentTimeMillis());
+                    webDriverHelpers.fillInWebElement(TITLE_INPUT, "EVENT_AUTOMATION" + timestamp);
+                    selectEventStatus(eventStatus);
+                    webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+                    webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_PARTICIPANT_BUTTON);
+                });
+        When(
+                "^I change the event status to ([^\"]*)",
+                (String eventStatus) -> {
+                    selectEventStatus(eventStatus);
+                    webDriverHelpers.scrollToElement(SAVE_BUTTON);
+                    webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+                    webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAVE_BUTTON);
+                });
+        When(
+                "^I search for specific event in event directory",
+                () -> {
+                    webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
+                    final String eventUuid = event.getUuid();
+                    webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_EVENT_BY_FREE_TEXT);
+                    webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT, eventUuid);
+                    webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+                });
+        When(
+                "^I check if it appears under ([^\"]*) filter in event directory",
+                (String eventStatus) -> {
+                    By byEventStatus = getByEventStatus(eventStatus);
+                    final String eventUuid = event.getUuid();
+                    webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
+                    webDriverHelpers.clickOnWebElementBySelector(byEventStatus);
+                    webDriverHelpers.waitUntilElementIsVisibleAndClickable(byEventStatus);
+                    webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
+                    webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_STATUS_OPTIONS);
+                });
+        When("I collect the UUID displayed on Edit event page", () -> event = collectEventUuid());
         When(
                 "^I validate create a new event popup",
                 () -> {
@@ -115,7 +159,8 @@ public class CreateNewEventSteps implements En {
                     webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_EMAIL);
                     webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_INSTITUTIONAL_PARTNER);
                     selectSourceInstitutionalPartner("Other");
-                    webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_INSTITUTIONAL_PARTNER_DETAILS);
+                    webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                            SOURCE_INSTITUTIONAL_PARTNER_DETAILS);
                     selectTypeOfPlace("Facility");
                     webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_CATEGORY);
                     webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_TYPE);
@@ -142,6 +187,10 @@ public class CreateNewEventSteps implements En {
                 });
     }
 
+    public Event collectEventUuid() {
+        return Event.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
+    }
+
     public void selectEventStatus(String eventStatus) {
         webDriverHelpers.clickWebElementByText(EVENT_STATUS_OPTIONS, eventStatus);
     }
@@ -151,7 +200,8 @@ public class CreateNewEventSteps implements En {
     }
 
     public void selectEventManagementStatusOption(String eventManagementStatusOption) {
-        webDriverHelpers.clickWebElementByText(EVENT_MANAGEMENT_STATUS_OPTIONS, eventManagementStatusOption);
+        webDriverHelpers.clickWebElementByText(
+                EVENT_MANAGEMENT_STATUS_OPTIONS, eventManagementStatusOption);
     }
 
     public void fillStartData(String startData) {
@@ -163,7 +213,8 @@ public class CreateNewEventSteps implements En {
     }
 
     public void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
-        webDriverHelpers.clickWebElementByText(EVENT_INVESTIGATION_STATUS_OPTIONS, eventInvestigationStatusOption);
+        webDriverHelpers.clickWebElementByText(
+                EVENT_INVESTIGATION_STATUS_OPTIONS, eventInvestigationStatusOption);
     }
 
     public void selectDisease(String disease) {

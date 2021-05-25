@@ -24,5 +24,5 @@ import lombok.*;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
 public class Event {
-  String eventId;
+  String uuid;
 }
