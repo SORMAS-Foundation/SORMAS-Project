@@ -26,8 +26,8 @@ import java.util.List;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.RestAssuredClient;
-import org.sormas.e2etests.pojo.api.Sample;
 import org.sormas.e2etests.pojo.api.Request;
+import org.sormas.e2etests.pojo.api.Sample;
 
 public class SampleHelper {
 
