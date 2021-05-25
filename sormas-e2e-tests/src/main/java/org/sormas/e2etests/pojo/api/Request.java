@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo.web;
+package org.sormas.e2etests.pojo.api;
 
 import io.restassured.http.Method;
 import lombok.*;

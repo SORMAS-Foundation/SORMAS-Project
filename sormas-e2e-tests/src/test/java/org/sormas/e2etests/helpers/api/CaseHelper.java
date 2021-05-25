@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.web.Request;
+import org.sormas.e2etests.pojo.api.Request;
 
 public class CaseHelper {
 
