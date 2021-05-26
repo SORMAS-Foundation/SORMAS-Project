@@ -45,6 +45,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,6 +147,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private VaccinationInfoFacadeEjbLocal vaccinationInfoFacade;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
+	@EJB
+	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	@Override
 	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid) {
@@ -252,6 +256,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {
+		if (!featureConfigurationFacade.isFeatureEnabled(FeatureType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS_NOTIFICATIONS)) {
+			return;
+		}
+
 		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
 		Map<String, User> responsibleUserByEventUuid = eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
 			eventParticipant.getPerson().getUuid(), event.getUuid(), event.getDisease(), fromDate);
@@ -265,8 +273,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 						DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
 						DataHelper.getShortUuid(eventParticipant.getUuid()),
 						DataHelper.getShortUuid(event.getUuid()),
-						buildCaptionForUserInNotification(event.getResponsibleUser()),
-						buildCaptionForUserInNotification(userService.getCurrentUser()),
+						User.buildCaptionForNotification(event.getResponsibleUser()),
+						User.buildCaptionForNotification(userService.getCurrentUser()),
 						buildEventListContentForNotification(responsibleUserByEventUuid)),
 					MessageType.EMAIL,
 					MessageType.SMS);
@@ -291,19 +299,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return String.format(
 			I18nProperties.getString(Strings.notificationEventWithResponsibleUserLine),
 			DataHelper.getShortUuid(eventUuid),
-			buildCaptionForUserInNotification(responsibleUser));
-	}
-
-	private String buildCaptionForUserInNotification(User user) {
-		if (user == null) {
-			return "-";
-		}
-
-		String caption = user.getFirstName() + " " + user.getLastName();
-		if (user.getUserEmail() != null) {
-			caption += " (" + user.getUserEmail() + ")";
-		}
-		return caption;
+			User.buildCaptionForNotification(responsibleUser));
 	}
 
 	@Override

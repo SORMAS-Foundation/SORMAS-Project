@@ -203,9 +203,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			cb.not(cb.equal(eventRoot.get(Event.UUID), excludedEventUuid)),
 			cb.equal(eventRoot.get(Event.DISEASE), disease),
 			createActiveEventsFilter(cb, eventRoot),
-			cb.or(
-				CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.START_DATE), timestamp),
-				CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.END_DATE), timestamp)),
+			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.REPORT_DATE_TIME), timestamp),
 			cb.isNotNull(responsibleUserJoin.get(User.USER_EMAIL)));
 		cq.where(filter);
 		cq.multiselect(eventRoot.get(Event.UUID), responsibleUserJoin);
