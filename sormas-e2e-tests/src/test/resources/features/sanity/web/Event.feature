@@ -37,3 +37,12 @@ Feature: Create events
       And I click on the Events button from navbar
       And I search for specific event in event directory
      Then I check if it appears under DROPPED filter in event directory
+
+  Scenario: Create and check a new event data
+    Given I log in as a National User
+      And I click on the Events button from navbar
+      And I click on the NEW EVENT button
+     When I create a new event with specific data
+      And I click on the Events button from navbar
+      And I search for specific event in event directory
+     Then I check the created data is correctly displayed in event edit page

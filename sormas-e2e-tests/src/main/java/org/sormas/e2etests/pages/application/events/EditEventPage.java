@@ -15,32 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo;
 
-import java.time.LocalDate;
-import lombok.*;
+package org.sormas.e2etests.pages.application.events;
 
-@Value
-@AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@Builder(toBuilder = true, builderClassName = "builder")
-public class Event {
-  String uuid;
-  String eventStatus;
-  String investigationStatus;
-  String eventManagementStatus;
-  String title;
-  LocalDate eventDate;
-  LocalDate eventEvolutionDate;
-  LocalDate reportDate;
-  String eventLocation;
-  String reportingUser;
-  String riskLevel;
-  String disease;
-  String description;
-  String region;
-  String district;
-  String community;
-  String sourceType;
-  String responsibleUser;
+import org.openqa.selenium.By;
+
+public class EditEventPage {
+  public static final By UUID_INPUT = By.id("uuid");
+  public static final By EVENT_SAVED_MESSAGE = By.xpath("//*[contains(text(),'Event saved')]");
 }

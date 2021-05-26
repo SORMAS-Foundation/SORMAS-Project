@@ -15,32 +15,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo;
 
+package org.sormas.e2etests.services;
+
+import com.github.javafaker.Faker;
+import com.google.inject.Inject;
 import java.time.LocalDate;
-import lombok.*;
+import org.sormas.e2etests.pojo.Event;
 
-@Value
-@AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@Builder(toBuilder = true, builderClassName = "builder")
-public class Event {
-  String uuid;
-  String eventStatus;
-  String investigationStatus;
-  String eventManagementStatus;
-  String title;
-  LocalDate eventDate;
-  LocalDate eventEvolutionDate;
-  LocalDate reportDate;
-  String eventLocation;
-  String reportingUser;
-  String riskLevel;
-  String disease;
-  String description;
-  String region;
-  String district;
-  String community;
-  String sourceType;
-  String responsibleUser;
+public class EventService {
+  private final Faker faker;
+
+  @Inject
+  public EventService(Faker faker) {
+    this.faker = faker;
+  }
+
+  public Event buildGeneratedEvent() {
+    String timestamp = String.valueOf(System.currentTimeMillis());
+    return Event.builder()
+        .eventStatus("EVENT")
+        .investigationStatus("ONGOING INVESTIGATION")
+        .eventManagementStatus("ONGOING")
+        .disease("COVID-19")
+        .title("EVENT_AUTOMATION_" + timestamp)
+        .eventDate(LocalDate.now().minusDays(1))
+        .reportDate(LocalDate.now())
+        .eventLocation("Home")
+        .riskLevel("Moderate risk")
+        .sourceType("Not applicable")
+        .build();
+  }
 }
