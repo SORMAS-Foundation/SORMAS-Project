@@ -630,7 +630,9 @@ public class StartupShutdownService {
 
 		// Check postgres version
 		String versionString = entityManager.createNativeQuery("SHOW server_version").getSingleResult().toString();
-		if (!isSupportedDatabaseVersion(versionString)) {
+		if (isSupportedDatabaseVersion(versionString)) {
+			logger.debug("Your PostgreSQL Version ({}) is currently supported.", versionString);
+		} else {
 			logger.warn("Your PostgreSQL Version ({}) is currently not supported.", versionString);
 		}
 
