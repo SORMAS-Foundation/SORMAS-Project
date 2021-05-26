@@ -44,6 +44,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
@@ -152,7 +153,7 @@ public class TaskGridComponent extends VerticalLayout {
 		{
 			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW_ARCHIVED)) {
-				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
@@ -175,32 +176,33 @@ public class TaskGridComponent extends VerticalLayout {
 				final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
 				menuBarItems.add(
-						new MenuBarHelper.MenuBarItem(
-								I18nProperties.getCaption(Captions.bulkEdit),
-								VaadinIcons.ELLIPSIS_H,
-								mi -> ControllerProvider.getTaskController().showBulkTaskDataEditComponent(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
-								hasBulkOperationsRight));
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.bulkEdit),
+						VaadinIcons.ELLIPSIS_H,
+						mi -> ControllerProvider.getTaskController()
+							.showBulkTaskDataEditComponent(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
+						hasBulkOperationsRight));
 				menuBarItems.add(
-						new MenuBarHelper.MenuBarItem(
-								I18nProperties.getCaption(Captions.bulkDelete),
-								VaadinIcons.TRASH,
-								selectedItem -> ControllerProvider.getTaskController()
-										.deleteAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
-								hasBulkOperationsRight));
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.bulkDelete),
+						VaadinIcons.TRASH,
+						selectedItem -> ControllerProvider.getTaskController()
+							.deleteAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
+						hasBulkOperationsRight));
 				menuBarItems.add(
-						new MenuBarHelper.MenuBarItem(
-								I18nProperties.getCaption(Captions.actionArchive),
-								VaadinIcons.ARCHIVE,
-								mi -> ControllerProvider.getTaskController()
-										.archiveAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
-								hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.actionArchive),
+						VaadinIcons.ARCHIVE,
+						mi -> ControllerProvider.getTaskController()
+							.archiveAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
+						hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
 				menuBarItems.add(
-						new MenuBarHelper.MenuBarItem(
-								I18nProperties.getCaption(Captions.actionDearchive),
-								VaadinIcons.ARCHIVE,
-								mi -> ControllerProvider.getTaskController()
-										.dearchiveAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
-								hasBulkOperationsRight && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.actionDearchive),
+						VaadinIcons.ARCHIVE,
+						mi -> ControllerProvider.getTaskController()
+							.dearchiveAllSelectedItems(this.grid.asMultiSelect().getSelectedItems(), () -> tasksView.navigateTo(criteria)),
+						hasBulkOperationsRight && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
 

@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.configuration.infrastructure.components;
 
 import java.util.function.BiConsumer;
 
+import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -29,6 +30,7 @@ public class CountryCombo extends ComboBox {
 	public CountryCombo(BiConsumer<CountryReferenceDto, Boolean> changeHandler) {
 		setId(RegionDto.COUNTRY);
 		setWidth(140, Unit.PIXELS);
+		setFilteringMode(FilteringMode.CONTAINS);
 		setCaption(I18nProperties.getPrefixCaption(RegionDto.I18N_PREFIX, RegionDto.COUNTRY));
 		addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
 

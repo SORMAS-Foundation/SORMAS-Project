@@ -79,12 +79,11 @@ import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.DashboardContactDto;
-import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.exposure.ExposureDto;
@@ -183,6 +182,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
+
 	private static final long SECONDS_30_DAYS = TimeUnit.DAYS.toSeconds(30L);
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -1283,24 +1283,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
-		RegionReferenceDto regionRef,
-		DistrictReferenceDto districtRef,
-		Disease disease,
-		Date from,
-		Date to) {
-
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
-		User user = userService.getCurrentUser();
-
-		List<DashboardQuarantineDataDto> dashboardContactsInQuarantine =
-			contactService.getQuarantineDataForDashBoard(region, district, disease, from, to, user);
-
-		return dashboardContactsInQuarantine;
-	}
-
-	@Override
 	public List<ContactDto> getByPersonUuids(List<String> personUuids) {
 		return contactService.getByPersonUuids(personUuids).stream().map(ContactFacadeEjb::toDto).collect(Collectors.toList());
 	}
@@ -1825,9 +1807,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		Predicate nameSimilarityFilter =
 			cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), configFacade.getNameSimilarityThreshold());
 		Predicate diseaseFilter = cb.equal(root.get(Contact.DISEASE), root2.get(Contact.DISEASE));
-		Predicate regionFilter = cb.or(
-			cb.or(cb.isNull(region.get(Region.ID)), cb.isNull(region2.get(Region.ID))),
-			cb.equal(region.get(Region.ID), region2.get(Region.ID)));
+		Predicate regionFilter = cb
+			.or(cb.or(cb.isNull(region.get(Region.ID)), cb.isNull(region2.get(Region.ID))), cb.equal(region.get(Region.ID), region2.get(Region.ID)));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 			cb.abs(
 				cb.diff(
@@ -1907,7 +1888,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 					if (parent.getCompleteness() == null && child.getCompleteness() == null
 						|| parent.getCompleteness() != null
-						&& (child.getCompleteness() == null || (parent.getCompleteness() >= child.getCompleteness()))) {
+							&& (child.getCompleteness() == null || (parent.getCompleteness() >= child.getCompleteness()))) {
 						resultList.add(
 							new MergeContactIndexDto[] {
 								parent,

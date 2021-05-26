@@ -24,4 +24,5 @@ public class NavBarPage {
   public static final By CASES_BUTTON = By.cssSelector("div#cases");
   public static final By CONTACTS_BUTTON = By.cssSelector("div#contacts");
   public static final By EVENTS_BUTTON = By.cssSelector("div#events");
+  public static final By TASKS_BUTTON = By.cssSelector("div#tasks");
 }
