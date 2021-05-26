@@ -28,7 +28,7 @@ public class SampleApiService {
   @Inject
   public SampleApiService() {}
 
-  public Sample buildGeneratedEvent(Case caze) {
+  public Sample buildGeneratedSample(Case caze) {
     return Sample.builder()
         .uuid(UUID.randomUUID().toString())
         .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())

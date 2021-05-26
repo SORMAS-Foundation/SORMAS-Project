@@ -33,7 +33,7 @@ public class SamplesSteps implements En {
     When(
         "API: I create a new sample",
         () -> {
-          Sample sample = sampleApiService.buildGeneratedEvent(apiState.getCreatedCase());
+          Sample sample = sampleApiService.buildGeneratedSample(apiState.getCreatedCase());
           sampleHelper.createSample(sample);
         });
   }
