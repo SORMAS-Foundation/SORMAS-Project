@@ -46,6 +46,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import net.minidev.json.JSONObject;
 
 @Remote
 public interface CaseFacade {
@@ -66,6 +67,10 @@ public interface CaseFacade {
 	Page<CaseIndexDetailedDto> getIndexDetailedPage(CaseCriteria caseCriteria, Integer offset, Integer max, List<SortProperty> sortProperties);
 
 	List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer offset, Integer max, List<SortProperty> sortProperties);
+
+	CaseDataDto patch(String uuid, Map<String, Object> updates);
+
+	CaseDataDto patchJson(String uuid, JSONObject jsonObject);
 
 	List<CaseExportDto> getExportList(
 		CaseCriteria caseCriteria,

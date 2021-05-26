@@ -21,6 +21,7 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -74,6 +75,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
@@ -290,6 +294,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.utils.CaseJoins;
+import net.minidev.json.JSONObject;
 
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
@@ -584,6 +589,57 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return cases;
+	}
+
+	public CaseDataDto patch(String uuid, Map<String, Object> updates) {
+		CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
+		updates.forEach((attribute, value) -> {
+			try {
+				Field field = existingCaseDto.getClass().getDeclaredField(attribute);
+				field.setAccessible(true);
+				if (field.getType().isEnum()) {
+					field.set(existingCaseDto, Enum.valueOf((Class<Enum>) field.getType(), value.toString()));
+
+				} else {
+					field.set(existingCaseDto, value);
+				}
+				field.setAccessible(false);
+			} catch (IllegalAccessException | NoSuchFieldException e) {
+				e.printStackTrace();
+			}
+		});
+		return saveCase(existingCaseDto);
+	}
+
+	public CaseDataDto patchJson(String uuid, JSONObject jsonObject) {
+
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			CaseDataDto updateCaseDto = mapper.readValue(jsonObject.toString(), CaseDataDto.class);
+			Set<String> attributes = jsonObject.keySet();
+			CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
+			attributes.forEach(attribute -> {
+				try {
+					Field existingField = existingCaseDto.getClass().getDeclaredField(attribute);
+					Field updateField = updateCaseDto.getClass().getDeclaredField(attribute);
+					existingField.setAccessible(true);
+					updateField.setAccessible(true);
+					existingField.set(existingCaseDto, updateField.get(updateCaseDto));
+					existingField.setAccessible(false);
+					updateField.setAccessible(false);
+				} catch (IllegalAccessException | NoSuchFieldException e) {
+					e.printStackTrace();
+				}
+
+			});
+
+			return saveCase(existingCaseDto);
+
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+
 	}
 
 	@Override
