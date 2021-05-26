@@ -142,6 +142,7 @@ public class EditContactSteps implements En {
             webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_COMBOBOX))
         .descriptionOfHowContactTookPlace(
             webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
   }
 
