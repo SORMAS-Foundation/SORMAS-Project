@@ -90,7 +90,16 @@
                 app:rounded="true" />
 
             <de.symeda.sormas.app.component.controls.ControlButton
-                android:id="@+id/synch_lbds"
+                android:id="@+id/kex_lbds"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/buttonControlMarginBottom"
+                android:text="@string/action_kex_lbds"
+                app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
+                app:rounded="true" />
+
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/sync_lbds"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/buttonControlMarginBottom"
