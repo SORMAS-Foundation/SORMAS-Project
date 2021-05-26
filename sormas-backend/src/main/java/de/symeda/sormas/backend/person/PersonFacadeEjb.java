@@ -332,11 +332,11 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public PersonDto savePersonAndNotifyExternalJournal(@Valid PersonDto source) throws ValidationRuntimeException {
-		return savePersonAndNotifyExternalJournal(source, true);
+	public PersonDto savePerson(@Valid PersonDto source) throws ValidationRuntimeException {
+		return savePerson(source, true);
 	}
 
-	public PersonDto savePersonAndNotifyExternalJournal(PersonDto source, boolean checkChangeDate) throws ValidationRuntimeException {
+	public PersonDto savePerson(PersonDto source, boolean checkChangeDate) throws ValidationRuntimeException {
 		Person person = personService.getByUuid(source.getUuid());
 
 		PersonDto existingPerson = toDto(person);
@@ -360,7 +360,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public Pair<CaseClassification, PersonDto> savePerson(PersonDto source) throws ValidationRuntimeException {
+	public Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(PersonDto source) throws ValidationRuntimeException {
 		Person existingPerson = personService.getByUuid(source.getUuid());
 		PersonDto existingPersonDto = toDto(existingPerson);
 
@@ -670,7 +670,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	public boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status) {
 		PersonDto person = getPersonByUuid(personUuid);
 		person.setSymptomJournalStatus(status);
-		savePersonAndNotifyExternalJournal(person);
+		savePerson(person);
 		return true;
 	}
 

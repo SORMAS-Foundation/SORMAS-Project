@@ -613,7 +613,7 @@ public class CaseController {
 					dto.setWasInQuarantineBeforeIsolation(YesNoUnknown.YES);
 
 					transferDataToPerson(createForm, person);
-					FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(person);
+					FacadeProvider.getPersonFacade().savePerson(person);
 
 					saveCase(dto);
 					// retrieve the contact just in case it has been changed during case saving
@@ -661,13 +661,13 @@ public class CaseController {
 					if (dbPerson == null) {
 						PersonDto personDto = PersonDto.build();
 						transferDataToPerson(createForm, personDto);
-						FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(personDto);
+						FacadeProvider.getPersonFacade().savePerson(personDto);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 						dto.setPerson(personDto.toReference());
 						saveCase(dto);
 					} else {
 						transferDataToPerson(createForm, dbPerson);
-						FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(dbPerson);
+						FacadeProvider.getPersonFacade().savePerson(dbPerson);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 						saveCase(dto);
 					}

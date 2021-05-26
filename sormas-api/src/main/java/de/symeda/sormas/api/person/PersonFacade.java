@@ -43,9 +43,9 @@ public interface PersonFacade {
 
 	JournalPersonDto getPersonForJournal(String uuid);
 
-	PersonDto savePersonAndNotifyExternalJournal(@Valid PersonDto dto);
+	PersonDto savePerson(@Valid PersonDto dto);
 
-	DataHelper.Pair<CaseClassification, PersonDto> savePerson(@Valid PersonDto source);
+	DataHelper.Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(@Valid PersonDto source);
 
 	void validate(PersonDto dto);
 

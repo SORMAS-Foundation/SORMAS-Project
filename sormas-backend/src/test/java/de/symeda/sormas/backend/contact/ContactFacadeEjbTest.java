@@ -960,7 +960,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactPerson.getAddress().setHouseNumber("Test number");
 		contactPerson.getAddress().setAdditionalInformation("Test information");
 		contactPerson.getAddress().setPostalCode("1234");
-		getPersonFacade().savePersonAndNotifyExternalJournal(contactPerson);
+		getPersonFacade().savePerson(contactPerson);
 
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
@@ -1369,7 +1369,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		UserReferenceDto otherUserReference = new UserReferenceDto(otherUser.getUuid());
 		PersonDto otherPerson = creator.createPerson("Max", "Smith");
 		otherPerson.setBirthWeight(2);
-		getPersonFacade().savePersonAndNotifyExternalJournal(otherPerson);
+		getPersonFacade().savePerson(otherPerson);
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
 		RDCF otherRdcf = creator.createRDCF();
 		ContactDto otherContact = creator.createContact(

@@ -71,7 +71,7 @@ public class PersonResource extends EntityDtoResource {
 	@POST
 	@Path("/push")
 	public List<PushResult> postPersons(@Valid List<PersonDto> dtos) {
-		return savePushedDto(dtos, FacadeProvider.getPersonFacade()::savePersonAndNotifyExternalJournal);
+		return savePushedDto(dtos, FacadeProvider.getPersonFacade()::savePerson);
 	}
 
 	@GET

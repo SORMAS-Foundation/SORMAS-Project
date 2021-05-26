@@ -1728,7 +1728,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		PersonDto leadPerson = personFacade.getPersonByUuid(leadContactDto.getPerson().getUuid());
 		PersonDto otherPerson = personFacade.getPersonByUuid(otherContactDto.getPerson().getUuid());
 		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
-		personFacade.savePersonAndNotifyExternalJournal(leadPerson);
+		personFacade.savePerson(leadPerson);
 
 		// 2 Change ContactReference
 		Contact leadContact = contactService.getByUuid(leadContactDto.getUuid());
