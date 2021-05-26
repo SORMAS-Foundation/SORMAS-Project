@@ -21,11 +21,15 @@ public class StartupShutdownServiceTest {
 
 	private String[] supportedDatabaseVersions = new String[] {
 		"9.5",
+		"9.5.25",
+		"9.6.5",
 		"9.6",
-		"10.1" };
+		"10.1",
+		"10.14 (Ubuntu 10.14-1.pgdg20.04+1)" };
 
 	private String[] unsupportedDatabaseVersions = new String[] {
 		"8.4",
+		"8.4.22",
 		"9.1",
 		"11.0" };
 

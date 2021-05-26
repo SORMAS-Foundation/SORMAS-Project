@@ -665,8 +665,9 @@ public class StartupShutdownService {
 	 */
 	static boolean isSupportedDatabaseVersion(String versionString) {
 
-		String versionRegexp = Stream.of("9\\.5", "9\\.6", "10\\.\\d+").collect(Collectors.joining(")|(", "(", ")"));
-		return versionString.matches(versionRegexp);
+		String versionBegin = versionString.split(" ")[0];
+		String versionRegexp = Stream.of("9\\.5", "9\\.5\\.\\d+", "9\\.6", "9\\.6\\.\\d+", "10\\.\\d+").collect(Collectors.joining(")|(", "(", ")"));
+		return versionBegin.matches(versionRegexp);
 	}
 
 	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
