@@ -20,8 +20,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -31,6 +33,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -38,13 +41,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.security.auth.x500.X500Principal;
+
+import org.hzi.sormas.lbds.messaging.LbdsHelper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -81,6 +85,11 @@ public final class ConfigProvider {
 	private static String SERVER_COUNTRY_NAME = "countryname";
 	private static String INITIAL_SYNC_REQUIRED = "initialSyncRequired";
 
+	private static String LBDS_SORMAS_PRIVATE_KEY = "lbdsSormasPrivateKey";
+	private static String LBDS_SORMAS_PUBLIC_KEY = "lbdsSormasPublicKey";
+	private static String LBDS_SERVICE_PUBLIC_KEY = "lbdsServicePublicKey";
+	private static String LBDS_AES_SECRET = "lbdsAesSecret";
+
 	private static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
 
 	public static ConfigProvider instance = null;
@@ -109,6 +118,11 @@ public final class ConfigProvider {
 	private String serverCountryName;
 	private Boolean repullNeeded;
 	private Boolean initialSyncRequired;
+
+	private PrivateKey lbdsSormasPrivateKey;
+	private PublicKey lbdsSormasPublicKey;
+	private PublicKey lbdsServicePublicKey;
+	private String lbdsAesSecret;
 
 	private ConfigProvider(Context context) {
 		this.context = context;
@@ -760,5 +774,88 @@ public final class ConfigProvider {
 
 		instance.initialSyncRequired = initialSyncRequired;
 		DatabaseHelper.getConfigDao().createOrUpdate(new Config(INITIAL_SYNC_REQUIRED, String.valueOf(initialSyncRequired)));
+	}
+
+	public static void resetLbdsSormasKeys() {
+		try {
+			KeyPair rsa = KeyPairGenerator.getInstance("RSA").genKeyPair();
+			instance.lbdsSormasPrivateKey = rsa.getPrivate();
+			instance.lbdsSormasPublicKey = rsa.getPublic();
+
+			DatabaseHelper.getConfigDao()
+				.createOrUpdate(new Config(LBDS_SORMAS_PRIVATE_KEY, LbdsHelper.getPKCS8FromPrivetKey(instance.lbdsSormasPrivateKey)));
+			DatabaseHelper.getConfigDao()
+				.createOrUpdate(new Config(LBDS_SORMAS_PUBLIC_KEY, LbdsHelper.getX509FromPublicKey(instance.lbdsSormasPublicKey)));
+
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static PrivateKey getLbdsSormasPrivateKey() {
+		if (instance.lbdsSormasPrivateKey == null) {
+			Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_SORMAS_PRIVATE_KEY);
+			if (config != null) {
+				try {
+					instance.lbdsSormasPrivateKey = LbdsHelper.getPrivateKeyFromPKCS8(config.getValue());
+				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+					throw new RuntimeException(e);
+				}
+			} else {
+				resetLbdsSormasKeys();
+			}
+		}
+		return instance.lbdsSormasPrivateKey;
+	}
+
+	public static PublicKey getLbdsSormasPublicKey() {
+		if (instance.lbdsSormasPublicKey == null) {
+			Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_SORMAS_PUBLIC_KEY);
+			if (config != null) {
+				try {
+					instance.lbdsSormasPublicKey = LbdsHelper.getPublicKeyFromX509(config.getValue());
+				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+					throw new RuntimeException(e);
+				}
+			} else {
+				resetLbdsSormasKeys();
+			}
+		}
+		return instance.lbdsSormasPublicKey;
+	}
+
+	public static PublicKey getLbdsServicePublicKey() {
+		if (instance.lbdsServicePublicKey == null) {
+			Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_SERVICE_PUBLIC_KEY);
+			if (config != null) {
+				try {
+					instance.lbdsServicePublicKey = LbdsHelper.getPublicKeyFromX509(config.getValue());
+				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		return instance.lbdsServicePublicKey;
+	}
+
+	public static void setLbdsServicePublicKey(PublicKey lbdsServicePublicKey) {
+		instance.lbdsServicePublicKey = lbdsServicePublicKey;
+		DatabaseHelper.getConfigDao().createOrUpdate(new Config(LBDS_SERVICE_PUBLIC_KEY, LbdsHelper.getX509FromPublicKey(lbdsServicePublicKey)));
+	}
+
+	public static String getLbdsAesSecret() {
+		if (instance.lbdsServicePublicKey == null) {
+			Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_AES_SECRET);
+			if (config != null) {
+				instance.lbdsAesSecret = new String(Base64.decode(config.getValue(), Base64.DEFAULT), StandardCharsets.UTF_8);
+			}
+		}
+		return instance.lbdsAesSecret;
+	}
+
+	public static void setLbdsAesSecret(String lbdsAesSecret) {
+		instance.lbdsAesSecret = lbdsAesSecret;
+		DatabaseHelper.getConfigDao()
+			.createOrUpdate(new Config(LBDS_AES_SECRET, Base64.encodeToString(lbdsAesSecret.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT)));
 	}
 }

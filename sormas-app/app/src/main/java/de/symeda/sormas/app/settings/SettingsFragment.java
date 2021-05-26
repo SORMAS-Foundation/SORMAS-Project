@@ -17,8 +17,7 @@ package de.symeda.sormas.app.settings;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
+import java.security.PublicKey;
 import java.util.List;
 
 import org.hzi.sormas.lbds.core.http.HttpContainer;
@@ -26,6 +25,7 @@ import org.hzi.sormas.lbds.core.http.HttpMethod;
 import org.hzi.sormas.lbds.messaging.LbdsPropagateKexToLbdsIntent;
 import org.hzi.sormas.lbds.messaging.LbdsRelated;
 import org.hzi.sormas.lbds.messaging.LbdsSendIntent;
+import org.hzi.sormas.lbds.messaging.util.KeySerializationUtil;
 
 import com.google.gson.Gson;
 
@@ -42,8 +42,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.LocaleManager;
@@ -103,14 +103,16 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.resynchronizeData.setOnClickListener(v -> repullData());
 		binding.showSyncLog.setOnClickListener(v -> openSyncLog());
 		binding.logout.setOnClickListener(v -> logout());
-		binding.synchLbds.setOnClickListener(v -> syncLbds());
+		binding.kexLbds.setOnClickListener(v -> kexLbds());
+		binding.syncLbds.setOnClickListener(v -> syncLbds());
 
 		binding.sormasVersion.setText("SORMAS " + InfoProvider.get().getVersion());
 		binding.sormasVersion.setOnClickListener(v -> {
 			versionClickedCount++;
 			if (isShowDevOptions()) {
 				binding.settingsServerUrl.setVisibility(View.VISIBLE);
-				binding.synchLbds.setVisibility(View.VISIBLE);
+				binding.kexLbds.setVisibility(View.VISIBLE);
+				binding.syncLbds.setVisibility(View.VISIBLE);
 				if (ConfigProvider.getUser() != null) {
 					binding.logout.setVisibility(View.VISIBLE);
 				}
@@ -163,7 +165,8 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.logout.setVisibility(hasUser && isShowDevOptions() ? View.VISIBLE : View.GONE);
-		binding.synchLbds.setVisibility(hasUser && isShowDevOptions() ? View.VISIBLE : View.GONE);
+		binding.kexLbds.setVisibility(hasUser && isShowDevOptions() ? View.VISIBLE : View.GONE);
+		binding.syncLbds.setVisibility(hasUser && isShowDevOptions() ? View.VISIBLE : View.GONE);
 	}
 
 	@Override
@@ -291,35 +294,48 @@ public class SettingsFragment extends BaseLandingFragment {
 		}, "LOGOUT");
 	}
 
-	public void syncLbds() {
-		Log.i("SYNC", "Sync");
+	public void kexLbds() {
+		Log.i("SORMAS_LBDS", "==========================");
+		Log.i("SORMAS_LBDS", "Key Exchange LBDS");
 
 		try {
-			KeyPair rsa = KeyPairGenerator.getInstance("RSA").genKeyPair();
-			// private key merken
-			LbdsPropagateKexToLbdsIntent kexToLbdsIntent = new LbdsPropagateKexToLbdsIntent(rsa.getPublic());
-			//kexToLbdsIntent.setComponent(LbdsRelated.componentName);
-			//ComponentName c = getContext().startForegroundService(kexToLbdsIntent);
+			PublicKey lbdsSormasPublicKey = ConfigProvider.getLbdsSormasPublicKey();
+			Log.i("SORMAS_LBDS", "send SORMAS public key: " + KeySerializationUtil.serializePublicKey(lbdsSormasPublicKey));
+			LbdsPropagateKexToLbdsIntent kexToLbdsIntent = new LbdsPropagateKexToLbdsIntent(lbdsSormasPublicKey);
 			ContextCompat.startForegroundService(getContext(), kexToLbdsIntent);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		Log.i("SORMAS_LBDS", "==========================");
+	}
 
+	public void syncLbds() {
+		Log.i("SORMAS_LBDS", "==========================");
+		Log.i("SORMAS_LBDS", "Sync LBDS");
 		PersonDto target = new PersonDto();
 		PersonDao personDao = DatabaseHelper.getPersonDao();
 		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
 		List<Person> modifiedEntities = personDao.getModifiedEntities();
-		if (modifiedEntities.isEmpty()) {
-			return;
+		String payload = "Test";
+		if (!modifiedEntities.isEmpty()) {
+			Person firstEntry = modifiedEntities.get(0);
+			personDtoHelper.fillInnerFromAdo(target, firstEntry);
+			resetFields(target);
+			payload = new Gson().toJson(target);
 		}
-		Person firstEntry = modifiedEntities.get(0);
-		personDtoHelper.fillInnerFromAdo(target, firstEntry);
-		resetFields(target);
-		String payload = new Gson().toJson(target);
+		Log.i("SORMAS_LBDS", "Send object: " + payload);
+
 		HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, "http://localhost:6080/sormas-rest/persons/push", payload);
-		Intent intent = new LbdsSendIntent(new HttpContainer(method), "");
-		intent.setComponent(LbdsRelated.componentName);
-		ContextCompat.startForegroundService(getContext(), intent);
+		String lbdsAesSecret = ConfigProvider.getLbdsAesSecret();
+		Log.i("SORMAS_LBDS", "AES secret: " + lbdsAesSecret);
+		LbdsSendIntent lbdsSendIntent = new LbdsSendIntent(new HttpContainer(method), lbdsAesSecret);
+		lbdsSendIntent.setComponent(LbdsRelated.componentName);
+
+		HttpContainer httpContainer = lbdsSendIntent.getHttpContainer(lbdsAesSecret);
+		Log.i("SORMAS_LBDS", "HttpContainer: " + httpContainer);
+
+		ContextCompat.startForegroundService(getContext(), lbdsSendIntent);
+		Log.i("SORMAS_LBDS", "==========================");
 	}
 
 	private void resetFields(PersonDto personDto) {
