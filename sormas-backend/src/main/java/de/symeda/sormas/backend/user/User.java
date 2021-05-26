@@ -332,4 +332,16 @@ public class User extends AbstractDomainObject {
 	public JurisdictionLevel getJurisdictionLevel() {
 		return UserRole.getJurisdictionLevel(this.getUserRoles());
 	}
+
+	public static String buildCaptionForNotification(User user) {
+		if (user == null) {
+			return "-";
+		}
+
+		String caption = user.getFirstName() + " " + user.getLastName();
+		if (user.getUserEmail() != null) {
+			caption += " (" + user.getUserEmail() + ")";
+		}
+		return caption;
+	}
 }

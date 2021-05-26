@@ -1021,6 +1021,7 @@ public interface Strings {
 	String notificationEventGroupSummary = "notificationEventGroupSummary";
 	String notificationEventGroupSummaryEmpty = "notificationEventGroupSummaryEmpty";
 	String notificationEventParticipantCaseClassificationConfirmed = "notificationEventParticipantCaseClassificationConfirmed";
+	String notificationEventParticipantRelatedToOtherEvents = "notificationEventParticipantRelatedToOtherEvents";
 	String notificationEventRemovedFromEventGroup = "notificationEventRemovedFromEventGroup";
 	String notificationEventWithResponsibleUserLine = "notificationEventWithResponsibleUserLine";
 	String notificationLabResultArrived = "notificationLabResultArrived";
