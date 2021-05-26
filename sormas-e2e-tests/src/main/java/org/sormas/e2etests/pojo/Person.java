@@ -18,7 +18,6 @@
 package org.sormas.e2etests.pojo;
 
 import java.time.LocalDate;
-import java.util.List;
 import lombok.*;
 
 @Value
@@ -33,6 +32,8 @@ public class Person {
   LocalDate dateOfBirth;
   String sex;
   String presentConditionOfPerson;
+  String emailAddress;
+  String phoneNumber;
   String passportNumber;
   String nationalHealthId;
   String externalId;
@@ -48,7 +49,7 @@ public class Person {
   String facility;
   String facilityNameAndDescription;
   String street;
-  int houseNumber;
+  String houseNumber;
   String additionalInformation;
   String postalCode;
   String city;
@@ -64,14 +65,7 @@ public class Person {
   String motherName;
   String fatherName;
   String nameOfGuardians;
-  boolean covidCodeDelivered;
-  Address address;
-  long creationDate;
-  String emailAddress;
-  String phoneNumber;
-  boolean pseudonymized;
-  long changeDate;
-  boolean hasCovidApp;
-  List<Object> personContactDetails;
-  List<Object> addresses;
+  String personContactDetails_typeOfContactDetails;
+  String personContactDetails_contactInformation;
+  String personContactDetails_additionalInformation;
 }

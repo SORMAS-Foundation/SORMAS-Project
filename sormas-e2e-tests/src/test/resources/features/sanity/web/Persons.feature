@@ -7,8 +7,13 @@ Feature: Edit Persons
     And I click on the NEW CONTACT button
     Then I create a new contact
     And I open Contact Person tab
-    Then I fill all default empty fields from Contact Person tab
-
-
-
+    Then I complete all default empty fields from Contact Person tab
+    When I click on new entry button from Contact Information section
+    Then I complete all fields from Person Contact Details popup and save
+    Then I click on save button from Contact Person tab
     And I click on the Persons button from navbar
+    When I open the last created person
+    Then I check that previous created or changed person is correctly displayed in Edit Person page
+    And While on Person edit page, I will edit all fields with new values
+    And I click on save button from Edit Person page
+    Then I check that previous created or changed person is correctly displayed in Edit Person page

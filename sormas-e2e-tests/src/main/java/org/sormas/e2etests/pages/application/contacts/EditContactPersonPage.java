@@ -36,18 +36,24 @@ public class EditContactPersonPage {
   public static final By UUID_INPUT = By.cssSelector("#uuid");
   public static final By FIRST_NAME_INPUT = By.cssSelector("#firstName");
   public static final By LAST_NAME_INPUT = By.cssSelector("#lastName");
-  public static final By DATE_OF_BIRTH_YEAR_INPUT = By.cssSelector("#birthdateYYYY input");
-  public static final By DATE_OF_BIRTH_MONTH_INPUT = By.cssSelector("#birthdateMM input");
-  public static final By DATE_OF_BIRTH_DAY_INPUT = By.cssSelector("#birthdateDD input");
+  public static final By DATE_OF_BIRTH_YEAR_COMBOBOX =
+      By.cssSelector(".popupContent #birthdateYYYY input+div");
+  public static final By DATE_OF_BIRTH_MONTH_COMBOBOX =
+      By.cssSelector(".popupContent #birthdateMM input+div");
+  public static final By DATE_OF_BIRTH_DAY_COMBOBOX =
+      By.cssSelector(".popupContent #birthdateDD input+div");
   public static final By SEX_COMBOBOX = By.cssSelector("[location='sex'] div[role='combobox'] div");
   public static final By SALUTATION_INPUT = By.cssSelector("[location=salutation] input");
   public static final By SALUTATION_COMBOBOX = By.cssSelector("[location=salutation] input + div");
   public static final By PRESENT_CONDITION_INPUT = By.cssSelector("#presentCondition input");
-  public static final By PRESENT_CONDITION_COMBOBOX = By.cssSelector("#presentCondition input + div");
+  public static final By PRESENT_CONDITION_COMBOBOX =
+      By.cssSelector("#presentCondition input + div");
   public static final By EXTERNAL_ID_INPUT = By.cssSelector("#externalId ");
   public static final By EXTERNAL_TOKEN_INPUT = By.cssSelector("#externalToken");
-  public static final By TYPE_OF_OCCUPATION_COMBOBOX = By.cssSelector("[location=occupationType] input+div");
-  public static final By STAFF_OF_ARMED_FORCES_COMBOBOX = By.cssSelector("[location=armedForcesRelationType] input+div");
+  public static final By TYPE_OF_OCCUPATION_COMBOBOX =
+      By.cssSelector("[location=occupationType] input+div");
+  public static final By STAFF_OF_ARMED_FORCES_COMBOBOX =
+      By.cssSelector("[location=armedForcesRelationType] input+div");
   public static final By EDUCATION_COMBOBOX = By.cssSelector("[location=educationType] input+div");
   public static final By REGION_COMBOBOX = By.cssSelector("#region > div");
   public static final By DISTRICT_COMBOBOX = By.cssSelector("#district > div");
@@ -62,7 +68,8 @@ public class EditContactPersonPage {
   public static final By POSTAL_CODE_INPUT = By.cssSelector("#postalCode");
   public static final By CITY_INPUT = By.cssSelector("#city");
   public static final By AREA_TYPE_COMBOBOX = By.cssSelector("#areaType > div");
-  public static final By CONTACT_PERSON_FIRST_NAME_INPUT = By.cssSelector("#contactPersonFirstName");
+  public static final By CONTACT_PERSON_FIRST_NAME_INPUT =
+      By.cssSelector("#contactPersonFirstName");
   public static final By CONTACT_PERSON_LAST_NAME_INPUT = By.cssSelector("#contactPersonLastName");
   public static final By CONTACT_PERSON_PHONE_NUMBER_INPUT = By.cssSelector("#contactPersonPhone");
   public static final By CONTACT_PERSON_EMAIL_ADDRESS_INPUT = By.cssSelector("#contactPersonEmail");
@@ -73,4 +80,8 @@ public class EditContactPersonPage {
   public static final By MOTHER_NAME_INPUT = By.cssSelector("#mothersName");
   public static final By FATHER_NAME_INPUT = By.cssSelector("#fathersName");
   public static final By NAMES_OF_GUARDIANS_INPUT = By.cssSelector("#namesOfGuardians");
+  public static final By CONTACT_INFORMATION_NEW_ENTRY_BUTTON =
+      By.cssSelector("#personContactDetails #actionNewEntry");
+  public static final By SAVE_BUTTON = By.cssSelector("#commit");
+  public static final By PERSON_DATA_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
 }

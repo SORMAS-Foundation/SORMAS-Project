@@ -20,11 +20,9 @@ package org.sormas.e2etests.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
-import org.sormas.e2etests.pojo.Contact;
-import org.sormas.e2etests.pojo.Person;
-
 import java.time.LocalDate;
 import java.util.UUID;
+import org.sormas.e2etests.pojo.Person;
 
 public class PersonService {
   private final Faker faker;
@@ -34,31 +32,55 @@ public class PersonService {
     this.faker = faker;
   }
 
+  public Person updateExistentPerson(
+      Person person, String firstName, String lastName, String UUID) {
+    return person.toBuilder().firstName(firstName).lastName(lastName).uuid(UUID).build();
+  }
+
   public Person buildGeneratedPerson() {
+    String firstName = faker.name().firstName();
+    String lastName = faker.name().lastName();
     return Person.builder()
-            .firstName(faker.name().firstName())
-            .lastName(faker.name().lastName())
-            .salutation("Dear Sir")
-            .dateOfBirth(LocalDate.of(1904, 3, 7))
-            .sex("Male")
-            .presentConditionOfPerson("Alive")
-            .nationalHealthId(UUID.randomUUID().toString())
-            .passportNumber(String.valueOf(System.currentTimeMillis()))
-            .emailAddress(faker.internet().emailAddress())
-            .phoneNumber(faker.phoneNumber().phoneNumber())
-            .externalId(UUID.randomUUID().toString())
-            .externalToken(UUID.randomUUID().toString())
-            .typeOfOccupation("Farmer")
-            .staffOfArmedForces("Unknown")
-            .education("Primary")
-            .region("Voreingestellte Bundesl\u00E4nder")
-            .district("Voreingestellter Landkreis")
-            .community("Voreingestellte Gemeinde")
-            .facilityCategory("Accommodation")
-            .facilityType("Campsite")
-            .facility("Other facility")
-            .facilityNameAndDescription("Dummy description")
-            
-            .build();
+        .firstName(firstName)
+        .lastName(lastName)
+        .salutation("Dear Sir")
+        .dateOfBirth(LocalDate.of(1904, 3, 7))
+        .sex("Male")
+        .presentConditionOfPerson("Alive")
+        .nationalHealthId(UUID.randomUUID().toString())
+        .passportNumber(String.valueOf(System.currentTimeMillis()))
+        .externalId(UUID.randomUUID().toString())
+        .externalToken(UUID.randomUUID().toString())
+        .typeOfOccupation("Farmer")
+        .staffOfArmedForces("Unknown")
+        .education("Primary")
+        .region("Voreingestellte Bundesl\u00E4nder")
+        .district("Voreingestellter Landkreis")
+        .community("Voreingestellte Gemeinde")
+        .facilityCategory("Accommodation")
+        .facilityType("Campsite")
+        .facility("Other facility")
+        .facilityNameAndDescription("Dummy description")
+        .street(faker.address().streetAddress())
+        .houseNumber(faker.address().buildingNumber())
+        .additionalInformation("Dummy description")
+        .postalCode(faker.address().zipCode())
+        .city(faker.address().cityName())
+        .areaType("Urban")
+        .contactPersonFirstName(faker.name().firstName())
+        .contactPersonLastName(faker.name().lastName())
+        .contactPersonPhoneNumber(faker.phoneNumber().phoneNumber())
+        .contactPersonEmailAddress(faker.internet().emailAddress())
+        .communityContactPerson(faker.name().firstName() + " " + faker.name().lastName())
+        .birthName(firstName + " " + lastName)
+        .nickname(firstName + "pie")
+        .motherMaidenName(faker.name().firstName() + " " + faker.name().lastName())
+        .motherName(faker.name().firstName() + " " + faker.name().lastName())
+        .fatherName(faker.name().firstName() + " " + faker.name().lastName())
+        .nameOfGuardians(faker.name().firstName())
+        .personContactDetails_typeOfContactDetails("Email")
+        .personContactDetails_contactInformation(faker.internet().emailAddress())
+        .personContactDetails_additionalInformation("Dummy description")
+        .build();
   }
 }

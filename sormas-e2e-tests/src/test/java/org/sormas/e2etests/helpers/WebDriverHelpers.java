@@ -96,6 +96,29 @@ public class WebDriverHelpers {
     }
   }
 
+  public void waitUntilIdentifiedElementDisappear(final Object selector) {
+    waitUntilIdentifiedElementDisappear(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
+  }
+
+  public void waitUntilIdentifiedElementDisappear(final Object selector, int seconds) {
+    if (selector instanceof By) {
+      assertHelpers.assertWithPoll(
+          () -> {
+            assertThat(baseSteps.getDriver().findElement((By) selector).isEnabled()).isFalse();
+            assertThat(baseSteps.getDriver().findElement((By) selector).isDisplayed()).isFalse();
+          },
+          seconds);
+    } else if (selector instanceof WebElement) {
+      assertHelpers.assertWithPoll15Second(
+          () -> {
+            assertThat(((WebElement) selector).isEnabled()).isFalse();
+            assertThat(((WebElement) selector).isDisplayed()).isFalse();
+          });
+    } else {
+      throw new NotFoundException("This type is not available");
+    }
+  }
+
   public void fillInWebElement(By selector, String text) {
     try {
       await()
