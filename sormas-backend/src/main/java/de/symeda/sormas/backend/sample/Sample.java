@@ -62,7 +62,6 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEntity;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoSample;
 import de.symeda.sormas.backend.user.User;
 
@@ -599,7 +598,7 @@ public class Sample extends CoreAdo implements SormasToSormasEntity {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
-	@OneToMany(mappedBy = ShareInfoEntity.SAMPLE, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = ShareInfoSample.SAMPLE, fetch = FetchType.LAZY)
 	public List<ShareInfoSample> getShareInfoSamples() {
 		return shareInfoSamples;
 	}

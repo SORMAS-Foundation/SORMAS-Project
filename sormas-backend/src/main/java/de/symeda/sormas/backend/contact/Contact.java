@@ -67,7 +67,6 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEntity;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
@@ -878,7 +877,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(mappedBy = ShareInfoEntity.CONTACT, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = ShareInfoContact.CONTACT, fetch = FetchType.LAZY)
 	public List<ShareInfoContact> getShareInfoContacts() {
 		return shareInfoContacts;
 	}

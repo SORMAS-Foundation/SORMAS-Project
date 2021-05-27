@@ -117,7 +117,7 @@ public class SormasToSormasFacadeHelper {
 		}
 
 		int statusCode = response.getStatus();
-		if (statusCode != HttpStatus.SC_NO_CONTENT) {
+		if (statusCode != HttpStatus.SC_NO_CONTENT && statusCode != HttpStatus.SC_OK) {
 			String errorMessage = response.readEntity(String.class);
 			Map<String, ValidationErrors> errors = null;
 

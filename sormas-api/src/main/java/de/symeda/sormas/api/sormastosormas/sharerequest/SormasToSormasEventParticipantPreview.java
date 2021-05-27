@@ -23,6 +23,10 @@ public class SormasToSormasEventParticipantPreview implements HasUuid, Serializa
 
 	private static final long serialVersionUID = 430061021316700295L;
 
+	public static final String I18N_PREFIX = "EventParticipant";
+
+	public static final String UUID = "uuid";
+
 	private String uuid;
 
 	private SormasToSormasPersonPreview person;

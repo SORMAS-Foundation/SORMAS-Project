@@ -527,6 +527,11 @@ public interface Strings {
 	String headingSelectCampaign = "headingSelectCampaign";
 	String headingSelectSourceCase = "headingSelectSourceCase";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
+	String headingShareRequestCases = "headingShareRequestCases";
+	String headingShareRequestContacts = "headingShareRequestContacts";
+	String headingShareRequestDetails = "headingShareRequestDetails";
+	String headingShareRequestEventParticipants = "headingShareRequestEventParticipants";
+	String headingShareRequestEvents = "headingShareRequestEvents";
 	String headingShowLabMessage = "headingShowLabMessage";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	String headingSomeCasesNotDeleted = "headingSomeCasesNotDeleted";

@@ -30,5 +30,5 @@ public interface ShareDataBuilder<T extends AbstractDomainObject, S extends Sorm
 
 	ShareData<T, P> buildShareDataPreview(T data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException;
 
-	List<ShareData<T, S>> buildShareData(SormasToSormasShareInfo shareInfo) throws SormasToSormasException;
+	List<ShareData<T, S>> buildShareData(SormasToSormasShareInfo shareInfo, User user) throws SormasToSormasException;
 }

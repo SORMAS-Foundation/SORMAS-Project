@@ -15,11 +15,13 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.GridSortOrder;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -67,6 +69,7 @@ public class ShareRequestGrid extends FilteredGrid<SormasToSormasShareRequestInd
 
 	private void initGridColumns() {
 		addShowColumn((request) -> {
+			ControllerProvider.getSormasToSormasController().showRequestDetails(request);
 		});
 		addComponentColumn(indexDto -> createActionButtons(indexDto)).setId(COLUMN_ACTIONS);
 
@@ -88,6 +91,9 @@ public class ShareRequestGrid extends FilteredGrid<SormasToSormasShareRequestInd
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(SormasToSormasShareRequestIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
+
+		setSortOrder(
+			Collections.singletonList(new GridSortOrder<>(getColumn(SormasToSormasShareRequestIndexDto.CREATION_DATE), SortDirection.DESCENDING)));
 	}
 
 	private Component createActionButtons(SormasToSormasShareRequestIndexDto indexDto) {

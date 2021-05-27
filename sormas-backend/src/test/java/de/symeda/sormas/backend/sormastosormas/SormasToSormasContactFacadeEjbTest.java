@@ -207,7 +207,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 		byte[] encryptedData =
 			encryptShareDataAsArray(new SormasToSormasContactDto(person, contact, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
-		getSormasToSormasContactFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		getSormasToSormasContactFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
 
 		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
 
@@ -243,7 +243,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		shareData.setSamples(Collections.singletonList(sample));
 
 		byte[] encryptedData = encryptShareDataAsArray(shareData);
-		getSormasToSormasContactFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		getSormasToSormasContactFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
 
 		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
 		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getSample().getUuid());

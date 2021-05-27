@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.sormastosormas.contact;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -26,6 +27,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.backend.contact.Contact;
@@ -50,16 +52,61 @@ public class ContactShareDataBuilder implements ShareDataBuilder<Contact, Sormas
 
 	public ShareData<Contact, SormasToSormasContactDto> buildShareData(Contact contact, User user, SormasToSormasOptionsDto options)
 		throws SormasToSormasException {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(options);
+		SormasToSormasOriginInfoDto originInfo =
+			dataBuilderHelper.createSormasToSormasOriginInfo(user, options.isHandOverOwnership(), options.getComment());
 
-		PersonDto personDto = dataBuilderHelper.getPersonDto(contact.getPerson(), pseudonymizer, options);
+		return createShareData(
+			contact,
+			originInfo,
+			user,
+			options.isWithSamples(),
+			options.isPseudonymizePersonalData(),
+			options.isPseudonymizeSensitiveData());
+	}
+
+	@Override
+	public ShareData<Contact, SormasToSormasContactPreview> buildShareDataPreview(Contact contact, User user, SormasToSormasOptionsDto options)
+		throws SormasToSormasException {
+		SormasToSormasContactPreview contactPreview = dataBuilderHelper.getContactPreview(contact);
+
+		return new ShareData<>(contact, contactPreview);
+	}
+
+	@Override
+	public List<ShareData<Contact, SormasToSormasContactDto>> buildShareData(SormasToSormasShareInfo shareInfo, User user)
+		throws SormasToSormasException {
+		SormasToSormasOriginInfoDto originInfo =
+			dataBuilderHelper.createSormasToSormasOriginInfo(user, shareInfo.isOwnershipHandedOver(), shareInfo.getComment());
+
+		return shareInfo.getContacts().stream().map(shareInfoContact -> {
+			Contact contact = shareInfoContact.getContact();
+
+			return createShareData(
+				contact,
+				originInfo,
+				user,
+				shareInfo.isWithSamples(),
+				shareInfo.isPseudonymizedPersonalData(),
+				shareInfo.isPseudonymizedSensitiveData());
+		}).collect(Collectors.toList());
+	}
+
+	private ShareData<Contact, SormasToSormasContactDto> createShareData(
+		Contact contact,
+		SormasToSormasOriginInfoDto originInfo,
+		User user,
+		boolean withSamples,
+		boolean pseudonymizePersonalData,
+		boolean pseudonymizeSensitiveData) {
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(pseudonymizePersonalData, pseudonymizeSensitiveData);
+
+		PersonDto personDto = dataBuilderHelper.getPersonDto(contact.getPerson(), pseudonymizer, pseudonymizePersonalData, pseudonymizeSensitiveData);
 		ContactDto contactDto = dataBuilderHelper.getContactDto(contact, pseudonymizer);
 
-		SormasToSormasContactDto contactData =
-			new SormasToSormasContactDto(personDto, contactDto, dataBuilderHelper.createSormasToSormasOriginInfo(user, options));
+		SormasToSormasContactDto contactData = new SormasToSormasContactDto(personDto, contactDto, originInfo);
 		ShareData<Contact, SormasToSormasContactDto> shareData = new ShareData<>(contact, contactData);
 
-		if (options.isWithSamples()) {
+		if (withSamples) {
 			List<Sample> samples = sampleService.findBy(new SampleCriteria().contact(contact.toReference()), user);
 
 			contactData.setSamples(dataBuilderHelper.getSampleDtos(samples, pseudonymizer));
@@ -67,16 +114,5 @@ public class ContactShareDataBuilder implements ShareDataBuilder<Contact, Sormas
 		}
 
 		return shareData;
-	}
-
-	@Override
-	public ShareData<Contact, SormasToSormasContactPreview> buildShareDataPreview(Contact data, User user, SormasToSormasOptionsDto options)
-		throws SormasToSormasException {
-		return null;
-	}
-
-	@Override
-	public List<ShareData<Contact, SormasToSormasContactDto>> buildShareData(SormasToSormasShareInfo shareInfo) throws SormasToSormasException {
-		return null;
 	}
 }

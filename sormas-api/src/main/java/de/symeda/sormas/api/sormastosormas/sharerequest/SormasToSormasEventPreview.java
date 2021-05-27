@@ -27,6 +27,16 @@ public class SormasToSormasEventPreview implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -8084434633554426724L;
 
+	public static final String I18N_PREFIX = "Event";
+
+	public static final String UUID = "uuid";
+	public static final String REPORT_DATE_TIME = "reportDateTime";
+	public static final String EVENT_TITLE = "eventTitle";
+	public static final String EVENT_DESC = "eventDesc";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String EVENT_LOCATION = "eventLocation";
+
 	private String uuid;
 	private Date reportDateTime;
 	private String eventTitle;

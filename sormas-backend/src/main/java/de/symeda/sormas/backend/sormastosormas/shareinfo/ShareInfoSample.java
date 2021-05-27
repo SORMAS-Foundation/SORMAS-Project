@@ -15,19 +15,36 @@
 
 package de.symeda.sormas.backend.sormastosormas.shareinfo;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.backend.sample.Sample;
 
 @Entity
-@AttributeOverride(name = "entity", column = @Column(name = ShareInfoEntity.SAMPLE))
 @DiscriminatorValue("SAMPLE")
-public class ShareInfoSample extends ShareInfoEntity<Sample> {
+public class ShareInfoSample extends ShareInfoEntity {
 
-	public ShareInfoSample(SormasToSormasShareInfo shareInfo, Sample entity) {
-		super(shareInfo, entity);
+	private static final long serialVersionUID = -5549989119975341619L;
+
+	public static final String SAMPLE = "sample";
+
+	private Sample sample;
+
+	public ShareInfoSample() {
+	}
+
+	public ShareInfoSample(SormasToSormasShareInfo shareInfo, Sample sample) {
+		super(shareInfo);
+		this.sample = sample;
+	}
+
+	@ManyToOne
+	public Sample getSample() {
+		return sample;
+	}
+
+	public void setSample(Sample sample) {
+		this.sample = sample;
 	}
 }

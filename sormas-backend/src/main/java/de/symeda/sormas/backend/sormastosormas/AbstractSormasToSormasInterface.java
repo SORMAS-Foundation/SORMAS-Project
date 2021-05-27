@@ -136,7 +136,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			associatedEntities.addAll(shareData.getAssociatedEntities());
 		}
 
-		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options);
+		SormasToSormasOriginInfoDto originInfo =
+			dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options.isHandOverOwnership(), options.getComment());
 		String requestUuid = DataHelper.createUuid();
 
 		sormasToSormasFacadeHelper.sendEntitiesToSormas(
@@ -211,33 +212,36 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	}
 
 	@Override
+	@Transactional
 	public void acceptShareRequest(String uuid) throws SormasToSormasException, SormasToSormasValidationException {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
 
-		SormasToSormasEncryptedDataDto encryptedData = sormasToSormasFacadeHelper.sendRequestToSormas(
+		byte[] encryptedData = sormasToSormasFacadeHelper.sendRequestToSormas(
 			organizationId,
 			(host, authToken) -> sormasToSormasRestClient.post(host, requestAcceptEndpoint, authToken, Collections.singletonList(uuid)),
-			SormasToSormasEncryptedDataDto.class);
+			byte[].class);
 
-		saveSharedEntities(encryptedData);
+		saveSharedEntities(new SormasToSormasEncryptedDataDto(organizationId, encryptedData), shareRequest.getOriginInfo());
 
+		shareRequest.setChangeDate(new Date());
 		shareRequest.setStatus(ShareRequestStatus.ACCEPTED);
 		shareRequestFacade.saveShareRequest(shareRequest);
 	}
 
 	@Override
 	public byte[] getDataForShareRequest(String uuid) throws SormasToSormasException {
+		User currentUser = userService.getCurrentUser();
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByRequestUuid(uuid);
 
-		List<ShareData<ADO, S>> shareData = getShareDataBuilder().buildShareData(shareInfo);
+		List<ShareData<ADO, S>> shareData = getShareDataBuilder().buildShareData(shareInfo, currentUser);
 
-		List<S> entitiesToSend = new ArrayList<>();
+		List<S> entitiesToSend = shareData.stream().map(ShareData::getDto).collect(Collectors.toList());
 		validateEntitiesBeforeShare(shareData.stream().map(ShareData::getEntity).collect(Collectors.toList()));
 
 		byte[] encrypted;
 		try {
-			encrypted = sormasToSormasFacadeHelper.encryptEntities(entitiesToSend, null);
+			encrypted = sormasToSormasFacadeHelper.encryptEntities(entitiesToSend, shareInfo.getOrganizationId());
 
 			shareInfo.setRequestStatus(ShareRequestStatus.ACCEPTED);
 			shareInfoService.ensurePersisted(shareInfo);
@@ -275,7 +279,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	}
 
 	@Override
-	public void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
+	public void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData, SormasToSormasOriginInfoDto originInfo)
+		throws SormasToSormasException, SormasToSormasValidationException {
 		S[] sharedEntities = sormasToSormasFacadeHelper.decryptSharedData(encryptedData, getShareDataClass());
 
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
@@ -292,7 +297,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 				} else {
 					PROCESSED processedData = getSharedDataProcessor().processSharedData(data, null);
 
-					processedData.getEntity().setSormasToSormasOriginInfo(processedData.getOriginInfo());
+					processedData.getEntity().setSormasToSormasOriginInfo(originInfo != null ? originInfo : processedData.getOriginInfo());
 
 					dataToSave.add(processedData);
 				}
@@ -526,6 +531,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		request.setUuid(requestUuid);
 		request.setDataType(shareRequestDataType);
 		request.setStatus(ShareRequestStatus.PENDING);
+
 		request.setOriginInfo(originInfo);
 
 		setShareRequestPreviewData(request, previews);

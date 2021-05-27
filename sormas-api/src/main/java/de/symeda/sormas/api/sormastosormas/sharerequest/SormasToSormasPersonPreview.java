@@ -24,6 +24,13 @@ public class SormasToSormasPersonPreview implements Serializable {
 
 	private static final long serialVersionUID = -5945798718115243796L;
 
+	public static final String I18N_PREFIX = "SormasToSormasPerson";
+
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
+	public static final String SEX = "sex";
+	public static final String ADDRESS = "address";
+
 	private String firstName;
 	private String lastName;
 	private Integer birthdateDD;

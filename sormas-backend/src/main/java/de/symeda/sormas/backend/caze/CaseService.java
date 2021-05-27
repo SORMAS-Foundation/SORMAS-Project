@@ -111,7 +111,6 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
@@ -769,8 +768,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				filter,
 				cb.or(
-					cb.isNotNull(joins.getSormasToSormasShareInfo().get(SormasToSormasShareInfo.CAZE)),
-					cb.isNotNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO))));
+					cb.isNotNull(joins.getSormasToSormasShareInfo()),
+					cb.isNotNull(from.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO))));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithReinfection())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.RE_INFECTION), YesNoUnknown.YES));

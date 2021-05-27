@@ -32,6 +32,21 @@ public class SormasToSormasContactPreview implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 6624342608405520944L;
 
+	public static final String I18N_PREFIX = "Contact";
+
+	public static final String UUID = "uuid";
+	public static final String REPORT_DATE_TIME = "reportDateTime";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String LAST_CONTACT_DATE = "lastContactDate";
+	public static final String CONTACT_CLASSIFICATION = "contactClassification";
+	public static final String CONTACT_CATEGORY = "contactCategory";
+	public static final String CONTACT_STATUS = "contactStatus";
+
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
+
 	private String uuid;
 	private Date reportDateTime;
 	private Disease disease;

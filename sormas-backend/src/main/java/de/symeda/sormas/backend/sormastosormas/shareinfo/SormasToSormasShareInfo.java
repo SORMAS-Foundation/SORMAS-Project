@@ -27,8 +27,10 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.Where;
 
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -39,17 +41,22 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8368155805122562791L;
 
+	public static final String CASES = "cases";
+	public static final String CONTACTS = "contacts";
+	public static final String SAMPLES = "samples";
+	public static final String EVENTS = "events";
+	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	public static final String ORGANIZATION_ID = "organizationId";
 	public static final String REQUEST_UUID = "requestUuid";
 
-	private List<ShareInfoCase> cases = new ArrayList<>();
+	private List<ShareInfoCase> cases;
 
-	private List<ShareInfoContact> contacts = new ArrayList<>();
+	private List<ShareInfoContact> contacts;
 
-	private List<ShareInfoSample> samples = new ArrayList<>();
+	private List<ShareInfoSample> samples;
 
-	private List<ShareInfoEvent> events = new ArrayList<>();
+	private List<ShareInfoEvent> events;
 
 	private List<ShareInfoEventParticipant> eventParticipants = new ArrayList<>();
 
@@ -74,7 +81,16 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	private String requestUuid;
 	private ShareRequestStatus requestStatus;
 
-	@ManyToMany(cascade = CascadeType.ALL)
+	public SormasToSormasShareInfo() {
+		cases = new ArrayList<>();
+		contacts = new ArrayList<>();
+		samples = new ArrayList<>();
+		events = new ArrayList<>();
+		eventParticipants = new ArrayList<>();
+	}
+
+	@OneToMany(mappedBy = ShareInfoCase.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoCase.class)
+	@Where(clause = "type='CASE'")
 	public List<ShareInfoCase> getCases() {
 		return cases;
 	}
@@ -83,7 +99,8 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.cases = cases;
 	}
 
-	@ManyToMany(cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = ShareInfoContact.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoContact.class)
+	@Where(clause = "type='CONTACT'")
 	public List<ShareInfoContact> getContacts() {
 		return contacts;
 	}
@@ -92,7 +109,8 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.contacts = contacts;
 	}
 
-	@ManyToMany(cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = ShareInfoSample.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoSample.class)
+	@Where(clause = "type='SAMPLE'")
 	public List<ShareInfoSample> getSamples() {
 		return samples;
 	}
@@ -101,7 +119,8 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.samples = samples;
 	}
 
-	@ManyToMany(cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = ShareInfoEvent.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoEvent.class)
+	@Where(clause = "type='EVENT'")
 	public List<ShareInfoEvent> getEvents() {
 		return events;
 	}
@@ -110,7 +129,8 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.events = events;
 	}
 
-	@ManyToMany(cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = ShareInfoEventParticipant.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoEventParticipant.class)
+	@Where(clause = "type='EVENT_PARTICIPANT'")
 	public List<ShareInfoEventParticipant> getEventParticipants() {
 		return eventParticipants;
 	}

@@ -35,6 +35,26 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 public class SormasToSormasCasePreview implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -5346989433141136006L;
+	public static final String I18N_PREFIX = "CaseData";
+
+	public static final String UUID = "uuid";
+	public static final String REPORT_DATE = "reportDate";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String OUTCOME = "outcome";
+	public static final String INVESTIGATION_STATUS = "investigationStatus";
+	public static final String ONSET_DATE = "onsetDate";
+
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
+	public static final String FACILITY_TYPE = "facilityType";
+	public static final String HEALTH_FACILITY = "healthFacility";
+	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
+	public static final String POINT_OF_ENTRY = "pointOfEntry";
+	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 
 	private String uuid;
 	private Date reportDate;

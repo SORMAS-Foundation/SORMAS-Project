@@ -42,7 +42,7 @@ public class AssociatedEntityWrapper<T extends SormasToSormasEntity> {
 					(s, c) -> s.getContacts().add(new ShareInfoContact(s, c)),
 					(shareInfo, contactToFind) -> shareInfo.getContacts()
 						.stream()
-						.anyMatch(c -> contactToFind.getUuid().equals(c.getEntity().getUuid()))))
+						.anyMatch(c -> contactToFind.getUuid().equals(c.getContact().getUuid()))))
 			.collect(Collectors.toList());
 	}
 
@@ -54,7 +54,7 @@ public class AssociatedEntityWrapper<T extends SormasToSormasEntity> {
 					(s, ep) -> s.getEventParticipants().add(new ShareInfoEventParticipant(s, ep)),
 					(shareInfo, epToFind) -> shareInfo.getEventParticipants()
 						.stream()
-						.anyMatch(ep -> epToFind.getUuid().equals(ep.getEntity().getUuid()))))
+						.anyMatch(ep -> epToFind.getUuid().equals(ep.getEventParticipant().getUuid()))))
 			.collect(Collectors.toList());
 	}
 
@@ -66,7 +66,7 @@ public class AssociatedEntityWrapper<T extends SormasToSormasEntity> {
 					(shareInfo, s) -> shareInfo.getSamples().add(new ShareInfoSample(shareInfo, sample)),
 					(shareInfo, sampleToFind) -> shareInfo.getSamples()
 						.stream()
-						.anyMatch(c -> sampleToFind.getUuid().equals(c.getEntity().getUuid()))))
+						.anyMatch(c -> sampleToFind.getUuid().equals(c.getSample().getUuid()))))
 			.collect(Collectors.toList());
 	}
 

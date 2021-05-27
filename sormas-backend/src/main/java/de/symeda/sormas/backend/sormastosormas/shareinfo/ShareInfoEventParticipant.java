@@ -15,19 +15,36 @@
 
 package de.symeda.sormas.backend.sormastosormas.shareinfo;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.backend.event.EventParticipant;
 
 @Entity
-@AttributeOverride(name = "entity", column = @Column(name = ShareInfoEntity.EVENT_PARTICIPANT))
 @DiscriminatorValue("EVENT_PARTICIPANT")
-public class ShareInfoEventParticipant extends ShareInfoEntity<EventParticipant> {
+public class ShareInfoEventParticipant extends ShareInfoEntity {
 
-	public ShareInfoEventParticipant(SormasToSormasShareInfo shareInfo, EventParticipant entity) {
-		super(shareInfo, entity);
+	private static final long serialVersionUID = 374973843547350721L;
+
+	public static final String EVENT_PARTICIPANT = "eventParticipant";
+
+	private EventParticipant eventParticipant;
+
+	public ShareInfoEventParticipant() {
+	}
+
+	public ShareInfoEventParticipant(SormasToSormasShareInfo shareInfo, EventParticipant eventParticipant) {
+		super(shareInfo);
+		this.eventParticipant = eventParticipant;
+	}
+
+	@ManyToOne
+	public EventParticipant getEventParticipant() {
+		return eventParticipant;
+	}
+
+	public void setEventParticipant(EventParticipant eventParticipant) {
+		this.eventParticipant = eventParticipant;
 	}
 }

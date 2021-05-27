@@ -23,6 +23,7 @@ import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
@@ -828,6 +829,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	}
 
 	@Override
+	@ImportIgnore
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}

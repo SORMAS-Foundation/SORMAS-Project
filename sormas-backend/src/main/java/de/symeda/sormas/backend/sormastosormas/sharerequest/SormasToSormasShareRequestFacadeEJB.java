@@ -190,7 +190,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		return target;
 	}
 
-	private SormasToSormasShareRequestDto toDto(SormasToSormasShareRequest source) {
+	public static SormasToSormasShareRequestDto toDto(SormasToSormasShareRequest source) {
 		if (source == null) {
 			return null;
 		}
@@ -208,7 +208,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	}
 
 	public List<SormasToSormasShareRequestDto> getShareRequestsByUuids(List<String> uuids) {
-		return shareRequestService.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		return shareRequestService.getByUuids(uuids).stream().map(SormasToSormasShareRequestFacadeEJB::toDto).collect(Collectors.toList());
 	}
 
 	@LocalBean

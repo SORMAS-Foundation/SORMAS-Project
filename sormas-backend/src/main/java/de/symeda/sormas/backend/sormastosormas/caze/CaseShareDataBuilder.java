@@ -75,50 +75,18 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 
 	public ShareData<Case, SormasToSormasCaseDto> buildShareData(Case caze, User user, SormasToSormasOptionsDto options)
 		throws SormasToSormasException {
-		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(options);
 
-		PersonDto personDto = dataBuilderHelper.getPersonDto(caze.getPerson(), pseudonymizer, options);
-		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
+		SormasToSormasOriginInfoDto originInfo =
+			dataBuilderHelper.createSormasToSormasOriginInfo(user, options.isHandOverOwnership(), options.getComment());
 
-		// external tokens ("Aktenzeichen") are not globally unique in Germany due to SurvNet, therefore, do not
-		// transmit the token to other GAs, but let them generate their own token based on their local, configurable
-		// format
-		if (!sormasToSormasConfig.getRetainCaseExternalToken()) {
-			cazeDto.setExternalToken(null);
-		}
-
-		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, options);
-
-		SormasToSormasCaseDto caseData = new SormasToSormasCaseDto(personDto, cazeDto, originInfo);
-		ShareData<Case, SormasToSormasCaseDto> shareData = new ShareData<>(caze, caseData);
-
-		List<Contact> associatedContacts = Collections.emptyList();
-		if (options.isWithAssociatedContacts()) {
-			associatedContacts = contactService.findBy(new ContactCriteria().caze(caze.toReference()), user);
-			caseData.setAssociatedContacts(getAssociatedContactDtos(associatedContacts, pseudonymizer, options));
-
-			shareData.addAssociatedEntities(AssociatedEntityWrapper.forContacts(associatedContacts));
-		}
-
-		final List<Sample> samples = new ArrayList<>();
-		if (options.isWithSamples()) {
-			final List<Sample> caseSamples = sampleService.findBy(new SampleCriteria().caze(caze.toReference()), user);
-			samples.addAll(caseSamples);
-
-			associatedContacts.forEach(associatedContact -> {
-				List<Sample> contactSamples = sampleService.findBy(new SampleCriteria().contact(associatedContact.toReference()), user)
-					.stream()
-					.filter(contactSample -> caseSamples.stream().noneMatch(caseSample -> DataHelper.isSame(caseSample, contactSample)))
-					.collect(Collectors.toList());
-
-				samples.addAll(contactSamples);
-			});
-
-			caseData.setSamples(dataBuilderHelper.getSampleDtos(samples, pseudonymizer));
-			shareData.addAssociatedEntities(AssociatedEntityWrapper.forSamples(samples));
-		}
-
-		return shareData;
+		return createShareData(
+			caze,
+			originInfo,
+			user,
+			options.isWithAssociatedContacts(),
+			options.isWithSamples(),
+			options.isPseudonymizePersonalData(),
+			options.isPseudonymizeSensitiveData());
 	}
 
 	@Override
@@ -140,8 +108,76 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 	}
 
 	@Override
-	public List<ShareData<Case, SormasToSormasCaseDto>> buildShareData(SormasToSormasShareInfo shareInfo) throws SormasToSormasException {
-		return null;
+	public List<ShareData<Case, SormasToSormasCaseDto>> buildShareData(SormasToSormasShareInfo shareInfo, User user) throws SormasToSormasException {
+		SormasToSormasOriginInfoDto originInfo =
+			dataBuilderHelper.createSormasToSormasOriginInfo(user, shareInfo.isOwnershipHandedOver(), shareInfo.getComment());
+
+		return shareInfo.getCases().stream().map(shareInfoCase -> {
+			Case caze = shareInfoCase.getCaze();
+
+			return createShareData(
+				caze,
+				originInfo,
+				user,
+				shareInfo.isWithAssociatedContacts(),
+				shareInfo.isWithSamples(),
+				shareInfo.isPseudonymizedPersonalData(),
+				shareInfo.isPseudonymizedSensitiveData());
+		}).collect(Collectors.toList());
+	}
+
+	private ShareData<Case, SormasToSormasCaseDto> createShareData(
+		Case caze,
+		SormasToSormasOriginInfoDto originInfo,
+		User user,
+		boolean withAssociatedContacts,
+		boolean withSamples,
+		boolean pseudonymizePersonalData,
+		boolean pseudonymizeSensitiveData) {
+
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(pseudonymizePersonalData, pseudonymizeSensitiveData);
+
+		PersonDto personDto = dataBuilderHelper.getPersonDto(caze.getPerson(), pseudonymizer, pseudonymizePersonalData, pseudonymizeSensitiveData);
+		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
+
+		// external tokens ("Aktenzeichen") are not globally unique in Germany due to SurvNet, therefore, do not
+		// transmit the token to other GAs, but let them generate their own token based on their local, configurable
+		// format
+		if (!sormasToSormasConfig.getRetainCaseExternalToken()) {
+			cazeDto.setExternalToken(null);
+		}
+
+		SormasToSormasCaseDto caseData = new SormasToSormasCaseDto(personDto, cazeDto, originInfo);
+		ShareData<Case, SormasToSormasCaseDto> shareData = new ShareData<>(caze, caseData);
+
+		List<Contact> associatedContacts = Collections.emptyList();
+		if (withAssociatedContacts) {
+			associatedContacts = contactService.findBy(new ContactCriteria().caze(caze.toReference()), user);
+			caseData.setAssociatedContacts(
+				getAssociatedContactDtos(associatedContacts, pseudonymizer, pseudonymizePersonalData, pseudonymizeSensitiveData));
+
+			shareData.addAssociatedEntities(AssociatedEntityWrapper.forContacts(associatedContacts));
+		}
+
+		final List<Sample> samples = new ArrayList<>();
+		if (withSamples) {
+			final List<Sample> caseSamples = sampleService.findBy(new SampleCriteria().caze(caze.toReference()), user);
+			samples.addAll(caseSamples);
+
+			associatedContacts.forEach(associatedContact -> {
+				List<Sample> contactSamples = sampleService.findBy(new SampleCriteria().contact(associatedContact.toReference()), user)
+					.stream()
+					.filter(contactSample -> caseSamples.stream().noneMatch(caseSample -> DataHelper.isSame(caseSample, contactSample)))
+					.collect(Collectors.toList());
+
+				samples.addAll(contactSamples);
+			});
+
+			caseData.setSamples(dataBuilderHelper.getSampleDtos(samples, pseudonymizer));
+			shareData.addAssociatedEntities(AssociatedEntityWrapper.forSamples(samples));
+		}
+
+		return shareData;
 	}
 
 	private CaseDataDto getCazeDto(Case caze, Pseudonymizer pseudonymizer) {
@@ -159,9 +195,11 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 	private List<SormasToSormasCaseDto.AssociatedContactDto> getAssociatedContactDtos(
 		List<Contact> associatedContacts,
 		Pseudonymizer pseudonymizer,
-		SormasToSormasOptionsDto options) {
+		boolean pseudonymizedPersonalData,
+		boolean pseudonymizedSensitiveData) {
 		return associatedContacts.stream().map(contact -> {
-			PersonDto personDto = dataBuilderHelper.getPersonDto(contact.getPerson(), pseudonymizer, options);
+			PersonDto personDto =
+				dataBuilderHelper.getPersonDto(contact.getPerson(), pseudonymizer, pseudonymizedPersonalData, pseudonymizedSensitiveData);
 			ContactDto contactDto = dataBuilderHelper.getContactDto(contact, pseudonymizer);
 
 			return new SormasToSormasCaseDto.AssociatedContactDto(personDto, contactDto);

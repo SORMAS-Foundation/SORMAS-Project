@@ -1740,6 +1740,10 @@ public interface Captions {
 	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
 	String SormasToSormasOptions_withEventParticipants = "SormasToSormasOptions.withEventParticipants";
 	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
+	String SormasToSormasPerson_address = "SormasToSormasPerson.address";
+	String SormasToSormasPerson_birthdDate = "SormasToSormasPerson.birthdDate";
+	String SormasToSormasPerson_personName = "SormasToSormasPerson.personName";
+	String SormasToSormasPerson_sex = "SormasToSormasPerson.sex";
 	String sormasToSormasReturn = "sormasToSormasReturn";
 	String sormasToSormasSampleNotShared = "sormasToSormasSampleNotShared";
 	String sormasToSormasSendLabMessage = "sormasToSormasSendLabMessage";
@@ -2165,6 +2169,7 @@ public interface Captions {
 	String View_samples_data = "View.samples.data";
 	String View_samples_labMessages = "View.samples.labMessages";
 	String View_samples_sub = "View.samples.sub";
+	String View_shareRequests = "View.shareRequests";
 	String View_statistics = "View.statistics";
 	String View_statistics_database_export = "View.statistics.database-export";
 	String View_tasks = "View.tasks";

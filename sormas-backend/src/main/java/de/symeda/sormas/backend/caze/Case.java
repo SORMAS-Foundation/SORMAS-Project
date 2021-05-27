@@ -87,7 +87,6 @@ import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEntity;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -1642,7 +1641,8 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(mappedBy = ShareInfoEntity.CAZE, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = ShareInfoCase.CAZE, fetch = FetchType.LAZY)
+	@AuditedIgnore
 	public List<ShareInfoCase> getShareInfoCases() {
 		return shareInfoCases;
 	}

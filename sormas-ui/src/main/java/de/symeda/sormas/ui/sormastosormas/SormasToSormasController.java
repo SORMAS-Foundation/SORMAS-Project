@@ -50,6 +50,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestIndexDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -346,6 +347,15 @@ public class SormasToSormasController {
 				.collect(Collectors.toList()));
 
 		return organizationIds;
+	}
+
+	public void showRequestDetails(SormasToSormasShareRequestIndexDto request) {
+		SormasToSormasShareRequestDto shareRequest = FacadeProvider.getSormasToSormasShareRequestFacade().getShareRequestByUuid(request.getUuid());
+		ShareRequestLayout shareRequestLayout = new ShareRequestLayout(shareRequest);
+		shareRequestLayout.setWidth(900, Sizeable.Unit.PIXELS);
+		shareRequestLayout.setMargin(true);
+
+		VaadinUiUtil.showPopupWindow(shareRequestLayout, I18nProperties.getString(Strings.headingShareRequestDetails));
 	}
 
 	private interface HandleShareWithOptions {

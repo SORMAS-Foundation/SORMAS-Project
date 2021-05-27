@@ -29,7 +29,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
@@ -69,29 +68,29 @@ public class ShareDataBuilderHelper {
 	@EJB
 	private AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal additionalTestFacade;
 
-	public Pseudonymizer createPseudonymizer(SormasToSormasOptionsDto options) {
+	public Pseudonymizer createPseudonymizer(boolean pseudonymizePersonalData, boolean pseudonymizeSensitiveData) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultNoCheckers(false);
 
-		if (options.isPseudonymizePersonalData()) {
+		if (pseudonymizePersonalData) {
 			pseudonymizer.addFieldAccessChecker(PersonalDataFieldAccessChecker.forcedNoAccess(), PersonalDataFieldAccessChecker.forcedNoAccess());
 		}
-		if (options.isPseudonymizeSensitiveData()) {
+		if (pseudonymizeSensitiveData) {
 			pseudonymizer.addFieldAccessChecker(SensitiveDataFieldAccessChecker.forcedNoAccess(), SensitiveDataFieldAccessChecker.forcedNoAccess());
 		}
 
 		return pseudonymizer;
 	}
 
-	public PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer, SormasToSormasOptionsDto options) {
+	public PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer, boolean pseudonymizedPersonalData, boolean pseudonymizedSensitiveData) {
 		PersonDto personDto = personFacade.convertToDto(person, pseudonymizer, true);
 
-		pseudonymiePerson(options, personDto);
+		pseudonymiePerson(personDto, pseudonymizedPersonalData, pseudonymizedSensitiveData);
 
 		return personDto;
 	}
 
-	public void pseudonymiePerson(SormasToSormasOptionsDto options, PersonDto personDto) {
-		if (options.isPseudonymizePersonalData() || options.isPseudonymizeSensitiveData()) {
+	public void pseudonymiePerson(PersonDto personDto, boolean pseudonymizedPersonalData, boolean pseudonymizedSensitiveData) {
+		if (pseudonymizedPersonalData || pseudonymizedPersonalData) {
 			personDto.setFirstName(I18nProperties.getCaption(Captions.inaccessibleValue));
 			personDto.setLastName(I18nProperties.getCaption(Captions.inaccessibleValue));
 		}
@@ -108,7 +107,8 @@ public class ShareDataBuilderHelper {
 		return contactDto;
 	}
 
-	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, SormasToSormasOptionsDto options) throws SormasToSormasException {
+	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, boolean isOwnershipHandedOver, String comment)
+		throws SormasToSormasException {
 		OrganizationServerAccessData serverAccessData = getServerAccessData();
 
 		SormasToSormasOriginInfoDto sormasToSormasOriginInfo = new SormasToSormasOriginInfoDto();
@@ -116,8 +116,8 @@ public class ShareDataBuilderHelper {
 		sormasToSormasOriginInfo.setSenderName(String.format("%s %s", user.getFirstName(), user.getLastName()));
 		sormasToSormasOriginInfo.setSenderEmail(user.getUserEmail());
 		sormasToSormasOriginInfo.setSenderPhoneNumber(user.getPhone());
-		sormasToSormasOriginInfo.setOwnershipHandedOver(options.isHandOverOwnership());
-		sormasToSormasOriginInfo.setComment(options.getComment());
+		sormasToSormasOriginInfo.setOwnershipHandedOver(isOwnershipHandedOver);
+		sormasToSormasOriginInfo.setComment(comment);
 
 		return sormasToSormasOriginInfo;
 	}

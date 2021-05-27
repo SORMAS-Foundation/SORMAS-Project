@@ -305,7 +305,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		byte[] encryptedData =
 			encryptShareDataAsArray(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
 
-		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 
@@ -353,7 +353,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		byte[] encryptedData =
 			encryptShareDataAsArray(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
 
-		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 
@@ -399,7 +399,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		byte[] encryptedData =
 			encryptShareDataAsArray(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
-		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 
@@ -429,7 +429,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		byte[] encryptedData =
 			encryptShareDataAsArray(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
-		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 
@@ -456,7 +456,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		shareData.setAssociatedContacts(Collections.singletonList(new SormasToSormasCaseDto.AssociatedContactDto(contactPerson, contact)));
 
 		byte[] encryptedData = encryptShareDataAsArray(shareData);
-		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
@@ -481,7 +481,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		shareData.setSamples(Collections.singletonList(sample));
 
 		byte[] encryptedData = encryptShareDataAsArray(shareData);
-		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getSample().getUuid());
@@ -747,7 +747,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		byte[] encryptedData =
 			encryptShareDataAsArray(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
 
-		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 
@@ -774,7 +774,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		byte[] encryptedData =
 			encryptShareDataAsArray(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
-		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		getSormasToSormasCaseFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 

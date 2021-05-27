@@ -15,19 +15,36 @@
 
 package de.symeda.sormas.backend.sormastosormas.shareinfo;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.backend.caze.Case;
 
 @Entity
-@AttributeOverride(name = "entity", column = @Column(name = ShareInfoEntity.CAZE))
 @DiscriminatorValue("CASE")
-public class ShareInfoCase extends ShareInfoEntity<Case> {
+public class ShareInfoCase extends ShareInfoEntity {
 
-	public ShareInfoCase(SormasToSormasShareInfo shareInfo, Case entity) {
-		super(shareInfo, entity);
+	private static final long serialVersionUID = 7389931026555830033L;
+
+	public static final String CAZE = "caze";
+
+	private Case caze;
+
+	public ShareInfoCase() {
+	}
+
+	public ShareInfoCase(SormasToSormasShareInfo shareInfo, Case caze) {
+		super(shareInfo);
+		this.caze = caze;
+	}
+
+	@ManyToOne
+	public Case getCaze() {
+		return caze;
+	}
+
+	public void setCaze(Case caze) {
+		this.caze = caze;
 	}
 }

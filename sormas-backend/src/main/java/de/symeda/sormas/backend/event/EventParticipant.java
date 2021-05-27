@@ -40,7 +40,6 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEntity;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEventParticipant;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
@@ -175,7 +174,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
-	@OneToMany(mappedBy = ShareInfoEntity.EVENT_PARTICIPANT, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = ShareInfoEventParticipant.EVENT_PARTICIPANT, fetch = FetchType.LAZY)
 	public List<ShareInfoEventParticipant> getShareInfoEventParticipants() {
 		return shareInfoEventParticipants;
 	}

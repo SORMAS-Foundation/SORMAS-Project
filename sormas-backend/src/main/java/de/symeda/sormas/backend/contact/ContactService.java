@@ -88,7 +88,6 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
@@ -1225,7 +1224,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb,
 				filter,
 				cb.or(
-					cb.isNotNull(joins.getSormasToSormasShareInfo().get(SormasToSormasShareInfo.CONTACT)),
+					cb.isNotNull(joins.getSormasToSormasShareInfo()),
 					cb.isNotNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO))));
 		}
 

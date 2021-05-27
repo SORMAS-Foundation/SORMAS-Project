@@ -60,11 +60,11 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private String comment;
 
+	private SormasToSormasShareRequest request;
+
 	private List<Case> cases;
 
 	private List<Contact> contacts;
-
-	private SormasToSormasShareRequest request;
 
 	private List<EventParticipant> eventParticipants;
 
