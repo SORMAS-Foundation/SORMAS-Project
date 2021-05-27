@@ -18,14 +18,20 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_CONTACT_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.web.Contact;
 
 public class ContactDirectorySteps implements En {
+
+  protected Contact createdContact;
+  protected WebDriverHelpers webDriverHelpers;
 
   @Inject
   public ContactDirectorySteps(WebDriverHelpers webDriverHelpers) {
@@ -35,5 +41,26 @@ public class ContactDirectorySteps implements En {
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 NEW_CONTACT_BUTTON, FIRST_NAME_OF_CONTACT_PERSON_INPUT));
+
+    When(
+        "I search after the last created contact",
+        () -> {
+          createdContact = EditContactSteps.aContact;
+          searchAfterContactByMultipleOptions(createdContact.getUuid());
+          openContactFromResultsByUUID(createdContact.getUuid());
+        });
+  }
+
+  private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
+    webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, idPhoneNameEmail);
+    webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+  }
+
+  private void openContactFromResultsByUUID(String uuid) {
+    String locator = "//a[contains(@title, '" + uuid + "')]";
+    webDriverHelpers.waitUntilIdentifiedElementIsPresent(By.xpath(locator));
+    webDriverHelpers.clickOnWebElementBySelector(By.xpath(locator));
+    webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
   }
 }
