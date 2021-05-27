@@ -22,4 +22,6 @@ import org.openqa.selenium.By;
 
 public class ContactDirectoryPage {
   public static final By NEW_CONTACT_BUTTON = By.id("contactNewContact");
+  public static final By MULTIPLE_OPTIONS_SEARCH_INPUT = By.cssSelector("#nameUuidCaseLike");
+  public static final By APPLY_FILTERS_BUTTON = By.cssSelector("#actionApplyFilters");
 }
