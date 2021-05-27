@@ -41,7 +41,7 @@ import org.sormas.e2etests.steps.BaseSteps;
 public class WebDriverHelpers {
 
   public static final By SELECTED_RADIO_BUTTOn =
-      By.xpath("ancestor::div[@role='radiogroup']//input[@checked]/following-sibling::label");
+      By.xpath("ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
 
   private final BaseSteps baseSteps;

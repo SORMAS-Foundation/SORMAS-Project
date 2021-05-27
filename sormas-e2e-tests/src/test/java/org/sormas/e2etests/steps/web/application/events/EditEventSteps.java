@@ -18,8 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
-import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.*;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
@@ -44,7 +43,7 @@ public class EditEventSteps implements En {
           selectEventStatus(eventStatus);
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAVE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);
         });
     When("I collect the UUID displayed on Edit event page", () -> event = collectEventUuid());
     When(
@@ -87,17 +86,20 @@ public class EditEventSteps implements En {
     return Event.builder()
         .reportDate(reportDate)
         .eventDate(eventDate)
-        .eventStatus(webDriverHelpers.getValueFromWebElement(EVENT_STATUS_OPTIONS))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .eventStatus(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SELECTED_EVENT_STATUS))
         .investigationStatus(
-            webDriverHelpers.getValueFromWebElement(EVENT_INVESTIGATION_STATUS_OPTIONS))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                EVENT_INVESTIGATION_STATUS_INPUT))
         .eventManagementStatus(
-            webDriverHelpers.getValueFromWebElement(EVENT_MANAGEMENT_STATUS_OPTIONS))
-        .riskLevel(webDriverHelpers.getValueFromWebElement(RISK_LEVEL_COMBOBOX))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                EVENT_MANAGEMENT_STATUS_INPUT))
+        .riskLevel(webDriverHelpers.getValueFromWebElement(RISK_LEVEL_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .title(webDriverHelpers.getValueFromWebElement(TITLE_INPUT))
-        .sourceType(webDriverHelpers.getValueFromWebElement(SOURCE_TYPE_COMBOBOX))
-        .eventLocation(webDriverHelpers.getValueFromWebElement(TYPE_OF_PLACE_COMBOBOX))
-        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .sourceType(webDriverHelpers.getValueFromWebElement(SOURCE_TYPE_INPUT))
+        .eventLocation(webDriverHelpers.getValueFromWebElement(TYPE_OF_PLACE_INPUT))
         .build();
   }
 
@@ -128,7 +130,7 @@ public class EditEventSteps implements En {
   }
 
   public void selectDisease(String disease) {
-    webDriverHelpers.selectFromCombobox(DISEASE_INPUT, disease);
+    webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
   }
 
   public void fillExternalIdInput(String externalId) {
@@ -172,6 +174,6 @@ public class EditEventSteps implements En {
   }
 
   public void selectRegion(String region) {
-    webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, region);
+    webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, region);
   }
 }
