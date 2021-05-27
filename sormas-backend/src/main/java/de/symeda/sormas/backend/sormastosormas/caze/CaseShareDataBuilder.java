@@ -42,7 +42,6 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
-import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
@@ -213,7 +212,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		casePreview.setReportDate(caze.getReportDate());
 		casePreview.setDisease(caze.getDisease());
 		casePreview.setDiseaseDetails(caze.getDiseaseDetails());
-		casePreview.setDiseaseVariant(DiseaseVariantFacadeEjb.toDto(caze.getDiseaseVariant()));
+		casePreview.setDiseaseVariant(caze.getDiseaseVariant());
 		casePreview.setCaseClassification(caze.getCaseClassification());
 		casePreview.setOutcome(caze.getOutcome());
 		casePreview.setInvestigationStatus(caze.getInvestigationStatus());

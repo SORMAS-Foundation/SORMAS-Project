@@ -974,7 +974,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setInternalId(source.getInternalId());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
+		target.setOwnershipHandedOver(source.getShareInfoEvents().stream().anyMatch(s -> s.getShareInfo().isOwnershipHandedOver()));
 
 		return target;
 	}

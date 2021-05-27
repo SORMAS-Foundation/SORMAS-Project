@@ -24,7 +24,7 @@ import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.disease.DiseaseVariantDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
@@ -60,7 +60,7 @@ public class SormasToSormasCasePreview implements HasUuid, Serializable {
 	private Date reportDate;
 	private Disease disease;
 	private String diseaseDetails;
-	private DiseaseVariantDto diseaseVariant;
+	private DiseaseVariant diseaseVariant;
 	private CaseClassification caseClassification;
 	private CaseOutcome outcome;
 	private InvestigationStatus investigationStatus;
@@ -111,11 +111,11 @@ public class SormasToSormasCasePreview implements HasUuid, Serializable {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	public DiseaseVariantDto getDiseaseVariant() {
+	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}
 
-	public void setDiseaseVariant(DiseaseVariantDto diseaseVariant) {
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
 	}
 

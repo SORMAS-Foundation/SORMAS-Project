@@ -67,7 +67,7 @@ public class CasePreviewGrid extends Grid<SormasToSormasCasePreview> {
 			}
 
 			if (casePreview.getDiseaseVariant() != null) {
-				diseaseText += diseaseText + " - " + casePreview.getDiseaseVariant().getName();
+				diseaseText += diseaseText + " - " + casePreview.getDiseaseVariant().getCaption();
 			}
 
 			return new Label(diseaseText);

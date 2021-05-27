@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
-import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class ShareRequestCriteria extends BaseCriteria {
 
