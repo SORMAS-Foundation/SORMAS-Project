@@ -46,10 +46,11 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.CountryDto;
+import de.symeda.sormas.api.region.ContinentReferenceDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
@@ -60,10 +61,12 @@ import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.region.ContinentFacadeEjb.ContinentFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CountryFacadeEjb;
 import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.region.SubcontinentFacadeEjb.SubcontinentFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -73,6 +76,10 @@ public class SharedDataProcessorHelper {
 
 	@EJB
 	private UserService userService;
+	@EJB
+	private ContinentFacadeEjbLocal continentFacade;
+	@EJB
+	private SubcontinentFacadeEjbLocal subcontinentFacade;
 	@EJB
 	private RegionFacadeEjbLocal regionFacade;
 	@EJB
@@ -124,10 +131,21 @@ public class SharedDataProcessorHelper {
 			processLocation(address, Captions.Person, validationErrors);
 		});
 
-		person.setBirthCountry(loadLocalCountry(person.getBirthCountry(), Captions.Person_birthCountry, validationErrors));
-		person.setCitizenship(loadLocalCountry(person.getCitizenship(), Captions.Person_citizenship, validationErrors));
+		CountryReferenceDto birthCountry = processCountry(person.getBirthCountry(), Captions.Person_birthCountry, validationErrors);
+		person.setBirthCountry(birthCountry);
+
+		CountryReferenceDto citizenship = processCountry(person.getCitizenship(), Captions.Person_citizenship, validationErrors);
+		person.setCitizenship(citizenship);
 
 		return validationErrors;
+	}
+	
+	private CountryReferenceDto processCountry(CountryReferenceDto country, String errorCaption, ValidationErrors validationErrors) {
+		CountryReferenceDto localCountry = loadLocalCountry(country);
+		if (country != null && localCountry == null) {
+			validationErrors.add(errorCaption, String.format(I18nProperties.getString(Strings.errorSormasToSormasCountry), country.getCaption()));
+		}
+		return localCountry;
 	}
 
 	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
@@ -138,6 +156,21 @@ public class SharedDataProcessorHelper {
 	}
 
 	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
+			RegionReferenceDto region,
+			DistrictReferenceDto district,
+			CommunityReferenceDto community,
+			FacilityType facilityType,
+			FacilityReferenceDto facility,
+			String facilityDetails,
+			PointOfEntryReferenceDto pointOfEntry,
+			String pointOfEntryDetails) {
+		return loadLocalInfrastructure(null, null, null, region, district, community, facilityType, facility, facilityDetails, pointOfEntry, pointOfEntryDetails);
+	}
+
+	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
+		ContinentReferenceDto continent,
+		SubcontinentReferenceDto subcontinent,
+		CountryReferenceDto country,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		CommunityReferenceDto community,
@@ -149,6 +182,21 @@ public class SharedDataProcessorHelper {
 
 		InfrastructureData infrastructureData = new InfrastructureData();
 		List<String> unmatchedFields = new ArrayList<>();
+
+		infrastructureData.continent = loadLocalContinent(continent);
+		if (continent != null && infrastructureData.continent == null) {
+			unmatchedFields.add(I18nProperties.getCaption(Captions.continent) + ": " + continent.getCaption());
+		}
+
+		infrastructureData.subcontinent = loadLocalSubcontinent(subcontinent);
+		if (subcontinent != null && infrastructureData.subcontinent == null) {
+			unmatchedFields.add(I18nProperties.getCaption(Captions.subcontinent) + ": " + subcontinent.getCaption());
+		}
+
+		infrastructureData.country = loadLocalCountry(country);
+		if (country != null && infrastructureData.country == null) {
+			unmatchedFields.add(I18nProperties.getCaption(Captions.country) + ": " + country.getCaption());
+		}
 
 		infrastructureData.region = loadLocalRegion(region);
 		if (region != null && infrastructureData.region == null) {
@@ -202,22 +250,6 @@ public class SharedDataProcessorHelper {
 		} else {
 			onNoErrors.accept(infrastructureAndErrors.getElement0());
 		}
-	}
-
-	private CountryReferenceDto loadLocalCountry(CountryReferenceDto country, String validationGroupTag, ValidationErrors validationErrors) {
-		if (country == null) {
-			return null;
-		}
-
-		CountryDto localCountry = countryFacade.getByIsoCode(country.getIsoCode(), true);
-
-		if (localCountry == null) {
-			validationErrors.add(
-				I18nProperties.getCaption(validationGroupTag),
-				String.format(I18nProperties.getString(Strings.errorSormasToSormasCountry), country.getCaption() + "(" + country.getIsoCode() + ")"));
-		}
-
-		return CountryFacadeEjb.toReferenceDto(localCountry);
 	}
 
 	public Map<String, ValidationErrors> processSamples(List<SormasToSormasSampleDto> samples) {
@@ -275,7 +307,8 @@ public class SharedDataProcessorHelper {
 	public ValidationErrors processContactData(ContactDto contact, PersonDto person, ContactDto existingContact) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		processPerson(person);
+		ValidationErrors personValidationErrors = processPerson(person);
+		validationErrors.addAll(personValidationErrors);
 
 		contact.setPerson(person.toReference());
 		updateReportingUser(contact, existingContact);
@@ -302,6 +335,12 @@ public class SharedDataProcessorHelper {
 					processLocation(exposureLocation, Captions.EpiData_exposures, validationErrors);
 				}
 			});
+			epiData.getActivitiesAsCase().forEach(activity -> {
+				LocationDto activityLocation = activity.getLocation();
+				if (activityLocation != null) {
+					processLocation(activityLocation, Captions.EpiData_activitiesAsCase, validationErrors);
+				}
+			});
 		}
 	}
 
@@ -313,6 +352,9 @@ public class SharedDataProcessorHelper {
 
 	private void processLocation(LocationDto address, String groupNameTag, ValidationErrors validationErrors) {
 		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = loadLocalInfrastructure(
+			address.getContinent(),
+			address.getSubcontinent(),
+			address.getCountry(),
 			address.getRegion(),
 			address.getDistrict(),
 			address.getCommunity(),
@@ -323,12 +365,64 @@ public class SharedDataProcessorHelper {
 			null);
 
 		handleInfraStructure(infrastructureAndErrors, groupNameTag, validationErrors, (infrastructure -> {
+			address.setContinent(infrastructure.getContinent());
+			address.setSubcontinent(infrastructure.getSubcontinent());
+			address.setCountry(infrastructure.getCountry());
 			address.setRegion(infrastructure.region);
 			address.setDistrict(infrastructure.district);
 			address.setCommunity(infrastructure.community);
 			address.setFacility(infrastructure.facility);
 			address.setFacilityDetails(infrastructure.facilityDetails);
 		}));
+	}
+
+
+	private ContinentReferenceDto loadLocalContinent(ContinentReferenceDto continent) {
+		if (continent == null) {
+			return null;
+		}
+		Optional<ContinentReferenceDto> localContinent = continent.getExternalId() != null
+			? continentFacade.getByExternalId(continent.getExternalId(), false).stream().findFirst()
+			: Optional.empty();
+		if (!localContinent.isPresent()) {
+			localContinent = continentFacade.getReferencesByName(continent.getCaption(), false).stream().findFirst();
+		}
+
+		return localContinent.orElse(null);
+	}
+
+	private SubcontinentReferenceDto loadLocalSubcontinent(SubcontinentReferenceDto subcontinent) {
+		if (subcontinent == null) {
+			return null;
+		}
+		Optional<SubcontinentReferenceDto> localSubcontinent = subcontinent.getExternalId() != null
+			? subcontinentFacade.getByExternalId(subcontinent.getExternalId(), false).stream().findFirst()
+			: Optional.empty();
+		if (!localSubcontinent.isPresent()) {
+			localSubcontinent = subcontinentFacade.getReferencesByName(subcontinent.getCaption(), false).stream().findFirst();
+		}
+
+		return localSubcontinent.orElse(null);
+	}
+
+	private CountryReferenceDto loadLocalCountry(CountryReferenceDto country) {
+		if (country == null) {
+			return null;
+		}
+
+		Optional<CountryReferenceDto> localCountry =
+			country.getExternalId() != null ? countryFacade.getByExternalId(country.getExternalId(), false).stream().findFirst() : Optional.empty();
+
+		if(!localCountry.isPresent()) {
+			localCountry = Optional.ofNullable(countryFacade.getByIsoCode(country.getIsoCode(), false))
+					.map(CountryFacadeEjb::toReferenceDto);
+		}
+
+		if (!localCountry.isPresent()) {
+			localCountry = countryFacade.getReferencesByName(country.getCaption(), false).stream().findFirst();
+		}
+
+		return localCountry.orElse(null);
 	}
 
 	private RegionReferenceDto loadLocalRegion(RegionReferenceDto region) {
@@ -453,6 +547,9 @@ public class SharedDataProcessorHelper {
 
 	public static class InfrastructureData {
 
+		private ContinentReferenceDto continent;
+		private SubcontinentReferenceDto subcontinent;
+		private CountryReferenceDto country;
 		private RegionReferenceDto region;
 		private DistrictReferenceDto district;
 		private CommunityReferenceDto community;
@@ -461,6 +558,18 @@ public class SharedDataProcessorHelper {
 		private PointOfEntryReferenceDto pointOfEntry;
 		private String pointOfEntryDetails;
 
+		public ContinentReferenceDto getContinent() {
+			return continent;
+		}
+
+		public SubcontinentReferenceDto getSubcontinent() {
+			return subcontinent;
+		}
+
+		public CountryReferenceDto getCountry() {
+			return country;
+		}
+		
 		public RegionReferenceDto getRegion() {
 			return region;
 		}
