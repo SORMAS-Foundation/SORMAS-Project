@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.importexport;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -50,7 +51,6 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -93,9 +93,6 @@ public class ImportExportTest extends AbstractBeanTest {
 		caze.setExternalID("text-ext-id");
 		caze.setExternalToken("text-ext-token");
 		caze.setDiseaseDetails("Corona");
-		caze.setPregnant(YesNoUnknown.NO);
-		caze.setTrimester(Trimester.UNKNOWN);
-		caze.setPostpartum(YesNoUnknown.NO);
 		caze.setHealthFacilityDetails("test HF details");
 		caze.setQuarantine(QuarantineType.INSTITUTIONELL);
 		caze.setQuarantineFrom(dateNow);
@@ -130,7 +127,7 @@ public class ImportExportTest extends AbstractBeanTest {
 		person.getAddress().setPostalCode("test postal code");
 		person.getAddress().setPostalCode("test postal code");
 
-		getPersonFacade().savePerson(person);
+		getPersonFacade().savePersonAndNotifyExternalJournal(person);
 
 		StreamResource exportStreamResource =
 			CaseDownloadUtil.createCaseExportResource(new CaseCriteria(), Collections::emptySet, CaseExportType.CASE_SURVEILLANCE, null);
@@ -180,9 +177,9 @@ public class ImportExportTest extends AbstractBeanTest {
 		assertThat(importedCase.getExternalToken(), is("text-ext-token"));
 		assertThat(importedCase.getDisease(), is(Disease.CORONAVIRUS));
 		assertThat(importedCase.getDiseaseDetails(), is("Corona"));
-		assertThat(importedCase.getPregnant(), is(YesNoUnknown.NO));
-		assertThat(importedCase.getTrimester(), is(Trimester.UNKNOWN));
-		assertThat(importedCase.getPostpartum(), is(YesNoUnknown.NO));
+		assertNull(importedCase.getPregnant());
+		assertNull(importedCase.getTrimester());
+		assertNull(importedCase.getPostpartum());
 		assertThat(importedCase.getRegion(), is(rdcf.region));
 		assertThat(importedCase.getDistrict(), is(rdcf.district));
 		assertThat(importedCase.getCommunity(), is(rdcf.community));
@@ -272,7 +269,7 @@ public class ImportExportTest extends AbstractBeanTest {
 		person.getAddress().setPostalCode("test postal code");
 		person.getAddress().setPostalCode("test postal code");
 
-		getPersonFacade().savePerson(person);
+		getPersonFacade().savePersonAndNotifyExternalJournal(person);
 
 		StreamResource exportStreamResource = ContactDownloadUtil.createContactExportResource(new ContactCriteria(), Collections::emptySet, null);
 

@@ -551,6 +551,9 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return Arrays.asList(
 			joins.getCaseReportingUser().get(User.UUID),
+			joins.getCaseResponsibleRegion().get(Region.UUID),
+			joins.getCaseResponsibleDistrict().get(District.UUID),
+			joins.getCaseResponsibleCommunity().get(Community.UUID),
 			joins.getCaseRegion().get(Region.UUID),
 			joins.getCaseDistrict().get(District.UUID),
 			joins.getCaseCommunity().get(Community.UUID),
@@ -570,13 +573,15 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	private Collection<Selection<?>> getContactJurisdictionSelections(SampleJoins joins) {
 
-		// eventReportingUserUuid, eventOfficerUuid, eventRegionUuid, eventDistrictUuid, eventCommunityUuid
 		return Arrays.asList(
 			joins.getContactReportingUser().get(User.UUID),
 			joins.getContactRegion().get(Region.UUID),
 			joins.getContactDistrict().get(District.UUID),
 			joins.getContactCommunity().get(Community.UUID),
 			joins.getContactCaseReportingUser().get(User.UUID),
+			joins.getContactCaseResponsibleRegion().get(Region.UUID),
+			joins.getContactCaseResponsibleDistrict().get(District.UUID),
+			joins.getContactCaseResponsibleCommunity().get(Community.UUID),
 			joins.getContactCaseRegion().get(Region.UUID),
 			joins.getContactCaseDistrict().get(District.UUID),
 			joins.getContactCaseCommunity().get(Community.UUID),

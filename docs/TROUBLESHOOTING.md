@@ -7,6 +7,15 @@ Please consult this collection of solutions to common problems if you have any i
 **Q:** I don't see a logout option anywhere in the mobile app. How can I change my user?  
 **A:** The logout option is hidden by default because users in the field often don't know their own passwords, but their devices are instead set up by a supervisor. If you want to change your user, go to the Settings screen and tap the version number five times to bring up additional options, including the logout option.
 
+## IDE Troubleshooting: Android Studio
+
+If for some reason the Android App is not building correctly (for example due to unexpected `ClassNotFoundExceptions`), here is what you should try:
+- Clean the Project (Build -> Clean Project)
+- Invalidate Caches (File -> Invalidate Caches / Restart...)
+- Wipe your Android VM (AVD Manager -> Wipe Data)
+
+If you get this exception: `Unable to load class 'javax.xml.bind.JAXBException'`, the reason is most likely a faulty JDK version. For the androidapp, you need Java JDK 8. To change the JDK, go to File -> Project Structure -> JDK Location and select a valid JDK (on Linux, check the folder `/usr/lib/jvm` and/or install if necessary: `sudo apt install openjdk-8-jdk`)
+
 ## IDE Troubleshooting: eclipse
 
 ### Deployment Problems

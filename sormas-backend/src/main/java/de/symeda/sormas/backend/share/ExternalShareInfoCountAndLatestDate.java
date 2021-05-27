@@ -21,7 +21,7 @@ import de.symeda.sormas.api.share.ExternalShareStatus;
 
 public class ExternalShareInfoCountAndLatestDate {
 
-	private final Long associatedObjectId;
+	private final String associatedObjectUuid;
 
 	private final Long count;
 
@@ -29,15 +29,15 @@ public class ExternalShareInfoCountAndLatestDate {
 
 	private final ExternalShareStatus latestStatus;
 
-	public ExternalShareInfoCountAndLatestDate(Long associatedObjectId, Long count, Date latestDate, ExternalShareStatus latestStatus) {
-		this.associatedObjectId = associatedObjectId;
+	public ExternalShareInfoCountAndLatestDate(String associatedObjectUuid, Long count, Date latestDate, ExternalShareStatus latestStatus) {
+		this.associatedObjectUuid = associatedObjectUuid;
 		this.count = count;
 		this.latestDate = latestDate;
 		this.latestStatus = latestStatus;
 	}
 
-	public Long getAssociatedObjectId() {
-		return associatedObjectId;
+	public String getAssociatedObjectUuid() {
+		return associatedObjectUuid;
 	}
 
 	public Long getCount() {

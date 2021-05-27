@@ -73,6 +73,7 @@ import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.contact.importer.ContactsImportLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.ContactDownloadUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
@@ -321,6 +322,16 @@ public class ContactsView extends AbstractView {
 			});
 		}
 
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_MERGE)) {
+			Button mergeDuplicatesButton = ButtonHelper.createIconButton(
+				Captions.contactMergeDuplicates,
+				VaadinIcons.COMPRESS_SQUARE,
+				e -> ControllerProvider.getContactController().navigateToMergeContactsView(),
+				ValoTheme.BUTTON_PRIMARY);
+			mergeDuplicatesButton.setWidth(100, Unit.PERCENTAGE);
+			moreLayout.addComponent(mergeDuplicatesButton);
+		}
+
 		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
 			Button btnNewContact = ButtonHelper.createIconButton(
 				Captions.contactNewContact,
@@ -390,7 +401,7 @@ public class ContactsView extends AbstractView {
 		activeStatusButton = statusAll;
 
 		for (ContactStatus status : ContactStatus.values()) {
-			Button statusButton = ButtonHelper.createButtonWithCaption("status-" + status.toString(), status.toString(), e -> {
+			Button statusButton = ButtonHelper.createButton("status-" + status.toString(), status.toString(), e -> {
 				criteria.contactStatus(status);
 				navigateTo(criteria);
 			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
@@ -411,7 +422,7 @@ public class ContactsView extends AbstractView {
 		{
 			// Show active/archived/all dropdown
 			if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW_ARCHIVED)) {
-				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);

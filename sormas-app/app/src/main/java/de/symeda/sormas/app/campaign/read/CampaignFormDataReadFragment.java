@@ -19,6 +19,7 @@
 package de.symeda.sormas.app.campaign.read;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.util.HashMap;
@@ -49,6 +51,7 @@ import de.symeda.sormas.app.util.TextViewBindingAdapters;
 
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.createControlTextReadField;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getExpressionValue;
+import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getUserTranslations;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.setVisibilityDependency;
 
 public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampaignDataReadLayoutBinding, CampaignFormData, CampaignFormData> {
@@ -78,7 +81,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
 
             if (type != CampaignFormElementType.SECTION && type != CampaignFormElementType.LABEL) {
                 String value = formValuesMap.get(campaignFormElement.getId());
-                ControlPropertyField dynamicField = createControlTextReadField(campaignFormElement, requireContext());
+                ControlPropertyField dynamicField = createControlTextReadField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                 dynamicField.setShowCaption(true);
                 if (value != null) {
                     if (type == CampaignFormElementType.YES_NO) {
@@ -97,11 +100,15 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                 }
                 final String expressionString = campaignFormElement.getExpression();
                 if (expressionString != null) {
-                    final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
-                    if (type == CampaignFormElementType.YES_NO) {
-                        ControlTextReadField.setValue((ControlTextReadField) dynamicField, (Boolean) expressionValue, null, null);
-                    } else {
-                        ControlTextReadField.setValue((ControlTextReadField) dynamicField, expressionValue.toString(), null, null, null);
+                    try {
+                        final Object expressionValue = getExpressionValue(expressionParser, formValues, expressionString);
+                        if (type == CampaignFormElementType.YES_NO) {
+                            ControlTextReadField.setValue((ControlTextReadField) dynamicField, (Boolean) expressionValue, null, null);
+                        } else {
+                            ControlTextReadField.setValue((ControlTextReadField) dynamicField, expressionValue.toString(), null, null, null);
+                        }
+                    } catch (SpelEvaluationException e) {
+                        Log.e("Error evaluating expression: " + expressionString, e.getMessage());
                     }
                 }
             } else if (type == CampaignFormElementType.SECTION) {
@@ -114,6 +121,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
         }
         return view;
     }
+
 
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {

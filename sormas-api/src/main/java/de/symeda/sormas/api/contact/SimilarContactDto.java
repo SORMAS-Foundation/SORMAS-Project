@@ -5,11 +5,15 @@ import java.util.Date;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class SimilarContactDto implements Serializable {
+public class SimilarContactDto extends PseudonymizableIndexDto implements Serializable {
 
 	private static final long serialVersionUID = -7290520732250426907L;
+
+	public static final String I18N_PREFIX = "Contact";
 
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
@@ -44,8 +48,8 @@ public class SimilarContactDto implements Serializable {
 							 ContactStatus contactStatus, FollowUpStatus followUpStatus,
 
 							 String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
-							 String caseReportingUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid,
-							 String caseHealthFacilityUuid, String casePointOfEntryUuid) {
+							 String caseReportingUuid, String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,
+							 String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid) {
 		//@formatter:on
 
 		this.firstName = firstName;
@@ -57,6 +61,7 @@ public class SimilarContactDto implements Serializable {
 			this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
 			this.caseJurisdiction = new CaseJurisdictionDto(
 				caseReportingUuid,
+				ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
 				caseRegionUuid,
 				caseDistrictUuid,
 				caseCommunityUuid,

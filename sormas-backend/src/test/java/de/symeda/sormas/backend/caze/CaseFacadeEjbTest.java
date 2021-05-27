@@ -32,6 +32,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -64,10 +67,8 @@ import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.DashboardCaseDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -101,6 +102,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -117,6 +119,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
@@ -127,6 +130,7 @@ import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -333,7 +337,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(1, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 
 		cazePerson.setPhone("40742140797");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		Assert.assertEquals(0, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 	}
@@ -405,50 +409,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetCasesForDashboard() {
-
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
-		CaseDataDto caze2 = creator.createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf2);
-		caze2.setSharedToCountry(true);
-		getCaseFacade().saveCase(caze2);
-
-		CaseCriteria caseCriteria = new CaseCriteria().region(caze.getRegion())
-			.district(caze.getDistrict())
-			.disease(caze.getDisease())
-			.newCaseDateBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1), NewCaseDateType.MOST_RELEVANT);
-
-		List<DashboardCaseDto> dashboardCaseDtos = getCaseFacade().getCasesForDashboard(caseCriteria);
-
-		// List should have only one entry; shared case should not appear
-		assertEquals(1, dashboardCaseDtos.size());
-	}
-
-	@Test
 	public void testMapCaseListCreation() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		PersonDto cazePerson = creator.createPerson("Case", "Person", p -> {
+			p.getAddress().setLatitude(0.0);
+			p.getAddress().setLongitude(0.0);
+		});
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
@@ -457,15 +426,25 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
+
+		Long count = getCaseFacade().countCasesForMap(
+			caze.getRegion(),
+			caze.getDistrict(),
+			caze.getDisease(),
+			DateHelper.subtractDays(new Date(), 1),
+			DateHelper.addDays(new Date(), 1),
+			null);
 
 		List<MapCaseDto> mapCaseDtos = getCaseFacade().getCasesForMap(
 			caze.getRegion(),
 			caze.getDistrict(),
 			caze.getDisease(),
 			DateHelper.subtractDays(new Date(), 1),
-			DateHelper.addDays(new Date(), 1));
+			DateHelper.addDays(new Date(), 1),
+			null);
 
 		// List should have one entry
+		assertEquals((long) count, mapCaseDtos.size());
 		assertEquals(1, mapCaseDtos.size());
 	}
 
@@ -655,7 +634,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 
 		cazePerson.getAddress().setCity("City");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
 		exposure.getLocation().setDetails("Ghana");
@@ -698,7 +677,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				PersonContactDetailDto
 					.build(cazePerson.toReference(), false, PersonContactDetailType.OTHER, null, "SkypeID", "personSkype", "", false, "", ""));
 
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		List<CaseExportDto> results =
 			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
@@ -737,7 +716,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		cazePerson.getAddress().setCity("City");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -877,7 +856,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// person alive again -> case has to be reset to no outcome
 		cazePerson.setPresentCondition(PresentCondition.ALIVE);
-		cazePerson = getPersonFacade().savePerson(cazePerson);
+		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
 		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
@@ -916,7 +895,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// person alive again -> deceased cases have to be set to no outcome
 		cazePerson.setPresentCondition(PresentCondition.ALIVE);
-		cazePerson = getPersonFacade().savePerson(cazePerson);
+		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
 		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
 		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
@@ -947,7 +926,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// case deceased -> person has to set to dead
 		firstCase.setOutcome(CaseOutcome.DECEASED);
 		cazePerson.setPresentCondition(PresentCondition.DEAD);
-		cazePerson = getPersonFacade().savePerson(cazePerson);
+		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		// this should throw an exception
 		exception.expect(OutdatedEntityException.class);
@@ -1072,7 +1051,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Thread.sleep(10L);
 
 		cazePerson.setBurialDate(new Date());
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
@@ -1100,7 +1079,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.getAddress().setStreet("new Street");
 		cazePerson.getAddress().setHouseNumber("new Number");
 		cazePerson.getAddress().setAdditionalInformation("new Information");
-		getPersonFacade().savePerson(cazePerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
 
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
@@ -1190,7 +1169,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		UserReferenceDto otherUserReference = new UserReferenceDto(otherUser.getUuid());
 		PersonDto otherPerson = creator.createPerson("Max", "Smith");
 		otherPerson.setBirthWeight(2);
-		getPersonFacade().savePerson(otherPerson);
+		getPersonFacade().savePersonAndNotifyExternalJournal(otherPerson);
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
 		RDCF otherRdcf = creator.createRDCF();
 		CaseDataDto otherCase = creator.createCase(
@@ -1756,5 +1735,113 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze = getCaseFacade().saveCase(caze);
 		assertEquals(FollowUpStatus.FOLLOW_UP, caze.getFollowUpStatus());
 		assertEquals(LocalDate.now().plusDays(21 + 10), DateHelper8.toLocalDate(caze.getFollowUpUntil()));
+	}
+
+	@Test
+	public void testCaseCriteriaSharedWithReportingTool() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+
+		CaseDataDto sharedCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		ExternalShareInfo shareInfo = new ExternalShareInfo();
+		shareInfo.setCaze(getCaseService().getByUuid(sharedCase.getUuid()));
+		shareInfo.setSender(getUserService().getByUuid(user.getUuid()));
+		shareInfo.setStatus(ExternalShareStatus.SHARED);
+		getExternalShareInfoService().ensurePersisted(shareInfo);
+
+		CaseDataDto notSharedCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+
+		CaseCriteria caseCriteriaForShared = new CaseCriteria();
+		caseCriteriaForShared.setOnlyEntitiesSharedWithExternalSurvTool(true);
+
+		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(caseCriteriaForShared, 0, 100, null);
+		MatcherAssert.assertThat(indexList, hasSize(1));
+		MatcherAssert.assertThat(indexList.get(0).getUuid(), is(sharedCase.getUuid()));
+
+		CaseCriteria caseCriteriaForNotShared = new CaseCriteria();
+		caseCriteriaForNotShared.setOnlyEntitiesNotSharedWithExternalSurvTool(true);
+
+		indexList = getCaseFacade().getIndexList(caseCriteriaForNotShared, 0, 100, null);
+		MatcherAssert.assertThat(indexList, hasSize(1));
+		MatcherAssert.assertThat(indexList.get(0).getUuid(), is(notSharedCase.getUuid()));
+	}
+
+	@Test
+	public void testCaseCriteriaChangedSinceLastShareWithReportingTool() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+
+		CaseDataDto sharedCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		ExternalShareInfo shareInfo = new ExternalShareInfo();
+		shareInfo.setCreationDate(Timestamp.valueOf(LocalDateTime.of(2021, Month.APRIL, 20, 12, 31)));
+		shareInfo.setCaze(getCaseService().getByUuid(sharedCase.getUuid()));
+		shareInfo.setSender(getUserService().getByUuid(user.getUuid()));
+		shareInfo.setStatus(ExternalShareStatus.DELETED);
+		getExternalShareInfoService().ensurePersisted(shareInfo);
+
+		sharedCase.setReInfection(YesNoUnknown.YES);
+		getCaseFacade().saveCase(sharedCase);
+
+		creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+
+		CaseCriteria caseCriteriaForShared = new CaseCriteria();
+		caseCriteriaForShared.setOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool(true);
+
+		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(caseCriteriaForShared, 0, 100, null);
+		MatcherAssert.assertThat(indexList, hasSize(1));
+		MatcherAssert.assertThat(indexList.get(0).getUuid(), is(sharedCase.getUuid()));
+	}
+
+	@Test
+	public void testCaseCriteriaLastShareWithReportingToolBetweenDates() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+
+		CaseDataDto sharedCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		ExternalShareInfo shareInfoMarch = new ExternalShareInfo();
+		shareInfoMarch.setCreationDate(Timestamp.valueOf(LocalDateTime.of(2021, Month.MARCH, 20, 12, 31)));
+		shareInfoMarch.setCaze(getCaseService().getByUuid(sharedCase.getUuid()));
+		shareInfoMarch.setSender(getUserService().getByUuid(user.getUuid()));
+		shareInfoMarch.setStatus(ExternalShareStatus.SHARED);
+		getExternalShareInfoService().ensurePersisted(shareInfoMarch);
+
+		ExternalShareInfo shareInfoApril = new ExternalShareInfo();
+		shareInfoApril.setCreationDate(Timestamp.valueOf(LocalDateTime.of(2021, Month.APRIL, 20, 12, 31)));
+		shareInfoApril.setCaze(getCaseService().getByUuid(sharedCase.getUuid()));
+		shareInfoApril.setSender(getUserService().getByUuid(user.getUuid()));
+		shareInfoApril.setStatus(ExternalShareStatus.DELETED);
+		getExternalShareInfoService().ensurePersisted(shareInfoApril);
+
+		sharedCase.setReInfection(YesNoUnknown.YES);
+		getCaseFacade().saveCase(sharedCase);
+
+		creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+		creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
+
+		CaseCriteria caseCriteriaForShared = new CaseCriteria();
+		caseCriteriaForShared.setNewCaseDateType(ExternalShareDateType.LAST_EXTERNAL_SURVEILLANCE_TOOL_SHARE);
+		caseCriteriaForShared
+			.setNewCaseDateFrom(Date.from(LocalDateTime.of(2021, Month.APRIL, 18, 12, 31).atZone(ZoneId.systemDefault()).toInstant()));
+		caseCriteriaForShared.setNewCaseDateTo(Date.from(LocalDateTime.of(2021, Month.APRIL, 21, 12, 31).atZone(ZoneId.systemDefault()).toInstant()));
+
+		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(caseCriteriaForShared, 0, 100, null);
+		MatcherAssert.assertThat(indexList, hasSize(1));
+		MatcherAssert.assertThat(indexList.get(0).getUuid(), is(sharedCase.getUuid()));
+
+		// range before last share
+		caseCriteriaForShared
+			.setNewCaseDateFrom(Date.from(LocalDateTime.of(2021, Month.MARCH, 10, 12, 31).atZone(ZoneId.systemDefault()).toInstant()));
+		caseCriteriaForShared.setNewCaseDateTo(Date.from(LocalDateTime.of(2021, Month.APRIL, 19, 10, 31).atZone(ZoneId.systemDefault()).toInstant()));
+		indexList = getCaseFacade().getIndexList(caseCriteriaForShared, 0, 100, null);
+		MatcherAssert.assertThat(indexList, hasSize(0));
+
+		// range after last share
+		caseCriteriaForShared
+			.setNewCaseDateFrom(Date.from(LocalDateTime.of(2021, Month.APRIL, 21, 12, 31).atZone(ZoneId.systemDefault()).toInstant()));
+		caseCriteriaForShared.setNewCaseDateTo(Date.from(LocalDateTime.of(2021, Month.APRIL, 22, 10, 31).atZone(ZoneId.systemDefault()).toInstant()));
+		indexList = getCaseFacade().getIndexList(caseCriteriaForShared, 0, 100, null);
+		MatcherAssert.assertThat(indexList, hasSize(0));
+
 	}
 }

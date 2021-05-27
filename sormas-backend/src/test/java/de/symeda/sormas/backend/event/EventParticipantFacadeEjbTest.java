@@ -81,7 +81,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		creator.createEventParticipant(event.toReference(), eventPerson1, "event fan", user.toReference());
 
 		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
-		eventParticipantCriteria.event(event.toReference());
+		eventParticipantCriteria.withEvent(event.toReference());
 
 		List<EventParticipantExportDto> results = getEventParticipantFacade().getExportList(eventParticipantCriteria, Collections.emptySet(), 0, 100, Language.EN);
 

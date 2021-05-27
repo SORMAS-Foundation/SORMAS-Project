@@ -332,7 +332,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	 */
 	public Button getCommitButton() {
 		if (commitButton == null) {
-			commitButton = ButtonHelper.createButtonWithCaption("commit", I18nProperties.getCaption(Captions.actionSave), new ClickListener() {
+			commitButton = ButtonHelper.createButton("commit", I18nProperties.getCaption(Captions.actionSave), new ClickListener() {
 
 				private static final long serialVersionUID = 1L;
 
@@ -354,7 +354,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	 */
 	public Button getDiscardButton() {
 		if (discardButton == null) {
-			discardButton = ButtonHelper.createButtonWithCaption("discard", I18nProperties.getCaption(Captions.actionDiscard), new ClickListener() {
+			discardButton = ButtonHelper.createButton("discard", I18nProperties.getCaption(Captions.actionDiscard), new ClickListener() {
 
 				private static final long serialVersionUID = 1L;
 
@@ -371,7 +371,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public Button getDeleteButton(String entityName) {
 		if (deleteButton == null) {
-			deleteButton = ButtonHelper.createButtonWithCaption("delete", I18nProperties.getCaption(Captions.actionDelete), new ClickListener() {
+			deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete), new ClickListener() {
 
 				private static final long serialVersionUID = 1L;
 

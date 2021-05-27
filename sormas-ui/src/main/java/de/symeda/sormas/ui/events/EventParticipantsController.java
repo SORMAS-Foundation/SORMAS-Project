@@ -96,7 +96,7 @@ public class EventParticipantsController {
 							selectedPerson -> {
 								if (selectedPerson != null) {
 									EventParticipantCriteria criteria = new EventParticipantCriteria();
-									criteria.event(eventRef);
+									criteria.withEvent(eventRef);
 									List<EventParticipantIndexDto> currentEventParticipants =
 										FacadeProvider.getEventParticipantFacade().getIndexList(criteria, null, null, null);
 									Boolean alreadyParticipant = false;
@@ -298,7 +298,7 @@ public class EventParticipantsController {
 	}
 
 	private void savePersonAndEventParticipant(Consumer<EventParticipantReferenceDto> doneConsumer, EventParticipantDto dto) {
-		personFacade.savePerson(dto.getPerson());
+		personFacade.savePersonAndNotifyExternalJournal(dto.getPerson());
 		eventParticipantFacade.saveEventParticipant(dto);
 		Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
 		if (doneConsumer != null)

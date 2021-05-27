@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -37,7 +34,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.backend.person.PersonContactDetail;
 import org.hibernate.Session;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
@@ -51,8 +47,10 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventGroup;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.facility.Facility;
@@ -61,6 +59,7 @@ import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.outbreak.Outbreak;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonContactDetail;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -105,6 +104,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.CONTACTS, new DatabaseExportConfiguration(Contact.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.VISITS, new DatabaseExportConfiguration(Visit.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTS, new DatabaseExportConfiguration(Event.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.EVENTGROUPS, new DatabaseExportConfiguration(EventGroup.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTPARTICIPANTS, new DatabaseExportConfiguration(EventParticipant.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.SAMPLES, new DatabaseExportConfiguration(Sample.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.SAMPLETESTS, new DatabaseExportConfiguration(PathogenTest.TABLE_NAME));
@@ -119,7 +119,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.FACILITIES, new DatabaseExportConfiguration(Facility.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.OUTBREAKS, new DatabaseExportConfiguration(Outbreak.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.CASE_SYMPTOMS, new DatabaseExportConfiguration(Symptoms.TABLE_NAME));
-
+		EXPORT_CONFIGS.put(DatabaseTable.CUSTOMIZABLE_ENUM_VALUES, new DatabaseExportConfiguration(CustomizableEnumValue.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.VISIT_SYMPTOMS, new DatabaseExportConfiguration(Symptoms.TABLE_NAME, Visit.TABLE_NAME, "id", "symptoms_id"));
 		EXPORT_CONFIGS.put(
 			DatabaseTable.CLINICAL_VISIT_SYMPTOMS,
@@ -169,9 +169,7 @@ public class DatabaseExportService {
 	}
 
 	private int getColumnCount(String tableName) {
-		BigInteger bigIntegerResult = (BigInteger) em.createNativeQuery(COUNT_TABLE_COLUMNS)
-				.setParameter("tableName", tableName)
-				.getSingleResult();
+		BigInteger bigIntegerResult = (BigInteger) em.createNativeQuery(COUNT_TABLE_COLUMNS).setParameter("tableName", tableName).getSingleResult();
 		return bigIntegerResult.intValue();
 	}
 
@@ -180,23 +178,20 @@ public class DatabaseExportService {
 		final String sql;
 		if (config.isUseJoinTable()) {
 			sql = String.format(
-					COPY_WITH_JOIN_TABLE,
-					config.getTableName(),
-					config.getJoinTableName(),
-					config.getColumnName(),
-					config.getJoinColumnName(),
-					configFacade.getCsvSeparator());
+				COPY_WITH_JOIN_TABLE,
+				config.getTableName(),
+				config.getJoinTableName(),
+				config.getColumnName(),
+				config.getJoinColumnName(),
+				configFacade.getCsvSeparator());
 		} else {
 			sql = String.format(COPY_SINGLE_TABLE, config.getTableName(), configFacade.getCsvSeparator());
 		}
 		writeCsv(writer, sql, databaseTable.getFileName());
 
 		// Be able to check performance for each export query
-		logger.trace(
-				"exportAsCsvFiles(): Exported '{}' in {} ms. sql='{}'",
-				databaseTable.getFileName(),
-				System.currentTimeMillis() - startTime,
-				sql);
+		logger
+			.trace("exportAsCsvFiles(): Exported '{}' in {} ms. sql='{}'", databaseTable.getFileName(), System.currentTimeMillis() - startTime, sql);
 	}
 
 	/**

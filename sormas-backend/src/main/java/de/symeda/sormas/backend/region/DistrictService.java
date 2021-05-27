@@ -96,7 +96,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
 		Root<District> from = cq.from(getElementClass());
 
-		Predicate filter = CriteriaBuilderHelper.unaccentedIlike(cb, from.get(District.NAME), name.trim());
+		Predicate filter = CriteriaBuilderHelper.unaccentedIlikePrecise(cb, from.get(District.NAME), name.trim());
 		if (region != null) {
 			filter = cb.and(filter, cb.equal(from.get(District.REGION), region));
 		}
@@ -115,7 +115,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
 		Root<District> from = cq.from(getElementClass());
 
-		Predicate filter = CriteriaBuilderHelper.ilike(cb, from.get(District.EXTERNAL_ID), externalId.trim());
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(District.EXTERNAL_ID), externalId.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}

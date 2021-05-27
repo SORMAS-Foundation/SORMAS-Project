@@ -36,7 +36,6 @@ import com.vaadin.ui.renderers.DateRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseFollowUpDto;
-import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -61,12 +60,13 @@ public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria
 		Date fromDate = DateHelper.subtractDays(referenceDate, interval - 1);
 		criteria.followUpUntilFrom(DateHelper.getStartOfDay(fromDate));
 
-		setColumns(FollowUpDto.UUID,
-				FollowUpDto.FIRST_NAME,
-				FollowUpDto.LAST_NAME,
-				FollowUpDto.REPORT_DATE,
-				FollowUpDto.FOLLOW_UP_UNTIL,
-				ContactFollowUpDto.SYMPTOM_JOURNAL_STATUS);
+		setColumns(
+			FollowUpDto.UUID,
+			FollowUpDto.FIRST_NAME,
+			FollowUpDto.LAST_NAME,
+			FollowUpDto.REPORT_DATE,
+			FollowUpDto.FOLLOW_UP_UNTIL,
+			FollowUpDto.SYMPTOM_JOURNAL_STATUS);
 
 		setVisitColumns(referenceDate, interval, criteria);
 

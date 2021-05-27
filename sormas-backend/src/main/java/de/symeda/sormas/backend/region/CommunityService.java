@@ -59,7 +59,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		CriteriaQuery<Community> cq = cb.createQuery(getElementClass());
 		Root<Community> from = cq.from(getElementClass());
 
-		Predicate filter = CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Community.NAME), name.trim());
+		Predicate filter = CriteriaBuilderHelper.unaccentedIlikePrecise(cb, from.get(Community.NAME), name.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -78,7 +78,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		CriteriaQuery<Community> cq = cb.createQuery(getElementClass());
 		Root<Community> from = cq.from(getElementClass());
 
-		Predicate filter = CriteriaBuilderHelper.ilike(cb, from.get(Community.EXTERNAL_ID), externalId.trim());
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(Community.EXTERNAL_ID), externalId.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -136,7 +136,8 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Community.ARCHIVED), false), cb.isNull(from.get(Community.ARCHIVED))));
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(from.get(Community.ARCHIVED), false), cb.isNull(from.get(Community.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Community.ARCHIVED), true));
 			}

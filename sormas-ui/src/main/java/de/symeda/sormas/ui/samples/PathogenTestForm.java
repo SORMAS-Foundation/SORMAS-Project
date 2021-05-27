@@ -22,10 +22,11 @@ import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_4;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -35,8 +36,8 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -152,6 +153,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		diseaseVariantField.setVisible(false);
 
 		Map<Object, List<Object>> pcrTestSpecificationVisibilityDependencies = new HashMap<Object, List<Object>>() {
+
 			{
 				put(PathogenTestDto.TESTED_DISEASE, Arrays.asList(Disease.CORONAVIRUS));
 				put(PathogenTestDto.TEST_TYPE, Arrays.asList(PathogenTestType.PCR_RT_PCR));
@@ -196,14 +198,11 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
-			List<DiseaseVariantReferenceDto> variants;
-			if (disease != null && disease.isVariantAllowed()) {
-				variants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
-			} else {
-				variants = Collections.emptyList();
-			}
-			FieldHelper.updateItems(diseaseVariantField, variants);
-			diseaseVariantField.setVisible(isVisibleAllowed(PathogenTestDto.TESTED_DISEASE_DETAILS) && !variants.isEmpty());
+			List<DiseaseVariant> diseaseVariants =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+			diseaseVariantField.setVisible(
+				disease != null && isVisibleAllowed(PathogenTestDto.TESTED_DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 		});
 
 		testTypeField.addValueChangeListener(e -> {

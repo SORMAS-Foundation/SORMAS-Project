@@ -51,6 +51,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
@@ -91,8 +92,8 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 	public DashboardFilterLayout(AbstractDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
 		this.dashboardView = dashboardView;
 		this.dashboardDataProvider = dashboardDataProvider;
-		this.regionFilter = new ComboBox();
-		this.districtFilter = new ComboBox();
+		this.regionFilter = ComboBoxHelper.createComboBoxV7();
+		this.districtFilter = ComboBoxHelper.createComboBoxV7();
 		dateFilterButtons = new HashSet<>();
 		dateComparisonButtons = new HashSet<>();
 
@@ -388,7 +389,7 @@ public abstract class DashboardFilterLayout extends HorizontalLayout {
 	}
 
 	private Button createAndAddDateFilterButton(String id, String caption, Set<Button> buttonSet) {
-		Button button = ButtonHelper.createButtonWithCaption(id, caption, e -> {
+		Button button = ButtonHelper.createButton(id, caption, e -> {
 			changeCustomDateFilterPanelStyle(e.getButton(), buttonSet);
 		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 

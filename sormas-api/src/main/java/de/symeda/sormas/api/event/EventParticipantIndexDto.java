@@ -3,6 +3,7 @@ package de.symeda.sormas.api.event;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -26,6 +27,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String CONTACT_COUNT = "contactCount";
+	public static final String VACCINATION = "vaccination";
 
 	private String uuid;
 	private String personUuid;
@@ -45,6 +47,8 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 	private PathogenTestResultType pathogenTestResult;
 	private Date sampleDateTime;
 
+	private Vaccination vaccination;
+
 	private EventParticipantJurisdictionDto eventJurisdiction;
 
 	public EventParticipantIndexDto(
@@ -60,6 +64,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		String involvementDescription,
 		PathogenTestResultType pathogenTestResult,
 		Date sampleDateTime,
+		Vaccination vaccination,
 		String reportingUserUuid) {
 
 		this.uuid = uuid;
@@ -73,6 +78,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		this.involvementDescription = involvementDescription;
 		this.pathogenTestResult = pathogenTestResult;
 		this.sampleDateTime = sampleDateTime;
+		this.vaccination = vaccination;
 		this.eventJurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
 	}
 
@@ -174,6 +180,14 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 
 	public void setSampleDateTime(Date sampleDateTime) {
 		this.sampleDateTime = sampleDateTime;
+	}
+
+	public Vaccination getVaccination() {
+		return vaccination;
+	}
+
+	public void setVaccination(Vaccination vaccination) {
+		this.vaccination = vaccination;
 	}
 
 	public EventParticipantReferenceDto toReference() {

@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
-import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.action.ActionStatus;
@@ -32,12 +31,15 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.share.ExternalShareCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
+import de.symeda.sormas.api.utils.criteria.CriteriaWithDateType;
 
-public class EventCriteria extends BaseCriteria implements Serializable {
+public class EventCriteria extends CriteriaWithDateType implements ExternalShareCriteria, Serializable {
 
 	private static final long serialVersionUID = 2194071020732246594L;
 
@@ -52,6 +54,10 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public static final String DISTRICT = "district";
 	public static final String REGION = "region";
 	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
+	public static final String ONLY_ENTITIES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyEntitiesNotSharedWithExternalSurvTool";
+	public static final String ONLY_ENTITIES_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyEntitiesSharedWithExternalSurvTool";
+	public static final String ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL =
+		"onlyEntitiesChangedSinceLastSharedWithExternalSurvTool";
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
@@ -62,11 +68,10 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
-	private Date reportedDateFrom;
-	private Date reportedDateTo;
 	private EntityRelevanceStatus relevanceStatus;
 	private Date eventDateFrom;
 	private Date eventDateTo;
+	private CriteriaDateType eventDateType = EventCriteriaDateType.EVENT_DATE;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private Date eventEvolutionDateFrom;
 	private Date eventEvolutionDateTo;
@@ -93,6 +98,13 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Date actionChangeDateFrom;
 	private Date actionChangeDateTo;
 	private DateFilterOption actionChangeDateFilterOption = DateFilterOption.DATE;
+	private Boolean onlyEntitiesNotSharedWithExternalSurvTool;
+	private Boolean onlyEntitiesSharedWithExternalSurvTool;
+	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
+
+	public EventCriteria() {
+		super(EventCriteriaDateType.class);
+	}
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -230,38 +242,16 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	/**
-	 * @param reportedDateTo
-	 *            will automatically be set to the end of the day
-	 */
-	public EventCriteria reportedBetween(Date reportedDateFrom, Date reportedDateTo) {
-
-		this.reportedDateFrom = reportedDateFrom;
-		this.reportedDateTo = reportedDateTo;
-		return this;
-	}
-
-	public EventCriteria reportedDateFrom(Date reportedDateFrom) {
-		this.reportedDateFrom = reportedDateFrom;
-		return this;
-	}
-
-	public Date getReportedDateFrom() {
-		return reportedDateFrom;
-	}
-
-	public EventCriteria reportedDateTo(Date reportedDateTo) {
-		this.reportedDateTo = reportedDateTo;
-		return this;
-	}
-
-	public Date getReportedDateTo() {
-		return reportedDateTo;
-	}
-
-	public EventCriteria eventDateBetween(Date eventDateFrom, Date eventDateTo, DateFilterOption dateFilterOption) {
+	public EventCriteria eventDateBetween(Date eventDateFrom, Date eventDateTo) {
 		this.eventDateFrom = eventDateFrom;
 		this.eventDateTo = eventDateTo;
+		return this;
+	}
+
+	public EventCriteria eventDateBetween(Date eventDateFrom, Date eventDateTo, CriteriaDateType eventDateType, DateFilterOption dateFilterOption) {
+		this.eventDateFrom = eventDateFrom;
+		this.eventDateTo = eventDateTo;
+		this.eventDateType = eventDateType;
 		this.dateFilterOption = dateFilterOption;
 		return this;
 	}
@@ -282,6 +272,19 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public Date getEventDateTo() {
 		return eventDateTo;
+	}
+
+	public CriteriaDateType getEventDateType() {
+		return eventDateType;
+	}
+
+	public void setEventDateType(CriteriaDateType eventDateType) {
+		this.eventDateType = eventDateType;
+	}
+
+	public EventCriteria eventDateType(CriteriaDateType eventDateType) {
+		this.eventDateType = eventDateType;
+		return this;
 	}
 
 	public EventCriteria dateFilterOption(DateFilterOption dateFilterOption) {
@@ -426,10 +429,15 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public EventCriteria dateBetween(DateType dateType, Date dateFrom, Date dateTo, DateFilterOption dateFilterOption) {
+	public EventCriteria dateBetween(
+		DateType dateType,
+		Date dateFrom,
+		Date dateTo,
+		CriteriaDateType criteriaDateType,
+		DateFilterOption dateFilterOption) {
 		switch (dateType) {
 		case EVENT:
-			eventDateBetween(dateFrom, dateTo, dateFilterOption);
+			eventDateBetween(dateFrom, dateTo, criteriaDateType, dateFilterOption);
 			break;
 		case EVENT_SIGNAL_EVOLUTION:
 			eventEvolutionDateBetween(dateFrom, dateTo, dateFilterOption);
@@ -586,5 +594,29 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
 		this.eventManagementStatus = eventManagementStatus;
+	}
+
+	public Boolean getOnlyEntitiesNotSharedWithExternalSurvTool() {
+		return onlyEntitiesNotSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyEntitiesNotSharedWithExternalSurvTool(Boolean onlyEntitiesNotSharedWithExternalSurvTool) {
+		this.onlyEntitiesNotSharedWithExternalSurvTool = onlyEntitiesNotSharedWithExternalSurvTool;
+	}
+
+	public Boolean getOnlyEntitiesSharedWithExternalSurvTool() {
+		return onlyEntitiesSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyEntitiesSharedWithExternalSurvTool(Boolean onlyEntitiesSharedWithExternalSurvTool) {
+		this.onlyEntitiesSharedWithExternalSurvTool = onlyEntitiesSharedWithExternalSurvTool;
+	}
+
+	public Boolean getOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool() {
+		return onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
+	}
+
+	public void setOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool(Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool) {
+		this.onlyEntitiesChangedSinceLastSharedWithExternalSurvTool = onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
 	}
 }

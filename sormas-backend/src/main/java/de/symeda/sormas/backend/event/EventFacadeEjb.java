@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -58,7 +59,6 @@ import org.apache.commons.lang.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
@@ -93,6 +93,7 @@ import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLoca
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
@@ -176,20 +177,9 @@ public class EventFacadeEjb implements EventFacade {
 		return eventService.getDeletedUuidsSince(since);
 	}
 
-	@Override
-	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
-
-		return eventService.getNewEventsForDashboard(eventCriteria);
-	}
-
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
 
 		return eventService.getEventCountByDisease(eventCriteria);
-	}
-
-	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
-
-		return eventService.getEventCountByStatus(eventCriteria);
 	}
 
 	@Override
@@ -219,6 +209,10 @@ public class EventFacadeEjb implements EventFacade {
 		EventDto existingDto = toDto(existingEvent);
 
 		restorePseudonymizedDto(dto, existingEvent, existingDto, pseudonymizer);
+
+		if (dto.getReportDateTime() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
+		}
 
 		Event event = fromDto(dto, checkChangeDate);
 		eventService.ensurePersisted(event);
@@ -421,6 +415,8 @@ public class EventFacadeEjb implements EventFacade {
 		Map<String, Long> contactCounts = new HashMap<>();
 		Map<String, Long> contactCountsSourceInEvent = new HashMap<>();
 		Map<String, EventGroupsIndexDto> eventGroupsByEventId = new HashMap<>();
+		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = new HashMap<>();
+
 		if (CollectionUtils.isNotEmpty(indexList)) {
 			List<String> eventUuids = indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
 			List<Object[]> objectQueryList = null;
@@ -513,6 +509,12 @@ public class EventFacadeEjb implements EventFacade {
 					});
 				}
 			}
+
+			if (externalSurveillanceToolFacade.isFeatureEnabled()) {
+				survToolShareCountAndDates = externalShareInfoService.getEventShareCountAndLatestDate(eventUuids)
+					.stream()
+					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
+			}
 		}
 
 		if (indexList != null) {
@@ -523,6 +525,11 @@ public class EventFacadeEjb implements EventFacade {
 				Optional.ofNullable(contactCounts.get(eventDto.getUuid())).ifPresent(eventDto::setContactCount);
 				Optional.ofNullable(contactCountsSourceInEvent.get(eventDto.getUuid())).ifPresent(eventDto::setContactCountSourceInEvent);
 				Optional.ofNullable(eventGroupsByEventId.get(eventDto.getUuid())).ifPresent(eventDto::setEventGroups);
+				Optional.ofNullable(survToolShareCountAndDates.get(eventDto.getUuid())).ifPresent((c) -> {
+					eventDto.setSurveillanceToolStatus(c.getLatestStatus());
+					eventDto.setSurveillanceToolLastShareDate(c.getLatestDate());
+					eventDto.setSurveillanceToolShareCount(c.getCount());
+				});
 			}
 		}
 
@@ -900,104 +907,6 @@ public class EventFacadeEjb implements EventFacade {
 		}
 	}
 
-	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {
-		Event target = DtoHelper.fillOrBuildEntity(source, eventService.getByUuid(source.getUuid()), Event::new, checkChangeDate);
-
-		target.setEventStatus(source.getEventStatus());
-		target.setRiskLevel(source.getRiskLevel());
-		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
-		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
-		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
-		target.setExternalId(source.getExternalId());
-		target.setExternalToken(source.getExternalToken());
-		target.setEventTitle(source.getEventTitle());
-		target.setEventDesc(source.getEventDesc());
-		target.setNosocomial(source.getNosocomial());
-		target.setStartDate(source.getStartDate());
-		target.setEndDate(source.getEndDate());
-		target.setReportDateTime(source.getReportDateTime());
-		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
-		target.setEvolutionDate(source.getEvolutionDate());
-		target.setEvolutionComment(source.getEvolutionComment());
-		target.setEventLocation(locationFacade.fromDto(source.getEventLocation(), checkChangeDate));
-		target.setTypeOfPlace(source.getTypeOfPlace());
-		target.setMeansOfTransport(source.getMeansOfTransport());
-		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
-		target.setConnectionNumber(source.getConnectionNumber());
-		target.setTravelDate(source.getTravelDate());
-		target.setWorkEnvironment(source.getWorkEnvironment());
-		target.setSrcType(source.getSrcType());
-		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
-		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
-		target.setSrcFirstName(source.getSrcFirstName());
-		target.setSrcLastName(source.getSrcLastName());
-		target.setSrcTelNo(source.getSrcTelNo());
-		target.setSrcEmail(source.getSrcEmail());
-		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
-		target.setSrcMediaName(source.getSrcMediaName());
-		target.setSrcMediaDetails(source.getSrcMediaDetails());
-		target.setDisease(source.getDisease());
-		target.setDiseaseDetails(source.getDiseaseDetails());
-		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
-		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
-		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
-		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
-		target.setSuperordinateEvent(eventService.getByReferenceDto(source.getSuperordinateEvent()));
-		target.setEventManagementStatus(source.getEventManagementStatus());
-
-		target.setReportLat(source.getReportLat());
-		target.setReportLon(source.getReportLon());
-		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-
-		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
-		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
-		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
-		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
-
-		target.setInternalId(source.getInternalId());
-
-		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
-		}
-
-		return target;
-	}
-
-	public EventDto convertToDto(Event source, Pseudonymizer pseudonymizer) {
-		EventDto eventDto = toDto(source);
-
-		pseudonymizeDto(source, eventDto, pseudonymizer);
-
-		return eventDto;
-	}
-
-	private void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
-		if (dto != null) {
-			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(event);
-
-			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, (e) -> {
-				pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
-			});
-		}
-	}
-
-	private void restorePseudonymizedDto(EventDto dto, Event existingEvent, EventDto existingDto, Pseudonymizer pseudonymizer) {
-		if (existingDto != null) {
-			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(existingEvent);
-			pseudonymizer.restorePseudonymizedValues(EventDto.class, dto, existingDto, inJurisdiction);
-			pseudonymizer.restoreUser(existingEvent.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
-		}
-	}
-
-	public static EventReferenceDto toReferenceDto(Event entity) {
-
-		if (entity == null) {
-			return null;
-		}
-
-		return new EventReferenceDto(entity.getUuid(), entity.toString());
-	}
-
 	public static EventDto toDto(Event source) {
 
 		if (source == null) {
@@ -1057,10 +966,118 @@ public class EventFacadeEjb implements EventFacade {
 		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
 		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
 
+		target.setEpidemiologicalEvidence(source.getEpidemiologicalEvidence());
+		target.setEpidemiologicalEvidenceDetails(source.getEpidemiologicalEvidenceDetails());
+		target.setLaboratoryDiagnosticEvidence(source.getLaboratoryDiagnosticEvidence());
+		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
+
 		target.setInternalId(source.getInternalId());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getShareInfoEvents().stream().anyMatch(e -> e.getShareInfo().isOwnershipHandedOver()));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
+
+		return target;
+	}
+
+	public EventDto convertToDto(Event source, Pseudonymizer pseudonymizer) {
+		EventDto eventDto = toDto(source);
+
+		pseudonymizeDto(source, eventDto, pseudonymizer);
+
+		return eventDto;
+	}
+
+	private void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
+		if (dto != null) {
+			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(event);
+
+			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, (e) -> {
+				pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
+			});
+		}
+	}
+
+	private void restorePseudonymizedDto(EventDto dto, Event existingEvent, EventDto existingDto, Pseudonymizer pseudonymizer) {
+		if (existingDto != null) {
+			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(existingEvent);
+			pseudonymizer.restorePseudonymizedValues(EventDto.class, dto, existingDto, inJurisdiction);
+			pseudonymizer.restoreUser(existingEvent.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
+		}
+	}
+
+	public static EventReferenceDto toReferenceDto(Event entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		return new EventReferenceDto(entity.getUuid(), entity.toString());
+	}
+
+	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {
+		Event target = DtoHelper.fillOrBuildEntity(source, eventService.getByUuid(source.getUuid()), Event::new, checkChangeDate);
+
+		target.setEventStatus(source.getEventStatus());
+		target.setRiskLevel(source.getRiskLevel());
+		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
+		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
+		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
+		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
+		target.setEventTitle(source.getEventTitle());
+		target.setEventDesc(source.getEventDesc());
+		target.setNosocomial(source.getNosocomial());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
+		target.setReportDateTime(source.getReportDateTime());
+		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		target.setEvolutionDate(source.getEvolutionDate());
+		target.setEvolutionComment(source.getEvolutionComment());
+		target.setEventLocation(locationFacade.fromDto(source.getEventLocation(), checkChangeDate));
+		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setTravelDate(source.getTravelDate());
+		target.setWorkEnvironment(source.getWorkEnvironment());
+		target.setSrcType(source.getSrcType());
+		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
+		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
+		target.setSrcFirstName(source.getSrcFirstName());
+		target.setSrcLastName(source.getSrcLastName());
+		target.setSrcTelNo(source.getSrcTelNo());
+		target.setSrcEmail(source.getSrcEmail());
+		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
+		target.setSrcMediaName(source.getSrcMediaName());
+		target.setSrcMediaDetails(source.getSrcMediaDetails());
+		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
+		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
+		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
+		target.setSuperordinateEvent(eventService.getByReferenceDto(source.getSuperordinateEvent()));
+		target.setEventManagementStatus(source.getEventManagementStatus());
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
+		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
+		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
+		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+
+		target.setEpidemiologicalEvidence(source.getEpidemiologicalEvidence());
+		target.setEpidemiologicalEvidenceDetails(source.getEpidemiologicalEvidenceDetails());
+		target.setLaboratoryDiagnosticEvidence(source.getLaboratoryDiagnosticEvidence());
+		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
+
+		target.setInternalId(source.getInternalId());
+
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+		}
 
 		return target;
 	}
@@ -1112,8 +1129,11 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String eventUuid) {
 		return eventService.exists(
-			(cb, eventRoot) -> CriteriaBuilderHelper
-				.and(cb, cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken), cb.notEqual(eventRoot.get(Event.UUID), eventUuid)));
+			(cb, eventRoot) -> CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken),
+				cb.notEqual(eventRoot.get(Event.UUID), eventUuid),
+				cb.notEqual(eventRoot.get(Event.DELETED), Boolean.TRUE)));
 	}
 
 	@Override
