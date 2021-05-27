@@ -40,9 +40,7 @@ public class PersonContactDetailsSteps implements En {
           person = EditContactPersonSteps.newGeneratedPerson;
           selectTypeOfContactDetails(person.getPersonContactDetails_typeOfContactDetails());
           fillContactInformationInput(person.getPersonContactDetails_contactInformation());
-          fillAdditionalInformation(person.getPersonContactDetails_additionalInformation());
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(PERSON_CONTACT_DETAILS_POPUP);
         });
   }
 
@@ -52,9 +50,5 @@ public class PersonContactDetailsSteps implements En {
 
   private void fillContactInformationInput(String data) {
     webDriverHelpers.fillInWebElement(CONTACT_INFORMATION_INPUT, data);
-  }
-
-  private void fillAdditionalInformation(String info) {
-    webDriverHelpers.fillInWebElement(ADDITIONAL_INFORMATION_INPUT, info);
   }
 }

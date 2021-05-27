@@ -84,4 +84,16 @@ public class EditPersonPage {
   public static final By NAMES_OF_GUARDIANS_INPUT = By.cssSelector("#namesOfGuardians");
   public static final By SAVE_BUTTON = By.cssSelector("#commit");
   public static final By PERSON_DATA_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
+  public static final By EMAIL_FIELD =
+      By.xpath(
+          "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Email')])[1]/../following-sibling::td//div");
+  public static final By PHONE_FIELD =
+      By.xpath(
+          "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Phone')])[1]/../following-sibling::td//div");
+  public static final By PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT =
+      By.xpath(
+          "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Email')])[2]/../following-sibling::td//div");
+  public static final By PERSON_CONTACT_DETAILS_TYPE_OF_DETAILS_INPUT =
+      By.xpath(
+          "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Email')])[2]");
 }

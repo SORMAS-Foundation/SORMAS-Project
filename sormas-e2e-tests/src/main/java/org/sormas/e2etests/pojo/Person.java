@@ -67,5 +67,4 @@ public class Person {
   String nameOfGuardians;
   String personContactDetails_typeOfContactDetails;
   String personContactDetails_contactInformation;
-  String personContactDetails_additionalInformation;
 }

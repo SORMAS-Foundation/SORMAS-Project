@@ -27,16 +27,17 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
+import org.sormas.e2etests.comparators.PersonComparator;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.Person;
 import org.sormas.e2etests.services.PersonService;
-import org.sormas.e2etests.services.comparators.PersonComparator;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 
 public class EditPersonSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
+  private final PersonComparator personComparator;
   private BaseSteps baseSteps;
   protected Person previousCreatedPerson = null;
   protected Person collectedPerson;
@@ -47,16 +48,24 @@ public class EditPersonSteps implements En {
       WebDriverHelpers webDriverHelpers,
       final SoftAssertions softly,
       PersonService personService,
-      BaseSteps baseSteps) {
+      BaseSteps baseSteps,
+      PersonComparator personComparator) {
     this.webDriverHelpers = webDriverHelpers;
+    this.personComparator = personComparator;
 
     When(
-        "I check that previous created or changed person is correctly displayed in Edit Person page",
+        "I check that previous created person is correctly displayed in Edit Person page",
         () -> {
-          if (previousCreatedPerson == null)
-            previousCreatedPerson = EditContactPersonSteps.fullyDetailedPerson;
+          previousCreatedPerson = EditContactPersonSteps.fullyDetailedPerson;
           collectedPerson = collectPersonData();
-          PersonComparator.comparePersons(previousCreatedPerson, collectedPerson);
+          personComparator.comparePersonsAreEqual(previousCreatedPerson, collectedPerson);
+        });
+
+    When(
+        "I check that previous edited person is correctly displayed in Edit Person page",
+        () -> {
+          collectedPerson = collectPersonData();
+          personComparator.checkPersonAreDifferent(previousCreatedPerson, collectedPerson);
         });
 
     Then(
@@ -106,6 +115,7 @@ public class EditPersonSteps implements En {
     Then(
         "I click on save button from Edit Person page",
         () -> {
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(PERSON_DATA_SAVED_POPUP);
           // Workaround created until #5535 is fixed
@@ -116,11 +126,11 @@ public class EditPersonSteps implements En {
   }
 
   private void fillFirstName(String firstName) {
-    webDriverHelpers.selectFromCombobox(FIRST_NAME_INPUT, firstName);
+    webDriverHelpers.clearAndFillInWebElement(FIRST_NAME_INPUT, firstName);
   }
 
   private void fillLastName(String lastName) {
-    webDriverHelpers.selectFromCombobox(LAST_NAME_INPUT, lastName);
+    webDriverHelpers.clearAndFillInWebElement(LAST_NAME_INPUT, lastName);
   }
 
   private void fillSalutation(String salutation) {
@@ -318,6 +328,14 @@ public class EditPersonSteps implements En {
         .motherName(webDriverHelpers.getValueFromWebElement(MOTHER_NAME_INPUT))
         .fatherName(webDriverHelpers.getValueFromWebElement(FATHER_NAME_INPUT))
         .nameOfGuardians(webDriverHelpers.getValueFromWebElement(NAMES_OF_GUARDIANS_INPUT))
+        .personContactDetails_contactInformation(
+            webDriverHelpers.getTextFromPresentWebElement(
+                PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT))
+        .personContactDetails_typeOfContactDetails(
+            webDriverHelpers.getTextFromPresentWebElement(
+                PERSON_CONTACT_DETAILS_TYPE_OF_DETAILS_INPUT))
+        .phoneNumber(webDriverHelpers.getTextFromWebElement(PHONE_FIELD))
+        .emailAddress(webDriverHelpers.getTextFromWebElement(EMAIL_FIELD))
         .build();
   }
 

@@ -13,7 +13,7 @@ Feature: Edit Persons
     Then I click on save button from Contact Person tab
     And I click on the Persons button from navbar
     When I open the last created person
-    Then I check that previous created or changed person is correctly displayed in Edit Person page
+    Then I check that previous created person is correctly displayed in Edit Person page
     And While on Person edit page, I will edit all fields with new values
     And I click on save button from Edit Person page
-    Then I check that previous created or changed person is correctly displayed in Edit Person page
+    Then I check that previous edited person is correctly displayed in Edit Person page

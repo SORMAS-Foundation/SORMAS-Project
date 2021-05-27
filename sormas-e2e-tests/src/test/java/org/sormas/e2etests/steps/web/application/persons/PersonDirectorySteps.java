@@ -37,23 +37,25 @@ public class PersonDirectorySteps implements En {
   @Inject
   public PersonDirectorySteps(WebDriverHelpers webDriverHelpers) {
     this.webDriverHelpers = webDriverHelpers;
-    createdPerson = EditContactPersonSteps.fullyDetailedPerson;
 
     Then(
         "I open the last created person",
         () -> {
+          createdPerson = EditContactPersonSteps.fullyDetailedPerson;
           searchAfterPersonByMultipleOptions(createdPerson.getUuid());
           openPersonFromResultsByUUID(createdPerson.getUuid());
         });
   }
 
   private void searchAfterPersonByMultipleOptions(String idPhoneNameEmail) {
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
     webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, idPhoneNameEmail);
     webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
   }
 
   private void openPersonFromResultsByUUID(String uuid) {
     String locator = "//a[contains(@title, '" + uuid + "')]";
+    webDriverHelpers.waitUntilIdentifiedElementIsPresent(By.xpath(locator));
     webDriverHelpers.clickOnWebElementBySelector(By.xpath(locator));
     webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
   }

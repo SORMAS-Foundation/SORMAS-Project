@@ -33,8 +33,14 @@ public class PersonService {
   }
 
   public Person updateExistentPerson(
-      Person person, String firstName, String lastName, String UUID) {
-    return person.toBuilder().firstName(firstName).lastName(lastName).uuid(UUID).build();
+      Person person, String firstName, String lastName, String UUID, String email, String phone) {
+    return person.toBuilder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .uuid(UUID)
+        .emailAddress(email)
+        .phoneNumber(phone)
+        .build();
   }
 
   public Person buildGeneratedPerson() {
@@ -80,7 +86,6 @@ public class PersonService {
         .nameOfGuardians(faker.name().firstName())
         .personContactDetails_typeOfContactDetails("Email")
         .personContactDetails_contactInformation(faker.internet().emailAddress())
-        .personContactDetails_additionalInformation("Dummy description")
         .build();
   }
 }

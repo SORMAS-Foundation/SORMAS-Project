@@ -153,6 +153,7 @@ public class WebDriverHelpers {
   }
 
   public void clearAndFillInWebElement(By selector, String text) {
+    scrollToElement(selector);
     clearWebElement(selector);
     fillInWebElement(selector, text);
   }

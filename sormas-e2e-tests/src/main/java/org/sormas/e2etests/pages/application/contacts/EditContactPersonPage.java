@@ -29,19 +29,16 @@ public class EditContactPersonPage {
   public static final By NATIONAL_HEALTH_ID_INPUT = By.cssSelector("#nationalHealthId");
   public static final By EMAIL_FIELD =
       By.xpath(
-          "//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Email')]/../following-sibling::td//div");
+          "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Email')])[1]/../following-sibling::td//div");
   public static final By PHONE_FIELD =
       By.xpath(
-          "//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Phone')]/../following-sibling::td//div");
+          "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Phone')])[1]/../following-sibling::td//div");
   public static final By UUID_INPUT = By.cssSelector("#uuid");
   public static final By FIRST_NAME_INPUT = By.cssSelector("#firstName");
   public static final By LAST_NAME_INPUT = By.cssSelector("#lastName");
-  public static final By DATE_OF_BIRTH_YEAR_COMBOBOX =
-      By.cssSelector(".popupContent #birthdateYYYY input+div");
-  public static final By DATE_OF_BIRTH_MONTH_COMBOBOX =
-      By.cssSelector(".popupContent #birthdateMM input+div");
-  public static final By DATE_OF_BIRTH_DAY_COMBOBOX =
-      By.cssSelector(".popupContent #birthdateDD input+div");
+  public static final By DATE_OF_BIRTH_YEAR_COMBOBOX = By.cssSelector("#birthdateYYYY input+div");
+  public static final By DATE_OF_BIRTH_MONTH_COMBOBOX = By.cssSelector("#birthdateMM input+div");
+  public static final By DATE_OF_BIRTH_DAY_COMBOBOX = By.cssSelector("#birthdateDD input+div");
   public static final By SEX_COMBOBOX = By.cssSelector("[location='sex'] div[role='combobox'] div");
   public static final By SALUTATION_INPUT = By.cssSelector("[location=salutation] input");
   public static final By SALUTATION_COMBOBOX = By.cssSelector("[location=salutation] input + div");

@@ -87,10 +87,10 @@ public class EditContactPersonSteps implements En {
           fillDateOfBirth(newGeneratedPerson.getDateOfBirth());
           selectSex(newGeneratedPerson.getSex());
           selectPresentConditionOfPerson(newGeneratedPerson.getPresentConditionOfPerson());
-          fillNationalHealthId(newGeneratedPerson.getNationalHealthId());
-          fillNationalHealthId(newGeneratedPerson.getNationalHealthId());
           fillPassportNumber(newGeneratedPerson.getPassportNumber());
+          fillNationalHealthId(newGeneratedPerson.getNationalHealthId());
           fillExternalId(newGeneratedPerson.getExternalId());
+          fillExternalToken(newGeneratedPerson.getExternalToken());
           fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
           selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
@@ -135,14 +135,16 @@ public class EditContactPersonSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(PERSON_DATA_SAVED_POPUP);
           // Workaround created until #5535 is fixed
           baseSteps.getDriver().navigate().refresh();
-          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_NAME_INPUT);
           Person contactInfo = getPersonInformation();
           fullyDetailedPerson =
               personService.updateExistentPerson(
                   newGeneratedPerson,
                   contactInfo.getFirstName(),
                   contactInfo.getLastName(),
-                  contactInfo.getUuid());
+                  contactInfo.getUuid(),
+                  webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD),
+                  webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD));
         });
   }
 
@@ -311,11 +313,11 @@ public class EditContactPersonSteps implements En {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String UUID = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
-    String[] personInfos = contactInfo.split(" ");
-    LocalDate localDate = LocalDate.parse(personInfos[3].replace(")", ""), formatter);
+    String[] personInfo = contactInfo.split(" ");
+    LocalDate localDate = LocalDate.parse(personInfo[3].replace(")", ""), formatter);
     return Person.builder()
-        .firstName(personInfos[0])
-        .lastName(personInfos[1])
+        .firstName(personInfo[0])
+        .lastName(personInfo[1])
         .dateOfBirth(localDate)
         .uuid(UUID)
         .build();

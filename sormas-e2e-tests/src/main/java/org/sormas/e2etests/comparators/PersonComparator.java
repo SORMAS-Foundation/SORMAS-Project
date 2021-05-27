@@ -16,22 +16,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.services.comparators;
+package org.sormas.e2etests.comparators;
 
 import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.pojo.Person;
 
-public abstract class PersonComparator {
+public class PersonComparator {
 
-  private static SoftAssertions softly;
+  private SoftAssertions softly;
 
   @Inject
   public PersonComparator(SoftAssertions softly) {
     this.softly = softly;
   }
 
-  public static void comparePersons(Person person1, Person person2) {
+  public void comparePersonsAreEqual(Person person1, Person person2) {
     softly.assertThat(person1.getUuid()).isEqualToIgnoringCase(person2.getUuid());
     softly.assertThat(person1.getFirstName()).isEqualToIgnoringCase(person2.getFirstName());
     softly.assertThat(person1.getLastName()).isEqualToIgnoringCase(person2.getLastName());
@@ -101,6 +101,57 @@ public abstract class PersonComparator {
     softly
         .assertThat(person1.getNameOfGuardians())
         .isEqualToIgnoringCase(person2.getNameOfGuardians());
+    softly
+        .assertThat(person1.getPersonContactDetails_contactInformation())
+        .isEqualToIgnoringCase(person2.getPersonContactDetails_contactInformation());
+    softly
+        .assertThat(person1.getPersonContactDetails_typeOfContactDetails())
+        .isEqualToIgnoringCase(person2.getPersonContactDetails_typeOfContactDetails());
+    softly.assertAll();
+  }
+
+  public void checkPersonAreDifferent(Person person1, Person person2) {
+    softly.assertThat(person1.getFirstName()).isNotEqualToIgnoringCase(person2.getFirstName());
+    softly.assertThat(person1.getLastName()).isNotEqualToIgnoringCase(person2.getLastName());
+    softly
+        .assertThat(person1.getPassportNumber())
+        .isNotEqualToIgnoringCase(person2.getPassportNumber());
+    softly
+        .assertThat(person1.getNationalHealthId())
+        .isNotEqualToIgnoringCase(person2.getNationalHealthId());
+    softly.assertThat(person1.getExternalId()).isNotEqualToIgnoringCase(person2.getExternalId());
+    softly
+        .assertThat(person1.getExternalToken())
+        .isNotEqualToIgnoringCase(person2.getExternalToken());
+    softly.assertThat(person1.getStreet()).isNotEqualToIgnoringCase(person2.getStreet());
+    softly.assertThat(person1.getHouseNumber()).isNotEqualToIgnoringCase(person2.getHouseNumber());
+    softly.assertThat(person1.getPostalCode()).isNotEqualToIgnoringCase(person2.getPostalCode());
+    softly.assertThat(person1.getCity()).isNotEqualToIgnoringCase(person2.getCity());
+    softly
+        .assertThat(person1.getContactPersonFirstName())
+        .isNotEqualToIgnoringCase(person2.getContactPersonFirstName());
+    softly
+        .assertThat(person1.getContactPersonLastName())
+        .isNotEqualToIgnoringCase(person2.getContactPersonLastName());
+    softly
+        .assertThat(person1.getContactPersonPhoneNumber())
+        .isNotEqualToIgnoringCase(person2.getContactPersonPhoneNumber());
+    softly
+        .assertThat(person1.getContactPersonEmailAddress())
+        .isNotEqualToIgnoringCase(person2.getContactPersonEmailAddress());
+    softly
+        .assertThat(person1.getCommunityContactPerson())
+        .isNotEqualToIgnoringCase(person2.getCommunityContactPerson());
+    softly.assertThat(person1.getBirthName()).isNotEqualToIgnoringCase(person2.getBirthName());
+    softly.assertThat(person1.getNickname()).isNotEqualToIgnoringCase(person2.getNickname());
+    softly
+        .assertThat(person1.getMotherMaidenName())
+        .isNotEqualToIgnoringCase(person2.getMotherMaidenName());
+    softly.assertThat(person1.getMotherName()).isNotEqualToIgnoringCase(person2.getMotherName());
+    softly.assertThat(person1.getFatherName()).isNotEqualToIgnoringCase(person2.getFatherName());
+    softly
+        .assertThat(person1.getNameOfGuardians())
+        .isNotEqualToIgnoringCase(person2.getNameOfGuardians());
     softly.assertAll();
   }
 }
