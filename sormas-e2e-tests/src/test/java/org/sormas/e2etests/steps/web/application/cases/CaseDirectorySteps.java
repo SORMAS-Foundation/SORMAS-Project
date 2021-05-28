@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.cases;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -45,5 +46,13 @@ public class CaseDirectorySteps implements En {
         () ->
             webDriverHelpers.fillAndSubmitInWebElement(
                 NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid()));
+
+    Then(
+        "I check that the last created case was deleted",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid());
+          Truth.assertThat(webDriverHelpers.isElementVisible(FIRST_CASE_ID_BUTTON)).isFalse();
+        });
   }
 }

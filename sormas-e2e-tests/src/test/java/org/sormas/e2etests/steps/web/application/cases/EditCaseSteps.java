@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 
 import com.google.common.truth.Truth;
@@ -82,6 +83,15 @@ public class EditCaseSteps implements En {
     When(
         "I click on edit Sample",
         () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON));
+
+    When(
+        "I delete the case",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
+        });
   }
 
   public Case collectCasePersonUuid() {
@@ -100,7 +110,7 @@ public class EditCaseSteps implements En {
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
         .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
-        .uuid(webDriverHelpers.getTextFromWebElement(UUID_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_REGION_INPUT))
         .responsibleDistrict(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_DISTRICT_INPUT))

@@ -41,4 +41,6 @@ public class EditCasePage {
   public static final By EDIT_SAMPLE_BUTTON =
       By.cssSelector(
           "[location='samples'] [class='v-button v-widget link v-button-link compact v-button-compact']");
+  public static final By DELETE_BUTTON = By.cssSelector("#delete");
+  public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
 }
