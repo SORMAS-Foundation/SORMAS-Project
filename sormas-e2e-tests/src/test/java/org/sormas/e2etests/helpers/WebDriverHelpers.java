@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.helpers;
 
+import static com.google.common.truth.Truth.*;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 import static java.time.Duration.ofSeconds;
@@ -25,7 +26,6 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 import static org.sormas.e2etests.helpers.AssertHelpers.*;
 
-import com.google.common.truth.Truth;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Predicate;
@@ -40,8 +40,8 @@ import org.sormas.e2etests.steps.BaseSteps;
 @Slf4j
 public class WebDriverHelpers {
 
-  public static final By SELECTED_RADIO_BUTTOn =
-      By.xpath("ancestor::div[@role='group']//input[@checked]/following-sibling::label");
+  public static final By SELECTED_RADIO_BUTTON =
+      By.xpath("ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
 
   private final BaseSteps baseSteps;
@@ -81,6 +81,7 @@ public class WebDriverHelpers {
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
+            scrollToElement(selector);
             assertThat(baseSteps.getDriver().findElement((By) selector).isEnabled()).isTrue();
             assertThat(baseSteps.getDriver().findElement((By) selector).isDisplayed()).isTrue();
           },
@@ -88,6 +89,7 @@ public class WebDriverHelpers {
     } else if (selector instanceof WebElement) {
       assertHelpers.assertWithPoll15Second(
           () -> {
+            scrollToElement(selector);
             assertThat(((WebElement) selector).isEnabled()).isTrue();
             assertThat(((WebElement) selector).isDisplayed()).isTrue();
           });
@@ -114,8 +116,10 @@ public class WebDriverHelpers {
               });
 
     } catch (ConditionTimeoutException ignored) {
-      log.error("Unable to click on element identified by locator: {}", selector);
-      throw new TimeoutException("Unable to click on element identified by locator: " + selector);
+      log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
+      takeScreenshot(baseSteps.getDriver());
+      throw new TimeoutException(
+          "Unable to fill on element identified by locator: " + selector + " and text : " + text);
     }
   }
 
@@ -193,8 +197,7 @@ public class WebDriverHelpers {
 
   public void checkWebElementContainsText(By selector, String text) {
     assertHelpers.assertWithPoll15Second(
-        () ->
-            Truth.assertThat(baseSteps.getDriver().findElement(selector).getText()).contains(text));
+        () -> assertThat(baseSteps.getDriver().findElement(selector).getText()).contains(text));
   }
 
   public void accessWebSite(String url) {
@@ -204,8 +207,7 @@ public class WebDriverHelpers {
   public boolean isElementVisibleWithTimeout(By selector, int seconds) {
     try {
       assertHelpers.assertWithPoll(
-          () ->
-              Truth.assertThat(baseSteps.getDriver().findElement(selector).isDisplayed()).isTrue(),
+          () -> assertThat(baseSteps.getDriver().findElement(selector).isDisplayed()).isTrue(),
           seconds);
     } catch (Exception ignored) {
       return false;
@@ -229,7 +231,7 @@ public class WebDriverHelpers {
             "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});",
             selector);
       } else {
-        waitUntilIdentifiedElementIsPresent((By) selector);
+        waitUntilIdentifiedElementIsPresent(selector);
         javascriptExecutor.executeScript(
             "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});",
             baseSteps.getDriver().findElement((By) selector));
@@ -266,6 +268,16 @@ public class WebDriverHelpers {
 
   public String getValueFromWebElement(By byObject) {
     return getAttributeFromWebElement(byObject, "value");
+  }
+
+  public String getValueFromCombobox(By selector) {
+    waitUntilElementIsVisibleAndClickable(selector);
+    WebElement comboboxInput =
+        baseSteps
+            .getDriver()
+            .findElement(selector)
+            .findElement(By.xpath("preceding-sibling::input"));
+    return comboboxInput.getAttribute("value");
   }
 
   public String getAttributeFromWebElement(By byObject, String attribute) {
@@ -329,7 +341,7 @@ public class WebDriverHelpers {
 
   public String getCheckedOptionFromHorizontalOptionGroup(By options) {
     waitUntilIdentifiedElementIsPresent(options);
-    return baseSteps.getDriver().findElement(options).findElement(SELECTED_RADIO_BUTTOn).getText();
+    return baseSteps.getDriver().findElement(options).findElement(SELECTED_RADIO_BUTTON).getText();
   }
 
   public void clearWebElement(By selector) {
