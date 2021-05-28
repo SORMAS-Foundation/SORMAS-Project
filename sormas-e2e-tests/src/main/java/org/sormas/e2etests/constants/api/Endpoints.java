@@ -19,4 +19,9 @@ package org.sormas.e2etests.constants.api;
 
 public interface Endpoints {
   String PERSONS = "persons/";
+  String CONTACTS = "contacts/";
+  String CASES = "cases/";
+  String EVENTS = "events/";
+  String SAMPLES = "samples/";
+  String TASKS = "tasks/";
 }

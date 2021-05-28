@@ -16,29 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pojo;
+package org.sormas.e2etests.pages.application.samples;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import org.openqa.selenium.By;
 
-@Builder(toBuilder = true, builderClassName = "builder")
-@Value
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@NonNull
-public class Task {
-  String taskContext;
-  String taskType;
-  LocalDate suggestedStartDate;
-  LocalTime suggestedStartTime;
-  LocalDate dueDateDate;
-  LocalTime dueDateTime;
-  String assignedTo;
-  String priority;
-  String commentsOnTask;
-  String commentsOnExecution;
-  String taskStatus;
+public class SampleManagementPage {
+  public static final By SAMPLE_SEARCH_INPUT = By.cssSelector("[id='caseCodeIdLike']");
+  public static final By SEARCH_RESULT_SAMPLE = By.cssSelector("[role='gridcell'] a");
+  public static final By SAVE_EDIT_SAMPLE_BUTTON = By.cssSelector("[id='commit']");
 }

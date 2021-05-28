@@ -77,12 +77,7 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsVisibleAndClickable(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
   }
 
-  public void waitUntilIdentifiedElementIsVisibleAndClickable(final WebElement selector) {
-    waitUntilIdentifiedElementIsVisibleAndClickable(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
-  }
-
   public void waitUntilIdentifiedElementIsVisibleAndClickable(final Object selector, int seconds) {
-
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -270,9 +265,13 @@ public class WebDriverHelpers {
   }
 
   public String getValueFromWebElement(By byObject) {
-    waitUntilIdentifiedElementIsVisibleAndClickable(byObject);
+    return getAttributeFromWebElement(byObject, "value");
+  }
+
+  public String getAttributeFromWebElement(By byObject, String attribute) {
+    waitUntilIdentifiedElementIsPresent(byObject);
     scrollToElement(byObject);
-    return baseSteps.getDriver().findElement(byObject).getAttribute("value");
+    return baseSteps.getDriver().findElement(byObject).getAttribute(attribute);
   }
 
   public String getTextFromWebElement(By byObject) {
@@ -304,6 +303,12 @@ public class WebDriverHelpers {
     }
   }
 
+  public void waitUntilWebElementHasAttributeWithValue(
+      final By selector, String attribute, String value) {
+    assertHelpers.assertWithPoll15Second(
+        () -> assertThat(getAttributeFromWebElement(selector, attribute)).isEqualTo(value));
+  }
+
   public void waitUntilANumberOfElementsAreVisibleAndClickable(By selector, int number) {
     waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
     assertHelpers.assertWithPoll15Second(
@@ -311,6 +316,15 @@ public class WebDriverHelpers {
             assertWithMessage("Number of identified element should be %s", number)
                 .that(getNumberOfElements(selector))
                 .isAtLeast(number));
+  }
+
+  public void waitUntilNumberOfElementsIsReduceToGiven(By selector, int given) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
+    assertHelpers.assertWithPoll15Second(
+        () ->
+            assertWithMessage("Number of identified element should be %s", given)
+                .that(getNumberOfElements(selector))
+                .isLessThan(given));
   }
 
   public String getCheckedOptionFromHorizontalOptionGroup(By options) {

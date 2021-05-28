@@ -463,6 +463,16 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return null;
 	}
 
+	private String findHtmlMessageDetails(InvalidValueException exception) {
+		for (InvalidValueException cause : exception.getCauses()) {
+			String message = findHtmlMessage(cause);
+			if (message != null)
+				return message;
+		}
+
+		return null;
+	}
+
 	public void commitAndHandle() {
 		try {
 			commit();
@@ -499,6 +509,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						htmlMsg.append("</ul>");
 					} else if (firstCause != null) {
 						htmlMsg.append(findHtmlMessage(firstCause));
+						String additionalInfo = findHtmlMessageDetails(firstCause);
+						if (!additionalInfo.isEmpty()) {
+							htmlMsg.append(" : ");
+							htmlMsg.append(findHtmlMessageDetails(firstCause));
+						}
 					}
 
 				}

@@ -15,30 +15,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo;
+package org.sormas.e2etests.pojo.api;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.Date;
 import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
-public class Person {
-  String passportNumber;
-  String lastName;
-  boolean covidCodeDelivered;
-  Address address;
-  String sex;
-  long creationDate;
+@Jacksonized
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Case {
+  String caseClassification;
   String uuid;
-  String nationalHealthId;
-  String firstName;
-  String emailAddress;
-  String phone;
-  boolean pseudonymized;
-  long changeDate;
-  boolean hasCovidApp;
-  List<Object> personContactDetails;
-  List<Object> addresses;
+  String followUpStatus;
+  ClinicalCourse clinicalCourse;
+  Date reportDate;
+  ReportingUser reportingUser;
+  SurveillanceOfficer surveillanceOfficer;
+  String outcome;
+  String investigationStatus;
+  String caseOrigin;
+  String disease;
+  String healthFacilityDetails;
+  Hospitalization hospitalization;
+  Therapy therapy;
+  Community community;
+  Long followUpUntil;
+  Symptoms symptoms;
+  EpiData epiData;
+  Boolean pseudonymized;
+  Person person;
+  PortHealthInfo portHealthInfo;
+  District district;
+  Region region;
+  HealthFacility healthFacility;
+  MaternalHistory maternalHistory;
 }
