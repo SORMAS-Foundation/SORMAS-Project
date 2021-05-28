@@ -49,6 +49,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	public static final String ORGANIZATION_ID = "organizationId";
 	public static final String REQUEST_UUID = "requestUuid";
+	public static final String REQUEST_STATUS = "requestStatus";
 
 	private List<ShareInfoCase> cases;
 

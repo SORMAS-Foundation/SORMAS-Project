@@ -26,6 +26,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
@@ -99,6 +100,10 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 					criteria.getEventParticipant().getUuid()));
 		}
 
+		if (criteria.getRequestStatuses() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, from.get(SormasToSormasShareInfo.REQUEST_STATUS).in(criteria.getRequestStatuses()));
+		}
+
 		return filter;
 	}
 
@@ -126,6 +131,7 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		return exists(
 			(cb, root) -> cb.and(
 				cb.equal(root.join(associatedObjectField).get(associatedObjectName), associatedObject),
+				cb.equal(root.get(SormasToSormasShareInfo.REQUEST_STATUS), ShareRequestStatus.ACCEPTED),
 				cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
 	}
 

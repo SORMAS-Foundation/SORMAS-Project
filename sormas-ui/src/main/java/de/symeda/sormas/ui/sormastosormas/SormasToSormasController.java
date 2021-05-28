@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.sormastosormas;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -355,11 +356,11 @@ public class SormasToSormasController {
 			organizationIds.add(originInfo.getOrganizationId());
 		}
 
-		List<SormasToSormasShareInfoDto> shares = FacadeProvider.getSormasToSormasFacade().getShareInfoIndexList(criteria, null, null);
+		List<SormasToSormasShareInfoDto> shares = FacadeProvider.getSormasToSormasFacade()
+			.getShareInfoIndexList(criteria.requestStatuses(Arrays.asList(ShareRequestStatus.PENDING, ShareRequestStatus.ACCEPTED)), null, null);
 
 		organizationIds.addAll(
 			shares.stream()
-				.filter(s -> s.getRequestStatus() != ShareRequestStatus.REJECTED)
 				.map(s -> s.getTarget().getUuid())
 				.collect(Collectors.toList()));
 
