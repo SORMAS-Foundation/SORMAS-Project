@@ -139,6 +139,7 @@ public interface Strings {
 	String confirmationRemoveGridRowMessage = "confirmationRemoveGridRowMessage";
 	String confirmationRemoveGridRowTitle = "confirmationRemoveGridRowTitle";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
+	String confirmationRevokeSormasToSormasShareRequest = "confirmationRevokeSormasToSormasShareRequest";
 	String confirmationSetMissingGeoCoordinates = "confirmationSetMissingGeoCoordinates";
 	String confirmationSuperordinateEventDiscardUnsavedChanges = "confirmationSuperordinateEventDiscardUnsavedChanges";
 	String confirmationUnclearLabMessage = "confirmationUnclearLabMessage";
@@ -543,6 +544,7 @@ public interface Strings {
 	String headingRequestedAdditionalTests = "headingRequestedAdditionalTests";
 	String headingRequestedPathogenTests = "headingRequestedPathogenTests";
 	String headingResults = "headingResults";
+	String headingRevokeSormasToSormasShareRequest = "headingRevokeSormasToSormasShareRequest";
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSaveNotification = "headingSaveNotification";
 	String headingSaveUser = "headingSaveUser";

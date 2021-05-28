@@ -177,6 +177,11 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(EventsView.class, EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuEvents), VaadinIcons.PHONE);
 		}
 
+		if (permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)) {
+			ControllerProvider.getSampleController().registerViews(navigator);
+			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
+		}
+
 		if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()) {
 			ControllerProvider.getSormasToSormasController().registerViews(navigator);
 			menu.addView(
@@ -186,10 +191,6 @@ public class MainScreen extends HorizontalLayout {
 				VaadinIcons.SHARE);
 		}
 
-		if (permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)) {
-			ControllerProvider.getSampleController().registerViews(navigator);
-			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
-		}
 		if (permitted(FeatureType.CAMPAIGNS, UserRight.CAMPAIGN_VIEW)) {
 			AbstractCampaignView.registerViews(navigator);
 			menu.addView(

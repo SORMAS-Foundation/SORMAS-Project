@@ -154,6 +154,12 @@ public class SormasToSormasResource {
 		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasLabMessageFacade().saveLabMessages(labMessages));
 	}
 
+	@POST
+	@Path(SormasToSormasApiConstants.REVOKE_REQUESTS_ENDPOINT)
+	public Response revokeShareRequests(List<String> requestUuids) {
+		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasFacade().revokeRequests(requestUuids));
+	}
+
 	private Response handleVoidRequest(VoidFacadeCall facadeCall) {
 		try {
 			facadeCall.call();

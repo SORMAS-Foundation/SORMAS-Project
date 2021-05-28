@@ -53,4 +53,6 @@ public class SormasToSormasApiConstants {
 
 	public static final String LAB_MESSAGE_ENDPOINT = "/labmessages";
 
+	public static final String REVOKE_REQUESTS_ENDPOINT = "/revoke-requests";
+
 }

@@ -178,6 +178,23 @@ public class SormasToSormasController {
 		callback.run();
 	}
 
+	public void revokeShare(SormasToSormasShareInfoDto shareInfo, Runnable callback) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingRevokeSormasToSormasShareRequest),
+			new Label(I18nProperties.getString(Strings.confirmationRevokeSormasToSormasShareRequest)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			640,
+			confirmed -> {
+				if (confirmed) {
+					handleSormasToSormasRequest(() -> {
+						FacadeProvider.getSormasToSormasFacade().revokeShare(shareInfo.getUuid());
+					});
+					callback.run();
+				}
+			});
+	}
+
 	private void shareToSormasFromDetailPage(
 		HandleShareWithOptions handleShareWithOptions,
 		SormasToSormasListComponent listComponent,

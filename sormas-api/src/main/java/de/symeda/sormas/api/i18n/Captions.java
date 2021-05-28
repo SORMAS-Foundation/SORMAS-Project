@@ -1774,6 +1774,7 @@ public interface Captions {
 	String SormasToSormasPerson_personName = "SormasToSormasPerson.personName";
 	String SormasToSormasPerson_sex = "SormasToSormasPerson.sex";
 	String sormasToSormasReturn = "sormasToSormasReturn";
+	String sormasToSormasRevokeShare = "sormasToSormasRevokeShare";
 	String sormasToSormasSampleNotShared = "sormasToSormasSampleNotShared";
 	String sormasToSormasSendLabMessage = "sormasToSormasSendLabMessage";
 	String sormasToSormasSentFrom = "sormasToSormasSentFrom";

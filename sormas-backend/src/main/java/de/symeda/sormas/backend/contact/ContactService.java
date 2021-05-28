@@ -89,6 +89,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
@@ -1229,12 +1230,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.equal(joins.getCaseEvent().get(Event.UUID), contactCriteria.getOnlyContactsWithSourceCaseInGivenEvent().getUuid()));
 		}
 		if (Boolean.TRUE.equals(contactCriteria.getOnlyContactsFromOtherInstances())) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.or(
-					cb.greaterThan(cb.count(joins.getShareInfoContacts()), 0L),
-					cb.isNotNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO))));
+			Subquery<Long> sharesSubQuery = contactQueryContext.getQuery().subquery(Long.class);
+			Root<ShareInfoContact> sharesRoot = sharesSubQuery.from(ShareInfoContact.class);
+			sharesSubQuery.where(cb.equal(sharesRoot.get(ShareInfoContact.CONTACT), from));
+			sharesSubQuery.select(sharesRoot.get(ShareInfoContact.ID));
+
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.or(cb.exists(sharesSubQuery), cb.isNotNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO))));
 		}
 		if (contactCriteria.getDiseaseVariant() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.DISEASE_VARIANT), contactCriteria.getDiseaseVariant()));
