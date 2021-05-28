@@ -22,20 +22,24 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Contact;
+import org.sormas.e2etests.steps.BaseSteps;
 
 public class ContactDirectorySteps implements En {
 
-  protected Contact createdContact;
+  protected BaseSteps baseSteps;
   protected WebDriverHelpers webDriverHelpers;
+  protected Contact createdContact;
 
   @Inject
-  public ContactDirectorySteps(WebDriverHelpers webDriverHelpers) {
-
+  public ContactDirectorySteps(WebDriverHelpers webDriverHelpers, BaseSteps baseSteps) {
+    this.baseSteps = baseSteps;
+    this.webDriverHelpers = webDriverHelpers;
     When(
         "I click on the NEW CONTACT button",
         () ->
@@ -43,11 +47,20 @@ public class ContactDirectorySteps implements En {
                 NEW_CONTACT_BUTTON, FIRST_NAME_OF_CONTACT_PERSON_INPUT));
 
     When(
-        "I search after the last created contact",
+        "I open the last created contact",
         () -> {
-          createdContact = EditContactSteps.aContact;
-          searchAfterContactByMultipleOptions(createdContact.getUuid());
-          openContactFromResultsByUUID(createdContact.getUuid());
+          String contactUUID = EditContactSteps.aContact.getUuid();
+          searchAfterContactByMultipleOptions(contactUUID);
+          openContactFromResultsByUUID(contactUUID);
+        });
+
+    Then(
+        "I check that the last created contact was deleted",
+        () -> {
+          String contactUUID = EditContactSteps.aContact.getUuid();
+          searchAfterContactByMultipleOptions(contactUUID);
+          String locator = "//a[contains(@title, '" + contactUUID + "')]";
+          Truth.assertThat(webDriverHelpers.isElementVisible(By.xpath(locator))).isFalse();
         });
   }
 
@@ -59,7 +72,7 @@ public class ContactDirectorySteps implements En {
 
   private void openContactFromResultsByUUID(String uuid) {
     String locator = "//a[contains(@title, '" + uuid + "')]";
-    webDriverHelpers.waitUntilIdentifiedElementIsPresent(By.xpath(locator));
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(By.xpath(locator));
     webDriverHelpers.clickOnWebElementBySelector(By.xpath(locator));
     webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
   }
