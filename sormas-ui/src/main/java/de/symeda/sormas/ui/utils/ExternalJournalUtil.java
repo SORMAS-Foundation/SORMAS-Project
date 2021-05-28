@@ -208,7 +208,7 @@ public class ExternalJournalUtil {
 
 	private static void cancelPatientDiaryFollowUp(PersonDto personDto) {
 		PatientDiaryResult result = externalJournalFacade.cancelPatientDiaryFollowUp(personDto);
-		showPatientDiaryResultPopup(result, Captions.patientDiaryCancelError);
+		showPatientDiaryResultPopup(result, I18nProperties.getCaption(Captions.patientDiaryCancelError));
 		if (result.isSuccess()) {
 			SormasUI.refreshView();
 		}
@@ -227,7 +227,7 @@ public class ExternalJournalUtil {
 			showExternalJournalWarningPopup(validationResult.getMessage());
 		} else {
 			PatientDiaryResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
-			showPatientDiaryResultPopup(registerResult, Captions.patientDiaryRegistrationError);
+			showPatientDiaryResultPopup(registerResult, I18nProperties.getCaption(Captions.patientDiaryRegistrationError));
 			if (registerResult.isSuccess()) {
 				SormasUI.refreshView();
 			}
