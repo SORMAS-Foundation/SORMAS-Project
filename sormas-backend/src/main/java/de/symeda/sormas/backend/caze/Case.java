@@ -203,7 +203,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String CONVERTED_FROM_CONTACT = "convertedContact";
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
-	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String SHARE_INFO_CASES = "shareInfoCases";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String EXTERNAL_SHARES = "externalShares";
 

@@ -43,6 +43,7 @@ import de.symeda.sormas.backend.sormastosormas.AssociatedEntityWrapper;
 import de.symeda.sormas.backend.sormastosormas.ShareData;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilderHelper;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEventParticipant;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -67,10 +68,16 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 		throws SormasToSormasException {
 		SormasToSormasOriginInfoDto originInfo =
 			dataBuilderHelper.createSormasToSormasOriginInfo(user, options.isHandOverOwnership(), options.getComment());
+
+		List<EventParticipant> eventParticipants = Collections.emptyList();
+		if (options.isWithEventParticipants()) {
+			eventParticipants = eventParticipantService.getByEventUuids(Collections.singletonList(event.getUuid()));
+		}
+
 		return createShareData(
 			event,
 			originInfo,
-			options.isWithEventParticipants(),
+			eventParticipants,
 			options.isWithSamples(),
 			options.isPseudonymizePersonalData(),
 			options.isPseudonymizeSensitiveData());
@@ -105,7 +112,7 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 			return createShareData(
 				event,
 				originInfo,
-				shareInfo.isWithEventParticipants(),
+				shareInfo.getEventParticipants().stream().map(ShareInfoEventParticipant::getEventParticipant).collect(Collectors.toList()),
 				shareInfo.isWithSamples(),
 				shareInfo.isPseudonymizedPersonalData(),
 				shareInfo.isPseudonymizedSensitiveData());
@@ -115,7 +122,7 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 	private ShareData<Event, SormasToSormasEventDto> createShareData(
 		Event event,
 		SormasToSormasOriginInfoDto originInfo,
-		boolean withEventParticipants,
+		List<EventParticipant> eventParticipants,
 		boolean withSamples,
 		boolean pseudonymizedPersonalData,
 		boolean pseudonymizedSensitiveData) {
@@ -125,11 +132,6 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 
 		SormasToSormasEventDto eventData = new SormasToSormasEventDto(eventDto, originInfo);
 		ShareData<Event, SormasToSormasEventDto> eventShareData = new ShareData<>(event, eventData);
-
-		List<EventParticipant> eventParticipants = Collections.emptyList();
-		if (withEventParticipants) {
-			eventParticipants = eventParticipantService.getByEventUuids(Collections.singletonList(eventDto.getUuid()));
-		}
 
 		List<Sample> samples = Collections.emptyList();
 		if (eventParticipants.size() > 0 && withSamples) {

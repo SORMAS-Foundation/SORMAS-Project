@@ -7405,7 +7405,7 @@ ALTER TABLE sormastosormasshareinfo
     DROP COLUMN event_id,
     DROP COLUMN eventparticipant_id;
 
-update sormastosormasshareinfo set requestUuid = generate_base32_uuid();
+update sormastosormasshareinfo set requestUuid = generate_base32_uuid(), requestStatus = 'ACCEPTED';
 
 ALTER TABLE sormastosormasshareinfo
     ALTER COLUMN requestUuid SET NOT NULL;

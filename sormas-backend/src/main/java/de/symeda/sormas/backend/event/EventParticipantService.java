@@ -371,7 +371,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Predicate dateFilter = super.createChangeDateFilter(cb, from, date);
 		dateFilter =
 			cb.or(dateFilter, vaccinationInfoService.createChangeDateFilter(cb, from.join(EventParticipant.VACCINATION_INFO, JoinType.LEFT), date));
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_SHARES));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, EventParticipant.SHARE_INFO_EVENT_PARTICIPANTS));
 
 		return dateFilter;
 

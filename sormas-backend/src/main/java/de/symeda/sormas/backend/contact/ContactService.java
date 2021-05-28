@@ -194,7 +194,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		dateFilter = cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
 		dateFilter = cb.or(dateFilter, healthConditionsService.createChangeDateFilter(cb, from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT), date));
 		dateFilter = cb.or(dateFilter, vaccinationInfoService.createChangeDateFilter(cb, from.join(Contact.VACCINATION_INFO, JoinType.LEFT), date));
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_SHARES));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SHARE_INFO_CONTACTS));
 
 		return dateFilter;
 	}
@@ -1233,7 +1233,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb,
 				filter,
 				cb.or(
-					cb.isNotNull(joins.getSormasToSormasShareInfo()),
+					cb.greaterThan(cb.count(joins.getShareInfoContacts()), 0L),
 					cb.isNotNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO))));
 		}
 		if (contactCriteria.getDiseaseVariant() != null) {

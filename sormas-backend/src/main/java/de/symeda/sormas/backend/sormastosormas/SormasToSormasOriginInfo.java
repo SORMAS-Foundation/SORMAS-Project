@@ -113,7 +113,7 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
-	@OneToOne(optional = false, mappedBy = "originInfo")
+	@OneToOne(mappedBy = "originInfo")
 	public SormasToSormasShareRequest getRequest() {
 		return request;
 	}

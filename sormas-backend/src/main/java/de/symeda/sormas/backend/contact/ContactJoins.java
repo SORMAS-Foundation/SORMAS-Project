@@ -84,7 +84,7 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 
 	private Join<Contact, VaccinationInfo> vaccinationInfo;
 
-	private Join<Contact, SormasToSormasShareInfo> sormasToSormasShareInfo;
+	private Join<Contact, SormasToSormasShareInfo> shareInfoContacts;
 
 	public ContactJoins(From<T, Contact> contact) {
 		super(contact);
@@ -380,11 +380,11 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 		this.vaccinationInfo = vaccinationInfo;
 	}
 
-	public Join<Contact, SormasToSormasShareInfo> getSormasToSormasShareInfo() {
-		return getOrCreate(sormasToSormasShareInfo, Contact.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT, this::setSormasToSormasShareInfo);
+	public Join<Contact, SormasToSormasShareInfo> getShareInfoContacts() {
+		return getOrCreate(shareInfoContacts, Contact.SHARE_INFO_CONTACTS, JoinType.LEFT, this::setShareInfoContacts);
 	}
 
-	public void setSormasToSormasShareInfo(Join<Contact, SormasToSormasShareInfo> sormasToSormasShareInfo) {
-		this.sormasToSormasShareInfo = sormasToSormasShareInfo;
+	public void setShareInfoContacts(Join<Contact, SormasToSormasShareInfo> shareInfoContacts) {
+		this.shareInfoContacts = shareInfoContacts;
 	}
 }

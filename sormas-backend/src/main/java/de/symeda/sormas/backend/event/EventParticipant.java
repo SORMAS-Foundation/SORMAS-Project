@@ -61,6 +61,8 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 	public static final String SAMPLES = "samples";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String SHARE_INFO_EVENT_PARTICIPANTS = "shareInfoEventParticipants";
+
 	private User reportingUser;
 	private Event event;
 	private Person person;

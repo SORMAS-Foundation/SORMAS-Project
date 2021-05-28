@@ -90,7 +90,7 @@ public class ShareDataBuilderHelper {
 	}
 
 	public void pseudonymiePerson(PersonDto personDto, boolean pseudonymizedPersonalData, boolean pseudonymizedSensitiveData) {
-		if (pseudonymizedPersonalData || pseudonymizedPersonalData) {
+		if (pseudonymizedPersonalData || pseudonymizedSensitiveData) {
 			personDto.setFirstName(I18nProperties.getCaption(Captions.inaccessibleValue));
 			personDto.setLastName(I18nProperties.getCaption(Captions.inaccessibleValue));
 		}

@@ -164,6 +164,7 @@ import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEj
 import de.symeda.sormas.backend.sormastosormas.labmessage.SormasToSormasLabMessageFacadeEjb.SormasToSormasLabMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
+import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
@@ -619,5 +620,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public SormasToSormasShareRequestFacade getSormasToSormasShareRequestFacade() {
 		return getBean(SormasToSormasShareRequestFacadeEJBLocal.class);
+	}
+
+	public SormasToSormasShareRequestService getSormasToSormasShareRequestService() {
+		return getBean(SormasToSormasShareRequestService.class);
 	}
 }

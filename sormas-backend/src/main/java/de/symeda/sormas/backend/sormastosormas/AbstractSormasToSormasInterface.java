@@ -480,7 +480,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		return errors;
 	}
 
-	private <T> void saveNewShareInfo(
+	private void saveNewShareInfo(
 		UserReferenceDto sender,
 		SormasToSormasOptionsDto options,
 		String requestUuid,

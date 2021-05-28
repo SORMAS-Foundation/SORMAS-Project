@@ -53,6 +53,8 @@ import de.symeda.sormas.backend.sormastosormas.AssociatedEntityWrapper;
 import de.symeda.sormas.backend.sormastosormas.ShareData;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilderHelper;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoSample;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -78,12 +80,31 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		SormasToSormasOriginInfoDto originInfo =
 			dataBuilderHelper.createSormasToSormasOriginInfo(user, options.isHandOverOwnership(), options.getComment());
 
+		List<Contact> associatedContacts = Collections.emptyList();
+		if (options.isWithAssociatedContacts()) {
+			associatedContacts = contactService.findBy(new ContactCriteria().caze(caze.toReference()), user);
+		}
+
+		List<Sample> samples = Collections.emptyList();
+		if (options.isWithSamples()) {
+			final List<Sample> caseSamples = sampleService.findBy(new SampleCriteria().caze(caze.toReference()), user);
+			samples = new ArrayList<>(caseSamples);
+
+			for (Contact associatedContact : associatedContacts) {
+				List<Sample> contactSamples = sampleService.findBy(new SampleCriteria().contact(associatedContact.toReference()), user)
+					.stream()
+					.filter(contactSample -> caseSamples.stream().noneMatch(caseSample -> DataHelper.isSame(caseSample, contactSample)))
+					.collect(Collectors.toList());
+
+				samples.addAll(contactSamples);
+			}
+		}
+
 		return createShareData(
 			caze,
 			originInfo,
-			user,
-			options.isWithAssociatedContacts(),
-			options.isWithSamples(),
+			associatedContacts,
+			samples,
 			options.isPseudonymizePersonalData(),
 			options.isPseudonymizeSensitiveData());
 	}
@@ -117,9 +138,8 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 			return createShareData(
 				caze,
 				originInfo,
-				user,
-				shareInfo.isWithAssociatedContacts(),
-				shareInfo.isWithSamples(),
+				shareInfo.getContacts().stream().map(ShareInfoContact::getContact).collect(Collectors.toList()),
+				shareInfo.getSamples().stream().map(ShareInfoSample::getSample).collect(Collectors.toList()),
 				shareInfo.isPseudonymizedPersonalData(),
 				shareInfo.isPseudonymizedSensitiveData());
 		}).collect(Collectors.toList());
@@ -128,9 +148,8 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 	private ShareData<Case, SormasToSormasCaseDto> createShareData(
 		Case caze,
 		SormasToSormasOriginInfoDto originInfo,
-		User user,
-		boolean withAssociatedContacts,
-		boolean withSamples,
+		List<Contact> contacts,
+		List<Sample> samples,
 		boolean pseudonymizePersonalData,
 		boolean pseudonymizeSensitiveData) {
 
@@ -149,32 +168,11 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		SormasToSormasCaseDto caseData = new SormasToSormasCaseDto(personDto, cazeDto, originInfo);
 		ShareData<Case, SormasToSormasCaseDto> shareData = new ShareData<>(caze, caseData);
 
-		List<Contact> associatedContacts = Collections.emptyList();
-		if (withAssociatedContacts) {
-			associatedContacts = contactService.findBy(new ContactCriteria().caze(caze.toReference()), user);
-			caseData.setAssociatedContacts(
-				getAssociatedContactDtos(associatedContacts, pseudonymizer, pseudonymizePersonalData, pseudonymizeSensitiveData));
+		caseData.setAssociatedContacts(getAssociatedContactDtos(contacts, pseudonymizer, pseudonymizePersonalData, pseudonymizeSensitiveData));
+		shareData.addAssociatedEntities(AssociatedEntityWrapper.forContacts(contacts));
 
-			shareData.addAssociatedEntities(AssociatedEntityWrapper.forContacts(associatedContacts));
-		}
-
-		final List<Sample> samples = new ArrayList<>();
-		if (withSamples) {
-			final List<Sample> caseSamples = sampleService.findBy(new SampleCriteria().caze(caze.toReference()), user);
-			samples.addAll(caseSamples);
-
-			associatedContacts.forEach(associatedContact -> {
-				List<Sample> contactSamples = sampleService.findBy(new SampleCriteria().contact(associatedContact.toReference()), user)
-					.stream()
-					.filter(contactSample -> caseSamples.stream().noneMatch(caseSample -> DataHelper.isSame(caseSample, contactSample)))
-					.collect(Collectors.toList());
-
-				samples.addAll(contactSamples);
-			});
-
-			caseData.setSamples(dataBuilderHelper.getSampleDtos(samples, pseudonymizer));
-			shareData.addAssociatedEntities(AssociatedEntityWrapper.forSamples(samples));
-		}
+		caseData.setSamples(dataBuilderHelper.getSampleDtos(samples, pseudonymizer));
+		shareData.addAssociatedEntities(AssociatedEntityWrapper.forSamples(samples));
 
 		return shareData;
 	}

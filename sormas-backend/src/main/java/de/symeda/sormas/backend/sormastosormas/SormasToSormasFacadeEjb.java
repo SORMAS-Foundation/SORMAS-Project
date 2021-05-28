@@ -91,6 +91,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			cq.where(filter);
 		}
 
+		cq.distinct(true);
+
 		List<SormasToSormasShareInfo> resultList;
 		if (first != null && max != null) {
 			resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();

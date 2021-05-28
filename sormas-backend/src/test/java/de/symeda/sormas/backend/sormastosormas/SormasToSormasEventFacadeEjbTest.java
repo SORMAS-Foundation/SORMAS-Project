@@ -72,9 +72,11 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.common.StartupShutdownService;
@@ -387,6 +389,11 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				e.setSormasToSormasOriginInfo(originInfo);
 			});
 
+		SormasToSormasShareRequestDto shareRequest = new SormasToSormasShareRequestDto();
+		shareRequest.setUuid(DataHelper.createUuid());
+		shareRequest.setOriginInfo(event.getSormasToSormasOriginInfo());
+		getSormasToSormasShareRequestFacade().saveShareRequest(shareRequest);
+
 		PersonDto person = creator.createPerson();
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer, (p) -> {
 			p.setSormasToSormasOriginInfo(event.getSormasToSormasOriginInfo());
@@ -498,22 +505,20 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 				e.getEventLocation().setRegion(rdcf.region);
 				e.getEventLocation().setDistrict(rdcf.district);
 			});
-		getSormasToSormasShareInfoService().persist(
-			createShareInfo(
-				getUserService().getByUuid(officer.getUuid()),
-				SECOND_SERVER_ACCESS_CN,
-				false,
-				i -> i.getEvents().add(new ShareInfoEvent(i, getEventService().getByUuid(event.getUuid())))));
 
 		PersonDto person = creator.createPerson();
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer);
+
 		getSormasToSormasShareInfoService().persist(
 			createShareInfo(
 				getUserService().getByUuid(officer.getUuid()),
 				SECOND_SERVER_ACCESS_CN,
 				false,
-				i -> i.getEventParticipants()
-					.add(new ShareInfoEventParticipant(i, getEventParticipantService().getByUuid(eventParticipant.getUuid())))));
+				i -> {
+					i.getEvents().add(new ShareInfoEvent(i, getEventService().getByUuid(event.getUuid())));
+					i.getEventParticipants()
+						.add(new ShareInfoEventParticipant(i, getEventParticipantService().getByUuid(eventParticipant.getUuid())));
+				}));
 
 		EventParticipantDto newEventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer);
 

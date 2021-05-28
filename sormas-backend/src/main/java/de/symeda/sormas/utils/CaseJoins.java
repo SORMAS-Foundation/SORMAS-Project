@@ -75,7 +75,7 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 	private Join<Person, Country> personCitizenship;
 	private Join<Case, District> reportingDistrict;
 	private Join<Case, DiseaseVariant> diseaseVariant;
-	private Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo;
+	private Join<Case, SormasToSormasShareInfo> shareInfoCases;
 	private Join<Case, ExternalShareInfo> externalShareInfo;
 
 	public CaseJoins(From<T, Case> caze) {
@@ -306,12 +306,12 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 		this.reportingDistrict = reportingDistrict;
 	}
 
-	public Join<Case, SormasToSormasShareInfo> getSormasToSormasShareInfo() {
-		return getOrCreate(sormasToSormasShareInfo, Case.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT, this::setSormasToSormasShareInfo);
+	public Join<Case, SormasToSormasShareInfo> getShareInfoCases() {
+		return getOrCreate(shareInfoCases, Case.SHARE_INFO_CASES, JoinType.LEFT, this::setShareInfoCases);
 	}
 
-	private void setSormasToSormasShareInfo(Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo) {
-		this.sormasToSormasShareInfo = sormasToSormasShareInfo;
+	private void setShareInfoCases(Join<Case, SormasToSormasShareInfo> shareInfoCases) {
+		this.shareInfoCases = shareInfoCases;
 	}
 
 	public Join<Case, ExternalShareInfo> getExternalShareInfo() {

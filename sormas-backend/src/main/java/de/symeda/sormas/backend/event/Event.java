@@ -137,7 +137,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 	public static final String PARENTERAL_TRANSMISSION_MODE = "parenteralTransmissionMode";
 	public static final String MEDICALLY_ASSOCIATED_TRANSMISSION_MODE = "medicallyAssociatedTransmissionMode";
 
-	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String SHARE_INFO_EVENTS = "shareInfoEvents";
 
 	private Event superordinateEvent;
 	private List<Event> subordinateEvents;

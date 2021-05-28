@@ -62,6 +62,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -189,7 +190,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().sample(sample.toReference()), 0, 100);
 
-		SormasToSormasShareInfoDto sampleShareInfoList = shareInfoList.stream().filter(i -> DataHelper.isSame(null, sample)).findFirst().get();
+		SormasToSormasShareInfoDto sampleShareInfoList = shareInfoList.get(0);
 		assertThat(sampleShareInfoList.getTarget().getUuid(), is(SECOND_SERVER_ACCESS_CN));
 		assertThat(sampleShareInfoList.getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(sampleShareInfoList.getComment(), is("Test comment"));
@@ -276,6 +277,11 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 				c.setSormasToSormasOriginInfo(originInfo);
 			});
+
+		SormasToSormasShareRequestDto shareRequest = new SormasToSormasShareRequestDto();
+		shareRequest.setUuid(DataHelper.createUuid());
+		shareRequest.setOriginInfo(contact.getSormasToSormasOriginInfo());
+		getSormasToSormasShareRequestFacade().saveShareRequest(shareRequest);
 
 		SampleDto sharedSample = creator.createSample(contact.toReference(), officer, rdcf.facility, s -> {
 			s.setSormasToSormasOriginInfo(contact.getSormasToSormasOriginInfo());

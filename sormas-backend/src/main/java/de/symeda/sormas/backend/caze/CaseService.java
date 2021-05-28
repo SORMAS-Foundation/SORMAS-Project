@@ -94,7 +94,6 @@ import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
@@ -790,7 +789,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				filter,
 				cb.or(
-					cb.isNotNull(joins.getSormasToSormasShareInfo()),
+					cb.greaterThan(cb.count(joins.getShareInfoCases()), 0L),
 					cb.isNotNull(from.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO))));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithReinfection())) {
@@ -924,7 +923,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.add(clinicalCourse, ClinicalCourse.HEALTH_CONDITIONS)
 			.add(casePath, Case.MATERNAL_HISTORY)
 			.add(casePath, Case.PORT_HEALTH_INFO)
-			.add(casePath, Case.SORMAS_TO_SORMAS_SHARES);
+			.add(casePath, Case.SHARE_INFO_CASES);
 
 		if (includeExtendedChangeDateFilters) {
 			Join<Case, Sample> caseSampleJoin = casePath.join(Case.SAMPLES, JoinType.LEFT);
