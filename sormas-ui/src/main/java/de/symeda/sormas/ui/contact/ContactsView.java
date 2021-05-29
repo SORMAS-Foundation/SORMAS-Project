@@ -84,6 +84,7 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -333,7 +334,11 @@ public class ContactsView extends AbstractView {
 		}
 
 		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
-			Button btnNewContact = ButtonHelper.createIconButton(
+			final ExpandableButton lineListingButton =
+				new ExpandableButton(Captions.lineListing).expand(e -> ControllerProvider.getContactController().openLineListingWindow());
+			addHeaderComponent(lineListingButton);
+
+			final Button btnNewContact = ButtonHelper.createIconButton(
 				Captions.contactNewContact,
 				VaadinIcons.PLUS_CIRCLE,
 				e -> ControllerProvider.getContactController().create(),

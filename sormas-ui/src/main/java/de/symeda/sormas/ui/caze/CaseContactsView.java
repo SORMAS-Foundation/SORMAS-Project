@@ -72,6 +72,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
+import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 public class CaseContactsView extends AbstractCaseView {
 
@@ -93,7 +94,6 @@ public class CaseContactsView extends AbstractCaseView {
 	private Button resetButton;
 	private Button applyButton;
 
-	private Button newButton;
 	private DetailSubComponentWrapper gridLayout;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
@@ -328,7 +328,11 @@ public class CaseContactsView extends AbstractCaseView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
-			newButton = ButtonHelper.createIconButtonWithCaption(
+			final ExpandableButton lineListingButton =
+				new ExpandableButton(Captions.lineListing).expand(e -> ControllerProvider.getContactController().openLineListingWindow());
+			statusFilterLayout.addComponent(lineListingButton);
+
+			final Button newButton = ButtonHelper.createIconButtonWithCaption(
 				Captions.contactNewContact,
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Captions.contactNewContact),
 				VaadinIcons.PLUS_CIRCLE,

@@ -97,6 +97,10 @@ public class ContactController {
 		navigator.addView(ContactEpiDataView.VIEW_NAME, ContactEpiDataView.class);
 	}
 
+	public void openLineListingWindow() {
+		return;
+	}
+
 	public void create() {
 		create(null, false, null);
 	}

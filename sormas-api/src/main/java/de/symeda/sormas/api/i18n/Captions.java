@@ -469,7 +469,6 @@ public interface Captions {
 	String caseImportErrorDescription = "caseImportErrorDescription";
 	String caseImportMergeCase = "caseImportMergeCase";
 	String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
-	String caseLineListing = "caseLineListing";
 	String caseMergeDuplicates = "caseMergeDuplicates";
 	String caseMinusDays = "caseMinusDays";
 	String caseNewCase = "caseNewCase";
@@ -1297,6 +1296,7 @@ public interface Captions {
 	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
 	String lastName = "lastName";
+	String lineListing = "lineListing";
 	String lineListingAddLine = "lineListingAddLine";
 	String lineListingDisableAll = "lineListingDisableAll";
 	String lineListingDisableAllShort = "lineListingDisableAllShort";

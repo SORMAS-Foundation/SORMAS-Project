@@ -452,7 +452,7 @@ public class CasesView extends AbstractView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
 			final ExpandableButton lineListingButton =
-				new ExpandableButton(Captions.caseLineListing).expand(e -> ControllerProvider.getCaseController().openLineListingWindow());
+				new ExpandableButton(Captions.lineListing).expand(e -> ControllerProvider.getCaseController().openLineListingWindow());
 			addHeaderComponent(lineListingButton);
 
 			final ExpandableButton createButton =
