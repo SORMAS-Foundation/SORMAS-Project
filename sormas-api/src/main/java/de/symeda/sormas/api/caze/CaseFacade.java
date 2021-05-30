@@ -65,8 +65,6 @@ public interface CaseFacade {
 
 	List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer offset, Integer max, List<SortProperty> sortProperties);
 
-	CaseDataDto patch(String uuid, Map<String, Object> updates);
-
 	CaseDataDto patchJson(String uuid, JSONObject jsonObject);
 
 	List<CaseExportDto> getExportList(

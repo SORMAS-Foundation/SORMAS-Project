@@ -19,7 +19,6 @@ package de.symeda.sormas.rest;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
@@ -132,14 +131,8 @@ public class CaseResource extends EntityDtoResource {
 	}
 
 	@POST
-	@Path("/patch/{uuid}")
-	public CaseDataDto sayPlainTextHello(@PathParam("uuid") String uuid, @RequestBody Map<String, Object> updates) throws Exception {
-		return FacadeProvider.getCaseFacade().patch(uuid, updates);
-	}
-
-	@POST
 	@Path("/patchJson/{uuid}")
-	public CaseDataDto sayPlainTextHello(@PathParam("uuid") String uuid, JSONObject jsonObject) throws Exception {
+	public CaseDataDto patchJson(@PathParam("uuid") String uuid, JSONObject jsonObject) throws Exception {
 		return FacadeProvider.getCaseFacade().patchJson(uuid, jsonObject);
 	}
 
