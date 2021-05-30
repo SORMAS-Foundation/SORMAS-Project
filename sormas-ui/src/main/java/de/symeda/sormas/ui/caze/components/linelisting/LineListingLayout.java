@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui.caze.components.linelisting;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -146,7 +146,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		addComponent(sharedInformationComponent);
 
-		caseLines = new ArrayList<CaseLineLayout>();
+		caseLines = new ArrayList<>();
 		VerticalLayout lineComponent = new VerticalLayout();
 		lineComponent.setMargin(false);
 
@@ -223,7 +223,6 @@ public class LineListingLayout extends VerticalLayout {
 
 		addComponent(buttonsPanel);
 		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
-
 	}
 
 	private void updateDistricts(RegionReferenceDto regionDto) {
