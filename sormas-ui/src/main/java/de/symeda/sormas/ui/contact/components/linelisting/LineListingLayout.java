@@ -382,6 +382,7 @@ public class LineListingLayout extends VerticalLayout {
 			lastname.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			dateOfBirthYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
 			sex.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
+			sex.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			delete.setEnabled(false);
 			setComponentAlignment(delete, Alignment.MIDDLE_LEFT);
 		}
@@ -391,6 +392,7 @@ public class LineListingLayout extends VerticalLayout {
 			CssStyles.style(dateOfReport, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(firstname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(lastname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
+			CssStyles.style(sex, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 		}
 
 		private void setItemCaptionsForMonths(ComboBox<Integer> comboBox) {
