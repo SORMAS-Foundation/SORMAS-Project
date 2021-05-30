@@ -73,6 +73,7 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.NavigationHelper;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
@@ -215,6 +216,10 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 		}
 
 		updatePageMenu();
+
+		if (ConfigProvider.getUser() == null || !LocationService.instance().validateGpsAccessAndEnabled(this)) {
+			return;
+		}
 	}
 
 	protected void updateStatusFrame() {

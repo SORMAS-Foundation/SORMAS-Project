@@ -29,7 +29,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.pojo.Case;
+import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.services.CaseService;
 
 public class CreateNewCaseSteps implements En {

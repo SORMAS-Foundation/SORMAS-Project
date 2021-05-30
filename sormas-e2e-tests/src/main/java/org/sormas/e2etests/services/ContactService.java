@@ -22,7 +22,7 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.util.UUID;
-import org.sormas.e2etests.pojo.Contact;
+import org.sormas.e2etests.pojo.web.Contact;
 
 public class ContactService {
   private final Faker faker;

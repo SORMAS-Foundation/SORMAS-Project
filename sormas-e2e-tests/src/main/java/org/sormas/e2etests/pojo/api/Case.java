@@ -15,41 +15,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
-package org.sormas.e2etests.pojo;
+package org.sormas.e2etests.pojo.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.time.LocalDate;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import java.util.Date;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
-@Builder(toBuilder = true, builderClassName = "Builder")
 @Value
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderClassName = "builder")
+@Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@NonNull
-public class Contact {
-  String firstName;
-  String lastName;
-  LocalDate dateOfBirth;
-  String sex;
-  String nationalHealthId;
-  String passportNumber;
-  String primaryEmailAddress;
-  String primaryPhoneNumber;
-  String returningTraveler;
-  LocalDate reportDate;
-  String diseaseOfSourceCase;
-  String caseIdInExternalSystem;
-  LocalDate dateOfLastContact;
-  String caseOrEventInformation;
-  String responsibleDistrict;
-  String responsibleRegion;
-  String responsibleCommunity;
-  String additionalInformationOnContactType;
-  String typeOfContact;
-  String contactCategory;
-  String relationshipWithCase;
-  String descriptionOfHowContactTookPlace;
+public class Case {
+  String caseClassification;
   String uuid;
+  String followUpStatus;
+  ClinicalCourse clinicalCourse;
+  Date reportDate;
+  ReportingUser reportingUser;
+  SurveillanceOfficer surveillanceOfficer;
+  String outcome;
+  String investigationStatus;
+  String caseOrigin;
+  String disease;
+  String healthFacilityDetails;
+  Hospitalization hospitalization;
+  Therapy therapy;
+  Community community;
+  Long followUpUntil;
+  Symptoms symptoms;
+  EpiData epiData;
+  Boolean pseudonymized;
+  Person person;
+  PortHealthInfo portHealthInfo;
+  District district;
+  Region region;
+  HealthFacility healthFacility;
+  MaternalHistory maternalHistory;
 }
