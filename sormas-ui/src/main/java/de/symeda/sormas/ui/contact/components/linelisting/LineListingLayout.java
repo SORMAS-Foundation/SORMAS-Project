@@ -27,6 +27,7 @@ import com.vaadin.v7.data.Validator;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -50,11 +51,13 @@ public class LineListingLayout extends VerticalLayout {
 
 	public static final float DEFAULT_WIDTH = 1696;
 
-	private ComboBox<Disease> disease;
+	private final CaseSelector caseSelector;
+	private final ComboBox<Disease> disease;
+	private final ComboBox<RegionReferenceDto> region;
+	private final ComboBox<DistrictReferenceDto> district;
 
-	private ComboBox<RegionReferenceDto> region;
-	private ComboBox<DistrictReferenceDto> district;
 	private List<ContactLineLayout> caseLines;
+
 	private Button cancelButton;
 	private Button saveButton;
 
@@ -74,8 +77,14 @@ public class LineListingLayout extends VerticalLayout {
 		sharedInformationLabel.setValue(I18nProperties.getCaption(Captions.lineListingSharedInformation));
 		sharedInformationLabel.addStyleName(CssStyles.H3);
 		sharedInformationComponent.addComponent(sharedInformationLabel);
+
+		caseSelector = new CaseSelector();
+		caseSelector.setId("lineListingCase");
+		sharedInformationComponent.addComponent(caseSelector);
+
 		HorizontalLayout sharedInformationBar = new HorizontalLayout();
 		sharedInformationBar.addStyleName(CssStyles.SPACING_SMALL);
+
 		disease = new ComboBox<>(I18nProperties.getCaption(Captions.disease));
 		disease.setId("lineListingDisease");
 		disease.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
@@ -128,6 +137,7 @@ public class LineListingLayout extends VerticalLayout {
 			ContactLineLayout newLine = new ContactLineLayout(lineComponent, caseLines.size() + 1);
 			ContactLineDto lastLineDto = caseLines.get(caseLines.size() - 1).getBean();
 			ContactLineDto newLineDto = new ContactLineDto();
+			newLineDto.setCaze(lastLineDto.getCaze());
 			newLineDto.setDisease(lastLineDto.getDisease());
 			newLineDto.setRegion(lastLineDto.getRegion());
 			newLineDto.setDistrict(lastLineDto.getDistrict());
@@ -222,6 +232,7 @@ public class LineListingLayout extends VerticalLayout {
 			addStyleName(CssStyles.SPACING_SMALL);
 			setMargin(false);
 
+			binder.forField(caseSelector).bind(ContactLineDto.CAZE);
 			binder.forField(disease).asRequired().bind(ContactLineDto.DISEASE);
 			binder.forField(region).asRequired().bind(ContactLineDto.REGION);
 			binder.forField(district).asRequired().bind(ContactLineDto.DISTRICT);
@@ -415,6 +426,7 @@ public class LineListingLayout extends VerticalLayout {
 
 	public static class ContactLineDto implements Serializable {
 
+		public static final String CAZE = "caze";
 		public static final String DISEASE = "disease";
 		public static final String REGION = "region";
 		public static final String DISTRICT = "district";
@@ -429,6 +441,7 @@ public class LineListingLayout extends VerticalLayout {
 		public static final String DATE_OF_BIRTH_DD = "dateOfBirthDD";
 		public static final String SEX = "sex";
 
+		private CaseReferenceDto caze;
 		private Disease disease;
 		private RegionReferenceDto region;
 		private DistrictReferenceDto district;
@@ -444,6 +457,7 @@ public class LineListingLayout extends VerticalLayout {
 		private Sex sex;
 
 		public ContactLineDto(
+			CaseReferenceDto caze,
 			Disease disease,
 			RegionReferenceDto region,
 			DistrictReferenceDto district,
@@ -458,6 +472,7 @@ public class LineListingLayout extends VerticalLayout {
 			Integer dateOfBirthDay,
 			Sex sex) {
 
+			this.caze = caze;
 			this.disease = disease;
 			this.region = region;
 			this.district = district;
@@ -474,6 +489,14 @@ public class LineListingLayout extends VerticalLayout {
 		}
 
 		public ContactLineDto() {
+		}
+
+		public CaseReferenceDto getCaze() {
+			return caze;
+		}
+
+		public void setCaze(CaseReferenceDto caze) {
+			this.caze = caze;
 		}
 
 		public Disease getDisease() {
