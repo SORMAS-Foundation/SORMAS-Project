@@ -97,7 +97,8 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 			requestRoot.get(SormasToSormasShareRequest.DATA_TYPE),
 			requestRoot.get(SormasToSormasShareRequest.STATUS),
 			originInfo.get(SormasToSormasOriginInfo.ORGANIZATION_ID),
-			originInfo.get(SormasToSormasOriginInfo.SENDER_NAME));
+			originInfo.get(SormasToSormasOriginInfo.SENDER_NAME),
+			originInfo.get(SormasToSormasOriginInfo.COMMENT));
 
 		Predicate filter = null;
 		if (criteria != null) {
@@ -121,6 +122,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 					break;
 				case SormasToSormasOriginInfo.ORGANIZATION_ID:
 				case SormasToSormasOriginInfo.SENDER_NAME:
+				case SormasToSormasOriginInfo.COMMENT:
 					expression = originInfo.get(sortProperty.propertyName);
 					break;
 				default:

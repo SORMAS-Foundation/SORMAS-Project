@@ -81,6 +81,7 @@ public class ShareRequestGrid extends FilteredGrid<SormasToSormasShareRequestInd
 			SormasToSormasShareRequestIndexDto.ORGANIZATION_NAME,
 			SormasToSormasShareRequestIndexDto.SENDER_NAME,
 			SormasToSormasShareRequestIndexDto.STATUS,
+			SormasToSormasShareRequestIndexDto.COMMENT,
 			COLUMN_ACTIONS);
 
 		((Column<SormasToSormasShareRequestIndexDto, String>) getColumn(LabMessageIndexDto.UUID)).setRenderer(new UuidRenderer());

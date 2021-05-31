@@ -31,6 +31,7 @@ public class SormasToSormasShareRequestIndexDto implements Serializable {
 	public static final String ORGANIZATION_ID = "organizationId";
 	public static final String ORGANIZATION_NAME = "organizationName";
 	public static final String SENDER_NAME = "senderName";
+	public static final String COMMENT = "comment";
 
 	private String uuid;
 	private Date creationDate;
@@ -39,6 +40,7 @@ public class SormasToSormasShareRequestIndexDto implements Serializable {
 	private String organizationId;
 	private String organizationName;
 	private String senderName;
+	private String comment;
 
 	public SormasToSormasShareRequestIndexDto(
 		String uuid,
@@ -46,13 +48,15 @@ public class SormasToSormasShareRequestIndexDto implements Serializable {
 		ShareRequestDataType dataType,
 		ShareRequestStatus status,
 		String organizationId,
-		String senderName) {
+		String senderName,
+		String comment) {
 		this.uuid = uuid;
 		this.creationDate = creationDate;
 		this.dataType = dataType;
 		this.status = status;
 		this.organizationId = organizationId;
 		this.senderName = senderName;
+		this.comment = comment;
 	}
 
 	public String getUuid() {
@@ -109,5 +113,13 @@ public class SormasToSormasShareRequestIndexDto implements Serializable {
 
 	public void setSenderName(String senderName) {
 		this.senderName = senderName;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 }
