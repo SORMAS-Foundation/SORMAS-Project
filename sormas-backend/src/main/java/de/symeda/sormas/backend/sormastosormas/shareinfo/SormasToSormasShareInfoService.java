@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.sormastosormas.shareinfo;
 
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
@@ -22,6 +24,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -131,8 +134,13 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		return exists(
 			(cb, root) -> cb.and(
 				cb.equal(root.join(associatedObjectField).get(associatedObjectName), associatedObject),
-				cb.equal(root.get(SormasToSormasShareInfo.REQUEST_STATUS), ShareRequestStatus.ACCEPTED),
-				cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
+				getOwnershipHandedOverFilter(cb, root, ShareRequestStatus.ACCEPTED)));
+	}
+
+	private Predicate getOwnershipHandedOverFilter(CriteriaBuilder cb, Root<SormasToSormasShareInfo> root, ShareRequestStatus requestStatus) {
+		return cb.and(
+			cb.equal(root.get(SormasToSormasShareInfo.REQUEST_STATUS), requestStatus),
+			cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)));
 	}
 
 	public SormasToSormasShareInfo getByCaseAndOrganization(String caseUuid, String organizationId) {
@@ -185,5 +193,34 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		cq.where(cb.equal(from.get(SormasToSormasShareInfo.REQUEST_UUID), requestUuid));
 
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	public List<String> getCaseUuidsWithPendingOwnershipHandOver(List<Case> cases) {
+		return getUuidsWithPendingOwnershipHandOver(SormasToSormasShareInfo.CASES, ShareInfoCase.CAZE, cases);
+	}
+
+	public List<String> getContactUuidsWithPendingOwnershipHandOver(List<Contact> contacts) {
+		return getUuidsWithPendingOwnershipHandOver(SormasToSormasShareInfo.CONTACTS, ShareInfoContact.CONTACT, contacts);
+	}
+
+	public List<String> getEventUuidsWithPendingOwnershipHandOver(List<Event> events) {
+		return getUuidsWithPendingOwnershipHandOver(SormasToSormasShareInfo.EVENTS, ShareInfoEvent.EVENT, events);
+	}
+
+	private <ADO extends AbstractDomainObject> List<String> getUuidsWithPendingOwnershipHandOver(
+		String associatedObjectField,
+		String associatedObjectName,
+		List<ADO> associatedObjects) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		final CriteriaQuery<String> query = cb.createQuery(String.class);
+		Root<SormasToSormasShareInfo> root = query.from(SormasToSormasShareInfo.class);
+
+		Path<Object> associatedObjectPath = root.join(associatedObjectField).get(associatedObjectName);
+
+		query.select(associatedObjectPath.get(AbstractDomainObject.UUID));
+		query.where(associatedObjectPath.in(associatedObjects), cb.and(getOwnershipHandedOverFilter(cb, root, ShareRequestStatus.PENDING)));
+
+		return em.createQuery(query).getResultList();
 	}
 }

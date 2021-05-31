@@ -249,6 +249,12 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getCaption());
 			infoLayout.addComponent(senderLabel);
 
+			if (shareInfo.isOwnershipHandedOver()) {
+
+				Label ownershipLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasOwnershipHandedOver));
+				infoLayout.addComponent(ownershipLabel);
+			}
+
 			Label statusLabel =
 				new Label(I18nProperties.getCaption(Captions.SormasToSormasShareRequest_status) + ": " + shareInfo.getRequestStatus());
 			infoLayout.addComponent(statusLabel);

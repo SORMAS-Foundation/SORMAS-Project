@@ -124,6 +124,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		User currentUser = userService.getCurrentUser();
 		List<ADO> entities = getEntityService().getByUuids(entityUuids);
 
+		if (options.isHandOverOwnership()) {
+			validateOwnership(entities);
+		}
 		validateEntitiesBeforeShare(entities);
 
 		List<PREVIEW> previewsToSend = new ArrayList<>();
@@ -443,7 +446,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	}
 
 	private String buildEntityValidationGroupName(HasUuid entity) {
-		return buildValidationGroupName(entityCaptionTag, entity);
+		return buildEntityValidationGroupName(entity.getUuid());
+	}
+
+	private String buildEntityValidationGroupName(String uuid) {
+		return buildValidationGroupName(entityCaptionTag, uuid);
 	}
 
 	protected abstract BaseAdoService<ADO> getEntityService();
@@ -538,6 +545,24 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		return request;
 	}
+
+	protected void validateOwnership(List<ADO> entities) throws SormasToSormasException {
+		List<String> notOwnedUuids = getUuidsWithPendingOwnershipHandedOver(entities);
+		if (notOwnedUuids.size() > 0) {
+
+			Map<String, ValidationErrors> errors = notOwnedUuids.stream()
+				.collect(
+					Collectors.toMap(
+						this::buildEntityValidationGroupName,
+						(uuid) -> ValidationErrors.create(
+							I18nProperties.getCaption(entityCaptionTag),
+							I18nProperties.getString(Strings.errorSormasToSormasOwnershipAlreadyHandedOver))));
+
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasShare), errors);
+		}
+	}
+
+	protected abstract List<String> getUuidsWithPendingOwnershipHandedOver(List<ADO> entities);
 
 	protected abstract void setShareRequestPreviewData(SormasToSormasShareRequestDto request, List<PREVIEW> previews);
 }

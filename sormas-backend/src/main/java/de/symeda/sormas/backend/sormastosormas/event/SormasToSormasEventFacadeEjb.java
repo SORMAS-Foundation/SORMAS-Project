@@ -171,6 +171,11 @@ public class SormasToSormasEventFacadeEjb
 		return errors;
 	}
 
+	@Override
+	protected List<String> getUuidsWithPendingOwnershipHandedOver(List<Event> entities) {
+		return shareInfoService.getEventUuidsWithPendingOwnershipHandOver(entities);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class SormasToSormasEventFacadeEjbLocal extends SormasToSormasEventFacadeEjb {

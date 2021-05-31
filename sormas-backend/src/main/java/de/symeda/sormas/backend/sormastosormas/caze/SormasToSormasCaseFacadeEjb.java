@@ -171,6 +171,11 @@ public class SormasToSormasCaseFacadeEjb
 		return errors;
 	}
 
+	@Override
+	protected List<String> getUuidsWithPendingOwnershipHandedOver(List<Case> entities) {
+		return shareInfoService.getCaseUuidsWithPendingOwnershipHandOver(entities);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class SormasToSormasCaseFacadeEjbLocal extends SormasToSormasCaseFacadeEjb {
