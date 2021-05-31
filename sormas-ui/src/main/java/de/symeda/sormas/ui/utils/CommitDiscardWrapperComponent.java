@@ -60,6 +60,8 @@ import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.PersonEditForm;
 
+import static java.util.Objects.nonNull;
+
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
 	private static final long serialVersionUID = 1L;
@@ -510,7 +512,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 					} else if (firstCause != null) {
 						htmlMsg.append(findHtmlMessage(firstCause));
 						String additionalInfo = findHtmlMessageDetails(firstCause);
-						if (!additionalInfo.isEmpty()) {
+						if (nonNull(additionalInfo) && !additionalInfo.isEmpty()) {
 							htmlMsg.append(" : ");
 							htmlMsg.append(findHtmlMessageDetails(firstCause));
 						}
