@@ -37,4 +37,8 @@ public class EditCasePage {
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");
   public static final By NEW_TASK_BUTTON = By.cssSelector("div#taskNewTask");
   public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit-task']");
+  public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
+  public static final By EDIT_SAMPLE_BUTTON =
+      By.cssSelector(
+          "[location='samples'] [class='v-button v-widget link v-button-link compact v-button-compact']");
 }

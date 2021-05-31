@@ -15,41 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+package org.sormas.e2etests.pojo.web;
 
-package org.sormas.e2etests.pojo;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDate;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import java.util.List;
+import lombok.*;
 
-@Builder(toBuilder = true, builderClassName = "builder")
 @Value
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@NonNull
-public class Case {
-  String caseOrigin;
-  LocalDate dateOfBirth;
-  LocalDate dateOfReport;
-  LocalDate dateOfSymptomOnset;
-  String disease;
-  String externalId;
-  String uuid;
-  String facilityCategory;
-  String facilityType;
-  String firstName;
-  String lastName;
-  String nationalHealthId;
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderClassName = "builder")
+public class Person {
   String passportNumber;
-  String placeDescription;
-  String placeOfStay;
-  String pointOfEntry;
-  String presentConditionOfPerson;
-  String primaryEmailAddress;
-  String primaryPhoneNumber;
-  String responsibleCommunity;
-  String responsibleDistrict;
-  String responsibleRegion;
+  String lastName;
+  LocalDate dateOfBirth;
+  boolean covidCodeDelivered;
+  Address address;
   String sex;
+  long creationDate;
+  String uuid;
+  String nationalHealthId;
+  String firstName;
+  String emailAddress;
+  String phoneNumber;
+  boolean pseudonymized;
+  long changeDate;
+  boolean hasCovidApp;
+  List<Object> personContactDetails;
+  List<Object> addresses;
 }
