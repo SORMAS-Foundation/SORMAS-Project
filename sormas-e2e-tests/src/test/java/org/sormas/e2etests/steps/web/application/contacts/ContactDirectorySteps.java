@@ -27,6 +27,7 @@ import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 
 public class ContactDirectorySteps implements En {
@@ -35,7 +36,8 @@ public class ContactDirectorySteps implements En {
   protected WebDriverHelpers webDriverHelpers;
 
   @Inject
-  public ContactDirectorySteps(WebDriverHelpers webDriverHelpers, BaseSteps baseSteps) {
+  public ContactDirectorySteps(
+      WebDriverHelpers webDriverHelpers, BaseSteps baseSteps, ApiState apiState) {
     this.baseSteps = baseSteps;
     this.webDriverHelpers = webDriverHelpers;
     When(
@@ -47,16 +49,15 @@ public class ContactDirectorySteps implements En {
     When(
         "I open the last created contact",
         () -> {
-          String contactUUID = EditContactSteps.aContact.getUuid();
-          searchAfterContactByMultipleOptions(contactUUID);
-          openContactFromResultsByUUID(contactUUID);
+          searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
+          openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
         });
 
     Then(
-        "I check that the last created contact was deleted",
-        () -> {
-              Truth.assertThat(webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))
-              .isEqualTo(0);
+        "I check that number of displayed contact results is {int}",
+        (Integer number) -> {
+          Truth.assertThat(webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))
+              .isEqualTo(number);
         });
   }
 
