@@ -27,14 +27,12 @@ import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.Contact;
 import org.sormas.e2etests.steps.BaseSteps;
 
 public class ContactDirectorySteps implements En {
 
   protected BaseSteps baseSteps;
   protected WebDriverHelpers webDriverHelpers;
-  protected Contact createdContact;
 
   @Inject
   public ContactDirectorySteps(WebDriverHelpers webDriverHelpers, BaseSteps baseSteps) {
@@ -57,10 +55,8 @@ public class ContactDirectorySteps implements En {
     Then(
         "I check that the last created contact was deleted",
         () -> {
-          String contactUUID = EditContactSteps.aContact.getUuid();
-          searchAfterContactByMultipleOptions(contactUUID);
-          String locator = "//a[contains(@title, '" + contactUUID + "')]";
-          Truth.assertThat(webDriverHelpers.isElementVisible(By.xpath(locator))).isFalse();
+              Truth.assertThat(webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))
+              .isEqualTo(0);
         });
   }
 
@@ -71,9 +67,10 @@ public class ContactDirectorySteps implements En {
   }
 
   private void openContactFromResultsByUUID(String uuid) {
-    String locator = "//a[contains(@title, '" + uuid + "')]";
-    webDriverHelpers.waitUntilElementIsVisibleAndClickable(By.xpath(locator));
-    webDriverHelpers.clickOnWebElementBySelector(By.xpath(locator));
+    By uuidLocator =
+        By.xpath(String.format("%s", CONTACT_RESULTS_UUID_LOCATOR.replace("placeholder", uuid)));
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable((uuidLocator));
+    webDriverHelpers.clickOnWebElementBySelector((uuidLocator));
     webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
   }
 }
