@@ -182,7 +182,8 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
 		}
 
-		if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
+			&& FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()) {
 			ControllerProvider.getSormasToSormasController().registerViews(navigator);
 			menu.addView(
 				ShareRequestsView.class,

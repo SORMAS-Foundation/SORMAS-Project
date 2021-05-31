@@ -35,6 +35,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -249,15 +250,16 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getCaption());
 			infoLayout.addComponent(senderLabel);
 
-			if (shareInfo.isOwnershipHandedOver()) {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)) {
+				if (shareInfo.isOwnershipHandedOver()) {
+					Label ownershipLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasOwnershipHandedOver));
+					infoLayout.addComponent(ownershipLabel);
+				}
 
-				Label ownershipLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasOwnershipHandedOver));
-				infoLayout.addComponent(ownershipLabel);
+				Label statusLabel =
+					new Label(I18nProperties.getCaption(Captions.SormasToSormasShareRequest_status) + ": " + shareInfo.getRequestStatus());
+				infoLayout.addComponent(statusLabel);
 			}
-
-			Label statusLabel =
-				new Label(I18nProperties.getCaption(Captions.SormasToSormasShareRequest_status) + ": " + shareInfo.getRequestStatus());
-			infoLayout.addComponent(statusLabel);
 
 			Label shareDateLabel = new Label(
 				I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(shareInfo.getCreationDate()));
@@ -276,7 +278,10 @@ public class SormasToSormasListComponent extends VerticalLayout {
 				}));
 			}
 
-			if (revokeListener != null && shareInfo.getRequestStatus() == ShareRequestStatus.PENDING && !shareInfo.isOwnershipHandedOver()) {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
+				&& revokeListener != null
+				&& shareInfo.getRequestStatus() == ShareRequestStatus.PENDING
+				&& !shareInfo.isOwnershipHandedOver()) {
 				addComponent(ButtonHelper.createIconButton(Captions.sormasToSormasRevokeShare, VaadinIcons.TRASH, (e) -> {
 					revokeListener.accept(shareInfo);
 				}));

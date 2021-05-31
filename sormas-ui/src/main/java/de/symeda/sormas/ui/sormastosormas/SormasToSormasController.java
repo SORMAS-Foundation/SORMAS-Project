@@ -69,7 +69,7 @@ public class SormasToSormasController {
 
 	public void shareCaseFromDetailsPage(CaseDataDto caze, SormasToSormasListComponent listComponent) {
 		shareToSormasFromDetailPage(
-			(options) -> FacadeProvider.getSormasToSormasCaseFacade().sendShareRequest(Collections.singletonList(caze.getUuid()), options),
+			(options) -> FacadeProvider.getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options),
 			listComponent,
 			SormasToSormasOptionsForm.forCase(getCaseExcludedOrganizationIds(caze)));
 	}
@@ -77,14 +77,14 @@ public class SormasToSormasController {
 	public void shareSelectedCases(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
 		handleShareWithOptions((options) -> {
 			FacadeProvider.getSormasToSormasCaseFacade()
-				.sendShareRequest(selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()), options);
+				.share(selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()), options);
 			callback.run();
 		}, SormasToSormasOptionsForm.forCase(null), new SormasToSormasOptionsDto());
 	}
 
 	public void shareContactFromDetailsPage(ContactDto contact, SormasToSormasListComponent listComponent) {
 		shareToSormasFromDetailPage(
-			(options) -> FacadeProvider.getSormasToSormasContactFacade().sendShareRequest(Collections.singletonList(contact.getUuid()), options),
+			(options) -> FacadeProvider.getSormasToSormasContactFacade().share(Collections.singletonList(contact.getUuid()), options),
 			listComponent,
 			SormasToSormasOptionsForm.forContact(getContactExcludedOrganizationIds(contact)));
 	}
@@ -92,14 +92,14 @@ public class SormasToSormasController {
 	public void shareSelectedContacts(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
 		handleShareWithOptions((options) -> {
 			FacadeProvider.getSormasToSormasContactFacade()
-				.sendShareRequest(selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()), options);
+				.share(selectedRows.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()), options);
 			callback.run();
 		}, SormasToSormasOptionsForm.forContact(null), new SormasToSormasOptionsDto());
 	}
 
 	public void shareEventFromDetailsPage(EventDto event, SormasToSormasListComponent listComponent) {
 		shareToSormasFromDetailPage(
-			(options) -> FacadeProvider.getSormasToSormasEventFacade().sendShareRequest(Collections.singletonList(event.getUuid()), options),
+			(options) -> FacadeProvider.getSormasToSormasEventFacade().share(Collections.singletonList(event.getUuid()), options),
 			listComponent,
 			SormasToSormasOptionsForm.forEvent(getEventExcludedOrganizationIds(event)));
 	}

@@ -39,6 +39,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -58,6 +59,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
@@ -85,6 +87,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	private ShareDataBuilderHelper dataBuilderHelper;
 	@EJB
 	private SharedDataProcessorHelper dataProcessorHelper;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	private final String requestEndpoint;
 	private final String requestRejectEndpoint;
@@ -118,6 +122,15 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		this.entityCaptionTag = entityCaptionTag;
 		this.shareRequestDataType = shareRequestDataType;
 		this.previewType = previewType;
+	}
+
+	@Override
+	public void share(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)) {
+			sendShareRequest(entityUuids, options);
+		} else {
+			shareEntities(entityUuids, options);
+		}
 	}
 
 	public void sendShareRequest(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
@@ -278,7 +291,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			options,
 			(host, authToken, encryptedData) -> sormasToSormasRestClient.post(host, saveEndpoint, authToken, encryptedData));
 
-		saveNewShareInfo(currentUser.toReference(), options, null, ShareRequestStatus.ACCEPTED, entities, associatedEntities);
+		saveNewShareInfo(currentUser.toReference(), options, DataHelper.createUuid(), ShareRequestStatus.ACCEPTED, entities, associatedEntities);
 	}
 
 	@Override
@@ -337,7 +350,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		originInfo.setOwnershipHandedOver(false);
 		originInfoService.persist(originInfo);
 
-		List<AssociatedEntityWrapper<?>> sharedAssociatedObject = shareData.getAssociatedEntities()
+		List<AssociatedEntityWrapper<?>> sharedAssociatedObjects = shareData.getAssociatedEntities()
 			.stream()
 			.filter(wrapper -> wrapper.getEntity().getSormasToSormasOriginInfo() == null)
 			.collect(Collectors.toList());
@@ -345,10 +358,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		saveNewShareInfo(
 			currentUser.toReference(),
 			options,
-			originInfo.getRequest().getUuid(),
+			// if SORMAS_TO_SORMAS_ACCEPT_REJECT feature is not active then there is no request, so generate a random uuid in that case
+			originInfo.getRequest() != null ? originInfo.getRequest().getUuid() : DataHelper.createUuid(),
 			ShareRequestStatus.ACCEPTED,
 			Collections.emptyList(),
-			sharedAssociatedObject);
+			sharedAssociatedObjects);
 	}
 
 	@Override
