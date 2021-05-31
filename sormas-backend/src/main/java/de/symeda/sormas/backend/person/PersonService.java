@@ -604,4 +604,17 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		}
 		return geoLocationUpdated;
 	}
+
+	public List<Person> getByExternalIds(List<String> externalIds) {
+		if (externalIds == null || externalIds.isEmpty()) {
+			return null;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Person> cq = cb.createQuery(getElementClass());
+		Root<Person> from = cq.from(getElementClass());
+		cq.where(from.get(Person.EXTERNAL_ID).in(externalIds));
+
+		return em.createQuery(cq).getResultList();
+	}
 }

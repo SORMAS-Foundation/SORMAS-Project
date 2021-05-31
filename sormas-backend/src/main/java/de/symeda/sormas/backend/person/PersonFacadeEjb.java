@@ -229,6 +229,11 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
+	public List<PersonDto> getByExternalIds(List<String> externalIds) {
+		return toPseudonymizedDtos(personService.getByExternalIds(externalIds));
+	}
+
+	@Override
 	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease) {
 		final User user = userService.getCurrentUser();
 		if (user == null) {
