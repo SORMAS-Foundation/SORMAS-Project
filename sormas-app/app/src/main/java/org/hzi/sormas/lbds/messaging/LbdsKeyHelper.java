@@ -8,14 +8,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import android.content.Intent;
 import android.util.Base64;
 
-public class LbdsHelper {
-
-	public static LbdsPropagateKexToSormasIntent getLbdsPropagateKexToSormasIntent(Intent intent) {
-		return new LbdsPropagateKexToSormasIntent(intent);
-	}
+public class LbdsKeyHelper {
 
 	public static String getX509FromPublicKey(PublicKey publicKey) {
 		return Base64.encodeToString(publicKey.getEncoded(), Base64.DEFAULT);
