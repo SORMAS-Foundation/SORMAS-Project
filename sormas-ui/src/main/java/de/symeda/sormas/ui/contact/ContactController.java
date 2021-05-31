@@ -63,6 +63,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -75,6 +76,7 @@ import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -117,7 +119,42 @@ public class ContactController {
 	}
 
 	private void saveContactsFromLineListing(LineListingLayout lineListingForm, List<LineListingLayout.ContactLineDto> contacts) {
-		return;
+		try {
+			lineListingForm.validate();
+		} catch (ValidationRuntimeException e) {
+			Notification.show(I18nProperties.getString(Strings.errorFieldValidationFailed), "", Type.ERROR_MESSAGE);
+			return;
+		}
+
+		for (LineListingLayout.ContactLineDto contactLineDto : contacts) {
+			final ContactDto newContact = ContactDto.build();
+
+			newContact.setCaze(contactLineDto.getCaze());
+			newContact.setDisease(contactLineDto.getDisease());
+			newContact.setRegion(contactLineDto.getRegion());
+			newContact.setDistrict(contactLineDto.getDistrict());
+			newContact.setReportDateTime(DateHelper8.toDate(contactLineDto.getDateOfReport()));
+			newContact.setLastContactDate(DateHelper8.toDate(contactLineDto.getDateOfLastContact()));
+			newContact.setRelationToCase(contactLineDto.getRelationToCase());
+
+			newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
+
+			final PersonDto newPerson = PersonDto.build();
+			newPerson.setFirstName(contactLineDto.getFirstName());
+			newPerson.setLastName(contactLineDto.getLastName());
+			newPerson.setBirthdateYYYY(contactLineDto.getDateOfBirthYYYY());
+			newPerson.setBirthdateMM(contactLineDto.getDateOfBirthMM());
+			newPerson.setBirthdateDD(contactLineDto.getDateOfBirthDD());
+			newPerson.setSex(contactLineDto.getSex());
+
+			PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
+			newContact.setPerson(savedPerson.toReference());
+
+			FacadeProvider.getContactFacade().saveContact(newContact);
+		}
+
+		lineListingForm.closeWindow();
+		ControllerProvider.getContactController().navigateToIndex();
 	}
 
 	public void create() {
