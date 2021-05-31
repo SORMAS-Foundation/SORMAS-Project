@@ -17,7 +17,9 @@ package de.symeda.sormas.app.settings;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
+import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.List;
 
 import org.hzi.sormas.lbds.core.http.HttpContainer;
@@ -31,6 +33,7 @@ import com.google.gson.Gson;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -321,18 +324,25 @@ public class SettingsFragment extends BaseLandingFragment {
 			Person firstEntry = modifiedEntities.get(0);
 			personDtoHelper.fillInnerFromAdo(target, firstEntry);
 			resetFields(target);
-			payload = new Gson().toJson(target);
+			payload = new Gson().toJson(Arrays.asList(target));
 		}
 		Log.i("SORMAS_LBDS", "Send object: " + payload);
 
-		HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, "http://localhost:6080/sormas-rest/persons/push", payload);
+		String authBasicCredentials = ConfigProvider.getUsername() + ":" + ConfigProvider.getPassword();
+		String headers = "Authorization: Basic " + Base64.encodeToString(authBasicCredentials.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
+		// "Content-Type: application/json";
+
+		HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, "http://localhost:6080/sormas-rest/persons/push", headers, payload);
+		// HttpMethod method = new HttpMethod(HttpMethod.MethodType.GET, "http://perdu.com");
+
 		String lbdsAesSecret = ConfigProvider.getLbdsAesSecret();
 		Log.i("SORMAS_LBDS", "AES secret: " + lbdsAesSecret);
-		LbdsSendIntent lbdsSendIntent = new LbdsSendIntent(new HttpContainer(method), lbdsAesSecret);
+		HttpContainer httpContainer = new HttpContainer(method);
+		LbdsSendIntent lbdsSendIntent = new LbdsSendIntent(httpContainer, lbdsAesSecret);
 		lbdsSendIntent.setComponent(LbdsRelated.componentName);
 
-		HttpContainer httpContainer = lbdsSendIntent.getHttpContainer(lbdsAesSecret);
-		Log.i("SORMAS_LBDS", "HttpContainer: " + httpContainer);
+		HttpContainer httpContainerRead = lbdsSendIntent.getHttpContainer(lbdsAesSecret);
+		Log.i("SORMAS_LBDS", "HttpContainer: " + httpContainerRead);
 
 		ContextCompat.startForegroundService(getContext(), lbdsSendIntent);
 		Log.i("SORMAS_LBDS", "==========================");

@@ -48,7 +48,7 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.security.auth.x500.X500Principal;
 
-import org.hzi.sormas.lbds.messaging.LbdsHelper;
+import org.hzi.sormas.lbds.messaging.LbdsKeyHelper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -783,9 +783,9 @@ public final class ConfigProvider {
 			instance.lbdsSormasPublicKey = rsa.getPublic();
 
 			DatabaseHelper.getConfigDao()
-				.createOrUpdate(new Config(LBDS_SORMAS_PRIVATE_KEY, LbdsHelper.getPKCS8FromPrivetKey(instance.lbdsSormasPrivateKey)));
+				.createOrUpdate(new Config(LBDS_SORMAS_PRIVATE_KEY, LbdsKeyHelper.getPKCS8FromPrivetKey(instance.lbdsSormasPrivateKey)));
 			DatabaseHelper.getConfigDao()
-				.createOrUpdate(new Config(LBDS_SORMAS_PUBLIC_KEY, LbdsHelper.getX509FromPublicKey(instance.lbdsSormasPublicKey)));
+				.createOrUpdate(new Config(LBDS_SORMAS_PUBLIC_KEY, LbdsKeyHelper.getX509FromPublicKey(instance.lbdsSormasPublicKey)));
 
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
@@ -797,7 +797,7 @@ public final class ConfigProvider {
 			Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_SORMAS_PRIVATE_KEY);
 			if (config != null) {
 				try {
-					instance.lbdsSormasPrivateKey = LbdsHelper.getPrivateKeyFromPKCS8(config.getValue());
+					instance.lbdsSormasPrivateKey = LbdsKeyHelper.getPrivateKeyFromPKCS8(config.getValue());
 				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 					throw new RuntimeException(e);
 				}
@@ -813,7 +813,7 @@ public final class ConfigProvider {
 			Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_SORMAS_PUBLIC_KEY);
 			if (config != null) {
 				try {
-					instance.lbdsSormasPublicKey = LbdsHelper.getPublicKeyFromX509(config.getValue());
+					instance.lbdsSormasPublicKey = LbdsKeyHelper.getPublicKeyFromX509(config.getValue());
 				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 					throw new RuntimeException(e);
 				}
@@ -829,7 +829,7 @@ public final class ConfigProvider {
 			Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_SERVICE_PUBLIC_KEY);
 			if (config != null) {
 				try {
-					instance.lbdsServicePublicKey = LbdsHelper.getPublicKeyFromX509(config.getValue());
+					instance.lbdsServicePublicKey = LbdsKeyHelper.getPublicKeyFromX509(config.getValue());
 				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 					throw new RuntimeException(e);
 				}
@@ -840,7 +840,7 @@ public final class ConfigProvider {
 
 	public static void setLbdsServicePublicKey(PublicKey lbdsServicePublicKey) {
 		instance.lbdsServicePublicKey = lbdsServicePublicKey;
-		DatabaseHelper.getConfigDao().createOrUpdate(new Config(LBDS_SERVICE_PUBLIC_KEY, LbdsHelper.getX509FromPublicKey(lbdsServicePublicKey)));
+		DatabaseHelper.getConfigDao().createOrUpdate(new Config(LBDS_SERVICE_PUBLIC_KEY, LbdsKeyHelper.getX509FromPublicKey(lbdsServicePublicKey)));
 	}
 
 	public static String getLbdsAesSecret() {
