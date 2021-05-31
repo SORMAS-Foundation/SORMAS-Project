@@ -65,7 +65,7 @@ public class DocumentDto extends PseudonymizableDto {
 	}
 
 	public String getMimeType() {
-		return mimeType;
+		return mimeType != null ? mimeType : "application/octet-stream";
 	}
 
 	public void setMimeType(String mimeType) {
