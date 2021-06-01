@@ -24,12 +24,16 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+
+import org.openqa.selenium.By;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
 
 public class CaseDirectorySteps implements En {
 
   @Inject
-  public CaseDirectorySteps(WebDriverHelpers webDriverHelpers) {
+  public CaseDirectorySteps(WebDriverHelpers webDriverHelpers, ApiState apiState, AssertHelpers assertHelpers) {
 
     When(
         "^I click on the NEW CASE button$",
@@ -47,9 +51,22 @@ public class CaseDirectorySteps implements En {
             webDriverHelpers.fillAndSubmitInWebElement(
                 NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid()));
 
+      When(
+              "^I open the last created Case via API",
+              () ->{
+                  String caseUUID = apiState.getCreatedCase().getUuid();
+                  webDriverHelpers.fillAndSubmitInWebElement(
+                          NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
+                  By caseLocator = By.cssSelector(String.format(CASE_RESULTS_UUID_LOCATOR, caseUUID));
+                  webDriverHelpers.clickOnWebElementBySelector(caseLocator);
+              });
+
+
     Then(
         "I check that the last created case was deleted",
+            assertHelpers.assertWithPoll()
         () -> {
+            CASE_GRID_RESULTS_ROWS
           webDriverHelpers.fillAndSubmitInWebElement(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid());
           Truth.assertThat(webDriverHelpers.isElementVisible(FIRST_CASE_ID_BUTTON)).isFalse();
