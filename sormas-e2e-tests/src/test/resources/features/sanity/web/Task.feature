@@ -1,14 +1,6 @@
 @Sanity @Task
 Feature: Tasks functionalities
 
-  Scenario: Check a new case data
-    Given I log in with the user
-    And I click on the Tasks button from navbar
-    And I click on the NEW TASK button
-    And I create a new task with specific data
-    When I open last created task
-    Then I check the created task is correctly displayed on Edit task page
-
   Scenario: Check the edit of task from Case
     Given I log in as a Surveillance Officer
     And I click on the Cases button from navbar
