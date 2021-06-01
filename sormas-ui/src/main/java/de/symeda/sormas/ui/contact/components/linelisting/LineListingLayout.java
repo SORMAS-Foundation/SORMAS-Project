@@ -456,41 +456,6 @@ public class LineListingLayout extends VerticalLayout {
 		private Integer dateOfBirthDD;
 		private Sex sex;
 
-		public ContactLineDto(
-			CaseReferenceDto caze,
-			Disease disease,
-			RegionReferenceDto region,
-			DistrictReferenceDto district,
-			LocalDate dateOfReport,
-			LocalDate dateOfLastContact,
-			ContactProximity typeOfContact,
-			ContactRelation relationToCase,
-			String firstname,
-			String lastname,
-			Integer dateOfBirthYear,
-			Integer dateOfBirthMonth,
-			Integer dateOfBirthDay,
-			Sex sex) {
-
-			this.caze = caze;
-			this.disease = disease;
-			this.region = region;
-			this.district = district;
-			this.dateOfReport = dateOfReport;
-			this.dateOfLastContact = dateOfLastContact;
-			this.typeOfContact = typeOfContact;
-			this.relationToCase = relationToCase;
-			this.firstName = firstname;
-			this.lastName = lastname;
-			this.dateOfBirthYYYY = dateOfBirthYear;
-			this.dateOfBirthMM = dateOfBirthMonth;
-			this.dateOfBirthDD = dateOfBirthDay;
-			this.sex = sex;
-		}
-
-		public ContactLineDto() {
-		}
-
 		public CaseReferenceDto getCaze() {
 			return caze;
 		}
