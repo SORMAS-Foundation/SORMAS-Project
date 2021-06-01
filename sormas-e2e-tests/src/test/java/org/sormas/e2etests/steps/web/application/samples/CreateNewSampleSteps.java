@@ -32,7 +32,7 @@ import org.sormas.e2etests.pojo.Sample;
 import org.sormas.e2etests.services.SampleService;
 
 public class CreateNewSampleSteps implements En {
-  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/dd/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
   public static Sample sample;
   public static String sampleId;

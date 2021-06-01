@@ -30,7 +30,7 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Contact;
 
 public class EditContactSteps implements En {
-  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   private final WebDriverHelpers webDriverHelpers;
   protected Contact aContact;
 

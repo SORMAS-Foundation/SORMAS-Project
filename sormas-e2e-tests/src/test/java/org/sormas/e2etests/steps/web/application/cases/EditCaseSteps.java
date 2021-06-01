@@ -36,6 +36,7 @@ public class EditCaseSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static Case aCase;
+  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
   public EditCaseSteps(
@@ -287,37 +288,37 @@ public class EditCaseSteps implements En {
   }
 
   private LocalDate getDateOfReport() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+
     String dateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
-    return LocalDate.parse(dateOfReport, formatter);
+    return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
   private LocalDate getDateReceivedAtDistrictLevel() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+
     String dateOfReport =
         webDriverHelpers.getValueFromWebElement(DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT);
-    return LocalDate.parse(dateOfReport, formatter);
+    return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
   private LocalDate getDateReceivedAtRegionLevel() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+
     String dateOfReport =
         webDriverHelpers.getValueFromWebElement(DATE_RECEIVED_AT_REGION_LEVEL_INPUT);
-    return LocalDate.parse(dateOfReport, formatter);
+    return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
   private LocalDate getDateReceivedAtNationalLevel() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+
     String dateOfReport =
         webDriverHelpers.getValueFromWebElement(DATE_RECEIVED_AT_NATIONAL_LEVEL_INPUT);
-    return LocalDate.parse(dateOfReport, formatter);
+    return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
   public Case getUserInformation() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+
     String userInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String[] userInfos = userInfo.split(" ");
-    LocalDate localDate = LocalDate.parse(userInfos[3].replace(")", ""), formatter);
+    LocalDate localDate = LocalDate.parse(userInfos[3].replace(")", ""), DATE_FORMATTER);
     return Case.builder()
         .firstName(userInfos[0])
         .lastName(userInfos[1])
@@ -326,8 +327,8 @@ public class EditCaseSteps implements En {
   }
 
   public void fillDateOfReport(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
-    webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, formatter.format(date));
+
+    webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 
   public void selectCaseClassification(String caseClassification) {
@@ -461,21 +462,20 @@ public class EditCaseSteps implements En {
   }
 
   public void fillDateReceivedAtDistrictLevel(LocalDate dateReceivedAtDistrictLevel) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+
     webDriverHelpers.fillInWebElement(
-        DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT, formatter.format(dateReceivedAtDistrictLevel));
+        DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT, DATE_FORMATTER.format(dateReceivedAtDistrictLevel));
   }
 
   public void fillDateReceivedAtRegionLevel(LocalDate dateReceivedAtRegionLevel) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+
     webDriverHelpers.fillInWebElement(
-        DATE_RECEIVED_AT_REGION_LEVEL_INPUT, formatter.format(dateReceivedAtRegionLevel));
+        DATE_RECEIVED_AT_REGION_LEVEL_INPUT, DATE_FORMATTER.format(dateReceivedAtRegionLevel));
   }
 
   public void fillDateReceivedAtNationalLevel(LocalDate dateReceivedAtNationalLevel) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
     webDriverHelpers.fillInWebElement(
-        DATE_RECEIVED_AT_NATIONAL_LEVEL_INPUT, formatter.format(dateReceivedAtNationalLevel));
+        DATE_RECEIVED_AT_NATIONAL_LEVEL_INPUT, DATE_FORMATTER.format(dateReceivedAtNationalLevel));
   }
 
   public void fillGeneralComment(String generalComment) {
