@@ -232,10 +232,6 @@ public class WebDriverHelpers {
     return true;
   }
 
-  public boolean isElementVisible(By selector) {
-    return isElementVisibleWithTimeout(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
-  }
-
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {
       baseSteps.getDriver().findElements(byObject).get(index).click();
