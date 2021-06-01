@@ -56,8 +56,6 @@ public class Person {
   String areaType;
   String contactPersonFirstName;
   String contactPersonLastName;
-  String contactPersonPhoneNumber;
-  String contactPersonEmailAddress;
   String communityContactPerson;
   String birthName;
   String nickname;
@@ -65,6 +63,6 @@ public class Person {
   String motherName;
   String fatherName;
   String nameOfGuardians;
-  String personContactDetails_typeOfContactDetails;
-  String personContactDetails_contactInformation;
+  String personContactDetailsTypeOfContactDetails;
+  String personContactDetailsContactInformation;
 }

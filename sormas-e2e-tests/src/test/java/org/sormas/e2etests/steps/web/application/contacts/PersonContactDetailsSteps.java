@@ -38,8 +38,8 @@ public class PersonContactDetailsSteps implements En {
         "I complete all fields from Person Contact Details popup and save",
         () -> {
           person = EditContactPersonSteps.newGeneratedPerson;
-          selectTypeOfContactDetails(person.getPersonContactDetails_typeOfContactDetails());
-          fillContactInformationInput(person.getPersonContactDetails_contactInformation());
+          selectTypeOfContactDetails(person.getPersonContactDetailsTypeOfContactDetails());
+          fillContactInformationInput(person.getPersonContactDetailsContactInformation());
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
   }

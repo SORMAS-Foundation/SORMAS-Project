@@ -24,8 +24,8 @@ public class EditPersonPage {
   public static final By UUID_INPUT = By.cssSelector("#uuid");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot.v-slot-h2.v-slot-vspace-top-none.v-slot-primary");
-  public static final By FIRST_NAME_INPUT = By.cssSelector("#firstName");
-  public static final By LAST_NAME_INPUT = By.cssSelector("#lastName");
+  public static final By FIRST_NAME_INPUT = By.id("firstName");
+  public static final By LAST_NAME_INPUT = By.id("lastName");
   public static final By DATE_OF_BIRTH_YEAR_COMBOBOX = By.cssSelector("#birthdateYYYY input+div");
   public static final By DATE_OF_BIRTH_MONTH_COMBOBOX = By.cssSelector("#birthdateMM input+div");
   public static final By DATE_OF_BIRTH_DAY_COMBOBOX = By.cssSelector("#birthdateDD input+div");
@@ -62,27 +62,24 @@ public class EditPersonPage {
   public static final By FACILITY_TYPE_INPUT = By.cssSelector("#facilityType > input");
   public static final By FACILITY_COMBOBOX = By.cssSelector("#facility > div");
   public static final By FACILITY_INPUT = By.cssSelector("#facility > input");
-  public static final By FACILITY_NAME_AND_DESCRIPTION_INPUT = By.cssSelector("#facilityDetails");
-  public static final By STREET_INPUT = By.cssSelector("#street");
-  public static final By HOUSE_NUMBER_INPUT = By.cssSelector("#houseNumber");
-  public static final By ADDITIONAL_INFORMATION_INPUT = By.cssSelector("#additionalInformation");
-  public static final By POSTAL_CODE_INPUT = By.cssSelector("#postalCode");
-  public static final By CITY_INPUT = By.cssSelector("#city");
+  public static final By FACILITY_NAME_AND_DESCRIPTION_INPUT = By.id("facilityDetails");
+  public static final By STREET_INPUT = By.id("street");
+  public static final By HOUSE_NUMBER_INPUT = By.id("houseNumber");
+  public static final By ADDITIONAL_INFORMATION_INPUT = By.id("additionalInformation");
+  public static final By POSTAL_CODE_INPUT = By.id("postalCode");
+  public static final By CITY_INPUT = By.id("city");
   public static final By AREA_TYPE_COMBOBOX = By.cssSelector("#areaType > div");
   public static final By AREA_TYPE_INPUT = By.cssSelector("#areaType > input");
-  public static final By CONTACT_PERSON_FIRST_NAME_INPUT =
-      By.cssSelector("#contactPersonFirstName");
-  public static final By CONTACT_PERSON_LAST_NAME_INPUT = By.cssSelector("#contactPersonLastName");
-  public static final By CONTACT_PERSON_PHONE_NUMBER_INPUT = By.cssSelector("#contactPersonPhone");
-  public static final By CONTACT_PERSON_EMAIL_ADDRESS_INPUT = By.cssSelector("#contactPersonEmail");
-  public static final By COMMUNITY_CONTACT_PERSON_INPUT = By.cssSelector("#details");
-  public static final By BIRTH_NAME_INPUT = By.cssSelector("#birthName");
-  public static final By NICKNAME_INPUT = By.cssSelector("#nickname");
-  public static final By MOTHER_MAIDEN_NAME_INPUT = By.cssSelector("#mothersMaidenName");
-  public static final By MOTHER_NAME_INPUT = By.cssSelector("#mothersName");
-  public static final By FATHER_NAME_INPUT = By.cssSelector("#fathersName");
-  public static final By NAMES_OF_GUARDIANS_INPUT = By.cssSelector("#namesOfGuardians");
-  public static final By SAVE_BUTTON = By.cssSelector("#commit");
+  public static final By CONTACT_PERSON_FIRST_NAME_INPUT = By.id("contactPersonFirstName");
+  public static final By CONTACT_PERSON_LAST_NAME_INPUT = By.id("contactPersonLastName");
+  public static final By COMMUNITY_CONTACT_PERSON_INPUT = By.id("details");
+  public static final By BIRTH_NAME_INPUT = By.id("birthName");
+  public static final By NICKNAME_INPUT = By.id("nickname");
+  public static final By MOTHER_MAIDEN_NAME_INPUT = By.id("mothersMaidenName");
+  public static final By MOTHER_NAME_INPUT = By.id("mothersName");
+  public static final By FATHER_NAME_INPUT = By.id("fathersName");
+  public static final By NAMES_OF_GUARDIANS_INPUT = By.id("namesOfGuardians");
+  public static final By SAVE_BUTTON = By.id("commit");
   public static final By PERSON_DATA_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By EMAIL_FIELD =
       By.xpath(

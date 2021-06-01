@@ -101,8 +101,6 @@ public class EditPersonSteps implements En {
           selectAreaType(newGeneratedPerson.getAreaType());
           fillContactPersonFirstName(newGeneratedPerson.getContactPersonFirstName());
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
-          fillContactPersonPhoneNumber(newGeneratedPerson.getContactPersonPhoneNumber());
-          fillContactPersonEmailAddress(newGeneratedPerson.getContactPersonEmailAddress());
           fillCommunityContactPerson(newGeneratedPerson.getCommunityContactPerson());
           fillBirthName(newGeneratedPerson.getBirthName());
           fillNickName(newGeneratedPerson.getNickname());
@@ -243,14 +241,6 @@ public class EditPersonSteps implements En {
     webDriverHelpers.clearAndFillInWebElement(CONTACT_PERSON_LAST_NAME_INPUT, last);
   }
 
-  private void fillContactPersonPhoneNumber(String phone) {
-    webDriverHelpers.clearAndFillInWebElement(CONTACT_PERSON_PHONE_NUMBER_INPUT, phone);
-  }
-
-  private void fillContactPersonEmailAddress(String email) {
-    webDriverHelpers.clearAndFillInWebElement(CONTACT_PERSON_EMAIL_ADDRESS_INPUT, email);
-  }
-
   private void fillCommunityContactPerson(String name) {
     webDriverHelpers.clearAndFillInWebElement(COMMUNITY_CONTACT_PERSON_INPUT, name);
   }
@@ -316,10 +306,6 @@ public class EditPersonSteps implements En {
             webDriverHelpers.getValueFromWebElement(CONTACT_PERSON_FIRST_NAME_INPUT))
         .contactPersonLastName(
             webDriverHelpers.getValueFromWebElement(CONTACT_PERSON_LAST_NAME_INPUT))
-        .contactPersonPhoneNumber(
-            webDriverHelpers.getValueFromWebElement(CONTACT_PERSON_PHONE_NUMBER_INPUT))
-        .contactPersonEmailAddress(
-            webDriverHelpers.getValueFromWebElement(CONTACT_PERSON_EMAIL_ADDRESS_INPUT))
         .communityContactPerson(
             webDriverHelpers.getValueFromWebElement(COMMUNITY_CONTACT_PERSON_INPUT))
         .birthName(webDriverHelpers.getValueFromWebElement(BIRTH_NAME_INPUT))
@@ -328,10 +314,10 @@ public class EditPersonSteps implements En {
         .motherName(webDriverHelpers.getValueFromWebElement(MOTHER_NAME_INPUT))
         .fatherName(webDriverHelpers.getValueFromWebElement(FATHER_NAME_INPUT))
         .nameOfGuardians(webDriverHelpers.getValueFromWebElement(NAMES_OF_GUARDIANS_INPUT))
-        .personContactDetails_contactInformation(
+        .personContactDetailsContactInformation(
             webDriverHelpers.getTextFromPresentWebElement(
                 PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT))
-        .personContactDetails_typeOfContactDetails(
+        .personContactDetailsTypeOfContactDetails(
             webDriverHelpers.getTextFromPresentWebElement(
                 PERSON_CONTACT_DETAILS_TYPE_OF_DETAILS_INPUT))
         .phoneNumber(webDriverHelpers.getTextFromWebElement(PHONE_FIELD))

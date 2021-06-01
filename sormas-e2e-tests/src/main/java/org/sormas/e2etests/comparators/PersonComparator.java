@@ -83,12 +83,6 @@ public class PersonComparator {
         .assertThat(person1.getContactPersonLastName())
         .isEqualToIgnoringCase(person2.getContactPersonLastName());
     softly
-        .assertThat(person1.getContactPersonPhoneNumber())
-        .isEqualToIgnoringCase(person2.getContactPersonPhoneNumber());
-    softly
-        .assertThat(person1.getContactPersonEmailAddress())
-        .isEqualToIgnoringCase(person2.getContactPersonEmailAddress());
-    softly
         .assertThat(person1.getCommunityContactPerson())
         .isEqualToIgnoringCase(person2.getCommunityContactPerson());
     softly.assertThat(person1.getBirthName()).isEqualToIgnoringCase(person2.getBirthName());
@@ -102,11 +96,11 @@ public class PersonComparator {
         .assertThat(person1.getNameOfGuardians())
         .isEqualToIgnoringCase(person2.getNameOfGuardians());
     softly
-        .assertThat(person1.getPersonContactDetails_contactInformation())
-        .isEqualToIgnoringCase(person2.getPersonContactDetails_contactInformation());
+        .assertThat(person1.getPersonContactDetailsContactInformation())
+        .isEqualToIgnoringCase(person2.getPersonContactDetailsContactInformation());
     softly
-        .assertThat(person1.getPersonContactDetails_typeOfContactDetails())
-        .isEqualToIgnoringCase(person2.getPersonContactDetails_typeOfContactDetails());
+        .assertThat(person1.getPersonContactDetailsTypeOfContactDetails())
+        .isEqualToIgnoringCase(person2.getPersonContactDetailsTypeOfContactDetails());
     softly.assertAll();
   }
 
@@ -133,12 +127,6 @@ public class PersonComparator {
     softly
         .assertThat(person1.getContactPersonLastName())
         .isNotEqualToIgnoringCase(person2.getContactPersonLastName());
-    softly
-        .assertThat(person1.getContactPersonPhoneNumber())
-        .isNotEqualToIgnoringCase(person2.getContactPersonPhoneNumber());
-    softly
-        .assertThat(person1.getContactPersonEmailAddress())
-        .isNotEqualToIgnoringCase(person2.getContactPersonEmailAddress());
     softly
         .assertThat(person1.getCommunityContactPerson())
         .isNotEqualToIgnoringCase(person2.getCommunityContactPerson());

@@ -87,8 +87,6 @@ public class EditContactPersonSteps implements En {
           fillDateOfBirth(newGeneratedPerson.getDateOfBirth());
           selectSex(newGeneratedPerson.getSex());
           selectPresentConditionOfPerson(newGeneratedPerson.getPresentConditionOfPerson());
-          fillPassportNumber(newGeneratedPerson.getPassportNumber());
-          fillNationalHealthId(newGeneratedPerson.getNationalHealthId());
           fillExternalId(newGeneratedPerson.getExternalId());
           fillExternalToken(newGeneratedPerson.getExternalToken());
           fillExternalToken(newGeneratedPerson.getExternalToken());
@@ -110,8 +108,6 @@ public class EditContactPersonSteps implements En {
           selectAreaType(newGeneratedPerson.getAreaType());
           fillContactPersonFirstName(newGeneratedPerson.getContactPersonFirstName());
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
-          fillContactPersonPhoneNumber(newGeneratedPerson.getContactPersonPhoneNumber());
-          fillContactPersonEmailAddress(newGeneratedPerson.getContactPersonEmailAddress());
           fillCommunityContactPerson(newGeneratedPerson.getCommunityContactPerson());
           fillBirthName(newGeneratedPerson.getBirthName());
           fillNickName(newGeneratedPerson.getNickname());
@@ -143,6 +139,8 @@ public class EditContactPersonSteps implements En {
                   contactInfo.getFirstName(),
                   contactInfo.getLastName(),
                   contactInfo.getUuid(),
+                  CreateNewContactSteps.contact.getPassportNumber(),
+                  CreateNewContactSteps.contact.getNationalHealthId(),
                   webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD),
                   webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD));
         });
@@ -256,14 +254,6 @@ public class EditContactPersonSteps implements En {
 
   private void fillContactPersonLastName(String last) {
     webDriverHelpers.fillInWebElement(CONTACT_PERSON_LAST_NAME_INPUT, last);
-  }
-
-  private void fillContactPersonPhoneNumber(String phone) {
-    webDriverHelpers.fillInWebElement(CONTACT_PERSON_PHONE_NUMBER_INPUT, phone);
-  }
-
-  private void fillContactPersonEmailAddress(String email) {
-    webDriverHelpers.fillInWebElement(CONTACT_PERSON_EMAIL_ADDRESS_INPUT, email);
   }
 
   private void fillCommunityContactPerson(String name) {

@@ -33,11 +33,20 @@ public class PersonService {
   }
 
   public Person updateExistentPerson(
-      Person person, String firstName, String lastName, String UUID, String email, String phone) {
+      Person person,
+      String firstName,
+      String lastName,
+      String UUID,
+      String passportNumber,
+      String nationalHealthId,
+      String email,
+      String phone) {
     return person.toBuilder()
         .firstName(firstName)
         .lastName(lastName)
         .uuid(UUID)
+        .passportNumber(passportNumber)
+        .nationalHealthId(nationalHealthId)
         .emailAddress(email)
         .phoneNumber(phone)
         .build();
@@ -53,10 +62,10 @@ public class PersonService {
         .dateOfBirth(LocalDate.of(1904, 3, 7))
         .sex("Male")
         .presentConditionOfPerson("Alive")
-        .nationalHealthId(UUID.randomUUID().toString())
-        .passportNumber(String.valueOf(System.currentTimeMillis()))
-        .externalId(UUID.randomUUID().toString())
-        .externalToken(UUID.randomUUID().toString())
+        .nationalHealthId("HealthId-" + UUID.randomUUID().toString())
+        .passportNumber("Passport-" + String.valueOf(System.currentTimeMillis()))
+        .externalId("ExternalId" + UUID.randomUUID().toString())
+        .externalToken("ExternalToken" + UUID.randomUUID().toString())
         .typeOfOccupation("Farmer")
         .staffOfArmedForces("Unknown")
         .education("Primary")
@@ -75,8 +84,6 @@ public class PersonService {
         .areaType("Urban")
         .contactPersonFirstName(faker.name().firstName())
         .contactPersonLastName(faker.name().lastName())
-        .contactPersonPhoneNumber(faker.phoneNumber().phoneNumber())
-        .contactPersonEmailAddress(faker.internet().emailAddress())
         .communityContactPerson(faker.name().firstName() + " " + faker.name().lastName())
         .birthName(firstName + " " + lastName)
         .nickname(firstName + "pie")
@@ -84,8 +91,8 @@ public class PersonService {
         .motherName(faker.name().firstName() + " " + faker.name().lastName())
         .fatherName(faker.name().firstName() + " " + faker.name().lastName())
         .nameOfGuardians(faker.name().firstName())
-        .personContactDetails_typeOfContactDetails("Email")
-        .personContactDetails_contactInformation(faker.internet().emailAddress())
+        .personContactDetailsTypeOfContactDetails("Email")
+        .personContactDetailsContactInformation(faker.internet().emailAddress())
         .build();
   }
 }
