@@ -55,13 +55,13 @@ public class ContactDirectorySteps implements En {
         });
 
     Then(
-        "I check that number of displayed contact results is {int}",
-        (Integer number) -> {
-          assertHelpers.assertWithPoll15Second(
-              () ->
-                  Truth.assertThat(webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))
-                      .isEqualTo(number));
-        });
+        "I check that number of displayed contact results is (\\d+)",
+        (Integer number) ->
+            assertHelpers.assertWithPoll15Second(
+                () ->
+                    Truth.assertThat(
+                            webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))
+                        .isEqualTo(number)));
   }
 
   private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {
