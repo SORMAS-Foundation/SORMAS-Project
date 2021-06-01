@@ -26,20 +26,21 @@ import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.BaseSteps;
 
 public class ContactDirectorySteps implements En {
 
-  protected BaseSteps baseSteps;
   protected WebDriverHelpers webDriverHelpers;
+  private final AssertHelpers assertHelpers;
 
   @Inject
   public ContactDirectorySteps(
-      WebDriverHelpers webDriverHelpers, BaseSteps baseSteps, ApiState apiState) {
-    this.baseSteps = baseSteps;
+      WebDriverHelpers webDriverHelpers, ApiState apiState, AssertHelpers assertHelpers) {
     this.webDriverHelpers = webDriverHelpers;
+    this.assertHelpers = assertHelpers;
+
     When(
         "I click on the NEW CONTACT button",
         () ->
@@ -56,8 +57,10 @@ public class ContactDirectorySteps implements En {
     Then(
         "I check that number of displayed contact results is {int}",
         (Integer number) -> {
-          Truth.assertThat(webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))
-              .isEqualTo(number);
+          assertHelpers.assertWithPoll15Second(
+              () ->
+                  Truth.assertThat(webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))
+                      .isEqualTo(number));
         });
   }
 
@@ -68,9 +71,7 @@ public class ContactDirectorySteps implements En {
   }
 
   private void openContactFromResultsByUUID(String uuid) {
-    By uuidLocator =
-        By.xpath(String.format("%s", CONTACT_RESULTS_UUID_LOCATOR.replace("placeholder", uuid)));
-    webDriverHelpers.waitUntilElementIsVisibleAndClickable((uuidLocator));
+    By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, uuid));
     webDriverHelpers.clickOnWebElementBySelector((uuidLocator));
     webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
   }
