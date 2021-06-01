@@ -35,6 +35,7 @@ public class ContactSteps implements En {
         () -> {
           Contact contact = contactApiService.buildGeneratedContact(apiState.getEditPerson());
           contactHelper.push(contact);
+          apiState.setCreatedContact(contact);
         });
   }
 }

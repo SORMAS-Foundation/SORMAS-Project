@@ -61,10 +61,11 @@ public class CaseDirectorySteps implements En {
         });
 
     Then(
-        "I check that number of displayed contact results is {int}",
-        (Integer number) -> assertHelpers.assertWithPoll15Second(
-            () ->
-                Truth.assertThat(webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS))
-                    .isEqualTo(number)));
+        "I check that number of displayed cases results is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll15Second(
+                () ->
+                    Truth.assertThat(webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS))
+                        .isEqualTo(number)));
   }
 }
