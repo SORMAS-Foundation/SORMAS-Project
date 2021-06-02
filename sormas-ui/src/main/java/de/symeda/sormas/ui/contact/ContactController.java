@@ -142,9 +142,9 @@ public class ContactController {
 			final PersonDto newPerson = PersonDto.build();
 			newPerson.setFirstName(contactLineDto.getFirstName());
 			newPerson.setLastName(contactLineDto.getLastName());
-			newPerson.setBirthdateYYYY(contactLineDto.getDateOfBirthYYYY());
-			newPerson.setBirthdateMM(contactLineDto.getDateOfBirthMM());
-			newPerson.setBirthdateDD(contactLineDto.getDateOfBirthDD());
+			newPerson.setBirthdateYYYY(contactLineDto.getBirthDate().getDateOfBirthYYYY());
+			newPerson.setBirthdateMM(contactLineDto.getBirthDate().getDateOfBirthMM());
+			newPerson.setBirthdateDD(contactLineDto.getBirthDate().getDateOfBirthDD());
 			newPerson.setSex(contactLineDto.getSex());
 
 			PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);

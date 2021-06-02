@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.contact.components.linelisting;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -10,7 +9,6 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
-import com.vaadin.data.ValidationResult;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -22,7 +20,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -39,10 +36,10 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.contact.components.linelisting.birthdate.BirthDateDto;
+import de.symeda.sormas.ui.contact.components.linelisting.birthdate.BirthDateSelector;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -220,9 +217,7 @@ public class LineListingLayout extends VerticalLayout {
 		private final ComboBox<ContactRelation> relationToCase;
 		private final TextField firstname;
 		private final TextField lastname;
-		private final ComboBox<Integer> dateOfBirthYear;
-		private ComboBox<Integer> dateOfBirthMonth;
-		private ComboBox<Integer> dateOfBirthDay;
+		private final BirthDateSelector birthDate;
 		private final ComboBox<Sex> sex;
 
 		private final Button delete;
@@ -268,63 +263,9 @@ public class LineListingLayout extends VerticalLayout {
 			firstname.setId("lineListingLastName_" + lineIndex);
 			binder.forField(lastname).asRequired().bind(ContactLineDto.LAST_NAME);
 
-			dateOfBirthYear = new ComboBox<>();
-			dateOfBirthYear.setId("lineListingDateOfBirthYear_" + lineIndex);
-			dateOfBirthYear.setEmptySelectionAllowed(true);
-			dateOfBirthYear.setItems(DateHelper.getYearsToNow());
-			dateOfBirthYear.setWidth(80, Unit.PIXELS);
-			dateOfBirthYear.addStyleName(CssStyles.CAPTION_OVERFLOW);
-			binder.forField(dateOfBirthYear).withValidator((e, context) -> {
-				try {
-					ControllerProvider.getPersonController().validateBirthDate(e, dateOfBirthMonth.getValue(), dateOfBirthDay.getValue());
-					return ValidationResult.ok();
-				} catch (Validator.InvalidValueException ex) {
-					return ValidationResult.error(ex.getMessage());
-				}
-			}).bind(ContactLineDto.DATE_OF_BIRTH_YYYY);
-			dateOfBirthMonth = new ComboBox<>();
-			dateOfBirthMonth.setId("lineListingDateOfBirthMonth_" + lineIndex);
-			dateOfBirthMonth.setEmptySelectionAllowed(true);
-			dateOfBirthMonth.setItems(DateHelper.getMonthsInYear());
-			dateOfBirthMonth.setPageLength(12);
-			setItemCaptionsForMonths(dateOfBirthMonth);
-			dateOfBirthMonth.setWidth(120, Unit.PIXELS);
-			binder.forField(dateOfBirthMonth).withValidator((e, context) -> {
-				try {
-					ControllerProvider.getPersonController().validateBirthDate(dateOfBirthYear.getValue(), e, dateOfBirthDay.getValue());
-					return ValidationResult.ok();
-				} catch (Validator.InvalidValueException ex) {
-					return ValidationResult.error(ex.getMessage());
-				}
-			}).bind(ContactLineDto.DATE_OF_BIRTH_MM);
-			dateOfBirthDay = new ComboBox<>();
-			dateOfBirthDay.setId("lineListingDateOfBirthDay_" + lineIndex);
-			dateOfBirthDay.setEmptySelectionAllowed(true);
-			dateOfBirthDay.setWidth(80, Unit.PIXELS);
-			binder.forField(dateOfBirthDay).withValidator((e, context) -> {
-				try {
-					ControllerProvider.getPersonController().validateBirthDate(dateOfBirthYear.getValue(), dateOfBirthMonth.getValue(), e);
-					return ValidationResult.ok();
-				} catch (Validator.InvalidValueException ex) {
-					return ValidationResult.error(ex.getMessage());
-				}
-			}).bind(ContactLineDto.DATE_OF_BIRTH_DD);
-
-			// Update the list of days according to the selected month and year
-			dateOfBirthYear.addValueChangeListener(e -> {
-				updateListOfDays(e.getValue(), dateOfBirthMonth.getValue(), dateOfBirthDay);
-				dateOfBirthMonth.markAsDirty();
-				dateOfBirthDay.markAsDirty();
-			});
-			dateOfBirthMonth.addValueChangeListener(e -> {
-				updateListOfDays(dateOfBirthYear.getValue(), e.getValue(), dateOfBirthDay);
-				dateOfBirthYear.markAsDirty();
-				dateOfBirthDay.markAsDirty();
-			});
-			dateOfBirthDay.addValueChangeListener(e -> {
-				dateOfBirthYear.markAsDirty();
-				dateOfBirthMonth.markAsDirty();
-			});
+			birthDate = new BirthDateSelector();
+			birthDate.setId("lineListingBirthDate_" + lineIndex);
+			binder.forField(birthDate).bind(ContactLineDto.BIRTH_DATE);
 
 			sex = new ComboBox<>();
 			sex.setId("lineListingSex_" + lineIndex);
@@ -340,27 +281,13 @@ public class LineListingLayout extends VerticalLayout {
 				}
 			});
 
-			addComponents(
-				dateOfReport,
-				dateOfLastContact,
-				typeOfContact,
-				relationToCase,
-				firstname,
-				lastname,
-				dateOfBirthYear,
-				dateOfBirthMonth,
-				dateOfBirthDay,
-				sex,
-				delete);
+			addComponents(dateOfReport, dateOfLastContact, typeOfContact, relationToCase, firstname, lastname, birthDate, sex, delete);
 
 			if (lineIndex == 0) {
 				formatAsFirstLine();
 			} else {
 				formatAsOtherLine();
 			}
-
-			setComponentAlignment(dateOfBirthMonth, Alignment.BOTTOM_LEFT);
-			setComponentAlignment(dateOfBirthDay, Alignment.BOTTOM_LEFT);
 		}
 
 		public void setBean(ContactLineDto bean) {
@@ -391,7 +318,7 @@ public class LineListingLayout extends VerticalLayout {
 			firstname.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			lastname.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
 			lastname.removeStyleName(CssStyles.CAPTION_HIDDEN);
-			dateOfBirthYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
+			birthDate.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
 			sex.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
 			sex.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			delete.setEnabled(false);
@@ -404,19 +331,6 @@ public class LineListingLayout extends VerticalLayout {
 			CssStyles.style(firstname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(lastname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(sex, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-		}
-
-		private void setItemCaptionsForMonths(ComboBox<Integer> comboBox) {
-			comboBox.setItemCaptionGenerator(item -> I18nProperties.getEnumCaption(Month.of(item)));
-		}
-
-		private void updateListOfDays(Integer selectedYear, Integer selectedMonth, ComboBox<Integer> dateOfBirthDay) {
-			Integer currentlySelected = dateOfBirthDay.getValue();
-			List<Integer> daysInMonth = DateHelper.getDaysInMonth(selectedMonth, selectedYear);
-			dateOfBirthDay.setItems(daysInMonth);
-			if (daysInMonth.contains(currentlySelected)) {
-				dateOfBirthDay.setValue(currentlySelected);
-			}
 		}
 
 		public Button getDelete() {
@@ -436,9 +350,7 @@ public class LineListingLayout extends VerticalLayout {
 		public static final String RELATION_TO_CASE = "relationToCase";
 		public static final String FIRST_NAME = "firstName";
 		public static final String LAST_NAME = "lastName";
-		public static final String DATE_OF_BIRTH_YYYY = "dateOfBirthYYYY";
-		public static final String DATE_OF_BIRTH_MM = "dateOfBirthMM";
-		public static final String DATE_OF_BIRTH_DD = "dateOfBirthDD";
+		public static final String BIRTH_DATE = "birthDate";
 		public static final String SEX = "sex";
 
 		private CaseReferenceDto caze;
@@ -451,9 +363,7 @@ public class LineListingLayout extends VerticalLayout {
 		private ContactRelation relationToCase;
 		private String firstName;
 		private String lastName;
-		private Integer dateOfBirthYYYY;
-		private Integer dateOfBirthMM;
-		private Integer dateOfBirthDD;
+		private BirthDateDto birthDate;
 		private Sex sex;
 
 		public CaseReferenceDto getCaze() {
@@ -536,28 +446,12 @@ public class LineListingLayout extends VerticalLayout {
 			this.lastName = lastName;
 		}
 
-		public Integer getDateOfBirthYYYY() {
-			return dateOfBirthYYYY;
+		public BirthDateDto getBirthDate() {
+			return birthDate;
 		}
 
-		public void setDateOfBirthYYYY(Integer dateOfBirthYYYY) {
-			this.dateOfBirthYYYY = dateOfBirthYYYY;
-		}
-
-		public Integer getDateOfBirthMM() {
-			return dateOfBirthMM;
-		}
-
-		public void setDateOfBirthMM(Integer dateOfBirthMM) {
-			this.dateOfBirthMM = dateOfBirthMM;
-		}
-
-		public Integer getDateOfBirthDD() {
-			return dateOfBirthDD;
-		}
-
-		public void setDateOfBirthDD(Integer dateOfBirthDD) {
-			this.dateOfBirthDD = dateOfBirthDD;
+		public void setBirthDate(BirthDateDto birthDate) {
+			this.birthDate = birthDate;
 		}
 
 		public Sex getSex() {
