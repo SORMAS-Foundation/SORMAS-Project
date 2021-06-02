@@ -204,7 +204,6 @@ public class EditCaseSteps implements En {
           Truth.assertThat(editCase.getDateReceivedAtNationalLevel())
               .isEqualTo(aCase.getDateReceivedAtNationalLevel());
           Truth.assertThat(editCase.getGeneralComment()).isEqualTo(aCase.getGeneralComment());
-          //          Truth.assertAll();
         });
   }
 
