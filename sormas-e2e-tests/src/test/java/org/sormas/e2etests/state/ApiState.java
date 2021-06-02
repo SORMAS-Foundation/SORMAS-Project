@@ -22,6 +22,7 @@ import io.restassured.response.Response;
 import lombok.Getter;
 import lombok.Setter;
 import org.sormas.e2etests.pojo.api.Case;
+import org.sormas.e2etests.pojo.api.Contact;
 import org.sormas.e2etests.pojo.api.Person;
 
 @ScenarioScoped
@@ -31,4 +32,5 @@ public class ApiState {
   Response response;
   Person editPerson;
   Case createdCase;
+  Contact createdContact;
 }
