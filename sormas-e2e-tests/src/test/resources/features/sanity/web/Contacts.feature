@@ -19,7 +19,7 @@ Feature: Contacts end to end tests
       Then I delete the contact
       And I check that number of displayed contact results is 0
 
-  @EditContact
+  @EditContact @issue=5634
   Scenario: Edit a created contact
     Given I log in with the user
     And I click on the Contacts button from navbar

@@ -65,7 +65,7 @@ public class EditContactPage {
       By.cssSelector(".v-verticallayout [location='reportingDistrict'] [role='combobox'] div");
   public static final By REPORTING_DISTRICT_COMBOBOX_INPUT =
       By.cssSelector("#reportingDistrict input");
-  public static final By IDENTIFICATION_SOURCE =
+  public static final By IDENTIFICATION_SOURCE_INPUT =
       By.cssSelector("#contactIdentificationSourceDetails");
   public static final By CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX =
       By.cssSelector(
@@ -108,6 +108,6 @@ public class EditContactPage {
       By.cssSelector(".v-verticallayout [location='contactOfficer'] [role='combobox'] div");
   public static final By RESPONSIBLE_STATUS_OFFICER_COMBOBOX_INPUT =
       By.cssSelector("#contactOfficer input");
-  public static final By GENERAL_COMMENT = By.id("additionalDetails");
+  public static final By GENERAL_COMMENT_TEXT = By.id("additionalDetails");
   public static final By SAVE_EDIT_BUTTON = By.id("commit");
 }

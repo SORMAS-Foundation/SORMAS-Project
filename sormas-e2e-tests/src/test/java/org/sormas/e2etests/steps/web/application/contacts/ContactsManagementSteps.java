@@ -25,13 +25,12 @@ import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 
 public class ContactsManagementSteps implements En {
-  private final WebDriverHelpers webDriverHelpers;
+
+  public static String LAST_CREATED_CONTACT_URL;
 
   @Inject
   public ContactsManagementSteps(
       WebDriverHelpers webDriverHelpers, @Named("ENVIRONMENT_URL") String environmentUrl) {
-
-    this.webDriverHelpers = webDriverHelpers;
 
     When(
         "^I search contacts using the UUID from the last created Contact",
@@ -51,8 +50,9 @@ public class ContactsManagementSteps implements En {
     When(
         "^I navigate to the last created contact via the url$",
         () -> {
-          webDriverHelpers.accessWebSite(
-              environmentUrl + "/sormas-ui/#!contacts/data/" + EditContactSteps.aContact.getUuid());
+          LAST_CREATED_CONTACT_URL =
+              environmentUrl + "/sormas-ui/#!contacts/data/" + EditContactSteps.aContact.getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
         });
   }
 }

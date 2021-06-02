@@ -188,29 +188,29 @@ public class EditContactSteps implements En {
               .assertThat(aContact.getHighPriority())
               .isEqualToIgnoringCase(editedContact.getHighPriority());
           softly
-              .assertThat(aContact.getPreexistingConditionDiabetes())
-              .isEqualToIgnoringCase(editedContact.getPreexistingConditionDiabetes());
+              .assertThat(aContact.getDiabetes())
+              .isEqualToIgnoringCase(editedContact.getDiabetes());
           softly
-              .assertThat(aContact.getPreexistingConditionHiv())
-              .isEqualToIgnoringCase(editedContact.getPreexistingConditionHiv());
+              .assertThat(aContact.getImmunodeficiencyIncludingHiv())
+              .isEqualToIgnoringCase(editedContact.getImmunodeficiencyIncludingHiv());
           softly
-              .assertThat(aContact.getPreexistingConditionLiver())
-              .isEqualToIgnoringCase(editedContact.getPreexistingConditionLiver());
+              .assertThat(aContact.getLiverDisease())
+              .isEqualToIgnoringCase(editedContact.getLiverDisease());
           softly
-              .assertThat(aContact.getPreexistingConditionMalignancy())
-              .isEqualToIgnoringCase(editedContact.getPreexistingConditionMalignancy());
+              .assertThat(aContact.getMalignancy())
+              .isEqualToIgnoringCase(editedContact.getMalignancy());
           softly
-              .assertThat(aContact.getPreexistingConditionChronicPulmonary())
-              .isEqualToIgnoringCase(editedContact.getPreexistingConditionChronicPulmonary());
+              .assertThat(aContact.getChronicPulmonaryDisease())
+              .isEqualToIgnoringCase(editedContact.getChronicPulmonaryDisease());
           softly
-              .assertThat(aContact.getPreexistingConditionRenal())
-              .isEqualToIgnoringCase(editedContact.getPreexistingConditionRenal());
+              .assertThat(aContact.getRenalDisease())
+              .isEqualToIgnoringCase(editedContact.getRenalDisease());
           softly
-              .assertThat(aContact.getPreexistingConditionNeurologic())
-              .isEqualToIgnoringCase(editedContact.getPreexistingConditionNeurologic());
+              .assertThat(aContact.getChronicNeurologicalNeuromuscularDisease())
+              .isEqualToIgnoringCase(editedContact.getChronicNeurologicalNeuromuscularDisease());
           softly
-              .assertThat(aContact.getPreexistingConditionCardiovascular())
-              .isEqualToIgnoringCase(editedContact.getPreexistingConditionCardiovascular());
+              .assertThat(aContact.getCardiovascularDiseaseIncludingHypertension())
+              .isEqualToIgnoringCase(editedContact.getCardiovascularDiseaseIncludingHypertension());
           softly
               .assertThat(aContact.getAdditionalRelevantPreexistingConditions())
               .isEqualToIgnoringCase(editedContact.getAdditionalRelevantPreexistingConditions());
@@ -287,16 +287,16 @@ public class EditContactSteps implements En {
           selectHomeBasedQuarantinePossible(editedContact.getHomeBasedQuarantinePossible());
           selectQuarantine(editedContact.getQuarantine());
           selectHighPriority(editedContact.getHighPriority());
-          selectPreexistingConditionDiabetes(editedContact.getPreexistingConditionDiabetes());
-          selectPreexistingConditionHiv(editedContact.getPreexistingConditionHiv());
-          selectPreexistingConditionLiver(editedContact.getPreexistingConditionLiver());
-          selectPreexistingConditionMalignancy(editedContact.getPreexistingConditionMalignancy());
-          selectPreexistingConditionChronicPulmonary(
-              editedContact.getPreexistingConditionChronicPulmonary());
-          selectPreexistingConditionRenal(editedContact.getPreexistingConditionRenal());
-          selectPreexistingConditionNeurologic(editedContact.getPreexistingConditionNeurologic());
+          selectPreexistingConditionDiabetes(editedContact.getDiabetes());
+          selectPreexistingConditionHiv(editedContact.getImmunodeficiencyIncludingHiv());
+          selectPreexistingConditionLiver(editedContact.getLiverDisease());
+          selectPreexistingConditionMalignancy(editedContact.getMalignancy());
+          selectPreexistingConditionChronicPulmonary(editedContact.getChronicPulmonaryDisease());
+          selectPreexistingConditionRenal(editedContact.getRenalDisease());
+          selectPreexistingConditionNeurologic(
+              editedContact.getChronicNeurologicalNeuromuscularDisease());
           selectPreexistingConditionCardiovascular(
-              editedContact.getPreexistingConditionCardiovascular());
+              editedContact.getCardiovascularDiseaseIncludingHypertension());
           fillAdditionalRelevantPreexistingConditions(
               editedContact.getAdditionalRelevantPreexistingConditions());
           selectVaccinationStatusForThisDisease(editedContact.getVaccinationStatusForThisDisease());
@@ -378,7 +378,7 @@ public class EditContactSteps implements En {
   }
 
   public void fillIdentificationSource(String source) {
-    webDriverHelpers.clearAndFillInWebElement(IDENTIFICATION_SOURCE, source);
+    webDriverHelpers.clearAndFillInWebElement(IDENTIFICATION_SOURCE_INPUT, source);
   }
 
   public void selectContactType(String proximity) {
@@ -489,7 +489,7 @@ public class EditContactSteps implements En {
   }
 
   public void fillGeneralComment(String source) {
-    webDriverHelpers.clearAndFillInWebElement(GENERAL_COMMENT, source);
+    webDriverHelpers.clearAndFillInWebElement(GENERAL_COMMENT_TEXT, source);
   }
 
   public Contact collectContactData() {
@@ -508,8 +508,8 @@ public class EditContactSteps implements En {
     String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
     LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatter);
     String identificationSource =
-        (webDriverHelpers.isElementVisibleWithTimeout(IDENTIFICATION_SOURCE, 1))
-            ? webDriverHelpers.getValueFromWebElement(IDENTIFICATION_SOURCE)
+        (webDriverHelpers.isElementVisibleWithTimeout(IDENTIFICATION_SOURCE_INPUT, 1))
+            ? webDriverHelpers.getValueFromWebElement(IDENTIFICATION_SOURCE_INPUT)
             : null;
 
     return Contact.builder()
@@ -558,21 +558,17 @@ public class EditContactSteps implements En {
                 HOME_BASED_QUARANTINE_OPTIONS))
         .quarantine(webDriverHelpers.getValueFromWebElement(QUARANTINE_COMBOBOX_INPUT))
         .highPriority(webDriverHelpers.getValueForSingleCssInputIfChecked(HIGH_PRIORITY_CHECKBOX))
-        .preexistingConditionDiabetes(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIABETES_OPTIONS))
-        .preexistingConditionHiv(
+        .diabetes(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIABETES_OPTIONS))
+        .immunodeficiencyIncludingHiv(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HIV_OPTIONS))
-        .preexistingConditionLiver(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LIVER_OPTIONS))
-        .preexistingConditionMalignancy(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MALIGNANCY_OPTIONS))
-        .preexistingConditionChronicPulmonary(
+        .liverDisease(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LIVER_OPTIONS))
+        .malignancy(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MALIGNANCY_OPTIONS))
+        .chronicPulmonaryDisease(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PULMONARY_OPTIONS))
-        .preexistingConditionRenal(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RENAL_OPTIONS))
-        .preexistingConditionNeurologic(
+        .renalDisease(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RENAL_OPTIONS))
+        .chronicNeurologicalNeuromuscularDisease(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(NEUROLOGIC_OPTIONS))
-        .preexistingConditionCardiovascular(
+        .cardiovascularDiseaseIncludingHypertension(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CARDIOVASCULAR_OPTIONS))
         .additionalRelevantPreexistingConditions(
             webDriverHelpers.getValueFromWebElement(ADDITIONAL_RELEVANT_PRE_CONDITIONS_TEXT))
@@ -589,7 +585,7 @@ public class EditContactSteps implements En {
         .followUpStatusComment(webDriverHelpers.getValueFromWebElement(FOLLOW_UP_STATUS_TEXT))
         .responsibleContactOfficer(
             webDriverHelpers.getValueFromWebElement(RESPONSIBLE_STATUS_OFFICER_COMBOBOX_INPUT))
-        .generalComment(webDriverHelpers.getValueFromWebElement(GENERAL_COMMENT))
+        .generalComment(webDriverHelpers.getValueFromWebElement(GENERAL_COMMENT_TEXT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
   }
