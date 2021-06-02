@@ -18,7 +18,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class BirthDateSelector extends CustomField<BirthDateDto> {
+public class BirthDateField extends CustomField<BirthDateDto> {
 
 	private final Binder<BirthDateDto> binder = new Binder<>(BirthDateDto.class);
 
@@ -26,7 +26,7 @@ public class BirthDateSelector extends CustomField<BirthDateDto> {
 	private final ComboBox<Integer> dateOfBirthMonth;
 	private final ComboBox<Integer> dateOfBirthDay;
 
-	public BirthDateSelector() {
+	public BirthDateField() {
 		dateOfBirthYear = new ComboBox<>();
 		dateOfBirthMonth = new ComboBox<>();
 		dateOfBirthDay = new ComboBox<>();

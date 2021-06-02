@@ -39,7 +39,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.components.linelisting.birthdate.BirthDateDto;
-import de.symeda.sormas.ui.contact.components.linelisting.birthdate.BirthDateSelector;
+import de.symeda.sormas.ui.contact.components.linelisting.birthdate.BirthDateField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -217,7 +217,7 @@ public class LineListingLayout extends VerticalLayout {
 		private final ComboBox<ContactRelation> relationToCase;
 		private final TextField firstname;
 		private final TextField lastname;
-		private final BirthDateSelector birthDate;
+		private final BirthDateField birthDate;
 		private final ComboBox<Sex> sex;
 
 		private final Button delete;
@@ -263,7 +263,7 @@ public class LineListingLayout extends VerticalLayout {
 			firstname.setId("lineListingLastName_" + lineIndex);
 			binder.forField(lastname).asRequired().bind(ContactLineDto.LAST_NAME);
 
-			birthDate = new BirthDateSelector();
+			birthDate = new BirthDateField();
 			birthDate.setId("lineListingBirthDate_" + lineIndex);
 			binder.forField(birthDate).bind(ContactLineDto.BIRTH_DATE);
 
