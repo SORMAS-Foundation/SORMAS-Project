@@ -76,8 +76,6 @@ public class Contact {
   String immunosuppressiveTherapy;
   String activeInCare;
   boolean cancelFollowUp;
-  boolean lostToFollowUp;
-  boolean resumeFollowUp;
   String overwriteFollowUp;
   LocalDate dateOfFollowUpUntil;
   String followUpStatusComment;
