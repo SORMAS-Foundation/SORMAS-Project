@@ -56,12 +56,6 @@ public class CaseSteps implements En {
         });
 
     Given(
-        "I get a person from the system",
-        (String reportDate) -> {
-          bodyResources.setBody(bodyService.generatePostCaseBodyTooOld());
-        });
-
-    Given(
         "I try to enter invalid user for a new case",
         () -> {
           bodyResources.setBody("[" + bodyService.generatePostCaseBodyTooOld() + "]");
@@ -85,16 +79,6 @@ public class CaseSteps implements En {
           caseHelper.postCases("push", bodyResources.getBody());
           System.out.println("response status code = " + apiState.getResponse().getStatusCode());
           System.out.println("response body = " + apiState.getResponse().getBody().prettyPrint());
-        });
-
-    Then(
-        "I get the cases created since {int}",
-        (Integer since) -> {
-          caseHelper.getAllCasesSince(since);
-          assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
-
-          apiState.setCasesAllSince(apiState.getResponse().getBody().prettyPrint());
-          System.out.println("Last cases pushed = " + apiState.getCasesAllSince());
         });
 
     Then(
@@ -129,24 +113,14 @@ public class CaseSteps implements En {
               .contains(String.valueOf(ErrorMessages.UNKNOWN_DISEASE));
         });
 
-    When(
-        "I get al communities since {int}",
-        (Integer int1) -> {
-          communityHelper.getCommunitiesSince(int1);
-
+    Then(
+        "I can query case by UUID",
+        () -> {
+          String caseUUID = bodyResources.getCaseUUID();
+          System.out.println("Querying for case UUID = " + caseUUID);
+          caseHelper.postCasesQueryByUUID(caseUUID);
           assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
-          apiState.setCommunitiesAllSince(apiState.getResponse().getBody().prettyPrint());
-          System.out.println(apiState.getCommunitiesAllSince());
-        });
-
-    When(
-        "I get all facilities from region {word}",
-        (String regionUUID) -> {
-          countryHelper.getAllFacilitiesFromRegion(regionUUID);
-          assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
-
-          apiState.setFacilitiesFromRegion(apiState.getResponse().getBody().prettyPrint());
-          System.out.println(apiState.getFacilitiesFromRegion());
+          assertThat(apiState.getResponse().jsonPath().get("uuid").toString()).contains(caseUUID);
         });
   }
 }

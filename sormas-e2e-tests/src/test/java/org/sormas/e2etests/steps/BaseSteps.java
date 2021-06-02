@@ -23,6 +23,8 @@ import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import io.qameta.allure.listener.StepLifecycleListener;
+import io.restassured.RestAssured;
+import io.restassured.parsing.Parser;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
@@ -53,6 +55,11 @@ public class BaseSteps implements StepLifecycleListener {
     options.window().maximize();
     options.timeouts().setScriptTimeout(120, TimeUnit.SECONDS);
     options.timeouts().pageLoadTimeout(120, TimeUnit.SECONDS);
+  }
+
+  @Before(value = "@API")
+  static void setup() {
+    RestAssured.registerParser("text/html", Parser.JSON);
   }
 
   @After(value = "@UI")

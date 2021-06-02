@@ -1,4 +1,4 @@
-@Sanity @Case @API @ali
+@Sanity @Case @API
 Feature: Case business oriented scenarios through API
 
   @S1
@@ -7,6 +7,7 @@ Feature: Case business oriented scenarios through API
     Given I try to enter valid data for a new case
     When I create a new case
     Then I get successful response back
+    And I can query case by UUID
 
     @S2
   Scenario: Create a new case with invalid person data

@@ -39,8 +39,8 @@ public class CaseHelper {
         Request.builder().method(Method.POST).path(CASES + specificPath).body(json).build());
   }
 
-  public void getAllCasesSince(Integer since) {
+  public void postCasesQueryByUUID(String uuid) {
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.POST).path(CASES + "all/" + since).build());
+        Request.builder().method(Method.POST).path(CASES + "query").body(uuid).build());
   }
 }

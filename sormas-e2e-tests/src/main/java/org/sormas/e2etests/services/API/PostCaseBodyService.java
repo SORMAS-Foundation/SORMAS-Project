@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.services.API;
 
+import static org.sormas.e2etests.constants.api.ResourceFiles.POST_CASES_BASIC_JSON_BODY;
 import static org.sormas.e2etests.constants.api.ResourceFiles.POST_IN_COUNTRY_NO_HOSPITALIZATION_CASES_JSON_BODY;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,8 +45,7 @@ public class PostCaseBodyService {
     String postBody = null;
     try {
       Map<String, Object> postBodyJson =
-          testUtils.deserializeFromJson(
-              new File(POST_IN_COUNTRY_NO_HOSPITALIZATION_CASES_JSON_BODY));
+          testUtils.deserializeFromJson(new File(POST_CASES_BASIC_JSON_BODY));
 
       TimeZone tz = TimeZone.getTimeZone("UTC");
       DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -53,6 +53,9 @@ public class PostCaseBodyService {
       String nowAsISO = df.format(new Date());
 
       postBodyJson.put("reportDate", nowAsISO);
+      String caseUUID = UUID.randomUUID().toString();
+      postBodyJson.put("uuid", caseUUID);
+      bodyResources.setCaseUUID(caseUUID);
 
       Map<String, Object> clinicalCourse = (Map<String, Object>) postBodyJson.get("clinicalCourse");
       clinicalCourse.put("uuid", UUID.randomUUID().toString());
@@ -69,7 +72,7 @@ public class PostCaseBodyService {
       therapy.put("uuid", UUID.randomUUID().toString());
 
       Map<String, Object> symptoms = (Map<String, Object>) postBodyJson.get("symptoms");
-      postBodyJson.put("uuid", UUID.randomUUID().toString());
+      symptoms.put("uuid", UUID.randomUUID().toString());
 
       Map<String, Object> epiData = (Map<String, Object>) postBodyJson.get("epiData");
       epiData.put("uuid", UUID.randomUUID().toString());
@@ -165,7 +168,6 @@ public class PostCaseBodyService {
       System.out.println(postBody);
     } catch (IOException ioe) {
       System.out.println(ioe.getMessage());
-      // TestUtils.logError("Could not build the post json body", new AssertionError(ioe));
     }
     return postBody;
   }

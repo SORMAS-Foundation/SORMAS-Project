@@ -10,4 +10,5 @@ import lombok.Setter;
 public class BodyResources {
   String body;
   String personUUID;
+  String caseUUID;
 }
