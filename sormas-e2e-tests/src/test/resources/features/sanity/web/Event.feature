@@ -1,4 +1,4 @@
-@Event
+@Event @br
 Feature: Create events
 
   Scenario: Create a new event
@@ -45,4 +45,5 @@ Feature: Create events
      When I create a new event with specific data
       And I click on the Events button from navbar
       And I search for specific event in event directory
+      And I click on the searched event
      Then I check the created data is correctly displayed in event edit page
