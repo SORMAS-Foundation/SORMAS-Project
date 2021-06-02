@@ -4,7 +4,6 @@ import java.time.Month;
 import java.util.List;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
@@ -112,10 +111,6 @@ public class BirthDateField extends CustomField<BirthDateDto> {
 	@Override
 	public BirthDateDto getValue() {
 		return binder.getBean();
-	}
-
-	public BinderValidationStatus<BirthDateDto> validate() {
-		return binder.validate();
 	}
 
 	private void setItemCaptionsForMonths(ComboBox<Integer> comboBox) {
