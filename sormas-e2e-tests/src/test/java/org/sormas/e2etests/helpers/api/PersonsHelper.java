@@ -42,4 +42,10 @@ public class PersonsHelper {
     restAssuredClient.sendRequest(
         Request.builder().method(Method.GET).path(PERSONS + "uuids").build());
   }
+
+  public void pushPerson(String specificPath, String jsonBody) {
+    final String json = jsonBody;
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.POST).path(PERSONS + specificPath).body(json).build());
+  }
 }

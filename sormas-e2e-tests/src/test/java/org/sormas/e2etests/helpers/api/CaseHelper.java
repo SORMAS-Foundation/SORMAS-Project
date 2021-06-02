@@ -17,13 +17,12 @@
  */
 package org.sormas.e2etests.helpers.api;
 
+import static org.sormas.e2etests.constants.api.Endpoints.CASES;
+
 import io.restassured.http.Method;
+import javax.inject.Inject;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.pojo.Request;
-
-import javax.inject.Inject;
-
-import static org.sormas.e2etests.constants.api.Endpoints.CASES;
 
 public class CaseHelper {
 
@@ -35,8 +34,9 @@ public class CaseHelper {
   }
 
   public void postCases(String specificPath, String jsonBody) {
+    final String json = jsonBody;
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.POST).path(CASES + specificPath).body(jsonBody).build());
+        Request.builder().method(Method.POST).path(CASES + specificPath).body(json).build());
   }
 
   public void getAllCasesSince(Integer since) {

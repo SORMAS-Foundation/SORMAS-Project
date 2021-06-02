@@ -10,4 +10,7 @@ import lombok.Setter;
 @Setter
 public class ApiState {
   Response response;
+  String casesAllSince;
+  String communitiesAllSince;
+  String facilitiesFromRegion;
 }
