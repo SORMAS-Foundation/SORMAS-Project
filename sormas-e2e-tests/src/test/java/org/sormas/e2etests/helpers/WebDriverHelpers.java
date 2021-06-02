@@ -26,6 +26,7 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 import static org.sormas.e2etests.helpers.AssertHelpers.*;
 
+import com.google.common.truth.Truth;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Predicate;
@@ -377,7 +378,16 @@ public class WebDriverHelpers {
 
   public String getCheckedOptionFromHorizontalOptionGroup(By options) {
     waitUntilIdentifiedElementIsPresent(options);
-    return baseSteps.getDriver().findElement(options).findElement(SELECTED_RADIO_BUTTON).getText();
+    if (baseSteps.getDriver().findElement(options).findElements(SELECTED_RADIO_BUTTON).size()
+        == 0) {
+      return null;
+    } else {
+      return baseSteps
+          .getDriver()
+          .findElement(options)
+          .findElement(SELECTED_RADIO_BUTTON)
+          .getText();
+    }
   }
 
   public void clearWebElement(By selector) {

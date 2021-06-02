@@ -21,19 +21,20 @@ import static org.sormas.e2etests.pages.application.contacts.ContactManagementPa
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.steps.application.contacts.EditContactSteps;
 
 public class ContactsManagementSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
 
   @Inject
-  public ContactsManagementSteps(WebDriverHelpers webDriverHelpers) {
+  public ContactsManagementSteps(
+      WebDriverHelpers webDriverHelpers, @Named("ENVIRONMENT_URL") String environmentUrl) {
 
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "^I search for Contact using Contact UUID from the last created Contact",
+        "^I search contacts using the UUID from the last created Contact",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
               CONTACT_SEARCH_INPUT, EditContactSteps.aContact.getUuid());
@@ -43,6 +44,15 @@ public class ContactsManagementSteps implements En {
 
     When(
         "^I open the first displayed Contact result$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SEARCH_RESULT_CONTACT));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SEARCH_RESULT_CONTACT);
+        });
+
+    When(
+        "^I navigate to the last created contact via the url$",
+        () -> {
+          webDriverHelpers.accessWebSite(
+              environmentUrl + "/sormas-ui/#!contacts/data/" + EditContactSteps.aContact.getUuid());
+        });
   }
 }

@@ -3,12 +3,12 @@ Feature: Contacts end to end tests
   
   Scenario: Create simple contact
     Given I log in with the user
-      And I click on the Contacts button from navbar
-      And I click on the NEW CONTACT button
-      And I create a new contact
-      Then I check the created data is correctly displayed on Edit Contact page
-      Then I open Contact Person tab
-      And I check the created data is correctly displayed on Edit Contact Person page
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I create a new contact
+    Then I check the created data is correctly displayed on Edit Contact page
+    Then I open Contact Person tab
+    And I check the created data is correctly displayed on Edit Contact Person page
 
     Scenario: Delete created contact
       Given I log in with the user
@@ -27,6 +27,8 @@ Feature: Contacts end to end tests
     And I create a new contact
     Then I check the created data is correctly displayed on Edit Contact page
     And I click on the Contacts button from navbar
-    And I search for Contact using Contact UUID from the last created Contact
+    And I search contacts using the UUID from the last created Contact
     And I open the first displayed Contact result
-    Then I check the created data is correctly displayed on Edit Contact page
+    And I change all contact fields and save
+    And I navigate to the last created contact via the url
+    Then I check the edited data is correctly displayed on Edit Contact page

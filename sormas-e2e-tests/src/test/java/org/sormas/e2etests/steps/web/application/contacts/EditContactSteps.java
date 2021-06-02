@@ -19,7 +19,7 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.*;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -27,21 +27,25 @@ import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.pojo.web.Contact;
+import org.sormas.e2etests.services.ContactService;
 
 public class EditContactSteps implements En {
   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static Contact aContact;
+  public static Contact editedContact;
 
   @Inject
-  public EditContactSteps(WebDriverHelpers webDriverHelpers) {
+  public EditContactSteps(WebDriverHelpers webDriverHelpers, ContactService contactService) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I check the created data is correctly displayed on Edit Contact page",
         () -> {
           aContact = collectContactData();
+
           SoftAssertions softly = new SoftAssertions();
           softly
               .assertThat(aContact.getFirstName())
@@ -112,50 +116,351 @@ public class EditContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
         });
+
+    When(
+        "^I change all contact fields and save$",
+        () -> {
+          editedContact = contactService.buildEditContact();
+          selectContactClassification(editedContact.getClassification());
+          selectMultiDayContact(editedContact.getMultiDay());
+          fillDateOfFirstContact(editedContact.getDateOfFirstContact());
+          fillDateOfLastContact(editedContact.getDateOfLastContact());
+          selectDiseaseOfSourceCase(editedContact.getDiseaseOfSourceCase());
+          fillExternalId(editedContact.getExternalId());
+          fillExternalToken(editedContact.getExternalToken());
+          fillReportDate(editedContact.getReportDate());
+          selectReportingDistrict(editedContact.getReportingDistrict());
+          selectResponsibleRegion(editedContact.getResponsibleRegion());
+          selectResponsibleDistrict(editedContact.getResponsibleDistrict());
+          selectResponsibleCommunity(editedContact.getResponsibleCommunity());
+          selectReturningTraveler(editedContact.getReturningTraveler());
+          fillCaseIdExternalSystem(editedContact.getCaseIdInExternalSystem());
+          fillCaseOrEventInformation(editedContact.getCaseOrEventInformation());
+          selectIdentificationSource(editedContact.getIdentificationSource());
+          fillIdentificationSource(editedContact.getIdentificationSourceDetails());
+          selectContactType(editedContact.getTypeOfContact());
+          fillAdditionalInformationOnContactType(
+              editedContact.getAdditionalInformationOnContactType());
+          selectContactCategory(editedContact.getContactCategory());
+          selectRelationShipWithCase(editedContact.getRelationshipWithCase());
+          fillDescriptionOfHowContactTookPlace(editedContact.getDescriptionOfHowContactTookPlace());
+          selectProhibitionToWork(editedContact.getProhibitionToWork());
+          selectHomeBasedQuarantinePossible(editedContact.getHomeBasedQuarantinePossible());
+          selectQuarantine(editedContact.getQuarantine());
+          selectHighPriority(editedContact.getHighPriority());
+          selectPreexistingConditionDiabetes(editedContact.getPreexistingConditionDiabetes());
+          selectPreexistingConditionHiv(editedContact.getPreexistingConditionHiv());
+          selectPreexistingConditionLiver(editedContact.getPreexistingConditionLiver());
+          selectPreexistingConditionMalignancy(editedContact.getPreexistingConditionMalignancy());
+          selectPreexistingConditionChronicPulmonary(
+              editedContact.getPreexistingConditionChronicPulmonary());
+          selectPreexistingConditionRenal(editedContact.getPreexistingConditionRenal());
+          selectPreexistingConditionNeurologic(editedContact.getPreexistingConditionNeurologic());
+          selectPreexistingConditionCardiovascular(
+              editedContact.getPreexistingConditionCardiovascular());
+          fillAdditionalRelevantPreexistingConditions(
+              editedContact.getAdditionalRelevantPreexistingConditions());
+          selectVaccinationStatusForThisDisease(editedContact.getVaccinationStatusForThisDisease());
+          selectImmunosuppressiveTherapy(editedContact.getImmunosuppressiveTherapy());
+          selectActiveInCare(editedContact.getActiveInCare());
+          clickCancelFollowUpButton();
+          selectOverwriteFollowUp(editedContact.getOverwriteFollowUp());
+          fillDateOfFollowUpUntil(editedContact.getDateOfFollowUpUntil());
+          fillFollowUpStatusComment(editedContact.getFollowUpStatusComment());
+          selectResponsibleContactOfficer(editedContact.getResponsibleContactOfficer());
+          fillGeneralComment(editedContact.getGeneralComment());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_EDIT_BUTTON);
+        });
+  }
+
+  public void selectContactClassification(String classification) {
+    webDriverHelpers.clickWebElementByText(CONTACT_CLASSIFICATION, classification);
+  }
+
+  public void selectMultiDayContact(String multiDayContact) {
+    webDriverHelpers.clickWebElementByText(MULTI_DAY_CONTACT_CHECKBOX, multiDayContact);
+  }
+
+  public void fillDateOfFirstContact(LocalDate date) {
+    webDriverHelpers.clearAndFillInWebElement(FIRST_DAY_CONTACT_DATE, formatter.format(date));
+  }
+
+  public void fillDateOfLastContact(LocalDate date) {
+    webDriverHelpers.clearAndFillInWebElement(LAST_CONTACT_DATE, formatter.format(date));
+  }
+
+  public void selectDiseaseOfSourceCase(String disease) {
+    webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
+  }
+
+  public void fillExternalId(String text) {
+    webDriverHelpers.clearAndFillInWebElement(EXTERNAL_ID, text);
+  }
+
+  public void fillExternalToken(String text) {
+    webDriverHelpers.clearAndFillInWebElement(EXTERNAL_TOKEN, text);
+  }
+
+  public void fillReportDate(LocalDate date) {
+    webDriverHelpers.clearAndFillInWebElement(REPORT_DATE, formatter.format(date));
+  }
+
+  public void selectReportingDistrict(String district) {
+    webDriverHelpers.selectFromCombobox(REPORTING_DISTRICT_COMBOBOX, district);
+  }
+
+  public void selectResponsibleRegion(String region) {
+    webDriverHelpers.selectFromCombobox(RESPONSIBLE_REGION_COMBOBOX, region);
+  }
+
+  public void selectResponsibleDistrict(String district) {
+    webDriverHelpers.selectFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX, district);
+  }
+
+  public void selectResponsibleCommunity(String community) {
+    webDriverHelpers.selectFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX, community);
+  }
+
+  public void selectReturningTraveler(String text) {
+    webDriverHelpers.clickWebElementByText(RETURNING_TRAVELER_OPTIONS, text);
+  }
+
+  public void fillCaseIdExternalSystem(String date) {
+    webDriverHelpers.clearAndFillInWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT, date);
+  }
+
+  public void fillCaseOrEventInformation(String information) {
+    webDriverHelpers.clearAndFillInWebElement(CASE_OR_EVENT_INFORMATION_INPUT, information);
+  }
+
+  public void selectIdentificationSource(String source) {
+    webDriverHelpers.selectFromCombobox(CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX, source);
+  }
+
+  public void fillIdentificationSource(String source) {
+    webDriverHelpers.clearAndFillInWebElement(IDENTIFICATION_SOURCE, source);
+  }
+
+  public void selectContactType(String proximity) {
+    webDriverHelpers.clickWebElementByText(TYPE_OF_CONTACT_OPTIONS, proximity);
+  }
+
+  public void fillAdditionalInformationOnContactType(String information) {
+    webDriverHelpers.clearAndFillInWebElement(
+        ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT, information);
+  }
+
+  public void selectContactCategory(String category) {
+    webDriverHelpers.clickWebElementByText(CONTACT_CATEGORY_OPTIONS, category);
+  }
+
+  public void selectRelationShipWithCase(String relationship) {
+    webDriverHelpers.selectFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX, relationship);
+  }
+
+  public void fillDescriptionOfHowContactTookPlace(String text) {
+    webDriverHelpers.clearAndFillInWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT, text);
+  }
+
+  public void selectProhibitionToWork(String text) {
+    webDriverHelpers.clickWebElementByText(PROHIBITION_TO_WORK_OPTIONS, text);
+  }
+
+  public void selectHomeBasedQuarantinePossible(String text) {
+    webDriverHelpers.clickWebElementByText(HOME_BASED_QUARANTINE_OPTIONS, text);
+  }
+
+  public void selectQuarantine(String text) {
+    webDriverHelpers.selectFromCombobox(QUARANTINE_COMBOBOX, text);
+  }
+
+  public void selectHighPriority(String text) {
+    webDriverHelpers.clickWebElementByText(HIGH_PRIORITY_CHECKBOX, text);
+  }
+
+  public void selectPreexistingConditionDiabetes(String text) {
+    webDriverHelpers.clickWebElementByText(DIABETES_OPTIONS, text);
+  }
+
+  public void selectPreexistingConditionHiv(String text) {
+    webDriverHelpers.clickWebElementByText(HIV_OPTIONS, text);
+  }
+
+  public void selectPreexistingConditionLiver(String text) {
+    webDriverHelpers.clickWebElementByText(LIVER_OPTIONS, text);
+  }
+
+  public void selectPreexistingConditionMalignancy(String text) {
+    webDriverHelpers.clickWebElementByText(MALIGNANCY_OPTIONS, text);
+  }
+
+  public void selectPreexistingConditionChronicPulmonary(String text) {
+    webDriverHelpers.clickWebElementByText(PULMONARY_OPTIONS, text);
+  }
+
+  public void selectPreexistingConditionRenal(String text) {
+    webDriverHelpers.clickWebElementByText(RENAL_OPTIONS, text);
+  }
+
+  public void selectPreexistingConditionNeurologic(String text) {
+    webDriverHelpers.clickWebElementByText(NEUROLOGIC_OPTIONS, text);
+  }
+
+  public void selectPreexistingConditionCardiovascular(String text) {
+    webDriverHelpers.clickWebElementByText(CARDIOVASCULAR_OPTIONS, text);
+  }
+
+  public void fillAdditionalRelevantPreexistingConditions(String source) {
+    webDriverHelpers.clearAndFillInWebElement(ADDITIONAL_RELEVANT_PRE_CONDITIONS_TEXT, source);
+  }
+
+  public void selectVaccinationStatusForThisDisease(String vaccine) {
+    webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccine);
+  }
+
+  public void selectImmunosuppressiveTherapy(String text) {
+    webDriverHelpers.clickWebElementByText(IMMUNOSUPPRESSIVE_THERAPY_OPTIONS, text);
+  }
+
+  public void selectActiveInCare(String text) {
+    webDriverHelpers.clickWebElementByText(CARE_OVER_60_OPTIONS, text);
+  }
+
+  public void clickCancelFollowUpButton() {
+    if (editedContact.isCancelFollowUp()) {
+      webDriverHelpers.clickOnWebElementBySelector(CANCEL_FOLLOW_UP_BUTTON);
+    }
+  }
+
+  public void selectOverwriteFollowUp(String text) {
+    webDriverHelpers.clickWebElementByText(OVERWRITE_FOLLOW_UP_CHECKBOX, text);
+  }
+
+  public void fillDateOfFollowUpUntil(LocalDate date) {
+    webDriverHelpers.clearAndFillInWebElement(FOLLOW_UP_UNTIL_DATE, formatter.format(date));
+  }
+
+  public void fillFollowUpStatusComment(String source) {
+    webDriverHelpers.clearAndFillInWebElement(FOLLOW_UP_STATUS_TEXT, source);
+  }
+
+  public void selectResponsibleContactOfficer(String vaccine) {
+    webDriverHelpers.selectFromCombobox(RESPONSIBLE_STATUS_OFFICER_COMBOBOX, vaccine);
+  }
+
+  public void fillGeneralComment(String source) {
+    webDriverHelpers.clearAndFillInWebElement(GENERAL_COMMENT, source);
   }
 
   public Contact collectContactData() {
+    Contact contactInfo = getContactInformation();
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
-    String collectedLastDateOfContact =
-        webDriverHelpers.getValueFromWebElement(DATE_OF_LAST_CONTACT_INPUT);
+    LocalDate parsedDateOfFirst =
+        (webDriverHelpers.isElementVisibleWithTimeout(FIRST_DAY_CONTACT_DATE, 1))
+            ? LocalDate.parse(
+                webDriverHelpers.getValueFromWebElement(FIRST_DAY_CONTACT_DATE), formatter)
+            : null;
+    // LocalDate parsedDateOfFollowUp =
+    //    LocalDate.parse(webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE), formatter);
+    String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
     LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatter);
-    Contact contactInfo = getContactInformation();
+    String identificationSource =
+        (webDriverHelpers.isElementVisibleWithTimeout(IDENTIFICATION_SOURCE, 1))
+            ? webDriverHelpers.getValueFromWebElement(IDENTIFICATION_SOURCE)
+            : null;
 
     return Contact.builder()
         .firstName(contactInfo.getFirstName())
         .lastName(contactInfo.getLastName())
+        .classification(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CLASSIFICATION))
+        .multiDay(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MULTI_DAY_CONTACT_CHECKBOX))
+        .dateOfFirstContact(parsedDateOfFirst)
+        .dateOfLastContact(parsedLastDateOfContact)
+        .diseaseOfSourceCase(webDriverHelpers.getValueFromWebElement(DISEASE_COMBOBOX_INPUT))
+        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID))
+        .externalToken(webDriverHelpers.getValueFromWebElement(EXTERNAL_TOKEN))
+        .reportDate(parsedDateOfReport)
+        .reportingDistrict(
+            webDriverHelpers.getValueFromWebElement(REPORTING_DISTRICT_COMBOBOX_INPUT))
+        .responsibleRegion(
+            webDriverHelpers.getValueFromWebElement(RESPONSIBLE_REGION_COMBOBOX_INPUT))
+        .responsibleDistrict(
+            webDriverHelpers.getValueFromWebElement(RESPONSIBLE_DISTRICT_COMBOBOX_INPUT))
+        .responsibleCommunity(
+            webDriverHelpers.getValueFromWebElement(RESPONSIBLE_COMMUNITY_COMBOBOX_INPUT))
         .returningTraveler(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RETURNING_TRAVELER_OPTIONS))
-        .reportDate(parsedDateOfReport)
-        .diseaseOfSourceCase(webDriverHelpers.getValueFromWebElement(DISEASE_COMBOBOX))
         .caseIdInExternalSystem(
             webDriverHelpers.getValueFromWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT))
-        .dateOfLastContact(parsedLastDateOfContact)
         .caseOrEventInformation(
             webDriverHelpers.getValueFromWebElement(CASE_OR_EVENT_INFORMATION_INPUT))
-        .responsibleRegion(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_REGION_COMBOBOX))
-        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_DISTRICT_COMBOBOX))
-        .responsibleCommunity(
-            webDriverHelpers.getValueFromWebElement(RESPONSIBLE_COMMUNITY_COMBOBOX))
+        .identificationSource(
+            webDriverHelpers.getValueFromWebElement(IDENTIFICATION_SOURCE_DETAILS_COMBOBOX_INPUT))
+        .identificationSourceDetails(identificationSource)
+        .typeOfContact(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
         .additionalInformationOnContactType(
             webDriverHelpers.getValueFromWebElement(
                 ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
-        .typeOfContact(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
         .contactCategory(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
         .relationshipWithCase(
-            webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_COMBOBOX))
+            webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_COMBOBOX_INPUT))
         .descriptionOfHowContactTookPlace(
             webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
+        .prohibitionToWork(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PROHIBITION_TO_WORK_OPTIONS))
+        .homeBasedQuarantinePossible(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                HOME_BASED_QUARANTINE_OPTIONS))
+        .quarantine(webDriverHelpers.getValueFromWebElement(QUARANTINE_COMBOBOX_INPUT))
+        .highPriority(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HIGH_PRIORITY_CHECKBOX))
+        .preexistingConditionCardiovascular(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CARDIOVASCULAR_OPTIONS))
+        .preexistingConditionHiv(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HIV_OPTIONS))
+        .preexistingConditionLiver(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LIVER_OPTIONS))
+        .preexistingConditionMalignancy(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MALIGNANCY_OPTIONS))
+        .preexistingConditionChronicPulmonary(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PULMONARY_OPTIONS))
+        .preexistingConditionRenal(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RENAL_OPTIONS))
+        .preexistingConditionNeurologic(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(NEUROLOGIC_OPTIONS))
+        .preexistingConditionCardiovascular(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CARDIOVASCULAR_OPTIONS))
+        .additionalRelevantPreexistingConditions(
+            webDriverHelpers.getValueFromWebElement(ADDITIONAL_RELEVANT_PRE_CONDITIONS_TEXT))
+        .vaccinationStatusForThisDisease(
+           webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_COMBOBOX_INPUT))
+        .immunosuppressiveTherapy(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                IMMUNOSUPPRESSIVE_THERAPY_OPTIONS))
+        .activeInCare(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CARE_OVER_60_OPTIONS))
+        .overwriteFollowUp(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                OVERWRITE_FOLLOW_UP_CHECKBOX))
+        // .dateOfFollowUpUntil(parsedDateOfFollowUp)
+        .followUpStatusComment(webDriverHelpers.getValueFromWebElement(FOLLOW_UP_STATUS_TEXT))
+        .responsibleContactOfficer(
+            webDriverHelpers.getValueFromWebElement(RESPONSIBLE_STATUS_OFFICER_COMBOBOX_INPUT))
+        .generalComment(webDriverHelpers.getValueFromWebElement(GENERAL_COMMENT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
   }
 
   public Contact getContactInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-    String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
+    webDriverHelpers.waitForPageLoaded();
+    String contactInfo = webDriverHelpers.getTextFromWebElement(EditContactPage.USER_INFORMATION);
     String[] contactInfos = contactInfo.split(" ");
     LocalDate localDate = LocalDate.parse(contactInfos[3].replace(")", ""), formatter);
     return Contact.builder()
