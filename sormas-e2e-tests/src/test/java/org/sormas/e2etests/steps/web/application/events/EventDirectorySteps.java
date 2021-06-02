@@ -18,10 +18,13 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.EVENT_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.TITLE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 
@@ -35,5 +38,25 @@ public class EventDirectorySteps implements En {
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 EventDirectoryPage.NEW_EVENT_BUTTON, TITLE_INPUT));
+    When(
+        "^I check if it appears under ([^\"]*) filter in event directory",
+        (String eventStatus) -> {
+          By byEventStatus = getByEventStatus(eventStatus);
+          final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
+          webDriverHelpers.clickOnWebElementBySelector(byEventStatus);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(byEventStatus);
+          webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_STATUS_OPTIONS);
+        });
+    When(
+        "^I search for specific event in event directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
+          final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_EVENT_BY_FREE_TEXT);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT, eventUuid);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+        });
   }
 }
