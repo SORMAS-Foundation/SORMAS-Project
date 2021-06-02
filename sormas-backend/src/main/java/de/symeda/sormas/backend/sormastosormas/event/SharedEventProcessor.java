@@ -100,6 +100,9 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 		LocationDto eventLocation = event.getEventLocation();
 		DataHelper.Pair<SharedDataProcessorHelper.InfrastructureData, List<String>> infrastructureAndErrors =
 			dataProcessorHelper.loadLocalInfrastructure(
+				eventLocation.getContinent(),
+				eventLocation.getSubcontinent(),
+				eventLocation.getCountry(),
 				eventLocation.getRegion(),
 				eventLocation.getDistrict(),
 				eventLocation.getCommunity(),
@@ -110,6 +113,9 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 				null);
 
 		dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, validationErrors, infrastructureData -> {
+			eventLocation.setContinent(infrastructureData.getContinent());
+			eventLocation.setSubcontinent(infrastructureData.getSubcontinent());
+			eventLocation.setCountry(infrastructureData.getCountry());
 			eventLocation.setRegion(infrastructureData.getRegion());
 			eventLocation.setDistrict(infrastructureData.getDistrict());
 			eventLocation.setCommunity(infrastructureData.getCommunity());
@@ -123,13 +129,14 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 		Map<String, ValidationErrors> errors = new HashMap<>();
 
 		eventParticipants.forEach(eventParticipant -> {
-			dataProcessorHelper.processPerson(eventParticipant.getPerson());
-
 			ValidationErrors validationErrors = new ValidationErrors();
 
-			DataHelper.Pair<SharedDataProcessorHelper.InfrastructureData, List<String>> infraStruvtureAndErrors =
+			ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(eventParticipant.getPerson());
+			validationErrors.addAll(personValidationErrors);
+
+			DataHelper.Pair<SharedDataProcessorHelper.InfrastructureData, List<String>> infrastructureAndErrors =
 				dataProcessorHelper.loadLocalInfrastructure(eventParticipant.getRegion(), eventParticipant.getDistrict(), null);
-			dataProcessorHelper.handleInfraStructure(infraStruvtureAndErrors, Captions.EventParticipant, validationErrors, (infrastructureData -> {
+			dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.EventParticipant, validationErrors, (infrastructureData -> {
 				eventParticipant.setRegion(infrastructureData.getRegion());
 				eventParticipant.setDistrict(infrastructureData.getDistrict());
 			}));
