@@ -80,7 +80,7 @@ public class SormasToSormasEncryptionService {
 		DECRYPTION
 	}
 
-	private byte[] handle(Mode mode, byte[] data, String otherId)
+	private byte[] cipher(Mode mode, byte[] data, String otherId)
 		throws SormasToSormasException, CMSException, CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException,
 		UnrecoverableKeyException {
 		String ownId = getOrganizationId();
@@ -103,7 +103,7 @@ public class SormasToSormasEncryptionService {
 
 	public byte[] signAndEncrypt(byte[] data, String recipientId) throws SormasToSormasException {
 		try {
-			return handle(Mode.ENCRYPTION, data, recipientId);
+			return cipher(Mode.ENCRYPTION, data, recipientId);
 		} catch (Exception e) {
 			LOGGER.error("Could not sign and encrypt data", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasEncrypt));
@@ -112,7 +112,7 @@ public class SormasToSormasEncryptionService {
 
 	public byte[] decryptAndVerify(byte[] data, String senderId) throws SormasToSormasException {
 		try {
-			return handle(Mode.DECRYPTION, data, senderId);
+			return cipher(Mode.DECRYPTION, data, senderId);
 		} catch (Exception e) {
 			LOGGER.error("Could not decrypt and verify data", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDecrypt));
