@@ -284,13 +284,13 @@ public class ContactController {
 					if (dbPerson == null) {
 						PersonDto personDto = PersonDto.build();
 						transferDataToPerson(createForm, personDto);
-						FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(personDto);
+						FacadeProvider.getPersonFacade().savePerson(personDto);
 						dto.setPerson(personDto.toReference());
 						createNewContact(dto, e -> {
 						});
 					} else {
 						transferDataToPerson(createForm, dbPerson);
-						FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(dbPerson);
+						FacadeProvider.getPersonFacade().savePerson(dbPerson);
 						createNewContact(dto, e -> {
 						});
 					}
@@ -313,7 +313,7 @@ public class ContactController {
 										personDto.getAddress().setDistrict(caseDto.getDistrict());
 										personDto.getAddress().setCommunity(caseDto.getCommunity());
 									}
-									FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(personDto);
+									FacadeProvider.getPersonFacade().savePerson(personDto);
 								}
 
 								selectOrCreateContact(
@@ -386,7 +386,7 @@ public class ContactController {
 						personDto.getAddress().setDistrict(caseDto.getDistrict());
 						personDto.getAddress().setCommunity(caseDto.getCommunity());
 					}
-					FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(personDto);
+					FacadeProvider.getPersonFacade().savePerson(personDto);
 				}
 
 				selectOrCreateContact(dto, personDto, I18nProperties.getString(Strings.infoSelectOrCreateContact), selectedContactUuid -> {
@@ -467,7 +467,7 @@ public class ContactController {
 							person.getAddress().setDistrict(caze.getDistrict());
 							person.getAddress().setCommunity(caze.getCommunity());
 						}
-						FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(person);
+						FacadeProvider.getPersonFacade().savePerson(person);
 					}
 
 					dto = FacadeProvider.getContactFacade().saveContact(dto);

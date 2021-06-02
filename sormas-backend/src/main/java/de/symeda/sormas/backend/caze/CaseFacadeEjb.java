@@ -3074,7 +3074,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 			}
 			DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
-			personFacade.savePersonAndNotifyExternalJournal(leadPerson);
+			personFacade.savePerson(leadPerson);
 		} else {
 			assert (DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid()));
 		}
