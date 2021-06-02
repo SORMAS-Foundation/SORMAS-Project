@@ -47,5 +47,9 @@ public class NavBarSteps implements En {
     When(
         "^I click on the Sample button from navbar$",
         () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.SAMPLE_BUTTON));
+
+    When(
+        "^I click on the Persons button from navbar$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.PERSONS_BUTTON));
   }
 }
