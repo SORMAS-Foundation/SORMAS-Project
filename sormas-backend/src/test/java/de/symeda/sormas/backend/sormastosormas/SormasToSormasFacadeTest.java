@@ -161,7 +161,7 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 		mockDefaultServerAccess();
 
 		byte[] data = objectMapper.writeValueAsBytes(Collections.singletonList(shareData));
-		byte[] encryptedData = getSormasToSormasEncryptionService().encrypt(data, SECOND_SERVER_ACCESS_CN);
+		byte[] encryptedData = getSormasToSormasEncryptionService().signAndEncrypt(data, SECOND_SERVER_ACCESS_CN);
 
 		mockSecondServerAccess();
 
@@ -171,7 +171,7 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 	protected <T> T[] decryptSharesData(byte[] data, Class<T[]> dataType) throws SormasToSormasException, IOException {
 		mockSecondServerAccess();
 
-		byte[] decryptData = getSormasToSormasEncryptionService().decrypt(data, DEFAULT_SERVER_ACCESS_CN);
+		byte[] decryptData = getSormasToSormasEncryptionService().decryptAndVerify(data, DEFAULT_SERVER_ACCESS_CN);
 		T[] parsedData = objectMapper.readValue(decryptData, dataType);
 
 		mockDefaultServerAccess();
