@@ -141,8 +141,8 @@ public class EditContactPersonSteps implements En {
                   contactInfo.getUuid(),
                   CreateNewContactSteps.contact.getPassportNumber(),
                   CreateNewContactSteps.contact.getNationalHealthId(),
-                  webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD),
-                  webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD));
+                  CreateNewContactSteps.contact.getPrimaryEmailAddress(),
+                  CreateNewContactSteps.contact.getPrimaryPhoneNumber());
         });
   }
 
@@ -166,14 +166,6 @@ public class EditContactPersonSteps implements En {
 
   private void selectPresentConditionOfPerson(String condition) {
     webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, condition);
-  }
-
-  private void fillNationalHealthId(String nationalHealthId) {
-    webDriverHelpers.fillInWebElement(NATIONAL_HEALTH_ID_INPUT, nationalHealthId);
-  }
-
-  private void fillPassportNumber(String passportNumber) {
-    webDriverHelpers.fillInWebElement(PASSPORT_NUMBER_INPUT, passportNumber);
   }
 
   private void fillExternalId(String id) {

@@ -62,10 +62,10 @@ public class PersonService {
         .dateOfBirth(LocalDate.of(1904, 3, 7))
         .sex("Male")
         .presentConditionOfPerson("Alive")
-        .nationalHealthId("HealthId-" + UUID.randomUUID().toString())
-        .passportNumber("Passport-" + String.valueOf(System.currentTimeMillis()))
-        .externalId("ExternalId" + UUID.randomUUID().toString())
-        .externalToken("ExternalToken" + UUID.randomUUID().toString())
+        .nationalHealthId(UUID.randomUUID().toString())
+        .passportNumber(String.valueOf(System.currentTimeMillis()))
+        .externalId(UUID.randomUUID().toString())
+        .externalToken(UUID.randomUUID().toString())
         .typeOfOccupation("Farmer")
         .staffOfArmedForces("Unknown")
         .education("Primary")
@@ -91,8 +91,8 @@ public class PersonService {
         .motherName(faker.name().firstName() + " " + faker.name().lastName())
         .fatherName(faker.name().firstName() + " " + faker.name().lastName())
         .nameOfGuardians(faker.name().firstName())
-        .personContactDetailsTypeOfContactDetails("Email")
-        .personContactDetailsContactInformation(faker.internet().emailAddress())
+        .personContactDetailsTypeOfContactDetails("Other")
+        .personContactDetailsContactInformation("Facebook")
         .build();
   }
 }

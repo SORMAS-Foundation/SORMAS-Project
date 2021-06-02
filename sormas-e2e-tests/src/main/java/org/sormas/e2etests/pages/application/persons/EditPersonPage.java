@@ -89,8 +89,8 @@ public class EditPersonPage {
           "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Phone')])[1]/../following-sibling::td//div");
   public static final By PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT =
       By.xpath(
-          "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Email')])[2]/../following-sibling::td//div");
+          "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Other')])[1]/../following-sibling::td//div");
   public static final By PERSON_CONTACT_DETAILS_TYPE_OF_DETAILS_INPUT =
       By.xpath(
-          "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Email')])[2]");
+          "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Other')])[1]");
 }

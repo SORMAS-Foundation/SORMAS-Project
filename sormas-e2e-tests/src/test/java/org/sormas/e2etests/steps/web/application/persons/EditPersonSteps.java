@@ -318,8 +318,9 @@ public class EditPersonSteps implements En {
             webDriverHelpers.getTextFromPresentWebElement(
                 PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT))
         .personContactDetailsTypeOfContactDetails(
-            webDriverHelpers.getTextFromPresentWebElement(
-                PERSON_CONTACT_DETAILS_TYPE_OF_DETAILS_INPUT))
+            webDriverHelpers
+                .getTextFromPresentWebElement(PERSON_CONTACT_DETAILS_TYPE_OF_DETAILS_INPUT)
+                .trim())
         .phoneNumber(webDriverHelpers.getTextFromWebElement(PHONE_FIELD))
         .emailAddress(webDriverHelpers.getTextFromWebElement(EMAIL_FIELD))
         .build();
