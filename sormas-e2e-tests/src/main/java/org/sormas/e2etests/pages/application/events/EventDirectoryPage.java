@@ -22,35 +22,13 @@ import org.openqa.selenium.By;
 
 public class EventDirectoryPage {
   public static final By NEW_EVENT_BUTTON = By.id("eventNewEvent");
-  public static final By SEARCH_SPECIFIC_EVENT_BUTTON = By.id("eventSearchSpecificEvent");
-  public static final By SORT_BY_ALL = By.id("all");
-  public static final By SORT_BY_SIGNAL = By.id("status-Signal");
-  public static final By SORT_BY_EVENT = By.id("status-Event");
-  public static final By SORT_BY_SCREENING = By.id("status-Screening");
-  public static final By SORT_BY_CLUSTER = By.id("status-Cluster");
-  public static final By SORT_BY_DROPPED = By.id("status-Dropped");
-  public static final By SEARCH_EVENT_BY_FREE_TEXT = By.id("freeText");
+  public static final By SEARCH_EVENT_BY_FREE_TEXT_INPUT = By.id("freeText");
   public static final By RESET_FILTER = By.id("actionResetFilters");
   public static final By APPLY_FILTER = By.id("actionApplyFilters");
+  public static final By EVENT_STATUS_FILTER_BUTTONS =
+      By.xpath("//*[@id='status-Signal']/span/../../..//span[@class='v-button-wrap']/span/../..");
 
   public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title='" + eventUuid + "']");
-  }
-
-  public static By getByEventStatus(String eventStatus) {
-    switch (eventStatus) {
-      case "SIGNAL":
-        return SORT_BY_SIGNAL;
-      case "EVENT":
-        return SORT_BY_EVENT;
-      case "SCREENING":
-        return SORT_BY_SCREENING;
-      case "CLUSTER":
-        return SORT_BY_CLUSTER;
-      case "DROPPED":
-        return SORT_BY_DROPPED;
-      default:
-        return SORT_BY_ALL;
-    }
   }
 }

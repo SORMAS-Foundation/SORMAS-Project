@@ -958,7 +958,7 @@ public class DevModeView extends AbstractConfigurationView {
 				caze.setReportLon(healthFacility.getLongitude());
 			}
 
-			FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(person);
+			FacadeProvider.getPersonFacade().savePerson(person);
 			FacadeProvider.getCaseFacade().saveCase(caze);
 		}
 
@@ -1212,7 +1212,7 @@ public class DevModeView extends AbstractConfigurationView {
 			// description
 			contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
 
-			FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(person);
+			FacadeProvider.getPersonFacade().savePerson(person);
 			contact = FacadeProvider.getContactFacade().saveContact(contact);
 
 			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())) {
@@ -1336,7 +1336,7 @@ public class DevModeView extends AbstractConfigurationView {
 				fillEntity(person, referenceDateTime);
 				person.setSymptomJournalStatus(null);
 				setPersonName(person);
-				FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(person);
+				FacadeProvider.getPersonFacade().savePerson(person);
 				eventParticipant.setPerson(person);
 				eventParticipant.setInvolvementDescription("Participant");
 

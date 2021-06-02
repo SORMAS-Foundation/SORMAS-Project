@@ -55,4 +55,47 @@ public class CaseService {
         .primaryEmailAddress(faker.internet().emailAddress())
         .build();
   }
+
+  public Case buildEditGeneratedCase() {
+    return Case.builder()
+        .dateOfReport(LocalDate.now().minusDays(3))
+        .caseClassification("Confirmed case with unknown symptoms")
+        .clinicalConfirmation("Yes")
+        .epidemiologicalConfirmation("Yes")
+        .laboratoryDiagnosticConfirmation("Yes")
+        .investigationStatus("INVESTIGATION DONE")
+        .caseOrigin("IN-COUNTRY")
+        .externalId(UUID.randomUUID().toString())
+        .externalToken(UUID.randomUUID().toString())
+        .disease("COVID-19")
+        .reinfection("NO")
+        .outcomeOfCase("RECOVERED")
+        .reportingDistrict("Voreingestellter Landkreis")
+        .caseIdentificationSource("Suspicion report")
+        .region("Voreingestellte Bundesländer")
+        .district("Voreingestellter Landkreis")
+        .community("Voreingestellte Gemeinde")
+        .responsibleJurisdiction(
+            "Responsible jurisdiction of this case differs from its place of stay")
+        .responsibleDistrict("Voreingestellter Landkreis")
+        .responsibleCommunity("Voreingestellte Gemeinde")
+        .responsibleRegion("Voreingestellte Bundesländer")
+        .prohibitionToWork("NO")
+        .homeBasedQuarantinePossible("NO")
+        .quarantine("None")
+        .reportGpsLatitude("21")
+        .reportGpsLongitude("21")
+        .reportGpsAccuracyInM("21")
+        .sequelae("NO")
+        .bloodOrganTissueDonationInTheLast6Months("NO")
+        .vaccinationStatusForThisDisease("Unvaccinated")
+        .responsibleSurveillanceOfficer("Surveillance OFFICER - Surveillance Officer")
+        .dateReceivedAtDistrictLevel(LocalDate.now().minusDays(1))
+        .dateReceivedAtRegionLevel(LocalDate.now().minusDays(2))
+        .dateReceivedAtNationalLevel(LocalDate.now().minusDays(3))
+        .dateReceivedAtNationalLevel(LocalDate.now().minusDays(3))
+        .generalComment(faker.book().title())
+        .placeDescription(faker.business().creditCardExpiry())
+        .build();
+  }
 }

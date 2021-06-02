@@ -29,20 +29,49 @@ public class CreateNewEventPage {
   public static final By RISK_LEVEL_COMBOBOX = By.cssSelector(".popupContent #riskLevel div");
   public static final By EVENT_MANAGEMENT_STATUS_OPTIONS =
       By.cssSelector(".popupContent #eventManagementStatus .v-select-option label");
-  public static final By MULTI_DAY_EVENT_CHECKBOX =
-      By.cssSelector(".popupContent #multiDayEvent input");
   public static final By START_DATA_INPUT = By.cssSelector(".popupContent #startDate input");
-  public static final By SIGNAL_EVOLUTION_DATE_INPUT =
-      By.cssSelector(".popupContent #evolutionDate input");
   public static final By EVENT_INVESTIGATION_STATUS_OPTIONS =
       By.cssSelector(".popupContent #eventInvestigationStatus label");
-  public static final By DISEASE_INPUT = By.cssSelector(".popupContent #disease div");
-  public static final By EXTERNAL_ID_INPUT = By.cssSelector(".popupContent #externalId");
-  public static final By INTERNAL_ID_INPUT = By.cssSelector(".popupContent #internalId");
-  public static final By EXTERNAL_TOKEN_INPUT = By.cssSelector(".popupContent #externalToken");
-  public static final By DESCRIPTION_INPUT = By.cssSelector(".popupContent #eventDesc");
+  public static final By DISEASE_COMBOBOX = By.cssSelector(".popupContent #disease div");
   public static final By SOURCE_TYPE_COMBOBOX = By.cssSelector(".popupContent #srcType div");
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(".popupContent #typeOfPlace div");
+  public static final By PRIMARY_MODE_OF_TRANSMISSION_INPUT =
+      By.cssSelector(".popupContent #diseaseTransmissionMode");
+  public static final By NOSOCOMIAL_INPUT = By.cssSelector(".popupContent #nosocomial");
+  public static final By EVENT_INVESTIGATION_START_DATE_INPUT =
+      By.cssSelector(".popupContent #eventInvestigationStartDate");
+  public static final By EVENT_INVESTIGATION_END_DATE_INPUT =
+      By.cssSelector(".popupContent #eventInvestigationEndDate");
+  public static final By SOURCE_MEDIA_WEBSITE_INPUT =
+      By.cssSelector(".popupContent #srcMediaWebsite");
+  public static final By SOURCE_MEDIA_NAME_INPUT = By.cssSelector(".popupContent #srcMediaName");
+  public static final By SOURCE_MEDIA_DETAILS_INPUT =
+      By.cssSelector(".popupContent #srcMediaDetails");
+  public static final By SOURCE_FIRST_NAME_INPUT = By.cssSelector(".popupContent #srcFirstName");
+  public static final By SOURCE_LAST_NAME_INPUT = By.cssSelector(".popupContent #srcLastName");
+  public static final By SOURCE_TEL_NO_INPUT = By.cssSelector(".popupContent #srcTelNo");
+  public static final By SOURCE_EMAIL_INPUT = By.cssSelector(".popupContent #srcEmail");
+  public static final By SOURCE_INSTITUTIONAL_PARTNER_COMBOBOX =
+      By.cssSelector(".popupContent #srcInstitutionalPartnerType div");
+  public static final By SOURCE_INSTITUTIONAL_PARTNER_DETAILS_INPUT =
+      By.cssSelector(".popupContent #srcInstitutionalPartnerTypeDetails");
+  public static final By SPECIFY_OTHER_EVENT_PLACE_INPUT =
+      By.cssSelector(".popupContent #typeOfPlaceText");
+  public static final By MEANS_OF_TRANSPORT_COMBOBOX =
+      By.cssSelector(".popupContent #meansOfTransport div");
+  public static final By CONNECTION_NUMBER_INPUT =
+      By.cssSelector(".popupContent #connectionNumber");
+  public static final By TRAVEL_DATE_INPUT = By.cssSelector(".popupContent #travelDate");
+  public static final By FACILITY_CATEGORY_COMBOBOX =
+      By.cssSelector(".popupContent #typeGroup div");
+  public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector(".popupContent #facilityType div");
+  public static final By FACILITY_COMBOBOX = By.cssSelector(".popupContent #facility div");
+  public static final By MEANS_OF_TRANSPORT_DETAILS_INPUT =
+      By.cssSelector(".popupContent #meansOfTransportDetails");
+  public static final By DISEASE_NAME_INPUT = By.cssSelector(".popupContent #diseaseDetails");
+  public static final By REPORT_DATE_INPUT = By.cssSelector(".popupContent #reportDateTime input");
+  public static final By NEW_EVENT_CREATED_MESSAGE =
+      By.xpath("//*[contains(text(),'New event created')]");
   public static final By COUNTRY_COMBOBOX = By.cssSelector(".popupContent #country div");
   public static final By REGION_COMBOBOX = By.cssSelector(".popupContent #region div");
   public static final By DISTRICT_COMBOBOX = By.cssSelector(".popupContent #district div");

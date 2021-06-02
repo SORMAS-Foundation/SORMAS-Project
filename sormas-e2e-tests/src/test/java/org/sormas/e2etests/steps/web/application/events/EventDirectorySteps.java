@@ -37,28 +37,29 @@ public class EventDirectorySteps implements En {
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 EventDirectoryPage.NEW_EVENT_BUTTON, TITLE_INPUT));
+
     When(
         "^I check if it appears under ([^\"]*) filter in event directory",
         (String eventStatus) -> {
-          By byEventStatus = getByEventStatus(eventStatus);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(byEventStatus);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
-          webDriverHelpers.clickOnWebElementBySelector(byEventStatus);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(byEventStatus);
+          webDriverHelpers.clickWebElementByText(EVENT_STATUS_FILTER_BUTTONS, eventStatus);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_STATUS_FILTER_BUTTONS);
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_PARTICIPANTS_TAB);
         });
+
     When(
         "^I search for specific event in event directory",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESET_FILTER);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_EVENT_BY_FREE_TEXT);
-          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT, eventUuid);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_EVENT_BY_FREE_TEXT_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
         });
+
     When(
         "I click on the searched event",
         () -> {
@@ -68,10 +69,10 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "I check if participant appears in the event participants list",
-        () -> {
-          final String personUuid = EditEventSteps.person.getUuid();
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
-        });
+            "I check if participant appears in the event participants list",
+            () -> {
+              final String personUuid = EditEventSteps.person.getUuid();
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
+            });
   }
 }

@@ -30,9 +30,9 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Contact;
 
 public class EditContactSteps implements En {
-  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   private final WebDriverHelpers webDriverHelpers;
-  protected Contact aContact;
+  public static Contact aContact;
 
   @Inject
   public EditContactSteps(WebDriverHelpers webDriverHelpers) {
@@ -103,6 +103,14 @@ public class EditContactSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
+        });
+
+    When(
+        "I delete the contact",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
         });
   }
 
