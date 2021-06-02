@@ -31,5 +31,4 @@ public class EventDirectoryPage {
   public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title='" + eventUuid + "']");
   }
-
 }

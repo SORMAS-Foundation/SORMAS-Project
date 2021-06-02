@@ -40,11 +40,7 @@ import org.sormas.e2etests.steps.BaseSteps;
 @Slf4j
 public class WebDriverHelpers {
 
-<<<<<<< HEAD
   public static final By SELECTED_RADIO_BUTTON =
-=======
-  public static final By SELECTED_RADIO_BUTTOn =
->>>>>>> 70713e4082 (Changed test not to fail due to issue 5547, other fixes)
       By.xpath("ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
 
