@@ -8,31 +8,46 @@ public class BirthDateDto implements Serializable {
 
 	private static final long serialVersionUID = -905128183629450296L;
 
+	public static final String DATE_OF_BIRTH_DD = "dateOfBirthDD";
+	public static final String DATE_OF_BIRTH_MM = "dateOfBirthMM";
+	public static final String DATE_OF_BIRTH_YYYY = "dateOfBirthYYYY";
+
 	@PersonalData
-	private Integer birthdateDD;
-	private Integer birthdateMM;
-	private Integer birthdateYYYY;
+	private Integer dateOfBirthDD;
+	private Integer dateOfBirthMM;
+	private Integer dateOfBirthYYYY;
 
-	public BirthDateDto(Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY) {
-
-		this.birthdateDD = birthdateDD;
-		this.birthdateMM = birthdateMM;
-		this.birthdateYYYY = birthdateYYYY;
+	public BirthDateDto() {
 	}
 
-	public Integer getBirthdateDD() {
-		return birthdateDD;
+	public BirthDateDto(Integer dateOfBirthDD, Integer dateOfBirthMM, Integer dateOfBirthYYYY) {
+
+		this.dateOfBirthDD = dateOfBirthDD;
+		this.dateOfBirthMM = dateOfBirthMM;
+		this.dateOfBirthYYYY = dateOfBirthYYYY;
 	}
 
-	public void setBirthdateDD(Integer birthdateDD) {
-		this.birthdateDD = birthdateDD;
+	public Integer getDateOfBirthDD() {
+		return dateOfBirthDD;
 	}
 
-	public Integer getBirthdateMM() {
-		return birthdateMM;
+	public void setDateOfBirthDD(Integer dateOfBirthDD) {
+		this.dateOfBirthDD = dateOfBirthDD;
 	}
 
-	public Integer getBirthdateYYYY() {
-		return birthdateYYYY;
+	public Integer getDateOfBirthMM() {
+		return dateOfBirthMM;
+	}
+
+	public void setDateOfBirthMM(Integer dateOfBirthMM) {
+		this.dateOfBirthMM = dateOfBirthMM;
+	}
+
+	public Integer getDateOfBirthYYYY() {
+		return dateOfBirthYYYY;
+	}
+
+	public void setDateOfBirthYYYY(Integer dateOfBirthYYYY) {
+		this.dateOfBirthYYYY = dateOfBirthYYYY;
 	}
 }

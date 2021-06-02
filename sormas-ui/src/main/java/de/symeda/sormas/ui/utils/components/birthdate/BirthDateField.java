@@ -13,6 +13,7 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.v7.data.Validator;
 
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
