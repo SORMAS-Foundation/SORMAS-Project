@@ -96,8 +96,9 @@ public class SormasToSormasEncryptionService {
 			return CmsCreator.signAndEncrypt(data, ownCert, ownKey, otherCert, true);
 		case DECRYPTION:
 			return CmsReader.decryptAndVerify(data, Lists.newArrayList(otherCert), ownCert, ownKey);
+		default:
+			throw new IllegalArgumentException("Unknown mode " + mode);
 		}
-		return null;
 	}
 
 	public byte[] signAndEncrypt(byte[] data, String recipientId) throws SormasToSormasException {
