@@ -18,7 +18,6 @@ Feature: Cases end to end tests
     And I check the edited data is correctly displayed on Edit case page
 
   Scenario: Delete created case
-    Given I log in with the user
     When API: I create a new person
     Then API: I create a new case
     And I click on the Cases button from navbar
