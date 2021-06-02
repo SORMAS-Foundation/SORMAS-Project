@@ -308,6 +308,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		CriteriaQuery<VisitIndexDto> cq = cb.createQuery(VisitIndexDto.class);
 		Root<Visit> visit = cq.from(Visit.class);
 		Join<Visit, Symptoms> symptoms = visit.join(Visit.SYMPTOMS, JoinType.LEFT);
+		Join<Object, Object> visitUser = visit.join(Visit.VISIT_USER);
 
 		cq.multiselect(
 			visit.get(Visit.ID),
@@ -319,7 +320,10 @@ public class VisitFacadeEjb implements VisitFacade {
 			symptoms.get(Symptoms.SYMPTOMATIC),
 			symptoms.get(Symptoms.TEMPERATURE),
 			symptoms.get(Symptoms.TEMPERATURE_SOURCE),
-			visit.get(Visit.ORIGIN));
+			visit.get(Visit.ORIGIN),
+			visitUser.get(User.UUID),
+			visitUser.get(User.FIRST_NAME),
+			visitUser.get(User.LAST_NAME));
 
 		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visit));
 
