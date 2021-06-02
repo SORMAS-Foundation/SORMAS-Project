@@ -14,8 +14,9 @@
  */
 package de.symeda.sormas.backend.sormastosormas;
 
-import java.io.FileInputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
@@ -67,13 +68,16 @@ public class SormasToSormasEncryptionService {
 		String filePath = sormasToSormasConfig.getPath();
 		Path storePath = Paths.get(filePath, name);
 		KeyStore store = KeyStore.getInstance("pkcs12");
-		store.load(new FileInputStream(storePath.toFile()), password.toCharArray());
+		try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(storePath))) {
+			store.load(in, password.toCharArray());
+		}
+
 		return store;
 	}
 
 	private enum Mode {
-		Encryption,
-		Decryption
+		ENCRYPTION,
+		DECRYPTION
 	}
 
 	private byte[] handle(Mode mode, byte[] data, String otherId)
@@ -88,9 +92,9 @@ public class SormasToSormasEncryptionService {
 		X509Certificate otherCert = (X509Certificate) truststore.getCertificate(otherId);
 
 		switch (mode) {
-		case Encryption:
+		case ENCRYPTION:
 			return CmsCreator.signAndEncrypt(data, ownCert, ownKey, otherCert, true);
-		case Decryption:
+		case DECRYPTION:
 			return CmsReader.decryptAndVerify(data, Lists.newArrayList(otherCert), ownCert, ownKey);
 		}
 		return null;
@@ -98,7 +102,7 @@ public class SormasToSormasEncryptionService {
 
 	public byte[] signAndEncrypt(byte[] data, String recipientId) throws SormasToSormasException {
 		try {
-			return handle(Mode.Encryption, data, recipientId);
+			return handle(Mode.ENCRYPTION, data, recipientId);
 		} catch (Exception e) {
 			LOGGER.error("Could not sign and encrypt data", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasEncrypt));
@@ -107,7 +111,7 @@ public class SormasToSormasEncryptionService {
 
 	public byte[] decryptAndVerify(byte[] data, String senderId) throws SormasToSormasException {
 		try {
-			return handle(Mode.Decryption, data, senderId);
+			return handle(Mode.DECRYPTION, data, senderId);
 		} catch (Exception e) {
 			LOGGER.error("Could not decrypt and verify data", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDecrypt));
