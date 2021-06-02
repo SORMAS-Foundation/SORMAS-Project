@@ -80,7 +80,7 @@ public class ContactService {
         .identificationSourceDetails("random details")
         .typeOfContact("Direct physical contact with source case")
         .additionalInformationOnContactType("random contact type")
-        .contactCategory("HIGH RISK CONTACT")
+        .contactCategory("NO RISK CONTACT")
         .relationshipWithCase("Live in the same household")
         .descriptionOfHowContactTookPlace("description it took place randomly")
         .prohibitionToWork("UNKNOWN")

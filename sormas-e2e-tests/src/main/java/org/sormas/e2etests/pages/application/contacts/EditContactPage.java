@@ -56,8 +56,8 @@ public class EditContactPage {
   public static final By DELETE_BUTTON = By.id("delete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By CONTACT_CLASSIFICATION = By.cssSelector("#contactClassification label");
-  public static final By CONTACT_STATUS = By.cssSelector("#contactStatus label");
-  public static final By MULTI_DAY_CONTACT_CHECKBOX = By.cssSelector("#multiDayContact > label");
+  public static final By MULTI_DAY_CONTACT_CHECKBOX = By.cssSelector("#multiDayContact > input");
+  public static final By MULTI_DAY_CONTACT_LABEL = By.cssSelector("#multiDayContact > label");
   public static final By FIRST_DAY_CONTACT_DATE = By.cssSelector("#firstContactDate input");
   public static final By EXTERNAL_ID = By.id("externalID");
   public static final By EXTERNAL_TOKEN = By.id("externalToken");
@@ -78,7 +78,8 @@ public class EditContactPage {
   public static final By QUARANTINE_COMBOBOX =
       By.cssSelector(".v-verticallayout [location='quarantine'] [role='combobox'] div");
   public static final By QUARANTINE_COMBOBOX_INPUT = By.cssSelector("#quarantine input");
-  public static final By HIGH_PRIORITY_CHECKBOX = By.cssSelector("#highPriority > label");
+  public static final By HIGH_PRIORITY_CHECKBOX = By.cssSelector("#highPriority > input");
+  public static final By HIGH_PRIORITY_LABEL = By.cssSelector("#highPriority > label");
   public static final By DIABETES_OPTIONS = By.cssSelector("#diabetes label");
   public static final By HIV_OPTIONS = By.cssSelector("#immunodeficiencyIncludingHiv label");
   public static final By LIVER_OPTIONS = By.cssSelector("#chronicLiverDisease label");
@@ -97,9 +98,9 @@ public class EditContactPage {
       By.cssSelector("#immunosuppressiveTherapyBasicDisease label");
   public static final By CARE_OVER_60_OPTIONS = By.cssSelector("#careForPeopleOver60 label");
   public static final By CANCEL_FOLLOW_UP_BUTTON = By.id("contactCancelFollowUp");
-  public static final By LOST_TO_FOLLOW_UP_BUTTON = By.id("contactLostToFollowUp");
-  public static final By RESUME_FOLLOW_UP_BUTTON = By.id("contactResumeFollowUp");
   public static final By OVERWRITE_FOLLOW_UP_CHECKBOX =
+      By.cssSelector("#overwriteFollowUpUntil > input");
+  public static final By OVERWRITE_FOLLOW_UP_LABEL =
       By.cssSelector("#overwriteFollowUpUntil > label");
   public static final By FOLLOW_UP_UNTIL_DATE = By.cssSelector("#followUpUntil input");
   public static final By FOLLOW_UP_STATUS_TEXT = By.id("followUpComment");

@@ -26,7 +26,6 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 import static org.sormas.e2etests.helpers.AssertHelpers.*;
 
-import com.google.common.truth.Truth;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Predicate;
@@ -35,6 +34,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
 import org.openqa.selenium.*;
+import org.sormas.e2etests.common.StringUtils;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 
@@ -387,6 +387,33 @@ public class WebDriverHelpers {
           .findElement(options)
           .findElement(SELECTED_RADIO_BUTTON)
           .getText();
+    }
+  }
+
+  public boolean isSingleCssInputChecked(By cssInput) {
+    waitUntilIdentifiedElementIsPresent(cssInput);
+    scrollToElement(cssInput);
+    try {
+      boolean value =
+          (baseSteps.getDriver().findElement(cssInput).getAttribute("checked").equals("true"))
+              ? true
+              : false;
+      return value;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  public String getValueForSingleCssInputIfChecked(By cssInput) {
+    if (isSingleCssInputChecked(cssInput)) {
+      String checkedElementCssSelector =
+          StringUtils.getMatchedGroupByIndexFromAString(
+              baseSteps.getDriver().findElement(cssInput).toString(),
+              "(.*css selector:\\s)(.*)(\\s>\\sinput.*)",
+              2);
+      return baseSteps.getDriver().findElement(By.cssSelector(checkedElementCssSelector)).getText();
+    } else {
+      return null;
     }
   }
 

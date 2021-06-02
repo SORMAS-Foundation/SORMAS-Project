@@ -103,6 +103,145 @@ public class EditContactSteps implements En {
         });
 
     When(
+        "I check the edited data is correctly displayed on Edit Contact page after editing",
+        () -> {
+          aContact = collectContactData();
+
+          SoftAssertions softly = new SoftAssertions();
+          softly
+              .assertThat(aContact.getFirstName())
+              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getFirstName());
+          softly
+              .assertThat(aContact.getLastName())
+              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getLastName());
+          softly
+              .assertThat(aContact.getClassification())
+              .isEqualToIgnoringCase(editedContact.getClassification());
+          softly
+              .assertThat(aContact.getMultiDay())
+              .isEqualToIgnoringCase(editedContact.getMultiDay());
+          softly
+              .assertThat(aContact.getDateOfFirstContact())
+              .isEqualTo(editedContact.getDateOfFirstContact());
+          softly
+              .assertThat(aContact.getDiseaseOfSourceCase())
+              .isEqualToIgnoringCase(editedContact.getDiseaseOfSourceCase());
+          softly
+              .assertThat(aContact.getExternalId())
+              .isEqualToIgnoringCase(editedContact.getExternalId());
+          softly
+              .assertThat(aContact.getExternalToken())
+              .isEqualToIgnoringCase(editedContact.getExternalToken());
+          softly.assertThat(aContact.getReportDate()).isEqualTo(editedContact.getReportDate());
+          softly
+              .assertThat(aContact.getReportingDistrict())
+              .isEqualToIgnoringCase(editedContact.getReportingDistrict());
+          softly
+              .assertThat(aContact.getResponsibleRegion())
+              .isEqualToIgnoringCase(editedContact.getResponsibleRegion());
+          softly
+              .assertThat(aContact.getResponsibleDistrict())
+              .isEqualToIgnoringCase(editedContact.getResponsibleDistrict());
+          softly
+              .assertThat(aContact.getResponsibleCommunity())
+              .isEqualToIgnoringCase(editedContact.getResponsibleCommunity());
+          softly
+              .assertThat(aContact.getReturningTraveler())
+              .isEqualToIgnoringCase(editedContact.getReturningTraveler());
+          softly
+              .assertThat(aContact.getCaseIdInExternalSystem())
+              .isEqualToIgnoringCase(editedContact.getCaseIdInExternalSystem());
+          softly
+              .assertThat(aContact.getCaseOrEventInformation())
+              .isEqualToIgnoringCase(editedContact.getCaseOrEventInformation());
+          softly
+              .assertThat(aContact.getIdentificationSource())
+              .isEqualToIgnoringCase(editedContact.getIdentificationSource());
+          softly
+              .assertThat(aContact.getIdentificationSourceDetails())
+              .isEqualToIgnoringCase(editedContact.getIdentificationSourceDetails());
+          softly
+              .assertThat(aContact.getTypeOfContact())
+              .isEqualToIgnoringCase(editedContact.getTypeOfContact());
+          softly
+              .assertThat(aContact.getAdditionalInformationOnContactType())
+              .isEqualToIgnoringCase(editedContact.getAdditionalInformationOnContactType());
+          softly
+              .assertThat(aContact.getContactCategory())
+              .isEqualToIgnoringCase(editedContact.getContactCategory());
+          softly
+              .assertThat(aContact.getRelationshipWithCase())
+              .isEqualToIgnoringCase(editedContact.getRelationshipWithCase());
+          softly
+              .assertThat(aContact.getDescriptionOfHowContactTookPlace())
+              .isEqualToIgnoringCase(editedContact.getDescriptionOfHowContactTookPlace());
+          softly
+              .assertThat(aContact.getProhibitionToWork())
+              .isEqualToIgnoringCase(editedContact.getProhibitionToWork());
+          softly
+              .assertThat(aContact.getHomeBasedQuarantinePossible())
+              .isEqualToIgnoringCase(editedContact.getHomeBasedQuarantinePossible());
+          softly
+              .assertThat(aContact.getQuarantine())
+              .isEqualToIgnoringCase(editedContact.getQuarantine());
+          softly
+              .assertThat(aContact.getHighPriority())
+              .isEqualToIgnoringCase(editedContact.getHighPriority());
+          softly
+              .assertThat(aContact.getPreexistingConditionDiabetes())
+              .isEqualToIgnoringCase(editedContact.getPreexistingConditionDiabetes());
+          softly
+              .assertThat(aContact.getPreexistingConditionHiv())
+              .isEqualToIgnoringCase(editedContact.getPreexistingConditionHiv());
+          softly
+              .assertThat(aContact.getPreexistingConditionLiver())
+              .isEqualToIgnoringCase(editedContact.getPreexistingConditionLiver());
+          softly
+              .assertThat(aContact.getPreexistingConditionMalignancy())
+              .isEqualToIgnoringCase(editedContact.getPreexistingConditionMalignancy());
+          softly
+              .assertThat(aContact.getPreexistingConditionChronicPulmonary())
+              .isEqualToIgnoringCase(editedContact.getPreexistingConditionChronicPulmonary());
+          softly
+              .assertThat(aContact.getPreexistingConditionRenal())
+              .isEqualToIgnoringCase(editedContact.getPreexistingConditionRenal());
+          softly
+              .assertThat(aContact.getPreexistingConditionNeurologic())
+              .isEqualToIgnoringCase(editedContact.getPreexistingConditionNeurologic());
+          softly
+              .assertThat(aContact.getPreexistingConditionCardiovascular())
+              .isEqualToIgnoringCase(editedContact.getPreexistingConditionCardiovascular());
+          softly
+              .assertThat(aContact.getAdditionalRelevantPreexistingConditions())
+              .isEqualToIgnoringCase(editedContact.getAdditionalRelevantPreexistingConditions());
+          softly
+              .assertThat(aContact.getVaccinationStatusForThisDisease())
+              .isEqualToIgnoringCase(editedContact.getVaccinationStatusForThisDisease());
+          softly
+              .assertThat(aContact.getImmunosuppressiveTherapy())
+              .isEqualToIgnoringCase(editedContact.getImmunosuppressiveTherapy());
+          softly
+              .assertThat(aContact.getActiveInCare())
+              .isEqualToIgnoringCase(editedContact.getActiveInCare());
+          softly
+              .assertThat(aContact.getOverwriteFollowUp())
+              .isEqualToIgnoringCase(editedContact.getOverwriteFollowUp());
+          // softly
+          //    .assertThat(aContact.getDateOfFollowUpUntil())
+          //    .isEqualTo(editedContact.getFollowUpStatusComment());
+          softly
+              .assertThat(aContact.getFollowUpStatusComment())
+              .isEqualToIgnoringCase(editedContact.getFollowUpStatusComment());
+          softly
+              .assertThat(aContact.getResponsibleContactOfficer())
+              .isEqualToIgnoringCase(editedContact.getResponsibleContactOfficer());
+          softly
+              .assertThat(aContact.getGeneralComment())
+              .isEqualToIgnoringCase(editedContact.getGeneralComment());
+          softly.assertAll();
+        });
+
+    When(
         "I open Contact Person tab",
         () -> {
           webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
@@ -179,7 +318,7 @@ public class EditContactSteps implements En {
   }
 
   public void selectMultiDayContact(String multiDayContact) {
-    webDriverHelpers.clickWebElementByText(MULTI_DAY_CONTACT_CHECKBOX, multiDayContact);
+    webDriverHelpers.clickWebElementByText(MULTI_DAY_CONTACT_LABEL, multiDayContact);
   }
 
   public void fillDateOfFirstContact(LocalDate date) {
@@ -276,7 +415,7 @@ public class EditContactSteps implements En {
   }
 
   public void selectHighPriority(String text) {
-    webDriverHelpers.clickWebElementByText(HIGH_PRIORITY_CHECKBOX, text);
+    webDriverHelpers.clickWebElementByText(HIGH_PRIORITY_LABEL, text);
   }
 
   public void selectPreexistingConditionDiabetes(String text) {
@@ -334,7 +473,7 @@ public class EditContactSteps implements En {
   }
 
   public void selectOverwriteFollowUp(String text) {
-    webDriverHelpers.clickWebElementByText(OVERWRITE_FOLLOW_UP_CHECKBOX, text);
+    webDriverHelpers.clickWebElementByText(OVERWRITE_FOLLOW_UP_LABEL, text);
   }
 
   public void fillDateOfFollowUpUntil(LocalDate date) {
@@ -355,6 +494,8 @@ public class EditContactSteps implements En {
 
   public Contact collectContactData() {
     Contact contactInfo = getContactInformation();
+    String classification =
+        webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CLASSIFICATION);
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
     LocalDate parsedDateOfFirst =
@@ -374,10 +515,8 @@ public class EditContactSteps implements En {
     return Contact.builder()
         .firstName(contactInfo.getFirstName())
         .lastName(contactInfo.getLastName())
-        .classification(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CLASSIFICATION))
-        .multiDay(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MULTI_DAY_CONTACT_CHECKBOX))
+        .classification(classification)
+        .multiDay(webDriverHelpers.getValueForSingleCssInputIfChecked(MULTI_DAY_CONTACT_CHECKBOX))
         .dateOfFirstContact(parsedDateOfFirst)
         .dateOfLastContact(parsedLastDateOfContact)
         .diseaseOfSourceCase(webDriverHelpers.getValueFromWebElement(DISEASE_COMBOBOX_INPUT))
@@ -418,10 +557,9 @@ public class EditContactSteps implements En {
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 HOME_BASED_QUARANTINE_OPTIONS))
         .quarantine(webDriverHelpers.getValueFromWebElement(QUARANTINE_COMBOBOX_INPUT))
-        .highPriority(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HIGH_PRIORITY_CHECKBOX))
-        .preexistingConditionCardiovascular(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CARDIOVASCULAR_OPTIONS))
+        .highPriority(webDriverHelpers.getValueForSingleCssInputIfChecked(HIGH_PRIORITY_CHECKBOX))
+        .preexistingConditionDiabetes(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIABETES_OPTIONS))
         .preexistingConditionHiv(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HIV_OPTIONS))
         .preexistingConditionLiver(
@@ -439,15 +577,14 @@ public class EditContactSteps implements En {
         .additionalRelevantPreexistingConditions(
             webDriverHelpers.getValueFromWebElement(ADDITIONAL_RELEVANT_PRE_CONDITIONS_TEXT))
         .vaccinationStatusForThisDisease(
-           webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_COMBOBOX_INPUT))
+            webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_COMBOBOX_INPUT))
         .immunosuppressiveTherapy(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 IMMUNOSUPPRESSIVE_THERAPY_OPTIONS))
         .activeInCare(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CARE_OVER_60_OPTIONS))
         .overwriteFollowUp(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                OVERWRITE_FOLLOW_UP_CHECKBOX))
+            webDriverHelpers.getValueForSingleCssInputIfChecked(OVERWRITE_FOLLOW_UP_CHECKBOX))
         // .dateOfFollowUpUntil(parsedDateOfFollowUp)
         .followUpStatusComment(webDriverHelpers.getValueFromWebElement(FOLLOW_UP_STATUS_TEXT))
         .responsibleContactOfficer(

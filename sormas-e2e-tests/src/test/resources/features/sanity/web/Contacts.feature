@@ -19,7 +19,7 @@ Feature: Contacts end to end tests
       Then I delete the contact
       And I check that number of displayed contact results is 0
 
-
+  @EditContact
   Scenario: Edit a created contact
     Given I log in with the user
     And I click on the Contacts button from navbar
@@ -31,4 +31,4 @@ Feature: Contacts end to end tests
     And I open the first displayed Contact result
     And I change all contact fields and save
     And I navigate to the last created contact via the url
-    Then I check the edited data is correctly displayed on Edit Contact page
+    Then I check the edited data is correctly displayed on Edit Contact page after editing
