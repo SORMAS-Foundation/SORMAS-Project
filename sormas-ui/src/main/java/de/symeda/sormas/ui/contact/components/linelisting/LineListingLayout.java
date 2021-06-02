@@ -38,11 +38,11 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.contact.components.linelisting.birthdate.BirthDateDto;
-import de.symeda.sormas.ui.contact.components.linelisting.birthdate.BirthDateField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.components.birthdate.BirthDateDto;
+import de.symeda.sormas.ui.utils.components.birthdate.BirthDateField;
 
 public class LineListingLayout extends VerticalLayout {
 

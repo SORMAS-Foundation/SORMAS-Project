@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.contact.components.linelisting.birthdate;
+package de.symeda.sormas.ui.utils.components.birthdate;
 
 import java.io.Serializable;
 
