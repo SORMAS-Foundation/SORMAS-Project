@@ -45,7 +45,9 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);
         });
+
     When("I collect the UUID displayed on Edit event page", () -> event = collectEventUuid());
+
     When(
         "I check the created data is correctly displayed in event edit page",
         () -> {
@@ -78,7 +80,7 @@ public class EditEventSteps implements En {
 
   public Event collectEventData() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
-    String reportingDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
+    String reportingDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
     LocalDate reportDate = LocalDate.parse(reportingDate, formatter);
     String eventStartDate = webDriverHelpers.getValueFromWebElement(START_DATA_INPUT);
     LocalDate eventDate = LocalDate.parse(eventStartDate, formatter);
@@ -91,10 +93,10 @@ public class EditEventSteps implements En {
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SELECTED_EVENT_STATUS))
         .investigationStatus(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                EVENT_INVESTIGATION_STATUS_INPUT))
+                SELECTED_EVENT_INVESTIGATION_STATUS))
         .eventManagementStatus(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                EVENT_MANAGEMENT_STATUS_INPUT))
+                SELECTED_EVENT_MANAGEMENT_STATUS))
         .riskLevel(webDriverHelpers.getValueFromWebElement(RISK_LEVEL_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .title(webDriverHelpers.getValueFromWebElement(TITLE_INPUT))
@@ -105,75 +107,5 @@ public class EditEventSteps implements En {
 
   public void selectEventStatus(String eventStatus) {
     webDriverHelpers.clickWebElementByText(EVENT_STATUS_OPTIONS, eventStatus);
-  }
-
-  public void selectRiskLevel(String riskLevel) {
-    webDriverHelpers.selectFromCombobox(RISK_LEVEL_COMBOBOX, riskLevel);
-  }
-
-  public void selectEventManagementStatusOption(String eventManagementStatusOption) {
-    webDriverHelpers.clickWebElementByText(
-        EVENT_MANAGEMENT_STATUS_OPTIONS, eventManagementStatusOption);
-  }
-
-  public void fillStartData(String startData) {
-    webDriverHelpers.clickWebElementByText(START_DATA_INPUT, startData);
-  }
-
-  public void fillSignalEvolutionDate(String signalEvolutionDate) {
-    webDriverHelpers.clickWebElementByText(SIGNAL_EVOLUTION_DATE_INPUT, signalEvolutionDate);
-  }
-
-  public void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
-    webDriverHelpers.clickWebElementByText(
-        EVENT_INVESTIGATION_STATUS_OPTIONS, eventInvestigationStatusOption);
-  }
-
-  public void selectDisease(String disease) {
-    webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
-  }
-
-  public void fillExternalIdInput(String externalId) {
-    webDriverHelpers.clickWebElementByText(EXTERNAL_ID_INPUT, externalId);
-  }
-
-  public void fillInternalIdInput(String internalIdInput) {
-    webDriverHelpers.fillInWebElement(INTERNAL_ID_INPUT, internalIdInput);
-  }
-
-  public void fillExternalTokenInput(String externalToken) {
-    webDriverHelpers.fillInWebElement(EXTERNAL_TOKEN_INPUT, externalToken);
-  }
-
-  public void fillTitle(String title) {
-    webDriverHelpers.fillInWebElement(TITLE_INPUT, title);
-  }
-
-  public void fillDescriptionInput(String description) {
-    webDriverHelpers.fillInWebElement(DESCRIPTION_INPUT, description);
-  }
-
-  public void selectSourceType(String sourceType) {
-    webDriverHelpers.selectFromCombobox(SOURCE_TYPE_COMBOBOX, sourceType);
-  }
-
-  public void selectSourceInstitutionalPartner(String institutionalPartner) {
-    webDriverHelpers.selectFromCombobox(SOURCE_INSTITUTIONAL_PARTNER, institutionalPartner);
-  }
-
-  public void selectTypeOfPlace(String typeOfPlace) {
-    webDriverHelpers.selectFromCombobox(TYPE_OF_PLACE_COMBOBOX, typeOfPlace);
-  }
-
-  public void selectMeansOfTransport(String meansOfTransport) {
-    webDriverHelpers.selectFromCombobox(MEANS_OF_TRANSPORT, meansOfTransport);
-  }
-
-  public void selectCountryCombobox(String country) {
-    webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, country);
-  }
-
-  public void selectRegion(String region) {
-    webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, region);
   }
 }

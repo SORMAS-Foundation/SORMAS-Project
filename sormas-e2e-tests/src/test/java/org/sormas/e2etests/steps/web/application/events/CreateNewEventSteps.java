@@ -46,9 +46,9 @@ public class CreateNewEventSteps implements En {
           webDriverHelpers.fillInWebElement(
               TITLE_INPUT, "EVENT_AUTOMATION" + timestamp + Faker.instance().name().name());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_EVENT_CREATED_MESSAGE);
           webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
         });
+
     When(
         "^I create a new event with specific data$",
         () -> {
@@ -70,9 +70,9 @@ public class CreateNewEventSteps implements En {
                   .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
                   .build();
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_EVENT_CREATED_MESSAGE);
           webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
         });
+
     When(
         "^I create a new event with status ([^\"]*)",
         (String eventStatus) -> {
@@ -81,11 +81,11 @@ public class CreateNewEventSteps implements En {
           webDriverHelpers.fillInWebElement(TITLE_INPUT, "EVENT_AUTOMATION" + timestamp);
           selectEventStatus(eventStatus);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_EVENT_CREATED_MESSAGE);
           webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
         });
+
     When(
-        "^I validate create a new event popup",
+        "^I validate all fields are rendered correctly on create a new event popup window",
         () -> {
           String timestamp = String.valueOf(System.currentTimeMillis());
           webDriverHelpers.fillInWebElement(TITLE_INPUT, "EVENT_AUTOMATION_" + timestamp);
@@ -93,8 +93,9 @@ public class CreateNewEventSteps implements En {
           selectEventStatus("EVENT");
           selectEventStatus("SCREENING");
           selectEventStatus("CLUSTER");
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(PRIMARY_MODE_OF_TRANSMISSION);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NOSOCOMIAL);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              PRIMARY_MODE_OF_TRANSMISSION_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NOSOCOMIAL_INPUT);
           selectEventStatus("DROPPED");
           selectEventManagementStatusOption("PENDING");
           selectEventManagementStatusOption("ONGOING");
@@ -104,17 +105,23 @@ public class CreateNewEventSteps implements En {
           selectRiskLevel("Moderate risk");
           selectRiskLevel("High risk");
           selectRiskLevel("Unknown");
-          webDriverHelpers.scrollToElement(DISEASE_INPUT);
+          webDriverHelpers.scrollToElement(DISEASE_COMBOBOX);
           selectEventInvestigationStatusOptions("INVESTIGATION PENDING");
           selectEventInvestigationStatusOptions("ONGOING INVESTIGATION");
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_INVESTIGATION_START_DATE);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_INVESTIGATION_END_DATE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EVENT_INVESTIGATION_START_DATE_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EVENT_INVESTIGATION_END_DATE_INPUT);
           selectEventInvestigationStatusOptions("INVESTIGATION DONE");
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_INVESTIGATION_START_DATE);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_INVESTIGATION_END_DATE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EVENT_INVESTIGATION_START_DATE_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EVENT_INVESTIGATION_END_DATE_INPUT);
           selectEventInvestigationStatusOptions("INVESTIGATION DISCARDED");
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_INVESTIGATION_START_DATE);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_INVESTIGATION_END_DATE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EVENT_INVESTIGATION_START_DATE_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EVENT_INVESTIGATION_END_DATE_INPUT);
           selectDisease("Acute Flaccid Paralysis");
           selectDisease("Anthrax");
           selectDisease("COVID-19");
@@ -131,7 +138,7 @@ public class CreateNewEventSteps implements En {
           selectDisease("Monkeypox");
           selectDisease("Not Yet Defined");
           selectDisease("Other Epidemic Disease");
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(DISEASE_NAME);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(DISEASE_NAME_INPUT);
           selectDisease("Plague");
           selectDisease("Poliomyelitis");
           selectDisease("Unspecified VHF");
@@ -139,45 +146,46 @@ public class CreateNewEventSteps implements En {
           selectSourceType("Not applicable");
           selectSourceType("Mathematical model");
           selectSourceType("Media/News");
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_MEDIA_WEBSITE);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_MEDIA_NAME);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_MEDIA_DETAILS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_MEDIA_WEBSITE_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_MEDIA_NAME_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_MEDIA_DETAILS_INPUT);
           selectSourceType("Hotline/Person");
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_FIRST_NAME);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_LAST_NAME);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_TEL_NO);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_EMAIL);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_FIRST_NAME_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_LAST_NAME_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_TEL_NO_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_EMAIL_INPUT);
           selectSourceType("Institutional partner");
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_FIRST_NAME);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_LAST_NAME);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_TEL_NO);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_EMAIL);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_INSTITUTIONAL_PARTNER);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_FIRST_NAME_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_LAST_NAME_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_TEL_NO_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_EMAIL_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SOURCE_INSTITUTIONAL_PARTNER_COMBOBOX);
           selectSourceInstitutionalPartner("Other");
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              SOURCE_INSTITUTIONAL_PARTNER_DETAILS);
+              SOURCE_INSTITUTIONAL_PARTNER_DETAILS_INPUT);
           selectTypeOfPlace("Facility");
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_CATEGORY);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_TYPE);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_CATEGORY_COMBOBOX);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_TYPE_COMBOBOX);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_COMBOBOX);
           selectTypeOfPlace("Festivities");
           selectTypeOfPlace("Home");
           selectTypeOfPlace("Means of transport");
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(MEANS_OF_TRANSPORT);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONNECTION_NUMBER);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(TRAVEL_DATE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(MEANS_OF_TRANSPORT_COMBOBOX);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONNECTION_NUMBER_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(TRAVEL_DATE_INPUT);
           selectMeansOfTransport("Local public transport");
           selectMeansOfTransport("Bus");
           selectMeansOfTransport("Ship/Ferry");
           selectMeansOfTransport("Plane");
           selectMeansOfTransport("Train");
           selectMeansOfTransport("Other");
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(MEANS_OF_TRANSPORT_DETAILS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(MEANS_OF_TRANSPORT_DETAILS_INPUT);
           selectTypeOfPlace("Public place");
           selectTypeOfPlace("Scattered");
           selectTypeOfPlace("Unknown");
           selectTypeOfPlace("Other");
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SPECIFY_OTHER_EVENT_PLACE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SPECIFY_OTHER_EVENT_PLACE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON);
         });
   }
@@ -204,37 +212,17 @@ public class CreateNewEventSteps implements En {
     webDriverHelpers.fillInWebElement(START_DATA_INPUT, formatter.format(date));
   }
 
-  public void fillSignalEvolutionDate(String signalEvolutionDate) {
-    webDriverHelpers.clickWebElementByText(SIGNAL_EVOLUTION_DATE_INPUT, signalEvolutionDate);
-  }
-
   public void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
     webDriverHelpers.clickWebElementByText(
         EVENT_INVESTIGATION_STATUS_OPTIONS, eventInvestigationStatusOption);
   }
 
   public void selectDisease(String disease) {
-    webDriverHelpers.selectFromCombobox(DISEASE_INPUT, disease);
-  }
-
-  public void fillExternalIdInput(String externalId) {
-    webDriverHelpers.clickWebElementByText(EXTERNAL_ID_INPUT, externalId);
-  }
-
-  public void fillInternalIdInput(String internalIdInput) {
-    webDriverHelpers.fillInWebElement(INTERNAL_ID_INPUT, internalIdInput);
-  }
-
-  public void fillExternalTokenInput(String externalToken) {
-    webDriverHelpers.fillInWebElement(EXTERNAL_TOKEN_INPUT, externalToken);
+    webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
   }
 
   public void fillTitle(String title) {
     webDriverHelpers.fillInWebElement(TITLE_INPUT, title);
-  }
-
-  public void fillDescriptionInput(String description) {
-    webDriverHelpers.fillInWebElement(DESCRIPTION_INPUT, description);
   }
 
   public void selectSourceType(String sourceType) {
@@ -242,7 +230,8 @@ public class CreateNewEventSteps implements En {
   }
 
   public void selectSourceInstitutionalPartner(String institutionalPartner) {
-    webDriverHelpers.selectFromCombobox(SOURCE_INSTITUTIONAL_PARTNER, institutionalPartner);
+    webDriverHelpers.selectFromCombobox(
+        SOURCE_INSTITUTIONAL_PARTNER_COMBOBOX, institutionalPartner);
   }
 
   public void selectTypeOfPlace(String typeOfPlace) {
@@ -250,19 +239,11 @@ public class CreateNewEventSteps implements En {
   }
 
   public void selectMeansOfTransport(String meansOfTransport) {
-    webDriverHelpers.selectFromCombobox(MEANS_OF_TRANSPORT, meansOfTransport);
-  }
-
-  public void selectCountryCombobox(String country) {
-    webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, country);
-  }
-
-  public void selectRegion(String region) {
-    webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, region);
+    webDriverHelpers.selectFromCombobox(MEANS_OF_TRANSPORT_COMBOBOX, meansOfTransport);
   }
 
   public void fillDateOfReport(LocalDate date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
-    webDriverHelpers.fillInWebElement(REPORT_DATE, formatter.format(date));
+    webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, formatter.format(date));
   }
 }

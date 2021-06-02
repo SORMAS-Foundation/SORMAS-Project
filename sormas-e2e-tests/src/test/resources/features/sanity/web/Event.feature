@@ -1,4 +1,4 @@
-@Event @br
+@Sanity @Event
 Feature: Create events
 
   Scenario: Create a new event
@@ -11,7 +11,7 @@ Feature: Create events
     Given I log in as a National User
       And I click on the Events button from navbar
       And I click on the NEW EVENT button
-      And I validate create a new event popup
+      And I validate all fields are rendered correctly on create a new event popup window
 
   Scenario: Create a new event and change its status multiple times
     Given I log in as a National User
@@ -20,23 +20,23 @@ Feature: Create events
      When I create a new event with status CLUSTER
       And I click on the Events button from navbar
       And I search for specific event in event directory
-     Then I check if it appears under CLUSTER filter in event directory
+     Then I check if it appears under Cluster filter in event directory
      When I change the event status to SCREENING
       And I click on the Events button from navbar
       And I search for specific event in event directory
-     Then I check if it appears under SCREENING filter in event directory
+     Then I check if it appears under Screening filter in event directory
      When I change the event status to EVENT
       And I click on the Events button from navbar
       And I search for specific event in event directory
-     Then I check if it appears under EVENT filter in event directory
+     Then I check if it appears under Event filter in event directory
      When I change the event status to SIGNAL
       And I click on the Events button from navbar
       And I search for specific event in event directory
-     Then I check if it appears under SIGNAL filter in event directory
+     Then I check if it appears under Signal filter in event directory
      When I change the event status to DROPPED
       And I click on the Events button from navbar
       And I search for specific event in event directory
-     Then I check if it appears under DROPPED filter in event directory
+     Then I check if it appears under Dropped filter in event directory
 
   Scenario: Create and check a new event data
     Given I log in as a National User
