@@ -23,7 +23,6 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 
@@ -69,10 +68,10 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-            "I check if participant appears in the event participants list",
-            () -> {
-              final String personUuid = EditEventSteps.person.getUuid();
-              webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
-            });
+        "I check if participant appears in the event participants list",
+        () -> {
+          final String personUuid = EditEventSteps.person.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
+        });
   }
 }

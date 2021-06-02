@@ -11,8 +11,11 @@ import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 
 public class PersonDirectorySteps implements En {
 
+  private final WebDriverHelpers webDriverHelpers;
+
   @Inject
   public PersonDirectorySteps(WebDriverHelpers webDriverHelpers) {
+    this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I search for specific person in person directory",

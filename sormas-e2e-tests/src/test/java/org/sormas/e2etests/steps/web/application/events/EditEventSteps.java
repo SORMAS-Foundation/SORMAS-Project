@@ -35,9 +35,9 @@ import org.sormas.e2etests.pojo.web.Person;
 public class EditEventSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
-    private final Faker faker;
-    public static Event event;
-    public static Person person;
+  private final Faker faker;
+  public static Event event;
+  public static Person person;
 
   @Inject
   public EditEventSteps(WebDriverHelpers webDriverHelpers, Faker faker) {
@@ -138,4 +138,11 @@ public class EditEventSteps implements En {
     webDriverHelpers.clickWebElementByText(EVENT_STATUS_OPTIONS, eventStatus);
   }
 
+  public void selectResponsibleRegion(String region) {
+    webDriverHelpers.selectFromCombobox(EDIT_PERSON_POPUP_RESPONSIBLE_REGION_COMBOBOX, region);
+  }
+
+  public void selectResponsibleDistrict(String district) {
+    webDriverHelpers.selectFromCombobox(EDIT_PERSON_POPUP_RESPONSIBLE_DISTRICT_COMBOBOX, district);
+  }
 }
