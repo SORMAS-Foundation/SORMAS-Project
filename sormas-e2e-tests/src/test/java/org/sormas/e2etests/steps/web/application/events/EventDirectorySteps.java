@@ -66,5 +66,12 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
+
+    When(
+        "I check if participant appears in the event participants list",
+        () -> {
+          final String personUuid = EditEventSteps.person.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
+        });
   }
 }
