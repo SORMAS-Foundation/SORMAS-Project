@@ -77,6 +77,10 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsVisibleAndClickable(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
   }
 
+  public void waitUntilIdentifiedElementIsVisibleAndClickable(final WebElement selector) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
+  }
+
   public void waitUntilIdentifiedElementIsVisibleAndClickable(final Object selector, int seconds) {
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
