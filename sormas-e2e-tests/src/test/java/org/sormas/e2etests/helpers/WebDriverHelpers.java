@@ -26,7 +26,6 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 import static org.sormas.e2etests.helpers.AssertHelpers.*;
 
-import com.google.common.truth.Truth;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Predicate;
