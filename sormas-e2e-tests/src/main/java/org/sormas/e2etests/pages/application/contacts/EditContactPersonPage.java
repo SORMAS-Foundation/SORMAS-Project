@@ -33,9 +33,7 @@ public class EditContactPersonPage {
   public static final By PHONE_FIELD =
       By.xpath(
           "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Phone')])[1]/../following-sibling::td//div");
-  public static final By UUID_INPUT = By.cssSelector("#uuid");
   public static final By FIRST_NAME_INPUT = By.cssSelector("#firstName");
-  public static final By LAST_NAME_INPUT = By.cssSelector("#lastName");
   public static final By DATE_OF_BIRTH_YEAR_COMBOBOX = By.cssSelector("#birthdateYYYY input+div");
   public static final By DATE_OF_BIRTH_MONTH_COMBOBOX = By.cssSelector("#birthdateMM input+div");
   public static final By DATE_OF_BIRTH_DAY_COMBOBOX = By.cssSelector("#birthdateDD input+div");
@@ -68,8 +66,6 @@ public class EditContactPersonPage {
   public static final By CONTACT_PERSON_FIRST_NAME_INPUT =
       By.cssSelector("#contactPersonFirstName");
   public static final By CONTACT_PERSON_LAST_NAME_INPUT = By.cssSelector("#contactPersonLastName");
-  public static final By CONTACT_PERSON_PHONE_NUMBER_INPUT = By.cssSelector("#contactPersonPhone");
-  public static final By CONTACT_PERSON_EMAIL_ADDRESS_INPUT = By.cssSelector("#contactPersonEmail");
   public static final By COMMUNITY_CONTACT_PERSON_INPUT = By.cssSelector("#details");
   public static final By BIRTH_NAME_INPUT = By.cssSelector("#birthName");
   public static final By NICKNAME_INPUT = By.cssSelector("#nickname");

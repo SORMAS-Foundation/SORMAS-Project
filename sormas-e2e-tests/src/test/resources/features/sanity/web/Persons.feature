@@ -15,5 +15,6 @@ Feature: Edit Persons
     When I open the last created person
     Then I check that previous created person is correctly displayed in Edit Person page
     And While on Person edit page, I will edit all fields with new values
-    And I click on save button from Edit Person page
-    Then I check that previous edited person is correctly displayed in Edit Person page
+    And I edit all Person primary contact details and save
+    Then I click on save button from Edit Person page
+    And I check that previous edited person is correctly displayed in Edit Person page

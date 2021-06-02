@@ -20,11 +20,8 @@ package org.sormas.e2etests.pages.application.contacts;
 
 import org.openqa.selenium.By;
 
-public class PersonContactDetailsPage {
+public class EditPersonContactDetailsPage {
 
-  public static final By PERSON_CONTACT_DETAILS_POPUP = By.cssSelector(".v-window  .popupContent");
-  public static final By TYPE_OF_CONTACT_DETAILS_COMBOBOX =
-      By.cssSelector(".v-window #personContactDetailType > div");
   public static final By CONTACT_INFORMATION_INPUT =
       By.cssSelector(".v-window #contactInformation");
   public static final By DONE_BUTTON = By.cssSelector(".v-window #commit");

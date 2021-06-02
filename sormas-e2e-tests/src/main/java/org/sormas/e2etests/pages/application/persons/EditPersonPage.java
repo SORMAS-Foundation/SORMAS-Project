@@ -93,4 +93,13 @@ public class EditPersonPage {
   public static final By PERSON_CONTACT_DETAILS_TYPE_OF_DETAILS_INPUT =
       By.xpath(
           "(//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Other')])[1]");
+  public static final By PRIMARY_CONTACT_DETAILS_EDIT_OTHER_FIELD =
+      By.xpath(
+          "(//div[@class='v-table-cell-wrapper' and contains(text(),'Other')])[1]//preceding::div[contains(@id,'edit')][1]");
+  public static final By PRIMARY_CONTACT_DETAILS_EDIT_EMAIL_FIELD =
+      By.xpath(
+          "(//div[@class='v-table-cell-wrapper' and contains(text(),'Email')])[1]//preceding::div[contains(@id,'edit')][1]");
+  public static final By PRIMARY_CONTACT_DETAILS_EDIT_PHONE_FIELD =
+      By.xpath(
+          "(//div[@class='v-table-cell-wrapper' and contains(text(),'Phone')])[1]//preceding::div[contains(@id,'edit')][1]");
 }

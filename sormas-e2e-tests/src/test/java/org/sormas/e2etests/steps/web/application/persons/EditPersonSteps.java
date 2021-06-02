@@ -41,7 +41,7 @@ public class EditPersonSteps implements En {
   private BaseSteps baseSteps;
   protected Person previousCreatedPerson = null;
   protected Person collectedPerson;
-  protected Person newGeneratedPerson;
+  public static Person newGeneratedPerson;
 
   @Inject
   public EditPersonSteps(

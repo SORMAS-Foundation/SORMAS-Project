@@ -61,6 +61,8 @@ public class PersonService {
         .salutation("Dear Sir")
         .dateOfBirth(LocalDate.of(1904, 3, 7))
         .sex("Male")
+        .emailAddress(faker.internet().emailAddress())
+        .phoneNumber(faker.phoneNumber().phoneNumber())
         .presentConditionOfPerson("Alive")
         .nationalHealthId(UUID.randomUUID().toString())
         .passportNumber(String.valueOf(System.currentTimeMillis()))
@@ -92,7 +94,7 @@ public class PersonService {
         .fatherName(faker.name().firstName() + " " + faker.name().lastName())
         .nameOfGuardians(faker.name().firstName())
         .personContactDetailsTypeOfContactDetails("Other")
-        .personContactDetailsContactInformation("Facebook")
+        .personContactDetailsContactInformation(faker.funnyName().name())
         .build();
   }
 }
