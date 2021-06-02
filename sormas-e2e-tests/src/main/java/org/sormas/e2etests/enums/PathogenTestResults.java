@@ -16,25 +16,31 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pojo;
+package org.sormas.e2etests.enums;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import java.util.Random;
+import lombok.Getter;
 
-@Builder(toBuilder = true, builderClassName = "builder")
-@Value
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@NonNull
-public class Sample {
-  String uuid;
-  LocalDate dateOfCollection;
-  LocalTime timeOfCollection;
-  String sampleType;
-  String reasonForSample;
-  long sampleID;
-  String commentsOnSample;
+@Getter
+public enum PathogenTestResults {
+  INDETERMINATE("Indeterminate"),
+  PENDING("Pending"),
+  NEGATIVE("Negative"),
+  POSITIVE("Positive"),
+  NOT_DONE("Not done");
+
+  private final String results;
+
+  PathogenTestResults(String testResult) {
+    results = testResult;
+  }
+
+  public String value() {
+    return this.results;
+  }
+
+  public static String getRandomResult() {
+    Random random = new Random();
+    return String.valueOf(PathogenTestResults.values()[random.nextInt(values().length)]);
+  }
 }

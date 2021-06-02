@@ -332,6 +332,11 @@ public class WebDriverHelpers {
     return baseSteps.getDriver().findElement(options).findElement(SELECTED_RADIO_BUTTOn).getText();
   }
 
+  public String getCheckedOption(By options, By selected) {
+    waitUntilIdentifiedElementIsPresent(options);
+    return baseSteps.getDriver().findElement(options).findElement(selected).getText();
+  }
+
   public void clearWebElement(By selector) {
     Instant start = Instant.now();
     waitUntilElementIsVisibleAndClickable(selector);

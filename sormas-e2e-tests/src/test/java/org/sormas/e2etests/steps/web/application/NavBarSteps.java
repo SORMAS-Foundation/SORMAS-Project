@@ -47,5 +47,9 @@ public class NavBarSteps implements En {
     When(
         "^I click on the Sample button from navbar$",
         () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.SAMPLE_BUTTON));
+
+    And(
+        "^I confirm navigation$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONFIRM_NAVIGATION));
   }
 }

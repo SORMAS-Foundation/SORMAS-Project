@@ -15,26 +15,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo.api;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.Date;
+package org.sormas.e2etests.pojo.web;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import lombok.*;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Sample {
-  String sampleMaterial;
-  String samplePurpose;
-  AssociatedCase associatedCase;
-  ReportingUser reportingUser;
-  String pathogenTestResult;
-  String specimenCondition;
-  Date sampleDateTime;
-  Date reportDateTime;
-  Lab lab;
+  String purposeOfTheSample;
   String uuid;
+  LocalDate dateOfCollection;
+  LocalTime timeOfCollection;
+  String sampleType;
+  String reasonForSample;
+  long sampleID;
+  String laboratory;
+  String laboratoryName;
+  String received;
+  LocalDate receivedDate;
+  String specimenCondition;
+  long labSampleId;
+  String commentsOnSample;
+  String sampleTestResults;
+  LocalDate reportDate;
+  String typeOfTest;
+  String testedDisease;
+  LocalDate dateOfResult;
+  LocalTime timeOfResult;
+  String resultVerifiedByLabSupervisor;
+  String testResultsComment;
 }
