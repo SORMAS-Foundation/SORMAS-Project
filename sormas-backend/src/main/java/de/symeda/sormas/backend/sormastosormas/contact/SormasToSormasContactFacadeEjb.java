@@ -45,8 +45,8 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
+import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
-import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 
@@ -63,7 +63,7 @@ public class SormasToSormasContactFacadeEjb
 	@EJB
 	private ContactShareDataBuilder contactShareDataBuilder;
 	@EJB
-	private SharedContactProcessor sharedContactProcessor;
+	private ReceivedContactProcessor receivedContactProcessor;
 	@EJB
 	private ProcessedContactDataPersister processedContactDataPersister;
 	@EJB
@@ -88,8 +88,8 @@ public class SormasToSormasContactFacadeEjb
 	}
 
 	@Override
-	protected SharedDataProcessor<ContactDto, SormasToSormasContactDto, ProcessedContactData> getSharedDataProcessor() {
-		return sharedContactProcessor;
+	protected ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, ProcessedContactData> getReceivedDataProcessor() {
+		return receivedContactProcessor;
 	}
 
 	@Override
