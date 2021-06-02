@@ -21,6 +21,7 @@ import static de.symeda.sormas.ui.utils.DownloadUtil.createFileNameWithCurrentDa
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -35,10 +36,10 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ClassResource;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
-import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
@@ -49,7 +50,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -59,7 +59,6 @@ import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -173,13 +172,13 @@ public class AboutView extends VerticalLayout implements View {
 						String documentPath = FacadeProvider.getInfoFacae().generateDataDictionary();
 						IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
 					} catch (IOException e) {
-						LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
-						new Notification(
-							I18nProperties.getString(Strings.headingExportUserRightsFailed),
-							I18nProperties.getString(Strings.messageUserRightsExportFailed),
-							Notification.Type.ERROR_MESSAGE,
-							false).show(Page.getCurrent());
+						LoggerFactory.getLogger(AboutView.class).error("Failed to generate data dictionary", e);
+
+						// fall back to pre-generated document
+						InputStream preGeneratedDocumentStream = new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx").getStream().getStream();
+						IOUtils.copy(preGeneratedDocumentStream, out);
 					}
+
 				}, (e) -> {
 				}), createFileNameWithCurrentDate(ExportEntityName.DATA_DICTIONARY, ".xlsx"))).extend(dataDictionaryButton);
 			}
