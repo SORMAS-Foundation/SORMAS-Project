@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.caze.components.linelisting;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -10,7 +9,6 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
-import com.vaadin.data.ValidationResult;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -22,12 +20,12 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -44,14 +42,13 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FieldVisibleAndNotEmptyValidator;
+import de.symeda.sormas.ui.utils.components.birthdate.BirthDateField;
 
 public class LineListingLayout extends VerticalLayout {
 
@@ -126,13 +123,12 @@ public class LineListingLayout extends VerticalLayout {
 		district.addValueChangeListener(e -> {
 			removeFacilitiesIfCommunityIsNotPresent();
 			removeCommunities();
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getValue();
+			DistrictReferenceDto districtDto = e.getValue();
 			updateCommunitiesAndFacilities(districtDto);
 		});
 		typeGroup.addValueChangeListener(e -> {
 			removeFacilities();
-			type.setItems(
-				typeGroup.getValue() != null ? FacilityType.getAccommodationTypes((FacilityTypeGroup) typeGroup.getValue()) : new ArrayList<>());
+			type.setItems(typeGroup.getValue() != null ? FacilityType.getAccommodationTypes(typeGroup.getValue()) : new ArrayList<>());
 			type.setValue(null);
 		});
 		type.addValueChangeListener(e -> {
@@ -174,7 +170,7 @@ public class LineListingLayout extends VerticalLayout {
 		HorizontalLayout actionBar = new HorizontalLayout();
 		Button addLine = ButtonHelper.createIconButton(Captions.lineListingAddLine, VaadinIcons.PLUS, e -> {
 			CaseLineLayout newLine = new CaseLineLayout(lineComponent, caseLines.size() + 1);
-			DistrictReferenceDto districtReferenceDto = (DistrictReferenceDto) district.getValue();
+			DistrictReferenceDto districtReferenceDto = district.getValue();
 			updateCommunityAndFacility(districtReferenceDto, newLine);
 			CaseLineDto lastLineDto = caseLines.get(caseLines.size() - 1).getBean();
 			CaseLineDto newLineDto = new CaseLineDto();
@@ -349,22 +345,20 @@ public class LineListingLayout extends VerticalLayout {
 
 		private static final long serialVersionUID = 4159615474757272630L;
 
-		private Binder<CaseLineDto> binder = new Binder<>(CaseLineDto.class);
+		private final Binder<CaseLineDto> binder = new Binder<>(CaseLineDto.class);
 
-		private DateField dateOfReport;
-		private TextField epidNumber;
-		private ComboBox<CommunityReferenceDto> community;
+		private final DateField dateOfReport;
+		private final TextField epidNumber;
+		private final ComboBox<CommunityReferenceDto> community;
 		private ComboBox<FacilityReferenceDto> facility;
 		private TextField facilityDetails;
-		private TextField firstname;
-		private TextField lastname;
-		private ComboBox<Integer> dateOfBirthYear;
-		private ComboBox<Integer> dateOfBirthMonth;
-		private ComboBox<Integer> dateOfBirthDay;
-		private ComboBox<Sex> sex;
-		private DateField dateOfOnset;
+		private final TextField firstname;
+		private final TextField lastname;
+		private final BirthDateField birthDate;
+		private final ComboBox<Sex> sex;
+		private final DateField dateOfOnset;
 
-		private Button delete;
+		private final Button delete;
 
 		public CaseLineLayout(VerticalLayout lineComponent, int lineIndex) {
 
@@ -373,7 +367,7 @@ public class LineListingLayout extends VerticalLayout {
 
 			binder.forField(disease).asRequired().bind(CaseLineDto.DISEASE);
 			binder.forField(diseaseDetails)
-				.asRequired(new FieldVisibleAndNotEmptyValidator<String>(I18nProperties.getString(Strings.errorFieldValidationFailed)))
+				.asRequired(new FieldVisibleAndNotEmptyValidator<>(I18nProperties.getString(Strings.errorFieldValidationFailed)))
 				.bind(CaseLineDto.DISEASE_DETAILS);
 			binder.forField(region).asRequired().bind(CaseLineDto.REGION);
 			binder.forField(district).asRequired().bind(CaseLineDto.DISTRICT);
@@ -420,8 +414,8 @@ public class LineListingLayout extends VerticalLayout {
 			facilityDetails.setVisible(false);
 			updateFacilityFields(facility, facilityDetails);
 			binder.forField(facilityDetails)
-				.asRequired(new FieldVisibleAndNotEmptyValidator<String>(I18nProperties.getString(Strings.errorFieldValidationFailed)))
-				.bind(CaseLineDto.FACILITIY_DETAILS);
+				.asRequired(new FieldVisibleAndNotEmptyValidator<>(I18nProperties.getString(Strings.errorFieldValidationFailed)))
+				.bind(CaseLineDto.FACILITY_DETAILS);
 
 			firstname = new TextField();
 			firstname.setId("lineListingFirstName_" + lineIndex);
@@ -430,63 +424,9 @@ public class LineListingLayout extends VerticalLayout {
 			firstname.setId("lineListingLastName_" + lineIndex);
 			binder.forField(lastname).asRequired().bind(CaseLineDto.LAST_NAME);
 
-			dateOfBirthYear = new ComboBox<>();
-			dateOfBirthYear.setId("lineListingDateOfBirthYear_" + lineIndex);
-			dateOfBirthYear.setEmptySelectionAllowed(true);
-			dateOfBirthYear.setItems(DateHelper.getYearsToNow());
-			dateOfBirthYear.setWidth(80, Unit.PIXELS);
-			dateOfBirthYear.addStyleName(CssStyles.CAPTION_OVERFLOW);
-			binder.forField(dateOfBirthYear).withValidator((e, context) -> {
-				try {
-					ControllerProvider.getPersonController().validateBirthDate(e, dateOfBirthMonth.getValue(), dateOfBirthDay.getValue());
-					return ValidationResult.ok();
-				} catch (Validator.InvalidValueException ex) {
-					return ValidationResult.error(ex.getMessage());
-				}
-			}).bind(CaseLineDto.DATE_OF_BIRTH_YYYY);
-			dateOfBirthMonth = new ComboBox<>();
-			dateOfBirthMonth.setId("lineListingDateOfBirthMonth_" + lineIndex);
-			dateOfBirthMonth.setEmptySelectionAllowed(true);
-			dateOfBirthMonth.setItems(DateHelper.getMonthsInYear());
-			dateOfBirthMonth.setPageLength(12);
-			setItemCaptionsForMonths(dateOfBirthMonth);
-			dateOfBirthMonth.setWidth(120, Unit.PIXELS);
-			binder.forField(dateOfBirthMonth).withValidator((e, context) -> {
-				try {
-					ControllerProvider.getPersonController().validateBirthDate(dateOfBirthYear.getValue(), e, dateOfBirthDay.getValue());
-					return ValidationResult.ok();
-				} catch (Validator.InvalidValueException ex) {
-					return ValidationResult.error(ex.getMessage());
-				}
-			}).bind(CaseLineDto.DATE_OF_BIRTH_MM);
-			dateOfBirthDay = new ComboBox<>();
-			dateOfBirthDay.setId("lineListingDateOfBirthDay_" + lineIndex);
-			dateOfBirthDay.setEmptySelectionAllowed(true);
-			dateOfBirthDay.setWidth(80, Unit.PIXELS);
-			binder.forField(dateOfBirthDay).withValidator((e, context) -> {
-				try {
-					ControllerProvider.getPersonController().validateBirthDate(dateOfBirthYear.getValue(), dateOfBirthMonth.getValue(), e);
-					return ValidationResult.ok();
-				} catch (Validator.InvalidValueException ex) {
-					return ValidationResult.error(ex.getMessage());
-				}
-			}).bind(CaseLineDto.DATE_OF_BIRTH_DD);
-
-			// Update the list of days according to the selected month and year
-			dateOfBirthYear.addValueChangeListener(e -> {
-				updateListOfDays(e.getValue(), dateOfBirthMonth.getValue(), dateOfBirthDay);
-				dateOfBirthMonth.markAsDirty();
-				dateOfBirthDay.markAsDirty();
-			});
-			dateOfBirthMonth.addValueChangeListener(e -> {
-				updateListOfDays(dateOfBirthYear.getValue(), e.getValue(), dateOfBirthDay);
-				dateOfBirthYear.markAsDirty();
-				dateOfBirthDay.markAsDirty();
-			});
-			dateOfBirthDay.addValueChangeListener(e -> {
-				dateOfBirthYear.markAsDirty();
-				dateOfBirthMonth.markAsDirty();
-			});
+			birthDate = new BirthDateField();
+			birthDate.setId("lineListingBirthDate_" + lineIndex);
+			binder.forField(birthDate).bind(CaseLineDto.BIRTH_DATE);
 
 			sex = new ComboBox<>();
 			sex.setId("lineListingSex_" + lineIndex);
@@ -511,27 +451,13 @@ public class LineListingLayout extends VerticalLayout {
 			if (shouldShowEpidNumber()) {
 				addComponent(epidNumber);
 			}
-			addComponents(
-				community,
-				facility,
-				facilityDetails,
-				firstname,
-				lastname,
-				dateOfBirthYear,
-				dateOfBirthMonth,
-				dateOfBirthDay,
-				sex,
-				dateOfOnset,
-				delete);
+			addComponents(community, facility, facilityDetails, firstname, lastname, birthDate, sex, dateOfOnset, delete);
 
 			if (lineIndex == 0) {
 				formatAsFirstLine();
 			} else {
 				formatAsOtherLine();
 			}
-
-			setComponentAlignment(dateOfBirthMonth, Alignment.BOTTOM_LEFT);
-			setComponentAlignment(dateOfBirthDay, Alignment.BOTTOM_LEFT);
 		}
 
 		public void setBean(CaseLineDto bean) {
@@ -564,7 +490,7 @@ public class LineListingLayout extends VerticalLayout {
 			firstname.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			lastname.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
 			lastname.removeStyleName(CssStyles.CAPTION_HIDDEN);
-			dateOfBirthYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
+			birthDate.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
 			sex.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
 			sex.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			dateOfOnset.setCaption(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
@@ -581,19 +507,6 @@ public class LineListingLayout extends VerticalLayout {
 			CssStyles.style(firstname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(lastname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(sex, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-		}
-
-		private void setItemCaptionsForMonths(ComboBox<Integer> comboBox) {
-			comboBox.setItemCaptionGenerator(item -> I18nProperties.getEnumCaption(Month.of(item)));
-		}
-
-		private void updateListOfDays(Integer selectedYear, Integer selectedMonth, ComboBox<Integer> dateOfBirthDay) {
-			Integer currentlySelected = (Integer) dateOfBirthDay.getValue();
-			List<Integer> daysInMonth = DateHelper.getDaysInMonth(selectedMonth, selectedYear);
-			dateOfBirthDay.setItems(daysInMonth);
-			if (daysInMonth.contains(currentlySelected)) {
-				dateOfBirthDay.setValue(currentlySelected);
-			}
 		}
 
 		private void updateFacilityFields(ComboBox<FacilityReferenceDto> cbFacility, TextField tfFacilityDetails) {
@@ -662,12 +575,10 @@ public class LineListingLayout extends VerticalLayout {
 		public static final String EPID_NUMBER = "epidNumber";
 		public static final String COMMUNITY = "community";
 		public static final String FACILITY = "facility";
-		public static final String FACILITIY_DETAILS = "facilityDetails";
+		public static final String FACILITY_DETAILS = "facilityDetails";
 		public static final String FIRST_NAME = "firstName";
 		public static final String LAST_NAME = "lastName";
-		public static final String DATE_OF_BIRTH_YYYY = "dateOfBirthYYYY";
-		public static final String DATE_OF_BIRTH_MM = "dateOfBirthMM";
-		public static final String DATE_OF_BIRTH_DD = "dateOfBirthDD";
+		public static final String BIRTH_DATE = "birthDate";
 		public static final String SEX = "sex";
 		public static final String DATE_OF_ONSET = "dateOfOnset";
 		public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
@@ -686,54 +597,9 @@ public class LineListingLayout extends VerticalLayout {
 		private String facilityDetails;
 		private String firstName;
 		private String lastName;
-		private Integer dateOfBirthYYYY;
-		private Integer dateOfBirthMM;
-		private Integer dateOfBirthDD;
+		private BirthDateDto birthDate;
 		private Sex sex;
 		private LocalDate dateOfOnset;
-
-		public CaseLineDto(
-			Disease disease,
-			String diseaseDetails,
-			RegionReferenceDto region,
-			DistrictReferenceDto district,
-			LocalDate dateOfReport,
-			String epidNumber,
-			CommunityReferenceDto community,
-			FacilityTypeGroup facilityTypeGroup,
-			FacilityType facilityType,
-			FacilityReferenceDto facility,
-			String facilityDetails,
-			String firstname,
-			String lastname,
-			Integer dateOfBirthYear,
-			Integer dateOfBirthMonth,
-			Integer dateOfBirthDay,
-			Sex sex,
-			LocalDate dateOfOnset) {
-
-			this.disease = disease;
-			this.diseaseDetails = diseaseDetails;
-			this.region = region;
-			this.district = district;
-			this.dateOfReport = dateOfReport;
-			this.epidNumber = epidNumber;
-			this.community = community;
-			this.facility = facility;
-			this.facilityDetails = facilityDetails;
-			this.firstName = firstname;
-			this.lastName = lastname;
-			this.dateOfBirthYYYY = dateOfBirthYear;
-			this.dateOfBirthMM = dateOfBirthMonth;
-			this.dateOfBirthDD = dateOfBirthDay;
-			this.sex = sex;
-			this.dateOfOnset = dateOfOnset;
-			this.facilityTypeGroup = facilityTypeGroup;
-			this.facilityType = facilityType;
-		}
-
-		public CaseLineDto() {
-		}
 
 		public Disease getDisease() {
 			return disease;
@@ -823,28 +689,12 @@ public class LineListingLayout extends VerticalLayout {
 			this.lastName = lastName;
 		}
 
-		public Integer getDateOfBirthYYYY() {
-			return dateOfBirthYYYY;
+		public BirthDateDto getBirthDate() {
+			return birthDate;
 		}
 
-		public void setDateOfBirthYYYY(Integer dateOfBirthYYYY) {
-			this.dateOfBirthYYYY = dateOfBirthYYYY;
-		}
-
-		public Integer getDateOfBirthMM() {
-			return dateOfBirthMM;
-		}
-
-		public void setDateOfBirthMM(Integer dateOfBirthMM) {
-			this.dateOfBirthMM = dateOfBirthMM;
-		}
-
-		public Integer getDateOfBirthDD() {
-			return dateOfBirthDD;
-		}
-
-		public void setDateOfBirthDD(Integer dateOfBirthDD) {
-			this.dateOfBirthDD = dateOfBirthDD;
+		public void setBirthDate(BirthDateDto birthDate) {
+			this.birthDate = birthDate;
 		}
 
 		public Sex getSex() {

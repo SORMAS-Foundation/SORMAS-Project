@@ -1524,9 +1524,9 @@ public class CaseController {
 			final PersonDto newPerson = PersonDto.build();
 			newPerson.setFirstName(caseLineDto.getFirstName());
 			newPerson.setLastName(caseLineDto.getLastName());
-			newPerson.setBirthdateYYYY(caseLineDto.getDateOfBirthYYYY());
-			newPerson.setBirthdateMM(caseLineDto.getDateOfBirthMM());
-			newPerson.setBirthdateDD(caseLineDto.getDateOfBirthDD());
+			newPerson.setBirthdateYYYY(caseLineDto.getBirthDate().getDateOfBirthYYYY());
+			newPerson.setBirthdateMM(caseLineDto.getBirthDate().getDateOfBirthMM());
+			newPerson.setBirthdateDD(caseLineDto.getBirthDate().getDateOfBirthDD());
 			newPerson.setSex(caseLineDto.getSex());
 
 			ControllerProvider.getPersonController()
