@@ -17,8 +17,10 @@
  */
 package org.sormas.e2etests.steps.api;
 
-import com.google.common.truth.Truth;
+import static com.google.common.truth.Truth.assertThat;
+
 import cucumber.api.java8.En;
+import javax.inject.Inject;
 import org.sormas.e2etests.enums.APITestData.ErrorMessages;
 import org.sormas.e2etests.helpers.api.CaseHelper;
 import org.sormas.e2etests.helpers.api.CommunityHelper;
@@ -28,8 +30,6 @@ import org.sormas.e2etests.services.API.PostCaseBodyService;
 import org.sormas.e2etests.services.API.PostPersonBodyService;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.state.BodyResources;
-
-import javax.inject.Inject;
 
 public class CaseSteps implements En {
 
@@ -91,7 +91,7 @@ public class CaseSteps implements En {
         "I get the cases created since {int}",
         (Integer since) -> {
           caseHelper.getAllCasesSince(since);
-          Truth.assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
+          assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
 
           apiState.setCasesAllSince(apiState.getResponse().getBody().prettyPrint());
           System.out.println("Last cases pushed = " + apiState.getCasesAllSince());
@@ -102,25 +102,21 @@ public class CaseSteps implements En {
         () -> {
           System.out.println("Response status code = " + apiState.getResponse().getStatusCode());
           System.out.println("Response body = " + apiState.getResponse().getBody().asString());
-          Truth.assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
-          Truth.assertThat(
-              apiState
-                  .getResponse()
-                  .getBody()
-                  .asString()
-                  .equalsIgnoreCase(String.valueOf(ErrorMessages.TOO_OLD)));
+          assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
+          assertThat(apiState.getResponse().getBody().asString())
+              .ignoringCase()
+              .equals(String.valueOf(ErrorMessages.TOO_OLD));
         });
 
     Then(
         "I get successful response back",
         () -> {
-          System.out.println("Response status code = " + apiState.getResponse().getStatusCode());
-          System.out.println("Response body = " + apiState.getResponse().getBody().asString());
+          assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
+          //            assertThat(apiState.getResponse().getBody().asString())
+          //                    .ignoringCase()
+          //                    .equals(String.valueOf(ErrorMessages.TOO_OLD));
 
-          //          assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
-          //          assertThat(
-          //
-          // apiState.getResponse().getBody().asString().equalsIgnoreCase(String.valueOf("OK")));
+          assertThat(apiState.getResponse().getBody().asString()).contains(String.valueOf("OK"));
         });
 
     Then(
@@ -128,15 +124,9 @@ public class CaseSteps implements En {
         () -> {
           System.out.println("Response status code = " + apiState.getResponse().getStatusCode());
           System.out.println("Response body = " + apiState.getResponse().getBody().asString());
-          Truth.assertThat(apiState.getResponse().getStatusCode())
-              .toString()
-              .equalsIgnoreCase("400");
-          Truth.assertThat(
-              apiState
-                  .getResponse()
-                  .getBody()
-                  .asString()
-                  .contains(String.valueOf(ErrorMessages.UNKNOWN_DISEASE)));
+          assertThat(apiState.getResponse().getStatusCode()).toString().equalsIgnoreCase("400");
+          assertThat(apiState.getResponse().getBody().asString())
+              .contains(String.valueOf(ErrorMessages.UNKNOWN_DISEASE));
         });
 
     When(
@@ -144,7 +134,7 @@ public class CaseSteps implements En {
         (Integer int1) -> {
           communityHelper.getCommunitiesSince(int1);
 
-          Truth.assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
+          assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
           apiState.setCommunitiesAllSince(apiState.getResponse().getBody().prettyPrint());
           System.out.println(apiState.getCommunitiesAllSince());
         });
@@ -153,7 +143,7 @@ public class CaseSteps implements En {
         "I get all facilities from region {word}",
         (String regionUUID) -> {
           countryHelper.getAllFacilitiesFromRegion(regionUUID);
-          Truth.assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
+          assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
 
           apiState.setFacilitiesFromRegion(apiState.getResponse().getBody().prettyPrint());
           System.out.println(apiState.getFacilitiesFromRegion());
