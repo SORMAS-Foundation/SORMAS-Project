@@ -29,7 +29,7 @@ public class CreateNewEventPage {
   public static final By RISK_LEVEL_COMBOBOX = By.cssSelector(".popupContent #riskLevel div");
   public static final By EVENT_MANAGEMENT_STATUS_OPTIONS =
       By.cssSelector(".popupContent #eventManagementStatus .v-select-option label");
-  public static final By  START_DATA_INPUT = By.cssSelector(".popupContent #startDate input");
+  public static final By START_DATA_INPUT = By.cssSelector(".popupContent #startDate input");
   public static final By EVENT_INVESTIGATION_STATUS_OPTIONS =
       By.cssSelector(".popupContent #eventInvestigationStatus label");
   public static final By DISEASE_COMBOBOX = By.cssSelector(".popupContent #disease div");
