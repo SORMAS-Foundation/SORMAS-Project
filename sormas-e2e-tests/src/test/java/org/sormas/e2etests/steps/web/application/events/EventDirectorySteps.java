@@ -18,8 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
-import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.EVENT_STATUS_OPTIONS;
-import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.TITLE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
 
 import cucumber.api.java8.En;
@@ -43,20 +42,29 @@ public class EventDirectorySteps implements En {
         (String eventStatus) -> {
           By byEventStatus = getByEventStatus(eventStatus);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(byEventStatus);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
           webDriverHelpers.clickOnWebElementBySelector(byEventStatus);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(byEventStatus);
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_STATUS_OPTIONS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_PARTICIPANTS_TAB);
         });
     When(
         "^I search for specific event in event directory",
         () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESET_FILTER);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_EVENT_BY_FREE_TEXT);
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT, eventUuid);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+        });
+    When(
+        "I click on the searched event",
+        () -> {
+          final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
   }
 }

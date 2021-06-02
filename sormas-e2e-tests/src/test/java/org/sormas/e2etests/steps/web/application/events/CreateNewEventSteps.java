@@ -20,7 +20,6 @@ package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
-import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ADD_PARTICIPANT_BUTTON;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -47,7 +46,8 @@ public class CreateNewEventSteps implements En {
           webDriverHelpers.fillInWebElement(
               TITLE_INPUT, "EVENT_AUTOMATION" + timestamp + Faker.instance().name().name());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_PARTICIPANT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_EVENT_CREATED_MESSAGE);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
         });
     When(
         "^I create a new event with specific data$",
@@ -57,6 +57,8 @@ public class CreateNewEventSteps implements En {
           fillStartData(newEvent.getEventDate());
           selectEventStatus(newEvent.getEventStatus());
           selectEventInvestigationStatusOptions(newEvent.getInvestigationStatus());
+          selectEventInvestigationStatusOptions(
+              newEvent.getInvestigationStatus()); // remove after bug 5547 is fixed the duplication
           selectEventManagementStatusOption(newEvent.getEventManagementStatus());
           selectRiskLevel(newEvent.getRiskLevel());
           selectDisease(newEvent.getDisease());
@@ -79,7 +81,8 @@ public class CreateNewEventSteps implements En {
           webDriverHelpers.fillInWebElement(TITLE_INPUT, "EVENT_AUTOMATION" + timestamp);
           selectEventStatus(eventStatus);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_PARTICIPANT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_EVENT_CREATED_MESSAGE);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
         });
     When(
         "^I validate create a new event popup",
@@ -255,7 +258,7 @@ public class CreateNewEventSteps implements En {
   }
 
   public void selectRegion(String region) {
-    webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, region);
+    webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, region);
   }
 
   public void fillDateOfReport(LocalDate date) {
