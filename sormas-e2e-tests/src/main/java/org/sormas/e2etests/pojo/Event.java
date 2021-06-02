@@ -15,20 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+package org.sormas.e2etests.pojo;
 
-package org.sormas.e2etests.pages.application.events;
+import java.time.LocalDate;
+import lombok.*;
 
-import org.openqa.selenium.By;
-
-public class EventDirectoryPage {
-  public static final By NEW_EVENT_BUTTON = By.id("eventNewEvent");
-  public static final By SEARCH_EVENT_BY_FREE_TEXT_INPUT = By.id("freeText");
-  public static final By RESET_FILTER = By.id("actionResetFilters");
-  public static final By APPLY_FILTER = By.id("actionApplyFilters");
-  public static final By EVENT_STATUS_FILTER_BUTTONS =
-      By.xpath("//*[@id='status-Signal']/span/../../..//span[@class='v-button-wrap']/span/../..");
-
-  public static By getByEventUuid(String eventUuid) {
-    return By.cssSelector("a[title='" + eventUuid + "']");
-  }
+@Value
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderClassName = "builder")
+public class Event {
+  String uuid;
+  String eventStatus;
+  String investigationStatus;
+  String eventManagementStatus;
+  String title;
+  LocalDate eventDate;
+  LocalDate eventEvolutionDate;
+  LocalDate reportDate;
+  String eventLocation;
+  String reportingUser;
+  String riskLevel;
+  String disease;
+  String description;
+  String region;
+  String district;
+  String community;
+  String sourceType;
+  String responsibleUser;
 }

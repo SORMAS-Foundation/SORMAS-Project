@@ -77,7 +77,7 @@ public class SormasToSormasFacadeHelper {
 
 		Response response;
 		try {
-			byte[] encryptedEntities = encryptionService.encrypt(objectMapper.writeValueAsBytes(entities), targetServerAccessData.getId());
+			byte[] encryptedEntities = encryptionService.signAndEncrypt(objectMapper.writeValueAsBytes(entities), targetServerAccessData.getId());
 			response = restCall.call(
 				targetServerAccessData.getHostName(),
 				"Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8),
@@ -123,7 +123,7 @@ public class SormasToSormasFacadeHelper {
 
 	public <T> T[] decryptSharedData(SormasToSormasEncryptedDataDto encryptedData, Class<T[]> dataType) throws SormasToSormasException {
 		try {
-			byte[] decryptedData = encryptionService.decrypt(encryptedData.getData(), encryptedData.getOrganizationId());
+			byte[] decryptedData = encryptionService.decryptAndVerify(encryptedData.getData(), encryptedData.getOrganizationId());
 
 			return objectMapper.readValue(decryptedData, dataType);
 		} catch (IOException e) {

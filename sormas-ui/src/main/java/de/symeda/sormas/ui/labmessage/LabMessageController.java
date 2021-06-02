@@ -410,7 +410,7 @@ public class LabMessageController {
 			if (!createForm.getFieldGroup().isModified()) {
 				final EventParticipantDto dto = createForm.getValue();
 
-				FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(dto.getPerson());
+				FacadeProvider.getPersonFacade().savePerson(dto.getPerson());
 				EventParticipantDto savedDto = FacadeProvider.getEventParticipantFacade().saveEventParticipant(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
 				createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), savedDto.toReference()), labMessageDto, true);
@@ -437,7 +437,7 @@ public class LabMessageController {
 			personDto.getAddress().setPostalCode(labMessageDto.getPersonPostalCode());
 			personDto.getAddress().setCity(labMessageDto.getPersonCity());
 		}
-		FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(personDto);
+		FacadeProvider.getPersonFacade().savePerson(personDto);
 	}
 
 	private void pickOrCreateSample(PseudonymizableDto dto, LabMessageDto labMessageDto, List<SampleDto> samples) {
