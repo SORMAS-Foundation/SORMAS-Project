@@ -41,6 +41,10 @@ public class CaseHelper {
 
   public void postCasesQueryByUUID(String uuid) {
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.POST).path(CASES + "query").body(uuid).build());
+        Request.builder()
+            .method(Method.POST)
+            .path(CASES + "query")
+            .body("[\"" + uuid + "\"]")
+            .build());
   }
 }

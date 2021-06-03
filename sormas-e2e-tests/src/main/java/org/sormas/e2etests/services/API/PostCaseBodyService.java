@@ -18,19 +18,19 @@
 
 package org.sormas.e2etests.services.API;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.sormas.e2etests.state.BodyResources;
-import org.sormas.e2etests.utils.TestUtils;
+import static org.sormas.e2etests.constants.api.ResourceFiles.POST_CASES_BASIC_JSON_BODY;
+import static org.sormas.e2etests.constants.api.ResourceFiles.POST_IN_COUNTRY_NO_HOSPITALIZATION_CASES_JSON_BODY;
 
-import javax.inject.Inject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
-import static org.sormas.e2etests.constants.api.ResourceFiles.POST_CASES_BASIC_JSON_BODY;
-import static org.sormas.e2etests.constants.api.ResourceFiles.POST_IN_COUNTRY_NO_HOSPITALIZATION_CASES_JSON_BODY;
+import javax.inject.Inject;
+import org.sormas.e2etests.state.BodyResources;
+import org.sormas.e2etests.utils.IncorrectDataException;
+import org.sormas.e2etests.utils.TestUtils;
 
 public class PostCaseBodyService {
   private TestUtils testUtils;
@@ -42,7 +42,7 @@ public class PostCaseBodyService {
     this.bodyResources = bodyResources;
   }
 
-  public String generatePostCaseBodyValid() {
+  public String generatePostCaseBodyValid() throws IncorrectDataException {
     String postBody = null;
     try {
       Map<String, Object> postBodyJson =
@@ -92,14 +92,15 @@ public class PostCaseBodyService {
           new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(postBodyJson);
       System.out.println(postBody);
 
-    } catch (IOException ioe) {
-      System.out.println(ioe.getMessage());
-      // testUtils.logError("Could not build the post json body", new AssertionError(ioe));
+    } catch (IOException | NullPointerException ioe) {
+      throw new IncorrectDataException(
+          "Could not build the post json body, either the json file was not found or the property is not reachable ",
+          ioe);
     }
     return postBody;
   }
 
-  public String generatePostCaseBodyTooOld() {
+  public String generatePostCaseBodyTooOld() throws IncorrectDataException {
     String postBody = null;
     try {
       Map<String, Object> postBodyJson =
@@ -147,14 +148,15 @@ public class PostCaseBodyService {
           new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(postBodyJson);
       System.out.println(postBody);
 
-    } catch (IOException ioe) {
-      System.out.println(ioe.getMessage());
-      // testUtils.logError("Could not build the post json body", new AssertionError(ioe));
+    } catch (IOException | NullPointerException ioe) {
+      throw new IncorrectDataException(
+          "Could not build the post json body, either the json file was not found or the property is not reachable ",
+          ioe);
     }
     return postBody;
   }
 
-  public String generatePostCaseBodyUnknownDisease() {
+  public String generatePostCaseBodyUnknownDisease() throws IncorrectDataException {
     String postBody = null;
     try {
       Map<String, Object> postBodyJson =
@@ -167,13 +169,15 @@ public class PostCaseBodyService {
       postBody =
           new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(postBodyJson);
       System.out.println(postBody);
-    } catch (IOException ioe) {
-      System.out.println(ioe.getMessage());
+    } catch (IOException | NullPointerException ioe) {
+      throw new IncorrectDataException(
+          "Could not build the post json body, either the json file was not found or the property is not reachable ",
+          ioe);
     }
     return postBody;
   }
 
-  public String generatePostCaseBodyWithInvalidFacility() {
+  public String generatePostCaseBodyWithInvalidFacility() throws IncorrectDataException {
     String postBody = null;
     try {
       Map<String, Object> postBodyJson =
@@ -229,9 +233,10 @@ public class PostCaseBodyService {
           new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(postBodyJson);
       System.out.println(postBody);
 
-    } catch (IOException ioe) {
-      System.out.println(ioe.getMessage());
-      // testUtils.logError("Could not build the post json body", new AssertionError(ioe));
+    } catch (IOException | NullPointerException ioe) {
+      throw new IncorrectDataException(
+          "Could not build the post json body, either the json file was not found or the property is not reachable ",
+          ioe);
     }
     return postBody;
   }

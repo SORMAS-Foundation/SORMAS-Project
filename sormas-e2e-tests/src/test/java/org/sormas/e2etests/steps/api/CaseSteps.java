@@ -17,7 +17,10 @@
  */
 package org.sormas.e2etests.steps.api;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import cucumber.api.java8.En;
+import javax.inject.Inject;
 import org.sormas.e2etests.enums.APITestData.ErrorMessages;
 import org.sormas.e2etests.helpers.api.CaseHelper;
 import org.sormas.e2etests.helpers.api.CommunityHelper;
@@ -27,10 +30,6 @@ import org.sormas.e2etests.services.API.PostCaseBodyService;
 import org.sormas.e2etests.services.API.PostPersonBodyService;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.state.BodyResources;
-
-import javax.inject.Inject;
-
-import static com.google.common.truth.Truth.assertThat;
 
 public class CaseSteps implements En {
 
@@ -50,8 +49,7 @@ public class CaseSteps implements En {
         () -> {
           bodyResources.setBody("[" + personBodyService.generatePostPersonBody() + "]");
           personHelper.pushPerson("push", bodyResources.getBody());
-          System.out.println(
-              "Create person response = " + apiState.getResponse().getStatusCode());
+          System.out.println("Create person response = " + apiState.getResponse().getStatusCode());
         });
 
     Given(

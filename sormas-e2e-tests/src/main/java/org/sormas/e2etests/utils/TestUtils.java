@@ -4,8 +4,6 @@ import io.cucumber.datatable.dependency.com.fasterxml.jackson.databind.Deseriali
 import io.cucumber.datatable.dependency.com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -38,19 +36,5 @@ public class TestUtils {
   public Map<String, Object> deserializeFromJson(File path) throws IOException {
     Map<String, Object> map = new ObjectMapper().readValue(path, HashMap.class);
     return map;
-  }
-
-  public void logError(String customMessage, AssertionError ae) throws Throwable {
-    String errorMsg = customMessage + "->" + getLogMessage(ae);
-    // add to logg
-    throw ae;
-  }
-
-  public String getLogMessage(AssertionError ae) {
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
-    ae.printStackTrace(pw);
-
-    return ae.getMessage() + sw.toString();
   }
 }
