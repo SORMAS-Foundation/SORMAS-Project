@@ -23,4 +23,9 @@ public interface Endpoints {
   String COMMUNITIES = "communities/";
   String COUNTRIES = "countries/";
   String FACILITIES = "facilities/";
+  String CONTACTS = "contacts/";
+  String CASES = "cases/";
+  String EVENTS = "events/";
+  String SAMPLES = "samples/";
+  String TASKS = "tasks/";
 }

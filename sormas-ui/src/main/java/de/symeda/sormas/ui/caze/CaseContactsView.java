@@ -62,6 +62,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.ContactDownloadUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -113,14 +114,14 @@ public class CaseContactsView extends AbstractCaseView {
 		topLayout.setSpacing(true);
 		topLayout.setSizeUndefined();
 
-		classificationFilter = new ComboBox();
+		classificationFilter = ComboBoxHelper.createComboBoxV7();
 		classificationFilter.setWidth(240, Unit.PIXELS);
 		classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
 		classificationFilter.addValueChangeListener(e -> criteria.setContactClassification((ContactClassification) e.getProperty().getValue()));
 		topLayout.addComponent(classificationFilter);
 
 		UserDto user = UserProvider.getCurrent().getUser();
-		regionFilter = new ComboBox();
+		regionFilter = ComboBoxHelper.createComboBoxV7();
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(240, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactJurisdictionDto.REGION_UUID));
@@ -137,7 +138,7 @@ public class CaseContactsView extends AbstractCaseView {
 			topLayout.addComponent(regionFilter);
 		}
 
-		districtFilter = new ComboBox();
+		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setWidth(240, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.DISTRICT_UUID));
 		districtFilter.addValueChangeListener(e -> criteria.district((DistrictReferenceDto) e.getProperty().getValue()));
@@ -166,7 +167,7 @@ public class CaseContactsView extends AbstractCaseView {
 		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 		topLayout.addComponent(infoLabel);
 
-		officerFilter = new ComboBox();
+		officerFilter = ComboBoxHelper.createComboBoxV7();
 		officerFilter.setWidth(240, Unit.PIXELS);
 		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
 		officerFilter.addValueChangeListener(e -> criteria.setContactOfficer((UserReferenceDto) e.getProperty().getValue()));

@@ -42,6 +42,11 @@ public enum FeatureType {
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			EVENT_SURVEILLANCE }),
+	DOCUMENTS_MULTI_UPLOAD(true,
+			true,
+			new FeatureType[] {
+					DOCUMENTS
+			}),
 	EVENT_GROUPS(true,
 		true,
 		new FeatureType[] {
@@ -116,6 +121,10 @@ public enum FeatureType {
 		new FeatureType[] {
 			EVENT_GROUPS }),
 	EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS(true,
+		true,
+		new FeatureType[] {
+			EVENT_SURVEILLANCE }),
+	EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS_NOTIFICATIONS(true,
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE }),

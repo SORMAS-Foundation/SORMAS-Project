@@ -30,6 +30,12 @@ import org.sormas.e2etests.services.API.PostCaseBodyService;
 import org.sormas.e2etests.services.API.PostPersonBodyService;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.state.BodyResources;
+import cucumber.api.java8.En;
+import javax.inject.Inject;
+import org.sormas.e2etests.helpers.api.CaseHelper;
+import org.sormas.e2etests.pojo.api.Case;
+import org.sormas.e2etests.services.api.CaseApiService;
+import org.sormas.e2etests.state.ApiState;
 
 public class CaseSteps implements En {
 
@@ -123,6 +129,14 @@ public class CaseSteps implements En {
           caseHelper.postCasesQueryByUUID(caseUUID);
           assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
           assertThat(apiState.getResponse().jsonPath().get("uuid").toString()).contains(caseUUID);
+  public CaseSteps(CaseHelper caseHelper, CaseApiService caseApiService, ApiState apiState) {
+
+    When(
+        "API: I create a new case",
+        () -> {
+          Case caze = caseApiService.buildGeneratedCase(apiState.getEditPerson());
+          caseHelper.createCase(caze);
+          apiState.setCreatedCase(caze);
         });
   }
 }

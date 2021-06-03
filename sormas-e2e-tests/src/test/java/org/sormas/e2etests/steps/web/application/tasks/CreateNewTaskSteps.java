@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.steps.application.tasks;
+package org.sormas.e2etests.steps.web.application.tasks;
 
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.*;
 
@@ -27,13 +27,13 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.Task;
+import org.sormas.e2etests.pojo.web.Task;
 import org.sormas.e2etests.services.TaskService;
 
 public class CreateNewTaskSteps implements En {
-  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/dd/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-  protected static Task task;
+  public static Task task;
   private final WebDriverHelpers webDriverHelpers;
 
   @Inject
@@ -62,6 +62,23 @@ public class CreateNewTaskSteps implements En {
         () -> {
           final Task actualTask = collectTaskData();
           Truth.assertThat(task).isEqualTo(actualTask);
+        });
+
+    When(
+        "^I change all fields and save$",
+        () -> {
+          task = taskService.buildEditTask();
+          selectTaskType(task.getTaskType());
+          fillSuggestedStartDate(task.getSuggestedStartDate());
+          fillSuggestedStartTime(task.getSuggestedStartTime());
+          fillDueDateDate(task.getDueDateDate());
+          fillDueDateTime(task.getDueDateTime());
+          selectAssignedTo(task.getAssignedTo());
+          selectPriority(task.getPriority());
+          fillCommentsOnTask(task.getCommentsOnTask());
+          fillCommentsOnExecution(task.getCommentsOnExecution());
+          selectTaskStatus(task.getTaskStatus());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
   }
 

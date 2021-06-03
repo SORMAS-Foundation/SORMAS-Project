@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.person;
 
 import java.util.Date;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +34,6 @@ import com.vaadin.v7.data.Validator;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -127,7 +125,7 @@ public class PersonController {
 				} else {
 					PersonDto savedPerson;
 					if (saveNewPerson) {
-						savedPerson = personFacade.savePersonAndNotifyExternalJournal(person);
+						savedPerson = personFacade.savePerson(person);
 					} else {
 						savedPerson = person;
 					}
@@ -143,7 +141,7 @@ public class PersonController {
 			personSelect.selectBestMatch();
 		} else if (saveNewPerson) {
 			// no duplicate persons found so save a new person
-			PersonDto savedPerson = personFacade.savePersonAndNotifyExternalJournal(person);
+			PersonDto savedPerson = personFacade.savePerson(person);
 			resultConsumer.accept(savedPerson.toReference());
 		} else {
 			resultConsumer.accept(person.toReference());
@@ -203,33 +201,17 @@ public class PersonController {
 	}
 
 	private void savePerson(PersonDto personDto) {
-		PersonDto existingPerson = FacadeProvider.getPersonFacade().getPersonByUuid(personDto.getUuid());
-		List<CaseDataDto> personCases = FacadeProvider.getCaseFacade().getAllCasesOfPerson(personDto.getUuid());
+		DataHelper.Pair<CaseClassification, PersonDto> saveResult = personFacade.savePersonWithoutNotifyingExternalJournal(personDto);
 
-		onPersonChanged(existingPerson, personDto);
-
-		personFacade.savePerson(personDto);
-
-		// Check whether the classification of any of this person's cases has changed
-		CaseClassification newClassification = null;
-		for (CaseDataDto personCase : personCases) {
-			CaseDataDto updatedPersonCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(personCase.getUuid());
-			if (personCase.getCaseClassification() != updatedPersonCase.getCaseClassification()
-				&& updatedPersonCase.getClassificationUser() == null) {
-				newClassification = updatedPersonCase.getCaseClassification();
-				break;
-			}
-		}
-
-		ExternalJournalSyncResponseDto responseDto = FacadeProvider.getExternalJournalFacade().notifyExternalJournal(existingPerson);
+		ExternalJournalSyncResponseDto responseDto = FacadeProvider.getExternalJournalFacade().notifyExternalJournal(saveResult.getElement1());
 		String synchronizationMessage = getSynchronizationMessage(responseDto);
 
+		CaseClassification newClassification = saveResult.getElement0();
 		if (newClassification != null) {
 			String personSavedMessage =
 				String.format(I18nProperties.getString(Strings.messagePersonSavedClassificationChanged), newClassification.toString());
 			String notificationMessage = String.format("%s.%s", personSavedMessage, synchronizationMessage);
-			if (responseDto.isSuccess() && responseDto.getErrors().isEmpty()) {
-
+			if (responseDto == null || (responseDto.isSuccess() && responseDto.getErrors().isEmpty())) {
 				Notification notification = new Notification(notificationMessage, Type.WARNING_MESSAGE);
 				notification.setDelayMsec(-1);
 				notification.show(Page.getCurrent());
@@ -239,7 +221,7 @@ public class PersonController {
 		} else {
 			String personSavedMessage = I18nProperties.getString(Strings.messagePersonSaved);
 			String notificationMessage = String.format("%s.%s", personSavedMessage, synchronizationMessage);
-			if (responseDto.isSuccess() && responseDto.getErrors().isEmpty()) {
+			if (responseDto == null || (responseDto.isSuccess() && responseDto.getErrors().isEmpty())) {
 				Notification.show(notificationMessage, Type.WARNING_MESSAGE);
 			} else {
 				VaadinUiUtil.showWarningPopup(notificationMessage);

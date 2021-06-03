@@ -19,28 +19,39 @@ package org.sormas.e2etests.helpers.api;
 
 import static org.sormas.e2etests.constants.api.Endpoints.PERSONS;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
+import java.io.ByteArrayOutputStream;
+import java.util.List;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.RestAssuredClient;
-import org.sormas.e2etests.pojo.Request;
+import org.sormas.e2etests.pojo.api.Person;
+import org.sormas.e2etests.pojo.api.Request;
 
 public class PersonsHelper {
 
   private final RestAssuredClient restAssuredClient;
+  private final ObjectMapper objectMapper;
 
   @Inject
-  public PersonsHelper(RestAssuredClient restAssuredClient) {
+  public PersonsHelper(RestAssuredClient restAssuredClient, ObjectMapper objectMapper) {
     this.restAssuredClient = restAssuredClient;
-  }
-
-  public void getPersonByUuid(String Uuid) {
-    restAssuredClient.sendRequest(
-        Request.builder().method(Method.GET).path(PERSONS + Uuid).build());
+    this.objectMapper = objectMapper;
   }
 
   public void getAllPersonUuid() {
     restAssuredClient.sendRequest(
         Request.builder().method(Method.GET).path(PERSONS + "uuids").build());
+  }
+
+  @SneakyThrows
+  public void createNewPerson(Person person) {
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    List<Person> personBody = List.of(person);
+    objectMapper.writeValue(out, personBody);
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.POST).body(out.toString()).path(PERSONS + "push").build());
   }
 
   public void pushPerson(String specificPath, String jsonBody) {

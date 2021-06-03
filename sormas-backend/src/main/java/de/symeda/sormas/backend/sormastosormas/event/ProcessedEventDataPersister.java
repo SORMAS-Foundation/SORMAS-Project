@@ -140,7 +140,7 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 		throws SormasToSormasValidationException {
 		for (EventParticipantDto ep : eventParticipants) {
 			handleValidationError(
-				() -> personFacade.savePersonAndNotifyExternalJournal(ep.getPerson(), false),
+				() -> personFacade.savePerson(ep.getPerson(), false),
 				Captions.EventParticipant,
 				buildEventValidationGroupName(ep.getEvent()));
 

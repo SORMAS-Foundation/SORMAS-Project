@@ -18,7 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 
 import cucumber.api.java8.En;
@@ -35,5 +35,15 @@ public class CaseDirectorySteps implements En {
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 NEW_CASE_BUTTON, DATE_OF_REPORT_INPUT));
+
+    When(
+        "^I open last created case",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON));
+
+    When(
+        "^Search for Case using Case UUID from the created Task",
+        () ->
+            webDriverHelpers.fillAndSubmitInWebElement(
+                NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid()));
   }
 }

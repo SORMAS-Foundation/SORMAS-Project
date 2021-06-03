@@ -14,6 +14,7 @@ import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.components.DashboardFilterLayout;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class ContactsFilterLayout extends DashboardFilterLayout {
@@ -48,7 +49,7 @@ public class ContactsFilterLayout extends DashboardFilterLayout {
 	}
 
 	private void createDiseaseFilter() {
-		this.diseaseFilter = new ComboBox();
+		this.diseaseFilter = ComboBoxHelper.createComboBoxV7();
 		diseaseFilter.setWidth(200, Unit.PIXELS);
 		diseaseFilter.setInputPrompt(I18nProperties.getString(Strings.promptDisease));
 		diseaseFilter.addItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseasesWithFollowUp(true, true, true).toArray());

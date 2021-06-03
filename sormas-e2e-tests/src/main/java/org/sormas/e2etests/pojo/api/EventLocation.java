@@ -15,18 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo;
+package org.sormas.e2etests.pojo.api;
 
-import io.restassured.http.Method;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
-public class Request {
-  Method method;
-  String path;
-  String body;
-  String token;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class EventLocation {
+  String uuid;
 }

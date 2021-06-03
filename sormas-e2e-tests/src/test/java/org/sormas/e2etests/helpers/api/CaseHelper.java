@@ -23,6 +23,15 @@ import io.restassured.http.Method;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.pojo.Request;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.http.Method;
+import java.io.ByteArrayOutputStream;
+import java.util.List;
+import javax.inject.Inject;
+import lombok.SneakyThrows;
+import org.sormas.e2etests.helpers.RestAssuredClient;
+import org.sormas.e2etests.pojo.api.Case;
+import org.sormas.e2etests.pojo.api.Request;
 
 public class CaseHelper {
 
@@ -46,5 +55,20 @@ public class CaseHelper {
             .path(CASES + "query")
             .body("[\"" + uuid + "\"]")
             .build());
+  private final ObjectMapper objectMapper;
+
+  @Inject
+  public CaseHelper(RestAssuredClient restAssuredClient, ObjectMapper objectMapper) {
+    this.restAssuredClient = restAssuredClient;
+    this.objectMapper = objectMapper;
+  }
+
+  @SneakyThrows
+  public void createCase(Case caze) {
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    List<Case> listOfContacts = List.of(caze);
+    objectMapper.writeValue(out, listOfContacts);
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.POST).path(CASES + "push").body(out.toString()).build());
   }
 }

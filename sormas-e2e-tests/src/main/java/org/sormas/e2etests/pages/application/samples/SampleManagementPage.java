@@ -15,30 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo;
 
-import java.util.List;
-import lombok.*;
+package org.sormas.e2etests.pages.application.samples;
 
-@Value
-@AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@Builder(toBuilder = true, builderClassName = "builder")
-public class Person {
-  String passportNumber;
-  String lastName;
-  boolean covidCodeDelivered;
-  Address address;
-  String sex;
-  long creationDate;
-  String uuid;
-  String nationalHealthId;
-  String firstName;
-  String emailAddress;
-  String phone;
-  boolean pseudonymized;
-  long changeDate;
-  boolean hasCovidApp;
-  List<Object> personContactDetails;
-  List<Object> addresses;
+import org.openqa.selenium.By;
+
+public class SampleManagementPage {
+  public static final By SAMPLE_SEARCH_INPUT = By.cssSelector("[id='caseCodeIdLike']");
+  public static final By SEARCH_RESULT_SAMPLE = By.cssSelector("[role='gridcell'] a");
+  public static final By SAVE_EDIT_SAMPLE_BUTTON = By.cssSelector("[id='commit']");
 }
