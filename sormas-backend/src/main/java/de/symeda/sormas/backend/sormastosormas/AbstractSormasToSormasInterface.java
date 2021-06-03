@@ -84,7 +84,7 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 		User currentUser = userService.getCurrentUser();
 		List<T> entities = getEntityService().getByUuids(entityUuids);
 
-		validateEntitiesBeforeSend(entities);
+		validateEntitiesBeforeSend(entities, options);
 
 		List<S> entitiesToSend = new ArrayList<>();
 		List<AssociatedEntityWrapper<?>> associatedEntities = new ArrayList<>();
@@ -151,7 +151,7 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 		User currentUser = userService.getCurrentUser();
 
 		T entity = getEntityService().getByUuid(entityUuid);
-		validateEntitiesBeforeSend(Collections.singletonList(entity));
+		validateEntitiesBeforeSend(Collections.singletonList(entity), options);
 
 		ShareData<S> shareData = getShareDataBuilder().buildShareData(entity, currentUser, options);
 
@@ -211,7 +211,7 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 		User currentUser = userService.getCurrentUser();
 		T entity = getEntityService().getByUuid(entityUuid);
 
-		validateEntitiesBeforeSend(Collections.singletonList(entity));
+		validateEntitiesBeforeSend(Collections.singletonList(entity), options);
 
 		ShareData<S> shareData = getShareDataBuilder().buildShareData(entity, currentUser, options);
 
@@ -286,7 +286,7 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 
 	protected abstract Class<S[]> getShareDataClass();
 
-	protected abstract void validateEntitiesBeforeSend(List<T> entities) throws SormasToSormasException;
+	protected abstract void validateEntitiesBeforeSend(List<T> entities, SormasToSormasOptionsDto options) throws SormasToSormasException;
 
 	protected abstract ValidationErrors validateSharedEntity(U entity);
 
