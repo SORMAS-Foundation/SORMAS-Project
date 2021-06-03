@@ -25,7 +25,6 @@ import cucumber.api.java.Before;
 import io.qameta.allure.listener.StepLifecycleListener;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
-import java.util.concurrent.TimeUnit;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;

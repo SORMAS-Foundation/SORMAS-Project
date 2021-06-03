@@ -19,10 +19,6 @@ package org.sormas.e2etests.helpers.api;
 
 import static org.sormas.e2etests.constants.api.Endpoints.CASES;
 
-import io.restassured.http.Method;
-import javax.inject.Inject;
-import org.sormas.e2etests.helpers.RestAssuredClient;
-import org.sormas.e2etests.pojo.Request;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
 import java.io.ByteArrayOutputStream;
@@ -36,11 +32,18 @@ import org.sormas.e2etests.pojo.api.Request;
 public class CaseHelper {
 
   private final RestAssuredClient restAssuredClient;
+  private final ObjectMapper objectMapper;
 
   @Inject
-  public CaseHelper(RestAssuredClient restAssuredClient) {
+  public CaseHelper(RestAssuredClient restAssuredClient, ObjectMapper objectMapper) {
     this.restAssuredClient = restAssuredClient;
+    this.objectMapper = objectMapper;
   }
+
+  //  @Inject
+  //  public CaseHelper(RestAssuredClient restAssuredClient) {
+  //    this.restAssuredClient = restAssuredClient;
+  //  }
 
   public void postCases(String specificPath, String jsonBody) {
     final String json = jsonBody;
@@ -55,12 +58,6 @@ public class CaseHelper {
             .path(CASES + "query")
             .body("[\"" + uuid + "\"]")
             .build());
-  private final ObjectMapper objectMapper;
-
-  @Inject
-  public CaseHelper(RestAssuredClient restAssuredClient, ObjectMapper objectMapper) {
-    this.restAssuredClient = restAssuredClient;
-    this.objectMapper = objectMapper;
   }
 
   @SneakyThrows

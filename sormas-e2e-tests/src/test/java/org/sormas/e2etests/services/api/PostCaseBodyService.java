@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.services.API;
+package org.sormas.e2etests.services.api;
 
 import static org.sormas.e2etests.constants.api.ResourceFiles.POST_CASES_BASIC_JSON_BODY;
 import static org.sormas.e2etests.constants.api.ResourceFiles.POST_IN_COUNTRY_NO_HOSPITALIZATION_CASES_JSON_BODY;

@@ -1,11 +1,12 @@
 package org.sormas.e2etests.helpers.api;
 
 import static org.sormas.e2etests.constants.api.Endpoints.COMMUNITIES;
+// import org.sormas.e2etests.pojo.Request;
 
 import io.restassured.http.Method;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.RestAssuredClient;
-import org.sormas.e2etests.pojo.Request;
+import org.sormas.e2etests.pojo.api.Request;
 
 public class CommunityHelper {
   private final RestAssuredClient restAssuredClient;

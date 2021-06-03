@@ -1,4 +1,4 @@
-package org.sormas.e2etests.services.API;
+package org.sormas.e2etests.services.api;
 
 import static org.sormas.e2etests.constants.api.ResourceFiles.POST_PERSON_JSON_BODY;
 
