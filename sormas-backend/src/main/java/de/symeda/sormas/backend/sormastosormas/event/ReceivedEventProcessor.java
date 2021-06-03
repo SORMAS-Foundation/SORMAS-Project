@@ -36,25 +36,26 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.SharedDataProcessorHelper;
+import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessor;
+import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessorHelper;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class SharedEventProcessor implements SharedDataProcessor<EventDto, SormasToSormasEventDto, ProcessedEventData> {
+public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, SormasToSormasEventDto, ProcessedEventData> {
 
 	@EJB
 	private UserService userService;
 	@EJB
-	private SharedDataProcessorHelper dataProcessorHelper;
+	private ReceivedDataProcessorHelper dataProcessorHelper;
 
 	@Override
-	public ProcessedEventData processSharedData(SormasToSormasEventDto sharedData, EventDto existingEvent) throws SormasToSormasValidationException {
+	public ProcessedEventData processReceivedData(SormasToSormasEventDto receivedEvent, EventDto existingEvent)
+		throws SormasToSormasValidationException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
-		EventDto event = sharedData.getEntity();
-		SormasToSormasOriginInfoDto originInfo = sharedData.getOriginInfo();
+		EventDto event = receivedEvent.getEntity();
+		SormasToSormasOriginInfoDto originInfo = receivedEvent.getOriginInfo();
 
 		ValidationErrors eventValidationErrors = new ValidationErrors();
 
@@ -68,13 +69,13 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 			validationErrors.put(buildEventValidationGroupName(event), eventValidationErrors);
 		}
 
-		List<EventParticipantDto> eventParticipants = sharedData.getEventParticipants();
+		List<EventParticipantDto> eventParticipants = receivedEvent.getEventParticipants();
 		if (eventParticipants != null && eventParticipants.size() > 0) {
 			Map<String, ValidationErrors> eventParticipantErrors = processEventParticipants(eventParticipants);
 			validationErrors.putAll(eventParticipantErrors);
 		}
 
-		List<SormasToSormasSampleDto> samples = sharedData.getSamples();
+		List<SormasToSormasSampleDto> samples = receivedEvent.getSamples();
 		if (samples != null && samples.size() > 0) {
 			Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
 			validationErrors.putAll(sampleErrors);
@@ -98,7 +99,7 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 		}
 
 		LocationDto eventLocation = event.getEventLocation();
-		DataHelper.Pair<SharedDataProcessorHelper.InfrastructureData, List<String>> infrastructureAndErrors =
+		DataHelper.Pair<ReceivedDataProcessorHelper.InfrastructureData, List<String>> infrastructureAndErrors =
 			dataProcessorHelper.loadLocalInfrastructure(
 				eventLocation.getContinent(),
 				eventLocation.getSubcontinent(),
@@ -134,7 +135,7 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 			ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(eventParticipant.getPerson());
 			validationErrors.addAll(personValidationErrors);
 
-			DataHelper.Pair<SharedDataProcessorHelper.InfrastructureData, List<String>> infrastructureAndErrors =
+			DataHelper.Pair<ReceivedDataProcessorHelper.InfrastructureData, List<String>> infrastructureAndErrors =
 				dataProcessorHelper.loadLocalInfrastructure(eventParticipant.getRegion(), eventParticipant.getDistrict(), null);
 			dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.EventParticipant, validationErrors, (infrastructureData -> {
 				eventParticipant.setRegion(infrastructureData.getRegion());
