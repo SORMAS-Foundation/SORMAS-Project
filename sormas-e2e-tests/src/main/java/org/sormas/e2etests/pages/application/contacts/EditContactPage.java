@@ -59,8 +59,8 @@ public class EditContactPage {
   public static final By MULTI_DAY_CONTACT_CHECKBOX = By.cssSelector("#multiDayContact > input");
   public static final By MULTI_DAY_CONTACT_LABEL = By.cssSelector("#multiDayContact > label");
   public static final By FIRST_DAY_CONTACT_DATE = By.cssSelector("#firstContactDate input");
-  public static final By EXTERNAL_ID = By.id("externalID");
-  public static final By EXTERNAL_TOKEN = By.id("externalToken");
+  public static final By EXTERNAL_ID_INPUT = By.id("externalID");
+  public static final By EXTERNAL_TOKEN_INPUT = By.id("externalToken");
   public static final By REPORTING_DISTRICT_COMBOBOX =
       By.cssSelector(".v-verticallayout [location='reportingDistrict'] [role='combobox'] div");
   public static final By REPORTING_DISTRICT_COMBOBOX_INPUT =

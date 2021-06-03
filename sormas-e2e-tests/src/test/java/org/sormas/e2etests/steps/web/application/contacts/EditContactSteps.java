@@ -334,11 +334,11 @@ public class EditContactSteps implements En {
   }
 
   public void fillExternalId(String text) {
-    webDriverHelpers.clearAndFillInWebElement(EXTERNAL_ID, text);
+    webDriverHelpers.clearAndFillInWebElement(EXTERNAL_ID_INPUT, text);
   }
 
   public void fillExternalToken(String text) {
-    webDriverHelpers.clearAndFillInWebElement(EXTERNAL_TOKEN, text);
+    webDriverHelpers.clearAndFillInWebElement(EXTERNAL_TOKEN_INPUT, text);
   }
 
   public void fillReportDate(LocalDate date) {
@@ -520,8 +520,8 @@ public class EditContactSteps implements En {
         .dateOfFirstContact(parsedDateOfFirst)
         .dateOfLastContact(parsedLastDateOfContact)
         .diseaseOfSourceCase(webDriverHelpers.getValueFromWebElement(DISEASE_COMBOBOX_INPUT))
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID))
-        .externalToken(webDriverHelpers.getValueFromWebElement(EXTERNAL_TOKEN))
+        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        .externalToken(webDriverHelpers.getValueFromWebElement(EXTERNAL_TOKEN_INPUT))
         .reportDate(parsedDateOfReport)
         .reportingDistrict(
             webDriverHelpers.getValueFromWebElement(REPORTING_DISTRICT_COMBOBOX_INPUT))
