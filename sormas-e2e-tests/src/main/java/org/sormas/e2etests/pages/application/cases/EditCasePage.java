@@ -92,4 +92,6 @@ public class EditCasePage {
       By.cssSelector("#nationalLevelDate input");
   public static final By GENERAL_COMMENT_TEXTAREA = By.cssSelector("textarea#additionalDetails");
   public static final By SAVE_BUTTON = By.id("commit");
+  public static final By DELETE_BUTTON = By.id("delete");
+  public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
 }

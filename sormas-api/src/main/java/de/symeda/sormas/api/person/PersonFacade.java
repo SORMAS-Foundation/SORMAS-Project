@@ -88,4 +88,6 @@ public interface PersonFacade {
 	long setMissingGeoCoordinates(boolean overwriteExistingCoordinates);
 
 	boolean isSharedWithoutOwnership(String uuid);
+
+	List<PersonDto> getByExternalIds(List<String> externalIds);
 }

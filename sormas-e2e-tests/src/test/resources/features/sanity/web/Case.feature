@@ -1,5 +1,5 @@
-@Sanity @Case @UI
-Feature: Create cases
+@Sanity @Case
+Feature: Case end to end tests
 
   Background: Create new case
     Given I log in with the user
@@ -16,3 +16,11 @@ Feature: Create cases
     And I click on the Dashboard button from navbar
     And I open last edited case by link
     And I check the edited data is correctly displayed on Edit case page
+
+  Scenario: Delete created case
+    When API: I create a new person
+    Then API: I create a new case
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    And I delete the case
+    Then I check that number of displayed cases results is 0
