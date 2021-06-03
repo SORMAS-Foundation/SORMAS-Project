@@ -15,29 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo.api;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.Date;
-import lombok.*;
+package org.sormas.e2etests.enums;
 
-@Value
-@AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@Builder(toBuilder = true, builderClassName = "builder")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Sample {
-  String sampleMaterial;
-  String samplePurpose;
-  AssociatedCase associatedCase;
-  ReportingUser reportingUser;
-  String pathogenTestResult;
-  Date sampleDateTime;
-  Date reportDateTime;
-  Lab lab;
-  String uuid;
-  Boolean received;
-  String labSampleID;
-  Date receivedDate;
-  String specimenCondition;
+import java.util.Random;
+import lombok.Getter;
+
+@Getter
+public enum SpecimenConditions {
+  ADEQUATE(),
+  NOT_ADEQUATE();
+
+  public static String getRandomCondition() {
+    Random random = new Random();
+    return String.valueOf(SpecimenConditions.values()[random.nextInt(values().length)]);
+  }
 }

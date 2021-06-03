@@ -260,8 +260,7 @@ public class CreateNewSampleSteps implements En {
   }
 
   public String getPurposeOfSample() {
-    return webDriverHelpers.getCheckedOption(
-        SAMPLE_EDIT_PURPOSE_OPTIONS, SAMPLE_EDIT_PURPOSE_SELECTED_OPTION);
+    return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SAMPLE_EDIT_PURPOSE_OPTIONS);
   }
 
   public LocalDate getDateOfCollection() {
@@ -346,8 +345,7 @@ public class CreateNewSampleSteps implements En {
   }
 
   public String getResultVerifiedByLabSupervisor() {
-    return webDriverHelpers.getCheckedOption(
-        RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS,
-        RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS_SELECTED_OPTION);
+    return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+        RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS);
   }
 }

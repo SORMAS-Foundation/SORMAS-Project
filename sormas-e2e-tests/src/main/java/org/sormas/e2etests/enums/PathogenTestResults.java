@@ -23,21 +23,11 @@ import lombok.Getter;
 
 @Getter
 public enum PathogenTestResults {
-  INDETERMINATE("Indeterminate"),
-  PENDING("Pending"),
-  NEGATIVE("Negative"),
-  POSITIVE("Positive"),
-  NOT_DONE("Not done");
-
-  private final String results;
-
-  PathogenTestResults(String testResult) {
-    results = testResult;
-  }
-
-  public String value() {
-    return this.results;
-  }
+  INDETERMINATE(),
+  PENDING(),
+  NEGATIVE(),
+  POSITIVE(),
+  NOT_DONE();
 
   public static String getRandomResult() {
     Random random = new Random();

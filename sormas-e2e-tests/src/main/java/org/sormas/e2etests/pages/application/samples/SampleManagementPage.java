@@ -24,8 +24,6 @@ public class SampleManagementPage {
   public static final By SAMPLE_SEARCH_INPUT = By.cssSelector("[id='caseCodeIdLike']");
   public static final By SAMPLE_EDIT_PURPOSE_OPTIONS =
       By.cssSelector("#samplePurpose .v-select-option");
-  public static final By SAMPLE_EDIT_PURPOSE_SELECTED_OPTION =
-      By.xpath("//input[@checked]/following-sibling::label");
   public static final By POPUP_CONTENT = By.cssSelector("[role='dialog'] .popupContent");
   public static final By TEST_RESULTS_SEARCH_COMBOBOX =
       By.cssSelector("[id='pathogenTestResult'] [class='v-filterselect-button']");
@@ -55,8 +53,6 @@ public class SampleManagementPage {
   public static final By APPLY_FILTER_BUTTON = By.cssSelector("[id='actionApplyFilters']");
   public static final By RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS =
       By.cssSelector(".popupContent #testResultVerified .v-select-option");
-  public static final By RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS_SELECTED_OPTION =
-      By.xpath("//div[@class='popupContent'] //input[@checked]/following-sibling::label");
   public static final By SEARCH_RESULT_SAMPLE = By.cssSelector("[role='gridcell'] a");
   public static final By EDIT_TEST_RESULTS_BUTTON =
       By.cssSelector("[location='pathogenTests'] [class='v-slot v-slot-s-list'] [role='button']");
