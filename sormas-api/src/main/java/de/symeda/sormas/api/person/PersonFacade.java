@@ -89,5 +89,5 @@ public interface PersonFacade {
 
 	boolean isSharedWithoutOwnership(String uuid);
 
-	List<PersonDto> getByExternalIds(List<String> uuids);
+	List<PersonDto> getByExternalIds(List<String> externalIds);
 }

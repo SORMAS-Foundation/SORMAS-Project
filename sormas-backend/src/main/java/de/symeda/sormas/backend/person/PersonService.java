@@ -26,6 +26,7 @@ import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,6 +49,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -605,7 +609,21 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return geoLocationUpdated;
 	}
 
-	public List<Person> getByExternalIds(List<String> externalIds) {
+	public List<Person> getByExternalIdsBatched(List<String> externalIds) {
+		if (CollectionUtils.isEmpty(externalIds)) {
+			// Avoid empty IN clause
+			return Collections.emptyList();
+		} else if (externalIds.size() > ModelConstants.PARAMETER_LIMIT) {
+			List<Person> persons = new LinkedList<>();
+			IterableHelper
+					.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> persons.addAll(getByExternalIds(externalIds)));
+			return persons;
+		} else {
+			return getByExternalIds(externalIds);
+		}
+	}
+
+	private List<Person> getByExternalIds(List<String> externalIds) {
 		if (externalIds == null || externalIds.isEmpty()) {
 			return null;
 		}
