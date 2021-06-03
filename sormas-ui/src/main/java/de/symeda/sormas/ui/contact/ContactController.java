@@ -140,12 +140,12 @@ public class ContactController {
 			newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
 
 			final PersonDto newPerson = PersonDto.build();
-			newPerson.setFirstName(contactLineDto.getFirstName());
-			newPerson.setLastName(contactLineDto.getLastName());
-			newPerson.setBirthdateYYYY(contactLineDto.getBirthDate().getDateOfBirthYYYY());
-			newPerson.setBirthdateMM(contactLineDto.getBirthDate().getDateOfBirthMM());
-			newPerson.setBirthdateDD(contactLineDto.getBirthDate().getDateOfBirthDD());
-			newPerson.setSex(contactLineDto.getSex());
+			newPerson.setFirstName(contactLineDto.getPerson().getFirstName());
+			newPerson.setLastName(contactLineDto.getPerson().getLastName());
+			newPerson.setBirthdateYYYY(contactLineDto.getPerson().getBirthDate().getDateOfBirthYYYY());
+			newPerson.setBirthdateMM(contactLineDto.getPerson().getBirthDate().getDateOfBirthMM());
+			newPerson.setBirthdateDD(contactLineDto.getPerson().getBirthDate().getDateOfBirthDD());
+			newPerson.setSex(contactLineDto.getPerson().getSex());
 
 			PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
 			newContact.setPerson(savedPerson.toReference());

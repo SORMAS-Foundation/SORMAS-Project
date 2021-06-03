@@ -16,14 +16,12 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -32,8 +30,6 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -42,7 +38,8 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.components.birthdate.BirthDateField;
+import de.symeda.sormas.ui.utils.components.linelisting.PersonField;
+import de.symeda.sormas.ui.utils.components.linelisting.PersonFieldDto;
 
 public class LineListingLayout extends VerticalLayout {
 
@@ -188,8 +185,7 @@ public class LineListingLayout extends VerticalLayout {
 	public void validate() throws ValidationRuntimeException {
 		boolean validationFailed = false;
 		for (ContactLineLayout caseLine : caseLines) {
-			BinderValidationStatus<ContactLineDto> validationStatus = caseLine.validate();
-			if (validationStatus.hasErrors()) {
+			if (caseLine.hasErrors()) {
 				validationFailed = true;
 			}
 		}
@@ -215,10 +211,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		private final ComboBox<ContactProximity> typeOfContact;
 		private final ComboBox<ContactRelation> relationToCase;
-		private final TextField firstname;
-		private final TextField lastname;
-		private final BirthDateField birthDate;
-		private final ComboBox<Sex> sex;
+		private final PersonField person;
 
 		private final Button delete;
 
@@ -234,7 +227,7 @@ public class LineListingLayout extends VerticalLayout {
 
 			dateOfReport = new DateField();
 			dateOfReport.setId("lineListingDateOfReport_" + lineIndex);
-			dateOfReport.setWidth(100, Unit.PIXELS);
+			dateOfReport.setWidth(150, Unit.PIXELS);
 			binder.forField(dateOfReport).asRequired().bind(ContactLineDto.DATE_OF_REPORT);
 			dateOfReport.setRangeEnd(LocalDate.now());
 
@@ -256,22 +249,10 @@ public class LineListingLayout extends VerticalLayout {
 			relationToCase.addStyleName(CssStyles.CAPTION_OVERFLOW);
 			binder.forField(relationToCase).bind(ContactLineDto.RELATION_TO_CASE);
 
-			firstname = new TextField();
-			firstname.setId("lineListingFirstName_" + lineIndex);
-			binder.forField(firstname).asRequired().bind(ContactLineDto.FIRST_NAME);
-			lastname = new TextField();
-			firstname.setId("lineListingLastName_" + lineIndex);
-			binder.forField(lastname).asRequired().bind(ContactLineDto.LAST_NAME);
+			person = new PersonField();
+			person.setId("lineListingPerson_" + lineIndex);
+			binder.forField(person).bind(ContactLineDto.PERSON);
 
-			birthDate = new BirthDateField();
-			birthDate.setId("lineListingBirthDate_" + lineIndex);
-			binder.forField(birthDate).bind(ContactLineDto.BIRTH_DATE);
-
-			sex = new ComboBox<>();
-			sex.setId("lineListingSex_" + lineIndex);
-			sex.setItems(Sex.values());
-			sex.setWidth(100, Unit.PIXELS);
-			binder.forField(sex).asRequired().bind(ContactLineDto.SEX);
 			delete = ButtonHelper.createIconButtonWithCaption("delete_" + lineIndex, null, VaadinIcons.TRASH, event -> {
 				lineComponent.removeComponent(this);
 				caseLines.remove(this);
@@ -281,7 +262,7 @@ public class LineListingLayout extends VerticalLayout {
 				}
 			});
 
-			addComponents(dateOfReport, dateOfLastContact, typeOfContact, relationToCase, firstname, lastname, birthDate, sex, delete);
+			addComponents(dateOfReport, dateOfLastContact, typeOfContact, relationToCase, person, delete);
 
 			if (lineIndex == 0) {
 				formatAsFirstLine();
@@ -298,8 +279,10 @@ public class LineListingLayout extends VerticalLayout {
 			return binder.getBean();
 		}
 
-		public BinderValidationStatus<ContactLineDto> validate() {
-			return binder.validate();
+		public boolean hasErrors() {
+			BinderValidationStatus personValidationStatus = person.validate();
+			BinderValidationStatus lineValidationStatus = binder.validate();
+			return personValidationStatus.hasErrors() || lineValidationStatus.hasErrors();
 		}
 
 		private void formatAsFirstLine() {
@@ -314,13 +297,7 @@ public class LineListingLayout extends VerticalLayout {
 			typeOfContact.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			relationToCase.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.RELATION_TO_CASE));
 			relationToCase.removeStyleName(CssStyles.CAPTION_HIDDEN);
-			firstname.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
-			firstname.removeStyleName(CssStyles.CAPTION_HIDDEN);
-			lastname.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
-			lastname.removeStyleName(CssStyles.CAPTION_HIDDEN);
-			birthDate.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
-			sex.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
-			sex.removeStyleName(CssStyles.CAPTION_HIDDEN);
+			person.showCaptions();
 			delete.setEnabled(false);
 			setComponentAlignment(delete, Alignment.MIDDLE_LEFT);
 		}
@@ -328,9 +305,7 @@ public class LineListingLayout extends VerticalLayout {
 		private void formatAsOtherLine() {
 
 			CssStyles.style(dateOfReport, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-			CssStyles.style(firstname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-			CssStyles.style(lastname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-			CssStyles.style(sex, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
+			person.hideCaptions();
 		}
 
 		public Button getDelete() {
@@ -348,10 +323,7 @@ public class LineListingLayout extends VerticalLayout {
 		public static final String DATE_OF_LAST_CONTACT = "dateOfLastContact";
 		public static final String TYPE_OF_CONTACT = "typeOfContact";
 		public static final String RELATION_TO_CASE = "relationToCase";
-		public static final String FIRST_NAME = "firstName";
-		public static final String LAST_NAME = "lastName";
-		public static final String BIRTH_DATE = "birthDate";
-		public static final String SEX = "sex";
+		public static final String PERSON = "person";
 
 		private CaseReferenceDto caze;
 		private Disease disease;
@@ -361,10 +333,7 @@ public class LineListingLayout extends VerticalLayout {
 		private LocalDate dateOfLastContact;
 		private ContactProximity typeOfContact;
 		private ContactRelation relationToCase;
-		private String firstName;
-		private String lastName;
-		private BirthDateDto birthDate;
-		private Sex sex;
+		private PersonFieldDto person;
 
 		public CaseReferenceDto getCaze() {
 			return caze;
@@ -430,36 +399,12 @@ public class LineListingLayout extends VerticalLayout {
 			this.relationToCase = relationToCase;
 		}
 
-		public String getFirstName() {
-			return firstName;
+		public PersonFieldDto getPerson() {
+			return person;
 		}
 
-		public void setFirstName(String firstName) {
-			this.firstName = firstName;
-		}
-
-		public String getLastName() {
-			return lastName;
-		}
-
-		public void setLastName(String lastName) {
-			this.lastName = lastName;
-		}
-
-		public BirthDateDto getBirthDate() {
-			return birthDate;
-		}
-
-		public void setBirthDate(BirthDateDto birthDate) {
-			this.birthDate = birthDate;
-		}
-
-		public Sex getSex() {
-			return sex;
-		}
-
-		public void setSex(Sex sex) {
-			this.sex = sex;
+		public void setPerson(PersonFieldDto person) {
+			this.person = person;
 		}
 	}
 }
