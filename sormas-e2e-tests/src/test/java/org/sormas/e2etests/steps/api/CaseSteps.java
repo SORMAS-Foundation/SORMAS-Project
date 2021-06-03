@@ -17,10 +17,7 @@
  */
 package org.sormas.e2etests.steps.api;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import cucumber.api.java8.En;
-import javax.inject.Inject;
 import org.sormas.e2etests.enums.APITestData.ErrorMessages;
 import org.sormas.e2etests.helpers.api.CaseHelper;
 import org.sormas.e2etests.helpers.api.CommunityHelper;
@@ -30,6 +27,10 @@ import org.sormas.e2etests.services.API.PostCaseBodyService;
 import org.sormas.e2etests.services.API.PostPersonBodyService;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.state.BodyResources;
+
+import javax.inject.Inject;
+
+import static com.google.common.truth.Truth.assertThat;
 
 public class CaseSteps implements En {
 
@@ -50,9 +51,7 @@ public class CaseSteps implements En {
           bodyResources.setBody("[" + personBodyService.generatePostPersonBody() + "]");
           personHelper.pushPerson("push", bodyResources.getBody());
           System.out.println(
-              "Create person response code = " + apiState.getResponse().getStatusCode());
-          System.out.println(
-              "Create person response body = " + apiState.getResponse().getBody().prettyPrint());
+              "Create person response = " + apiState.getResponse().getStatusCode());
         });
 
     Given(
@@ -73,19 +72,21 @@ public class CaseSteps implements En {
           bodyResources.setBody("[" + bodyService.generatePostCaseBodyUnknownDisease() + "]");
         });
 
+    Given(
+        "I try to enter all lower case healthFacility for a new case",
+        () -> {
+          bodyResources.setBody("[" + bodyService.generatePostCaseBodyWithInvalidFacility() + "]");
+        });
+
     When(
         "I create a new case",
         () -> {
           caseHelper.postCases("push", bodyResources.getBody());
-          System.out.println("response status code = " + apiState.getResponse().getStatusCode());
-          System.out.println("response body = " + apiState.getResponse().getBody().prettyPrint());
         });
 
     Then(
         "I get the error message TOO_OLD",
         () -> {
-          System.out.println("Response status code = " + apiState.getResponse().getStatusCode());
-          System.out.println("Response body = " + apiState.getResponse().getBody().asString());
           assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
           assertThat(apiState.getResponse().getBody().asString())
               .ignoringCase()
@@ -93,21 +94,24 @@ public class CaseSteps implements En {
         });
 
     Then(
+        "I get a general error message ERROR",
+        () -> {
+          assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
+          assertThat(apiState.getResponse().getBody().asString())
+              .ignoringCase()
+              .equals(String.valueOf(ErrorMessages.ERROR));
+        });
+
+    Then(
         "I get successful response back",
         () -> {
           assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
-          //            assertThat(apiState.getResponse().getBody().asString())
-          //                    .ignoringCase()
-          //                    .equals(String.valueOf(ErrorMessages.TOO_OLD));
-
           assertThat(apiState.getResponse().getBody().asString()).contains(String.valueOf("OK"));
         });
 
     Then(
-        "I get the error message Unknown disease",
+        "I get the error message Unknown disease and all the valid values are shown",
         () -> {
-          System.out.println("Response status code = " + apiState.getResponse().getStatusCode());
-          System.out.println("Response body = " + apiState.getResponse().getBody().asString());
           assertThat(apiState.getResponse().getStatusCode()).toString().equalsIgnoreCase("400");
           assertThat(apiState.getResponse().getBody().asString())
               .contains(String.valueOf(ErrorMessages.UNKNOWN_DISEASE));

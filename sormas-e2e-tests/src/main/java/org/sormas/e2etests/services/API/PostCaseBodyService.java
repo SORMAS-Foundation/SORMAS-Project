@@ -18,18 +18,19 @@
 
 package org.sormas.e2etests.services.API;
 
-import static org.sormas.e2etests.constants.api.ResourceFiles.POST_CASES_BASIC_JSON_BODY;
-import static org.sormas.e2etests.constants.api.ResourceFiles.POST_IN_COUNTRY_NO_HOSPITALIZATION_CASES_JSON_BODY;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.sormas.e2etests.state.BodyResources;
+import org.sormas.e2etests.utils.TestUtils;
+
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import javax.inject.Inject;
-import org.sormas.e2etests.state.BodyResources;
-import org.sormas.e2etests.utils.TestUtils;
+
+import static org.sormas.e2etests.constants.api.ResourceFiles.POST_CASES_BASIC_JSON_BODY;
+import static org.sormas.e2etests.constants.api.ResourceFiles.POST_IN_COUNTRY_NO_HOSPITALIZATION_CASES_JSON_BODY;
 
 public class PostCaseBodyService {
   private TestUtils testUtils;
@@ -168,6 +169,69 @@ public class PostCaseBodyService {
       System.out.println(postBody);
     } catch (IOException ioe) {
       System.out.println(ioe.getMessage());
+    }
+    return postBody;
+  }
+
+  public String generatePostCaseBodyWithInvalidFacility() {
+    String postBody = null;
+    try {
+      Map<String, Object> postBodyJson =
+          testUtils.deserializeFromJson(new File(POST_CASES_BASIC_JSON_BODY));
+
+      TimeZone tz = TimeZone.getTimeZone("UTC");
+      DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      df.setTimeZone(tz);
+      String nowAsISO = df.format(new Date());
+
+      postBodyJson.put("reportDate", nowAsISO);
+      String caseUUID = UUID.randomUUID().toString();
+      postBodyJson.put("uuid", caseUUID);
+      bodyResources.setCaseUUID(caseUUID);
+
+      Map<String, Object> clinicalCourse = (Map<String, Object>) postBodyJson.get("clinicalCourse");
+      clinicalCourse.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> healthConditions =
+          (Map<String, Object>) clinicalCourse.get("healthConditions");
+      healthConditions.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> hospitalization =
+          (Map<String, Object>) postBodyJson.get("hospitalization");
+      hospitalization.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> therapy = (Map<String, Object>) postBodyJson.get("therapy");
+      therapy.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> symptoms = (Map<String, Object>) postBodyJson.get("symptoms");
+      symptoms.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> epiData = (Map<String, Object>) postBodyJson.get("epiData");
+      epiData.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> person = (Map<String, Object>) postBodyJson.get("person");
+      person.put("uuid", bodyResources.getPersonUUID());
+
+      Map<String, Object> healthFacility = (Map<String, Object>) postBodyJson.get("healthFacility");
+
+      String correctValueForHFacilityUUID = (String) healthFacility.get("uuid");
+
+      healthFacility.put("uuid", correctValueForHFacilityUUID.toLowerCase(Locale.ROOT));
+
+      Map<String, Object> portHealthInfo = (Map<String, Object>) postBodyJson.get("portHealthInfo");
+      portHealthInfo.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> maternalHistory =
+          (Map<String, Object>) postBodyJson.get("maternalHistory");
+      maternalHistory.put("uuid", UUID.randomUUID().toString());
+
+      postBody =
+          new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(postBodyJson);
+      System.out.println(postBody);
+
+    } catch (IOException ioe) {
+      System.out.println(ioe.getMessage());
+      // testUtils.logError("Could not build the post json body", new AssertionError(ioe));
     }
     return postBody;
   }
