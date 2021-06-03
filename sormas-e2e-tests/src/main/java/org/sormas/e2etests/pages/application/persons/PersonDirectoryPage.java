@@ -25,4 +25,5 @@ public class PersonDirectoryPage {
   public static final By MULTIPLE_OPTIONS_SEARCH_INPUT =
       By.cssSelector("#nameAddressPhoneEmailLike");
   public static final By APPLY_FILTERS_BUTTON = By.cssSelector("#actionApplyFilters");
+  public static final String PERSON_RESULTS_UUID_LOCATOR = "[title = '%s']";
 }

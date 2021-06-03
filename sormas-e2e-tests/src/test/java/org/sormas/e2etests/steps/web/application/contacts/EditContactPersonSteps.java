@@ -37,7 +37,6 @@ import org.sormas.e2etests.steps.BaseSteps;
 public class EditContactPersonSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
-  private BaseSteps baseSteps;
   protected Person aPerson;
   protected static Person newGeneratedPerson;
   public static Person fullyDetailedPerson;
@@ -294,14 +293,14 @@ public class EditContactPersonSteps implements En {
   public Person getPersonInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
-    String UUID = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+    String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
     String[] personInfo = contactInfo.split(" ");
     LocalDate localDate = LocalDate.parse(personInfo[3].replace(")", ""), formatter);
     return Person.builder()
         .firstName(personInfo[0])
         .lastName(personInfo[1])
         .dateOfBirth(localDate)
-        .uuid(UUID)
+        .uuid(uuid)
         .build();
   }
 }

@@ -36,7 +36,7 @@ public class PersonService {
       Person person,
       String firstName,
       String lastName,
-      String UUID,
+      String uuid,
       String passportNumber,
       String nationalHealthId,
       String email,
@@ -44,7 +44,7 @@ public class PersonService {
     return person.toBuilder()
         .firstName(firstName)
         .lastName(lastName)
-        .uuid(UUID)
+        .uuid(uuid)
         .passportNumber(passportNumber)
         .nationalHealthId(nationalHealthId)
         .emailAddress(email)

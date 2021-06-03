@@ -26,7 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.comparators.PersonComparator;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.Person;
@@ -37,8 +36,6 @@ import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps
 public class EditPersonSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
-  private final PersonComparator personComparator;
-  private BaseSteps baseSteps;
   protected Person previousCreatedPerson = null;
   protected Person collectedPerson;
   public static Person newGeneratedPerson;
@@ -46,12 +43,10 @@ public class EditPersonSteps implements En {
   @Inject
   public EditPersonSteps(
       WebDriverHelpers webDriverHelpers,
-      final SoftAssertions softly,
       PersonService personService,
       BaseSteps baseSteps,
       PersonComparator personComparator) {
     this.webDriverHelpers = webDriverHelpers;
-    this.personComparator = personComparator;
 
     When(
         "I check that previous created person is correctly displayed in Edit Person page",
@@ -329,14 +324,14 @@ public class EditPersonSteps implements En {
   public Person getPersonInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
-    String UUID = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+    String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
     String[] personInfos = contactInfo.split(" ");
     LocalDate localDate = LocalDate.parse(personInfos[3].replace(")", ""), formatter);
     return Person.builder()
         .firstName(personInfos[0])
         .lastName(personInfos[1])
         .dateOfBirth(localDate)
-        .uuid(UUID)
+        .uuid(uuid)
         .build();
   }
 }

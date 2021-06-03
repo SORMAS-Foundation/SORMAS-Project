@@ -38,9 +38,7 @@ public class EditContactPersonPage {
   public static final By DATE_OF_BIRTH_MONTH_COMBOBOX = By.cssSelector("#birthdateMM input+div");
   public static final By DATE_OF_BIRTH_DAY_COMBOBOX = By.cssSelector("#birthdateDD input+div");
   public static final By SEX_COMBOBOX = By.cssSelector("[location='sex'] div[role='combobox'] div");
-  public static final By SALUTATION_INPUT = By.cssSelector("[location=salutation] input");
   public static final By SALUTATION_COMBOBOX = By.cssSelector("[location=salutation] input + div");
-  public static final By PRESENT_CONDITION_INPUT = By.cssSelector("#presentCondition input");
   public static final By PRESENT_CONDITION_COMBOBOX =
       By.cssSelector("#presentCondition input + div");
   public static final By EXTERNAL_ID_INPUT = By.cssSelector("#externalId ");

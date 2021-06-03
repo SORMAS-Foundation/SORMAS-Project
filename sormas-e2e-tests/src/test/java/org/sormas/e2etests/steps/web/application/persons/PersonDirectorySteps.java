@@ -22,7 +22,6 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.UUID_
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.*;
 
 import cucumber.api.java8.En;
-import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -30,7 +29,6 @@ import org.sormas.e2etests.pojo.Person;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 
 public class PersonDirectorySteps implements En {
-  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
   private final WebDriverHelpers webDriverHelpers;
   protected Person createdPerson;
 
@@ -54,9 +52,9 @@ public class PersonDirectorySteps implements En {
   }
 
   private void openPersonFromResultsByUUID(String uuid) {
-    String locator = "//a[contains(@title, '" + uuid + "')]";
-    webDriverHelpers.waitUntilIdentifiedElementIsPresent(By.xpath(locator));
-    webDriverHelpers.clickOnWebElementBySelector(By.xpath(locator));
+    By uuidLocator = By.cssSelector(String.format(PERSON_RESULTS_UUID_LOCATOR, uuid));
+    webDriverHelpers.waitUntilIdentifiedElementIsPresent(uuidLocator);
+    webDriverHelpers.clickOnWebElementBySelector(uuidLocator);
     webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
   }
 }

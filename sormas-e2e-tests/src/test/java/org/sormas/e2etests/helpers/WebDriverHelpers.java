@@ -104,15 +104,23 @@ public class WebDriverHelpers {
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
-            assertThat(baseSteps.getDriver().findElement((By) selector).isEnabled()).isFalse();
-            assertThat(baseSteps.getDriver().findElement((By) selector).isDisplayed()).isFalse();
+            assertWithMessage(selector.getClass().getSimpleName() + "is still enabled")
+                .that(baseSteps.getDriver().findElement((By) selector).isEnabled())
+                .isFalse();
+            assertWithMessage(selector.getClass().getSimpleName() + "is still displayed")
+                .that(baseSteps.getDriver().findElement((By) selector).isDisplayed())
+                .isFalse();
           },
           seconds);
     } else if (selector instanceof WebElement) {
       assertHelpers.assertWithPoll15Second(
           () -> {
-            assertThat(((WebElement) selector).isEnabled()).isFalse();
-            assertThat(((WebElement) selector).isDisplayed()).isFalse();
+            assertWithMessage(selector.getClass().getSimpleName() + "is still enabled")
+                .that(((WebElement) selector).isEnabled())
+                .isFalse();
+            assertWithMessage(selector.getClass().getSimpleName() + "is still displayed")
+                .that(((WebElement) selector).isDisplayed())
+                .isFalse();
           });
     } else {
       throw new NotFoundException("This type is not available");

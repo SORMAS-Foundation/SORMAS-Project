@@ -30,7 +30,6 @@ import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
 public class EditPersonContactDetailsSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
-  protected Person person;
 
   @Inject
   public EditPersonContactDetailsSteps(WebDriverHelpers webDriverHelpers) {
