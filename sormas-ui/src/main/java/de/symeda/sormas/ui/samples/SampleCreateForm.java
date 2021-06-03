@@ -51,6 +51,8 @@ public class SampleCreateForm extends AbstractSampleForm {
 		+ fluidRowLocs(PathogenTestDto.CQ_VALUE, PathogenTestDto.TYPING_ID)
 		+ fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.TEST_RESULT_TEXT);
 
+	CheckBox includeTestField;
+
 	public SampleCreateForm() {
 		super(SampleDto.class, SampleDto.I18N_PREFIX);
 		setPathogenTestFieldCaptions();
@@ -61,7 +63,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 	protected void addFields() {
 
 		addCommonFields();
-		CheckBox includeTestField = addCustomField(Captions.sampleIncludeTestOnCreation, Boolean.class, CheckBox.class);
+		includeTestField = addCustomField(Captions.sampleIncludeTestOnCreation, Boolean.class, CheckBox.class);
 		ComboBox pathogenTestResultField = addCustomField(PathogenTestDto.TEST_RESULT, PathogenTestResultType.class, ComboBox.class);
 		pathogenTestResultField.removeItem(PathogenTestResultType.NOT_DONE);
 		NullableOptionGroup testVerifiedField = addCustomField(PathogenTestDto.TEST_RESULT_VERIFIED, Boolean.class, NullableOptionGroup.class);
