@@ -24,7 +24,7 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.Person;
+import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.steps.web.application.persons.EditPersonSteps;
 
 public class EditPersonContactDetailsSteps implements En {

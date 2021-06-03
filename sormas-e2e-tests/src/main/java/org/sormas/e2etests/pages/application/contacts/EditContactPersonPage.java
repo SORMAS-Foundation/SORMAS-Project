@@ -21,6 +21,7 @@ package org.sormas.e2etests.pages.application.contacts;
 import org.openqa.selenium.By;
 
 public class EditContactPersonPage {
+  public static final By UUID_INPUT = By.cssSelector("#uuid");
   public static final By CONTACT_PERSON_TAB = By.cssSelector("div#tab-contacts-person");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot.v-slot-h2.v-slot-vspace-top-none.v-slot-primary");

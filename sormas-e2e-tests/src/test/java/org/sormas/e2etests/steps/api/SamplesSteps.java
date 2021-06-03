@@ -15,30 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+package org.sormas.e2etests.steps.api;
 
-package org.sormas.e2etests.pojo;
+import cucumber.api.java8.En;
+import javax.inject.Inject;
+import org.sormas.e2etests.helpers.api.SampleHelper;
+import org.sormas.e2etests.pojo.api.Sample;
+import org.sormas.e2etests.services.api.SampleApiService;
+import org.sormas.e2etests.state.ApiState;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+public class SamplesSteps implements En {
 
-@Builder(toBuilder = true, builderClassName = "builder")
-@Value
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@NonNull
-public class Task {
-  String taskContext;
-  String taskType;
-  LocalDate suggestedStartDate;
-  LocalTime suggestedStartTime;
-  LocalDate dueDateDate;
-  LocalTime dueDateTime;
-  String assignedTo;
-  String priority;
-  String commentsOnTask;
-  String commentsOnExecution;
-  String taskStatus;
+  @Inject
+  public SamplesSteps(
+      SampleHelper sampleHelper, SampleApiService sampleApiService, ApiState apiState) {
+
+    When(
+        "API: I create a new sample",
+        () -> {
+          Sample sample = sampleApiService.buildGeneratedSample(apiState.getCreatedCase());
+          sampleHelper.createSample(sample);
+        });
+  }
 }

@@ -150,7 +150,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 				// In that case it would means that the person related to the event participant were deduped by the user
 				// So no need to persist an already existing person
 				if (existingPerson == null) {
-					personFacade.savePersonAndNotifyExternalJournal(eventParticipant.getPerson());
+					personFacade.savePerson(eventParticipant.getPerson());
 				}
 				eventParticipantFacade.saveEventParticipant(eventParticipant);
 			}

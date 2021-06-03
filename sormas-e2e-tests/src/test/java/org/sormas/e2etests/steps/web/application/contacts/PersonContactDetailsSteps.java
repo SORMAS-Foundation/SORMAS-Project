@@ -23,7 +23,7 @@ import static org.sormas.e2etests.pages.application.contacts.PersonContactDetail
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.Person;
+import org.sormas.e2etests.pojo.web.Person;
 
 public class PersonContactDetailsSteps implements En {
 

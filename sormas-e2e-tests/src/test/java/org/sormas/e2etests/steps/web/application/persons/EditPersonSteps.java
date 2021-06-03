@@ -28,7 +28,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 import org.sormas.e2etests.comparators.PersonComparator;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.Person;
+import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.services.PersonService;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;

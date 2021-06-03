@@ -20,7 +20,7 @@ package org.sormas.e2etests.comparators;
 
 import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
-import org.sormas.e2etests.pojo.Person;
+import org.sormas.e2etests.pojo.web.Person;
 
 public class PersonComparator {
 

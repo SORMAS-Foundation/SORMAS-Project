@@ -29,7 +29,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.pojo.Case;
+import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.services.CaseService;
 
 public class CreateNewCaseSteps implements En {
@@ -75,7 +75,7 @@ public class CreateNewCaseSteps implements En {
   }
 
   public void fillDateOfReport(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
   }
 
@@ -143,7 +143,7 @@ public class CreateNewCaseSteps implements En {
   }
 
   public void fillDateOfSymptomOnset(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_ONSET_INPUT, formatter.format(date));
   }
 

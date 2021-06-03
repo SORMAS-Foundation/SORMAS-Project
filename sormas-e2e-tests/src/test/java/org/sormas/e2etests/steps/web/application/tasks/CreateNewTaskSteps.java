@@ -27,11 +27,11 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.Task;
+import org.sormas.e2etests.pojo.web.Task;
 import org.sormas.e2etests.services.TaskService;
 
 public class CreateNewTaskSteps implements En {
-  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/dd/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
   public static Task task;
   private final WebDriverHelpers webDriverHelpers;

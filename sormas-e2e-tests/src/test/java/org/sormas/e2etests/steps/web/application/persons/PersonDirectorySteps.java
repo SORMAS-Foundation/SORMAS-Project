@@ -25,7 +25,7 @@ import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.Person;
+import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 
 public class PersonDirectorySteps implements En {
