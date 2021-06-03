@@ -35,14 +35,12 @@ import org.sormas.e2etests.pojo.web.Person;
 public class EditEventSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
-  private final Faker faker;
   public static Event event;
   public static Person person;
 
   @Inject
   public EditEventSteps(WebDriverHelpers webDriverHelpers, Faker faker) {
     this.webDriverHelpers = webDriverHelpers;
-    this.faker = faker;
 
     When(
         "^I change the event status to ([^\"]*)",
@@ -86,21 +84,19 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
           webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());
           webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, faker.name().lastName());
-          webDriverHelpers.clickOnWebElementBySelector(EDIT_PERSON_POPUP_SAVE);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE);
           person = collectPersonUuid();
           selectResponsibleRegion("Region1");
           selectResponsibleDistrict("District11");
-          webDriverHelpers.clickOnWebElementBySelector(EDIT_PERSON_POPUP_SAVE);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(PERSON_DATA_SAVED);
         });
   }
 
   public Person collectPersonUuid() {
-    return Person.builder()
-        .uuid(webDriverHelpers.getValueFromWebElement(EDIT_PERSON_POPUP_PERSON_ID))
-        .build();
+    return Person.builder().uuid(webDriverHelpers.getValueFromWebElement(POPUP_PERSON_ID)).build();
   }
 
   public Event collectEventUuid() {
@@ -139,10 +135,10 @@ public class EditEventSteps implements En {
   }
 
   public void selectResponsibleRegion(String region) {
-    webDriverHelpers.selectFromCombobox(EDIT_PERSON_POPUP_RESPONSIBLE_REGION_COMBOBOX, region);
+    webDriverHelpers.selectFromCombobox(POPUP_RESPONSIBLE_REGION_COMBOBOX, region);
   }
 
   public void selectResponsibleDistrict(String district) {
-    webDriverHelpers.selectFromCombobox(EDIT_PERSON_POPUP_RESPONSIBLE_DISTRICT_COMBOBOX, district);
+    webDriverHelpers.selectFromCombobox(POPUP_RESPONSIBLE_DISTRICT_COMBOBOX, district);
   }
 }
