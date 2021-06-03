@@ -26,7 +26,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.Event;
+import org.sormas.e2etests.pojo.web.Event;
+import org.sormas.e2etests.services.EventService;
 
 public class EditEventSteps implements En {
 
@@ -34,7 +35,7 @@ public class EditEventSteps implements En {
   public static Event event;
 
   @Inject
-  public EditEventSteps(WebDriverHelpers webDriverHelpers) {
+  public EditEventSteps(WebDriverHelpers webDriverHelpers, EventService eventService) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -72,6 +73,36 @@ public class EditEventSteps implements En {
           Truth.assertThat(event.getEventLocation())
               .isEqualTo(CreateNewEventSteps.newEvent.getEventLocation());
         });
+
+    When(
+        "I change the fields of event and save",
+        () -> {
+          event = eventService.buildEditEvent();
+          fillDateOfReport(event.getReportDate());
+          fillStartData(event.getEventDate());
+          event =
+              event.toBuilder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
+          selectEventStatus(event.getEventStatus());
+          selectEventInvestigationStatusOptions(event.getInvestigationStatus());
+          // selectEventInvestigationStatusOptions(
+          // event.getInvestigationStatus()); // remove after bug 5547 is fixed the duplication
+          selectEventManagementStatusOption(event.getEventManagementStatus());
+          selectRiskLevel(event.getRiskLevel());
+          selectDisease(event.getDisease());
+          fillTitle(event.getTitle());
+          selectSourceType(event.getSourceType());
+          selectTypeOfPlace(event.getEventLocation());
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);
+        });
+
+    When(
+        "I check the modified event data is correctly displayed",
+        () -> {
+          final Event currentEvent = collectEventData();
+          Truth.assertThat(event).isEqualTo(currentEvent);
+        });
   }
 
   public Event collectEventUuid() {
@@ -107,5 +138,45 @@ public class EditEventSteps implements En {
 
   public void selectEventStatus(String eventStatus) {
     webDriverHelpers.clickWebElementByText(EVENT_STATUS_OPTIONS, eventStatus);
+  }
+
+  public void selectRiskLevel(String riskLevel) {
+    webDriverHelpers.selectFromCombobox(RISK_LEVEL_COMBOBOX, riskLevel);
+  }
+
+  public void selectEventManagementStatusOption(String eventManagementStatusOption) {
+    webDriverHelpers.clickWebElementByText(
+        EVENT_MANAGEMENT_STATUS_OPTIONS, eventManagementStatusOption);
+  }
+
+  public void fillStartData(LocalDate date) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+    webDriverHelpers.fillInWebElement(START_DATA_INPUT, formatter.format(date));
+  }
+
+  public void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
+    webDriverHelpers.clickWebElementByText(
+        EVENT_INVESTIGATION_STATUS_OPTIONS, eventInvestigationStatusOption);
+  }
+
+  public void selectDisease(String disease) {
+    webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
+  }
+
+  public void fillTitle(String title) {
+    webDriverHelpers.fillInWebElement(TITLE_INPUT, title);
+  }
+
+  public void selectSourceType(String sourceType) {
+    webDriverHelpers.selectFromCombobox(SOURCE_TYPE_COMBOBOX, sourceType);
+  }
+
+  public void selectTypeOfPlace(String typeOfPlace) {
+    webDriverHelpers.selectFromCombobox(TYPE_OF_PLACE_COMBOBOX, typeOfPlace);
+  }
+
+  public void fillDateOfReport(LocalDate date) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+    webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, formatter.format(date));
   }
 }
