@@ -378,15 +378,16 @@ public class WebDriverHelpers {
 
   public String getCheckedOptionFromHorizontalOptionGroup(By options) {
     waitUntilIdentifiedElementIsPresent(options);
+    return baseSteps.getDriver().findElement(options).findElement(SELECTED_RADIO_BUTTON).getText();
+  }
+
+  public String getOptionFromHorizontalGroupOrNullIfNothingChecked(By options) {
+    waitUntilIdentifiedElementIsPresent(options);
     if (baseSteps.getDriver().findElement(options).findElements(SELECTED_RADIO_BUTTON).size()
         == 0) {
       return null;
     } else {
-      return baseSteps
-          .getDriver()
-          .findElement(options)
-          .findElement(SELECTED_RADIO_BUTTON)
-          .getText();
+      return getCheckedOptionFromHorizontalOptionGroup(options);
     }
   }
 
@@ -408,9 +409,7 @@ public class WebDriverHelpers {
     if (isSingleCssInputChecked(cssInput)) {
       String checkedElementCssSelector =
           StringUtils.getMatchedGroupByIndexFromAString(
-              baseSteps.getDriver().findElement(cssInput).toString(),
-              "(.*css selector:\\s)(.*)(\\s>\\sinput.*)",
-              2);
+              cssInput.toString(), "(.*cssSelector:\\s)(.*)(\\s>\\sinput.*)", 2);
       return baseSteps.getDriver().findElement(By.cssSelector(checkedElementCssSelector)).getText();
     } else {
       return null;

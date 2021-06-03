@@ -495,7 +495,7 @@ public class EditContactSteps implements En {
   public Contact collectContactData() {
     Contact contactInfo = getContactInformation();
     String classification =
-        webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CLASSIFICATION);
+        webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(CONTACT_CLASSIFICATION);
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
     LocalDate parsedDateOfFirst =
@@ -532,7 +532,8 @@ public class EditContactSteps implements En {
         .responsibleCommunity(
             webDriverHelpers.getValueFromWebElement(RESPONSIBLE_COMMUNITY_COMBOBOX_INPUT))
         .returningTraveler(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RETURNING_TRAVELER_OPTIONS))
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(
+                RETURNING_TRAVELER_OPTIONS))
         .caseIdInExternalSystem(
             webDriverHelpers.getValueFromWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT))
         .caseOrEventInformation(
@@ -541,44 +542,53 @@ public class EditContactSteps implements En {
             webDriverHelpers.getValueFromWebElement(IDENTIFICATION_SOURCE_DETAILS_COMBOBOX_INPUT))
         .identificationSourceDetails(identificationSource)
         .typeOfContact(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(
+                TYPE_OF_CONTACT_OPTIONS))
         .additionalInformationOnContactType(
             webDriverHelpers.getValueFromWebElement(
                 ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
         .contactCategory(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(
+                CONTACT_CATEGORY_OPTIONS))
         .relationshipWithCase(
             webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_COMBOBOX_INPUT))
         .descriptionOfHowContactTookPlace(
             webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
         .prohibitionToWork(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PROHIBITION_TO_WORK_OPTIONS))
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(
+                PROHIBITION_TO_WORK_OPTIONS))
         .homeBasedQuarantinePossible(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(
                 HOME_BASED_QUARANTINE_OPTIONS))
         .quarantine(webDriverHelpers.getValueFromWebElement(QUARANTINE_COMBOBOX_INPUT))
         .highPriority(webDriverHelpers.getValueForSingleCssInputIfChecked(HIGH_PRIORITY_CHECKBOX))
-        .diabetes(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIABETES_OPTIONS))
+        .diabetes(
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(DIABETES_OPTIONS))
         .immunodeficiencyIncludingHiv(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HIV_OPTIONS))
-        .liverDisease(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LIVER_OPTIONS))
-        .malignancy(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MALIGNANCY_OPTIONS))
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(HIV_OPTIONS))
+        .liverDisease(
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(LIVER_OPTIONS))
+        .malignancy(
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(MALIGNANCY_OPTIONS))
         .chronicPulmonaryDisease(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PULMONARY_OPTIONS))
-        .renalDisease(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RENAL_OPTIONS))
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(PULMONARY_OPTIONS))
+        .renalDisease(
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(RENAL_OPTIONS))
         .chronicNeurologicalNeuromuscularDisease(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(NEUROLOGIC_OPTIONS))
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(NEUROLOGIC_OPTIONS))
         .cardiovascularDiseaseIncludingHypertension(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CARDIOVASCULAR_OPTIONS))
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(
+                CARDIOVASCULAR_OPTIONS))
         .additionalRelevantPreexistingConditions(
             webDriverHelpers.getValueFromWebElement(ADDITIONAL_RELEVANT_PRE_CONDITIONS_TEXT))
         .vaccinationStatusForThisDisease(
             webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_COMBOBOX_INPUT))
         .immunosuppressiveTherapy(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(
                 IMMUNOSUPPRESSIVE_THERAPY_OPTIONS))
         .activeInCare(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CARE_OVER_60_OPTIONS))
+            webDriverHelpers.getOptionFromHorizontalGroupOrNullIfNothingChecked(
+                CARE_OVER_60_OPTIONS))
         .overwriteFollowUp(
             webDriverHelpers.getValueForSingleCssInputIfChecked(OVERWRITE_FOLLOW_UP_CHECKBOX))
         // .dateOfFollowUpUntil(parsedDateOfFollowUp)
