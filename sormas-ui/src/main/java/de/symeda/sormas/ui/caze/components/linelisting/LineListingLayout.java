@@ -25,7 +25,6 @@ import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -34,8 +33,6 @@ import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -48,7 +45,8 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FieldVisibleAndNotEmptyValidator;
-import de.symeda.sormas.ui.utils.components.birthdate.BirthDateField;
+import de.symeda.sormas.ui.utils.components.linelisting.PersonField;
+import de.symeda.sormas.ui.utils.components.linelisting.PersonFieldDto;
 
 public class LineListingLayout extends VerticalLayout {
 
@@ -322,9 +320,8 @@ public class LineListingLayout extends VerticalLayout {
 
 	public void validate() throws ValidationRuntimeException {
 		boolean validationFailed = false;
-		for (CaseLineLayout caseLine : caseLines) {
-			BinderValidationStatus<CaseLineDto> validationStatus = caseLine.validate();
-			if (validationStatus.hasErrors()) {
+		for (CaseLineLayout line : caseLines) {
+			if (line.hasErrors()) {
 				validationFailed = true;
 			}
 		}
@@ -334,7 +331,7 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	public List<CaseLineDto> getCaseLineDtos() {
-		return caseLines.stream().map(caseLine -> caseLine.getBean()).collect(Collectors.toList());
+		return caseLines.stream().map(line -> line.getBean()).collect(Collectors.toList());
 	}
 
 	public void setSaveCallback(Consumer<List<CaseLineDto>> saveCallback) {
@@ -352,10 +349,7 @@ public class LineListingLayout extends VerticalLayout {
 		private final ComboBox<CommunityReferenceDto> community;
 		private ComboBox<FacilityReferenceDto> facility;
 		private TextField facilityDetails;
-		private final TextField firstname;
-		private final TextField lastname;
-		private final BirthDateField birthDate;
-		private final ComboBox<Sex> sex;
+		private final PersonField person;
 		private final DateField dateOfOnset;
 
 		private final Button delete;
@@ -417,22 +411,10 @@ public class LineListingLayout extends VerticalLayout {
 				.asRequired(new FieldVisibleAndNotEmptyValidator<>(I18nProperties.getString(Strings.errorFieldValidationFailed)))
 				.bind(CaseLineDto.FACILITY_DETAILS);
 
-			firstname = new TextField();
-			firstname.setId("lineListingFirstName_" + lineIndex);
-			binder.forField(firstname).asRequired().bind(CaseLineDto.FIRST_NAME);
-			lastname = new TextField();
-			firstname.setId("lineListingLastName_" + lineIndex);
-			binder.forField(lastname).asRequired().bind(CaseLineDto.LAST_NAME);
+			person = new PersonField();
+			person.setId("lineListingPerson_" + lineIndex);
+			binder.forField(person).bind(CaseLineDto.PERSON);
 
-			birthDate = new BirthDateField();
-			birthDate.setId("lineListingBirthDate_" + lineIndex);
-			binder.forField(birthDate).bind(CaseLineDto.BIRTH_DATE);
-
-			sex = new ComboBox<>();
-			sex.setId("lineListingSex_" + lineIndex);
-			sex.setItems(Sex.values());
-			sex.setWidth(100, Unit.PIXELS);
-			binder.forField(sex).asRequired().bind(CaseLineDto.SEX);
 			dateOfOnset = new DateField();
 			dateOfOnset.setId("lineListingDateOfOnSet_" + lineIndex);
 			dateOfOnset.setWidth(100, Unit.PIXELS);
@@ -451,7 +433,7 @@ public class LineListingLayout extends VerticalLayout {
 			if (shouldShowEpidNumber()) {
 				addComponent(epidNumber);
 			}
-			addComponents(community, facility, facilityDetails, firstname, lastname, birthDate, sex, dateOfOnset, delete);
+			addComponents(community, facility, facilityDetails, person, dateOfOnset, delete);
 
 			if (lineIndex == 0) {
 				formatAsFirstLine();
@@ -468,8 +450,10 @@ public class LineListingLayout extends VerticalLayout {
 			return binder.getBean();
 		}
 
-		public BinderValidationStatus<CaseLineDto> validate() {
-			return binder.validate();
+		public boolean hasErrors() {
+			BinderValidationStatus<PersonFieldDto> personValidationStatus = person.validate();
+			BinderValidationStatus<CaseLineDto> lineValidationStatus = binder.validate();
+			return personValidationStatus.hasErrors() || lineValidationStatus.hasErrors();
 		}
 
 		private void formatAsFirstLine() {
@@ -482,17 +466,8 @@ public class LineListingLayout extends VerticalLayout {
 			community.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.COMMUNITY));
 			facility.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));
 			facility.removeStyleName(CssStyles.CAPTION_HIDDEN);
-			// no caption due to limited space and dependence on type of facility (other or home)
-//			facilityDetails.setCaption(I18nProperties.getCaption(Captions.caseHealthFacilityDetailsShort));
-//			facilityDetails.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(facilityDetails, CssStyles.FORCE_CAPTION);
-			firstname.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
-			firstname.removeStyleName(CssStyles.CAPTION_HIDDEN);
-			lastname.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
-			lastname.removeStyleName(CssStyles.CAPTION_HIDDEN);
-			birthDate.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
-			sex.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
-			sex.removeStyleName(CssStyles.CAPTION_HIDDEN);
+			person.showCaptions();
 			dateOfOnset.setCaption(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 			dateOfOnset.setDescription(I18nProperties.getPrefixDescription(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 			delete.setEnabled(false);
@@ -504,9 +479,7 @@ public class LineListingLayout extends VerticalLayout {
 			CssStyles.style(dateOfReport, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(facility, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
 			CssStyles.style(facilityDetails, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-			CssStyles.style(firstname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-			CssStyles.style(lastname, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-			CssStyles.style(sex, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
+			person.hideCaptions();
 		}
 
 		private void updateFacilityFields(ComboBox<FacilityReferenceDto> cbFacility, TextField tfFacilityDetails) {
@@ -576,10 +549,7 @@ public class LineListingLayout extends VerticalLayout {
 		public static final String COMMUNITY = "community";
 		public static final String FACILITY = "facility";
 		public static final String FACILITY_DETAILS = "facilityDetails";
-		public static final String FIRST_NAME = "firstName";
-		public static final String LAST_NAME = "lastName";
-		public static final String BIRTH_DATE = "birthDate";
-		public static final String SEX = "sex";
+		public static final String PERSON = "person";
 		public static final String DATE_OF_ONSET = "dateOfOnset";
 		public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
 		public static final String FACILITY_TYPE = "facilityType";
@@ -595,10 +565,7 @@ public class LineListingLayout extends VerticalLayout {
 		private FacilityType facilityType;
 		private FacilityReferenceDto facility;
 		private String facilityDetails;
-		private String firstName;
-		private String lastName;
-		private BirthDateDto birthDate;
-		private Sex sex;
+		private PersonFieldDto person;
 		private LocalDate dateOfOnset;
 
 		public Disease getDisease() {
@@ -673,36 +640,12 @@ public class LineListingLayout extends VerticalLayout {
 			this.facilityDetails = facilityDetails;
 		}
 
-		public String getFirstName() {
-			return firstName;
+		public PersonFieldDto getPerson() {
+			return person;
 		}
 
-		public void setFirstName(String firstName) {
-			this.firstName = firstName;
-		}
-
-		public String getLastName() {
-			return lastName;
-		}
-
-		public void setLastName(String lastName) {
-			this.lastName = lastName;
-		}
-
-		public BirthDateDto getBirthDate() {
-			return birthDate;
-		}
-
-		public void setBirthDate(BirthDateDto birthDate) {
-			this.birthDate = birthDate;
-		}
-
-		public Sex getSex() {
-			return sex;
-		}
-
-		public void setSex(Sex sex) {
-			this.sex = sex;
+		public void setPerson(PersonFieldDto person) {
+			this.person = person;
 		}
 
 		public LocalDate getDateOfOnset() {

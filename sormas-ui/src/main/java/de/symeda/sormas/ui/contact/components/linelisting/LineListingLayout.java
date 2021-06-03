@@ -50,7 +50,7 @@ public class LineListingLayout extends VerticalLayout {
 	private final ComboBox<RegionReferenceDto> region;
 	private final ComboBox<DistrictReferenceDto> district;
 
-	private List<ContactLineLayout> caseLines;
+	private List<ContactLineLayout> contactLines;
 
 	private Button cancelButton;
 	private Button saveButton;
@@ -101,7 +101,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		addComponent(sharedInformationComponent);
 
-		caseLines = new ArrayList<>();
+		contactLines = new ArrayList<>();
 		VerticalLayout lineComponent = new VerticalLayout();
 		lineComponent.setMargin(false);
 
@@ -112,7 +112,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		ContactLineLayout line = new ContactLineLayout(lineComponent, 0);
 		line.setBean(new ContactLineDto());
-		caseLines.add(line);
+		contactLines.add(line);
 		lineComponent.addComponent(line);
 		lineComponent.setSpacing(false);
 		addComponent(lineComponent);
@@ -128,8 +128,8 @@ public class LineListingLayout extends VerticalLayout {
 
 		HorizontalLayout actionBar = new HorizontalLayout();
 		Button addLine = ButtonHelper.createIconButton(Captions.lineListingAddLine, VaadinIcons.PLUS, e -> {
-			ContactLineLayout newLine = new ContactLineLayout(lineComponent, caseLines.size() + 1);
-			ContactLineDto lastLineDto = caseLines.get(caseLines.size() - 1).getBean();
+			ContactLineLayout newLine = new ContactLineLayout(lineComponent, contactLines.size() + 1);
+			ContactLineDto lastLineDto = contactLines.get(contactLines.size() - 1).getBean();
 			ContactLineDto newLineDto = new ContactLineDto();
 			newLineDto.setCaze(lastLineDto.getCaze());
 			newLineDto.setDisease(lastLineDto.getDisease());
@@ -140,11 +140,11 @@ public class LineListingLayout extends VerticalLayout {
 			newLineDto.setTypeOfContact(lastLineDto.getTypeOfContact());
 			newLineDto.setRelationToCase(lastLineDto.getRelationToCase());
 			newLine.setBean(newLineDto);
-			caseLines.add(newLine);
+			contactLines.add(newLine);
 			lineComponent.addComponent(newLine);
 
-			if (caseLines.size() > 1) {
-				caseLines.get(0).getDelete().setEnabled(true);
+			if (contactLines.size() > 1) {
+				contactLines.get(0).getDelete().setEnabled(true);
 			}
 		}, ValoTheme.BUTTON_PRIMARY);
 
@@ -164,7 +164,7 @@ public class LineListingLayout extends VerticalLayout {
 		buttonsPanel.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(cancelButton, 1);
 
-		saveButton = ButtonHelper.createButton(Captions.actionSave, event -> saveCallback.accept(getCaseLineDtos()), ValoTheme.BUTTON_PRIMARY);
+		saveButton = ButtonHelper.createButton(Captions.actionSave, event -> saveCallback.accept(getContactLineDtos()), ValoTheme.BUTTON_PRIMARY);
 
 		buttonsPanel.addComponent(saveButton);
 		buttonsPanel.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
@@ -184,8 +184,8 @@ public class LineListingLayout extends VerticalLayout {
 
 	public void validate() throws ValidationRuntimeException {
 		boolean validationFailed = false;
-		for (ContactLineLayout caseLine : caseLines) {
-			if (caseLine.hasErrors()) {
+		for (ContactLineLayout line : contactLines) {
+			if (line.hasErrors()) {
 				validationFailed = true;
 			}
 		}
@@ -194,8 +194,8 @@ public class LineListingLayout extends VerticalLayout {
 		}
 	}
 
-	public List<ContactLineDto> getCaseLineDtos() {
-		return caseLines.stream().map(caseLine -> caseLine.getBean()).collect(Collectors.toList());
+	public List<ContactLineDto> getContactLineDtos() {
+		return contactLines.stream().map(line -> line.getBean()).collect(Collectors.toList());
 	}
 
 	public void setSaveCallback(Consumer<List<ContactLineDto>> saveCallback) {
@@ -255,10 +255,10 @@ public class LineListingLayout extends VerticalLayout {
 
 			delete = ButtonHelper.createIconButtonWithCaption("delete_" + lineIndex, null, VaadinIcons.TRASH, event -> {
 				lineComponent.removeComponent(this);
-				caseLines.remove(this);
-				caseLines.get(0).formatAsFirstLine();
-				if (caseLines.size() > 1) {
-					caseLines.get(0).getDelete().setEnabled(true);
+				contactLines.remove(this);
+				contactLines.get(0).formatAsFirstLine();
+				if (contactLines.size() > 1) {
+					contactLines.get(0).getDelete().setEnabled(true);
 				}
 			});
 
@@ -280,8 +280,8 @@ public class LineListingLayout extends VerticalLayout {
 		}
 
 		public boolean hasErrors() {
-			BinderValidationStatus personValidationStatus = person.validate();
-			BinderValidationStatus lineValidationStatus = binder.validate();
+			BinderValidationStatus<PersonFieldDto> personValidationStatus = person.validate();
+			BinderValidationStatus<ContactLineDto> lineValidationStatus = binder.validate();
 			return personValidationStatus.hasErrors() || lineValidationStatus.hasErrors();
 		}
 

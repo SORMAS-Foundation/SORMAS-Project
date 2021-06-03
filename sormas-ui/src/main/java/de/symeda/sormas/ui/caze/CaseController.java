@@ -1522,12 +1522,12 @@ public class CaseController {
 			newCase.setReportingUser(UserProvider.getCurrent().getUserReference());
 
 			final PersonDto newPerson = PersonDto.build();
-			newPerson.setFirstName(caseLineDto.getFirstName());
-			newPerson.setLastName(caseLineDto.getLastName());
-			newPerson.setBirthdateYYYY(caseLineDto.getBirthDate().getDateOfBirthYYYY());
-			newPerson.setBirthdateMM(caseLineDto.getBirthDate().getDateOfBirthMM());
-			newPerson.setBirthdateDD(caseLineDto.getBirthDate().getDateOfBirthDD());
-			newPerson.setSex(caseLineDto.getSex());
+			newPerson.setFirstName(caseLineDto.getPerson().getFirstName());
+			newPerson.setLastName(caseLineDto.getPerson().getLastName());
+			newPerson.setBirthdateYYYY(caseLineDto.getPerson().getBirthDate().getDateOfBirthYYYY());
+			newPerson.setBirthdateMM(caseLineDto.getPerson().getBirthDate().getDateOfBirthMM());
+			newPerson.setBirthdateDD(caseLineDto.getPerson().getBirthDate().getDateOfBirthDD());
+			newPerson.setSex(caseLineDto.getPerson().getSex());
 
 			ControllerProvider.getPersonController()
 				.selectOrCreatePerson(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
