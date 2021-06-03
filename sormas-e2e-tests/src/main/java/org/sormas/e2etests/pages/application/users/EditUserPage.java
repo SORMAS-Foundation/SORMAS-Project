@@ -24,10 +24,8 @@ public class EditUserPage {
   public static final By FIRST_NAME_OF_USER_INPUT = By.id("firstName");
   public static final By LAST_NAME_OF_USER_INPUT = By.id("lastName");
   public static final By CREATE_NEW_PASSWORD = By.id("userResetPassword");
-
   public static final By EMAIL_ADDRESS_INPUT = By.id("userEmail");
   public static final By PHONE_INPUT = By.id("phone");
-
   public static final By COUNTRY_COMBOBOX_INPUT = By.cssSelector("#country input");
   public static final By REGION_COMBOBOX_INPUT = By.cssSelector(".v-window #region input");
   public static final By DISTRICT_COMBOBOX_INPUT = By.cssSelector("#district input");
@@ -47,10 +45,8 @@ public class EditUserPage {
   public static final By LONGITUDE_INPUT = By.id("longitude");
   public static final By LAT_LON_ACCURACY_INPUT = By.id("latLonAccuracy");
   public static final By ACTIVE_CHECKBOX = By.cssSelector(".v-window #active input");
-
   public static final By USER_NAME_INPUT = By.id("userName");
   public static final By USER_ROLE_CHECKBOX_TEXT = By.cssSelector("#userRoles [checked] + label");
   public static final By LIMITED_DISEASE_COMBOBOX_INPUT = By.cssSelector("#limitedDisease > input");
-
   public static final By DISCARD_BUTTON = By.id("discard");
 }

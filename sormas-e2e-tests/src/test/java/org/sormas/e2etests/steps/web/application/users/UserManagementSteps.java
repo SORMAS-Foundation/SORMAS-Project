@@ -37,8 +37,20 @@ public class UserManagementSteps implements En {
                 NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT));
 
     When(
-        "^I select last created user$",
+        "^I select fists user from list$",
         () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_EDIT_BUTTON_FROM_LIST);
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_EDIT_BUTTON_FROM_LIST);
+        });
+
+    When(
+        "^I search for created user$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_USER_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SEARCH_USER_INPUT, CreateNewUserSteps.user.getUserName());
+          webDriverHelpers.checkWebElementContainsText(
+              USER_NAME_GRID_CELL, CreateNewUserSteps.user.getUserName());
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_EDIT_BUTTON_FROM_LIST);
           webDriverHelpers.clickOnWebElementBySelector(FIRST_EDIT_BUTTON_FROM_LIST);
         });
