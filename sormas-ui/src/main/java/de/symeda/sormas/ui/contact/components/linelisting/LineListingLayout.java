@@ -245,6 +245,7 @@ public class LineListingLayout extends VerticalLayout {
 
 			relationToCase = new ComboBox<>();
 			relationToCase.setId("lineListingRelationToCase_" + lineIndex);
+			relationToCase.setItems(ContactRelation.values());
 			relationToCase.setWidth(200, Unit.PIXELS);
 			relationToCase.addStyleName(CssStyles.CAPTION_OVERFLOW);
 			binder.forField(relationToCase).bind(ContactLineDto.RELATION_TO_CASE);
