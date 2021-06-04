@@ -510,19 +510,22 @@ public class EventsView extends AbstractView {
 						I18nProperties.getCaption(Captions.bulkDelete),
 						VaadinIcons.TRASH,
 						mi -> grid.bulkActionHandler(
-							items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, () -> navigateTo(eventCriteria)))),
+							items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, () -> navigateTo(eventCriteria)),
+							true)),
 					new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.actionArchive),
 						VaadinIcons.ARCHIVE,
 						mi -> grid.bulkActionHandler(
-							items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, () -> navigateTo(eventCriteria))),
+							items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, () -> navigateTo(eventCriteria)),
+							true),
 						EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())),
 					new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.actionDearchive),
 						VaadinIcons.ARCHIVE,
 						mi -> grid.bulkActionHandler(
 							items -> ControllerProvider.getEventController()
-								.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria))),
+								.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria)),
+							true),
 						EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())),
 					new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.actionGroupEvent),

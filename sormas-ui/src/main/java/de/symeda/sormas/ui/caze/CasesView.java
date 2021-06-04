@@ -657,7 +657,8 @@ public class CasesView extends AbstractView {
 					}, hasBulkOperationsRight));
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 						grid.bulkActionHandler(
-							items -> ControllerProvider.getCaseController().deleteAllSelectedItems(items, () -> navigateTo(criteria)));
+							items -> ControllerProvider.getCaseController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
+							true);
 					}, hasBulkOperationsRight));
 					final boolean externalMessagesEnabled =
 						FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
@@ -673,11 +674,13 @@ public class CasesView extends AbstractView {
 					}
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, mi -> {
 						grid.bulkActionHandler(
-							items -> ControllerProvider.getCaseController().archiveAllSelectedItems(items, () -> navigateTo(criteria)));
+							items -> ControllerProvider.getCaseController().archiveAllSelectedItems(items, () -> navigateTo(criteria)),
+							true);
 					}, hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, mi -> {
 						grid.bulkActionHandler(
-							items -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(items, () -> navigateTo(criteria)));
+							items -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(items, () -> navigateTo(criteria)),
+							true);
 					}, hasBulkOperationsRight && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.sormasToSormasShare), VaadinIcons.SHARE, mi -> {
 						grid.bulkActionHandler(

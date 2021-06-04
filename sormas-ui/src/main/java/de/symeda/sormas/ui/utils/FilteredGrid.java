@@ -15,8 +15,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+import de.symeda.sormas.ui.UserProvider;
 
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
@@ -69,6 +71,9 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Use this method before calling any bulkaction, to prevent illegal access to pseudonymized entries
+	 */
 	public void bulkActionHandler(Consumer<Set> callback) {
 		if (PseudonymizableIndexDto.class.isAssignableFrom(getBeanType())
 			&& getSelectedItems().stream().anyMatch(item -> ((PseudonymizableIndexDto) item).isPseudonymized())) {
@@ -88,6 +93,21 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		} else {
 			callback.accept(getSelectedItems());
 		}
+	}
+
+	/**
+	 * Use this method before calling any bulkaction, to prevent illegal access to pseudonymized entries
+	 * 
+	 * @param allowAdminOverride
+	 *            allow admins to perform this action even on pseudonymized entries
+	 */
+	public void bulkActionHandler(Consumer<Set> callback, boolean allowAdminOverride) {
+		if (allowAdminOverride && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+			callback.accept(getSelectedItems());
+		} else {
+			bulkActionHandler(callback);
+		}
+
 	}
 
 	public int getItemCount() {

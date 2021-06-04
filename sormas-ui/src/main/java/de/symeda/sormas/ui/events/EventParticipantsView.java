@@ -188,7 +188,7 @@ public class EventParticipantsView extends AbstractEventView {
 				Collections.singletonList(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
 					grid.bulkActionHandler(items -> {
 						ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> navigateTo(criteria));
-					});
+					}, true);
 				})));
 
 			if (isDocGenerationAllowed()) {
