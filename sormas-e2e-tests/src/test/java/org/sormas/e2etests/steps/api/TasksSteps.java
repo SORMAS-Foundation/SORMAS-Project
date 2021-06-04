@@ -20,6 +20,7 @@ package org.sormas.e2etests.steps.api;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.api.TaskHelper;
+import org.sormas.e2etests.pojo.api.Contact;
 import org.sormas.e2etests.pojo.api.Task;
 import org.sormas.e2etests.services.api.TaskApiService;
 import org.sormas.e2etests.state.ApiState;
@@ -33,6 +34,8 @@ public class TasksSteps implements En {
         "API: I create a new task",
         () -> {
           Task task = taskApiService.buildGeneratedTask();
+          Contact contact = Contact.builder().uuid(apiState.getCreatedContact().getUuid()).build();
+          task = task.toBuilder().contact(contact).build();
           taskHelper.createTask(task);
         });
   }

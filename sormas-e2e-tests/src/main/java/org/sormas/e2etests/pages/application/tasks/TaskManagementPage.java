@@ -25,4 +25,6 @@ public class TaskManagementPage {
   public static final By GENERAL_SEARCH_INPUT = By.cssSelector("input#freeText");
   public static final String EDIT_BUTTON_XPATH_BY_TEXT =
       "//td[contains(text(),'%s')]/../td/span[contains(@class, 'v-icon-edit')]";
+  public static final By COLUMN_HEADERS_TEXT =
+      By.cssSelector("thead .v-grid-column-default-header-content");
 }

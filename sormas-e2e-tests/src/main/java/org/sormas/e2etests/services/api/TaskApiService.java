@@ -31,13 +31,13 @@ public class TaskApiService {
   public Task buildGeneratedTask() {
     return Task.builder()
         .uuid(UUID.randomUUID().toString())
-        .taskContext("GENERAL")
+        .taskContext("CONTACT")
         .taskType("WEEKLY_REPORT_GENERATION")
         .priority("NORMAL")
         .dueDate(new Date())
         .suggestedStart(new Date())
         .taskStatus("PENDING")
-        .assigneeUser(AssigneeUser.builder().uuid("QKBKF3-EZT5OK-327TUH-NV73SJYY").build())
+        .assigneeUser(AssigneeUser.builder().uuid("TWJCUP-I3VN2G-QL5UG3-WXX6SOPA").build())
         .build();
   }
 }

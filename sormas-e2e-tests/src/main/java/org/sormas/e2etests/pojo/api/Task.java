@@ -35,4 +35,5 @@ public class Task {
   String uuid;
   Date suggestedStart;
   String taskStatus;
+  Contact contact;
 }

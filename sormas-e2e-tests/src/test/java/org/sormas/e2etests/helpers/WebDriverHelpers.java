@@ -53,19 +53,14 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoaded() {
-    try {
-      assertHelpers.assertWithPoll15Second(
-          () ->
-              assertThat(
-                      baseSteps
-                          .getDriver()
-                          .executeScript("return document.readyState")
-                          .toString()
-                          .contentEquals("complete"))
-                  .isTrue());
-    } catch (Throwable ignored) {
 
-    }
+    assertThat(
+            baseSteps
+                .getDriver()
+                .executeScript("return document.readyState")
+                .toString()
+                .contentEquals("complete"))
+        .isTrue();
   }
 
   public void waitUntilElementIsVisibleAndClickable(By selector) {
@@ -103,37 +98,6 @@ public class WebDriverHelpers {
             assertWithMessage("The element was not displayed")
                 .that(((WebElement) selector).isDisplayed())
                 .isTrue();
-          });
-    } else {
-      throw new NotFoundException("This type is not available");
-    }
-  }
-
-  public void waitUntilIdentifiedElementDisappear(final Object selector) {
-    waitUntilIdentifiedElementDisappear(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
-  }
-
-  public void waitUntilIdentifiedElementDisappear(final Object selector, int seconds) {
-    if (selector instanceof By) {
-      assertHelpers.assertWithPoll(
-          () -> {
-            assertWithMessage(selector.getClass().getSimpleName() + "is still enabled")
-                .that(baseSteps.getDriver().findElement((By) selector).isEnabled())
-                .isFalse();
-            assertWithMessage(selector.getClass().getSimpleName() + "is still displayed")
-                .that(baseSteps.getDriver().findElement((By) selector).isDisplayed())
-                .isFalse();
-          },
-          seconds);
-    } else if (selector instanceof WebElement) {
-      assertHelpers.assertWithPoll15Second(
-          () -> {
-            assertWithMessage(selector.getClass().getSimpleName() + "is still enabled")
-                .that(((WebElement) selector).isEnabled())
-                .isFalse();
-            assertWithMessage(selector.getClass().getSimpleName() + "is still displayed")
-                .that(((WebElement) selector).isDisplayed())
-                .isFalse();
           });
     } else {
       throw new NotFoundException("This type is not available");

@@ -25,12 +25,13 @@ import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 
 public class TaskManagementSteps implements En {
 
   @Inject
-  public TaskManagementSteps(WebDriverHelpers webDriverHelpers) {
+  public TaskManagementSteps(WebDriverHelpers webDriverHelpers, BaseSteps baseSteps) {
 
     When(
         "^I click on the NEW TASK button$",
@@ -52,6 +53,12 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERAL_SEARCH_INPUT);
           webDriverHelpers.fillAndSubmitInWebElement(
               GENERAL_SEARCH_INPUT, EditCaseSteps.aCase.getUuid());
+        });
+
+    When(
+        "^I search last created task by Case UUIDasdsa$",
+        () -> {
+          baseSteps.getDriver().findElements(COLUMN_HEADERS_TEXT).stream();
         });
   }
 }
