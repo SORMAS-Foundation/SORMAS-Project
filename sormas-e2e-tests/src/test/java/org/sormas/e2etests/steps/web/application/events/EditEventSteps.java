@@ -29,8 +29,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.pojo.web.Event;
+import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.services.EventService;
 
 public class EditEventSteps implements En {
@@ -38,6 +38,7 @@ public class EditEventSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static Event event;
   public static Person person;
+  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
   public EditEventSteps(WebDriverHelpers webDriverHelpers, EventService eventService, Faker faker) {
@@ -89,8 +90,6 @@ public class EditEventSteps implements En {
               event.toBuilder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
           selectEventStatus(event.getEventStatus());
           selectEventInvestigationStatusOptions(event.getInvestigationStatus());
-          // selectEventInvestigationStatusOptions(
-          // event.getInvestigationStatus()); // remove after bug 5547 is fixed the duplication
           selectEventManagementStatusOption(event.getEventManagementStatus());
           selectRiskLevel(event.getRiskLevel());
           selectDisease(event.getDisease());
@@ -136,11 +135,10 @@ public class EditEventSteps implements En {
   }
 
   public Event collectEventData() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
     String reportingDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
-    LocalDate reportDate = LocalDate.parse(reportingDate, formatter);
+    LocalDate reportDate = LocalDate.parse(reportingDate, DATE_FORMATTER);
     String eventStartDate = webDriverHelpers.getValueFromWebElement(START_DATA_INPUT);
-    LocalDate eventDate = LocalDate.parse(eventStartDate, formatter);
+    LocalDate eventDate = LocalDate.parse(eventStartDate, DATE_FORMATTER);
 
     return Event.builder()
         .reportDate(reportDate)
@@ -184,8 +182,7 @@ public class EditEventSteps implements En {
   }
 
   public void fillStartData(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
-    webDriverHelpers.fillInWebElement(START_DATA_INPUT, formatter.format(date));
+    webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER.format(date));
   }
 
   public void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
@@ -210,7 +207,6 @@ public class EditEventSteps implements En {
   }
 
   public void fillDateOfReport(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
-    webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, formatter.format(date));
+    webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 }
