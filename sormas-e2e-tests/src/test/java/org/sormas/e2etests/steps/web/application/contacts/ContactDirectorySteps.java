@@ -25,6 +25,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUI
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -34,12 +35,26 @@ public class ContactDirectorySteps implements En {
 
   protected WebDriverHelpers webDriverHelpers;
   private final AssertHelpers assertHelpers;
+  public static String LAST_CREATED_CONTACT_URL;
 
   @Inject
   public ContactDirectorySteps(
-      WebDriverHelpers webDriverHelpers, ApiState apiState, AssertHelpers assertHelpers) {
+      WebDriverHelpers webDriverHelpers,
+      ApiState apiState,
+      AssertHelpers assertHelpers,
+      @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
     this.assertHelpers = assertHelpers;
+
+    When(
+        "^I navigate to the last created contact via the url$",
+        () -> {
+          LAST_CREATED_CONTACT_URL =
+              environmentUrl
+                  + "/sormas-ui/#!contacts/data/"
+                  + apiState.getCreatedContact().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
+        });
 
     When(
         "I click on the NEW CONTACT button",
