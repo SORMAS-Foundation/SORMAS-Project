@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.Case;
+import org.sormas.e2etests.pojo.web.Case;
 
 public class EditCasePersonSteps implements En {
 

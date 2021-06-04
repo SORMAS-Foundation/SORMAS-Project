@@ -15,9 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.contact;
 
-import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CONTACT_ENDPOINT;
-import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CONTACT_SYNC_ENDPOINT;
-import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
+import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.*;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 
 import java.util.HashMap;
@@ -35,6 +33,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
@@ -45,8 +44,8 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
+import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
-import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 
@@ -63,7 +62,7 @@ public class SormasToSormasContactFacadeEjb
 	@EJB
 	private ContactShareDataBuilder contactShareDataBuilder;
 	@EJB
-	private SharedContactProcessor sharedContactProcessor;
+	private ReceivedContactProcessor receivedContactProcessor;
 	@EJB
 	private ProcessedContactDataPersister processedContactDataPersister;
 	@EJB
@@ -88,8 +87,8 @@ public class SormasToSormasContactFacadeEjb
 	}
 
 	@Override
-	protected SharedDataProcessor<ContactDto, SormasToSormasContactDto, ProcessedContactData> getSharedDataProcessor() {
-		return sharedContactProcessor;
+	protected ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, ProcessedContactData> getReceivedDataProcessor() {
+		return receivedContactProcessor;
 	}
 
 	@Override
@@ -103,7 +102,7 @@ public class SormasToSormasContactFacadeEjb
 	}
 
 	@Override
-	protected void validateEntitiesBeforeSend(List<Contact> entities) throws SormasToSormasException {
+	protected void validateEntitiesBeforeSend(List<Contact> entities, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		for (Contact contact : entities) {
 			if (!contactService.isContactEditAllowed(contact)) {
@@ -111,6 +110,12 @@ public class SormasToSormasContactFacadeEjb
 					buildContactValidationGroupName(contact),
 					ValidationErrors
 						.create(I18nProperties.getCaption(Captions.Contact), I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
+			}
+			if (options.isHandOverOwnership() && contact.getPerson().isEnrolledInExternalJournal()) {
+				validationErrors.put(
+					buildContactValidationGroupName(contact),
+					ValidationErrors
+						.create(I18nProperties.getCaption(Captions.Contact), I18nProperties.getString(Strings.errorSormasToSormasPersonEnrolled)));
 			}
 		}
 

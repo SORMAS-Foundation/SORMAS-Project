@@ -264,6 +264,7 @@ public interface Strings {
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
 	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
 	String errorSormasToSormasNotEditable = "errorSormasToSormasNotEditable";
+	String errorSormasToSormasPersonEnrolled = "errorSormasToSormasPersonEnrolled";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
 	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
@@ -1021,6 +1022,7 @@ public interface Strings {
 	String notificationEventGroupSummary = "notificationEventGroupSummary";
 	String notificationEventGroupSummaryEmpty = "notificationEventGroupSummaryEmpty";
 	String notificationEventParticipantCaseClassificationConfirmed = "notificationEventParticipantCaseClassificationConfirmed";
+	String notificationEventParticipantRelatedToOtherEvents = "notificationEventParticipantRelatedToOtherEvents";
 	String notificationEventRemovedFromEventGroup = "notificationEventRemovedFromEventGroup";
 	String notificationEventWithResponsibleUserLine = "notificationEventWithResponsibleUserLine";
 	String notificationLabResultArrived = "notificationLabResultArrived";

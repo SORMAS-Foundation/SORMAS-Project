@@ -3074,7 +3074,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 			}
 			DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
-			personFacade.savePersonAndNotifyExternalJournal(leadPerson);
+			personFacade.savePerson(leadPerson);
 		} else {
 			assert (DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid()));
 		}
@@ -3391,7 +3391,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			caseDto,
 			CaseLogic.getFollowUpStartDate(caseDto, sampleFacade.getByCaseUuids(Collections.singletonList(caseDto.getUuid()))),
 			visitFacade.getVisitsByCase(caseDto.toReference()),
-			diseaseConfigurationFacade.getFollowUpDuration(caseDto.getDisease()),
+			diseaseConfigurationFacade.getCaseFollowUpDuration(caseDto.getDisease()),
 			ignoreOverwrite);
 	}
 

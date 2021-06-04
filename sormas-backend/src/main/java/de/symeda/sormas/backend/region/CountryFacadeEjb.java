@@ -274,6 +274,20 @@ public class CountryFacadeEjb implements CountryFacade {
 		return dto;
 	}
 
+	public List<CountryReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
+		return countryService.getByExternalId(externalId, includeArchived)
+				.stream()
+				.map(CountryFacadeEjb::toReferenceDto)
+				.collect(Collectors.toList());
+	}
+
+	public List<CountryReferenceDto> getReferencesByName(String caption, boolean includeArchived) {
+		return countryService.getByDefaultName(caption, includeArchived)
+				.stream()
+				.map(CountryFacadeEjb::toReferenceDto)
+				.collect(Collectors.toList());
+	}
+
 	private Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Country::new, checkChangeDate);
 

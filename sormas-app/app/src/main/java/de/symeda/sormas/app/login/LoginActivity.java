@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.app.login;
 
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -27,6 +25,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
+
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -49,7 +49,6 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.AppUpdateController;
-import de.symeda.sormas.app.util.LocationService;
 import de.symeda.sormas.app.util.NavigationHelper;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 import de.symeda.sormas.app.util.SormasProperties;
@@ -85,9 +84,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 	protected void onResume() {
 		super.onResume();
 
-		if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
 			checkLoginAndDoUpdateAndInitialSync();
-		}
 
 		if (ConfigProvider.getUser() != null) {
 			binding.signInLayout.setVisibility(View.GONE);
@@ -105,9 +102,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		if (LocationService.instance().validateGpsAccessAndEnabled(this)) {
-			checkLoginAndDoUpdateAndInitialSync();
-		}
+		checkLoginAndDoUpdateAndInitialSync();
 	}
 
 	/**
@@ -272,13 +267,16 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 	}
 
 	private void openLandingActivity() {
+
 		User user = ConfigProvider.getUser();
+
+
 		boolean caseSuveillance = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CASE_SURVEILANCE);
 		boolean campaigns = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS);
 
 		if (caseSuveillance) {
 			if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)
-				&& (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)
+					&& (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)
 					|| user.hasUserRole(UserRole.CASE_OFFICER)
 					|| user.hasUserRole(UserRole.POE_INFORMANT)
 					|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)
