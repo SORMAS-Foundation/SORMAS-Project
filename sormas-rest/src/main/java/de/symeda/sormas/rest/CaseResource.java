@@ -130,10 +130,21 @@ public class CaseResource extends EntityDtoResource {
 		return FacadeProvider.getCaseFacade().getByUuid(uuid);
 	}
 
+	/**
+	 * This endpoint is used to partially update the CaseData.
+	 * For allowing only a subset of the fields of the caseDataDto to be updated, and ensuring that the system can determine
+	 * which fields are not provided and which are intended to be reset it, the payload needs to be a Json object and not a dto
+	 * 
+	 * @param uuid
+	 * @param CaseDataDtoJson
+	 *            - a subset of caseDataDto fields, same structure as caseDataDto
+	 * @return - the updated caseDataDto
+	 * @throws Exception
+	 */
 	@POST
-	@Path("/patchJson/{uuid}")
-	public CaseDataDto patchJson(@PathParam("uuid") String uuid, JSONObject jsonObject) throws Exception {
-		return FacadeProvider.getCaseFacade().patchJson(uuid, jsonObject);
+	@Path("/postUpdate/{uuid}")
+	public CaseDataDto postUpdate(@PathParam("uuid") String uuid, JSONObject caseDataDtoJson) throws Exception {
+		return FacadeProvider.getCaseFacade().postUpdate(uuid, caseDataDtoJson);
 	}
 
 }

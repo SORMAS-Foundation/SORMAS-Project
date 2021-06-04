@@ -13,7 +13,7 @@ import net.minidev.json.JSONObject;
 
 public class PatchHelper {
 
-	public static <T> T patchJson(JSONObject jsonObject, Class<T> patchObjectClass, T existingObject) {
+	public static <T> T postUpdate(JSONObject jsonObject, Class<T> patchObjectClass, T existingObject) {
 		ObjectMapper mapper = new ObjectMapper();
 
 		try {

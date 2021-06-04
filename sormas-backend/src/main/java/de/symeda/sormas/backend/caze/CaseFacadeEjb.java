@@ -585,9 +585,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		return cases;
 	}
 
-	public CaseDataDto patchJson(String uuid, JSONObject jsonObject) {
+	public CaseDataDto postUpdate(String uuid, JSONObject caseDataDtoJson) {
 		CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
-		CaseDataDto patchedObject = PatchHelper.<CaseDataDto> patchJson(jsonObject, CaseDataDto.class, existingCaseDto);
+		CaseDataDto patchedObject = PatchHelper.<CaseDataDto> postUpdate(caseDataDtoJson, CaseDataDto.class, existingCaseDto);
 		return saveCase(patchedObject);
 
 	}
