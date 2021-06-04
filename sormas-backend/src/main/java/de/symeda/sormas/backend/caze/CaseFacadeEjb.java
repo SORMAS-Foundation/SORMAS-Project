@@ -2073,8 +2073,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			if (newCase.getOutcome() == null || newCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
 				newCase.setOutcomeDate(null);
-			} else if (newCase.getOutcomeDate() == null) {
-				newCase.setOutcomeDate(new Date());
 			}
 
 			if (newCase.getOutcome() == CaseOutcome.DECEASED) {
@@ -2127,7 +2125,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			&& existingCase.getOutcomeDate() != newCase.getOutcomeDate()
 			&& newCase.getOutcomeDate() != null) {
 			// outcomeDate was changed, but person & case are considered dead
-			if (existingCase.getOutcomeDate() == newCase.getPerson().getDeathDate()) {
+			if (existingCase.getOutcomeDate() == newCase.getPerson().getDeathDate()
+				&& newCase.getPerson().getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
+				&& newCase.getPerson().getCauseOfDeathDisease() == existingCase.getDisease()) {
 				// update the deathdate of the person, if the previous outcomedate equals the previous deathdate
 				PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
 				newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
