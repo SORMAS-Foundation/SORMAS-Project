@@ -60,7 +60,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	@EJB
 	private EventShareDataBuilder shareDataBuilder;
 	@EJB
-	private SharedEventProcessor sharedEventProcessor;
+	private ReceivedEventProcessor receivedEventProcessor;
 	@EJB
 	private ProcessedEventDataPersister processedEventDataPersister;
 	@EJB
@@ -126,8 +126,8 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Override
-	protected SharedEventProcessor getSharedDataProcessor() {
-		return sharedEventProcessor;
+	protected ReceivedEventProcessor getReceivedDataProcessor() {
+		return receivedEventProcessor;
 	}
 
 	@Override

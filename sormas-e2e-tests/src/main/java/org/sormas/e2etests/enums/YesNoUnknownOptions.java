@@ -15,17 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+package org.sormas.e2etests.enums;
 
-package org.sormas.e2etests.pages.application;
+import lombok.Getter;
 
-import org.openqa.selenium.By;
+@Getter
+public enum YesNoUnknownOptions {
+  YES("YES"),
+  NO("NO"),
+  UNKNOW("UNKNOWN");
 
-public class NavBarPage {
-  public static final By CASES_BUTTON = By.cssSelector("div#cases");
-  public static final By CONTACTS_BUTTON = By.cssSelector("div#contacts");
-  public static final By EVENTS_BUTTON = By.cssSelector("div#events");
-  public static final By TASKS_BUTTON = By.cssSelector("div#tasks");
-  public static final By PERSONS_BUTTON = By.cssSelector("div#persons");
-  public static final By DASHBOARD_BUTTON = By.cssSelector("div#dashboard");
-  public static final By SAMPLE_BUTTON = By.cssSelector("[id='samples']");
+  private final String option;
+
+  YesNoUnknownOptions(String option) {
+    this.option = option;
+  }
+
+  @Override
+  public String toString() {
+    return this.option;
+  }
 }

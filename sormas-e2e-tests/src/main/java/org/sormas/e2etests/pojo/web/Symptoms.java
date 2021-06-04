@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.sormas.e2etests.pojo.web;
 
 import java.time.LocalDate;
@@ -24,45 +25,32 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
-public class Person {
-  String uuid;
-  String firstName;
-  String lastName;
-  String salutation;
-  LocalDate dateOfBirth;
-  String sex;
-  String presentConditionOfPerson;
-  String emailAddress;
-  String phoneNumber;
-  String passportNumber;
-  String nationalHealthId;
-  String externalId;
-  String externalToken;
-  String typeOfOccupation;
-  String staffOfArmedForces;
-  String education;
-  String region;
-  String district;
-  String community;
-  String facilityCategory;
-  String facilityType;
-  String facility;
-  String facilityNameAndDescription;
-  String street;
-  String houseNumber;
-  String additionalInformation;
-  String postalCode;
-  String city;
-  String areaType;
-  String contactPersonFirstName;
-  String contactPersonLastName;
-  String communityContactPerson;
-  String birthName;
-  String nickname;
-  String motherMaidenName;
-  String motherName;
-  String fatherName;
-  String nameOfGuardians;
-  String personContactDetailsTypeOfContactDetails;
-  String personContactDetailsContactInformation;
+public class Symptoms {
+  String maximumBodyTemperatureInC;
+  String sourceOfBodyTemperature;
+  String chillsOrSweats;
+  String headache;
+  String feelingIll;
+  String musclePain;
+  String fever;
+  String shivering;
+  String acuteRespiratoryDistressSyndrome;
+  String oxygenSaturationLower94;
+  String cough;
+  String pneumoniaClinicalOrRadiologic;
+  String difficultyBreathing;
+  String rapidBreathing;
+  String respiratoryDiseaseVentilation;
+  String runnyNose;
+  String soreThroat;
+  String fastHeartRate;
+  String diarrhea;
+  String nausea;
+  String lossOfSmell;
+  String lossOfTaste;
+  String otherNonHemorrhagicSymptoms;
+  String symptomsComments;
+  String firstSymptom;
+  LocalDate dateOfSymptom;
+  String save;
 }

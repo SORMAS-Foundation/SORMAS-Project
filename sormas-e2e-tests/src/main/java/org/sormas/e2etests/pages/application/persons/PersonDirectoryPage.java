@@ -16,16 +16,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pages.application;
+package org.sormas.e2etests.pages.application.persons;
 
 import org.openqa.selenium.By;
 
-public class NavBarPage {
-  public static final By CASES_BUTTON = By.cssSelector("div#cases");
-  public static final By CONTACTS_BUTTON = By.cssSelector("div#contacts");
-  public static final By EVENTS_BUTTON = By.cssSelector("div#events");
-  public static final By TASKS_BUTTON = By.cssSelector("div#tasks");
-  public static final By PERSONS_BUTTON = By.cssSelector("div#persons");
-  public static final By DASHBOARD_BUTTON = By.cssSelector("div#dashboard");
-  public static final By SAMPLE_BUTTON = By.cssSelector("[id='samples']");
+public class PersonDirectoryPage {
+
+  public static final By MULTIPLE_OPTIONS_SEARCH_INPUT =
+      By.cssSelector("#nameAddressPhoneEmailLike");
+  public static final By APPLY_FILTERS_BUTTON = By.cssSelector("#actionApplyFilters");
+  public static final String PERSON_RESULTS_UUID_LOCATOR = "[title = '%s']";
+  public static final By SEARCH_PERSON_BY_FREE_TEXT = By.id("nameAddressPhoneEmailLike");
 }
