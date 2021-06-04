@@ -12,8 +12,8 @@ import com.vaadin.server.SerializableSupplier;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
-import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
@@ -21,11 +21,17 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 
 	private static final long serialVersionUID = 8116377533153377424L;
 
+	/**
+	 * For lazy loading: Defines how many entries are loaded into the grid when new data needs to be loaded for the visible range.
+	 */
+	private static final int LAZY_BATCH_SIZE = 100;
+
 	private C criteria;
 	private boolean inEagerMode;
 
 	public FilteredGrid(Class<T> beanType) {
 		super(beanType);
+		getDataCommunicator().setMinPushSize(LAZY_BATCH_SIZE);
 	}
 
 	public C getCriteria() {

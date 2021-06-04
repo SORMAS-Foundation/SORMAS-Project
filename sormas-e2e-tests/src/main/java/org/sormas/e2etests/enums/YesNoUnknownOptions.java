@@ -15,13 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+package org.sormas.e2etests.enums;
 
-package org.sormas.e2etests.pages.application.events;
+import lombok.Getter;
 
-import org.openqa.selenium.By;
+@Getter
+public enum YesNoUnknownOptions {
+  YES("YES"),
+  NO("NO"),
+  UNKNOW("UNKNOWN");
 
-public class EventParticipantsPage {
-  public static final By ADD_PARTICIPANT_BUTTON = By.cssSelector("div#eventParticipantAddPerson");
-  public static final By PARTICIPANT_FIRST_NAME_INPUT = By.cssSelector(".popupContent #firstName");
-  public static final By PARTICIPANT_LAST_NAME_INPUT = By.cssSelector(".popupContent #lastName");
+  private final String option;
+
+  YesNoUnknownOptions(String option) {
+    this.option = option;
+  }
+
+  @Override
+  public String toString() {
+    return this.option;
+  }
 }

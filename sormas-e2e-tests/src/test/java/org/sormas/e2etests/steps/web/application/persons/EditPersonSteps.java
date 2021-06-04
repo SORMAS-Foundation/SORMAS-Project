@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.persons;
 
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 
 import cucumber.api.java8.En;
@@ -32,6 +33,7 @@ import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.services.PersonService;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
+import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 
 public class EditPersonSteps implements En {
 
@@ -115,6 +117,15 @@ public class EditPersonSteps implements En {
           baseSteps.getDriver().navigate().refresh();
           webDriverHelpers.waitForPageLoaded();
           previousCreatedPerson = collectedPerson;
+        });
+
+    When(
+        "I check if event is available at person information",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_EVENTS_FOR_PERSON);
+          webDriverHelpers.clickOnWebElementBySelector(SEE_EVENTS_FOR_PERSON);
+          final String eventUuid = EditEventSteps.event.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
         });
   }
 

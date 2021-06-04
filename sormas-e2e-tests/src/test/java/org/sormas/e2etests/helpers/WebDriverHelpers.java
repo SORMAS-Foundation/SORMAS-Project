@@ -18,13 +18,12 @@
 
 package org.sormas.e2etests.helpers;
 
-import static com.google.common.truth.Truth.*;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
-import static org.sormas.e2etests.helpers.AssertHelpers.*;
+import static org.sormas.e2etests.helpers.AssertHelpers.takeScreenshot;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -409,6 +408,7 @@ public class WebDriverHelpers {
 
   public String getCheckedOptionFromHorizontalOptionGroup(By options) {
     waitUntilIdentifiedElementIsPresent(options);
+    scrollToElement(options);
     return baseSteps.getDriver().findElement(options).findElement(SELECTED_RADIO_BUTTON).getText();
   }
 
@@ -419,7 +419,7 @@ public class WebDriverHelpers {
     while (!"".contentEquals(getValueFromWebElement(selector))) {
       log.debug("Deleted char: {}", getValueFromWebElement(selector));
       webElement.clear();
-      webElement.sendKeys((Keys.chord(Keys.SHIFT, Keys.END)));
+      webElement.sendKeys(Keys.chord(Keys.SHIFT, Keys.END));
       webElement.sendKeys(Keys.chord(Keys.BACK_SPACE));
       webElement.click();
       if (Instant.now().isAfter(start.plus(1, ChronoUnit.MINUTES))) {

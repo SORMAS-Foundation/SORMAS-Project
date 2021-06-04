@@ -72,7 +72,7 @@ import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class SharedDataProcessorHelper {
+public class ReceivedDataProcessorHelper {
 
 	@EJB
 	private UserService userService;
@@ -139,7 +139,7 @@ public class SharedDataProcessorHelper {
 
 		return validationErrors;
 	}
-	
+
 	private CountryReferenceDto processCountry(CountryReferenceDto country, String errorCaption, ValidationErrors validationErrors) {
 		CountryReferenceDto localCountry = loadLocalCountry(country);
 		if (country != null && localCountry == null) {
@@ -156,15 +156,26 @@ public class SharedDataProcessorHelper {
 	}
 
 	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
-			RegionReferenceDto region,
-			DistrictReferenceDto district,
-			CommunityReferenceDto community,
-			FacilityType facilityType,
-			FacilityReferenceDto facility,
-			String facilityDetails,
-			PointOfEntryReferenceDto pointOfEntry,
-			String pointOfEntryDetails) {
-		return loadLocalInfrastructure(null, null, null, region, district, community, facilityType, facility, facilityDetails, pointOfEntry, pointOfEntryDetails);
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		CommunityReferenceDto community,
+		FacilityType facilityType,
+		FacilityReferenceDto facility,
+		String facilityDetails,
+		PointOfEntryReferenceDto pointOfEntry,
+		String pointOfEntryDetails) {
+		return loadLocalInfrastructure(
+			null,
+			null,
+			null,
+			region,
+			district,
+			community,
+			facilityType,
+			facility,
+			facilityDetails,
+			pointOfEntry,
+			pointOfEntryDetails);
 	}
 
 	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
@@ -376,7 +387,6 @@ public class SharedDataProcessorHelper {
 		}));
 	}
 
-
 	private ContinentReferenceDto loadLocalContinent(ContinentReferenceDto continent) {
 		if (continent == null) {
 			return null;
@@ -413,9 +423,8 @@ public class SharedDataProcessorHelper {
 		Optional<CountryReferenceDto> localCountry =
 			country.getExternalId() != null ? countryFacade.getByExternalId(country.getExternalId(), false).stream().findFirst() : Optional.empty();
 
-		if(!localCountry.isPresent()) {
-			localCountry = Optional.ofNullable(countryFacade.getByIsoCode(country.getIsoCode(), false))
-					.map(CountryFacadeEjb::toReferenceDto);
+		if (!localCountry.isPresent()) {
+			localCountry = Optional.ofNullable(countryFacade.getByIsoCode(country.getIsoCode(), false)).map(CountryFacadeEjb::toReferenceDto);
 		}
 
 		if (!localCountry.isPresent()) {
@@ -569,7 +578,7 @@ public class SharedDataProcessorHelper {
 		public CountryReferenceDto getCountry() {
 			return country;
 		}
-		
+
 		public RegionReferenceDto getRegion() {
 			return region;
 		}

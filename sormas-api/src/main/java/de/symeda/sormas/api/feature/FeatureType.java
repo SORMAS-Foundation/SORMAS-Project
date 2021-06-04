@@ -43,11 +43,14 @@ public enum FeatureType {
 			CASE_SURVEILANCE,
 			EVENT_SURVEILLANCE }),
 	DOCUMENTS_MULTI_UPLOAD(true,
-			true,
-			new FeatureType[] {
-					DOCUMENTS
-			}),
+		true,
+		new FeatureType[] {
+			DOCUMENTS }),
 	EVENT_GROUPS(true,
+		true,
+		new FeatureType[] {
+			EVENT_SURVEILLANCE }),
+	EVENT_HIERARCHIES(true,
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE }),
