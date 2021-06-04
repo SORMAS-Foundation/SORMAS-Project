@@ -320,7 +320,7 @@ public class PathogenTestController {
 			});
 	}
 
-	private void showCaseCloningWithNewDiseaseDialog(CaseDataDto existingCaseDto, Disease disease) {
+	public static void showCaseCloningWithNewDiseaseDialog(CaseDataDto existingCaseDto, Disease disease) {
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.caseCloneCaseWithNewDisease) + " " + I18nProperties.getEnumCaption(disease) + "?",
@@ -342,7 +342,7 @@ public class PathogenTestController {
 			});
 	}
 
-	private void showConfirmCaseDialog(CaseDataDto caze) {
+	public void showConfirmCaseDialog(CaseDataDto caze) {
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.caseConfirmCase),

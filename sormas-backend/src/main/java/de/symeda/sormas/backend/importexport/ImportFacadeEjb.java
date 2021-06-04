@@ -233,7 +233,10 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		char separator = configFacade.getCsvSeparator();
 
-		List<String> columnsToRemove = Arrays.asList(EventDto.SORMAS_TO_SORMAS_ORIGIN_INFO, EventDto.OWNERSHIP_HANDED_OVER);
+		ArrayList<String> columnsToRemove = new ArrayList<>(Arrays.asList(EventDto.SORMAS_TO_SORMAS_ORIGIN_INFO, EventDto.OWNERSHIP_HANDED_OVER));
+		if (featureConfigurationFacade.isFeatureDisabled(FeatureType.EVENT_HIERARCHIES)) {
+			columnsToRemove.add(EventDto.SUPERORDINATE_EVENT);
+		}
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		appendListOfFields(importColumns, EventDto.class, "", separator);

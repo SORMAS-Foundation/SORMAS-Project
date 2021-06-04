@@ -52,6 +52,7 @@ public class MessagingService {
 	public static final String CONTENT_CASE_CLASSIFICATION_CHANGED = "notificationCaseClassificationChanged";
 	public static final String CONTENT_CASE_INVESTIGATION_DONE = "notificationCaseInvestigationDone";
 	public static final String CONTENT_EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED = "notificationEventParticipantCaseClassificationConfirmed";
+	public static final String CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS = "notificationEventParticipantRelatedToOtherEvents";
 	public static final String CONTENT_LAB_RESULT_ARRIVED = "notificationLabResultArrived";
 	public static final String CONTENT_LAB_RESULT_ARRIVED_CONTACT = "notificationLabResultArrivedContact";
 	public static final String CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT = "notificationLabResultArrivedEventParticipant";

@@ -46,6 +46,9 @@ public interface Validations {
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String errorsInForm = "errorsInForm";
 	String exportNoNameSpecified = "exportNoNameSpecified";
+	String externalJournalPersonSynchronizationFailure = "externalJournalPersonSynchronizationFailure";
+	String externalJournalPersonSynchronizationPartial = "externalJournalPersonSynchronizationPartial";
+	String externalJournalPersonSynchronizationSuccess = "externalJournalPersonSynchronizationSuccess";
 	String externalJournalPersonValidationBirthdate = "externalJournalPersonValidationBirthdate";
 	String externalJournalPersonValidationEmail = "externalJournalPersonValidationEmail";
 	String externalJournalPersonValidationEmailTaken = "externalJournalPersonValidationEmailTaken";

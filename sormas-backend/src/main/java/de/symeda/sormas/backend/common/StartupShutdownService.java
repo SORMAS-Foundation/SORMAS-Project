@@ -629,9 +629,10 @@ public class StartupShutdownService {
 		List<String> errors = new ArrayList<>();
 
 		// Check postgres version
-		String versionRegexp = Stream.of("9\\.5", "9\\.6", "10\\.\\d+").collect(Collectors.joining(")|(", "(", ")"));
 		String versionString = entityManager.createNativeQuery("SHOW server_version").getSingleResult().toString();
-		if (!versionString.matches(versionRegexp)) {
+		if (isSupportedDatabaseVersion(versionString)) {
+			logger.debug("Your PostgreSQL Version ({}) is currently supported.", versionString);
+		} else {
 			logger.warn("Your PostgreSQL Version ({}) is currently not supported.", versionString);
 		}
 
@@ -655,6 +656,18 @@ public class StartupShutdownService {
 			// List all config problems and stop deployment
 			throw new RuntimeException(errors.stream().collect(Collectors.joining("\n * ", "Postgres setup is not compatible:\n * ", "")));
 		}
+	}
+
+	/**
+	 * @param versionString
+	 *            Database system version.
+	 * @return {@code true}, if the database version is supported.
+	 */
+	static boolean isSupportedDatabaseVersion(String versionString) {
+
+		String versionBegin = versionString.split(" ")[0];
+		String versionRegexp = Stream.of("9\\.5", "9\\.5\\.\\d+", "9\\.6", "9\\.6\\.\\d+", "10\\.\\d+").collect(Collectors.joining(")|(", "(", ")"));
+		return versionBegin.matches(versionRegexp);
 	}
 
 	private void updateDatabase(EntityManager entityManager, String schemaFileName) {

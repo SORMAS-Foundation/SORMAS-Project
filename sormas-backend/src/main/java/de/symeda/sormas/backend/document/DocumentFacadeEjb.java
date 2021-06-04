@@ -59,6 +59,8 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 @Stateless(name = "DocumentFacade")
 public class DocumentFacadeEjb implements DocumentFacade {
 
+	private static final String MIME_TYPE_DEFAULT = "application/octet-stream";
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
@@ -91,6 +93,10 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		Document existingDocument = dto.getUuid() == null ? null : documentService.getByUuid(dto.getUuid());
 		if (existingDocument != null) {
 			throw new EntityExistsException("Tried to save a document that already exists: " + dto.getUuid());
+		}
+
+		if (dto.getMimeType() == null) {
+			dto.setMimeType(MIME_TYPE_DEFAULT);
 		}
 
 		Document document = fromDto(dto, true);
@@ -170,24 +176,24 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		if (dto != null) {
 			boolean inJurisdiction = isInJurisdiction(dto);
 			pseudonymizer.pseudonymizeDto(
-					DocumentDto.class,
-					dto,
-					inJurisdiction,
-					(e) -> pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser));
+				DocumentDto.class,
+				dto,
+				inJurisdiction,
+				(e) -> pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser));
 		}
 	}
 
 	private boolean isInJurisdiction(DocumentDto dto) {
 		switch (dto.getRelatedEntityType()) {
-			case CASE:
-				Case caze = caseService.getByUuid(dto.getRelatedEntityUuid());
-				return caseJurisdictionChecker.isInJurisdictionOrOwned(caze);
-			case CONTACT:
-				Contact contact = contactService.getByUuid(dto.getRelatedEntityUuid());
-				return contactJurisdictionChecker.isInJurisdictionOrOwned(contact);
-			case EVENT:
-				Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
-				return eventJurisdictionChecker.isInJurisdictionOrOwned(event);
+		case CASE:
+			Case caze = caseService.getByUuid(dto.getRelatedEntityUuid());
+			return caseJurisdictionChecker.isInJurisdictionOrOwned(caze);
+		case CONTACT:
+			Contact contact = contactService.getByUuid(dto.getRelatedEntityUuid());
+			return contactJurisdictionChecker.isInJurisdictionOrOwned(contact);
+		case EVENT:
+			Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
+			return eventJurisdictionChecker.isInJurisdictionOrOwned(event);
 		}
 		return true;
 	}

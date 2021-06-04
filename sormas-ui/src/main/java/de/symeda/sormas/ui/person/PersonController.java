@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.person;
 
 import java.util.Date;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,10 +34,11 @@ import com.vaadin.v7.data.Validator;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
@@ -201,35 +201,53 @@ public class PersonController {
 	}
 
 	private void savePerson(PersonDto personDto) {
-		PersonDto existingPerson = FacadeProvider.getPersonFacade().getPersonByUuid(personDto.getUuid());
-		List<CaseDataDto> personCases = FacadeProvider.getCaseFacade().getAllCasesOfPerson(personDto.getUuid());
+		DataHelper.Pair<CaseClassification, PersonDto> saveResult = personFacade.savePersonWithoutNotifyingExternalJournal(personDto);
 
-		onPersonChanged(existingPerson, personDto);
+		ExternalJournalSyncResponseDto responseDto = FacadeProvider.getExternalJournalFacade().notifyExternalJournal(saveResult.getElement1());
+		String synchronizationMessage = getSynchronizationMessage(responseDto);
 
-		personFacade.savePerson(personDto);
-
-		// Check whether the classification of any of this person's cases has changed
-		CaseClassification newClassification = null;
-		for (CaseDataDto personCase : personCases) {
-			CaseDataDto updatedPersonCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(personCase.getUuid());
-			if (personCase.getCaseClassification() != updatedPersonCase.getCaseClassification()
-				&& updatedPersonCase.getClassificationUser() == null) {
-				newClassification = updatedPersonCase.getCaseClassification();
-				break;
+		CaseClassification newClassification = saveResult.getElement0();
+		if (newClassification != null) {
+			String personSavedMessage =
+				String.format(I18nProperties.getString(Strings.messagePersonSavedClassificationChanged), newClassification.toString());
+			String notificationMessage = String.format("%s.%s", personSavedMessage, synchronizationMessage);
+			if (responseDto == null || (responseDto.isSuccess() && responseDto.getErrors().isEmpty())) {
+				Notification notification = new Notification(notificationMessage, Type.WARNING_MESSAGE);
+				notification.setDelayMsec(-1);
+				notification.show(Page.getCurrent());
+			} else {
+				VaadinUiUtil.showWarningPopup(notificationMessage);
+			}
+		} else {
+			String personSavedMessage = I18nProperties.getString(Strings.messagePersonSaved);
+			String notificationMessage = String.format("%s.%s", personSavedMessage, synchronizationMessage);
+			if (responseDto == null || (responseDto.isSuccess() && responseDto.getErrors().isEmpty())) {
+				Notification.show(notificationMessage, Type.WARNING_MESSAGE);
+			} else {
+				VaadinUiUtil.showWarningPopup(notificationMessage);
 			}
 		}
 
-		if (newClassification != null) {
-			Notification notification = new Notification(
-				String.format(I18nProperties.getString(Strings.messagePersonSavedClassificationChanged), newClassification.toString()),
-				Type.WARNING_MESSAGE);
-			notification.setDelayMsec(-1);
-			notification.show(Page.getCurrent());
-		} else {
-			Notification.show(I18nProperties.getString(Strings.messagePersonSaved), Type.WARNING_MESSAGE);
+		SormasUI.refreshView();
+	}
+
+	private String getSynchronizationMessage(ExternalJournalSyncResponseDto responseDto) {
+		if (responseDto == null) {
+			return "";
 		}
 
-		SormasUI.refreshView();
+		if (!responseDto.isSuccess()) {
+			return I18nProperties.getValidationError(Validations.externalJournalPersonSynchronizationFailure, responseDto.getMessage());
+		} else if (!responseDto.getErrors().isEmpty()) {
+			StringBuffer sb = new StringBuffer();
+			responseDto.getErrors().forEach((errorKey, errorValue) -> {
+				sb.append(errorValue);
+				sb.append(";");
+			});
+			return I18nProperties.getValidationError(Validations.externalJournalPersonSynchronizationPartial, sb.toString());
+		} else {
+			return I18nProperties.getValidationError(Validations.externalJournalPersonSynchronizationSuccess);
+		}
 	}
 
 	private void onPersonChanged(PersonDto existingPerson, PersonDto changedPerson) {

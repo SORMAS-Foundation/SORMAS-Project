@@ -260,17 +260,17 @@ public class CaseController {
 
 	private void convertSamePersonContactsAndEventparticipants(CaseDataDto caze, Date relevantDate) {
 
-		ContactSimilarityCriteria contactCriteria = new ContactSimilarityCriteria().setPerson(caze.getPerson())
-			.setDisease(caze.getDisease())
-			.setContactClassification(ContactClassification.CONFIRMED)
-			.setExcludePseudonymized(true)
-			.setNoResultingCase(true);
+		ContactSimilarityCriteria contactCriteria = new ContactSimilarityCriteria().withPerson(caze.getPerson())
+			.withDisease(caze.getDisease())
+			.withContactClassification(ContactClassification.CONFIRMED)
+			.withExcludePseudonymized(true)
+			.withNoResultingCase(true);
 		List<SimilarContactDto> matchingContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactCriteria);
 
-		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria().setPerson(caze.getPerson())
-			.setDisease(caze.getDisease())
-			.setExcludePseudonymized(true)
-			.setNoResultingCase(true);
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria().withPerson(caze.getPerson())
+			.withDisease(caze.getDisease())
+			.withExcludePseudonymized(true)
+			.withNoResultingCase(true);
 		List<SimilarEventParticipantDto> matchingEventParticipants =
 			FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
 

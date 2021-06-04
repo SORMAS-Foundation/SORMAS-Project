@@ -42,7 +42,6 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionDto;
-import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
@@ -68,38 +67,6 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 
 public class EventFacadeEjbTest extends AbstractBeanTest {
-
-	@Test
-	public void testDashboardEventListCreation() {
-
-		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		EventDto event = creator.createEvent(
-			EventStatus.SIGNAL,
-			EventInvestigationStatus.PENDING,
-			"Title",
-			"Description",
-			"First",
-			"Name",
-			"12345",
-			TypeOfPlace.PUBLIC_PLACE,
-			DateHelper.subtractDays(new Date(), 1),
-			new Date(),
-			user.toReference(),
-			user.toReference(),
-			Disease.EVD,
-			rdcf.district);
-
-		List<DashboardEventDto> dashboardEventDtos = getEventFacade().getNewEventsForDashboard(
-			new EventCriteria().region(event.getEventLocation().getRegion())
-				.district(event.getEventLocation().getDistrict())
-				.disease(event.getDisease())
-				.reportedBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1)));
-
-		// List should have one entry
-		assertEquals(1, dashboardEventDtos.size());
-	}
 
 	@Test
 	public void testEventDeletion() throws ExternalSurveillanceToolException {

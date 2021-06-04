@@ -53,6 +53,11 @@ dependencies {
 	implementation("com.github.javafaker:javafaker:$javaFakerVersion") { exclude module: 'org.yaml' }
 
 	testImplementation group: 'org.assertj', name: 'assertj-core', version: assertjCore
+
+	implementation("io.rest-assured:rest-assured:$restAssured")
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonDatatypeJdk8")
+	implementation("com.fasterxml.jackson.core:jackson-core:$jacksonDatatypeJdk8")
+	implementation group: 'org.assertj', name: 'assertj-core', version: assertjCore
 }
 
 task format(type: GoogleJavaFormat) {

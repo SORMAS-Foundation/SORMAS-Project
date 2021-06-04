@@ -28,7 +28,6 @@ import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
-import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
 import de.symeda.sormas.backend.event.EventGroupFacadeEjb.EventGroupFacadeEjbLocal;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;

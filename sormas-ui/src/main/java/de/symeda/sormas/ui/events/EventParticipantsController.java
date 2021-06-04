@@ -96,7 +96,7 @@ public class EventParticipantsController {
 							selectedPerson -> {
 								if (selectedPerson != null) {
 									EventParticipantCriteria criteria = new EventParticipantCriteria();
-									criteria.event(eventRef);
+									criteria.withEvent(eventRef);
 									List<EventParticipantIndexDto> currentEventParticipants =
 										FacadeProvider.getEventParticipantFacade().getIndexList(criteria, null, null, null);
 									Boolean alreadyParticipant = false;
