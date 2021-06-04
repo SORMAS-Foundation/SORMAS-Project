@@ -6,7 +6,7 @@ Feature: Case business oriented scenarios through API
     Given I create a person
     Given I try to enter valid data for a new case
     When I create a new case
-    Then I get successful response back
+    Then I get 200 OK response back
     And I can query case by UUID
 
   @S2

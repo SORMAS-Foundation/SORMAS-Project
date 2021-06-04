@@ -17,9 +17,7 @@
  */
 package org.sormas.e2etests.constants.api;
 
-public interface ResourceFiles {
+public interface JsonResourcesLocations {
   String POST_CASES_BASIC_JSON_BODY = "src/test/resources/JsonFiles/PostCase-Basic.json";
-  String POST_IN_COUNTRY_NO_HOSPITALIZATION_CASES_JSON_BODY =
-      "src/test/resources/JsonFiles/InCountry-NoHospitalization-PostCase.json";
-  String POST_PERSON_JSON_BODY = "src/test/resources/JsonFiles/Person-Post.json";
+  String POST_PERSON_JSON_BODY = "src/test/resources/JsonFiles/PostPerson-Basic.json";
 }

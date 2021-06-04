@@ -1,6 +1,6 @@
 package org.sormas.e2etests.services.api;
 
-import static org.sormas.e2etests.constants.api.ResourceFiles.POST_PERSON_JSON_BODY;
+import static org.sormas.e2etests.constants.api.JsonResourcesLocations.POST_PERSON_JSON_BODY;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -9,15 +9,15 @@ import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
 import org.sormas.e2etests.state.BodyResources;
-import org.sormas.e2etests.utils.TestUtils;
+import org.sormas.e2etests.utils.JsonUtils;
 
 public class PostPersonBodyService {
-  private TestUtils testUtils;
+  private JsonUtils jsonUtils;
   private BodyResources bodyResources;
 
   @Inject
-  public PostPersonBodyService(TestUtils testUtils, BodyResources bodyResources) {
-    this.testUtils = testUtils;
+  public PostPersonBodyService(JsonUtils jsonUtils, BodyResources bodyResources) {
+    this.jsonUtils = jsonUtils;
     this.bodyResources = bodyResources;
   }
 
@@ -25,7 +25,7 @@ public class PostPersonBodyService {
     String postBody = null;
     try {
       Map<String, Object> postBodyJson =
-          testUtils.deserializeFromJson(new File(POST_PERSON_JSON_BODY));
+          jsonUtils.deserializeFromJson(new File(POST_PERSON_JSON_BODY));
       String personUUID = UUID.randomUUID().toString();
       postBodyJson.put("uuid", personUUID);
       bodyResources.setPersonUUID(personUUID);
@@ -36,11 +36,9 @@ public class PostPersonBodyService {
 
       postBody =
           new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(postBodyJson);
-      System.out.println(postBody);
 
     } catch (IOException ioe) {
       System.out.println(ioe.getMessage());
-      // testUtils.logError("Could not build the post json body", new AssertionError(ioe));
     }
     return postBody;
   }

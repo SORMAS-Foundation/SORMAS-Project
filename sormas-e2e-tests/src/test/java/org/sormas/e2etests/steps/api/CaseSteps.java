@@ -21,7 +21,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
-import org.sormas.e2etests.enums.APITestData.ErrorMessages;
+import org.sormas.e2etests.enums.APITestData.POSTCase_ErrorMessages;
 import org.sormas.e2etests.helpers.api.CaseHelper;
 import org.sormas.e2etests.helpers.api.CommunityHelper;
 import org.sormas.e2etests.helpers.api.CountryHelper;
@@ -52,7 +52,6 @@ public class CaseSteps implements En {
         () -> {
           bodyResources.setBody("[" + personBodyService.generatePostPersonBody() + "]");
           personHelper.pushPerson("push", bodyResources.getBody());
-          System.out.println("Create person response = " + apiState.getResponse().getStatusCode());
         });
 
     Given(
@@ -91,7 +90,7 @@ public class CaseSteps implements En {
           assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
           assertThat(apiState.getResponse().getBody().asString())
               .ignoringCase()
-              .equals(String.valueOf(ErrorMessages.TOO_OLD));
+              .equals(String.valueOf(POSTCase_ErrorMessages.TOO_OLD));
         });
 
     Then(
@@ -100,11 +99,11 @@ public class CaseSteps implements En {
           assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
           assertThat(apiState.getResponse().getBody().asString())
               .ignoringCase()
-              .equals(String.valueOf(ErrorMessages.ERROR));
+              .equals(String.valueOf(POSTCase_ErrorMessages.ERROR));
         });
 
     Then(
-        "I get successful response back",
+        "I get 200 OK response back",
         () -> {
           assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
           assertThat(apiState.getResponse().getBody().asString()).contains(String.valueOf("OK"));
@@ -115,14 +114,13 @@ public class CaseSteps implements En {
         () -> {
           assertThat(apiState.getResponse().getStatusCode()).toString().equalsIgnoreCase("400");
           assertThat(apiState.getResponse().getBody().asString())
-              .contains(String.valueOf(ErrorMessages.UNKNOWN_DISEASE));
+              .contains(String.valueOf(POSTCase_ErrorMessages.UNKNOWN_DISEASE));
         });
 
     Then(
         "I can query case by UUID",
         () -> {
           String caseUUID = bodyResources.getCaseUUID();
-          System.out.println("Querying for case UUID = " + caseUUID);
           caseHelper.postCasesQueryByUUID(caseUUID);
           assertThat(apiState.getResponse().getStatusCode()).toString().startsWith("2");
           assertThat(apiState.getResponse().jsonPath().get("uuid").toString()).contains(caseUUID);

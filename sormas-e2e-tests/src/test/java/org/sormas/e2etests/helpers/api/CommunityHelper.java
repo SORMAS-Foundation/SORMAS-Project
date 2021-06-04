@@ -1,6 +1,6 @@
 package org.sormas.e2etests.helpers.api;
 
-import static org.sormas.e2etests.constants.api.Endpoints.COMMUNITIES;
+import static org.sormas.e2etests.constants.api.Endpoints.COMMUNITIES_PATH;
 // import org.sormas.e2etests.pojo.Request;
 
 import io.restassured.http.Method;
@@ -18,6 +18,6 @@ public class CommunityHelper {
 
   public void getCommunitiesSince(Integer since) {
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.GET).path(COMMUNITIES + "all/" + since).build());
+        Request.builder().method(Method.GET).path(COMMUNITIES_PATH + "all/" + since).build());
   }
 }

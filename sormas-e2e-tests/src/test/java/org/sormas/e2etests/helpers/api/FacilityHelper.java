@@ -1,6 +1,6 @@
 package org.sormas.e2etests.helpers.api;
 
-import static org.sormas.e2etests.constants.api.Endpoints.FACILITIES;
+import static org.sormas.e2etests.constants.api.Endpoints.FACILITIES_PATH;
 
 import io.restassured.http.Method;
 import javax.inject.Inject;
@@ -20,7 +20,7 @@ public class FacilityHelper {
     restAssuredClient.sendRequest(
         Request.builder()
             .method(Method.GET)
-            .path(FACILITIES + specificPath + regionUuid + "/" + since)
+            .path(FACILITIES_PATH + specificPath + regionUuid + "/" + since)
             .build());
   }
 }

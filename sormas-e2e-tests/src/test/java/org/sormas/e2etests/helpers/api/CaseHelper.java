@@ -17,7 +17,7 @@
  */
 package org.sormas.e2etests.helpers.api;
 
-import static org.sormas.e2etests.constants.api.Endpoints.CASES;
+import static org.sormas.e2etests.constants.api.Endpoints.CASES_PATH;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
@@ -40,22 +40,17 @@ public class CaseHelper {
     this.objectMapper = objectMapper;
   }
 
-  //  @Inject
-  //  public CaseHelper(RestAssuredClient restAssuredClient) {
-  //    this.restAssuredClient = restAssuredClient;
-  //  }
-
   public void postCases(String specificPath, String jsonBody) {
     final String json = jsonBody;
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.POST).path(CASES + specificPath).body(json).build());
+        Request.builder().method(Method.POST).path(CASES_PATH + specificPath).body(json).build());
   }
 
   public void postCasesQueryByUUID(String uuid) {
     restAssuredClient.sendRequest(
         Request.builder()
             .method(Method.POST)
-            .path(CASES + "query")
+            .path(CASES_PATH + "query")
             .body("[\"" + uuid + "\"]")
             .build());
   }
@@ -66,6 +61,10 @@ public class CaseHelper {
     List<Case> listOfContacts = List.of(caze);
     objectMapper.writeValue(out, listOfContacts);
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.POST).path(CASES + "push").body(out.toString()).build());
+        Request.builder()
+            .method(Method.POST)
+            .path(CASES_PATH + "push")
+            .body(out.toString())
+            .build());
   }
 }

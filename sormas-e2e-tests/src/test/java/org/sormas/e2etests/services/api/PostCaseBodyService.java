@@ -18,8 +18,7 @@
 
 package org.sormas.e2etests.services.api;
 
-import static org.sormas.e2etests.constants.api.ResourceFiles.POST_CASES_BASIC_JSON_BODY;
-import static org.sormas.e2etests.constants.api.ResourceFiles.POST_IN_COUNTRY_NO_HOSPITALIZATION_CASES_JSON_BODY;
+import static org.sormas.e2etests.constants.api.JsonResourcesLocations.POST_CASES_BASIC_JSON_BODY;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -30,15 +29,15 @@ import java.util.*;
 import javax.inject.Inject;
 import org.sormas.e2etests.state.BodyResources;
 import org.sormas.e2etests.utils.IncorrectDataException;
-import org.sormas.e2etests.utils.TestUtils;
+import org.sormas.e2etests.utils.JsonUtils;
 
 public class PostCaseBodyService {
-  private TestUtils testUtils;
+  private JsonUtils jsonUtils;
   private BodyResources bodyResources;
 
   @Inject
-  public PostCaseBodyService(TestUtils testUtils, BodyResources bodyResources) {
-    this.testUtils = testUtils;
+  public PostCaseBodyService(JsonUtils jsonUtils, BodyResources bodyResources) {
+    this.jsonUtils = jsonUtils;
     this.bodyResources = bodyResources;
   }
 
@@ -46,7 +45,7 @@ public class PostCaseBodyService {
     String postBody = null;
     try {
       Map<String, Object> postBodyJson =
-          testUtils.deserializeFromJson(new File(POST_CASES_BASIC_JSON_BODY));
+          jsonUtils.deserializeFromJson(new File(POST_CASES_BASIC_JSON_BODY));
 
       TimeZone tz = TimeZone.getTimeZone("UTC");
       DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -90,7 +89,6 @@ public class PostCaseBodyService {
 
       postBody =
           new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(postBodyJson);
-      System.out.println(postBody);
 
     } catch (IOException | NullPointerException ioe) {
       throw new IncorrectDataException(
@@ -104,8 +102,7 @@ public class PostCaseBodyService {
     String postBody = null;
     try {
       Map<String, Object> postBodyJson =
-          testUtils.deserializeFromJson(
-              new File(POST_IN_COUNTRY_NO_HOSPITALIZATION_CASES_JSON_BODY));
+          jsonUtils.deserializeFromJson(new File(POST_CASES_BASIC_JSON_BODY));
 
       TimeZone tz = TimeZone.getTimeZone("UTC");
       DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -134,9 +131,6 @@ public class PostCaseBodyService {
       Map<String, Object> epiData = (Map<String, Object>) postBodyJson.get("epiData");
       epiData.put("uuid", UUID.randomUUID().toString());
 
-      Map<String, Object> person = (Map<String, Object>) postBodyJson.get("person");
-      person.put("uuid", bodyResources.getPersonUUID());
-
       Map<String, Object> portHealthInfo = (Map<String, Object>) postBodyJson.get("portHealthInfo");
       portHealthInfo.put("uuid", UUID.randomUUID().toString());
 
@@ -146,7 +140,6 @@ public class PostCaseBodyService {
 
       postBody =
           new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(postBodyJson);
-      System.out.println(postBody);
 
     } catch (IOException | NullPointerException ioe) {
       throw new IncorrectDataException(
@@ -160,15 +153,54 @@ public class PostCaseBodyService {
     String postBody = null;
     try {
       Map<String, Object> postBodyJson =
-          testUtils.deserializeFromJson(
-              new File(POST_IN_COUNTRY_NO_HOSPITALIZATION_CASES_JSON_BODY));
-      String disease = (String) postBodyJson.get("disease");
+          jsonUtils.deserializeFromJson(new File(POST_CASES_BASIC_JSON_BODY));
 
+      TimeZone tz = TimeZone.getTimeZone("UTC");
+      DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      df.setTimeZone(tz);
+      String nowAsISO = df.format(new Date());
+
+      postBodyJson.put("reportDate", nowAsISO);
+      String caseUUID = UUID.randomUUID().toString();
+      postBodyJson.put("uuid", caseUUID);
+      bodyResources.setCaseUUID(caseUUID);
+
+      String disease = (String) postBodyJson.get("disease");
       postBodyJson.put("disease", disease.toLowerCase(Locale.ROOT));
+
+      Map<String, Object> clinicalCourse = (Map<String, Object>) postBodyJson.get("clinicalCourse");
+      clinicalCourse.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> healthConditions =
+          (Map<String, Object>) clinicalCourse.get("healthConditions");
+      healthConditions.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> hospitalization =
+          (Map<String, Object>) postBodyJson.get("hospitalization");
+      hospitalization.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> therapy = (Map<String, Object>) postBodyJson.get("therapy");
+      therapy.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> symptoms = (Map<String, Object>) postBodyJson.get("symptoms");
+      symptoms.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> epiData = (Map<String, Object>) postBodyJson.get("epiData");
+      epiData.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> person = (Map<String, Object>) postBodyJson.get("person");
+      person.put("uuid", bodyResources.getPersonUUID());
+
+      Map<String, Object> portHealthInfo = (Map<String, Object>) postBodyJson.get("portHealthInfo");
+      portHealthInfo.put("uuid", UUID.randomUUID().toString());
+
+      Map<String, Object> maternalHistory =
+          (Map<String, Object>) postBodyJson.get("maternalHistory");
+      maternalHistory.put("uuid", UUID.randomUUID().toString());
 
       postBody =
           new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(postBodyJson);
-      System.out.println(postBody);
+
     } catch (IOException | NullPointerException ioe) {
       throw new IncorrectDataException(
           "Could not build the post json body, either the json file was not found or the property is not reachable ",
@@ -181,7 +213,7 @@ public class PostCaseBodyService {
     String postBody = null;
     try {
       Map<String, Object> postBodyJson =
-          testUtils.deserializeFromJson(new File(POST_CASES_BASIC_JSON_BODY));
+          jsonUtils.deserializeFromJson(new File(POST_CASES_BASIC_JSON_BODY));
 
       TimeZone tz = TimeZone.getTimeZone("UTC");
       DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -217,9 +249,7 @@ public class PostCaseBodyService {
       person.put("uuid", bodyResources.getPersonUUID());
 
       Map<String, Object> healthFacility = (Map<String, Object>) postBodyJson.get("healthFacility");
-
       String correctValueForHFacilityUUID = (String) healthFacility.get("uuid");
-
       healthFacility.put("uuid", correctValueForHFacilityUUID.toLowerCase(Locale.ROOT));
 
       Map<String, Object> portHealthInfo = (Map<String, Object>) postBodyJson.get("portHealthInfo");
@@ -231,7 +261,6 @@ public class PostCaseBodyService {
 
       postBody =
           new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(postBodyJson);
-      System.out.println(postBody);
 
     } catch (IOException | NullPointerException ioe) {
       throw new IncorrectDataException(

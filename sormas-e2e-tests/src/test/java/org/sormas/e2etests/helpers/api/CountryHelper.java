@@ -1,6 +1,6 @@
 package org.sormas.e2etests.helpers.api;
 
-import static org.sormas.e2etests.constants.api.Endpoints.FACILITIES;
+import static org.sormas.e2etests.constants.api.Endpoints.FACILITIES_PATH;
 
 import io.restassured.http.Method;
 import javax.inject.Inject;
@@ -18,6 +18,9 @@ public class CountryHelper {
 
   public void getAllFacilitiesFromRegion(String regionUUID) {
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.GET).path(FACILITIES + "region/" + regionUUID).build());
+        Request.builder()
+            .method(Method.GET)
+            .path(FACILITIES_PATH + "region/" + regionUUID)
+            .build());
   }
 }
