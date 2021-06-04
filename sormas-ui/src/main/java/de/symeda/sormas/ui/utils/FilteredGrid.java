@@ -14,7 +14,9 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -79,10 +81,10 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 			&& getSelectedItems().stream().anyMatch(item -> ((PseudonymizableIndexDto) item).isPseudonymized())) {
 
 			VaadinUiUtil.showConfirmationPopup(
-				"Warning",
-				new Label("You cannot use bulk edit actions on pseudonymized entities."),
-				"Deselect and Proceed",
-				"Cancel",
+				I18nProperties.getCaption(Captions.bulkActions),
+				new Label(I18nProperties.getString(Strings.pseudonymizedEntitiesSelectedWarning)),
+				I18nProperties.getCaption(Captions.actionDeselectAndContinue),
+				I18nProperties.getCaption(Captions.actionCancel),
 				640,
 				proceed -> {
 					if (proceed) {
