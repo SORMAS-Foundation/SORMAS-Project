@@ -229,17 +229,17 @@ public class CreateNewEventSteps implements En {
     webDriverHelpers.selectFromCombobox(SOURCE_TYPE_COMBOBOX, sourceType);
   }
 
-  public void selectSourceInstitutionalPartner(String institutionalPartner) {
-    webDriverHelpers.selectFromCombobox(
-        SOURCE_INSTITUTIONAL_PARTNER_COMBOBOX, institutionalPartner);
-  }
-
   public void selectTypeOfPlace(String typeOfPlace) {
     webDriverHelpers.selectFromCombobox(TYPE_OF_PLACE_COMBOBOX, typeOfPlace);
   }
 
   public void selectMeansOfTransport(String meansOfTransport) {
     webDriverHelpers.selectFromCombobox(MEANS_OF_TRANSPORT_COMBOBOX, meansOfTransport);
+  }
+
+  public void selectSourceInstitutionalPartner(String institutionalPartner) {
+    webDriverHelpers.selectFromCombobox(
+        SOURCE_INSTITUTIONAL_PARTNER_COMBOBOX, institutionalPartner);
   }
 
   public void fillDateOfReport(LocalDate date) {

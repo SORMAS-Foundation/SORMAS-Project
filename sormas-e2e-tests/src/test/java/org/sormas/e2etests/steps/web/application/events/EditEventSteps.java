@@ -19,13 +19,17 @@
 package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.*;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 
+import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.pojo.web.Event;
 import org.sormas.e2etests.services.EventService;
 
@@ -33,9 +37,10 @@ public class EditEventSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static Event event;
+  public static Person person;
 
   @Inject
-  public EditEventSteps(WebDriverHelpers webDriverHelpers, EventService eventService) {
+  public EditEventSteps(WebDriverHelpers webDriverHelpers, EventService eventService, Faker faker) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -103,6 +108,27 @@ public class EditEventSteps implements En {
           final Event currentEvent = collectEventData();
           Truth.assertThat(event).isEqualTo(currentEvent);
         });
+
+    When(
+        "I add a participant to the event",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());
+          webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, faker.name().lastName());
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE);
+          person = collectPersonUuid();
+          selectResponsibleRegion("Region1");
+          selectResponsibleDistrict("District11");
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(PERSON_DATA_SAVED);
+        });
+  }
+
+  public Person collectPersonUuid() {
+    return Person.builder().uuid(webDriverHelpers.getValueFromWebElement(POPUP_PERSON_ID)).build();
   }
 
   public Event collectEventUuid() {
@@ -138,6 +164,14 @@ public class EditEventSteps implements En {
 
   public void selectEventStatus(String eventStatus) {
     webDriverHelpers.clickWebElementByText(EVENT_STATUS_OPTIONS, eventStatus);
+  }
+
+  public void selectResponsibleRegion(String region) {
+    webDriverHelpers.selectFromCombobox(POPUP_RESPONSIBLE_REGION_COMBOBOX, region);
+  }
+
+  public void selectResponsibleDistrict(String district) {
+    webDriverHelpers.selectFromCombobox(POPUP_RESPONSIBLE_DISTRICT_COMBOBOX, district);
   }
 
   public void selectRiskLevel(String riskLevel) {
