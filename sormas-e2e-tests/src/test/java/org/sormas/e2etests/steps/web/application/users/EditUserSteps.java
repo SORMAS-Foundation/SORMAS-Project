@@ -27,9 +27,8 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.User;
 
 public class EditUserSteps implements En {
-
   private final WebDriverHelpers webDriverHelpers;
-  protected User aUser;
+  protected User user;
 
   @Inject
   public EditUserSteps(final WebDriverHelpers webDriverHelpers, final SoftAssertions softly) {
@@ -38,83 +37,155 @@ public class EditUserSteps implements En {
     When(
         "I check the created data is correctly displayed on Edit User Page",
         () -> {
-          aUser = collectUserData();
+          user = collectUserData();
 
           softly
-              .assertThat(aUser.getFirstName())
+              .assertThat(user.getFirstName())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getFirstName());
           softly
-              .assertThat(aUser.getLastName())
+              .assertThat(user.getLastName())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getLastName());
           softly
-              .assertThat(aUser.getEmailAddress())
+              .assertThat(user.getEmailAddress())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getEmailAddress());
           softly
-              .assertThat(aUser.getPhoneNumber())
+              .assertThat(user.getPhoneNumber())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getPhoneNumber());
           softly
-              .assertThat(aUser.getLanguage())
+              .assertThat(user.getLanguage())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getLanguage());
           softly
-              .assertThat(aUser.getCountry())
+              .assertThat(user.getCountry())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getCountry());
           softly
-              .assertThat(aUser.getRegion())
+              .assertThat(user.getRegion())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getRegion());
           softly
-              .assertThat(aUser.getDistrict())
+              .assertThat(user.getDistrict())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getDistrict());
           softly
-              .assertThat(aUser.getCommunity())
+              .assertThat(user.getCommunity())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getCommunity());
           softly
-              .assertThat(aUser.getFacilityCategory())
+              .assertThat(user.getFacilityCategory())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getFacilityCategory());
           softly
-              .assertThat(aUser.getFacilityType())
+              .assertThat(user.getFacilityType())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getFacilityType());
           softly
-              .assertThat(aUser.getFacility())
+              .assertThat(user.getFacility())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getFacility());
           softly
-              .assertThat(aUser.getStreet())
+              .assertThat(user.getFacilityNameAndDescription())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getFacilityNameAndDescription());
+          softly
+              .assertThat(user.getStreet())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getStreet());
           softly
-              .assertThat(aUser.getHouseNumber())
+              .assertThat(user.getHouseNumber())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getHouseNumber());
           softly
-              .assertThat(aUser.getAdditionalInformation())
+              .assertThat(user.getAdditionalInformation())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getAdditionalInformation());
           softly
-              .assertThat(aUser.getPostalCode())
+              .assertThat(user.getPostalCode())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getPostalCode());
           softly
-              .assertThat(aUser.getCity())
+              .assertThat(user.getCity())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getCity());
           softly
-              .assertThat(aUser.getAreaType())
+              .assertThat(user.getAreaType())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getAreaType());
-          //          softly
-          //              .assertThat(aUser.getCommunityContactPerson())
-          //
-          // .isEqualToIgnoringCase(CreateNewUserSteps.user.getCommunityContactPerson());
           softly
-              .assertThat(aUser.getGpsLongitude())
+              .assertThat(user.getGpsLongitude())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getGpsLongitude());
           softly
-              .assertThat(aUser.getGpsLatitude())
+              .assertThat(user.getGpsLatitude())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getGpsLatitude());
           softly
-              .assertThat(aUser.getGpsAccuracy())
+              .assertThat(user.getGpsAccuracy())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getGpsAccuracy());
           softly
-              .assertThat(aUser.getUserName())
+              .assertThat(user.getUserName())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getUserName());
           softly
-              .assertThat(aUser.getUserRole())
+              .assertThat(user.getUserRole())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getUserRole());
           softly
-              .assertThat(aUser.getLimitedDisease())
+              .assertThat(user.getLimitedDisease())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getLimitedDisease());
+          softly.assertAll();
+        });
+
+    Then(
+        "^I check the edited data is correctly displayed on Edit User page$",
+        () -> {
+          final User editUser = collectUserData();
+          softly
+              .assertThat(editUser.getFirstName())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getFirstName());
+          softly
+              .assertThat(editUser.getLastName())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getLastName());
+          softly
+              .assertThat(editUser.getEmailAddress())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getEmailAddress());
+          softly
+              .assertThat(editUser.getPhoneNumber())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getPhoneNumber());
+          softly
+              .assertThat(editUser.getLanguage())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getLanguage());
+          softly
+              .assertThat(editUser.getCountry())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getCountry());
+          softly
+              .assertThat(editUser.getFacilityCategory())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getFacilityCategory());
+          softly
+              .assertThat(editUser.getFacilityType())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getFacilityType());
+          softly
+              .assertThat(editUser.getFacility())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getFacility());
+          softly
+              .assertThat(editUser.getFacilityNameAndDescription())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getFacilityNameAndDescription());
+          softly
+              .assertThat(editUser.getStreet())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getStreet());
+          softly
+              .assertThat(editUser.getHouseNumber())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getHouseNumber());
+          softly
+              .assertThat(editUser.getAdditionalInformation())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getAdditionalInformation());
+          softly
+              .assertThat(editUser.getPostalCode())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getPostalCode());
+          softly
+              .assertThat(editUser.getCity())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getCity());
+          softly
+              .assertThat(editUser.getAreaType())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getAreaType());
+          softly
+              .assertThat(editUser.getGpsLongitude())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getGpsLongitude());
+          softly
+              .assertThat(editUser.getGpsLatitude())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getGpsLatitude());
+          softly
+              .assertThat(editUser.getGpsAccuracy())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getGpsAccuracy());
+          softly
+              .assertThat(editUser.getUserName())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getUserName());
+          softly
+              .assertThat(editUser.getUserRole())
+              .isEqualToIgnoringCase(CreateNewUserSteps.user.getUserRole());
+          softly
+              .assertThat(editUser.getLimitedDisease())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getLimitedDisease());
           softly.assertAll();
         });
@@ -134,6 +205,8 @@ public class EditUserSteps implements En {
         .facilityCategory(webDriverHelpers.getValueFromWebElement(FACILITY_CATEGORY_COMBOBOX_INPUT))
         .facilityType(webDriverHelpers.getValueFromWebElement(FACILITY_TYPE_COMBOBOX_INPUT))
         .facility(webDriverHelpers.getValueFromWebElement(FACILITY_COMBOBOX_INPUT))
+        .facilityNameAndDescription(
+            webDriverHelpers.getValueFromWebElement(FACILITY_NAME_DESCRIPTION_VALUE))
         .street(webDriverHelpers.getValueFromWebElement(STREET_INPUT))
         .houseNumber(webDriverHelpers.getValueFromWebElement(HOUSE_NUMBER_INPUT))
         .additionalInformation(
@@ -141,7 +214,6 @@ public class EditUserSteps implements En {
         .postalCode(webDriverHelpers.getValueFromWebElement(POSTAL_CODE_INPUT))
         .city(webDriverHelpers.getValueFromWebElement(CITY_INPUT))
         .areaType(webDriverHelpers.getValueFromWebElement(AREA_TYPE_COMBOBOX_INPUT))
-        // .communityContactPerson(webDriverHelpers.getValueFromWebElement(COMMUNITY_CONTACT_PERSON))
         .gpsLatitude(webDriverHelpers.getValueFromWebElement(LATITUDE_INPUT))
         .gpsLongitude(webDriverHelpers.getValueFromWebElement(LONGITUDE_INPUT))
         .gpsAccuracy(webDriverHelpers.getValueFromWebElement(LAT_LON_ACCURACY_INPUT))

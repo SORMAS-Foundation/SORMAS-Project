@@ -23,11 +23,11 @@ import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.users.CreateNewUserPage;
 import org.sormas.e2etests.pojo.User;
 import org.sormas.e2etests.services.UserService;
 
 public class CreateNewUserSteps implements En {
-
   private final WebDriverHelpers webDriverHelpers;
   protected static User user;
 
@@ -45,28 +45,59 @@ public class CreateNewUserSteps implements En {
           selectLanguage(user.getLanguage());
           selectCountry(user.getCountry());
           selectRegion(user.getRegion());
-          // selectDistrict(user.getDistrict()); //TODO: must be manually added on configuration nav section
-          // selectCommunity(user.getCommunity());
+          selectDistrict(user.getDistrict());
+          selectCommunity(user.getCommunity());
           selectFacilityCategory(user.getFacilityCategory());
           selectFacilityType(user.getFacilityType());
-          // selectFacility(user.getFacility());
+          selectFacility(user.getFacility());
+          fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
           fillStreet(user.getStreet());
           fillHouseNr(user.getHouseNumber());
           fillAdditionalInformation(user.getAdditionalInformation());
           fillPostalCode(user.getPostalCode());
           fillCity(user.getCity());
           selectAreaType(user.getAreaType());
-          // fillCommunityContactPerson(user.getCommunityContactPerson());
           fillGpsLatitude(user.getGpsLatitude());
           fillGpsLongitude(user.getGpsLongitude());
           fillGpsAccuracy(user.getGpsAccuracy());
-          //   clickActive();
           fillUserName(user.getUserName());
-          selectUserRole(user.getUserRole());
+          selectActive();
+          selectUserRole(rights);
           selectLimitedDisease(user.getLimitedDisease());
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CLOSE_DIALOG_BUTTON);
+          closeNewPasswordPopUp();
+        });
+    And(
+        "^I change user data and save the changes$",
+        () -> {
+          user = userService.buildEditUser();
+          fillFirstName(user.getFirstName());
+          fillLastName(user.getLastName());
+          fillEmailAddress(user.getEmailAddress());
+          fillPhoneNumber(user.getPhoneNumber());
+          selectLanguage(user.getLanguage());
+          selectCountry(user.getCountry());
+          selectFacilityCategory(user.getFacilityCategory());
+          selectFacilityType(user.getFacilityType());
+          selectFacility(user.getFacility());
+          fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
+          fillStreet(user.getStreet());
+          fillHouseNr(user.getHouseNumber());
+          fillAdditionalInformation(user.getAdditionalInformation());
+          fillPostalCode(user.getPostalCode());
+          fillCity(user.getCity());
+          selectAreaType(user.getAreaType());
+          fillGpsLatitude(user.getGpsLatitude());
+          fillGpsLongitude(user.getGpsLongitude());
+          fillGpsAccuracy(user.getGpsAccuracy());
+          selectActive();
+          fillUserName(user.getUserName());
+          selectActiveUserRole();
+          selectUserRole(user.getUserRole());
+          selectLimitedDisease(user.getLimitedDisease());
+          webDriverHelpers.scrollToElement(CreateNewUserPage.SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CreateNewUserPage.SAVE_BUTTON);
         });
   }
 
@@ -99,23 +130,32 @@ public class CreateNewUserSteps implements En {
   }
 
   public void selectDistrict(String district) {
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(DISTRICT_COMBOBOX);
     webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, district);
   }
 
   public void selectCommunity(String community) {
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMUNITY_COMBOBOX);
     webDriverHelpers.selectFromCombobox(COMMUNITY_COMBOBOX, community);
   }
 
   public void selectFacilityCategory(String facilityCategory) {
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_CATEGORY_COMBOBOX);
     webDriverHelpers.selectFromCombobox(FACILITY_CATEGORY_COMBOBOX, facilityCategory);
   }
 
   public void selectFacilityType(String facilityType) {
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_TYPE_COMBOBOX);
     webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, facilityType);
   }
 
   public void selectFacility(String facility) {
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_COMBOBOX);
     webDriverHelpers.selectFromCombobox(FACILITY_COMBOBOX, facility);
+  }
+
+  public void fillFacilityNameAndDescription(String facilityName) {
+    webDriverHelpers.fillInWebElement(FACILITY_NAME_DESCRIPTION, facilityName);
   }
 
   public void fillStreet(String street) {
@@ -139,6 +179,7 @@ public class CreateNewUserSteps implements En {
   }
 
   public void selectAreaType(String areaType) {
+    webDriverHelpers.waitForPageLoaded();
     webDriverHelpers.selectFromCombobox(AREA_TYPE_COMBOBOX, areaType);
   }
 
@@ -158,8 +199,14 @@ public class CreateNewUserSteps implements En {
     webDriverHelpers.fillInWebElement(LAT_LON_ACCURACY_INPUT, gpsAccuracy);
   }
 
-  public void clickActive() {
+  public void selectActive() {
     webDriverHelpers.clickOnWebElementBySelector(ACTIVE_CHECKBOX);
+  }
+
+  public void selectActiveUserRole() {
+    webDriverHelpers.clickWebElementByText(
+        USER_ROLE_CHECKBOX,
+        webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(USER_ROLE_CHECKBOX));
   }
 
   public void fillUserName(String userName) {
@@ -168,6 +215,11 @@ public class CreateNewUserSteps implements En {
 
   public void selectUserRole(String role) {
     webDriverHelpers.clickWebElementByText(USER_ROLE_CHECKBOX, role);
+  }
+
+  public void closeNewPasswordPopUp() {
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_DIALOG_BUTTON);
+    webDriverHelpers.clickOnWebElementBySelector(CLOSE_DIALOG_BUTTON);
   }
 
   public void selectLimitedDisease(String limitedDisease) {

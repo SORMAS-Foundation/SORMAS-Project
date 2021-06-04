@@ -26,10 +26,11 @@ import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 
 public class UserManagementSteps implements En {
+  protected WebDriverHelpers webDriverHelpers;
 
   @Inject
   public UserManagementSteps(WebDriverHelpers webDriverHelpers) {
-
+    this.webDriverHelpers = webDriverHelpers;
     When(
         "^I click on the NEW USER button$",
         () ->
@@ -39,20 +40,24 @@ public class UserManagementSteps implements En {
     When(
         "^I select fists user from list$",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_EDIT_BUTTON_FROM_LIST);
-          webDriverHelpers.clickOnWebElementBySelector(FIRST_EDIT_BUTTON_FROM_LIST);
+          selectFirstElementFromList();
         });
 
     When(
         "^I search for created user$",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_USER_INPUT);
-          webDriverHelpers.fillAndSubmitInWebElement(
-              SEARCH_USER_INPUT, CreateNewUserSteps.user.getUserName());
-          webDriverHelpers.checkWebElementContainsText(
-              USER_NAME_GRID_CELL, CreateNewUserSteps.user.getUserName());
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_EDIT_BUTTON_FROM_LIST);
-          webDriverHelpers.clickOnWebElementBySelector(FIRST_EDIT_BUTTON_FROM_LIST);
+          searchForUser(CreateNewUserSteps.user.getUserName());
+          selectFirstElementFromList();
         });
+  }
+
+  private void searchForUser(String userName) {
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_USER_INPUT);
+    webDriverHelpers.fillAndSubmitInWebElement(SEARCH_USER_INPUT, userName);
+  }
+
+  private void selectFirstElementFromList() {
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_EDIT_BUTTON_FROM_LIST);
+    webDriverHelpers.clickOnWebElementBySelector(FIRST_EDIT_BUTTON_FROM_LIST);
   }
 }
