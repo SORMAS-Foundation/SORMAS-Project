@@ -67,7 +67,7 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 
 			String displayText = origin.toString();
 
-			if (origin == VisitOrigin.USER) {
+			if (origin == VisitOrigin.USER && visitIndexDto.getVisitUser() != null) {
 				displayText += " " + visitIndexDto.getVisitUser().getShortCaption();
 			}
 

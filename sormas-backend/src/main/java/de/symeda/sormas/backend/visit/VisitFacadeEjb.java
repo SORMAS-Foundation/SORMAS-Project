@@ -308,7 +308,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		CriteriaQuery<VisitIndexDto> cq = cb.createQuery(VisitIndexDto.class);
 		Root<Visit> visit = cq.from(Visit.class);
 		Join<Visit, Symptoms> symptoms = visit.join(Visit.SYMPTOMS, JoinType.LEFT);
-		Join<Object, Object> visitUser = visit.join(Visit.VISIT_USER, JoinType.LEFT);
+		Join<Visit, User> visitUser = visit.join(Visit.VISIT_USER, JoinType.LEFT);
 
 		cq.multiselect(
 			visit.get(Visit.ID),
