@@ -18,7 +18,6 @@
 package org.sormas.e2etests.pojo.web;
 
 import java.time.LocalDate;
-import java.util.List;
 import lombok.*;
 
 @Value
@@ -26,21 +25,44 @@ import lombok.*;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
 public class Person {
-  String passportNumber;
-  String lastName;
-  LocalDate dateOfBirth;
-  boolean covidCodeDelivered;
-  Address address;
-  String sex;
-  long creationDate;
   String uuid;
-  String nationalHealthId;
   String firstName;
+  String lastName;
+  String salutation;
+  LocalDate dateOfBirth;
+  String sex;
+  String presentConditionOfPerson;
   String emailAddress;
   String phoneNumber;
-  boolean pseudonymized;
-  long changeDate;
-  boolean hasCovidApp;
-  List<Object> personContactDetails;
-  List<Object> addresses;
+  String passportNumber;
+  String nationalHealthId;
+  String externalId;
+  String externalToken;
+  String typeOfOccupation;
+  String staffOfArmedForces;
+  String education;
+  String region;
+  String district;
+  String community;
+  String facilityCategory;
+  String facilityType;
+  String facility;
+  String facilityNameAndDescription;
+  String street;
+  String houseNumber;
+  String additionalInformation;
+  String postalCode;
+  String city;
+  String areaType;
+  String contactPersonFirstName;
+  String contactPersonLastName;
+  String communityContactPerson;
+  String birthName;
+  String nickname;
+  String motherMaidenName;
+  String motherName;
+  String fatherName;
+  String nameOfGuardians;
+  String personContactDetailsTypeOfContactDetails;
+  String personContactDetailsContactInformation;
 }

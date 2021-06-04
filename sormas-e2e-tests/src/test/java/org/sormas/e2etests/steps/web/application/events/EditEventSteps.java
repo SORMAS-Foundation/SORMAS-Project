@@ -18,7 +18,9 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.*;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 

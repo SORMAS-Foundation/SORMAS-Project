@@ -16,16 +16,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pages.application;
+package org.sormas.e2etests.pages.application.contacts;
 
 import org.openqa.selenium.By;
 
-public class NavBarPage {
-  public static final By CASES_BUTTON = By.cssSelector("div#cases");
-  public static final By CONTACTS_BUTTON = By.cssSelector("div#contacts");
-  public static final By EVENTS_BUTTON = By.cssSelector("div#events");
-  public static final By TASKS_BUTTON = By.cssSelector("div#tasks");
-  public static final By PERSONS_BUTTON = By.cssSelector("div#persons");
-  public static final By DASHBOARD_BUTTON = By.cssSelector("div#dashboard");
-  public static final By SAMPLE_BUTTON = By.cssSelector("[id='samples']");
+public class EditPersonContactDetailsPage {
+
+  public static final By CONTACT_INFORMATION_INPUT =
+      By.cssSelector(".v-window #contactInformation");
+  public static final By DONE_BUTTON = By.cssSelector(".v-window #commit");
 }

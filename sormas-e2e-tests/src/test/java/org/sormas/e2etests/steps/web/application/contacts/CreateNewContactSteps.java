@@ -110,8 +110,8 @@ public class CreateNewContactSteps implements En {
     webDriverHelpers.fillInWebElement(PRIMARY_PHONE_NUMBER_INPUT, primaryPhoneNumber);
   }
 
-  public void fillPrimaryEmailAddress(String primaryPhoneNumber) {
-    webDriverHelpers.fillInWebElement(PRIMARY_EMAIL_ADDRESS_INPUT, primaryPhoneNumber);
+  public void fillPrimaryEmailAddress(String primaryEmail) {
+    webDriverHelpers.fillInWebElement(PRIMARY_EMAIL_ADDRESS_INPUT, primaryEmail);
   }
 
   public void selectReturningTraveler(String option) {
