@@ -207,7 +207,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 		if (caseFollowupEnabled && UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			PersonDto casePerson = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
-			ExternalJournalUtil.getExternalJournalUiButton(casePerson).ifPresent(getButtonsLayout()::addComponent);
+			ExternalJournalUtil.getExternalJournalUiButton(casePerson, caze).ifPresent(getButtonsLayout()::addComponent);
 		}
 	}
 

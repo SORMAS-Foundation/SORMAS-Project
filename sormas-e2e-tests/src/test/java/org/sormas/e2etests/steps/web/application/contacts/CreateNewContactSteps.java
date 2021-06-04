@@ -36,7 +36,7 @@ import org.sormas.e2etests.pojo.web.Contact;
 import org.sormas.e2etests.services.ContactService;
 
 public class CreateNewContactSteps implements En {
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static Contact contact;
 
@@ -110,8 +110,8 @@ public class CreateNewContactSteps implements En {
     webDriverHelpers.fillInWebElement(PRIMARY_PHONE_NUMBER_INPUT, primaryPhoneNumber);
   }
 
-  public void fillPrimaryEmailAddress(String primaryPhoneNumber) {
-    webDriverHelpers.fillInWebElement(PRIMARY_EMAIL_ADDRESS_INPUT, primaryPhoneNumber);
+  public void fillPrimaryEmailAddress(String primaryEmail) {
+    webDriverHelpers.fillInWebElement(PRIMARY_EMAIL_ADDRESS_INPUT, primaryEmail);
   }
 
   public void selectReturningTraveler(String option) {

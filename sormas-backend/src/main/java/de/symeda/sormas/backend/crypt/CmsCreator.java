@@ -7,6 +7,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -124,7 +125,7 @@ public class CmsCreator {
 		}
 
 		if (validateSignature) {
-			CmsReader.verify(cmsSignedData, Arrays.asList(signerCertificate));
+			CmsReader.verify(cmsSignedData, Collections.singletonList(signerCertificate));
 			logger.info("Created signature is valid");
 		}
 

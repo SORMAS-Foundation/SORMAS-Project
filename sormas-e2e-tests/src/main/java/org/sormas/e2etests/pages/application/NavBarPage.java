@@ -25,5 +25,7 @@ public class NavBarPage {
   public static final By CONTACTS_BUTTON = By.cssSelector("div#contacts");
   public static final By EVENTS_BUTTON = By.cssSelector("div#events");
   public static final By TASKS_BUTTON = By.cssSelector("div#tasks");
+  public static final By PERSONS_BUTTON = By.cssSelector("div#persons");
+  public static final By DASHBOARD_BUTTON = By.cssSelector("div#dashboard");
   public static final By SAMPLE_BUTTON = By.cssSelector("[id='samples']");
 }

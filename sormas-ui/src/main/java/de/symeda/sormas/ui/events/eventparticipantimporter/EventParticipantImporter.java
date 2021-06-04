@@ -215,7 +215,7 @@ public class EventParticipantImporter extends DataImporter {
 				} else if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
 					return ImportLineResult.SKIPPED;
 				} else {
-					PersonDto savedPerson = personFacade.savePersonAndNotifyExternalJournal(newPerson);
+					PersonDto savedPerson = personFacade.savePerson(newPerson);
 					newEventParticipant.setPerson(savedPerson);
 
 					eventParticipantFacade.saveEventParticipant(newEventParticipant);
