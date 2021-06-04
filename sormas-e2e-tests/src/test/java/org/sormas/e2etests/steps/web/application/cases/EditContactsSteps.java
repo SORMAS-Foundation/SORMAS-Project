@@ -59,6 +59,7 @@ public class EditContactsSteps implements En {
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       ContactService contactService,
+      SoftAssertions softly,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -108,7 +109,6 @@ public class EditContactsSteps implements En {
         () -> {
           openContactFromResultsByUUID(contactUUID);
           collectedContact = collectContactData();
-          SoftAssertions softly = new SoftAssertions();
           softly
               .assertThat(contact.getFirstName())
               .isEqualToIgnoringCase(collectedContact.getFirstName());

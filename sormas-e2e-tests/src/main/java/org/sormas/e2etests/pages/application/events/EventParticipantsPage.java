@@ -21,5 +21,5 @@ package org.sormas.e2etests.pages.application.events;
 import org.openqa.selenium.By;
 
 public class EventParticipantsPage {
-  public static final By ADD_PARTICIPANT_BUTTON = By.cssSelector("div#eventParticipantAddPerson");
+
 }
