@@ -205,6 +205,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String NOT_A_CASE_REASON_DETAILS = "notACaseReasonDetails";
 	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
 	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
+	public static final String DONT_SHARE_WITH_REPORTING_TOOL = "dontShareWithReportingTool";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -615,6 +616,8 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private String notACaseReasonDetails;
 	private Date followUpStatusChangeDate;
 	private UserReferenceDto followUpStatusChangeUser;
+
+	private boolean dontShareWithReportingTool;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -1733,5 +1736,13 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	public boolean hasResponsibleJurisdiction() {
 		return responsibleRegion != null || responsibleDistrict != null || responsibleCommunity != null;
+	}
+
+	public boolean isDontShareWithReportingTool() {
+		return dontShareWithReportingTool;
+	}
+
+	public void setDontShareWithReportingTool(boolean dontShareWithReportingTool) {
+		this.dontShareWithReportingTool = dontShareWithReportingTool;
 	}
 }

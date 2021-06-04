@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
@@ -75,6 +76,8 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String WARNING_LAYOUT = "warningLayout";
+	private static final String SHARE_CHECKBOX = "shareCheckbox";
+	private static final String DONT_SHARE_WARNING_LOC = "dontShareWarning";
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -100,7 +103,10 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
                             CaseBulkEditData.COMMUNITY) +
                     fluidRowLocs(FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, CaseBulkEditData.FACILITY_TYPE) +
                     fluidRowLocs(WARNING_LAYOUT) +
-                    fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseBulkEditData.HEALTH_FACILITY_DETAILS);
+                    fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseBulkEditData.HEALTH_FACILITY_DETAILS) +
+                    fluidRowLocs(SHARE_CHECKBOX) +
+                    fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL) +
+                    fluidRowLocs(DONT_SHARE_WARNING_LOC);
     //@formatter:on
 
 	private final DistrictReferenceDto singleSelectedDistrict;
@@ -113,6 +119,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private CheckBox outcomeCheckBox;
 	private CheckBox surveillanceOfficerCheckBox;
 	private CheckBox healthFacilityCheckbox;
+	private CheckBox shareWithReportingToolCheckbox;
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
 	private TextField healthFacilityDetails;
@@ -337,6 +344,27 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		facilityType.setValue(FacilityType.HOSPITAL); // default
 
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+
+		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
+			shareWithReportingToolCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkCaseShareWithReportingTool));
+			shareWithReportingToolCheckbox.addStyleName(VSPACE_3);
+			getContent().addComponent(shareWithReportingToolCheckbox, SHARE_CHECKBOX);
+
+			CaseFormHelper.addDontShareWithReportingTool(
+				this,
+				getContent(),
+				CaseBulkEditData.DONT_SHARE_WITH_REPORTING_TOOL,
+				DONT_SHARE_WARNING_LOC,
+				Strings.messageBulkDontShareWithReportingToolWarning);
+			CheckBox dontShareCheckbox = getField(CaseBulkEditData.DONT_SHARE_WITH_REPORTING_TOOL);
+			dontShareCheckbox.setEnabled(false);
+			FieldHelper.setEnabledWhen(
+				shareWithReportingToolCheckbox,
+				Collections.singletonList(Boolean.TRUE),
+				Collections.singletonList(dontShareCheckbox),
+				true);
+
+		}
 
 		FieldHelper.setRequiredWhen(getFieldGroup(), diseaseCheckBox, Arrays.asList(CaseBulkEditData.DISEASE), Arrays.asList(true));
 		FieldHelper

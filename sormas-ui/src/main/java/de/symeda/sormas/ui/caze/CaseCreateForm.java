@@ -85,6 +85,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String FACILITY_TYPE_GROUP_LOC = "typeGroupLoc";
+	private static final String DONT_SHARE_WARNING_LOC = "dontShareWithReportingToolWarnLoc";
 
 	private ComboBox birthDateDay;
 	private NullableOptionGroup facilityOrHome;
@@ -94,6 +95,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
 			+ fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER, CaseDataDto.EXTERNAL_ID)
+			+ fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL)
+			+ fluidRowLocs(DONT_SHARE_WARNING_LOC)
 			+ fluidRow(
 					fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
 					fluidColumn(6, 0,
@@ -135,6 +138,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		if (!FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
 			TextField externalIdField = addField(CaseDataDto.EXTERNAL_ID, TextField.class);
 			style(externalIdField, ERROR_COLOR_PRIMARY);
+		} else {
+			CaseFormHelper.addDontShareWithReportingTool(this, getContent(), CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL, DONT_SHARE_WARNING_LOC);
 		}
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);

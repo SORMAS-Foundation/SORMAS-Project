@@ -64,20 +64,25 @@ public class ExternalSurveillanceShareComponent extends VerticalLayout {
 		Label header = new Label(I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_title));
 		header.addStyleName(CssStyles.H3);
 
-		Button sendButton = ButtonHelper.createIconButton(
-			Captions.ExternalSurveillanceToolGateway_send,
-			VaadinIcons.OUTBOX,
-			e -> onSendButtonClick(entityName, sendHandler, editComponent),
-			ValoTheme.BUTTON_PRIMARY);
-
-		Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> deleteHandler.run(), ValoTheme.BUTTON_ICON_ONLY);
-
-		HorizontalLayout headerLayout = new HorizontalLayout(header, sendButton, deleteButton);
-		headerLayout.setExpandRatio(sendButton, 1);
+		HorizontalLayout headerLayout = new HorizontalLayout(header);
 		headerLayout.setComponentAlignment(header, Alignment.MIDDLE_LEFT);
-		headerLayout.setComponentAlignment(sendButton, Alignment.MIDDLE_RIGHT);
-		headerLayout.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
-		headerLayout.setWidth(100, Unit.PERCENTAGE);
+
+		if (sendHandler != null) {
+			Button sendButton = ButtonHelper.createIconButton(
+				Captions.ExternalSurveillanceToolGateway_send,
+				VaadinIcons.OUTBOX,
+				e -> onSendButtonClick(entityName, sendHandler, editComponent),
+				ValoTheme.BUTTON_PRIMARY);
+
+			headerLayout.addComponent(sendButton);
+			headerLayout.setExpandRatio(sendButton, 1);
+			headerLayout.setComponentAlignment(sendButton, Alignment.MIDDLE_RIGHT);
+
+			Button deleteButton = ButtonHelper.createIconButton("", VaadinIcons.TRASH, e -> deleteHandler.run(), ValoTheme.BUTTON_ICON_ONLY);
+			headerLayout.addComponent(deleteButton);
+			headerLayout.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
+			headerLayout.setWidth(100, Unit.PERCENTAGE);
+		}
 
 		return headerLayout;
 	}

@@ -164,6 +164,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String CASE_CONFIRMATION_BASIS = "caseConfirmationBasis";
 	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
 	private static final String DIFFERENT_JURISDICTION = "differentJurisdiction";
+	private static final String DONT_SHARE_WARNING_LOC = "dontShareWarning";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -182,6 +183,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(6, CaseDataDto.EPID_NUMBER, 3, ASSIGN_NEW_EPID_NUMBER_LOC) +
 					loc(EPID_NUMBER_WARNING_LOC) +
 					fluidRowLocs(CaseDataDto.EXTERNAL_ID, CaseDataDto.EXTERNAL_TOKEN) +
+					fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL) +
+					fluidRowLocs(DONT_SHARE_WARNING_LOC) +
 					fluidRowLocs("", EXTERNAL_TOKEN_WARNING_LOC) +
 					fluidRowLocs(6, CaseDataDto.CASE_ID_ISM, 6, null) +
 					fluidRow(
@@ -350,6 +353,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Label epidNumberWarningLabel = new Label(I18nProperties.getString(Strings.messageEpidNumberWarning));
 		epidNumberWarningLabel.addStyleName(VSPACE_3);
 		addField(CaseDataDto.EXTERNAL_ID, TextField.class);
+
+		CaseFormHelper.addDontShareWithReportingTool(this, getContent(), CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL, DONT_SHARE_WARNING_LOC);
 
 		TextField externalTokenField = addField(CaseDataDto.EXTERNAL_TOKEN, TextField.class);
 		Label externalTokenWarningLabel = new Label(I18nProperties.getString(Strings.messageCaseExternalTokenWarning));

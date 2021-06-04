@@ -7338,4 +7338,10 @@ CREATE INDEX IF NOT EXISTS idx_eventparticipant_deleted ON eventparticipant (del
 CREATE INDEX IF NOT EXISTS idx_documents_deleted ON documents (deleted);
 
 INSERT INTO schema_version (version_number, comment) VALUES (374, 'Indexing by deleted flag on all containing entities should be applied #5465');
+
+-- 2021-06-02 Add a checkbox to avoid sending this case to SurvNet #5324
+ALTER TABLE cases ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (375, 'Add a checkbox to avoid sending this case to SurvNet #5324');
 -- *** Insert new sql commands BEFORE this line ***
