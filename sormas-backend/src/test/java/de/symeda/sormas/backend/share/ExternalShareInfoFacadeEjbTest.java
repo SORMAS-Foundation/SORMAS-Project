@@ -36,7 +36,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
-public class ExternalShareInfoFacadeEjbEjbTest extends AbstractBeanTest {
+public class ExternalShareInfoFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexList() {
