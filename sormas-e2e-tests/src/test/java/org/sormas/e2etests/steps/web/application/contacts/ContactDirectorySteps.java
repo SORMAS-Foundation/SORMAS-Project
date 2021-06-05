@@ -34,8 +34,6 @@ import org.sormas.e2etests.state.ApiState;
 public class ContactDirectorySteps implements En {
 
   protected WebDriverHelpers webDriverHelpers;
-  private final AssertHelpers assertHelpers;
-  public static String LAST_CREATED_CONTACT_URL;
 
   @Inject
   public ContactDirectorySteps(
@@ -44,12 +42,11 @@ public class ContactDirectorySteps implements En {
       AssertHelpers assertHelpers,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
-    this.assertHelpers = assertHelpers;
 
     When(
         "^I navigate to the last created contact via the url$",
         () -> {
-          LAST_CREATED_CONTACT_URL =
+          String LAST_CREATED_CONTACT_URL =
               environmentUrl
                   + "/sormas-ui/#!contacts/data/"
                   + apiState.getCreatedContact().getUuid();

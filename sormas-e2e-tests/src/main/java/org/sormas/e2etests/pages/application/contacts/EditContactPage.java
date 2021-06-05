@@ -63,8 +63,6 @@ public class EditContactPage {
   public static final By EXTERNAL_TOKEN_INPUT = By.id("externalToken");
   public static final By REPORTING_DISTRICT_COMBOBOX =
       By.cssSelector(".v-verticallayout [location='reportingDistrict'] [role='combobox'] div");
-  public static final By REPORTING_DISTRICT_COMBOBOX_INPUT =
-      By.cssSelector("#reportingDistrict input");
   public static final By IDENTIFICATION_SOURCE_INPUT =
       By.cssSelector("#contactIdentificationSourceDetails");
   public static final By CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX =
@@ -77,7 +75,6 @@ public class EditContactPage {
       By.cssSelector("#quarantineHomePossible label");
   public static final By QUARANTINE_COMBOBOX =
       By.cssSelector(".v-verticallayout [location='quarantine'] [role='combobox'] div");
-  public static final By QUARANTINE_COMBOBOX_INPUT = By.cssSelector("#quarantine input");
   public static final By HIGH_PRIORITY_CHECKBOX = By.cssSelector("#highPriority > input");
   public static final By HIGH_PRIORITY_LABEL = By.cssSelector("#highPriority > label");
   public static final By DIABETES_OPTIONS = By.cssSelector("#diabetes label");
@@ -92,8 +89,6 @@ public class EditContactPage {
   public static final By ADDITIONAL_RELEVANT_PRE_CONDITIONS_TEXT = By.id("otherConditions");
   public static final By VACCINATION_STATUS_COMBOBOX =
       By.cssSelector(".v-verticallayout [location='vaccinationInfo'] [role='combobox'] div");
-  public static final By VACCINATION_STATUS_COMBOBOX_INPUT =
-      By.cssSelector("#vaccinationInfo input");
   public static final By IMMUNOSUPPRESSIVE_THERAPY_OPTIONS =
       By.cssSelector("#immunosuppressiveTherapyBasicDisease label");
   public static final By CARE_OVER_60_OPTIONS = By.cssSelector("#careForPeopleOver60 label");
@@ -106,8 +101,6 @@ public class EditContactPage {
   public static final By FOLLOW_UP_STATUS_TEXT = By.id("followUpComment");
   public static final By RESPONSIBLE_STATUS_OFFICER_COMBOBOX =
       By.cssSelector(".v-verticallayout [location='contactOfficer'] [role='combobox'] div");
-  public static final By RESPONSIBLE_STATUS_OFFICER_COMBOBOX_INPUT =
-      By.cssSelector("#contactOfficer input");
   public static final By GENERAL_COMMENT_TEXT = By.id("additionalDetails");
   public static final By SAVE_EDIT_BUTTON = By.id("commit");
 }

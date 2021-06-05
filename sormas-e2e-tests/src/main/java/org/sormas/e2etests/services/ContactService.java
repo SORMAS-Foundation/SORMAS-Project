@@ -101,7 +101,8 @@ public class ContactService {
         .activeInCare("NO")
         .cancelFollowUp(true)
         .overwriteFollowUp("Overwrite follow-up until date")
-        .dateOfFollowUpUntil(LocalDate.now().plusDays(15))
+        // commented code until issue=5634 is fixed
+        // .dateOfFollowUpUntil(LocalDate.now().plusDays(15))
         .followUpStatusComment("dummy comment will resume, ofc")
         .responsibleContactOfficer("")
         .generalComment("last dummy comment here")
