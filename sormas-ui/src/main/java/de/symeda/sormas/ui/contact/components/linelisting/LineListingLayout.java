@@ -50,10 +50,7 @@ public class LineListingLayout extends VerticalLayout {
 	private final ComboBox<RegionReferenceDto> region;
 	private final ComboBox<DistrictReferenceDto> district;
 
-	private List<ContactLineLayout> contactLines;
-
-	private Button cancelButton;
-	private Button saveButton;
+	private final List<ContactLineLayout> contactLines;
 
 	private final Window window;
 	private Consumer<List<ContactLineDto>> saveCallback;
@@ -117,8 +114,9 @@ public class LineListingLayout extends VerticalLayout {
 		lineComponent.setSpacing(false);
 		addComponent(lineComponent);
 
-		if (UserRole.isSupervisor(UserProvider.getCurrent().getUserRoles())) {
-			RegionReferenceDto userRegion = UserProvider.getCurrent().getUser().getRegion();
+		UserProvider currentUserProvider = UserProvider.getCurrent();
+		if (currentUserProvider != null && UserRole.isSupervisor(currentUserProvider.getUserRoles())) {
+			RegionReferenceDto userRegion = currentUserProvider.getUser().getRegion();
 			region.setValue(userRegion);
 			region.setVisible(false);
 			updateDistricts(userRegion);
@@ -158,13 +156,14 @@ public class LineListingLayout extends VerticalLayout {
 		buttonsPanel.setSpacing(true);
 		buttonsPanel.setWidth(100, Unit.PERCENTAGE);
 
-		cancelButton = ButtonHelper.createButton(Captions.actionDiscard, event -> closeWindow());
+		Button cancelButton = ButtonHelper.createButton(Captions.actionDiscard, event -> closeWindow());
 
 		buttonsPanel.addComponent(cancelButton);
 		buttonsPanel.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(cancelButton, 1);
 
-		saveButton = ButtonHelper.createButton(Captions.actionSave, event -> saveCallback.accept(getContactLineDtos()), ValoTheme.BUTTON_PRIMARY);
+		Button saveButton =
+			ButtonHelper.createButton(Captions.actionSave, event -> saveCallback.accept(getContactLineDtos()), ValoTheme.BUTTON_PRIMARY);
 
 		buttonsPanel.addComponent(saveButton);
 		buttonsPanel.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
@@ -195,7 +194,7 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	public List<ContactLineDto> getContactLineDtos() {
-		return contactLines.stream().map(line -> line.getBean()).collect(Collectors.toList());
+		return contactLines.stream().map(ContactLineLayout::getBean).collect(Collectors.toList());
 	}
 
 	public void setSaveCallback(Consumer<List<ContactLineDto>> saveCallback) {
@@ -239,6 +238,7 @@ public class LineListingLayout extends VerticalLayout {
 
 			typeOfContact = new ComboBox<>();
 			typeOfContact.setId("lineListingContactProximity_" + lineIndex);
+			typeOfContact.setItems(ContactProximity.values());
 			typeOfContact.setWidth(200, Unit.PIXELS);
 			typeOfContact.addStyleName(CssStyles.CAPTION_OVERFLOW);
 			binder.forField(typeOfContact).bind(ContactLineDto.TYPE_OF_CONTACT);
