@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -139,6 +140,15 @@ public class LineListingLayout extends VerticalLayout {
 			newLineDto.setTypeOfContact(lastLineDto.getTypeOfContact());
 			newLineDto.setRelationToCase(lastLineDto.getRelationToCase());
 			newLine.setBean(newLineDto);
+			newLine.addDeleteLineListener(evt -> {
+				ContactLineLayout selectedLine = (ContactLineLayout) evt.getSource();
+				lineComponent.removeComponent(selectedLine);
+				contactLines.remove(selectedLine);
+				contactLines.get(0).formatLine(0);
+				if (contactLines.size() > 1) {
+					contactLines.get(0).getDelete().setEnabled(true);
+				}
+			});
 			contactLines.add(newLine);
 			lineComponent.addComponent(newLine);
 
@@ -254,16 +264,15 @@ public class LineListingLayout extends VerticalLayout {
 			binder.forField(person).bind(ContactLineDto.PERSON);
 
 			delete = ButtonHelper.createIconButtonWithCaption("delete_" + lineIndex, null, VaadinIcons.TRASH, event -> {
-				lineComponent.removeComponent(this);
-				contactLines.remove(this);
-				contactLines.get(0).formatLine(0);
-				if (contactLines.size() > 1) {
-					contactLines.get(0).getDelete().setEnabled(true);
-				}
+				fireEvent(new DeleteLineEvent(this));
 			});
 
 			addComponents(dateOfReport, multiDay, typeOfContact, relationToCase, person, delete);
 			formatLine(lineIndex);
+		}
+
+		public Registration addDeleteLineListener(DeleteLineListener deleteLineListener) {
+			return addListener(DeleteLineEvent.class, deleteLineListener, DeleteLineListener.DELETE_LINE_METHOD);
 		}
 
 		public void setBean(ContactLineDto bean) {
