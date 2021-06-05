@@ -35,13 +35,12 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.contact.components.linelisting.multidayselector.MultiDaySelectorDto;
-import de.symeda.sormas.ui.contact.components.linelisting.multidayselector.MultiDaySelectorField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.components.linelisting.PersonField;
 import de.symeda.sormas.ui.utils.components.linelisting.PersonFieldDto;
+import de.symeda.sormas.ui.utils.components.multidayselector.MultiDaySelectorDto;
 
 public class LineListingLayout extends VerticalLayout {
 
@@ -208,7 +207,7 @@ public class LineListingLayout extends VerticalLayout {
 		private final Binder<ContactLineDto> binder = new Binder<>(ContactLineDto.class);
 
 		private final DateField dateOfReport;
-		private final MultiDaySelectorField multiDay;
+		private final MultiDayContactField multiDay;
 
 		private final ComboBox<ContactProximity> typeOfContact;
 		private final ComboBox<ContactRelation> relationToCase;
@@ -232,7 +231,7 @@ public class LineListingLayout extends VerticalLayout {
 			binder.forField(dateOfReport).asRequired().bind(ContactLineDto.DATE_OF_REPORT);
 			dateOfReport.setRangeEnd(LocalDate.now());
 
-			multiDay = new MultiDaySelectorField();
+			multiDay = new MultiDayContactField();
 			multiDay.setId("lineListingMultiDay_" + lineIndex);
 			binder.forField(multiDay).bind(ContactLineDto.MULTI_DAY_SELECTOR);
 

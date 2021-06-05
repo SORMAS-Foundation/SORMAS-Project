@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.contact.components.linelisting.multidayselector;
+package de.symeda.sormas.ui.utils.components.multidayselector;
 
 import java.io.Serializable;
 import java.time.LocalDate;

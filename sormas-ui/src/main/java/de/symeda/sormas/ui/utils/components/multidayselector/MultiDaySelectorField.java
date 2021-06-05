@@ -1,6 +1,7 @@
-package de.symeda.sormas.ui.contact.components.linelisting.multidayselector;
+package de.symeda.sormas.ui.utils.components.multidayselector;
 
 import java.time.LocalDate;
+import java.util.Properties;
 
 import com.vaadin.data.Binder;
 import com.vaadin.ui.CheckBox;
@@ -10,7 +11,6 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -22,10 +22,14 @@ public class MultiDaySelectorField extends CustomField<MultiDaySelectorDto> {
 	private final DateField firstDate;
 	private final DateField lastDate;
 
+	protected Properties properties;
+
 	public MultiDaySelectorField() {
 		multiDaySelect = new CheckBox();
 		firstDate = new DateField();
 		lastDate = new DateField();
+
+		this.properties = new Properties();
 	}
 
 	@Override
@@ -75,11 +79,12 @@ public class MultiDaySelectorField extends CustomField<MultiDaySelectorDto> {
 	}
 
 	public void showCaptions() {
-		multiDaySelect.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.MULTI_DAY_CONTACT));
+		String prefix = properties.getProperty("prefix");
+		multiDaySelect.setCaption(I18nProperties.getPrefixCaption(prefix, properties.getProperty("multiDay")));
 		multiDaySelect.removeStyleName(CssStyles.CAPTION_HIDDEN);
-		firstDate.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.FIRST_CONTACT_DATE));
+		firstDate.setCaption(I18nProperties.getPrefixCaption(prefix, properties.getProperty("firstDate")));
 		firstDate.removeStyleName(CssStyles.CAPTION_HIDDEN);
-		lastDate.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE));
+		lastDate.setCaption(I18nProperties.getPrefixCaption(prefix, properties.getProperty("lastDate")));
 		lastDate.removeStyleName(CssStyles.CAPTION_HIDDEN);
 	}
 }
