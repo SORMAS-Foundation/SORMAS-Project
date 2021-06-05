@@ -23,20 +23,20 @@ import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.sormas.e2etests.state.ApiState;
 
-public class APISteps implements En {
+public class ApiHelperSteps implements En {
 
   @Inject
-  public APISteps(ApiState apiState) {
+  public ApiHelperSteps(ApiState apiState) {
 
     When(
-        "API: I check if the response contains ([^\"]*)",
+        "^API: I check if the response contains ([^\"]*)$",
         (String expectedString) ->
             assertWithMessage("The response does not contains  %s", expectedString)
                 .that(apiState.getResponse().prettyPrint())
                 .contains(expectedString));
 
     When(
-        "API: I check if the response has status (.*)",
+        "^API: I check if the response has status (\\d+)$",
         (Integer statusCode) ->
             assertWithMessage("The response does not have the status  %s", statusCode)
                 .that(apiState.getResponse().getStatusCode())
