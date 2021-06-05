@@ -192,7 +192,7 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	private ContactLineLayout buildNewLine(VerticalLayout lineComponent) {
-		ContactLineLayout newLine = new ContactLineLayout(lineComponent, contactLines.size());
+		ContactLineLayout newLine = new ContactLineLayout(contactLines.size());
 		ContactLineDto newLineDto = new ContactLineDto();
 
 		if (!contactLines.isEmpty()) {
@@ -234,7 +234,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		private final Button delete;
 
-		public ContactLineLayout(VerticalLayout lineComponent, int lineIndex) {
+		public ContactLineLayout(int lineIndex) {
 
 			addStyleName(CssStyles.SPACING_SMALL);
 			setMargin(false);
