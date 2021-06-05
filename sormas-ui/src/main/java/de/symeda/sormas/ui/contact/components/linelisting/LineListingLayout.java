@@ -109,8 +109,7 @@ public class LineListingLayout extends VerticalLayout {
 		lineComponentLabel.addStyleName(CssStyles.H3);
 		lineComponent.addComponent(lineComponentLabel);
 
-		ContactLineLayout line = new ContactLineLayout(lineComponent, 0);
-		line.setBean(new ContactLineDto());
+		ContactLineLayout line = buildNewLine(lineComponent);
 		contactLines.add(line);
 		lineComponent.addComponent(line);
 		lineComponent.setSpacing(false);
@@ -128,27 +127,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		HorizontalLayout actionBar = new HorizontalLayout();
 		Button addLine = ButtonHelper.createIconButton(Captions.lineListingAddLine, VaadinIcons.PLUS, e -> {
-			ContactLineLayout newLine = new ContactLineLayout(lineComponent, contactLines.size() + 1);
-			ContactLineDto lastLineDto = contactLines.get(contactLines.size() - 1).getBean();
-			ContactLineDto newLineDto = new ContactLineDto();
-			newLineDto.setCaze(lastLineDto.getCaze());
-			newLineDto.setDisease(lastLineDto.getDisease());
-			newLineDto.setRegion(lastLineDto.getRegion());
-			newLineDto.setDistrict(lastLineDto.getDistrict());
-			newLineDto.setDateOfReport(lastLineDto.getDateOfReport());
-			newLineDto.setMultiDaySelector(lastLineDto.getMultiDaySelector());
-			newLineDto.setTypeOfContact(lastLineDto.getTypeOfContact());
-			newLineDto.setRelationToCase(lastLineDto.getRelationToCase());
-			newLine.setBean(newLineDto);
-			newLine.addDeleteLineListener(evt -> {
-				ContactLineLayout selectedLine = (ContactLineLayout) evt.getSource();
-				lineComponent.removeComponent(selectedLine);
-				contactLines.remove(selectedLine);
-				contactLines.get(0).formatLine(0);
-				if (contactLines.size() > 1) {
-					contactLines.get(0).getDelete().setEnabled(true);
-				}
-			});
+			ContactLineLayout newLine = buildNewLine(lineComponent);
 			contactLines.add(newLine);
 			lineComponent.addComponent(newLine);
 
@@ -212,6 +191,36 @@ public class LineListingLayout extends VerticalLayout {
 		this.saveCallback = saveCallback;
 	}
 
+	private ContactLineLayout buildNewLine(VerticalLayout lineComponent) {
+		ContactLineLayout newLine = new ContactLineLayout(lineComponent, contactLines.size());
+		ContactLineDto newLineDto = new ContactLineDto();
+
+		if (!contactLines.isEmpty()) {
+			ContactLineDto lastLineDto = contactLines.get(contactLines.size() - 1).getBean();
+			newLineDto.setCaze(lastLineDto.getCaze());
+			newLineDto.setDisease(lastLineDto.getDisease());
+			newLineDto.setRegion(lastLineDto.getRegion());
+			newLineDto.setDistrict(lastLineDto.getDistrict());
+			newLineDto.setDateOfReport(lastLineDto.getDateOfReport());
+			newLineDto.setMultiDaySelector(lastLineDto.getMultiDaySelector());
+			newLineDto.setTypeOfContact(lastLineDto.getTypeOfContact());
+			newLineDto.setRelationToCase(lastLineDto.getRelationToCase());
+		}
+
+		newLine.setBean(newLineDto);
+		newLine.addDeleteLineListener(evt -> {
+			ContactLineLayout selectedLine = (ContactLineLayout) evt.getSource();
+			lineComponent.removeComponent(selectedLine);
+			contactLines.remove(selectedLine);
+			contactLines.get(0).formatLine(0);
+			if (contactLines.size() > 1) {
+				contactLines.get(0).getDelete().setEnabled(true);
+			}
+		});
+
+		return newLine;
+	}
+
 	class ContactLineLayout extends HorizontalLayout {
 
 		private final Binder<ContactLineDto> binder = new Binder<>(ContactLineDto.class);
@@ -263,9 +272,8 @@ public class LineListingLayout extends VerticalLayout {
 			person.setId("lineListingPerson_" + lineIndex);
 			binder.forField(person).bind(ContactLineDto.PERSON);
 
-			delete = ButtonHelper.createIconButtonWithCaption("delete_" + lineIndex, null, VaadinIcons.TRASH, event -> {
-				fireEvent(new DeleteLineEvent(this));
-			});
+			delete = ButtonHelper
+				.createIconButtonWithCaption("delete_" + lineIndex, null, VaadinIcons.TRASH, event -> fireEvent(new DeleteLineEvent(this)));
 
 			addComponents(dateOfReport, multiDay, typeOfContact, relationToCase, person, delete);
 			formatLine(lineIndex);
