@@ -35,6 +35,8 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.contact.components.linelisting.multidayselector.MultiDaySelectorDto;
+import de.symeda.sormas.ui.contact.components.linelisting.multidayselector.MultiDaySelectorField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -134,7 +136,7 @@ public class LineListingLayout extends VerticalLayout {
 			newLineDto.setRegion(lastLineDto.getRegion());
 			newLineDto.setDistrict(lastLineDto.getDistrict());
 			newLineDto.setDateOfReport(lastLineDto.getDateOfReport());
-			newLineDto.setDateOfLastContact(lastLineDto.getDateOfLastContact());
+			newLineDto.setMultiDaySelector(lastLineDto.getMultiDaySelector());
 			newLineDto.setTypeOfContact(lastLineDto.getTypeOfContact());
 			newLineDto.setRelationToCase(lastLineDto.getRelationToCase());
 			newLine.setBean(newLineDto);
@@ -206,7 +208,7 @@ public class LineListingLayout extends VerticalLayout {
 		private final Binder<ContactLineDto> binder = new Binder<>(ContactLineDto.class);
 
 		private final DateField dateOfReport;
-		private final DateField dateOfLastContact;
+		private final MultiDaySelectorField multiDay;
 
 		private final ComboBox<ContactProximity> typeOfContact;
 		private final ComboBox<ContactRelation> relationToCase;
@@ -230,23 +232,21 @@ public class LineListingLayout extends VerticalLayout {
 			binder.forField(dateOfReport).asRequired().bind(ContactLineDto.DATE_OF_REPORT);
 			dateOfReport.setRangeEnd(LocalDate.now());
 
-			dateOfLastContact = new DateField();
-			dateOfLastContact.setId("lineListingDateOfLastContact_" + lineIndex);
-			dateOfLastContact.setWidth(150, Unit.PIXELS);
-			binder.forField(dateOfLastContact).bind(ContactLineDto.DATE_OF_LAST_CONTACT);
-			dateOfLastContact.setRangeEnd(LocalDate.now());
+			multiDay = new MultiDaySelectorField();
+			multiDay.setId("lineListingMultiDay_" + lineIndex);
+			binder.forField(multiDay).bind(ContactLineDto.MULTI_DAY_SELECTOR);
 
 			typeOfContact = new ComboBox<>();
 			typeOfContact.setId("lineListingContactProximity_" + lineIndex);
 			typeOfContact.setItems(ContactProximity.values());
-			typeOfContact.setWidth(200, Unit.PIXELS);
+			typeOfContact.setWidth(150, Unit.PIXELS);
 			typeOfContact.addStyleName(CssStyles.CAPTION_OVERFLOW);
 			binder.forField(typeOfContact).bind(ContactLineDto.TYPE_OF_CONTACT);
 
 			relationToCase = new ComboBox<>();
 			relationToCase.setId("lineListingRelationToCase_" + lineIndex);
 			relationToCase.setItems(ContactRelation.values());
-			relationToCase.setWidth(200, Unit.PIXELS);
+			relationToCase.setWidth(150, Unit.PIXELS);
 			relationToCase.addStyleName(CssStyles.CAPTION_OVERFLOW);
 			binder.forField(relationToCase).bind(ContactLineDto.RELATION_TO_CASE);
 
@@ -263,7 +263,7 @@ public class LineListingLayout extends VerticalLayout {
 				}
 			});
 
-			addComponents(dateOfReport, dateOfLastContact, typeOfContact, relationToCase, person, delete);
+			addComponents(dateOfReport, multiDay, typeOfContact, relationToCase, person, delete);
 
 			if (lineIndex == 0) {
 				formatAsFirstLine();
@@ -292,13 +292,16 @@ public class LineListingLayout extends VerticalLayout {
 
 			dateOfReport.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
 			dateOfReport.removeStyleName(CssStyles.CAPTION_HIDDEN);
-			dateOfLastContact.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE));
-			dateOfLastContact.removeStyleName(CssStyles.CAPTION_HIDDEN);
+			setComponentAlignment(dateOfReport, Alignment.BOTTOM_LEFT);
+			multiDay.showCaptions();
 			typeOfContact.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_PROXIMITY));
 			typeOfContact.removeStyleName(CssStyles.CAPTION_HIDDEN);
+			setComponentAlignment(typeOfContact, Alignment.BOTTOM_LEFT);
 			relationToCase.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.RELATION_TO_CASE));
 			relationToCase.removeStyleName(CssStyles.CAPTION_HIDDEN);
+			setComponentAlignment(relationToCase, Alignment.BOTTOM_LEFT);
 			person.showCaptions();
+			setComponentAlignment(person, Alignment.BOTTOM_LEFT);
 			delete.setEnabled(false);
 			setComponentAlignment(delete, Alignment.MIDDLE_LEFT);
 		}
@@ -321,7 +324,7 @@ public class LineListingLayout extends VerticalLayout {
 		public static final String REGION = "region";
 		public static final String DISTRICT = "district";
 		public static final String DATE_OF_REPORT = "dateOfReport";
-		public static final String DATE_OF_LAST_CONTACT = "dateOfLastContact";
+		public static final String MULTI_DAY_SELECTOR = "multiDaySelector";
 		public static final String TYPE_OF_CONTACT = "typeOfContact";
 		public static final String RELATION_TO_CASE = "relationToCase";
 		public static final String PERSON = "person";
@@ -331,7 +334,7 @@ public class LineListingLayout extends VerticalLayout {
 		private RegionReferenceDto region;
 		private DistrictReferenceDto district;
 		private LocalDate dateOfReport;
-		private LocalDate dateOfLastContact;
+		private MultiDaySelectorDto multiDaySelector;
 		private ContactProximity typeOfContact;
 		private ContactRelation relationToCase;
 		private PersonFieldDto person;
@@ -376,12 +379,12 @@ public class LineListingLayout extends VerticalLayout {
 			this.dateOfReport = dateOfReport;
 		}
 
-		public LocalDate getDateOfLastContact() {
-			return dateOfLastContact;
+		public MultiDaySelectorDto getMultiDaySelector() {
+			return multiDaySelector;
 		}
 
-		public void setDateOfLastContact(LocalDate dateOfLastContact) {
-			this.dateOfLastContact = dateOfLastContact;
+		public void setMultiDaySelector(MultiDaySelectorDto multiDaySelector) {
+			this.multiDaySelector = multiDaySelector;
 		}
 
 		public ContactProximity getTypeOfContact() {
