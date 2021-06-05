@@ -37,6 +37,7 @@ public class TasksSteps implements En {
           Contact contact = Contact.builder().uuid(apiState.getCreatedContact().getUuid()).build();
           task = task.toBuilder().contact(contact).build();
           taskHelper.createTask(task);
+          apiState.setCreatedTask(task);
         });
   }
 }

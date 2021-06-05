@@ -36,4 +36,6 @@ public class Task {
   Date suggestedStart;
   String taskStatus;
   Contact contact;
+  String assigneeReply;
+  String creatorComment;
 }

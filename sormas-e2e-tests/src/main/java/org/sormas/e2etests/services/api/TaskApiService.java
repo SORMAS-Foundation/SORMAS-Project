@@ -18,15 +18,11 @@
 
 package org.sormas.e2etests.services.api;
 
-import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
 import org.sormas.e2etests.pojo.api.*;
 
 public class TaskApiService {
-
-  @Inject
-  public TaskApiService() {}
 
   public Task buildGeneratedTask() {
     return Task.builder()
@@ -37,7 +33,15 @@ public class TaskApiService {
         .dueDate(new Date())
         .suggestedStart(new Date())
         .taskStatus("PENDING")
-        .assigneeUser(AssigneeUser.builder().uuid("TWJCUP-I3VN2G-QL5UG3-WXX6SOPA").build())
+        .assigneeUser(
+            AssigneeUser.builder()
+                .caption("Contact OFFICER - Kontaktbeauftragte*r")
+                .firstName("Contact")
+                .lastName("Officer")
+                .uuid("TWJCUP-I3VN2G-QL5UG3-WXX6SOPA")
+                .build())
+        .assigneeReply(UUID.randomUUID().toString())
+        .creatorComment(UUID.randomUUID().toString())
         .build();
   }
 }
