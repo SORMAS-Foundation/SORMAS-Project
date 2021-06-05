@@ -17,36 +17,29 @@
  */
 package org.sormas.e2etests.steps.api;
 
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import cucumber.api.java8.En;
 import javax.inject.Inject;
-import org.sormas.e2etests.helpers.api.CaseHelper;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.services.api.CaseApiService;
 import org.sormas.e2etests.state.ApiState;
 
-public class CaseSteps implements En {
+public class APISteps implements En {
 
   @Inject
-  public CaseSteps(CaseHelper caseHelper, CaseApiService caseApiService, ApiState apiState) {
+  public APISteps(ApiState apiState) {
 
     When(
-        "API: I create a new case",
-        () -> {
-          Case caze = caseApiService.buildGeneratedCase(apiState.getEditPerson());
-          caseHelper.createCase(caze);
-          apiState.setCreatedCase(caze);
-        });
+        "API: I check if the response contains ([^\"]*)",
+        (String expectedString) ->
+            assertWithMessage("The response does not contains  %s", expectedString)
+                .that(apiState.getResponse().prettyPrint())
+                .contains(expectedString));
 
     When(
-        "API: I create a new case with already created Case uuid",
-        () -> {
-          Case caze =
-              caseApiService.buildGeneratedCase(
-                  apiState.getEditPerson().toBuilder()
-                      .uuid(apiState.getCreatedCase().getUuid())
-                      .build());
-          caseHelper.createCase(caze);
-          apiState.setCreatedCase(caze);
-        });
+        "API: I check if the response has status (.*)",
+        (Integer statusCode) ->
+            assertWithMessage("The response does not have the status  %s", statusCode)
+                .that(apiState.getResponse().getStatusCode())
+                .isEqualTo(statusCode));
   }
 }
