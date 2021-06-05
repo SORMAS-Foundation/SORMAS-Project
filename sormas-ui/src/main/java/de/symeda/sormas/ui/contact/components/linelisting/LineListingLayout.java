@@ -256,19 +256,14 @@ public class LineListingLayout extends VerticalLayout {
 			delete = ButtonHelper.createIconButtonWithCaption("delete_" + lineIndex, null, VaadinIcons.TRASH, event -> {
 				lineComponent.removeComponent(this);
 				contactLines.remove(this);
-				contactLines.get(0).formatAsFirstLine();
+				contactLines.get(0).formatLine(0);
 				if (contactLines.size() > 1) {
 					contactLines.get(0).getDelete().setEnabled(true);
 				}
 			});
 
 			addComponents(dateOfReport, multiDay, typeOfContact, relationToCase, person, delete);
-
-			if (lineIndex == 0) {
-				formatAsFirstLine();
-			} else {
-				formatAsOtherLine();
-			}
+			formatLine(lineIndex);
 		}
 
 		public void setBean(ContactLineDto bean) {
@@ -285,9 +280,7 @@ public class LineListingLayout extends VerticalLayout {
 			return personValidationStatus.hasErrors() || lineValidationStatus.hasErrors();
 		}
 
-		private void formatAsFirstLine() {
-
-			formatAsOtherLine();
+		private void formatLine(int lineIndex) {
 
 			dateOfReport.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
 			dateOfReport.removeStyleName(CssStyles.CAPTION_HIDDEN);
@@ -301,14 +294,8 @@ public class LineListingLayout extends VerticalLayout {
 			setComponentAlignment(relationToCase, Alignment.BOTTOM_LEFT);
 			person.showCaptions();
 			setComponentAlignment(person, Alignment.BOTTOM_LEFT);
-			delete.setEnabled(false);
+			delete.setEnabled(lineIndex > 0);
 			setComponentAlignment(delete, Alignment.MIDDLE_LEFT);
-		}
-
-		private void formatAsOtherLine() {
-
-			CssStyles.style(dateOfReport, CssStyles.SOFT_REQUIRED, CssStyles.CAPTION_HIDDEN);
-			person.hideCaptions();
 		}
 
 		public Button getDelete() {
