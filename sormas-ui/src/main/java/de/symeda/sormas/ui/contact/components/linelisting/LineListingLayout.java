@@ -123,10 +123,7 @@ public class LineListingLayout extends VerticalLayout {
 			ContactLineLayout newLine = buildNewLine(lineComponent);
 			contactLines.add(newLine);
 			lineComponent.addComponent(newLine);
-
-			if (contactLines.size() > 1) {
-				contactLines.get(0).getDelete().setEnabled(true);
-			}
+			contactLines.get(0).enableDelete(true);
 		}, ValoTheme.BUTTON_PRIMARY);
 
 		actionBar.addComponent(addLine);
@@ -195,6 +192,8 @@ public class LineListingLayout extends VerticalLayout {
 			newLineDto.setRegion(lastLineDto.getRegion());
 			newLineDto.setDistrict(lastLineDto.getDistrict());
 			newLineDto.setLineField(lastLineDto.getLineField());
+		} else {
+			newLine.enableDelete(false);
 		}
 
 		newLine.setBean(newLineDto);
@@ -202,10 +201,7 @@ public class LineListingLayout extends VerticalLayout {
 			ContactLineLayout selectedLine = (ContactLineLayout) e.getComponent();
 			lineComponent.removeComponent(selectedLine);
 			contactLines.remove(selectedLine);
-			contactLines.get(0).formatLine(0);
-			if (contactLines.size() > 1) {
-				contactLines.get(0).getDelete().setEnabled(true);
-			}
+			contactLines.get(0).enableDelete(contactLines.size() > 1);
 		});
 
 		return newLine;
@@ -241,7 +237,7 @@ public class LineListingLayout extends VerticalLayout {
 			setComponentAlignment(contactLineField, Alignment.BOTTOM_LEFT);
 			setComponentAlignment(delete, Alignment.BOTTOM_LEFT);
 
-			formatLine(lineIndex);
+			contactLineField.showCaptions();
 		}
 
 		public void setBean(ContactLineDto bean) {
@@ -256,14 +252,8 @@ public class LineListingLayout extends VerticalLayout {
 			return contactLineField.hasErrors();
 		}
 
-		private void formatLine(int lineIndex) {
-
-			contactLineField.showCaptions();
-			delete.setEnabled(lineIndex > 0);
-		}
-
-		public Button getDelete() {
-			return delete;
+		public void enableDelete(boolean shouldEnable) {
+			delete.setEnabled(shouldEnable);
 		}
 	}
 
