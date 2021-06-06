@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.Registration;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -40,7 +39,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
-import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineListener;
+import de.symeda.sormas.ui.utils.components.linelisting.line.LineLayout;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonField;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 import de.symeda.sormas.ui.utils.components.multidayselector.MultiDaySelectorDto;
@@ -223,7 +222,7 @@ public class LineListingLayout extends VerticalLayout {
 		return newLine;
 	}
 
-	class ContactLineLayout extends HorizontalLayout {
+	class ContactLineLayout extends LineLayout {
 
 		private final Binder<ContactLineDto> binder = new Binder<>(ContactLineDto.class);
 
@@ -279,10 +278,6 @@ public class LineListingLayout extends VerticalLayout {
 
 			addComponents(dateOfReport, multiDay, typeOfContact, relationToCase, person, delete);
 			formatLine(lineIndex);
-		}
-
-		public Registration addDeleteLineListener(DeleteLineListener deleteLineListener) {
-			return addListener(DeleteLineEvent.class, deleteLineListener, DeleteLineListener.DELETE_LINE_METHOD);
 		}
 
 		public void setBean(ContactLineDto bean) {

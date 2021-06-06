@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.Registration;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -47,7 +46,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FieldVisibleAndNotEmptyValidator;
 import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
-import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineListener;
+import de.symeda.sormas.ui.utils.components.linelisting.line.LineLayout;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonField;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 
@@ -360,7 +359,7 @@ public class LineListingLayout extends VerticalLayout {
 		return newLine;
 	}
 
-	class CaseLineLayout extends HorizontalLayout {
+	class CaseLineLayout extends LineLayout {
 
 		private static final long serialVersionUID = 4159615474757272630L;
 
@@ -454,10 +453,6 @@ public class LineListingLayout extends VerticalLayout {
 			} else {
 				formatAsOtherLine();
 			}
-		}
-
-		public Registration addDeleteLineListener(DeleteLineListener deleteLineListener) {
-			return addListener(DeleteLineEvent.class, deleteLineListener, DeleteLineListener.DELETE_LINE_METHOD);
 		}
 
 		public void setBean(CaseLineDto bean) {
