@@ -6,12 +6,12 @@ import java.time.LocalDate;
 public class MultiDaySelectorDto implements Serializable {
 
 	public static final String MULTI_DAY = "multiDay";
-	public static final String FIRST_DATE = "firstDate";
-	public static final String LAST_DATE = "lastDate";
+	public static final String START_DATE = "startDate";
+	public static final String END_DATE = "endDate";
 
 	private boolean multiDay;
-	private LocalDate firstDate;
-	private LocalDate lastDate;
+	private LocalDate startDate;
+	private LocalDate endDate;
 
 	public boolean isMultiDay() {
 		return multiDay;
@@ -21,19 +21,19 @@ public class MultiDaySelectorDto implements Serializable {
 		this.multiDay = multiDay;
 	}
 
-	public LocalDate getFirstDate() {
-		return firstDate;
+	public LocalDate getStartDate() {
+		return startDate;
 	}
 
-	public void setFirstDate(LocalDate firstDate) {
-		this.firstDate = firstDate;
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
 	}
 
-	public LocalDate getLastDate() {
-		return lastDate;
+	public LocalDate getEndDate() {
+		return endDate;
 	}
 
-	public void setLastDate(LocalDate lastDate) {
-		this.lastDate = lastDate;
+	public void setEndDate(LocalDate endDate) {
+		this.endDate = endDate;
 	}
 }

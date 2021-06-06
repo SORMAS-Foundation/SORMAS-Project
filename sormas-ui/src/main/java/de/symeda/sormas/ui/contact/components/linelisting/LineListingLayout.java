@@ -289,6 +289,7 @@ public class LineListingLayout extends VerticalLayout {
 		}
 
 		public boolean hasErrors() {
+			BinderValidationStatus<MultiDaySelectorDto> contactDates = multiDay.validate();
 			BinderValidationStatus<PersonFieldDto> personValidationStatus = person.validate();
 			BinderValidationStatus<ContactLineDto> lineValidationStatus = binder.validate();
 			return personValidationStatus.hasErrors() || lineValidationStatus.hasErrors();

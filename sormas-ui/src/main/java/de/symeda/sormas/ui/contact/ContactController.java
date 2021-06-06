@@ -134,7 +134,7 @@ public class ContactController {
 			newContact.setRegion(contactLineDto.getRegion());
 			newContact.setDistrict(contactLineDto.getDistrict());
 			newContact.setReportDateTime(DateHelper8.toDate(contactLineDto.getDateOfReport()));
-			newContact.setLastContactDate(DateHelper8.toDate(contactLineDto.getMultiDaySelector().getLastDate()));
+			newContact.setLastContactDate(DateHelper8.toDate(contactLineDto.getMultiDaySelector().getEndDate()));
 			newContact.setRelationToCase(contactLineDto.getRelationToCase());
 
 			newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
