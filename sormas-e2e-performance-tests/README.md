@@ -25,8 +25,8 @@ Non-GUI execution of the performance tests is recommended:
   -l 'PathWhereTheResultsWillBeSaved'\Results.csv -e -o 'PathWhereTheHtmlReportWillBeSaved'\reports
 
 > Example:
-jmeter -n -t C:\projects\sormas\performance\SormasPoc.jmx -l C:\projects\sormas\performance\results\10threads\Results3.csv
--e -o C:\projects\sormas\performance\results\10threads\reports
+jmeter -n -t C:\projects\sormas\performance\SormasPoc.jmx -l C:\projects\sormas\performance\results\Results3.csv
+-e -o C:\projects\sormas\performance\reports
 
 
 ## Reporting
