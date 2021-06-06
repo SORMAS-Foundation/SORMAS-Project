@@ -63,8 +63,6 @@ public class LineListingLayout extends VerticalLayout {
 	private ComboBox<FacilityTypeGroup> typeGroup;
 	private ComboBox<FacilityType> type;
 	private List<CaseLineLayout> caseLines;
-	private Button cancelButton;
-	private Button saveButton;
 
 	private final Window window;
 	private Consumer<List<CaseLineDto>> saveCallback;
@@ -156,8 +154,9 @@ public class LineListingLayout extends VerticalLayout {
 		lineComponent.setSpacing(false);
 		addComponent(lineComponent);
 
-		if (UserRole.isSupervisor(UserProvider.getCurrent().getUserRoles())) {
-			RegionReferenceDto userRegion = UserProvider.getCurrent().getUser().getRegion();
+		UserProvider currentUserProvider = UserProvider.getCurrent();
+		if (currentUserProvider != null && UserRole.isSupervisor(currentUserProvider.getUserRoles())) {
+			RegionReferenceDto userRegion = currentUserProvider.getUser().getRegion();
 			region.setValue(userRegion);
 			region.setVisible(false);
 			updateDistricts(userRegion);
@@ -203,13 +202,13 @@ public class LineListingLayout extends VerticalLayout {
 		buttonsPanel.setSpacing(true);
 		buttonsPanel.setWidth(100, Unit.PERCENTAGE);
 
-		cancelButton = ButtonHelper.createButton(Captions.actionDiscard, event -> closeWindow());
+		Button cancelButton = ButtonHelper.createButton(Captions.actionDiscard, event -> closeWindow());
 
 		buttonsPanel.addComponent(cancelButton);
 		buttonsPanel.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(cancelButton, 1);
 
-		saveButton = ButtonHelper.createButton(Captions.actionSave, event -> saveCallback.accept(getCaseLineDtos()), ValoTheme.BUTTON_PRIMARY);
+		Button saveButton = ButtonHelper.createButton(Captions.actionSave, event -> saveCallback.accept(getCaseLineDtos()), ValoTheme.BUTTON_PRIMARY);
 
 		buttonsPanel.addComponent(saveButton);
 		buttonsPanel.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
@@ -331,7 +330,7 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	public List<CaseLineDto> getCaseLineDtos() {
-		return caseLines.stream().map(line -> line.getBean()).collect(Collectors.toList());
+		return caseLines.stream().map(CaseLineLayout::getBean).collect(Collectors.toList());
 	}
 
 	public void setSaveCallback(Consumer<List<CaseLineDto>> saveCallback) {
@@ -399,9 +398,7 @@ public class LineListingLayout extends VerticalLayout {
 			facility = new ComboBox<>();
 			facility.setId("lineListingFacility_" + lineIndex);
 			facility.setWidth(364, Unit.PIXELS);
-			facility.addValueChangeListener(e -> {
-				updateFacilityFields(facility, facilityDetails);
-			});
+			facility.addValueChangeListener(e -> updateFacilityFields(facility, facilityDetails));
 			binder.forField(facility).asRequired().bind(CaseLineDto.FACILITY);
 			facilityDetails = new TextField();
 			facilityDetails.setId("lineListingFacilityDetails_" + lineIndex);
@@ -484,8 +481,8 @@ public class LineListingLayout extends VerticalLayout {
 
 		private void updateFacilityFields(ComboBox<FacilityReferenceDto> cbFacility, TextField tfFacilityDetails) {
 			if (cbFacility.getValue() != null) {
-				boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
-				boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+				boolean otherHealthFacility = cbFacility.getValue().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+				boolean noneHealthFacility = cbFacility.getValue().getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
 				boolean visibleEnabledAndRequired = otherHealthFacility || noneHealthFacility;
 
 				tfFacilityDetails.setVisible(visibleEnabledAndRequired);
@@ -514,7 +511,9 @@ public class LineListingLayout extends VerticalLayout {
 
 		private boolean shouldShowEpidNumber() {
 			ConfigFacade configFacade = FacadeProvider.getConfigFacade();
-			return UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)
+			UserProvider currentUserProvider = UserProvider.getCurrent();
+			return currentUserProvider != null
+				&& currentUserProvider.hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)
 				&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
 				&& !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);
 		}
