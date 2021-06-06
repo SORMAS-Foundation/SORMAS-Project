@@ -12,6 +12,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class MultiDaySelectorField extends CustomField<MultiDaySelectorDto> {
@@ -47,7 +48,7 @@ public class MultiDaySelectorField extends CustomField<MultiDaySelectorDto> {
 		multiDaySelect.addValueChangeListener(e -> {
 			getValue().setMultiDay(e.getValue());
 			firstDate.setVisible(e.getValue());
-			getValue().setFirstDate(null);
+			firstDate.setValue(null);
 		});
 		selectorLayout.addComponent(multiDaySelect);
 
@@ -55,14 +56,28 @@ public class MultiDaySelectorField extends CustomField<MultiDaySelectorDto> {
 
 		firstDate.setId("firstDate");
 		firstDate.setWidth(150, Unit.PIXELS);
-		binder.forField(firstDate).bind(MultiDaySelectorDto.FIRST_DATE);
 		firstDate.setRangeEnd(LocalDate.now());
 		firstDate.setVisible(getValue().isMultiDay());
+		binder.forField(firstDate)
+			.withValidator(
+				new DateComparisonValidator(
+					lastDate,
+					true,
+					I18nProperties.getValidationError(Validations.beforeDate, firstDate.getCaption(), lastDate.getCaption())))
+			.bind(MultiDaySelectorDto.FIRST_DATE);
+		firstDate.addValueChangeListener(e -> getValue().setFirstDate(e.getValue()));
 
 		lastDate.setId("lastDate");
 		lastDate.setWidth(150, Unit.PIXELS);
-		binder.forField(lastDate).bind(MultiDaySelectorDto.LAST_DATE);
+		binder.forField(lastDate)
+			.withValidator(
+				new DateComparisonValidator(
+					firstDate,
+					false,
+					I18nProperties.getValidationError(Validations.afterDate, lastDate.getCaption(), firstDate.getCaption())))
+			.bind(MultiDaySelectorDto.LAST_DATE);
 		lastDate.setRangeEnd(LocalDate.now());
+		lastDate.addValueChangeListener(e -> getValue().setLastDate(e.getValue()));
 
 		datesLayout.addComponents(firstDate, lastDate);
 

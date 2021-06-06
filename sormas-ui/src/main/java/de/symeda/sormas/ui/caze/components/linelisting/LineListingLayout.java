@@ -346,8 +346,8 @@ public class LineListingLayout extends VerticalLayout {
 		}
 
 		newLine.setBean(newLineDto);
-		newLine.addDeleteLineListener(evt -> {
-			CaseLineLayout selectedLine = (CaseLineLayout) evt.getComponent();
+		newLine.addDeleteLineListener(e -> {
+			CaseLineLayout selectedLine = (CaseLineLayout) e.getComponent();
 			lineComponent.removeComponent(selectedLine);
 			caseLines.remove(selectedLine);
 			caseLines.get(0).formatAsFirstLine();

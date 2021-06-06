@@ -209,8 +209,8 @@ public class LineListingLayout extends VerticalLayout {
 		}
 
 		newLine.setBean(newLineDto);
-		newLine.addDeleteLineListener(evt -> {
-			ContactLineLayout selectedLine = (ContactLineLayout) evt.getComponent();
+		newLine.addDeleteLineListener(e -> {
+			ContactLineLayout selectedLine = (ContactLineLayout) e.getComponent();
 			lineComponent.removeComponent(selectedLine);
 			contactLines.remove(selectedLine);
 			contactLines.get(0).formatLine(0);
