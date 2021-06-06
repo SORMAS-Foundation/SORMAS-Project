@@ -35,10 +35,16 @@ public class PersonField extends CustomField<PersonFieldDto> {
 
 		HorizontalLayout layout = new HorizontalLayout();
 
+		firstname.setId("firstName");
 		binder.forField(firstname).asRequired().bind(PersonFieldDto.FIRST_NAME);
+
+		lastname.setId("lastName");
 		binder.forField(lastname).asRequired().bind(PersonFieldDto.LAST_NAME);
+
+		birthDate.setId("birthDate");
 		binder.forField(birthDate).bind(PersonFieldDto.BIRTH_DATE);
 
+		sex.setId("sex");
 		sex.setItems(Sex.values());
 		sex.setWidth(100, Unit.PIXELS);
 		binder.forField(sex).asRequired().bind(PersonFieldDto.SEX);

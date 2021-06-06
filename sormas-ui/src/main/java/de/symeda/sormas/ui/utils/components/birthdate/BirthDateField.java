@@ -38,6 +38,7 @@ public class BirthDateField extends CustomField<BirthDateDto> {
 
 		HorizontalLayout layout = new HorizontalLayout();
 
+		dateOfBirthYear.setId("dateOfBirthYear");
 		dateOfBirthYear.setEmptySelectionAllowed(true);
 		dateOfBirthYear.setItems(DateHelper.getYearsToNow());
 		dateOfBirthYear.setWidth(80, Unit.PIXELS);
@@ -51,6 +52,7 @@ public class BirthDateField extends CustomField<BirthDateDto> {
 			}
 		}).bind(BirthDateDto.DATE_OF_BIRTH_YYYY);
 
+		dateOfBirthMonth.setId("dateOfBirthMonth");
 		dateOfBirthMonth.setEmptySelectionAllowed(true);
 		dateOfBirthMonth.setItems(DateHelper.getMonthsInYear());
 		dateOfBirthMonth.setPageLength(12);
@@ -65,6 +67,7 @@ public class BirthDateField extends CustomField<BirthDateDto> {
 			}
 		}).bind(BirthDateDto.DATE_OF_BIRTH_MM);
 
+		dateOfBirthDay.setId("dateOfBirthDay");
 		dateOfBirthDay.setEmptySelectionAllowed(true);
 		dateOfBirthDay.setWidth(80, Unit.PIXELS);
 		binder.forField(dateOfBirthDay).withValidator((e, context) -> {

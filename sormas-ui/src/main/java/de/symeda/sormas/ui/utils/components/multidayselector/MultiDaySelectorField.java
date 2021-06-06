@@ -42,6 +42,7 @@ public class MultiDaySelectorField extends CustomField<MultiDaySelectorDto> {
 
 		HorizontalLayout selectorLayout = new HorizontalLayout();
 
+		multiDaySelect.setId("multiDaySelect");
 		binder.forField(multiDaySelect).bind(MultiDaySelectorDto.MULTI_DAY);
 		multiDaySelect.addValueChangeListener(e -> {
 			getValue().setMultiDay(e.getValue());
@@ -52,11 +53,13 @@ public class MultiDaySelectorField extends CustomField<MultiDaySelectorDto> {
 
 		HorizontalLayout datesLayout = new HorizontalLayout();
 
+		firstDate.setId("firstDate");
 		firstDate.setWidth(150, Unit.PIXELS);
 		binder.forField(firstDate).bind(MultiDaySelectorDto.FIRST_DATE);
 		firstDate.setRangeEnd(LocalDate.now());
 		firstDate.setVisible(getValue().isMultiDay());
 
+		lastDate.setId("lastDate");
 		lastDate.setWidth(150, Unit.PIXELS);
 		binder.forField(lastDate).bind(MultiDaySelectorDto.LAST_DATE);
 		lastDate.setRangeEnd(LocalDate.now());
