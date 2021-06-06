@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -45,6 +46,8 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FieldVisibleAndNotEmptyValidator;
+import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
+import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineListener;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonField;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 
@@ -55,14 +58,15 @@ public class LineListingLayout extends VerticalLayout {
 	public static final float DEFAULT_WIDTH = 1696;
 	public static final float WITDH_WITHOUT_EPID_NUMBER = 1536;
 
-	private ComboBox<Disease> disease;
-	private TextField diseaseDetails;
+	private final ComboBox<Disease> disease;
+	private final TextField diseaseDetails;
 
-	private ComboBox<RegionReferenceDto> region;
-	private ComboBox<DistrictReferenceDto> district;
-	private ComboBox<FacilityTypeGroup> typeGroup;
-	private ComboBox<FacilityType> type;
-	private List<CaseLineLayout> caseLines;
+	private final ComboBox<RegionReferenceDto> region;
+	private final ComboBox<DistrictReferenceDto> district;
+	private final ComboBox<FacilityTypeGroup> typeGroup;
+	private final ComboBox<FacilityType> type;
+
+	private final List<CaseLineLayout> caseLines;
 
 	private final Window window;
 	private Consumer<List<CaseLineDto>> saveCallback;
@@ -147,8 +151,7 @@ public class LineListingLayout extends VerticalLayout {
 		lineComponentLabel.addStyleName(CssStyles.H3);
 		lineComponent.addComponent(lineComponentLabel);
 
-		CaseLineLayout line = new CaseLineLayout(lineComponent, 0);
-		line.setBean(new CaseLineDto());
+		CaseLineLayout line = buildNewLine(lineComponent);
 		caseLines.add(line);
 		lineComponent.addComponent(line);
 		lineComponent.setSpacing(false);
@@ -166,26 +169,9 @@ public class LineListingLayout extends VerticalLayout {
 
 		HorizontalLayout actionBar = new HorizontalLayout();
 		Button addLine = ButtonHelper.createIconButton(Captions.lineListingAddLine, VaadinIcons.PLUS, e -> {
-			CaseLineLayout newLine = new CaseLineLayout(lineComponent, caseLines.size() + 1);
-			DistrictReferenceDto districtReferenceDto = district.getValue();
-			updateCommunityAndFacility(districtReferenceDto, newLine);
-			CaseLineDto lastLineDto = caseLines.get(caseLines.size() - 1).getBean();
-			CaseLineDto newLineDto = new CaseLineDto();
-			newLineDto.setDisease(lastLineDto.getDisease());
-			newLineDto.setDiseaseDetails(lastLineDto.getDiseaseDetails());
-			newLineDto.setRegion(lastLineDto.getRegion());
-			newLineDto.setDistrict(lastLineDto.getDistrict());
-			newLineDto.setDateOfReport(lastLineDto.getDateOfReport());
-			newLineDto.setCommunity(lastLineDto.getCommunity());
-			newLineDto.setFacilityTypeGroup(lastLineDto.getFacilityTypeGroup());
-			newLineDto.setFacilityType(lastLineDto.getFacilityType());
-			newLineDto.setFacility(lastLineDto.getFacility());
-			newLineDto.setFacilityDetails(lastLineDto.getFacilityDetails());
-			newLine.setBean(newLineDto);
+			CaseLineLayout newLine = buildNewLine(lineComponent);
 			caseLines.add(newLine);
 			lineComponent.addComponent(newLine);
-
-			setEpidNumberPrefix(newLine, lastLineDto.getDateOfReport());
 
 			if (caseLines.size() > 1) {
 				caseLines.get(0).getDelete().setEnabled(true);
@@ -337,6 +323,43 @@ public class LineListingLayout extends VerticalLayout {
 		this.saveCallback = saveCallback;
 	}
 
+	private CaseLineLayout buildNewLine(VerticalLayout lineComponent) {
+		CaseLineLayout newLine = new CaseLineLayout(caseLines.size());
+		DistrictReferenceDto districtReferenceDto = district.getValue();
+		updateCommunityAndFacility(districtReferenceDto, newLine);
+
+		CaseLineDto newLineDto = new CaseLineDto();
+
+		if (!caseLines.isEmpty()) {
+			CaseLineDto lastLineDto = caseLines.get(caseLines.size() - 1).getBean();
+			newLineDto.setDisease(lastLineDto.getDisease());
+			newLineDto.setDiseaseDetails(lastLineDto.getDiseaseDetails());
+			newLineDto.setRegion(lastLineDto.getRegion());
+			newLineDto.setDistrict(lastLineDto.getDistrict());
+			newLineDto.setDateOfReport(lastLineDto.getDateOfReport());
+			newLineDto.setCommunity(lastLineDto.getCommunity());
+			newLineDto.setFacilityTypeGroup(lastLineDto.getFacilityTypeGroup());
+			newLineDto.setFacilityType(lastLineDto.getFacilityType());
+			newLineDto.setFacility(lastLineDto.getFacility());
+			newLineDto.setFacilityDetails(lastLineDto.getFacilityDetails());
+
+			setEpidNumberPrefix(newLine, lastLineDto.getDateOfReport());
+		}
+
+		newLine.setBean(newLineDto);
+		newLine.addDeleteLineListener(evt -> {
+			CaseLineLayout selectedLine = (CaseLineLayout) evt.getComponent();
+			lineComponent.removeComponent(selectedLine);
+			caseLines.remove(selectedLine);
+			caseLines.get(0).formatAsFirstLine();
+			if (caseLines.size() > 1) {
+				caseLines.get(0).getDelete().setEnabled(true);
+			}
+		});
+
+		return newLine;
+	}
+
 	class CaseLineLayout extends HorizontalLayout {
 
 		private static final long serialVersionUID = 4159615474757272630L;
@@ -353,7 +376,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		private final Button delete;
 
-		public CaseLineLayout(VerticalLayout lineComponent, int lineIndex) {
+		public CaseLineLayout(int lineIndex) {
 
 			addStyleName(CssStyles.SPACING_SMALL);
 			setMargin(false);
@@ -417,14 +440,8 @@ public class LineListingLayout extends VerticalLayout {
 			dateOfOnset.setWidth(100, Unit.PIXELS);
 			dateOfOnset.addStyleName(CssStyles.CAPTION_FIXED_WIDTH_100);
 			binder.forField(dateOfOnset).bind(CaseLineDto.DATE_OF_ONSET);
-			delete = ButtonHelper.createIconButtonWithCaption("delete_" + lineIndex, null, VaadinIcons.TRASH, event -> {
-				lineComponent.removeComponent(this);
-				caseLines.remove(this);
-				caseLines.get(0).formatAsFirstLine();
-				if (caseLines.size() > 1) {
-					caseLines.get(0).getDelete().setEnabled(true);
-				}
-			});
+			delete = ButtonHelper
+				.createIconButtonWithCaption("delete_" + lineIndex, null, VaadinIcons.TRASH, event -> fireEvent(new DeleteLineEvent(this)));
 
 			addComponent(dateOfReport);
 			if (shouldShowEpidNumber()) {
@@ -437,6 +454,10 @@ public class LineListingLayout extends VerticalLayout {
 			} else {
 				formatAsOtherLine();
 			}
+		}
+
+		public Registration addDeleteLineListener(DeleteLineListener deleteLineListener) {
+			return addListener(DeleteLineEvent.class, deleteLineListener, DeleteLineListener.DELETE_LINE_METHOD);
 		}
 
 		public void setBean(CaseLineDto bean) {
