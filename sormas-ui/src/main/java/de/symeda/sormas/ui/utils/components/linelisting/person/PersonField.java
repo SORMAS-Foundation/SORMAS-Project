@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.utils.components.linelisting;
+package de.symeda.sormas.ui.utils.components.linelisting.person;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;

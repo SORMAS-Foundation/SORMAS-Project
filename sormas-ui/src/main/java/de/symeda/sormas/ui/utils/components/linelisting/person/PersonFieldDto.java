@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.utils.components.linelisting;
+package de.symeda.sormas.ui.utils.components.linelisting.person;
 
 import java.io.Serializable;
 

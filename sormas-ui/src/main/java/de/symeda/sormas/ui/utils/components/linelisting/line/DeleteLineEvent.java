@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.contact.components.linelisting;
+package de.symeda.sormas.ui.utils.components.linelisting.line;
 
 import com.vaadin.ui.Component;
 

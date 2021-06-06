@@ -45,8 +45,8 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FieldVisibleAndNotEmptyValidator;
-import de.symeda.sormas.ui.utils.components.linelisting.PersonField;
-import de.symeda.sormas.ui.utils.components.linelisting.PersonFieldDto;
+import de.symeda.sormas.ui.utils.components.linelisting.person.PersonField;
+import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 
 public class LineListingLayout extends VerticalLayout {
 

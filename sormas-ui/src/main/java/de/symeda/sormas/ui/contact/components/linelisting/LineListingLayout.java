@@ -39,8 +39,10 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.components.linelisting.PersonField;
-import de.symeda.sormas.ui.utils.components.linelisting.PersonFieldDto;
+import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
+import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineListener;
+import de.symeda.sormas.ui.utils.components.linelisting.person.PersonField;
+import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 import de.symeda.sormas.ui.utils.components.multidayselector.MultiDaySelectorDto;
 
 public class LineListingLayout extends VerticalLayout {
