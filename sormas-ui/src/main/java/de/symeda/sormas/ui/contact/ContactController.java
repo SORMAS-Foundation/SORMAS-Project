@@ -133,19 +133,19 @@ public class ContactController {
 			newContact.setDisease(contactLineDto.getDisease());
 			newContact.setRegion(contactLineDto.getRegion());
 			newContact.setDistrict(contactLineDto.getDistrict());
-			newContact.setReportDateTime(DateHelper8.toDate(contactLineDto.getDateOfReport()));
-			newContact.setLastContactDate(DateHelper8.toDate(contactLineDto.getMultiDaySelector().getEndDate()));
-			newContact.setRelationToCase(contactLineDto.getRelationToCase());
+			newContact.setReportDateTime(DateHelper8.toDate(contactLineDto.getLineField().getDateOfReport()));
+			newContact.setLastContactDate(DateHelper8.toDate(contactLineDto.getLineField().getMultiDaySelector().getEndDate()));
+			newContact.setRelationToCase(contactLineDto.getLineField().getRelationToCase());
 
 			newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
 
 			final PersonDto newPerson = PersonDto.build();
-			newPerson.setFirstName(contactLineDto.getPerson().getFirstName());
-			newPerson.setLastName(contactLineDto.getPerson().getLastName());
-			newPerson.setBirthdateYYYY(contactLineDto.getPerson().getBirthDate().getDateOfBirthYYYY());
-			newPerson.setBirthdateMM(contactLineDto.getPerson().getBirthDate().getDateOfBirthMM());
-			newPerson.setBirthdateDD(contactLineDto.getPerson().getBirthDate().getDateOfBirthDD());
-			newPerson.setSex(contactLineDto.getPerson().getSex());
+			newPerson.setFirstName(contactLineDto.getLineField().getPerson().getFirstName());
+			newPerson.setLastName(contactLineDto.getLineField().getPerson().getLastName());
+			newPerson.setBirthdateYYYY(contactLineDto.getLineField().getPerson().getBirthDate().getDateOfBirthYYYY());
+			newPerson.setBirthdateMM(contactLineDto.getLineField().getPerson().getBirthDate().getDateOfBirthMM());
+			newPerson.setBirthdateDD(contactLineDto.getLineField().getPerson().getBirthDate().getDateOfBirthDD());
+			newPerson.setSex(contactLineDto.getLineField().getPerson().getSex());
 
 			PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
 			newContact.setPerson(savedPerson.toReference());
