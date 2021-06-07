@@ -183,7 +183,7 @@ public class EditContactSteps implements En {
   }
 
   public void selectContactClassification(String classification) {
-    webDriverHelpers.clickWebElementByText(CONTACT_CLASSIFICATION, classification);
+    webDriverHelpers.clickWebElementByText(CONTACT_CLASSIFICATION_OPTIONS, classification);
   }
 
   public void selectMultiDayContact(String multiDayContact) {
@@ -411,7 +411,7 @@ public class EditContactSteps implements En {
     webDriverHelpers.waitForPageLoaded();
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     String classification =
-        webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CLASSIFICATION);
+        webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CLASSIFICATION_OPTIONS);
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
     LocalDate parsedDateOfFirst =
         LocalDate.parse(webDriverHelpers.getValueFromWebElement(FIRST_DAY_CONTACT_DATE), formatter);

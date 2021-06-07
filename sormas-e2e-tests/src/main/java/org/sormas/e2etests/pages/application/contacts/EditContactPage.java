@@ -49,7 +49,7 @@ public class EditContactPage {
   public static final By CONTACT_CREATED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By DELETE_BUTTON = By.id("delete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
-  public static final By CONTACT_CLASSIFICATION = By.cssSelector("#contactClassification label");
+  public static final By CONTACT_CLASSIFICATION_OPTIONS = By.cssSelector("#contactClassification label");
   public static final By MULTI_DAY_CONTACT_CHECKBOX = By.cssSelector("#multiDayContact > input");
   public static final By MULTI_DAY_CONTACT_LABEL = By.cssSelector("#multiDayContact > label");
   public static final By FIRST_DAY_CONTACT_DATE = By.cssSelector("#firstContactDate input");
@@ -61,7 +61,7 @@ public class EditContactPage {
       By.cssSelector("#contactIdentificationSourceDetails");
   public static final By CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX =
       By.cssSelector(
-          ".v-verticallayout [location='contactIdentificationSource'] [role='combobox'] div");
+          "#contactIdentificationSource div");
   public static final By PROHIBITION_TO_WORK_OPTIONS = By.cssSelector("#prohibitionToWork label");
   public static final By HOME_BASED_QUARANTINE_OPTIONS =
       By.cssSelector("#quarantineHomePossible label");
