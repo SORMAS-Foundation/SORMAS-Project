@@ -105,6 +105,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.utils.EventJoins;
 
 @Stateless(name = "EventFacade")
 public class EventFacadeEjb implements EventFacade {
@@ -270,12 +271,13 @@ public class EventFacadeEjb implements EventFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventIndexDto> cq = cb.createQuery(EventIndexDto.class);
 		Root<Event> event = cq.from(Event.class);
-		Join<Event, Location> location = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
-		Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
-		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
-		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
-		Join<Event, User> reportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
-		Join<Event, User> responsibleUser = event.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
+		EventJoins<Event> eventJoins = new EventJoins<>(event);
+		Join<Event, Location> location = eventJoins.getLocation();
+		Join<Location, Region> region = eventJoins.getRegion();
+		Join<Location, District> district = eventJoins.getDistrict();
+		Join<Location, Community> community = eventJoins.getCommunity();
+		Join<Event, User> reportingUser = eventJoins.getReportingUser();
+		Join<Event, User> responsibleUser = eventJoins.getResponsibleUser();
 
 		cq.multiselect(
 			event.get(Event.UUID),
@@ -549,12 +551,13 @@ public class EventFacadeEjb implements EventFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventExportDto> cq = cb.createQuery(EventExportDto.class);
 		Root<Event> event = cq.from(Event.class);
-		Join<Event, Location> location = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
-		Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
-		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
-		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
-		Join<Event, User> reportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
-		Join<Event, User> responsibleUser = event.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
+		EventJoins<Event> eventJoins = new EventJoins<>(event);
+		Join<Event, Location> location = eventJoins.getLocation();
+		Join<Location, Region> region = eventJoins.getRegion();
+		Join<Location, District> district = eventJoins.getDistrict();
+		Join<Location, Community> community = eventJoins.getCommunity();
+		Join<Event, User> reportingUser = eventJoins.getReportingUser();
+		Join<Event, User> responsibleUser = eventJoins.getResponsibleUser();
 
 		cq.multiselect(
 			event.get(Event.UUID),
