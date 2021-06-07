@@ -32,7 +32,11 @@ import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/clinicalvisits")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
@@ -68,5 +72,11 @@ public class ClinicalVisitResource extends EntityDtoResource {
 	@Path("/uuids")
 	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getClinicalVisitFacade().getAllActiveUuids();
+	}
+
+	@POST
+	@Path("/indexList")
+	public List<ClinicalVisitIndexDto> getIndexList(@RequestBody CriteriaWithSorting<ClinicalVisitCriteria> criteriaWithSorting) {
+		return FacadeProvider.getClinicalVisitFacade().getIndexList(criteriaWithSorting.getCriteria());
 	}
 }
