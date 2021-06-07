@@ -59,7 +59,8 @@ public class ShareRequestGridComponent extends VerticalLayout {
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 		VerticalLayout gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createFilterBar(filterChangeHandler, filterResetHandler));
+		// Filters to be added later
+		/* gridLayout.addComponent( */createFilterBar(filterChangeHandler, filterResetHandler)/* ) */;
 		gridLayout.addComponent(createStatusFilterBar(filterChangeHandler));
 
 		gridLayout.addComponent(grid);
