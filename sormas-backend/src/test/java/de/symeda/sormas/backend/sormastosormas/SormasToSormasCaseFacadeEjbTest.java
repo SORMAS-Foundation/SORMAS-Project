@@ -943,66 +943,6 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		assertThat(shareInfoList.get(0).getRequestStatus(), is(ShareRequestStatus.PENDING));
 	}
 
-//	@Test
-//	public void testSaveSharedCaseReqest() throws JsonProcessingException, SormasToSormasException, SormasToSormasValidationException {
-//		MappableRdcf rdcf = createRDCF(false);
-//
-//		SormasToSormasCasePreview preview = new SormasToSormasCasePreview();
-//		preview.setUuid(DataHelper.createUuid());
-//		preview.setDisease(Disease.CORONAVIRUS);
-//		preview.setCaseClassification(CaseClassification.SUSPECT);
-//		preview.setRegion(rdcf.remoteRdcf.region);
-//		preview.setDistrict(rdcf.remoteRdcf.district);
-//		preview.setCommunity(rdcf.remoteRdcf.community);
-//		preview.setFacilityType(FacilityType.HOSPITAL);
-//		preview.setHealthFacility(rdcf.remoteRdcf.facility);
-//
-//		SormasToSormasPersonPreview personPreview = new SormasToSormasPersonPreview();
-//		personPreview.setFirstName("James");
-//		personPreview.setLastName("Smith");
-//
-//		LocationDto address = LocationDto.build();
-//		address.setRegion(rdcf.remoteRdcf.region);
-//		address.setDistrict(rdcf.remoteRdcf.district);
-//		address.setCommunity(rdcf.remoteRdcf.community);
-//
-//		personPreview.setAddress(address);
-//
-//		preview.setPerson(personPreview);
-//
-//		CaseShareRequestData shareData = new CaseShareRequestData(
-//			DataHelper.createUuid(),
-//			Collections.singletonList(preview),
-//			createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false));
-//		byte[] encryptedData = encryptShareData(shareData);
-//
-//		getSormasToSormasCaseFacade().saveShareRequest(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
-//
-//		List<SormasToSormasShareRequestIndexDto> requests = getSormasToSormasShareRequestFacade().getIndexList(null, 0, 100, null);
-//
-//		assertThat(requests, hasSize(1));
-//
-//		SormasToSormasShareRequestDto savedRequest = getSormasToSormasShareRequestFacade().getShareRequestByUuid(requests.get(0).getUuid());
-//
-//		SormasToSormasCasePreview casePreview = savedRequest.getCases().get(0);
-//
-//		assertThat(casePreview.getDisease(), is(Disease.CORONAVIRUS));
-//		assertThat(casePreview.getCaseClassification(), is(CaseClassification.SUSPECT));
-//		assertThat(casePreview.getRegion(), is(rdcf.localRdcf.region));
-//		assertThat(casePreview.getDistrict(), is(rdcf.localRdcf.district));
-//		assertThat(casePreview.getCommunity(), is(rdcf.localRdcf.community));
-//		assertThat(casePreview.getHealthFacility(), is(rdcf.localRdcf.facility));
-//
-//		assertThat(savedRequest.getOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
-//		assertThat(savedRequest.getOriginInfo().getSenderName(), is("John doe"));
-//
-//		assertThat(casePreview.getPerson().getAddress().getRegion(), is(rdcf.localRdcf.region));
-//		assertThat(casePreview.getPerson().getAddress().getDistrict(), is(rdcf.localRdcf.district));
-//		assertThat(casePreview.getPerson().getAddress().getCommunity(), is(rdcf.localRdcf.community));
-//		assertThat(casePreview.getPerson().getFirstName(), is("James"));
-//		assertThat(casePreview.getPerson().getLastName(), is("Smith"));
-//	}
-
 	private CaseDataDto createRemoteCaseDto(TestDataCreator.RDCF remoteRdcf, PersonDto person) {
 		CaseDataDto caze = CaseDataDto.build(person.toReference(), Disease.CORONAVIRUS);
 		caze.setRegion(remoteRdcf.region);

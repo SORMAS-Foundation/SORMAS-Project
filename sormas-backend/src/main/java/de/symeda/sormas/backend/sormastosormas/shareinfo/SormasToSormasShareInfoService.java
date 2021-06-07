@@ -118,7 +118,7 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		return isOwnerShipHandedOver(SormasToSormasShareInfo.EVENTS, ShareInfoEvent.EVENT, event);
 	}
 
-	public boolean isEventOwnershipHandedOver(EventParticipant eventParticipant) {
+	public boolean isEventParticipantOwnershipHandedOver(EventParticipant eventParticipant) {
 		return isOwnerShipHandedOver(SormasToSormasShareInfo.EVENT_PARTICIPANTS, ShareInfoEventParticipant.EVENT_PARTICIPANT, eventParticipant);
 	}
 

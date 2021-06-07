@@ -98,6 +98,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 			requestRoot.get(SormasToSormasShareRequest.STATUS),
 			originInfo.get(SormasToSormasOriginInfo.ORGANIZATION_ID),
 			originInfo.get(SormasToSormasOriginInfo.SENDER_NAME),
+			originInfo.get(SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER),
 			originInfo.get(SormasToSormasOriginInfo.COMMENT));
 
 		Predicate filter = null;

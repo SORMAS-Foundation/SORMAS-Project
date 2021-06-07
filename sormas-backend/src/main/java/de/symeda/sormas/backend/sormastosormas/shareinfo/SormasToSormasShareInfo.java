@@ -59,7 +59,7 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	private List<ShareInfoEvent> events;
 
-	private List<ShareInfoEventParticipant> eventParticipants = new ArrayList<>();
+	private List<ShareInfoEventParticipant> eventParticipants;
 
 	private String organizationId;
 

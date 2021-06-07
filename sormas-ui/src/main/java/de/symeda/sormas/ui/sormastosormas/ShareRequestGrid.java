@@ -41,6 +41,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareReque
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
@@ -80,6 +81,7 @@ public class ShareRequestGrid extends FilteredGrid<SormasToSormasShareRequestInd
 			SormasToSormasShareRequestIndexDto.DATA_TYPE,
 			SormasToSormasShareRequestIndexDto.ORGANIZATION_NAME,
 			SormasToSormasShareRequestIndexDto.SENDER_NAME,
+			SormasToSormasShareRequestIndexDto.OWNERSHIP_HANDED_OVER,
 			SormasToSormasShareRequestIndexDto.STATUS,
 			SormasToSormasShareRequestIndexDto.COMMENT,
 			COLUMN_ACTIONS);
@@ -88,6 +90,7 @@ public class ShareRequestGrid extends FilteredGrid<SormasToSormasShareRequestInd
 		((Column<SormasToSormasShareRequestIndexDto, Date>) getColumn(SormasToSormasShareRequestIndexDto.CREATION_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
 		getColumn(SormasToSormasShareRequestIndexDto.ORGANIZATION_NAME).setSortable(false);
+		getColumn(SormasToSormasShareRequestIndexDto.OWNERSHIP_HANDED_OVER).setRenderer(new BooleanRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(SormasToSormasShareRequestIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));

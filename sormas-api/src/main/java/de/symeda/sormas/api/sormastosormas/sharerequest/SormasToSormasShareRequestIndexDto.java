@@ -31,6 +31,7 @@ public class SormasToSormasShareRequestIndexDto implements Serializable {
 	public static final String ORGANIZATION_ID = "organizationId";
 	public static final String ORGANIZATION_NAME = "organizationName";
 	public static final String SENDER_NAME = "senderName";
+	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	public static final String COMMENT = "comment";
 
 	private String uuid;
@@ -40,6 +41,7 @@ public class SormasToSormasShareRequestIndexDto implements Serializable {
 	private String organizationId;
 	private String organizationName;
 	private String senderName;
+	private boolean ownershipHandedOver;
 	private String comment;
 
 	public SormasToSormasShareRequestIndexDto(
@@ -49,6 +51,7 @@ public class SormasToSormasShareRequestIndexDto implements Serializable {
 		ShareRequestStatus status,
 		String organizationId,
 		String senderName,
+		boolean ownershipHandedOver,
 		String comment) {
 		this.uuid = uuid;
 		this.creationDate = creationDate;
@@ -56,6 +59,7 @@ public class SormasToSormasShareRequestIndexDto implements Serializable {
 		this.status = status;
 		this.organizationId = organizationId;
 		this.senderName = senderName;
+		this.ownershipHandedOver = ownershipHandedOver;
 		this.comment = comment;
 	}
 
@@ -113,6 +117,14 @@ public class SormasToSormasShareRequestIndexDto implements Serializable {
 
 	public void setSenderName(String senderName) {
 		this.senderName = senderName;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
 	public String getComment() {

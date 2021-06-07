@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.event;
 
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventParticipantValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
@@ -99,7 +98,7 @@ public class SharedEventProcessor implements SharedDataProcessor<EventDto, Sorma
 		dataProcessorHelper.processLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
 
 		if (eventValidationErrors.hasError()) {
-			validationErrors.put(buildCaseValidationGroupName(preview), eventValidationErrors);
+			validationErrors.put(buildEventValidationGroupName(preview), eventValidationErrors);
 		}
 
 		List<SormasToSormasEventParticipantPreview> eventParticipants = preview.getEventParticipants();
