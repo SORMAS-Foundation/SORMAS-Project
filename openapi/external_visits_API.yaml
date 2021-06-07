@@ -137,7 +137,7 @@ info:
     \ API endpoint described below.<br><br><li><b>Synchronization of person data changed\
     \ in SORMAS</b></li><br>It may happen that person data (like a contact detail)\
     \ gets changed after a person is registered in an external journal. SORMAS notifies\
-    \ externl journals about such a change whith first fetching an authentication\
+    \ external journals about such a change whith first fetching an authentication\
     \ token as descriced in 1., and the using this token for this request:<br><tt>PUT\
     \ [interface.patientdiary.probandsurl]/external-data/[personUUID]</tt><br>The\
     \ external journal is expected to refetch the person data via the ``/visits-external/person/{personUuid}``\
@@ -221,20 +221,27 @@ paths:
       responses:
         default:
           description: "A selection of personal data, including first and last name,\
-            \ e-mail, phone number(s) and birth date if availablefor that person.\
-            \ Note that Null value fields may not be returned. If you get an unexpected\
-            \ result, it might help to verifyif the personUuid is existing in your\
-            \ system via the isValid controller."
+            \ e-mail, phone number and birth date if available for that person.Regarding\
+            \ the e-mail and phone number: in SORMAS it is possible to store several\
+            \ e-mail addresses and phone numbers for a person. It is tried to provide\
+            \ one e-mail address and/or phone number via the external visits API in\
+            \ any feasible way.<br>if there is just one e-mail and/or phone number\
+            \ for a person, this is transmitted.<br>If there are several e-mail addresses\
+            \ and or phone numbers, SORMAS will transmit the ones marked as primary.<br>If\
+            \ there are several e-mail addresses or phone numbers without any marked\
+            \ as primary, SORMAS will request the user to mark one before registration.<br>Regarding\
+            \ the latestFollowUpEndDate: this is the latest follow up end date of\
+            \ any contact (or case, if the case follow up feature is enabled) related\
+            \ to the person. The contacts (and cases) considered are not filtered\
+            \ by disease.<br>Note that Null value fields may not be returned. If you\
+            \ get an unexpected result, it might help to verifyif the personUuid is\
+            \ existing in your system via the isValid controller.<br>If you get \"\
+            pseudonymized\": true, the user the request was authorized with probably\
+            \ lacks the user role REST_EXTERNAL_VISITS_USER."
           content:
-            application/json:
+            application/json; charset=UTF-8:
               schema:
-                type: string
-                example: "[  {    \"pseudonymized\": false,    \"firstName\": \"Tim\"\
-                  ,    \"lastName\": \"Tahler\",    \"emailAddress\": \"test@test.de\"\
-                  \    \"phone\": \"0123456789\",    \"birthdateDD\": 6,    \"birthdateMM\"\
-                  : 4,    \"birthdateYYYY\": 1974,    \"sex\": \"MALE\",    \"uuid\"\
-                  : \"UO2OCI-BPXSAO-7Q4RHO-RMXCKC4M\",    \"latestFollowUpEndDate\"\
-                  : 1601416800000,  }]"
+                $ref: '#/components/schemas/JournalPersonDto'
   /visits-external/version:
     get:
       summary: Get API version

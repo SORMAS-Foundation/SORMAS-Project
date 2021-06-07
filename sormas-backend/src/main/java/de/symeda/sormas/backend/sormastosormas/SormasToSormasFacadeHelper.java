@@ -142,7 +142,7 @@ public class SormasToSormasFacadeHelper {
 
 	public <T> T decryptSharedData(SormasToSormasEncryptedDataDto encryptedData, Class<T> dataType) throws SormasToSormasException {
 		try {
-			byte[] decryptedData = encryptionService.decrypt(encryptedData.getData(), encryptedData.getOrganizationId());
+			byte[] decryptedData = encryptionService.decryptAndVerify(encryptedData.getData(), encryptedData.getOrganizationId());
 
 			return objectMapper.readValue(decryptedData, dataType);
 		} catch (IOException e) {

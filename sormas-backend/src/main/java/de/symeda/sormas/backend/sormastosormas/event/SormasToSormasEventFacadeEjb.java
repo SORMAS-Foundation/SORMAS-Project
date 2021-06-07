@@ -36,6 +36,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
@@ -69,7 +70,7 @@ public class SormasToSormasEventFacadeEjb
 	@EJB
 	private EventShareDataBuilder shareDataBuilder;
 	@EJB
-	private SharedEventProcessor sharedEventProcessor;
+	private ReceivedEventProcessor receivedEventProcessor;
 	@EJB
 	private ProcessedEventDataPersister processedEventDataPersister;
 	@EJB
@@ -95,7 +96,7 @@ public class SormasToSormasEventFacadeEjb
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<Event> entities) throws SormasToSormasException {
+	protected void validateEntitiesBeforeShare(List<Event> entities, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		for (Event event : entities) {
 			if (!eventService.isEventEditAllowed(event)) {
@@ -142,8 +143,8 @@ public class SormasToSormasEventFacadeEjb
 	}
 
 	@Override
-	protected SharedEventProcessor getSharedDataProcessor() {
-		return sharedEventProcessor;
+	protected ReceivedEventProcessor getReceivedDataProcessor() {
+		return receivedEventProcessor;
 	}
 
 	@Override

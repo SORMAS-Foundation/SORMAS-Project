@@ -19,6 +19,7 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CAS
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CASE_SYNC_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
@@ -48,8 +50,8 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
+import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
-import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
@@ -70,7 +72,7 @@ public class SormasToSormasCaseFacadeEjb
 	@EJB
 	private CaseShareDataBuilder caseShareDataBuilder;
 	@EJB
-	private SharedCaseProcessor sharedCaseProcessor;
+	private ReceivedCaseProcessor receivedCaseProcessor;
 	@EJB
 	private ProcessedCaseDataPersister processedCaseDataPersister;
 	@EJB
@@ -100,9 +102,8 @@ public class SormasToSormasCaseFacadeEjb
 		return caseShareDataBuilder;
 	}
 
-	@Override
-	protected SharedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData, SormasToSormasCasePreview> getSharedDataProcessor() {
-		return sharedCaseProcessor;
+	protected ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData, SormasToSormasCasePreview> getReceivedDataProcessor() {
+		return receivedCaseProcessor;
 	}
 
 	@Override
@@ -116,7 +117,7 @@ public class SormasToSormasCaseFacadeEjb
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<Case> entities) throws SormasToSormasException {
+	protected void validateEntitiesBeforeShare(List<Case> entities, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		for (Case caze : entities) {
 			if (!caseService.isCaseEditAllowed(caze)) {
@@ -124,6 +125,12 @@ public class SormasToSormasCaseFacadeEjb
 					buildCaseValidationGroupName(caze),
 					ValidationErrors
 						.create(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
+			}
+			if (options.isHandOverOwnership() && caze.getPerson().isEnrolledInExternalJournal()) {
+				validationErrors.put(
+						buildCaseValidationGroupName(caze),
+						ValidationErrors
+								.create(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getString(Strings.errorSormasToSormasPersonEnrolled)));
 			}
 		}
 

@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 
 import com.google.common.truth.Truth;
@@ -28,7 +29,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pages.application.cases.CreateNewCasePage;
 import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.services.CaseService;
 
@@ -204,7 +204,15 @@ public class EditCaseSteps implements En {
           Truth.assertThat(editCase.getDateReceivedAtNationalLevel())
               .isEqualTo(aCase.getDateReceivedAtNationalLevel());
           Truth.assertThat(editCase.getGeneralComment()).isEqualTo(aCase.getGeneralComment());
-          //          Truth.assertAll();
+        });
+
+    When(
+        "I delete the case",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
         });
   }
 
@@ -220,8 +228,8 @@ public class EditCaseSteps implements En {
         .firstName(userInfo.getFirstName())
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
-        .externalId(webDriverHelpers.getValueFromWebElement(CreateNewCasePage.EXTERNAL_ID_INPUT))
-        .uuid(webDriverHelpers.getTextFromWebElement(UUID_INPUT))
+        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
         .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))

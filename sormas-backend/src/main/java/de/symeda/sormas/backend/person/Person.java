@@ -763,6 +763,11 @@ public class Person extends AbstractDomainObject {
 		return new PersonReferenceDto(getUuid(), getFirstName(), getLastName());
 	}
 
+	@Transient
+	public boolean isEnrolledInExternalJournal() {
+		return SymptomJournalStatus.ACCEPTED.equals(symptomJournalStatus) || SymptomJournalStatus.REGISTERED.equals(symptomJournalStatus);
+	}
+
 	@Override
 	public String toString() {
 		return PersonDto.buildCaption(firstName, lastName);

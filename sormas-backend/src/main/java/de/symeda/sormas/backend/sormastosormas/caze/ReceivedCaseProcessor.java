@@ -44,29 +44,29 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePrevie
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.SharedDataProcessorHelper;
-import de.symeda.sormas.backend.sormastosormas.SharedDataProcessorHelper.InfrastructureData;
+import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessor;
+import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessorHelper;
+import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessorHelper.InfrastructureData;
 
 @Stateless
 @LocalBean
-public class SharedCaseProcessor implements SharedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData, SormasToSormasCasePreview> {
+public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData, SormasToSormasCasePreview> {
 
 	@EJB
-	private SharedDataProcessorHelper dataProcessorHelper;
+	private ReceivedDataProcessorHelper dataProcessorHelper;
 	@EJB
 	private ContactFacadeEjbLocal contactFacade;
 
 	@Override
-	public ProcessedCaseData processSharedData(SormasToSormasCaseDto sharedCase, CaseDataDto existingCaseData)
+	public ProcessedCaseData processReceivedData(SormasToSormasCaseDto receivedCase, CaseDataDto existingCaseData)
 		throws SormasToSormasValidationException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
-		PersonDto person = sharedCase.getPerson();
-		CaseDataDto caze = sharedCase.getEntity();
-		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts = sharedCase.getAssociatedContacts();
-		List<SormasToSormasSampleDto> samples = sharedCase.getSamples();
-		SormasToSormasOriginInfoDto originInfo = sharedCase.getOriginInfo();
+		PersonDto person = receivedCase.getPerson();
+		CaseDataDto caze = receivedCase.getEntity();
+		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts = receivedCase.getAssociatedContacts();
+		List<SormasToSormasSampleDto> samples = receivedCase.getSamples();
+		SormasToSormasOriginInfoDto originInfo = receivedCase.getOriginInfo();
 
 		ValidationErrors caseValidationErrors = new ValidationErrors();
 

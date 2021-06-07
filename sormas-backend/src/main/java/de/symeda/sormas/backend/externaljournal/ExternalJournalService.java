@@ -320,7 +320,7 @@ public class ExternalJournalService {
 			} else {
 				logger.info("Successfully registered patient " + person.getUuid() + " in patient diary.");
 				person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
-				personFacade.savePersonAndNotifyExternalJournal(person);
+				personFacade.savePerson(person);
 			}
 			return new PatientDiaryResult(success, message);
 		} catch (IOException e) {
@@ -544,7 +544,7 @@ public class ExternalJournalService {
 			} else {
 				logger.info("Successfully cancelled follow-up for person " + person.getUuid() + " in patient diary.");
 				person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
-				personFacade.savePersonAndNotifyExternalJournal(person);
+				personFacade.savePerson(person);
 			}
 			return new PatientDiaryResult(success, message);
 		} catch (IOException e) {
