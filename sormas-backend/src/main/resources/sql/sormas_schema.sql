@@ -7338,4 +7338,77 @@ CREATE INDEX IF NOT EXISTS idx_eventparticipant_deleted ON eventparticipant (del
 CREATE INDEX IF NOT EXISTS idx_documents_deleted ON documents (deleted);
 
 INSERT INTO schema_version (version_number, comment) VALUES (374, 'Indexing by deleted flag on all containing entities should be applied #5465');
+
+-- 2021-04-30 [SORMAS2SORMAS] accept or reject a shared case from another SORMAS Instance #4423
+CREATE TABLE sormastosormassharerequest(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+
+    dataType varchar(255),
+    status  varchar(255),
+    originInfo_id bigint,
+    cases json,
+    contacts json,
+    events json,
+
+    sys_period tstzrange not null,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE sormastosormassharerequest OWNER TO sormas_user;
+ALTER TABLE sormastosormassharerequest ADD CONSTRAINT fk_sormastosormassharerequest_originInfo_id FOREIGN KEY (originInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+CREATE TABLE sormastosormassharerequest_history (LIKE sormastosormassharerequest);
+ALTER TABLE sormastosormassharerequest_history OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sormastosormassharerequest
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sormastosormassharerequest_history', true);
+
+CREATE TABLE sormastosormasshareinfo_entities(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+
+    type varchar(255),
+    shareinfo_id bigint,
+    caze_id bigint,
+    contact_id bigint,
+    sample_id bigint,
+    event_id bigint,
+    eventparticipant_id bigint
+);
+ALTER TABLE sormastosormasshareinfo_entities OWNER TO sormas_user;
+ALTER TABLE sormastosormasshareinfo_entities ADD CONSTRAINT fk_sormastosormasshareinfo_entities_shareinfo_id FOREIGN KEY (shareinfo_id) REFERENCES sormastosormasshareinfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo_entities ADD CONSTRAINT fk_sormastosormasshareinfo_entities_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo_entities ADD CONSTRAINT fk_sormastosormasshareinfo_entities_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo_entities ADD CONSTRAINT fk_sormastosormasshareinfo_entities_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo_entities ADD CONSTRAINT fk_sormastosormasshareinfo_entities_event_id FOREIGN KEY (event_id) REFERENCES events (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo_entities ADD CONSTRAINT fk_sormastosormasshareinfo_entities_eventparticipant_id FOREIGN KEY (eventparticipant_id) REFERENCES eventparticipant (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+insert into sormastosormasshareinfo_entities (id, uuid, changedate, creationdate, type, shareinfo_id, caze_id, contact_id, sample_id, event_id, eventparticipant_id)
+select nextval('entity_seq'), generate_base32_uuid(), now(), now(),
+            CASE WHEN caze_id is not null THEN 'CASE'
+            WHEN contact_id is not null THEN 'CONTACT'
+            WHEN sample_id is not null THEN 'SAMPLE'
+            WHEN event_id is not null THEN 'EVENT'
+            WHEN eventparticipant_id is not null THEN 'EVENT_PARTICIPANT'
+            ELSE null END, id, caze_id, contact_id, sample_id, event_id, eventparticipant_id from sormastosormasshareinfo;
+
+ALTER TABLE sormastosormasshareinfo
+    ADD COLUMN requestUuid varchar(36) unique,
+    ADD COLUMN requestStatus varchar(255),
+    DROP COLUMN caze_id,
+    DROP COLUMN contact_id,
+    DROP COLUMN sample_id,
+    DROP COLUMN event_id,
+    DROP COLUMN eventparticipant_id;
+
+update sormastosormasshareinfo set requestUuid = generate_base32_uuid(), requestStatus = 'ACCEPTED';
+
+ALTER TABLE sormastosormasshareinfo
+    ALTER COLUMN requestUuid SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (375, '[SORMAS2SORMAS] accept or reject a shared case from another SORMAS Instance #4423');
 -- *** Insert new sql commands BEFORE this line ***

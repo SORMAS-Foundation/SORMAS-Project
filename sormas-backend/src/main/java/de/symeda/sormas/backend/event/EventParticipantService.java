@@ -52,7 +52,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -371,7 +371,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Predicate dateFilter = super.createChangeDateFilter(cb, from, date);
 		dateFilter =
 			cb.or(dateFilter, vaccinationInfoService.createChangeDateFilter(cb, from.join(EventParticipant.VACCINATION_INFO, JoinType.LEFT), date));
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_SHARES));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, EventParticipant.SHARE_INFO_EVENT_PARTICIPANTS));
 
 		return dateFilter;
 
@@ -383,7 +383,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		}
 
 		return eventParticipantJurisdictionChecker.isInJurisdiction(eventParticipant)
-			&& !sormasToSormasShareInfoService.isEventOwnershipHandedOver(eventParticipant);
+			&& !sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant);
 	}
 
 	public Collection<EventParticipant> getByPersonUuids(List<String> personUuids) {

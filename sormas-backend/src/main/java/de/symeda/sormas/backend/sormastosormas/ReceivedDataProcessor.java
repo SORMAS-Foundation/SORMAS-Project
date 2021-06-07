@@ -19,7 +19,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 
-public interface ReceivedDataProcessor<T extends SormasToSormasEntityDto, U extends SormasToSormasDto<T>, P extends ProcessedData<T>> {
+public interface ReceivedDataProcessor<ENTITY extends SormasToSormasEntityDto, SHARED extends SormasToSormasDto<ENTITY>, PROCESED extends ProcessedData<ENTITY>, PREVIEW> {
 
-	P processReceivedData(U receivedData, T existingData) throws SormasToSormasValidationException;
+	PROCESED processReceivedData(SHARED sharedData, ENTITY existingData) throws SormasToSormasValidationException;
+
+	PREVIEW processReceivedPreview(PREVIEW sharedPreview) throws SormasToSormasValidationException;
 }

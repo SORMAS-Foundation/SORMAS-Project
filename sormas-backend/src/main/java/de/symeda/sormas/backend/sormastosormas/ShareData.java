@@ -18,21 +18,25 @@ package de.symeda.sormas.backend.sormastosormas;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
+public class ShareData<T, DTO> {
 
-public class ShareData<T extends SormasToSormasDto> {
+	private final DTO dto;
 
-	private final T dto;
+	private final T entity;
+	private final List<AssociatedEntityWrapper<?>> associatedEntities;
 
-	private List<AssociatedEntityWrapper<?>> associatedEntities;
-
-	public ShareData(T dto) {
+	public ShareData(T entity, DTO dto) {
 		this.dto = dto;
+		this.entity = entity;
 		this.associatedEntities = new ArrayList<>();
 	}
 
-	public T getDto() {
+	public DTO getDto() {
 		return dto;
+	}
+
+	public T getEntity() {
+		return entity;
 	}
 
 	public void addAssociatedEntities(List<AssociatedEntityWrapper<?>> entities) {
