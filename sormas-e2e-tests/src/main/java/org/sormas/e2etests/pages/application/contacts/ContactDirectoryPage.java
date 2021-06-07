@@ -26,4 +26,5 @@ public class ContactDirectoryPage {
   public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
   public static final String CONTACT_RESULTS_UUID_LOCATOR = "[title = '%s']";
   public static final By CONTACT_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
+  public static final By FOLLOW_UP_VISITS_SPAN = By.cssSelector("#contactsViewSwitcher span:nth-child(3)");
 }

@@ -28,3 +28,15 @@ Feature: Contacts end to end tests
     And I change all contact fields and save
     And I navigate to the last created contact via the url
     Then I check the edited data is correctly displayed on Edit Contact page after editing
+
+  @FollowUpVisit
+  Scenario: Edit all fields from Follow-up visits  tab
+    Given API: I create a new contact
+    Given I log in with the user
+    When I am accessing the Follow-up visits tab using of created contact via api
+    Then I check and fill all data
+    And I click on save
+    And I am accessing the contacts
+    When I am accessing the Follow-up visits tab using of created contact via api
+    And I am checking all data is saved and displayed
+
