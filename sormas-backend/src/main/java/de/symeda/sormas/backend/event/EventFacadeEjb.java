@@ -974,7 +974,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setLaboratoryDiagnosticEvidence(source.getLaboratoryDiagnosticEvidence());
 		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
 
-		target.setInternalId(source.getInternalId());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
@@ -1076,7 +1076,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setLaboratoryDiagnosticEvidence(source.getLaboratoryDiagnosticEvidence());
 		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
 
-		target.setInternalId(source.getInternalId());
+		target.setInternalToken(source.getInternalToken());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));

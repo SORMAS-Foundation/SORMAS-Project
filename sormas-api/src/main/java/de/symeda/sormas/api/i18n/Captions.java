@@ -968,7 +968,7 @@ public interface Captions {
 	String Event_humanTransmissionMode = "Event.humanTransmissionMode";
 	String Event_infectionPathCertainty = "Event.infectionPathCertainty";
 	String Event_informationSource = "Event.informationSource";
-	String Event_internalId = "Event.internalId";
+	String Event_internalToken = "Event.internalToken";
 	String Event_laboratoryDiagnosticEvidence = "Event.laboratoryDiagnosticEvidence";
 	String Event_latestEventGroup = "Event.latestEventGroup";
 	String Event_meansOfTransport = "Event.meansOfTransport";

@@ -1244,7 +1244,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 		this.externalToken = externalToken;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getInternalToken() {
 		return internalToken;
 	}

@@ -188,7 +188,7 @@
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/event_internalToken"
-                app:value="@{data.internalId}"
+                app:value="@{data.internalToken}"
                 style="@style/ControlSingleColumnStyle"/>
 
             <LinearLayout

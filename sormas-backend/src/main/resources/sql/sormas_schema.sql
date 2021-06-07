@@ -7349,6 +7349,9 @@ ALTER TABLE contact_history ADD COLUMN internaltoken text;
 ALTER TABLE person ADD COLUMN internaltoken text;
 ALTER TABLE person_history ADD COLUMN internaltoken text;
 
+ALTER TABLE events RENAME internalid TO internaltoken;
+ALTER TABLE events_history RENAME internalid TO internaltoken;
+
 INSERT INTO schema_version (version_number, comment) VALUES (375, 'Introduce an internal token field #5224');
 
 

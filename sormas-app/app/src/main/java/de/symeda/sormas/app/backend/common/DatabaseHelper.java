@@ -2588,6 +2588,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN internalToken text;");
 					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN internalToken text;");
 					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN internalToken text;");
+					getDao(Event.class).executeRaw("ALTER TABLE events RENAME internalid TO internaltoken;");
 
 				// ATTENTION: break should only be done after last version
 				break;

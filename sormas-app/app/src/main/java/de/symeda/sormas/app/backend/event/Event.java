@@ -239,7 +239,7 @@ public class Event extends PseudonymizableAdo {
 	private MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode;
 
 	@Column(columnDefinition = "text")
-	private String internalId;
+	private String internalToken;
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -651,11 +651,11 @@ public class Event extends PseudonymizableAdo {
 		this.medicallyAssociatedTransmissionMode = medicallyAssociatedTransmissionMode;
 	}
 
-	public String getInternalId() {
-		return internalId;
+	public String getInternalToken() {
+		return internalToken;
 	}
 
-	public void setInternalId(String internalId) {
-		this.internalId = internalId;
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 }
