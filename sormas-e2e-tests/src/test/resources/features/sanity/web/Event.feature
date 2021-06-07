@@ -77,3 +77,14 @@ Feature: Create events
       And I search for specific event in event directory
       And I click on the searched event
      Then I check the modified event data is correctly displayed
+
+  Scenario: Add a Task from event and verify the fields
+    Given API: I create a new event
+    Given I log in with the user
+     When I am accessing the event tab using the created event via api
+     Then I click on New Task from event tab
+      And I create a new task with specific data
+      And I click on the Tasks button from navbar
+      And I am checking if the associated linked event appears in task management and click on it
+      And I click on edit task icon
+      And I check the created task is correctly displayed on Edit task page
