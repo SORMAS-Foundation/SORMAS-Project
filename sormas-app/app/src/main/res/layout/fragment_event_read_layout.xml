@@ -181,13 +181,13 @@
                     app:value="@{data.externalId}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/contact_externalToken"
+                    android:id="@+id/event_externalToken"
                     app:value="@{data.externalToken}"
                     style="@style/ControlSecondOfTwoColumnsStyle"/>
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/contact_internalId"
+                android:id="@+id/event_internalToken"
                 app:value="@{data.internalId}"
                 style="@style/ControlSingleColumnStyle"/>
 

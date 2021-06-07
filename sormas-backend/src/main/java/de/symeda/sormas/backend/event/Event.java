@@ -84,6 +84,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalId";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";

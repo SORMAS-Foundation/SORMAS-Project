@@ -7338,4 +7338,18 @@ CREATE INDEX IF NOT EXISTS idx_eventparticipant_deleted ON eventparticipant (del
 CREATE INDEX IF NOT EXISTS idx_documents_deleted ON documents (deleted);
 
 INSERT INTO schema_version (version_number, comment) VALUES (374, 'Indexing by deleted flag on all containing entities should be applied #5465');
+
+-- 2020-05-26 Introduce an internal token field #5224
+ALTER TABLE cases ADD COLUMN internaltoken text;
+ALTER TABLE cases_history ADD COLUMN internaltoken text;
+
+ALTER TABLE contact ADD COLUMN internaltoken text;
+ALTER TABLE contact_history ADD COLUMN internaltoken text;
+
+ALTER TABLE person ADD COLUMN internaltoken text;
+ALTER TABLE person_history ADD COLUMN internaltoken text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (375, 'Introduce an internal token field #5224');
+
+
 -- *** Insert new sql commands BEFORE this line ***

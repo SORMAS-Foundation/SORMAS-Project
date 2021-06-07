@@ -94,7 +94,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String EPIDEMIOLOGICAL_EVIDENCE_DETAILS = "epidemiologicalEvidenceDetails";
 	public static final String LABORATORY_DIAGNOSTIC_EVIDENCE = "laboratoryDiagnosticEvidence";
 	public static final String LABORATORY_DIAGNOSTIC_EVIDENCE_DETAILS = "laboratoryDiagnosticEvidenceDetails";
-	public static final String INTERNALID = "internalId";
+	public static final String INTERNAL_TOKEN = "internalId";
 	public static final String EVENT_GROUP = "eventGroup";
 
 	private EventReferenceDto superordinateEvent;

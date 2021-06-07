@@ -168,7 +168,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 302;
+	public static final int DATABASE_VERSION = 303;
 
 	private static DatabaseHelper instance = null;
 
@@ -2582,6 +2582,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					"UPDATE pathogenTest SET testedDiseaseVariant = UPPER(REPLACE((SELECT name FROM diseaseVariant WHERE diseaseVariant.id = pathogenTest.testedDiseaseVariant_id), ' ', '_')) WHERE pathogenTest.changeDate = 0;");
 				getDao(PathogenTest.class).executeRaw("UPDATE pathogenTest SET testedDiseaseVariant_id = NULL;");
 				getDao(Case.class).executeRaw("DROP TABLE diseaseVariant;");
+
+				case 302:
+					currentVersion = 302;
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN internalToken text;");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN internalToken text;");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN internalToken text;");
 
 				// ATTENTION: break should only be done after last version
 				break;

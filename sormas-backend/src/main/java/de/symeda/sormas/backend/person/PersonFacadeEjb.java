@@ -849,6 +849,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
 		target.setExternalId(source.getExternalId());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setBirthCountry(CountryFacadeEjb.toReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(CountryFacadeEjb.toReferenceDto(source.getCitizenship()));
@@ -1328,6 +1329,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
 		target.setExternalId(source.getExternalId());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setBirthCountry(countryService.getByReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(countryService.getByReferenceDto(source.getCitizenship()));

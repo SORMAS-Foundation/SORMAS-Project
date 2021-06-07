@@ -285,6 +285,7 @@ public interface Captions {
 	String CaseData_healthFacilityName = "CaseData.healthFacilityName";
 	String CaseData_hospitalization = "CaseData.hospitalization";
 	String CaseData_infectionSetting = "CaseData.infectionSetting";
+	String CaseData_internalToken = "CaseData.internalToken";
 	String CaseData_investigatedDate = "CaseData.investigatedDate";
 	String CaseData_investigationStatus = "CaseData.investigationStatus";
 	String CaseData_laboratoryDiagnosticConfirmation = "CaseData.laboratoryDiagnosticConfirmation";
@@ -575,6 +576,7 @@ public interface Captions {
 	String Contact_highPriority = "Contact.highPriority";
 	String Contact_immunosuppressiveTherapyBasicDisease = "Contact.immunosuppressiveTherapyBasicDisease";
 	String Contact_immunosuppressiveTherapyBasicDiseaseDetails = "Contact.immunosuppressiveTherapyBasicDiseaseDetails";
+	String Contact_internalToken = "Contact.internalToken";
 	String Contact_lastContactDate = "Contact.lastContactDate";
 	String Contact_lastName = "Contact.lastName";
 	String Contact_latestEventId = "Contact.latestEventId";
@@ -1472,6 +1474,7 @@ public interface Captions {
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
 	String Person_hasCovidApp = "Person.hasCovidApp";
 	String Person_healthcare_occupationDetails = "Person.healthcare.occupationDetails";
+	String Person_internalToken = "Person.internalToken";
 	String Person_lastDisease = "Person.lastDisease";
 	String Person_matchingCase = "Person.matchingCase";
 	String Person_mothersMaidenName = "Person.mothersMaidenName";

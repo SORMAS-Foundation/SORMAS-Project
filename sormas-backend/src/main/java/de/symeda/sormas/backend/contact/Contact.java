@@ -109,6 +109,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -189,6 +190,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 	private String description;
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 
 	private Case resultingCase;
 	private User resultingCaseUser;
@@ -571,6 +573,15 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	@ManyToOne(cascade = {})

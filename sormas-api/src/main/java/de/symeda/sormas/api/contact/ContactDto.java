@@ -82,6 +82,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	public static final String VISITS = "visits";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -191,6 +192,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 		COUNTRY_CODE_SWITZERLAND })
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
@@ -573,6 +575,14 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	public RegionReferenceDto getRegion() {

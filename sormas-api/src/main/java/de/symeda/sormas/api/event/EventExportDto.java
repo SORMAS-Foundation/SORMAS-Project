@@ -42,6 +42,7 @@ public class EventExportDto implements Serializable {
 	private String uuid;
 	private String externalId;
 	private String externalToken;
+	private String internalId;
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
@@ -91,6 +92,7 @@ public class EventExportDto implements Serializable {
 		String uuid,
 		String externalId,
 		String externalToken,
+		String internalToken,
 		EventStatus eventStatus,
 		RiskLevel riskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
@@ -138,6 +140,7 @@ public class EventExportDto implements Serializable {
 		this.uuid = uuid;
 		this.externalId = externalId;
 		this.externalToken = externalToken;
+		this.internalId = internalToken;
 		this.eventStatus = eventStatus;
 		this.riskLevel = riskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
@@ -616,6 +619,12 @@ public class EventExportDto implements Serializable {
 		return externalToken;
 	}
 
+	@Order(45)
+	@ExportProperty(EventDto.INTERNAL_TOKEN)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getInternalId() {
+		return internalId;
+	}
 	public void setContactCountSourceInEvent(long contactCountSourceInEvent) {
 		this.contactCountSourceInEvent = contactCountSourceInEvent;
 	}

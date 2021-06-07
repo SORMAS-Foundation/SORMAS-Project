@@ -181,6 +181,7 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.EPID_NUMBER),
 			root.get(Case.EXTERNAL_ID),
 			root.get(Case.EXTERNAL_TOKEN),
+			root.get(Case.INTERNAL_TOKEN),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			root.get(Case.DISEASE),
@@ -231,6 +232,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.EPID_NUMBER:
 		case CaseIndexDto.EXTERNAL_ID:
 		case CaseIndexDto.EXTERNAL_TOKEN:
+		case CaseIndexDto.INTERNAL_TOKEN:
 		case CaseIndexDto.DISEASE:
 		case CaseIndexDto.DISEASE_DETAILS:
 		case CaseIndexDto.CASE_CLASSIFICATION:
