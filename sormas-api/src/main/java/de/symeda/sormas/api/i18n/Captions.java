@@ -1306,6 +1306,7 @@ public interface Captions {
 	String lineListingEndDate = "lineListingEndDate";
 	String lineListingInfrastructureData = "lineListingInfrastructureData";
 	String lineListingNewCasesList = "lineListingNewCasesList";
+	String lineListingNewContactsList = "lineListingNewContactsList";
 	String lineListingSetEndDateForAll = "lineListingSetEndDateForAll";
 	String lineListingSharedInformation = "lineListingSharedInformation";
 	String linkEvent = "linkEvent";

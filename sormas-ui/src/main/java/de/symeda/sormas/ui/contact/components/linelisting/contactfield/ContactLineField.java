@@ -22,9 +22,9 @@ import de.symeda.sormas.ui.utils.components.linelisting.person.PersonField;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 import de.symeda.sormas.ui.utils.components.multidayselector.MultiDaySelectorDto;
 
-public class ContactLineField extends CustomField<ContactFieldDto> {
+public class ContactLineField extends CustomField<ContactLineFieldDto> {
 
-	private final Binder<ContactFieldDto> binder = new Binder<>(ContactFieldDto.class);
+	private final Binder<ContactLineFieldDto> binder = new Binder<>(ContactLineFieldDto.class);
 
 	private final DateField dateOfReport;
 	private final MultiDayContactField multiDay;
@@ -42,7 +42,7 @@ public class ContactLineField extends CustomField<ContactFieldDto> {
 
 	@Override
 	protected Component initContent() {
-		setValue(new ContactFieldDto());
+		setValue(new ContactLineFieldDto());
 
 		HorizontalLayout layout = new HorizontalLayout();
 
@@ -51,26 +51,26 @@ public class ContactLineField extends CustomField<ContactFieldDto> {
 
 		dateOfReport.setId("dateOfReport");
 		dateOfReport.setWidth(150, Unit.PIXELS);
-		binder.forField(dateOfReport).asRequired().bind(ContactFieldDto.DATE_OF_REPORT);
+		binder.forField(dateOfReport).asRequired().bind(ContactLineFieldDto.DATE_OF_REPORT);
 		dateOfReport.setRangeEnd(LocalDate.now());
 
 		multiDay.setId("multiDay");
-		binder.forField(multiDay).bind(ContactFieldDto.MULTI_DAY_SELECTOR);
+		binder.forField(multiDay).bind(ContactLineFieldDto.MULTI_DAY_SELECTOR);
 
 		typeOfContact.setId("typeOfContact");
 		typeOfContact.setItems(ContactProximity.values());
 		typeOfContact.setWidth(150, Unit.PIXELS);
 		typeOfContact.addStyleName(CssStyles.CAPTION_OVERFLOW);
-		binder.forField(typeOfContact).bind(ContactFieldDto.TYPE_OF_CONTACT);
+		binder.forField(typeOfContact).bind(ContactLineFieldDto.TYPE_OF_CONTACT);
 
 		relationToCase.setId("relationToCase");
 		relationToCase.setItems(ContactRelation.values());
 		relationToCase.setWidth(150, Unit.PIXELS);
 		relationToCase.addStyleName(CssStyles.CAPTION_OVERFLOW);
-		binder.forField(relationToCase).bind(ContactFieldDto.RELATION_TO_CASE);
+		binder.forField(relationToCase).bind(ContactLineFieldDto.RELATION_TO_CASE);
 
 		person.setId("person");
-		binder.forField(person).bind(ContactFieldDto.PERSON);
+		binder.forField(person).bind(ContactLineFieldDto.PERSON);
 
 		layout.addComponents(dateOfReport, multiDay, typeOfContact, relationToCase, person);
 
@@ -83,19 +83,19 @@ public class ContactLineField extends CustomField<ContactFieldDto> {
 	}
 
 	@Override
-	protected void doSetValue(ContactFieldDto contactFieldDto) {
+	protected void doSetValue(ContactLineFieldDto contactFieldDto) {
 		binder.setBean(contactFieldDto);
 	}
 
 	@Override
-	public ContactFieldDto getValue() {
+	public ContactLineFieldDto getValue() {
 		return binder.getBean();
 	}
 
 	public boolean hasErrors() {
 		BinderValidationStatus<MultiDaySelectorDto> contactDatesStatus = multiDay.validate();
 		BinderValidationStatus<PersonFieldDto> personValidationStatus = person.validate();
-		BinderValidationStatus<ContactFieldDto> lineValidationStatus = binder.validate();
+		BinderValidationStatus<ContactLineFieldDto> lineValidationStatus = binder.validate();
 		return contactDatesStatus.hasErrors() || personValidationStatus.hasErrors() || lineValidationStatus.hasErrors();
 	}
 

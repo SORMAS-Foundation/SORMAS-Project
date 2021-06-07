@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.contact.components.linelisting;
+package de.symeda.sormas.ui.contact.components.linelisting.layout;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,7 +11,6 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -20,8 +19,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactFieldDto;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineField;
+import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineFieldDto;
+import de.symeda.sormas.ui.contact.components.linelisting.section.LineListingSection;
 import de.symeda.sormas.ui.contact.components.linelisting.sharedinfo.SharedInfoField;
 import de.symeda.sormas.ui.contact.components.linelisting.sharedinfo.SharedInfoFieldDto;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -34,7 +34,6 @@ public class LineListingLayout extends VerticalLayout {
 	public static final float DEFAULT_WIDTH = 1696;
 
 	private final SharedInfoField sharedInfoField;
-
 	private final List<ContactLineLayout> contactLines;
 
 	private final Window window;
@@ -46,13 +45,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		setSpacing(false);
 
-		VerticalLayout sharedInformationComponent = new VerticalLayout();
-		sharedInformationComponent.setMargin(false);
-		sharedInformationComponent.setSpacing(false);
-		Label sharedInformationLabel = new Label();
-		sharedInformationLabel.setValue(I18nProperties.getCaption(Captions.lineListingSharedInformation));
-		sharedInformationLabel.addStyleName(CssStyles.H3);
-		sharedInformationComponent.addComponent(sharedInformationLabel);
+		LineListingSection sharedInformationComponent = new LineListingSection(Captions.lineListingSharedInformation);
 
 		sharedInfoField = new SharedInfoField();
 		sharedInfoField.setId("lineListingSharedInfoField");
@@ -60,19 +53,13 @@ public class LineListingLayout extends VerticalLayout {
 
 		addComponent(sharedInformationComponent);
 
+		LineListingSection lineComponent = new LineListingSection(Captions.lineListingNewContactsList);
+
 		contactLines = new ArrayList<>();
-		VerticalLayout lineComponent = new VerticalLayout();
-		lineComponent.setMargin(false);
-
-		Label lineComponentLabel = new Label();
-		lineComponentLabel.setValue(I18nProperties.getCaption(Captions.lineListingNewCasesList));
-		lineComponentLabel.addStyleName(CssStyles.H3);
-		lineComponent.addComponent(lineComponentLabel);
-
 		ContactLineLayout line = buildNewLine(lineComponent);
 		contactLines.add(line);
 		lineComponent.addComponent(line);
-		lineComponent.setSpacing(false);
+
 		addComponent(lineComponent);
 
 		HorizontalLayout actionBar = new HorizontalLayout();
@@ -210,7 +197,7 @@ public class LineListingLayout extends VerticalLayout {
 		public static final String LINE_FIELD = "lineField";
 
 		private SharedInfoFieldDto sharedInfoField;
-		private ContactFieldDto lineField;
+		private ContactLineFieldDto lineField;
 
 		public SharedInfoFieldDto getSharedInfoField() {
 			return sharedInfoField;
@@ -220,11 +207,11 @@ public class LineListingLayout extends VerticalLayout {
 			this.sharedInfoField = sharedInfoField;
 		}
 
-		public ContactFieldDto getLineField() {
+		public ContactLineFieldDto getLineField() {
 			return lineField;
 		}
 
-		public void setLineField(ContactFieldDto lineField) {
+		public void setLineField(ContactLineFieldDto lineField) {
 			this.lineField = lineField;
 		}
 	}

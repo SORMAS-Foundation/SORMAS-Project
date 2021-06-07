@@ -42,6 +42,8 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 
 		VerticalLayout layout = new VerticalLayout();
 
+		layout.setMargin(false);
+
 		caseSelector.setId("caseSelector");
 		layout.addComponent(caseSelector);
 

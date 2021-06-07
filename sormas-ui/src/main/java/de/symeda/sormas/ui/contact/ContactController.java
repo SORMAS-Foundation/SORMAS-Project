@@ -70,7 +70,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.caze.CaseSelectionField;
-import de.symeda.sormas.ui.contact.components.linelisting.LineListingLayout;
+import de.symeda.sormas.ui.contact.components.linelisting.layout.LineListingLayout;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.AbstractView;

@@ -8,7 +8,7 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 import de.symeda.sormas.ui.utils.components.multidayselector.MultiDaySelectorDto;
 
-public class ContactFieldDto implements Serializable {
+public class ContactLineFieldDto implements Serializable {
 
 	public static final String DATE_OF_REPORT = "dateOfReport";
 	public static final String MULTI_DAY_SELECTOR = "multiDaySelector";
