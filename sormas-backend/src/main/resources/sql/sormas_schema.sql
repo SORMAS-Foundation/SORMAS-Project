@@ -7304,9 +7304,9 @@ DO $$
     BEGIN
         FOR rec IN SELECT id, disease, name FROM diseasevariant
             LOOP
-                INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', UPPER(REGEXP_REPLACE(rec.name, ' ', '_')), rec.name, rec.disease);
-                UPDATE cases SET diseasevariant = UPPER(REGEXP_REPLACE(rec.name, ' ', '_')), changedate = now() WHERE diseasevariant = rec.id::text;
-                UPDATE pathogentest SET testeddiseasevariant = UPPER(REGEXP_REPLACE(rec.name, ' ', '_')), changedate = now() WHERE testeddiseasevariant = rec.id::text;
+                INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', UPPER(REGEXP_REPLACE(rec.name, ' ', '_', 'g')), rec.name, rec.disease);
+                UPDATE cases SET diseasevariant = UPPER(REGEXP_REPLACE(rec.name, ' ', '_', 'g')) WHERE diseasevariant = rec.id::text;
+                UPDATE pathogentest SET testeddiseasevariant = UPPER(REGEXP_REPLACE(rec.name, ' ', '_', 'g')) WHERE testeddiseasevariant = rec.id::text;
             END LOOP;
     END;
 $$ LANGUAGE plpgsql;
