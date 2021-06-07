@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.contact.components.linelisting.layout;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -15,9 +16,16 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineField;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineFieldDto;
@@ -34,7 +42,7 @@ public class LineListingLayout extends VerticalLayout {
 	public static final float DEFAULT_WIDTH = 1696;
 
 	private final SharedInfoField sharedInfoField;
-	private final List<ContactLineLayout> contactLines;
+	private final List<ContactLineLayout> lines;
 
 	private final Window window;
 	private Consumer<List<ContactLineDto>> saveCallback;
@@ -55,9 +63,9 @@ public class LineListingLayout extends VerticalLayout {
 
 		LineListingSection lineComponent = new LineListingSection(Captions.lineListingNewContactsList);
 
-		contactLines = new ArrayList<>();
+		lines = new ArrayList<>();
 		ContactLineLayout line = buildNewLine(lineComponent);
-		contactLines.add(line);
+		lines.add(line);
 		lineComponent.addComponent(line);
 
 		addComponent(lineComponent);
@@ -65,9 +73,9 @@ public class LineListingLayout extends VerticalLayout {
 		HorizontalLayout actionBar = new HorizontalLayout();
 		Button addLine = ButtonHelper.createIconButton(Captions.lineListingAddLine, VaadinIcons.PLUS, e -> {
 			ContactLineLayout newLine = buildNewLine(lineComponent);
-			contactLines.add(newLine);
+			lines.add(newLine);
 			lineComponent.addComponent(newLine);
-			contactLines.get(0).enableDelete(true);
+			lines.get(0).enableDelete(true);
 		}, ValoTheme.BUTTON_PRIMARY);
 
 		actionBar.addComponent(addLine);
@@ -103,7 +111,7 @@ public class LineListingLayout extends VerticalLayout {
 
 	public void validate() throws ValidationRuntimeException {
 		boolean validationFailed = false;
-		for (ContactLineLayout line : contactLines) {
+		for (ContactLineLayout line : lines) {
 			if (line.hasErrors()) {
 				validationFailed = true;
 			}
@@ -114,7 +122,29 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	public List<ContactLineDto> getContactLineDtos() {
-		return contactLines.stream().map(ContactLineLayout::getBean).collect(Collectors.toList());
+		return lines.stream().map(line -> {
+			ContactLineLayoutDto layoutBean = line.getBean();
+			ContactLineDto result = new ContactLineDto();
+
+			result.setCaze(layoutBean.getSharedInfoField().getCaze());
+			result.setDisease(layoutBean.getSharedInfoField().getDisease());
+			result.setRegion(layoutBean.getSharedInfoField().getRegion());
+			result.setDistrict(layoutBean.getSharedInfoField().getDistrict());
+			result.setDateOfReport(layoutBean.getLineField().getDateOfReport());
+			result.setFirstContactDate(layoutBean.getLineField().getMultiDaySelector().getStartDate());
+			result.setLastContactDate(layoutBean.getLineField().getMultiDaySelector().getEndDate());
+			result.setTypeOfContact(layoutBean.getLineField().getTypeOfContact());
+			result.setRelationToCase(layoutBean.getLineField().getRelationToCase());
+
+			result.setFirstName(layoutBean.getLineField().getPerson().getFirstName());
+			result.setLastName(layoutBean.getLineField().getPerson().getLastName());
+			result.setDateOfBirthYYYY(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthYYYY());
+			result.setDateOfBirthMM(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthMM());
+			result.setDateOfBirthDD(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthDD());
+			result.setSex(layoutBean.getLineField().getPerson().getSex());
+
+			return result;
+		}).collect(Collectors.toList());
 	}
 
 	public void setSaveCallback(Consumer<List<ContactLineDto>> saveCallback) {
@@ -122,11 +152,11 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	private ContactLineLayout buildNewLine(VerticalLayout lineComponent) {
-		ContactLineLayout newLine = new ContactLineLayout(contactLines.size());
-		ContactLineDto newLineDto = new ContactLineDto();
+		ContactLineLayout newLine = new ContactLineLayout(lines.size());
+		ContactLineLayoutDto newLineDto = new ContactLineLayoutDto();
 
-		if (!contactLines.isEmpty()) {
-			ContactLineDto lastLineDto = contactLines.get(contactLines.size() - 1).getBean();
+		if (!lines.isEmpty()) {
+			ContactLineLayoutDto lastLineDto = lines.get(lines.size() - 1).getBean();
 			newLineDto.setSharedInfoField(lastLineDto.getSharedInfoField());
 			newLineDto.setLineField(lastLineDto.getLineField());
 		} else {
@@ -137,8 +167,8 @@ public class LineListingLayout extends VerticalLayout {
 		newLine.addDeleteLineListener(e -> {
 			ContactLineLayout selectedLine = (ContactLineLayout) e.getComponent();
 			lineComponent.removeComponent(selectedLine);
-			contactLines.remove(selectedLine);
-			contactLines.get(0).enableDelete(contactLines.size() > 1);
+			lines.remove(selectedLine);
+			lines.get(0).enableDelete(lines.size() > 1);
 		});
 
 		return newLine;
@@ -146,7 +176,7 @@ public class LineListingLayout extends VerticalLayout {
 
 	class ContactLineLayout extends LineLayout {
 
-		private final Binder<ContactLineDto> binder = new Binder<>(ContactLineDto.class);
+		private final Binder<ContactLineLayoutDto> binder = new Binder<>(ContactLineLayoutDto.class);
 
 		private final ContactLineField contactLineField;
 		private final Button delete;
@@ -156,11 +186,11 @@ public class LineListingLayout extends VerticalLayout {
 			addStyleName(CssStyles.SPACING_SMALL);
 			setMargin(false);
 
-			binder.forField(sharedInfoField).bind(ContactLineDto.SHARED_INFO_FIELD);
+			binder.forField(sharedInfoField).bind(ContactLineLayoutDto.SHARED_INFO_FIELD);
 
 			contactLineField = new ContactLineField();
 			contactLineField.setId("lineListingContactLineField_" + lineIndex);
-			binder.forField(contactLineField).bind(ContactLineDto.LINE_FIELD);
+			binder.forField(contactLineField).bind(ContactLineLayoutDto.LINE_FIELD);
 
 			delete = ButtonHelper
 				.createIconButtonWithCaption("delete_" + lineIndex, null, VaadinIcons.TRASH, event -> fireEvent(new DeleteLineEvent(this)));
@@ -174,11 +204,11 @@ public class LineListingLayout extends VerticalLayout {
 			contactLineField.showCaptions();
 		}
 
-		public void setBean(ContactLineDto bean) {
+		public void setBean(ContactLineLayoutDto bean) {
 			binder.setBean(bean);
 		}
 
-		public ContactLineDto getBean() {
+		public ContactLineLayoutDto getBean() {
 			return binder.getBean();
 		}
 
@@ -191,7 +221,7 @@ public class LineListingLayout extends VerticalLayout {
 		}
 	}
 
-	public static class ContactLineDto implements Serializable {
+	public static class ContactLineLayoutDto implements Serializable {
 
 		public static final String SHARED_INFO_FIELD = "sharedInfoField";
 		public static final String LINE_FIELD = "lineField";
@@ -213,6 +243,145 @@ public class LineListingLayout extends VerticalLayout {
 
 		public void setLineField(ContactLineFieldDto lineField) {
 			this.lineField = lineField;
+		}
+	}
+
+	public static class ContactLineDto implements Serializable {
+
+		private CaseReferenceDto caze;
+		private Disease disease;
+		private RegionReferenceDto region;
+		private DistrictReferenceDto district;
+		private LocalDate dateOfReport;
+		private LocalDate firstContactDate;
+		private LocalDate lastContactDate;
+		private ContactProximity typeOfContact;
+		private ContactRelation relationToCase;
+		private String firstName;
+		private String lastName;
+		private Integer dateOfBirthDD;
+		private Integer dateOfBirthMM;
+		private Integer dateOfBirthYYYY;
+		private Sex sex;
+
+		public CaseReferenceDto getCaze() {
+			return caze;
+		}
+
+		public void setCaze(CaseReferenceDto caze) {
+			this.caze = caze;
+		}
+
+		public Disease getDisease() {
+			return disease;
+		}
+
+		public void setDisease(Disease disease) {
+			this.disease = disease;
+		}
+
+		public RegionReferenceDto getRegion() {
+			return region;
+		}
+
+		public void setRegion(RegionReferenceDto region) {
+			this.region = region;
+		}
+
+		public DistrictReferenceDto getDistrict() {
+			return district;
+		}
+
+		public void setDistrict(DistrictReferenceDto district) {
+			this.district = district;
+		}
+
+		public LocalDate getDateOfReport() {
+			return dateOfReport;
+		}
+
+		public void setDateOfReport(LocalDate dateOfReport) {
+			this.dateOfReport = dateOfReport;
+		}
+
+		public LocalDate getFirstContactDate() {
+			return firstContactDate;
+		}
+
+		public void setFirstContactDate(LocalDate firstContactDate) {
+			this.firstContactDate = firstContactDate;
+		}
+
+		public LocalDate getLastContactDate() {
+			return lastContactDate;
+		}
+
+		public void setLastContactDate(LocalDate lastContactDate) {
+			this.lastContactDate = lastContactDate;
+		}
+
+		public ContactProximity getTypeOfContact() {
+			return typeOfContact;
+		}
+
+		public void setTypeOfContact(ContactProximity typeOfContact) {
+			this.typeOfContact = typeOfContact;
+		}
+
+		public ContactRelation getRelationToCase() {
+			return relationToCase;
+		}
+
+		public void setRelationToCase(ContactRelation relationToCase) {
+			this.relationToCase = relationToCase;
+		}
+
+		public String getFirstName() {
+			return firstName;
+		}
+
+		public void setFirstName(String firstName) {
+			this.firstName = firstName;
+		}
+
+		public String getLastName() {
+			return lastName;
+		}
+
+		public void setLastName(String lastName) {
+			this.lastName = lastName;
+		}
+
+		public Integer getDateOfBirthDD() {
+			return dateOfBirthDD;
+		}
+
+		public void setDateOfBirthDD(Integer dateOfBirthDD) {
+			this.dateOfBirthDD = dateOfBirthDD;
+		}
+
+		public Integer getDateOfBirthMM() {
+			return dateOfBirthMM;
+		}
+
+		public void setDateOfBirthMM(Integer dateOfBirthMM) {
+			this.dateOfBirthMM = dateOfBirthMM;
+		}
+
+		public Integer getDateOfBirthYYYY() {
+			return dateOfBirthYYYY;
+		}
+
+		public void setDateOfBirthYYYY(Integer dateOfBirthYYYY) {
+			this.dateOfBirthYYYY = dateOfBirthYYYY;
+		}
+
+		public Sex getSex() {
+			return sex;
+		}
+
+		public void setSex(Sex sex) {
+			this.sex = sex;
 		}
 	}
 }

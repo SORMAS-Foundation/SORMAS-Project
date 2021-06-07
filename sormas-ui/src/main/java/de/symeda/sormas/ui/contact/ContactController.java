@@ -129,23 +129,24 @@ public class ContactController {
 		for (LineListingLayout.ContactLineDto contactLineDto : contacts) {
 			final ContactDto newContact = ContactDto.build();
 
-			newContact.setCaze(contactLineDto.getSharedInfoField().getCaze());
-			newContact.setDisease(contactLineDto.getSharedInfoField().getDisease());
-			newContact.setRegion(contactLineDto.getSharedInfoField().getRegion());
-			newContact.setDistrict(contactLineDto.getSharedInfoField().getDistrict());
-			newContact.setReportDateTime(DateHelper8.toDate(contactLineDto.getLineField().getDateOfReport()));
-			newContact.setLastContactDate(DateHelper8.toDate(contactLineDto.getLineField().getMultiDaySelector().getEndDate()));
-			newContact.setRelationToCase(contactLineDto.getLineField().getRelationToCase());
+			newContact.setCaze(contactLineDto.getCaze());
+			newContact.setDisease(contactLineDto.getDisease());
+			newContact.setRegion(contactLineDto.getRegion());
+			newContact.setDistrict(contactLineDto.getDistrict());
+			newContact.setReportDateTime(DateHelper8.toDate(contactLineDto.getDateOfReport()));
+			newContact.setFirstContactDate(DateHelper8.toDate(contactLineDto.getFirstContactDate()));
+			newContact.setLastContactDate(DateHelper8.toDate(contactLineDto.getLastContactDate()));
+			newContact.setRelationToCase(contactLineDto.getRelationToCase());
 
 			newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
 
 			final PersonDto newPerson = PersonDto.build();
-			newPerson.setFirstName(contactLineDto.getLineField().getPerson().getFirstName());
-			newPerson.setLastName(contactLineDto.getLineField().getPerson().getLastName());
-			newPerson.setBirthdateYYYY(contactLineDto.getLineField().getPerson().getBirthDate().getDateOfBirthYYYY());
-			newPerson.setBirthdateMM(contactLineDto.getLineField().getPerson().getBirthDate().getDateOfBirthMM());
-			newPerson.setBirthdateDD(contactLineDto.getLineField().getPerson().getBirthDate().getDateOfBirthDD());
-			newPerson.setSex(contactLineDto.getLineField().getPerson().getSex());
+			newPerson.setFirstName(contactLineDto.getFirstName());
+			newPerson.setLastName(contactLineDto.getLastName());
+			newPerson.setBirthdateYYYY(contactLineDto.getDateOfBirthYYYY());
+			newPerson.setBirthdateMM(contactLineDto.getDateOfBirthMM());
+			newPerson.setBirthdateDD(contactLineDto.getDateOfBirthDD());
+			newPerson.setSex(contactLineDto.getSex());
 
 			PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
 			newContact.setPerson(savedPerson.toReference());
