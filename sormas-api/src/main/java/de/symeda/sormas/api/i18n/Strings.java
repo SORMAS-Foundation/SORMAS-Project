@@ -679,6 +679,7 @@ public interface Strings {
 	String infoNoPathogenTests = "infoNoPathogenTests";
 	String infoNoSourceCase = "infoNoSourceCase";
 	String infoNoSourceCaseSelected = "infoNoSourceCaseSelected";
+	String infoNoSourceCaseSelectedLineListing = "infoNoSourceCaseSelectedLineListing";
 	String infoNoSubordinateEvents = "infoNoSubordinateEvents";
 	String infoNoSuperordinateEvent = "infoNoSuperordinateEvent";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";

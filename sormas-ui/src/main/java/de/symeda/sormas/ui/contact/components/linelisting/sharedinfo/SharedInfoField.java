@@ -10,8 +10,10 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -29,8 +31,10 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 	private final ComboBox<RegionReferenceDto> region;
 	private final ComboBox<DistrictReferenceDto> district;
 
-	public SharedInfoField() {
-		caseSelector = new CaseSelector();
+	public SharedInfoField(CaseReferenceDto caseReferenceDto) {
+		caseSelector = caseReferenceDto != null
+			? new CaseSelector(caseReferenceDto)
+			: new CaseSelector(I18nProperties.getString(Strings.infoNoSourceCaseSelectedLineListing));
 		disease = new ComboBox<>(I18nProperties.getCaption(Captions.disease));
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
 		district = new ComboBox<>(I18nProperties.getCaption(Captions.district));
@@ -43,6 +47,7 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 		VerticalLayout layout = new VerticalLayout();
 
 		layout.setMargin(false);
+		layout.setSpacing(false);
 
 		caseSelector.setId("caseSelector");
 		layout.addComponent(caseSelector);

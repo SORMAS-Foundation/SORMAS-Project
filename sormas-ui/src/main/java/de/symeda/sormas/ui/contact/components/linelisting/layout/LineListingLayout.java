@@ -47,7 +47,7 @@ public class LineListingLayout extends VerticalLayout {
 	private final Window window;
 	private Consumer<List<ContactLineDto>> saveCallback;
 
-	public LineListingLayout(Window window) {
+	public LineListingLayout(Window window, CaseReferenceDto caseReferenceDto) {
 
 		this.window = window;
 
@@ -55,7 +55,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		LineListingSection sharedInformationComponent = new LineListingSection(Captions.lineListingSharedInformation);
 
-		sharedInfoField = new SharedInfoField();
+		sharedInfoField = new SharedInfoField(caseReferenceDto);
 		sharedInfoField.setId("lineListingSharedInfoField");
 		sharedInformationComponent.addComponent(sharedInfoField);
 

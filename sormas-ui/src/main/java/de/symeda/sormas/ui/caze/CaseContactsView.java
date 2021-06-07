@@ -80,8 +80,8 @@ public class CaseContactsView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
 
-	private ContactCriteria criteria;
-	private ViewConfiguration viewConfiguration;
+	private final ContactCriteria criteria;
+	private final ViewConfiguration viewConfiguration;
 
 	private ContactGrid grid;
 
@@ -328,8 +328,8 @@ public class CaseContactsView extends AbstractCaseView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
-			final ExpandableButton lineListingButton =
-				new ExpandableButton(Captions.lineListing).expand(e -> ControllerProvider.getContactController().openLineListingWindow());
+			final ExpandableButton lineListingButton = new ExpandableButton(Captions.lineListing)
+				.expand(e -> ControllerProvider.getContactController().openLineListingWindow(this.getCaseRef()));
 			statusFilterLayout.addComponent(lineListingButton);
 
 			final Button newButton = ButtonHelper.createIconButtonWithCaption(
