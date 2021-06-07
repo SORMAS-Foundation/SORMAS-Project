@@ -19,73 +19,23 @@
 package org.sormas.e2etests.pojo.web;
 
 import java.time.LocalDate;
+import java.util.List;
+
 import lombok.*;
+import org.sormas.e2etests.enums.YesNoUnknownOptions;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivity;
+import org.sormas.e2etests.pojo.web.epidemiologicalData.Activity;
+import org.sormas.e2etests.pojo.web.epidemiologicalData.Exposure;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
 public class EpidemiologicalData {
-  String exposureDetailsKnown;
-  String exposureDetailsNewEntry;
-  LocalDate startOfExposure;
-  LocalDate endOfExposure;
-  String exposureDescription;
-  String typeOfActivity;
-  String exposureDetailsRole;
-  String riskArea;
-  String indoors;
-  String outdoors;
-  String wearingMask;
-  String wearingPpe;
-  String otherProtectiveMeasures;
-  String shortDistance;
-  String longFaceToFaceContact;
-  String animalMarket;
-  String percutaneous;
-  String contactToBodyFluids;
-  String handlingSamples;
-  String contactToSourceCase;
-  String typeOfPlace;
-  String continent;
-  String subcontinent;
-  String country;
-  String exposureRegion;
-  String district;
-  String community;
-  String street;
-  String houseNumber;
-  String additionalInformation;
-  String postalCode;
-  String city;
-  String areaType;
-  String communityContactPerson;
-  String doneButton;
-  String discardButton;
-  String activityDetailsKnown;
-  String activityDetailsNewEntry;
-  LocalDate accStartOfActivity;
-  LocalDate accEndOfActivity;
-  String accDescription;
-  String accActivityAsCaseType;
-  String accRole;
-  String accTypeOfPlace;
-  String accContinent;
-  String accSubcontinent;
-  String accCountry;
-  String accRegion;
-  String accDistrict;
-  String accCommunity;
-  String accStreet;
-  String accHouseNumber;
-  String accAdditionalInformation;
-  String accPostalCode;
-  String accCity;
-  String accAreaType;
-  String accDetails;
-  String accDoneButton;
-  String accDiscardButton;
-  String residingAreaWithRisk;
-  String largeOutbreaksArea;
-
+  List<Exposure> exposures;
+  List<Activity> activities;
+  YesNoUnknownOptions residingAreaWithRisk;
+  YesNoUnknownOptions largeOutbreaksArea;
+  YesNoUnknownOptions contactsWithSourceCaseKnown;
 }

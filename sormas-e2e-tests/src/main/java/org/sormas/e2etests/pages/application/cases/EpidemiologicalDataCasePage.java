@@ -95,10 +95,13 @@ public class EpidemiologicalDataCasePage {
   public static final By AcC_DISCARD_BUTTON = By.cssSelector(".v-window #discard");
 
   public static final By RESIDING_AREA_WITH_RISK =
-      By.cssSelector("#highTransmissionRiskArea span:nth-child(1)");
+      By.cssSelector("#highTransmissionRiskArea .v-checkbox");
 
   public static final By LARGE_OUTBREAKS_AREA =
-      By.cssSelector("#largeOutbreaksArea span:nth-child(1)");
+      By.cssSelector("#largeOutbreaksArea .v-checkbox");
+
+  public static final By CONTACTS_WITH_SOURCE_CASE_KNOWN =
+      By.cssSelector("#contactWithSourceCaseKnown .v-checkbox");
 
   public static final By SAVE_BUTTON_EPIDEMIOLOGICAL_DATA = By.cssSelector("#commit");
   public static final By DISCARD_BUTTON_EPIDEMIOLOGICAL_DATA = By.cssSelector("#commit");
