@@ -10,29 +10,22 @@ import com.vaadin.data.Binder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactFieldDto;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineField;
+import de.symeda.sormas.ui.contact.components.linelisting.sharedinfo.SharedInfoField;
+import de.symeda.sormas.ui.contact.components.linelisting.sharedinfo.SharedInfoFieldDto;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
 import de.symeda.sormas.ui.utils.components.linelisting.line.LineLayout;
 
@@ -40,10 +33,7 @@ public class LineListingLayout extends VerticalLayout {
 
 	public static final float DEFAULT_WIDTH = 1696;
 
-	private final CaseSelector caseSelector;
-	private final ComboBox<Disease> disease;
-	private final ComboBox<RegionReferenceDto> region;
-	private final ComboBox<DistrictReferenceDto> district;
+	private final SharedInfoField sharedInfoField;
 
 	private final List<ContactLineLayout> contactLines;
 
@@ -64,32 +54,9 @@ public class LineListingLayout extends VerticalLayout {
 		sharedInformationLabel.addStyleName(CssStyles.H3);
 		sharedInformationComponent.addComponent(sharedInformationLabel);
 
-		caseSelector = new CaseSelector();
-		caseSelector.setId("lineListingCase");
-		sharedInformationComponent.addComponent(caseSelector);
-
-		HorizontalLayout sharedInformationBar = new HorizontalLayout();
-		sharedInformationBar.addStyleName(CssStyles.SPACING_SMALL);
-
-		disease = new ComboBox<>(I18nProperties.getCaption(Captions.disease));
-		disease.setId("lineListingDisease");
-		disease.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
-		sharedInformationBar.addComponent(disease);
-
-		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
-		region.setId("lineListingRegion");
-		sharedInformationBar.addComponent(region);
-
-		district = new ComboBox<>(I18nProperties.getCaption(Captions.district));
-		district.setId("lineListingDistrict");
-		sharedInformationBar.addComponent(district);
-
-		region.addValueChangeListener(e -> {
-			RegionReferenceDto regionDto = e.getValue();
-			updateDistricts(regionDto);
-		});
-
-		sharedInformationComponent.addComponent(sharedInformationBar);
+		sharedInfoField = new SharedInfoField();
+		sharedInfoField.setId("lineListingSharedInfoField");
+		sharedInformationComponent.addComponent(sharedInfoField);
 
 		addComponent(sharedInformationComponent);
 
@@ -107,16 +74,6 @@ public class LineListingLayout extends VerticalLayout {
 		lineComponent.addComponent(line);
 		lineComponent.setSpacing(false);
 		addComponent(lineComponent);
-
-		UserProvider currentUserProvider = UserProvider.getCurrent();
-		if (currentUserProvider != null && UserRole.isSupervisor(currentUserProvider.getUserRoles())) {
-			RegionReferenceDto userRegion = currentUserProvider.getUser().getRegion();
-			region.setValue(userRegion);
-			region.setVisible(false);
-			updateDistricts(userRegion);
-		} else {
-			region.setItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
-		}
 
 		HorizontalLayout actionBar = new HorizontalLayout();
 		Button addLine = ButtonHelper.createIconButton(Captions.lineListingAddLine, VaadinIcons.PLUS, e -> {
@@ -153,10 +110,6 @@ public class LineListingLayout extends VerticalLayout {
 		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
 	}
 
-	private void updateDistricts(RegionReferenceDto regionDto) {
-		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
-	}
-
 	public void closeWindow() {
 		window.close();
 	}
@@ -187,10 +140,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		if (!contactLines.isEmpty()) {
 			ContactLineDto lastLineDto = contactLines.get(contactLines.size() - 1).getBean();
-			newLineDto.setCaze(lastLineDto.getCaze());
-			newLineDto.setDisease(lastLineDto.getDisease());
-			newLineDto.setRegion(lastLineDto.getRegion());
-			newLineDto.setDistrict(lastLineDto.getDistrict());
+			newLineDto.setSharedInfoField(lastLineDto.getSharedInfoField());
 			newLineDto.setLineField(lastLineDto.getLineField());
 		} else {
 			newLine.enableDelete(false);
@@ -219,10 +169,7 @@ public class LineListingLayout extends VerticalLayout {
 			addStyleName(CssStyles.SPACING_SMALL);
 			setMargin(false);
 
-			binder.forField(caseSelector).bind(ContactLineDto.CAZE);
-			binder.forField(disease).asRequired().bind(ContactLineDto.DISEASE);
-			binder.forField(region).asRequired().bind(ContactLineDto.REGION);
-			binder.forField(district).asRequired().bind(ContactLineDto.DISTRICT);
+			binder.forField(sharedInfoField).bind(ContactLineDto.SHARED_INFO_FIELD);
 
 			contactLineField = new ContactLineField();
 			contactLineField.setId("lineListingContactLineField_" + lineIndex);
@@ -249,7 +196,7 @@ public class LineListingLayout extends VerticalLayout {
 		}
 
 		public boolean hasErrors() {
-			return contactLineField.hasErrors();
+			return sharedInfoField.hasErrors() | contactLineField.hasErrors();
 		}
 
 		public void enableDelete(boolean shouldEnable) {
@@ -259,48 +206,18 @@ public class LineListingLayout extends VerticalLayout {
 
 	public static class ContactLineDto implements Serializable {
 
-		public static final String CAZE = "caze";
-		public static final String DISEASE = "disease";
-		public static final String REGION = "region";
-		public static final String DISTRICT = "district";
+		public static final String SHARED_INFO_FIELD = "sharedInfoField";
 		public static final String LINE_FIELD = "lineField";
 
-		private CaseReferenceDto caze;
-		private Disease disease;
-		private RegionReferenceDto region;
-		private DistrictReferenceDto district;
+		private SharedInfoFieldDto sharedInfoField;
 		private ContactFieldDto lineField;
 
-		public CaseReferenceDto getCaze() {
-			return caze;
+		public SharedInfoFieldDto getSharedInfoField() {
+			return sharedInfoField;
 		}
 
-		public void setCaze(CaseReferenceDto caze) {
-			this.caze = caze;
-		}
-
-		public Disease getDisease() {
-			return disease;
-		}
-
-		public void setDisease(Disease disease) {
-			this.disease = disease;
-		}
-
-		public RegionReferenceDto getRegion() {
-			return region;
-		}
-
-		public void setRegion(RegionReferenceDto region) {
-			this.region = region;
-		}
-
-		public DistrictReferenceDto getDistrict() {
-			return district;
-		}
-
-		public void setDistrict(DistrictReferenceDto district) {
-			this.district = district;
+		public void setSharedInfoField(SharedInfoFieldDto sharedInfoField) {
+			this.sharedInfoField = sharedInfoField;
 		}
 
 		public ContactFieldDto getLineField() {

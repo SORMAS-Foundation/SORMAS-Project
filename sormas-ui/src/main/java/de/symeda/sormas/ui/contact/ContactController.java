@@ -129,10 +129,10 @@ public class ContactController {
 		for (LineListingLayout.ContactLineDto contactLineDto : contacts) {
 			final ContactDto newContact = ContactDto.build();
 
-			newContact.setCaze(contactLineDto.getCaze());
-			newContact.setDisease(contactLineDto.getDisease());
-			newContact.setRegion(contactLineDto.getRegion());
-			newContact.setDistrict(contactLineDto.getDistrict());
+			newContact.setCaze(contactLineDto.getSharedInfoField().getCaze());
+			newContact.setDisease(contactLineDto.getSharedInfoField().getDisease());
+			newContact.setRegion(contactLineDto.getSharedInfoField().getRegion());
+			newContact.setDistrict(contactLineDto.getSharedInfoField().getDistrict());
 			newContact.setReportDateTime(DateHelper8.toDate(contactLineDto.getLineField().getDateOfReport()));
 			newContact.setLastContactDate(DateHelper8.toDate(contactLineDto.getLineField().getMultiDaySelector().getEndDate()));
 			newContact.setRelationToCase(contactLineDto.getLineField().getRelationToCase());
