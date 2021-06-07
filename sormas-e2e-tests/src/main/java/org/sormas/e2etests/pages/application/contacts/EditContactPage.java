@@ -65,8 +65,7 @@ public class EditContactPage {
   public static final By PROHIBITION_TO_WORK_OPTIONS = By.cssSelector("#prohibitionToWork label");
   public static final By HOME_BASED_QUARANTINE_OPTIONS =
       By.cssSelector("#quarantineHomePossible label");
-  public static final By QUARANTINE_COMBOBOX =
-      By.cssSelector(".v-verticallayout [location='quarantine'] [role='combobox'] div");
+  public static final By QUARANTINE_COMBOBOX = By.cssSelector("#quarantine div");
   public static final By HIGH_PRIORITY_CHECKBOX = By.cssSelector("#highPriority > input");
   public static final By HIGH_PRIORITY_LABEL = By.cssSelector("#highPriority > label");
   public static final By DIABETES_OPTIONS = By.cssSelector("#diabetes label");
