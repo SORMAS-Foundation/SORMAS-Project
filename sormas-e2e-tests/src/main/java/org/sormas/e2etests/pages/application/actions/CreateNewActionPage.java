@@ -15,26 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.steps.api;
 
-import cucumber.api.java8.En;
-import javax.inject.Inject;
-import org.sormas.e2etests.helpers.api.EventHelper;
-import org.sormas.e2etests.pojo.api.Event;
-import org.sormas.e2etests.services.api.EventApiService;
-import org.sormas.e2etests.state.ApiState;
+package org.sormas.e2etests.pages.application.actions;
 
-public class EventSteps implements En {
+import org.openqa.selenium.By;
 
-  @Inject
-  public EventSteps(EventHelper eventHelper, EventApiService eventApiService, ApiState apiState) {
+public class CreateNewActionPage {
 
-    When(
-        "API: I create a new event",
-        () -> {
-          Event eve = eventApiService.buildGeneratedEvent();
-          eventHelper.createEvent(eve);
-          apiState.setCreatedEvent(eve);
-        });
-  }
+  public static final By NEW_ACTION_POPUP = By.cssSelector(".v-window .popupContent");
+  public static final By DATE_INPUT = By.cssSelector("#date_date > input");
+  public static final By PRIORITY_COMBOBOX = By.cssSelector("#priority > div");
+  public static final By MEASURE_COMBOBOX = By.cssSelector("#actionMeasure > div");
+  public static final By TITLE_INPUT = By.id("title");
+  public static final By DESCRIPTION_IFRAME = By.cssSelector("#description > iframe");
+  public static final By ACTION_STATUS_OPTIONS = By.cssSelector("#actionStatus label");
+  public static final By SAVE_BUTTON = By.cssSelector(".v-window #commit");
 }

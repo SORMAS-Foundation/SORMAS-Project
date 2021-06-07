@@ -15,26 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.steps.api;
 
-import cucumber.api.java8.En;
-import javax.inject.Inject;
-import org.sormas.e2etests.helpers.api.EventHelper;
-import org.sormas.e2etests.pojo.api.Event;
-import org.sormas.e2etests.services.api.EventApiService;
-import org.sormas.e2etests.state.ApiState;
+package org.sormas.e2etests.pages.application.events;
 
-public class EventSteps implements En {
+import org.openqa.selenium.By;
 
-  @Inject
-  public EventSteps(EventHelper eventHelper, EventApiService eventApiService, ApiState apiState) {
-
-    When(
-        "API: I create a new event",
-        () -> {
-          Event eve = eventApiService.buildGeneratedEvent();
-          eventHelper.createEvent(eve);
-          apiState.setCreatedEvent(eve);
-        });
-  }
+public class EventActionsPage {
+  public static final By CREATE_BUTTON = By.id("actionCreate");
+  public static final String EDIT_SPECIFIC_EVENT_BUTTON =
+      "//div[contains(text(),'%s')]//following::div[@id='edit-action-0']";
 }
