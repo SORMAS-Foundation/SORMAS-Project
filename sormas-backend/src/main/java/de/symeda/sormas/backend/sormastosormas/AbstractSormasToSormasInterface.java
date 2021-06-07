@@ -96,10 +96,8 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 			associatedEntities.addAll(shareData.getAssociatedEntities());
 		}
 
-		sormasToSormasFacadeHelper.sendEntitiesToSormas(
-			entitiesToSend,
-			options,
-			(host, authToken, encryptedData) -> sormasToSormasRestClient.post(host, saveEndpoint, authToken, encryptedData));
+		sormasToSormasFacadeHelper
+			.sendEntitiesToSormas(entitiesToSend, options, (id, encryptedData) -> sormasToSormasRestClient.post(id, saveEndpoint, encryptedData));
 
 		entities.forEach(entity -> saveNewShareInfo(currentUser.toReference(), options, entity, this::setEntityShareInfoAssociatedObject));
 		associatedEntities.forEach(wrapper -> {
@@ -158,7 +156,7 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 		sormasToSormasFacadeHelper.sendEntitiesToSormas(
 			Collections.singletonList(shareData.getDto()),
 			options,
-			(host, authToken, encryptedData) -> sormasToSormasRestClient.put(host, saveEndpoint, authToken, encryptedData));
+			(id, encryptedData) -> sormasToSormasRestClient.put(id, saveEndpoint, encryptedData));
 
 		entity.getSormasToSormasOriginInfo().setOwnershipHandedOver(false);
 		originInfoService.persist(entity.getSormasToSormasOriginInfo());
@@ -219,7 +217,7 @@ public abstract class AbstractSormasToSormasInterface<T extends AbstractDomainOb
 		sormasToSormasFacadeHelper.sendEntitiesToSormas(
 			Collections.singletonList(shareData.getDto()),
 			options,
-			(host, authToken, encryptedData) -> sormasToSormasRestClient.post(host, syncEndpoint, authToken, encryptedData));
+			(id, encryptedData) -> sormasToSormasRestClient.post(id, syncEndpoint, encryptedData));
 
 		SormasToSormasShareInfo shareInfo = getShareInfoByEntityAndOrganization(entity.getUuid(), options.getOrganization().getUuid());
 		updateShareInfoOptions(shareInfo, options);

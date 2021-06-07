@@ -21,13 +21,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
 
-import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -78,7 +75,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.common.StartupShutdownService;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -110,18 +106,12 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
 		options.setComment("Test comment");
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasRestClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
-				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_REST_URL));
+				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ACCESS_CN));
 				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/cases"));
 
-				String authToken = invocation.getArgument(2, String.class);
-				assertThat(authToken, startsWith("Basic "));
-				String credentials = new String(Base64.getDecoder().decode(authToken.replace("Basic ", "")), StandardCharsets.UTF_8);
-				// uses password from server-list.csv from `serveraccessdefault` package
-				assertThat(credentials, is(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + SECOND_SERVER_REST_PASSWORD));
-
-				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(3, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(2, SormasToSormasEncryptedDataDto.class);
 				assertThat(encryptedData.getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
 
 				SormasToSormasCaseDto[] sharedCases = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto[].class);
@@ -177,9 +167,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setComment("Test comment");
 		options.setWithAssociatedContacts(true);
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasRestClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
-				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(3, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(2, SormasToSormasEncryptedDataDto.class);
 				SormasToSormasCaseDto[] sharedCases = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto[].class);
 
 				assertThat(sharedCases[0].getAssociatedContacts().size(), is(1));
@@ -237,9 +227,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setWithSamples(true);
 		options.setWithAssociatedContacts(true);
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasRestClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
-				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(3, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(2, SormasToSormasEncryptedDataDto.class);
 				SormasToSormasCaseDto[] sharedCases = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto[].class);
 
 				assertThat(sharedCases[0].getSamples().size(), is(2));
@@ -502,9 +492,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
 		options.setPseudonymizePersonalData(true);
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasRestClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
-				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(3, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(2, SormasToSormasEncryptedDataDto.class);
 				SormasToSormasCaseDto[] sharedCases = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto[].class);
 				SormasToSormasCaseDto sharedCase = sharedCases[0];
 
@@ -539,9 +529,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
 		options.setPseudonymizeSensitiveData(true);
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasRestClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
-				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(3, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(2, SormasToSormasEncryptedDataDto.class);
 				SormasToSormasCaseDto[] sharedCases = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto[].class);
 				SormasToSormasCaseDto sharedCase = sharedCases[0];
 
@@ -594,7 +584,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setWithSamples(true);
 		options.setComment("Test comment");
 
-		Mockito.when(MockProducer.getSormasToSormasClient().put(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasRestClient().put(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> Response.noContent().build());
 
 		getSormasToSormasCaseFacade().returnEntity(caze.getUuid(), options);

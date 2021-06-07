@@ -19,13 +19,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.startsWith;
 
-import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -77,14 +72,13 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.common.StartupShutdownService;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
-	public void testShareEvent() throws SormasToSormasException, JsonProcessingException, NoSuchAlgorithmException, KeyManagementException {
+	public void testShareEvent() throws SormasToSormasException, JsonProcessingException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
 
@@ -111,18 +105,12 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
 		options.setComment("Test comment");
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasRestClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
-				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_REST_URL));
+				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ACCESS_CN));
 				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/events"));
 
-				String authToken = invocation.getArgument(2, String.class);
-				assertThat(authToken, startsWith("Basic "));
-				String credentials = new String(Base64.getDecoder().decode(authToken.replace("Basic ", "")), StandardCharsets.UTF_8);
-				// uses password from server-list.csv from `serveraccessdefault` package
-				assertThat(credentials, is(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + SECOND_SERVER_REST_PASSWORD));
-
-				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(3, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(2, SormasToSormasEncryptedDataDto.class);
 				SormasToSormasEventDto[] sharedEvents = decryptSharesData(encryptedData.getData(), SormasToSormasEventDto[].class);
 				SormasToSormasEventDto sharedEventData = sharedEvents[0];
 
@@ -159,8 +147,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 	}
 
 	@Test
-	public void testShareEventWithSamples()
-		throws SormasToSormasException, JsonProcessingException, NoSuchAlgorithmException, KeyManagementException {
+	public void testShareEventWithSamples() throws SormasToSormasException, JsonProcessingException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
 
@@ -203,12 +190,12 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setWithSamples(true);
 		options.setComment("Test comment");
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasRestClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
-				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_REST_URL));
+				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ACCESS_CN));
 				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/events"));
 
-				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(3, SormasToSormasEncryptedDataDto.class);
+				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(2, SormasToSormasEncryptedDataDto.class);
 				SormasToSormasEventDto[] sharedEvents = decryptSharesData(encryptedData.getData(), SormasToSormasEventDto[].class);
 				SormasToSormasEventDto sharedEventData = sharedEvents[0];
 
@@ -396,7 +383,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setWithEventParticipants(true);
 		options.setComment("Test comment");
 
-		Mockito.when(MockProducer.getSormasToSormasClient().put(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasRestClient().put(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> Response.noContent().build());
 
 		getSormasToSormasEventFacade().returnEntity(event.getUuid(), options);
@@ -514,7 +501,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setWithEventParticipants(true);
 		options.setComment("Test comment");
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasRestClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> Response.noContent().build());
 
 		getSormasToSormasEventFacade().syncEntity(event.getUuid(), options);

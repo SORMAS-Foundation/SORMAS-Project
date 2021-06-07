@@ -72,7 +72,7 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 		sormasToSormasFacadeHelper.sendEntitiesToSormas(
 			dtos,
 			options,
-			(host, authToken, encryptedData) -> sormasToSormasRestClient.post(host, SAVE_SHARED_LAB_MESSAGE_ENDPOINT, authToken, encryptedData));
+			(id, encryptedData) -> sormasToSormasRestClient.post(id, SAVE_SHARED_LAB_MESSAGE_ENDPOINT, encryptedData));
 
 		labMessages.forEach(labMessage -> {
 			labMessage.setStatus(LabMessageStatus.FORWARDED);

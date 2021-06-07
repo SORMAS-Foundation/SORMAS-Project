@@ -149,7 +149,7 @@ public class MockProducer {
 		return principal;
 	}
 
-	public static SormasToSormasRestClient getSormasToSormasClient() {
+	public static SormasToSormasRestClient getSormasToSormasRestClient() {
 		return SORMAS_TO_SORMAS_REST_CLIENT;
 	}
 

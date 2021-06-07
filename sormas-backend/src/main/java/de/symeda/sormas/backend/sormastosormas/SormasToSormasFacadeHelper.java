@@ -17,8 +17,6 @@ package de.symeda.sormas.backend.sormastosormas;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,7 +44,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
-import de.symeda.sormas.backend.common.StartupShutdownService;
 
 @Stateless
 @LocalBean
@@ -73,15 +70,11 @@ public class SormasToSormasFacadeHelper {
 		OrganizationServerAccessData targetServerAccessData = getOrganizationServerAccessData(options.getOrganization().getUuid())
 			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 
-		String userCredentials = StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + targetServerAccessData.getRestUserPassword();
-
 		Response response;
 		try {
 			byte[] encryptedEntities = encryptionService.signAndEncrypt(objectMapper.writeValueAsBytes(entities), targetServerAccessData.getId());
-			response = restCall.call(
-				targetServerAccessData.getHostName(),
-				"Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8),
-				new SormasToSormasEncryptedDataDto(serverAccessData.getId(), encryptedEntities));
+			response =
+				restCall.call(options.getOrganization().getUuid(), new SormasToSormasEncryptedDataDto(serverAccessData.getId(), encryptedEntities));
 		} catch (JsonProcessingException e) {
 			LOGGER.error("Unable to send data sormas", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasSend));
@@ -138,6 +131,7 @@ public class SormasToSormasFacadeHelper {
 
 	public interface RestCall {
 
-		Response call(String host, String authToken, SormasToSormasEncryptedDataDto encryptedData) throws JsonProcessingException;
+		Response call(String id, SormasToSormasEncryptedDataDto encryptedData)
+			throws JsonProcessingException, ProcessingException, SormasToSormasException;
 	}
 }
