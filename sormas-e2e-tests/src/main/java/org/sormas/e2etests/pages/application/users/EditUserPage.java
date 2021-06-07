@@ -28,8 +28,8 @@ public class EditUserPage {
   public static final By PHONE_INPUT = By.id("phone");
   public static final By COUNTRY_COMBOBOX_INPUT = By.cssSelector("#country input");
   public static final By REGION_COMBOBOX_INPUT = By.cssSelector(".v-window #region input");
-  public static final By DISTRICT_COMBOBOX_INPUT = By.cssSelector("#district input");
-  public static final By COMMUNITY_COMBOBOX_INPUT = By.cssSelector("#community input");
+  public static final By DISTRICT_COMBOBOX_INPUT = By.cssSelector(".v-window #district input");
+  public static final By COMMUNITY_COMBOBOX_INPUT = By.cssSelector(".v-window #community input");
   public static final By FACILITY_CATEGORY_COMBOBOX_INPUT = By.cssSelector("#typeGroup input");
   public static final By FACILITY_TYPE_COMBOBOX_INPUT = By.cssSelector("#facilityType input");
   public static final By FACILITY_COMBOBOX_INPUT = By.cssSelector("#facility input");
@@ -39,6 +39,7 @@ public class EditUserPage {
   public static final By POSTAL_CODE_INPUT = By.id("postalCode");
   public static final By CITY_INPUT = By.id("city");
   public static final By AREA_TYPE_COMBOBOX_INPUT = By.cssSelector("#areaType input");
+  public static final By FACILITY_NAME_DESCRIPTION_VALUE = By.id("facilityDetails");
   public static final By LANGUAGE_COMBOBOX_INPUT = By.cssSelector("#language input");
   public static final By COMMUNITY_CONTACT_PERSON_INPUT = By.cssSelector(".v-window #details");
   public static final By LATITUDE_INPUT = By.id("latitude");

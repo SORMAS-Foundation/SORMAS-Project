@@ -40,6 +40,7 @@ public class User {
   String facilityCategory;
   String facilityType;
   String facility;
+  String facilityNameAndDescription;
   String street;
   String houseNumber;
   String additionalInformation;

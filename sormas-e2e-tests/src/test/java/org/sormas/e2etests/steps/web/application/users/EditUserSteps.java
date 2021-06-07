@@ -35,8 +35,8 @@ public class EditUserSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "I check the created data is correctly displayed on Edit User Page",
-        () -> {
+        "^I check the created data is correctly displayed on Edit User Page for selected ([^\"]*)$",
+        (String role) -> {
           user = collectUserData();
 
           softly
@@ -83,13 +83,13 @@ public class EditUserSteps implements En {
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getStreet());
           softly
               .assertThat(user.getHouseNumber())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getHouseNumber());
+              .isEqualTo(CreateNewUserSteps.user.getHouseNumber());
           softly
               .assertThat(user.getAdditionalInformation())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getAdditionalInformation());
           softly
               .assertThat(user.getPostalCode())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getPostalCode());
+              .isEqualTo(CreateNewUserSteps.user.getPostalCode());
           softly
               .assertThat(user.getCity())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getCity());
@@ -98,19 +98,17 @@ public class EditUserSteps implements En {
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getAreaType());
           softly
               .assertThat(user.getGpsLongitude())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getGpsLongitude());
+              .isEqualTo(CreateNewUserSteps.user.getGpsLongitude());
           softly
               .assertThat(user.getGpsLatitude())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getGpsLatitude());
+              .isEqualTo(CreateNewUserSteps.user.getGpsLatitude());
           softly
               .assertThat(user.getGpsAccuracy())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getGpsAccuracy());
+              .isEqualTo(CreateNewUserSteps.user.getGpsAccuracy());
           softly
               .assertThat(user.getUserName())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getUserName());
-          softly
-              .assertThat(user.getUserRole())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getUserRole());
+          softly.assertThat(user.getUserRole()).isEqualToIgnoringCase(role);
           softly
               .assertThat(user.getLimitedDisease())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getLimitedDisease());
@@ -156,7 +154,7 @@ public class EditUserSteps implements En {
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getStreet());
           softly
               .assertThat(editUser.getHouseNumber())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getHouseNumber());
+              .isEqualTo(CreateNewUserSteps.user.getHouseNumber());
           softly
               .assertThat(editUser.getAdditionalInformation())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getAdditionalInformation());
@@ -171,13 +169,13 @@ public class EditUserSteps implements En {
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getAreaType());
           softly
               .assertThat(editUser.getGpsLongitude())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getGpsLongitude());
+              .isEqualTo(CreateNewUserSteps.user.getGpsLongitude());
           softly
               .assertThat(editUser.getGpsLatitude())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getGpsLatitude());
+              .isEqualTo(CreateNewUserSteps.user.getGpsLatitude());
           softly
               .assertThat(editUser.getGpsAccuracy())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getGpsAccuracy());
+              .isEqualTo(CreateNewUserSteps.user.getGpsAccuracy());
           softly
               .assertThat(editUser.getUserName())
               .isEqualToIgnoringCase(CreateNewUserSteps.user.getUserName());

@@ -52,12 +52,10 @@ public class UserManagementSteps implements En {
   }
 
   private void searchForUser(String userName) {
-    webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_USER_INPUT);
     webDriverHelpers.fillAndSubmitInWebElement(SEARCH_USER_INPUT, userName);
   }
 
   private void selectFirstElementFromList() {
-    webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_EDIT_BUTTON_FROM_LIST);
     webDriverHelpers.clickOnWebElementBySelector(FIRST_EDIT_BUTTON_FROM_LIST);
   }
 }
