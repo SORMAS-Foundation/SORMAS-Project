@@ -86,7 +86,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 	@EJB
-	private SharedDataProcessorHelper dataProcessorHelper;
+	private ReceivedDataProcessorHelper dataProcessorHelper;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
@@ -140,7 +140,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		if (options.isHandOverOwnership()) {
 			validateOwnership(entities);
 		}
-		validateEntitiesBeforeShare(entities);
+
+		validateEntitiesBeforeShare(entities, options.isHandOverOwnership());
 
 		List<PREVIEW> previewsToSend = new ArrayList<>();
 		List<AssociatedEntityWrapper<?>> associatedEntities = new ArrayList<>();
@@ -185,7 +186,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 				if (caseErrors.hasError()) {
 					validationErrors.put(buildEntityValidationGroupName(preview), caseErrors);
 				} else {
-					PREVIEW processedData = getSharedDataProcessor().processSharedPreview(preview);
+					PREVIEW processedData = getReceivedDataProcessor().processReceivedPreview(preview);
 					previewsToSave.add(processedData);
 				}
 			} catch (SormasToSormasValidationException validationException) {
@@ -253,7 +254,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		List<ShareData<ADO, S>> shareData = getShareDataBuilder().buildShareData(shareInfo, currentUser);
 
 		List<S> entitiesToSend = shareData.stream().map(ShareData::getDto).collect(Collectors.toList());
-		validateEntitiesBeforeShare(shareData.stream().map(ShareData::getEntity).collect(Collectors.toList()));
+		validateEntitiesBeforeShare(shareData.stream().map(ShareData::getEntity).collect(Collectors.toList()), shareInfo.isOwnershipHandedOver());
 
 		byte[] encrypted;
 		try {
@@ -274,7 +275,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		User currentUser = userService.getCurrentUser();
 		List<ADO> entities = getEntityService().getByUuids(entityUuids);
 
-		validateEntitiesBeforeShare(entities, options);
+		validateEntitiesBeforeShare(entities, options.isHandOverOwnership());
 
 		List<S> entitiesToSend = new ArrayList<>();
 		List<AssociatedEntityWrapper<?>> associatedEntities = new ArrayList<>();
@@ -337,7 +338,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		User currentUser = userService.getCurrentUser();
 
 		ADO entity = getEntityService().getByUuid(entityUuid);
-		validateEntitiesBeforeShare(Collections.singletonList(entity), options);
+		validateEntitiesBeforeShare(Collections.singletonList(entity), options.isHandOverOwnership());
 
 		ShareData<ADO, S> shareData = getShareDataBuilder().buildShareData(entity, currentUser, options);
 
@@ -405,7 +406,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		User currentUser = userService.getCurrentUser();
 		ADO entity = getEntityService().getByUuid(entityUuid);
 
-		validateEntitiesBeforeShare(Collections.singletonList(entity), options);
+		validateEntitiesBeforeShare(Collections.singletonList(entity), options.isHandOverOwnership());
 
 		ShareData<ADO, S> shareData = getShareDataBuilder().buildShareData(entity, currentUser, options);
 
@@ -477,7 +478,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	protected abstract Class<S[]> getShareDataClass();
 
-	protected abstract void validateEntitiesBeforeShare(List<ADO> entities, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	protected abstract void validateEntitiesBeforeShare(List<ADO> entities, boolean handOverOwnership) throws SormasToSormasException;
 
 	protected abstract ValidationErrors validateSharedEntity(DTO entity);
 

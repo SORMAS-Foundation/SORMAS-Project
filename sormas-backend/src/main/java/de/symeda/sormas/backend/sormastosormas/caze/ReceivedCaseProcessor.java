@@ -98,7 +98,7 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 	}
 
 	@Override
-	public SormasToSormasCasePreview processSharedPreview(SormasToSormasCasePreview preview) throws SormasToSormasValidationException {
+	public SormasToSormasCasePreview processReceivedPreview(SormasToSormasCasePreview preview) throws SormasToSormasValidationException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
 		ValidationErrors caseValidationErrors = new ValidationErrors();

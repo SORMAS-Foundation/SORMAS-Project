@@ -23,5 +23,5 @@ public interface ReceivedDataProcessor<ENTITY extends SormasToSormasEntityDto, S
 
 	PROCESED processReceivedData(SHARED sharedData, ENTITY existingData) throws SormasToSormasValidationException;
 
-	PREVIEW processSharedPreview(PREVIEW sharedPreview) throws SormasToSormasValidationException;
+	PREVIEW processReceivedPreview(PREVIEW sharedPreview) throws SormasToSormasValidationException;
 }

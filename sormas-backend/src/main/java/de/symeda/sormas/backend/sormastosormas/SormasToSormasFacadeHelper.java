@@ -85,7 +85,7 @@ public class SormasToSormasFacadeHelper {
 	}
 
 	public byte[] encryptEntities(Object entities, String organizationId) throws SormasToSormasException, JsonProcessingException {
-		return encryptionService.encrypt(objectMapper.writeValueAsBytes(entities), organizationId);
+		return encryptionService.signAndEncrypt(objectMapper.writeValueAsBytes(entities), organizationId);
 	}
 
 	public <T> T sendRequestToSormas(String organizationId, RestCall restCall, Class<T> responseType) throws SormasToSormasException {

@@ -80,7 +80,7 @@ public class ReceivedContactProcessor
 	}
 
 	@Override
-	public SormasToSormasContactPreview processSharedPreview(SormasToSormasContactPreview preview) throws SormasToSormasValidationException {
+	public SormasToSormasContactPreview processReceivedPreview(SormasToSormasContactPreview preview) throws SormasToSormasValidationException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
 		ValidationErrors contactErrors = dataProcessorHelper.processContactPreview(preview);

@@ -91,7 +91,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 	}
 
 	@Override
-	public SormasToSormasEventPreview processSharedPreview(SormasToSormasEventPreview preview) throws SormasToSormasValidationException {
+	public SormasToSormasEventPreview processReceivedPreview(SormasToSormasEventPreview preview) throws SormasToSormasValidationException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
 		ValidationErrors eventValidationErrors = new ValidationErrors();
