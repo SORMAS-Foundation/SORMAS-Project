@@ -64,6 +64,7 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 public class SormasToSormasFacadeTest extends AbstractBeanTest {
@@ -157,22 +158,26 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return shareInfo;
 	}
 
+	protected byte[] encryptShareDataAsArray(Object shareData) throws JsonProcessingException, SormasToSormasException {
+		return encryptShareData(Collections.singletonList(shareData));
+	}
+
 	protected byte[] encryptShareData(Object shareData) throws JsonProcessingException, SormasToSormasException {
 		mockDefaultServerAccess();
 
-		byte[] data = objectMapper.writeValueAsBytes(Collections.singletonList(shareData));
-		byte[] encryptedData = getSormasToSormasEncryptionService().encrypt(data, SECOND_SERVER_ACCESS_CN);
+		byte[] data = objectMapper.writeValueAsBytes(shareData);
+		byte[] encryptedData = getSormasToSormasEncryptionService().signAndEncrypt(data, SECOND_SERVER_ACCESS_CN);
 
 		mockSecondServerAccess();
 
 		return encryptedData;
 	}
 
-	protected <T> T[] decryptSharesData(byte[] data, Class<T[]> dataType) throws SormasToSormasException, IOException {
+	protected <T> T decryptSharesData(byte[] data, Class<T> dataType) throws SormasToSormasException, IOException {
 		mockSecondServerAccess();
 
-		byte[] decryptData = getSormasToSormasEncryptionService().decrypt(data, DEFAULT_SERVER_ACCESS_CN);
-		T[] parsedData = objectMapper.readValue(decryptData, dataType);
+		byte[] decryptData = getSormasToSormasEncryptionService().decryptAndVerify(data, DEFAULT_SERVER_ACCESS_CN);
+		T parsedData = objectMapper.readValue(decryptData, dataType);
 
 		mockDefaultServerAccess();
 

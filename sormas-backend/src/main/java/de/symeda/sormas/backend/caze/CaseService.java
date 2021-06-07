@@ -93,28 +93,23 @@ import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -139,14 +134,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@EJB
 	private SampleService sampleService;
 	@EJB
-	private PersonFacadeEjbLocal personFacade;
-	@EJB
-	private PersonService personService;
-	@EJB
-	private EventParticipantService eventParticipantService;
-	@EJB
-	private HospitalizationService hospitalizationService;
-	@EJB
 	private EpiDataService epiDataService;
 	@EJB
 	private UserService userService;
@@ -166,8 +153,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
-	@EJB
-	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
 
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
@@ -801,12 +786,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), caseCriteria.getBirthdateDD()));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyContactsFromOtherInstances())) {
+			Subquery<Long> sharesSubQuery = cq.subquery(Long.class);
+			Root<ShareInfoCase> sharesRoot = sharesSubQuery.from(ShareInfoCase.class);
+			sharesSubQuery.where(cb.equal(sharesRoot.get(ShareInfoCase.CAZE), from));
+			sharesSubQuery.select(sharesRoot.get(ShareInfoCase.ID));
+
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.or(
-					cb.isNotNull(joins.getSormasToSormasShareInfo().get(SormasToSormasShareInfo.CAZE)),
-					cb.isNotNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO))));
+					cb.exists(sharesSubQuery),
+					cb.isNotNull(from.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO))));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithReinfection())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.RE_INFECTION), YesNoUnknown.YES));
@@ -939,7 +929,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.add(clinicalCourse, ClinicalCourse.HEALTH_CONDITIONS)
 			.add(casePath, Case.MATERNAL_HISTORY)
 			.add(casePath, Case.PORT_HEALTH_INFO)
-			.add(casePath, Case.SORMAS_TO_SORMAS_SHARES);
+			.add(casePath, Case.SHARE_INFO_CASES);
 
 		if (includeExtendedChangeDateFilters) {
 			Join<Case, Sample> caseSampleJoin = casePath.join(Case.SAMPLES, JoinType.LEFT);
@@ -1033,7 +1023,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
 				Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
 				Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
-				contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, cq, contactRoot));
+				contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, contactRoot));
 				contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
 				filter = CriteriaBuilderHelper.or(cb, filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
 			}
@@ -1075,7 +1065,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 * By default (if {@code dateType} is null), this logic looks at the {@link Symptoms#onsetDate} first or, if this is null,
 	 * the {@link Case#reportDate}.
 	 */
-	private Predicate createNewCaseFilter(
+	public Predicate createNewCaseFilter(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		From<?, Case> caze,
@@ -1304,7 +1294,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
 		Root<Case> caseRoot = cq.from(Case.class);
 
-		cq.where(cb.equal(caseRoot.get(Case.EXTERNAL_ID), externalId));
+		cq.where(cb.equal(caseRoot.get(Case.EXTERNAL_ID), externalId), cb.equal(caseRoot.get(Case.DELETED), Boolean.FALSE));
 
 		return em.createQuery(cq).getResultList();
 	}

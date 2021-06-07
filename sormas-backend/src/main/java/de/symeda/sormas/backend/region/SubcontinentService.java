@@ -61,4 +61,19 @@ public class SubcontinentService extends AbstractInfrastructureAdoService<Subcon
 
 		return em.createQuery(cq).getResultList();
 	}
+
+	public List<Subcontinent> getByExternalId(String externalId, boolean includeArchived) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Subcontinent> cq = cb.createQuery(getElementClass());
+		Root<Subcontinent> from = cq.from(getElementClass());
+
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(Subcontinent.EXTERNAL_ID), externalId.trim());
+		if (!includeArchived) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
+
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList();
+	}
 }

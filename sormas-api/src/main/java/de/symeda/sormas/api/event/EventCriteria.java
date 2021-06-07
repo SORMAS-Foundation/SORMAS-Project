@@ -68,8 +68,6 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
-	private Date reportedDateFrom;
-	private Date reportedDateTo;
 	private EntityRelevanceStatus relevanceStatus;
 	private Date eventDateFrom;
 	private Date eventDateTo;
@@ -244,33 +242,10 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 		return this;
 	}
 
-	/**
-	 * @param reportedDateTo
-	 *            will automatically be set to the end of the day
-	 */
-	public EventCriteria reportedBetween(Date reportedDateFrom, Date reportedDateTo) {
-
-		this.reportedDateFrom = reportedDateFrom;
-		this.reportedDateTo = reportedDateTo;
+	public EventCriteria eventDateBetween(Date eventDateFrom, Date eventDateTo) {
+		this.eventDateFrom = eventDateFrom;
+		this.eventDateTo = eventDateTo;
 		return this;
-	}
-
-	public EventCriteria reportedDateFrom(Date reportedDateFrom) {
-		this.reportedDateFrom = reportedDateFrom;
-		return this;
-	}
-
-	public Date getReportedDateFrom() {
-		return reportedDateFrom;
-	}
-
-	public EventCriteria reportedDateTo(Date reportedDateTo) {
-		this.reportedDateTo = reportedDateTo;
-		return this;
-	}
-
-	public Date getReportedDateTo() {
-		return reportedDateTo;
 	}
 
 	public EventCriteria eventDateBetween(Date eventDateFrom, Date eventDateTo, CriteriaDateType eventDateType, DateFilterOption dateFilterOption) {
@@ -305,6 +280,11 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 
 	public void setEventDateType(CriteriaDateType eventDateType) {
 		this.eventDateType = eventDateType;
+	}
+
+	public EventCriteria eventDateType(CriteriaDateType eventDateType) {
+		this.eventDateType = eventDateType;
+		return this;
 	}
 
 	public EventCriteria dateFilterOption(DateFilterOption dateFilterOption) {

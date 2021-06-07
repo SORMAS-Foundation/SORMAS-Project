@@ -44,11 +44,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
-import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
@@ -72,11 +70,10 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -87,8 +84,6 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @LocalBean
 public class EventService extends AbstractCoreAdoService<Event> {
 
-	@EJB
-	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
@@ -194,47 +189,27 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(objects -> (String) objects[0], objects -> (User) objects[1]));
 	}
 
-	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
-
+	public Map<String, User> getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(String personUuid, String excludedEventUuid, Disease disease, Date date) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
-		Root<Event> event = cq.from(getElementClass());
-		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
-		Join<Location, District> eventDistrict = eventLocation.join(Location.DISTRICT, JoinType.LEFT);
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Event> eventRoot = cq.from(Event.class);
+		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
+		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
+		Join<Event, User> responsibleUserJoin = eventRoot.join(Event.RESPONSIBLE_USER, JoinType.INNER);
 
-		Predicate filter = createDefaultFilter(cb, event);
-		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event)));
-		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, event));
-
-		List<DashboardEventDto> result;
-
-		if (filter != null) {
-			cq.where(filter);
-			cq.multiselect(
-				event.get(Event.UUID),
-				event.get(Event.EVENT_STATUS),
-				event.get(Event.EVENT_INVESTIGATION_STATUS),
-				event.get(Event.DISEASE),
-				event.get(Event.DISEASE_DETAILS),
-				event.get(Event.START_DATE),
-				event.get(Event.REPORT_LAT),
-				event.get(Event.REPORT_LON),
-				eventLocation.get(Location.LATITUDE),
-				eventLocation.get(Location.LONGITUDE),
-				event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
-				event.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID),
-				eventLocation.join(Location.REGION, JoinType.LEFT).get(Region.UUID),
-				eventDistrict.get(District.NAME),
-				eventDistrict.get(District.UUID),
-				eventLocation.join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID));
-
-			result = em.createQuery(cq).getResultList();
-
-		} else {
-			result = Collections.emptyList();
-		}
-
-		return result;
+		Timestamp timestamp = DateHelper.toTimestampUpper(date);
+		Predicate filter = cb.and(
+			cb.equal(personJoin.get(Person.UUID), personUuid),
+			cb.not(cb.equal(eventRoot.get(Event.UUID), excludedEventUuid)),
+			cb.equal(eventRoot.get(Event.DISEASE), disease),
+			createActiveEventsFilter(cb, eventRoot),
+			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.REPORT_DATE_TIME), timestamp),
+			cb.isNotNull(responsibleUserJoin.get(User.USER_EMAIL)));
+		cq.where(filter);
+		cq.multiselect(eventRoot.get(Event.UUID), responsibleUserJoin);
+		return em.createQuery(cq).getResultList()
+			.stream()
+			.collect(Collectors.toMap(row -> (String) row[0], row -> (User) row[1]));
 	}
 
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
@@ -270,28 +245,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		cq.where(filter);
 
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
-	}
-
-	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Event> event = cq.from(Event.class);
-		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
-
-		cq.multiselect(event.get(Event.EVENT_STATUS), cb.count(event));
-		cq.groupBy(event.get(Event.EVENT_STATUS));
-
-		Predicate filter = createDefaultFilter(cb, event);
-		filter = CriteriaBuilderHelper.and(cb, filter, buildCriteriaFilter(eventCriteria, eventQueryContext));
-		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, event));
-
-		if (filter != null)
-			cq.where(filter);
-
-		List<Object[]> results = em.createQuery(cq).getResultList();
-
-		return results.stream().collect(Collectors.toMap(e -> (EventStatus) e[0], e -> (Long) e[1]));
 	}
 
 	public List<String> getArchivedUuidsSince(Date since) {
@@ -492,7 +445,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	private ChangeDateFilterBuilder addChangeDateFilter(ChangeDateFilterBuilder filterBuilder, From<?, Event> eventPath) {
 
-		filterBuilder.add(eventPath).add(eventPath, Event.EVENT_LOCATION).add(eventPath, Contact.SORMAS_TO_SORMAS_SHARES);
+		filterBuilder.add(eventPath).add(eventPath, Event.EVENT_LOCATION).add(eventPath, Event.SHARE_INFO_EVENTS);
 
 		return filterBuilder;
 	}
@@ -588,12 +541,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					from.join(Event.EVENT_LOCATION, JoinType.LEFT).join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID),
 					eventCriteria.getCommunity().getUuid()));
 		}
-		if (eventCriteria.getReportedDateFrom() != null || eventCriteria.getReportedDateTo() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.between(from.get(Event.REPORT_DATE_TIME), eventCriteria.getReportedDateFrom(), eventCriteria.getReportedDateTo()));
-		}
+
 		if (eventCriteria.getEventEvolutionDateFrom() != null && eventCriteria.getEventEvolutionDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
@@ -649,8 +597,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					CriteriaBuilderHelper.ilike(cb, eventParticipantJoin.get(EventParticipant.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, personJoin.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, personJoin.get(Person.LAST_NAME), textFilter),
-					CriteriaBuilderHelper.ilike(cb, (Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
-					CriteriaBuilderHelper.ilike(cb, (Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter));
+					CriteriaBuilderHelper.ilike(
+						cb,
+						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
+						textFilter),
+					CriteriaBuilderHelper.ilike(
+						cb,
+						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
+						textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
@@ -710,10 +664,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				cb.equal(from.get(Event.SUPERORDINATE_EVENT).get(AbstractDomainObject.UUID), eventCriteria.getSuperordinateEvent().getUuid()));
 		}
 		if (eventCriteria.getEventGroup() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.equal(from.join(Event.EVENT_GROUPS).get(EventGroup.UUID), eventCriteria.getEventGroup().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(Event.EVENT_GROUPS).get(EventGroup.UUID), eventCriteria.getEventGroup().getUuid()));
 		}
 		if (CollectionUtils.isNotEmpty(eventCriteria.getExcludedUuids())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.not(from.get(AbstractDomainObject.UUID).in(eventCriteria.getExcludedUuids())));
@@ -745,33 +697,27 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		Date eventDateTo = eventCriteria.getEventDateTo();
 
 		if (eventDateType == null || eventDateType == EventCriteriaDateType.EVENT_DATE) {
+			Predicate eventDateFilter = null;
+
 			if (eventDateFrom != null && eventDateTo != null) {
-				filter = CriteriaBuilderHelper.and(
-					cb,
-					filter,
-					cb.or(
-						cb.between(from.get(Event.START_DATE), eventDateFrom, eventDateTo),
-						cb.and(
-							cb.isNotNull(from.get(Event.END_DATE)),
-							cb.lessThan(from.get(Event.START_DATE), eventDateFrom),
-							cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventDateFrom))));
+				eventDateFilter = cb.or(
+					cb.and(cb.isNull(from.get(Event.END_DATE)), cb.between(from.get(Event.START_DATE), eventDateFrom, eventDateTo)),
+					cb.and(cb.isNull(from.get(Event.START_DATE)), cb.between(from.get(Event.END_DATE), eventDateFrom, eventDateTo)),
+					cb.and(
+						cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventDateFrom),
+						cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo)));
 			} else if (eventDateFrom != null) {
-				filter = CriteriaBuilderHelper.and(
-					cb,
-					filter,
-					cb.or(
-						cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventDateFrom),
-						cb.and(
-							cb.isNotNull(from.get(Event.END_DATE)),
-							cb.lessThan(from.get(Event.START_DATE), eventDateFrom),
-							cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventDateFrom))));
+				eventDateFilter = cb.or(
+					cb.and(cb.isNull(from.get(Event.END_DATE)), cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventDateFrom)),
+					cb.and(cb.isNull(from.get(Event.START_DATE)), cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventDateFrom)));
 			} else if (eventDateTo != null) {
-				filter = CriteriaBuilderHelper.and(
-					cb,
-					filter,
-					cb.or(
-						cb.and(cb.isNull(from.get(Event.END_DATE)), cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo)),
-						cb.lessThanOrEqualTo(from.get(Event.END_DATE), eventDateTo)));
+				eventDateFilter = cb.or(
+					cb.and(cb.isNull(from.get(Event.START_DATE)), cb.lessThanOrEqualTo(from.get(Event.END_DATE), eventDateTo)),
+					cb.and(cb.isNull(from.get(Event.END_DATE)), cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventDateTo)));
+			}
+
+			if (eventDateFrom != null || eventDateTo != null) {
+				filter = CriteriaBuilderHelper.and(cb, filter, eventDateFilter);
 			}
 		} else if (eventDateType == ExternalShareDateType.LAST_EXTERNAL_SURVEILLANCE_TOOL_SHARE) {
 			filter = externalShareInfoService.buildLatestSurvToolShareDateFilter(cq, cb, from, ExternalShareInfo.EVENT, (latestShareDate) -> {

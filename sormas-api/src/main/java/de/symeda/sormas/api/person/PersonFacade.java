@@ -19,17 +19,17 @@ package de.symeda.sormas.api.person;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -43,9 +43,9 @@ public interface PersonFacade {
 
 	JournalPersonDto getPersonForJournal(String uuid);
 
-	PersonDto savePersonAndNotifyExternalJournal(@Valid PersonDto dto);
+	PersonDto savePerson(@Valid PersonDto dto);
 
-	PersonDto savePerson(@Valid PersonDto source);
+	DataHelper.Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(@Valid PersonDto source);
 
 	void validate(PersonDto dto);
 
@@ -54,8 +54,6 @@ public interface PersonFacade {
 	PersonDto getPersonByUuid(String uuid);
 
 	List<PersonDto> getByUuids(List<String> uuids);
-
-	Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
 
 	/**
 	 * Returns a list with the names of all persons that the user has access to and that match the criteria.
@@ -90,4 +88,6 @@ public interface PersonFacade {
 	long setMissingGeoCoordinates(boolean overwriteExistingCoordinates);
 
 	boolean isSharedWithoutOwnership(String uuid);
+
+	List<PersonDto> getByExternalIds(List<String> externalIds);
 }

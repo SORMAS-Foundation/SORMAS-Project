@@ -64,10 +64,10 @@ public class EpiWeekAndDateFilterComponent<DATE_TYPE> extends HorizontalLayout {
 		Calendar c = Calendar.getInstance();
 		c.setTime(new Date());
 
-		dateFilterOptionFilter = new ComboBox();
-		dateTypeSelector = new ComboBox();
-		weekFromFilter = new ComboBox();
-		weekToFilter = new ComboBox();
+		dateFilterOptionFilter = ComboBoxHelper.createComboBoxV7();
+		dateTypeSelector = ComboBoxHelper.createComboBoxV7();
+		weekFromFilter = ComboBoxHelper.createComboBoxV7();
+		weekToFilter = ComboBoxHelper.createComboBoxV7();
 		dateFromFilter = new PopupDateField();
 		dateToFilter = new PopupDateField();
 

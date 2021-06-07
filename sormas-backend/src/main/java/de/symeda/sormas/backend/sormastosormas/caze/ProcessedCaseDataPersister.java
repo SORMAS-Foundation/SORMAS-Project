@@ -41,8 +41,8 @@ import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersisterHelper;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersisterHelper.ReturnedAssociatedEntityCallback;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
@@ -116,12 +116,12 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 		final CaseDataDto savedCase;
 		if (isCreate) {
 			// save person first during creation
-			handleValidationError(() -> personFacade.savePersonAndNotifyExternalJournal(caseData.getPerson(), false), Captions.Person, buildCaseValidationGroupName(caze));
+			handleValidationError(() -> personFacade.savePerson(caseData.getPerson(), false), Captions.Person, buildCaseValidationGroupName(caze));
 			savedCase = handleValidationError(() -> caseFacade.saveCase(caze, true, false), Captions.CaseData, buildCaseValidationGroupName(caze));
 		} else {
 			//save case first during update
 			savedCase = handleValidationError(() -> caseFacade.saveCase(caze, true, false), Captions.CaseData, buildCaseValidationGroupName(caze));
-			handleValidationError(() -> personFacade.savePersonAndNotifyExternalJournal(caseData.getPerson(), false), Captions.Person, buildCaseValidationGroupName(caze));
+			handleValidationError(() -> personFacade.savePerson(caseData.getPerson(), false), Captions.Person, buildCaseValidationGroupName(caze));
 		}
 
 		if (afterSaveCase != null) {
@@ -139,7 +139,7 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 				if (isCreate || !contactFacade.exists(contact.getUuid())) {
 					// save person first during creation
 					handleValidationError(
-						() -> personFacade.savePersonAndNotifyExternalJournal(associatedContact.getPerson(), false),
+						() -> personFacade.savePerson(associatedContact.getPerson(), false),
 						Captions.Person,
 						buildContactValidationGroupName(contact));
 					handleValidationError(
@@ -153,7 +153,7 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 						Captions.Contact,
 						buildContactValidationGroupName(contact));
 					handleValidationError(
-						() -> personFacade.savePersonAndNotifyExternalJournal(associatedContact.getPerson(), false),
+						() -> personFacade.savePerson(associatedContact.getPerson(), false),
 						Captions.Person,
 						buildContactValidationGroupName(contact));
 

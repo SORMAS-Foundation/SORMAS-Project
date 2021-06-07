@@ -15,12 +15,18 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
+import static de.symeda.sormas.backend.sormastosormas.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
+
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -29,16 +35,30 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "SormasToSormasFacade")
 public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
+
+	private static final String REVOKE_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.REVOKE_REQUESTS_ENDPOINT;
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -50,10 +70,25 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private ServerAccessDataService serverAccessDataService;
 	@EJB
 	private SormasToSormasFacadeHelper sormasToSormasFacadeHelper;
+	@Inject
+	private SormasToSormasRestClient sormasToSormasRestClient;
+	@EJB
+	private SormasToSormasShareRequestFacadeEJBLocal shareRequestFacade;
+	@EJB
+	private SormasToSormasCaseFacadeEjbLocal sormasToSormasCaseFacade;
+	@EJB
+	private SormasToSormasContactFacadeEjbLocal sormasToSormasContactFacade;
+	@EJB
+	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 
 	@Override
 	public List<ServerAccessDataReferenceDto> getAvailableOrganizations() {
 		return serverAccessDataService.getOrganizationList().stream().map(OrganizationServerAccessData::toReference).collect(Collectors.toList());
+	}
+
+	@Override
+	public ServerAccessDataReferenceDto getOrganizationRef(String id) {
+		return sormasToSormasFacadeHelper.getOrganizationServerAccessData(id).map(OrganizationServerAccessData::toReference).orElseGet(null);
 	}
 
 	@Override
@@ -67,6 +102,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			cq.where(filter);
 		}
 
+		cq.distinct(true);
+
 		List<SormasToSormasShareInfo> resultList;
 		if (first != null && max != null) {
 			resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
@@ -78,13 +115,43 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	@Override
-	public boolean isFeatureEnabled() {
-		return userService.hasRight(UserRight.SORMAS_TO_SORMAS_SHARE) && !serverAccessDataService.getOrganizationList().isEmpty();
+	public void rejectShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException {
+		getEntityInterface(dataType).sendRejectShareRequest(uuid);
 	}
 
 	@Override
-	public ServerAccessDataReferenceDto getOrganizationRef(String id) {
-		return sormasToSormasFacadeHelper.getOrganizationServerAccessData(id).map(OrganizationServerAccessData::toReference).orElseGet(null);
+	public void acceptShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException, SormasToSormasValidationException {
+		getEntityInterface(dataType).acceptShareRequest(uuid);
+	}
+
+	@Override
+	public void revokeShare(String shareInfoUuid) throws SormasToSormasException {
+		SormasToSormasShareInfo shareInfo = shareInfoService.getByUuid(shareInfoUuid);
+
+		sormasToSormasFacadeHelper.sendRequestToSormas(
+			shareInfo.getOrganizationId(),
+			(host, authToken) -> sormasToSormasRestClient
+				.post(host, REVOKE_REQUEST_ENDPOINT, authToken, Collections.singletonList(shareInfo.getRequestUuid())),
+			byte[].class);
+
+		shareInfo.setRequestStatus(ShareRequestStatus.REVOKED);
+		shareInfoService.ensurePersisted(shareInfo);
+	}
+
+	@Override
+	public void revokeRequests(List<String> requestUuids) {
+		requestUuids.forEach(requestUuid -> {
+			SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(requestUuid);
+
+			shareRequest.setChangeDate(new Date());
+			shareRequest.setStatus(ShareRequestStatus.REVOKED);
+			shareRequestFacade.saveShareRequest(shareRequest);
+		});
+	}
+
+	@Override
+	public boolean isFeatureEnabled() {
+		return userService.hasRight(UserRight.SORMAS_TO_SORMAS_SHARE) && !serverAccessDataService.getOrganizationList().isEmpty();
 	}
 
 	public SormasToSormasShareInfoDto toSormasToSormasShareInfoDto(SormasToSormasShareInfo source) {
@@ -92,22 +159,11 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		DtoHelper.fillDto(target, source);
 
-		if (source.getCaze() != null) {
-			target.setCaze(source.getCaze().toReference());
-		}
-
-		if (source.getContact() != null) {
-			target.setContact(source.getContact().toReference());
-		}
-
-		if (source.getSample() != null) {
-			target.setSample(source.getSample().toReference());
-		}
-
 		OrganizationServerAccessData serverAccessData = sormasToSormasFacadeHelper.getOrganizationServerAccessData(source.getOrganizationId())
 			.orElseGet(() -> new OrganizationServerAccessData(source.getOrganizationId(), source.getOrganizationId()));
 		target.setTarget(serverAccessData.toReference());
 
+		target.setRequestStatus(source.getRequestStatus());
 		target.setSender(source.getSender().toReference());
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 		target.setWithAssociatedContacts(source.isWithAssociatedContacts());
@@ -118,6 +174,19 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setComment(source.getComment());
 
 		return target;
+	}
+
+	private SormasToSormasEntityInterface getEntityInterface(ShareRequestDataType dataType) {
+		switch (dataType) {
+		case CASE:
+			return sormasToSormasCaseFacade;
+		case CONTACT:
+			return sormasToSormasContactFacade;
+		case EVENT:
+			return sormasToSormasEventFacade;
+		default:
+			throw new RuntimeException("Unknown request [" + dataType + "]");
+		}
 	}
 
 	@LocalBean

@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import javax.ejb.Remote;
@@ -32,14 +31,12 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
-import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -98,8 +95,6 @@ public interface CaseFacade {
 
 	String getUuidByUuidEpidNumberOrExternalId(String searchTerm);
 
-	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria);
-
 	List<MapCaseDto> getCasesForMap(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
@@ -115,20 +110,6 @@ public interface CaseFacade {
 		Date from,
 		Date to,
 		NewCaseDateType dateType);
-
-	Map<CaseClassification, Long> getCaseCountPerClassification(
-		CaseCriteria caseCriteria,
-		boolean excludeSharedCases,
-		boolean excludeCasesFromContacts);
-
-	Map<PresentCondition, Long> getCaseCountPerPersonCondition(
-		CaseCriteria caseCriteria,
-		boolean excludeSharedCases,
-		boolean excludeCasesFromContacts);
-
-	Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
-
-	String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
 
 	List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease, CaseMeasure caseMeasure);
 
@@ -197,15 +178,6 @@ public interface CaseFacade {
 		Integer first,
 		Integer max,
 		List<SortProperty> sortProperties);
-
-	List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
-		RegionReferenceDto regionRef,
-		DistrictReferenceDto districtRef,
-		Disease disease,
-		Date from,
-		Date to);
-
-	long countCasesConvertedFromContacts(CaseCriteria caseCriteria);
 
 	void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes);
 

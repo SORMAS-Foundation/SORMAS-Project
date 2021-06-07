@@ -133,11 +133,13 @@ public interface Strings {
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	String confirmationPickContactAndDeleteOther = "confirmationPickContactAndDeleteOther";
 	String confirmationReduceQuarantine = "confirmationReduceQuarantine";
+	String confirmationRejectSormasToSormasShareRequest = "confirmationRejectSormasToSormasShareRequest";
 	String confirmationRemoveGridRowCancel = "confirmationRemoveGridRowCancel";
 	String confirmationRemoveGridRowConfirm = "confirmationRemoveGridRowConfirm";
 	String confirmationRemoveGridRowMessage = "confirmationRemoveGridRowMessage";
 	String confirmationRemoveGridRowTitle = "confirmationRemoveGridRowTitle";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
+	String confirmationRevokeSormasToSormasShareRequest = "confirmationRevokeSormasToSormasShareRequest";
 	String confirmationSetMissingGeoCoordinates = "confirmationSetMissingGeoCoordinates";
 	String confirmationSuperordinateEventDiscardUnsavedChanges = "confirmationSuperordinateEventDiscardUnsavedChanges";
 	String confirmationUnclearLabMessage = "confirmationUnclearLabMessage";
@@ -264,6 +266,8 @@ public interface Strings {
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
 	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
 	String errorSormasToSormasNotEditable = "errorSormasToSormasNotEditable";
+	String errorSormasToSormasOwnershipAlreadyHandedOver = "errorSormasToSormasOwnershipAlreadyHandedOver";
+	String errorSormasToSormasPersonEnrolled = "errorSormasToSormasPersonEnrolled";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
 	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
@@ -311,6 +315,7 @@ public interface Strings {
 	String headingCaseComparison = "headingCaseComparison";
 	String headingCaseConversion = "headingCaseConversion";
 	String headingCaseData = "headingCaseData";
+	String headingCaseFatalityRate = "headingCaseFatalityRate";
 	String headingCaseImport = "headingCaseImport";
 	String headingCaseResponsibleJurisidction = "headingCaseResponsibleJurisidction";
 	String headingCasesArchived = "headingCasesArchived";
@@ -319,6 +324,7 @@ public interface Strings {
 	String headingCasesGuide = "headingCasesGuide";
 	String headingCasesInQuarantine = "headingCasesInQuarantine";
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
+	String headingCasesResultingFromContacts = "headingCasesResultingFromContacts";
 	String headingCaseStatusMap = "headingCaseStatusMap";
 	String headingCaution = "headingCaution";
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
@@ -346,7 +352,6 @@ public interface Strings {
 	String headingContactMergeGuide = "headingContactMergeGuide";
 	String headingContactsArchived = "headingContactsArchived";
 	String headingContactsCancelFollowUp = "headingContactsCancelFollowUp";
-	String headingContactsConvertedToCase = "headingContactsConvertedToCase";
 	String headingContactsDeleted = "headingContactsDeleted";
 	String headingContactsInQuarantine = "headingContactsInQuarantine";
 	String headingContactsLostToFollowUp = "headingContactsLostToFollowUp";
@@ -435,6 +440,7 @@ public interface Strings {
 	String headingExposureInvestigation = "headingExposureInvestigation";
 	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingExtendQuarantine = "headingExtendQuarantine";
+	String headingFatalities = "headingFatalities";
 	String headingFetchLabMessages = "headingFetchLabMessages";
 	String headingFileExists = "headingFileExists";
 	String headingFilters = "headingFilters";
@@ -478,6 +484,7 @@ public interface Strings {
 	String headingLabMessagesDeleted = "headingLabMessagesDeleted";
 	String headingLabMessagesDeleteProcessed = "headingLabMessagesDeleteProcessed";
 	String headingLaboratorySample = "headingLaboratorySample";
+	String headingLastReportedDistrict = "headingLastReportedDistrict";
 	String headingLineListing = "headingLineListing";
 	String headingLineListingImport = "headingLineListingImport";
 	String headingLocation = "headingLocation";
@@ -512,6 +519,7 @@ public interface Strings {
 	String headingNoTreatmentsSelected = "headingNoTreatmentsSelected";
 	String headingNoUsersSelected = "headingNoUsersSelected";
 	String headingNoVisitsSelected = "headingNoVisitsSelected";
+	String headingOutbreakDistricts = "headingOutbreakDistricts";
 	String headingOutbreakIn = "headingOutbreakIn";
 	String headingPaperFormDates = "headingPaperFormDates";
 	String headingPathogenTestsDeleted = "headingPathogenTestsDeleted";
@@ -533,10 +541,12 @@ public interface Strings {
 	String headingReduceQuarantine = "headingReduceQuarantine";
 	String headingReferCaseFromPointOfEntry = "headingReferCaseFromPointOfEntry";
 	String headingReferSample = "headingReferSample";
+	String headingRejectSormasToSormasShareRequest = "headingRejectSormasToSormasShareRequest";
 	String headingRemoveCaseFromContact = "headingRemoveCaseFromContact";
 	String headingRequestedAdditionalTests = "headingRequestedAdditionalTests";
 	String headingRequestedPathogenTests = "headingRequestedPathogenTests";
 	String headingResults = "headingResults";
+	String headingRevokeSormasToSormasShareRequest = "headingRevokeSormasToSormasShareRequest";
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSaveNotification = "headingSaveNotification";
 	String headingSaveUser = "headingSaveUser";
@@ -544,6 +554,11 @@ public interface Strings {
 	String headingSelectCampaign = "headingSelectCampaign";
 	String headingSelectSourceCase = "headingSelectSourceCase";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
+	String headingShareRequestCases = "headingShareRequestCases";
+	String headingShareRequestContacts = "headingShareRequestContacts";
+	String headingShareRequestDetails = "headingShareRequestDetails";
+	String headingShareRequestEventParticipants = "headingShareRequestEventParticipants";
+	String headingShareRequestEvents = "headingShareRequestEvents";
 	String headingShowLabMessage = "headingShowLabMessage";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	String headingSomeCasesNotDeleted = "headingSomeCasesNotDeleted";
@@ -1017,6 +1032,7 @@ public interface Strings {
 	String notificationEventGroupSummary = "notificationEventGroupSummary";
 	String notificationEventGroupSummaryEmpty = "notificationEventGroupSummaryEmpty";
 	String notificationEventParticipantCaseClassificationConfirmed = "notificationEventParticipantCaseClassificationConfirmed";
+	String notificationEventParticipantRelatedToOtherEvents = "notificationEventParticipantRelatedToOtherEvents";
 	String notificationEventRemovedFromEventGroup = "notificationEventRemovedFromEventGroup";
 	String notificationEventWithResponsibleUserLine = "notificationEventWithResponsibleUserLine";
 	String notificationLabResultArrived = "notificationLabResultArrived";
