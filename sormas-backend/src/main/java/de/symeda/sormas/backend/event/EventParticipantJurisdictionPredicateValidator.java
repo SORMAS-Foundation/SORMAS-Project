@@ -68,4 +68,9 @@ public class EventParticipantJurisdictionPredicateValidator extends Jurisdiction
 	protected Predicate whenPointOfEntryLevel() {
 		return null;
 	}
+
+	@Override
+	protected Predicate whenLaboratoryLevel() {
+		return null;
+	}
 }

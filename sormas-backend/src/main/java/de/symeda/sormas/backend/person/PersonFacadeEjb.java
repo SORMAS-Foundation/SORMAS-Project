@@ -51,6 +51,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.utils.CaseJoins;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1081,7 +1082,7 @@ public class PersonFacadeEjb implements PersonFacade {
 				cb.equal(emailRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.EMAIL)));
 		emailSubQuery.select(emailRoot.get(PersonContactDetail.CONTACT_INFORMATION));
 
-		final Predicate jurisdictionPredicate = personService.getJurisdictionPredicate(cb, cq, person);
+		final Predicate jurisdictionPredicate = personService.inJurisdiction(cb, cq, person);
 
 		// make sure to check the sorting by the multi-select order if you extend the selections here
 		cq.multiselect(
@@ -1102,7 +1103,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			phoneSubQuery.alias(PersonIndexDto.PHONE),
 			emailSubQuery.alias(PersonIndexDto.EMAIL_ADDRESS),
 			person.get(Person.CHANGE_DATE),
-			cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false)));
+			personService.jurisdictionSelector(cb, jurisdictionPredicate));
 
 		Predicate filter = personService.createUserFilter(cb, cq, person);
 		if (criteria != null) {

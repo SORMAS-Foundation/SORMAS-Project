@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.visit;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -50,10 +51,12 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -66,6 +69,41 @@ public class VisitService extends BaseAdoService<Visit> {
 
 	public VisitService() {
 		super(Visit.class);
+	}
+
+	protected boolean inJurisdiction(Visit visit) {
+		return !getInJurisdictionIDs(Collections.singletonList(visit)).isEmpty();
+	}
+
+	public List<Long> getInJurisdictionIDs(final List<Visit> selectedEntities) {
+		if (selectedEntities.size() == 0) {
+			return Collections.emptyList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
+		final Root<Visit> root = inJurisdictionQuery.from(Visit.class);
+
+		Join<Visit, Case> caseJoin = root.join(Visit.CAZE, JoinType.LEFT);
+		Join<Visit, Contact> contactJoin = root.join(Visit.CONTACTS, JoinType.LEFT);
+
+		inJurisdictionQuery.select(root.get(AbstractDomainObject.ID));
+
+		final Predicate isFromSelectedCases =
+				cb.in(root.get(AbstractDomainObject.ID)).value(selectedEntities.stream().map(AbstractDomainObject::getId).collect(Collectors.toList()));
+		inJurisdictionQuery.where(cb.and(isFromSelectedCases, inJurisdiction(cb, inJurisdictionQuery, caseJoin, contactJoin)));
+
+		return em.createQuery(inJurisdictionQuery).getResultList();
+	}
+
+	private Predicate inJurisdiction(
+		CriteriaBuilder cb,
+		CriteriaQuery<Long> inJurisdictionQuery,
+		Join<Visit, Case> caseJoin,
+		Join<Visit, Contact> contactJoin) {
+		return cb.or(
+			caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(caseJoin)),
+			contactService.inJurisdictionOrOwned(cb, inJurisdictionQuery, contactJoin, new ContactJoins(contactJoin)));
 	}
 
 	public List<String> getAllActiveUuids(User user) {

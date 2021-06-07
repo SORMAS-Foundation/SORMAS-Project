@@ -107,4 +107,8 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 	protected Expression<String> removeNonNumbersExpression(CriteriaBuilder cb, Expression<String> path) {
 		return cb.function("REGEXP_REPLACE", String.class, path, cb.literal("[^0-9]"), cb.literal(""), cb.literal("g"));
 	}
+
+	public Expression<Object> jurisdictionSelector(CriteriaBuilder cb, Predicate jurisdictionPredicate) {
+		return cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false));
+	}
 }

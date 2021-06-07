@@ -39,7 +39,7 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 	private TemperatureSource temperatureSource;
 	private VisitOrigin origin;
 
-	private ContactJurisdictionDto contactJurisdiction;
+	private Boolean isInJurisdiction;
 
 	public VisitIndexDto(
 		Long id,
@@ -51,7 +51,8 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 		Boolean symptomatic,
 		Float temperature,
 		TemperatureSource temperatureSource,
-		VisitOrigin origin) {
+		VisitOrigin origin,
+		boolean isInJurisdiction) {
 
 		this.id = id;
 		this.uuid = uuid;
@@ -63,6 +64,7 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.temperature = temperature;
 		this.temperatureSource = temperatureSource;
 		this.origin = origin;
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public Long getId() {
@@ -133,10 +135,6 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.temperatureSource = temperatureSource;
 	}
 
-	public void setJurisdiction(ContactJurisdictionDto contactJurisdiction) {
-		this.contactJurisdiction = contactJurisdiction;
-	}
-
 	public VisitOrigin getOrigin() {
 		return origin;
 	}
@@ -145,7 +143,7 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.origin = origin;
 	}
 
-	public ContactJurisdictionDto getJurisdiction() {
-		return contactJurisdiction;
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 }

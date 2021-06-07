@@ -284,8 +284,6 @@ public class CaseExportDto implements Serializable {
 	private Date lastCooperativeVisitDate;
 	private String lastCooperativeVisitSymptoms;
 
-	private CaseJurisdictionDto jurisdiction;
-
 	private Long eventCount;
 	private String latestEventId;
 	private String latestEventTitle;
@@ -304,6 +302,8 @@ public class CaseExportDto implements Serializable {
 	private String responsibleRegion;
 	private String responsibleDistrict;
 	private String responsibleCommunity;
+
+	private Boolean isInJurisdiction;
 
 	//@formatter:off
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
@@ -342,7 +342,7 @@ public class CaseExportDto implements Serializable {
 						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 						 String reportingDistrict, CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType,
 						 // responsible jurisdiction
-						 String responsibleRegionUuid, String responsibleRegion, String responsibleDistrictUuid, String responsibleDistrict, String responsibleCommunityUuid, String responsibleCommunity
+						 String responsibleRegion, String responsibleDistrict, String responsibleCommunity,  boolean isInJurisdiction
 						 ) {
 		//@formatter:on
 
@@ -466,18 +466,15 @@ public class CaseExportDto implements Serializable {
 		this.responsibleDistrict = responsibleDistrict;
 		this.responsibleCommunity = responsibleCommunity;
 
-		jurisdiction = new CaseJurisdictionDto(
-			reportingUserUuid,
-			ResponsibleJurisdictionDto.of(responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid),
-			regionUuid,
-			districtUuid,
-			communityUuid,
-			healthFacilityUuid,
-			pointOfEntryUuid);
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(uuid, firstName, lastName);
+	}
+
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 
 	@Order(0)
@@ -2342,10 +2339,6 @@ public class CaseExportDto implements Serializable {
 
 	public void addOtherSample(EmbeddedSampleExportDto otherSample) {
 		this.otherSamples.add(otherSample);
-	}
-
-	public CaseJurisdictionDto getJurisdiction() {
-		return jurisdiction;
 	}
 
 	public void setFollowUpStatus(FollowUpStatus followUpStatus) {

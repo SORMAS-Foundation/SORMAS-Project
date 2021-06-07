@@ -88,6 +88,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
@@ -877,19 +878,23 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter;
 		if (userFilter != null) {
-			filter = cb.or(createUserFilterWithoutCase(cb, (From<?, Contact>) contactPath, contactCriteria), userFilter);
+			filter = cb.or(createUserFilterWithoutCase(contactQueryContext, contactCriteria), userFilter);
 		} else {
-			filter = createUserFilterWithoutCase(cb, (From<?, Contact>) contactPath, contactCriteria);
+			filter = createUserFilterWithoutCase(contactQueryContext, contactCriteria);
 		}
 		return filter;
 	}
 
-	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, From<?, Contact> contactPath) {
-		return createUserFilterWithoutCase(cb, contactPath, null);
+	public Predicate createUserFilterWithoutCase(ContactQueryContext qc) {
+		return createUserFilterWithoutCase(qc, null);
 	}
 
-	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, From<?, Contact> contactPath, ContactCriteria contactCriteria) {
+	public Predicate createUserFilterWithoutCase(ContactQueryContext qc, ContactCriteria contactCriteria) {
 
+
+		CriteriaBuilder cb = qc.getCriteriaBuilder();
+		CriteriaQuery cq = qc.getQuery();
+		From contactPath = qc.getRoot();
 		// National users can access all contacts in the system
 		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
@@ -928,6 +933,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			if (community != null) {
 				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactPath.get(Contact.COMMUNITY), currentUser.getCommunity()));
 			}
+			break;
+		case LABORATORY:
+			Subquery<Long> sampleContactSubquery = cq.subquery(Long.class);
+			Root<Sample> sampleRoot = sampleContactSubquery.from(Sample.class);
+			sampleContactSubquery.where(sampleService.createUserFilterWithoutCase(cb, new SampleJoins(sampleRoot)));
+			sampleContactSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CONTACT).get(Contact.ID));
+			filter = CriteriaBuilderHelper.or(cb, filter, cb.in(contactPath.get(Contact.ID)).value(sampleContactSubquery));
 			break;
 		default:
 		}
@@ -1309,7 +1321,29 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.lessThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), to)));
 	}
 
-	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<Contact> contactRoot, ContactJoins joins) {
+	public boolean inJurisdictionOrOwned(Contact contact) {
+		return !getInJurisdictionIDs(Collections.singletonList(contact)).isEmpty();
+	}
+
+	public List<Long> getInJurisdictionIDs(final List<Contact> selectedContacts) {
+		if (selectedContacts.size() == 0) {
+			return Collections.emptyList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
+		final Root<Contact> root = inJurisdictionQuery.from(Contact.class);
+
+		inJurisdictionQuery.select(root.get(AbstractDomainObject.ID));
+
+		final Predicate isFromSelectedCases =
+				cb.in(root.get(AbstractDomainObject.ID)).value(selectedContacts.stream().map(AbstractDomainObject::getId).collect(Collectors.toList()));
+		inJurisdictionQuery.where(cb.and(isFromSelectedCases, inJurisdictionOrOwned(cb, inJurisdictionQuery, root, new ContactJoins(root))));
+
+		return em.createQuery(inJurisdictionQuery).getResultList();
+	}
+
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, ?> contactRoot, ContactJoins joins) {
 		final User currentUser = this.getCurrentUser();
 
 		final Subquery<Long> contactCaseJurisdictionSubQuery = cq.subquery(Long.class);
@@ -1318,7 +1352,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		contactCaseJurisdictionSubQuery.where(
 			cb.and(
 				cb.equal(contactCaseRoot, joins.getRoot().get(Contact.CAZE)),
-				caseService.isInJurisdictionOrOwned(cb, new CaseJoins<>(contactCaseRoot))));
+				caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(contactCaseRoot))));
 
 		final Predicate contactCaseInJurisdiction = cb.exists(contactCaseJurisdictionSubQuery);
 

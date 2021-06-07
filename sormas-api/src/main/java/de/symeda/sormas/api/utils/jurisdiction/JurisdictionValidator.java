@@ -36,7 +36,7 @@ public abstract class JurisdictionValidator<T> {
 		case HEALTH_FACILITY:
 			return whenFacilityLevel();
 		case LABORATORY:
-			return whenNotAllowed();
+			return whenLaboratoryLevel();
 		case EXTERNAL_LABORATORY:
 			return whenNotAllowed();
 		case POINT_OF_ENTRY:
@@ -59,4 +59,6 @@ public abstract class JurisdictionValidator<T> {
 	protected abstract T whenFacilityLevel();
 
 	protected abstract T whenPointOfEntryLevel();
+
+	protected abstract T whenLaboratoryLevel();
 }

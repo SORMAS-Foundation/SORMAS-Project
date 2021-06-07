@@ -49,6 +49,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "SurveillanceReportFacade")
 public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
@@ -112,6 +113,8 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 		} else {
 			resultList = em.createQuery(cq).getResultList();
 		}
+
+//		caseService.jurisdictionSelector(cb, caseService.inJurisdiction(cb, new CaseJoins<>(root.get(SurveillanceReport.CAZE))));
 
 		List<SurveillanceReportDto> reports = resultList.stream().map(SurveillanceReportFacadeEjb::toDto).collect(Collectors.toList());
 

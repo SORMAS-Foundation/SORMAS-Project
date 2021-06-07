@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -168,13 +167,8 @@ public class CaseListCriteriaBuilder {
 	}
 
 	public List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseQueryContext caseQueryContext) {
-
-		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
-
-		return getCaseIndexSelections(root, joins);
-	}
-
-	public List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseJoins<Case> joins) {
+		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		return Arrays.asList(
 			root.get(AbstractDomainObject.ID),
 			root.get(Case.UUID),
@@ -220,7 +214,8 @@ public class CaseListCriteriaBuilder {
 			joins.getFacility().get(Facility.ID),
 			joins.getResponsibleRegion().get(Region.UUID),
 			joins.getResponsibleDistrict().get(District.UUID),
-			joins.getResponsibleCommunity().get(Community.UUID));
+			joins.getResponsibleCommunity().get(Community.UUID),
+			caseService.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, joins)));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {
@@ -323,20 +318,6 @@ public class CaseListCriteriaBuilder {
 		default:
 			return getIndexOrders(sortProperty, caze, joins, cb);
 		}
-	}
-
-	public Stream<Selection<?>> getJurisdictionSelections(CaseJoins<Case> joins) {
-
-		return Stream.of(
-			joins.getReportingUser().get(User.UUID),
-			joins.getResponsibleRegion().get(Region.UUID),
-			joins.getResponsibleDistrict().get(District.UUID),
-			joins.getResponsibleCommunity().get(Community.UUID),
-			joins.getRegion().get(Region.UUID),
-			joins.getDistrict().get(District.UUID),
-			joins.getCommunity().get(Community.UUID),
-			joins.getFacility().get(Facility.UUID),
-			joins.getPointOfEntry().get(PointOfEntry.UUID));
 	}
 
 	private interface OrderExpressionProvider {

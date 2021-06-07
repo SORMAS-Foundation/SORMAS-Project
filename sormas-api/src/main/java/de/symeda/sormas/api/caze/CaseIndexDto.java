@@ -120,6 +120,8 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 
 	private CaseJurisdictionDto jurisdiction;
 
+	private Boolean isInJurisdiction;
+
 	//@formatter:off
 	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String personFirstName, String personLastName, Disease disease,
 						DiseaseVariant diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
@@ -129,7 +131,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
 						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Vaccination vaccination, Date changeDate, Long facilityId,
 						// responsible jurisdiction
-						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid) {
+						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid, boolean isInJurisdiction) {
 		this(id, uuid, epidNumber, externalID, externalToken, personFirstName, personLastName, disease,
 				diseaseVariant, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid,
@@ -137,7 +139,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 				pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo,
 				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccination, changeDate, facilityId,
-				responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid,
+				responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid, isInJurisdiction,
 				null
 		);
 	}
@@ -153,7 +155,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,  SymptomJournalStatus symptomJournalStatus, Vaccination vaccination,
 						Date changeDate, Long facilityId, // XXX: unused, only here for TypedQuery mapping
 						// responsible jurisdiction
-						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid,
+						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid, boolean isInJurisdiction,
 						// others
 						Integer visitCount
 	) {
@@ -188,6 +190,8 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 		this.followUpUntil = followUpUntil;
 		this.symptomJournalStatus = symptomJournalStatus;
 		this.vaccination = vaccination;
+
+		this.isInJurisdiction = isInJurisdiction;
 
 		this.jurisdiction = new CaseJurisdictionDto(
 			reportingUserUuid,
@@ -423,6 +427,10 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 
 	public CaseJurisdictionDto getJurisdiction() {
 		return jurisdiction;
+	}
+
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 
 	public FollowUpStatus getFollowUpStatus() {

@@ -87,4 +87,9 @@ public class CaseJurisdictionPredicateValidator extends JurisdictionValidator<Pr
 	protected Predicate whenPointOfEntryLevel() {
 		return cb.equal(joins.getPointOfEntry().get(PointOfEntry.ID), currentUser.getPointOfEntry().getId());
 	}
+
+	@Override
+	protected Predicate whenLaboratoryLevel() {
+		return cb.equal(joins.getSampleLabs().get(Facility.ID), currentUser.getHealthFacility().getId());
+	}
 }

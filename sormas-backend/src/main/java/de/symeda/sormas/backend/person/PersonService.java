@@ -352,8 +352,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			.collect(Collectors.toList());
 	}
 
-	public List<Long> getInJurisdictionIDs(final List<Person> selectedPersons) {
-		if (selectedPersons.size() == 0) {
+	public List<Long> getInJurisdictionIDs(final List<Person> selectedEntities) {
+		if (selectedEntities.size() == 0) {
 			return Collections.emptyList();
 		}
 
@@ -364,13 +364,14 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		inJurisdictionQuery.select(personRoot.get(Person.ID));
 
 		final Predicate isFromSelectedPersons =
-			cb.in(personRoot.get(Person.ID)).value(selectedPersons.stream().map(Person::getId).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedPersons, getJurisdictionPredicate(cb, inJurisdictionQuery, personRoot)));
+			cb.in(personRoot.get(Person.ID)).value(selectedEntities.stream().map(Person::getId).collect(Collectors.toList()));
+		inJurisdictionQuery.where(cb.and(isFromSelectedPersons, inJurisdiction(cb, inJurisdictionQuery, personRoot)));
 
 		return em.createQuery(inJurisdictionQuery).getResultList();
 	}
 
-	public Predicate getJurisdictionPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<Person> personRoot) {
+	// todo refactor this to consider laboratory access from samples + try make jurisdiction for case and contact also in db
+	public Predicate inJurisdiction(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<Person> personRoot) {
 
 		final Path<Object> personId = personRoot.get(Person.ID);
 
@@ -378,7 +379,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Root<Case> caseRoot = caseJurisdictionSubQuery.from(Case.class);
 		caseJurisdictionSubQuery.select(caseRoot.get(Case.ID));
 		caseJurisdictionSubQuery.where(
-			cb.and(cb.equal(caseRoot.get(Case.PERSON).get(Person.ID), personId), caseService.isInJurisdictionOrOwned(cb, new CaseJoins<>(caseRoot))));
+			cb.and(cb.equal(caseRoot.get(Case.PERSON).get(Person.ID), personId), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(caseRoot))));
 		final Predicate isCaseInJurisdiction = cb.exists(caseJurisdictionSubQuery);
 
 		final Subquery<Long> contactJurisdictionSubQuery = cq.subquery(Long.class);
@@ -387,7 +388,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		contactJurisdictionSubQuery.where(
 			cb.and(
 				cb.equal(contactRoot.get(Contact.PERSON).get(Person.ID), personId),
-				contactService.isInJurisdictionOrOwned(cb, cq, contactRoot, new ContactJoins(contactRoot))));
+				contactService.inJurisdictionOrOwned(cb, cq, contactRoot, new ContactJoins(contactRoot))));
 		final Predicate isContactInJurisdiction = cb.exists(contactJurisdictionSubQuery);
 
 		final Subquery<Long> eventParticipantJurisdictionSubQuery = cq.subquery(Long.class);

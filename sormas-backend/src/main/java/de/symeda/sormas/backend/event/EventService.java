@@ -39,6 +39,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleJoins;
+import de.symeda.sormas.backend.sample.SampleService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -98,6 +101,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
+	@EJB
+	private SampleService sampleService;
 
 	public EventService() {
 		super(Event.class);
@@ -356,6 +361,13 @@ public class EventService extends AbstractCoreAdoService<Event> {
 						eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT),
 						currentUser.getHealthFacility().getDistrict()));
 			}
+		case LABORATORY:
+			Subquery<Long> sampleEventSubquery = cq.subquery(Long.class);
+			Root<Sample> sampleRoot = sampleEventSubquery.from(Sample.class);
+			sampleEventSubquery.where(sampleService.createUserFilterWithoutCase(cb, new SampleJoins(sampleRoot)));
+			sampleEventSubquery.select(sampleRoot.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.EVENT).get(Event.ID));
+			filter = CriteriaBuilderHelper.or(cb, filter, cb.in(eventPath.get(Event.ID)).value(sampleEventSubquery));
+			break;
 		default:
 		}
 
