@@ -184,7 +184,7 @@ public class CreateNewUserSteps implements En {
   }
 
   public void fillCommunityContactPerson(String communityContactPerson) {
-    webDriverHelpers.fillInWebElement(COMMUNITY_CONTACT_PERSON, communityContactPerson);
+    webDriverHelpers.fillInWebElement(COMMUNITY_CONTACT_PERSON_INPUT, communityContactPerson);
   }
 
   public void fillGpsLatitude(String gpsLatitude) {

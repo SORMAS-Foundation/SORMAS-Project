@@ -28,7 +28,7 @@ public class CreateNewUserPage {
   public static final By PHONE_INPUT = By.id("phone");
   public static final By COUNTRY_COMBOBOX = By.cssSelector(".v-window #country div");
   public static final By REGION_COMBOBOX = By.cssSelector(".v-window #region div");
-  public static final By DISTRICT_COMBOBOX = By.cssSelector("#district div");
+  public static final By DISTRICT_COMBOBOX = By.cssSelector(".v-window #district div");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector("#community div");
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
   public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#facilityType div");
@@ -40,11 +40,12 @@ public class CreateNewUserPage {
   public static final By CITY_INPUT = By.id("city");
   public static final By AREA_TYPE_COMBOBOX = By.cssSelector("#areaType div");
   public static final By LANGUAGE_COMBOBOX = By.cssSelector("#language div");
-  public static final By COMMUNITY_CONTACT_PERSON = By.cssSelector(".v-window #details");
+  public static final By COMMUNITY_CONTACT_PERSON_INPUT = By.cssSelector(".v-window #details");
+  public static final By FACILITY_NAME_DESCRIPTION = By.id("facilityDetails");
   public static final By LATITUDE_INPUT = By.id("latitude");
   public static final By LONGITUDE_INPUT = By.id("longitude");
   public static final By LAT_LON_ACCURACY_INPUT = By.id("latLonAccuracy");
-  public static final By ACTIVE_CHECKBOX = By.cssSelector(".v-window #active input");
+  public static final By ACTIVE_CHECKBOX = By.cssSelector(".v-window #active label");
   public static final By USER_NAME_INPUT = By.id("userName");
   public static final By USER_ROLE_CHECKBOX = By.cssSelector("#userRoles label");
   public static final By LIMITED_DISEASE_COMBOBOX = By.cssSelector("#limitedDisease > div");

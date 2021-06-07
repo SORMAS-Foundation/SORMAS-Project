@@ -40,7 +40,7 @@ public class EditUserPage {
   public static final By CITY_INPUT = By.id("city");
   public static final By AREA_TYPE_COMBOBOX_INPUT = By.cssSelector("#areaType input");
   public static final By LANGUAGE_COMBOBOX_INPUT = By.cssSelector("#language input");
-  public static final By COMMUNITY_CONTACT_PERSON = By.cssSelector(".v-window #details");
+  public static final By COMMUNITY_CONTACT_PERSON_INPUT = By.cssSelector(".v-window #details");
   public static final By LATITUDE_INPUT = By.id("latitude");
   public static final By LONGITUDE_INPUT = By.id("longitude");
   public static final By LAT_LON_ACCURACY_INPUT = By.id("latLonAccuracy");
