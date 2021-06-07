@@ -79,7 +79,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -166,8 +165,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
 	private SampleJurisdictionChecker sampleJurisdictionChecker;
-	@EJB
-	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
@@ -998,7 +995,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			pseudonymizer.pseudonymizeDto(
 				CaseReferenceDto.class,
 				sampleCase,
-				caseJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getCaseJurisdiction()),
+				caseService.inJurisdictionOrOwned(caseService.getByUuid(sampleCase.getUuid())),
 				null);
 		}
 
@@ -1013,7 +1010,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				pseudonymizer.pseudonymizeDto(
 					ContactReferenceDto.PersonName.class,
 					sampleContact.getCaseName(),
-					caseJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction().getCaseJurisdiction()),
+					caseService.inJurisdictionOrOwned(contactService.getByUuid(sampleContact.getUuid()).getCaze()),
 					null);
 			}
 		}

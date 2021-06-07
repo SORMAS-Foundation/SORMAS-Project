@@ -29,7 +29,6 @@ import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
@@ -72,8 +71,6 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	private DocumentStorageService documentStorageService;
 	@EJB
 	private CaseService caseService;
-	@EJB
-	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private ContactService contactService;
 	@EJB
@@ -187,7 +184,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		switch (dto.getRelatedEntityType()) {
 		case CASE:
 			Case caze = caseService.getByUuid(dto.getRelatedEntityUuid());
-			return caseJurisdictionChecker.isInJurisdictionOrOwned(caze);
+			return caseService.inJurisdictionOrOwned(caze);
 		case CONTACT:
 			Contact contact = contactService.getByUuid(dto.getRelatedEntityUuid());
 			return contactJurisdictionChecker.isInJurisdictionOrOwned(contact);

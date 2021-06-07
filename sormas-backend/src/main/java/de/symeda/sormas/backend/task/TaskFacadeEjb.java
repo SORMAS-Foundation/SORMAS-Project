@@ -48,7 +48,6 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
@@ -76,7 +75,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -100,8 +98,6 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -129,17 +125,11 @@ public class TaskFacadeEjb implements TaskFacade {
 	@EJB
 	private EventService eventService;
 	@EJB
-	private UserFacadeEjbLocal userFacade;
-	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private MessagingService messagingService;
 	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-	@EJB
 	private ConfigFacadeEjbLocal configFacade;
-	@EJB
-	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
@@ -243,12 +233,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		pseudonymizer.pseudonymizeDto(TaskDto.class, target, taskJurisdictionChecker.isInJurisdictionOrOwned(source), t -> {
 			if (source.getCaze() != null) {
-				CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getCaze());
-				pseudonymizer.pseudonymizeDto(
-					CaseReferenceDto.class,
-					target.getCaze(),
-					caseJurisdictionChecker.isInJurisdictionOrOwned(caseJurisdiction),
-					null);
+				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, target.getCaze(), caseService.inJurisdictionOrOwned(source.getCaze()), null);
 			}
 
 			if (source.getContact() != null) {
@@ -528,7 +513,7 @@ public class TaskFacadeEjb implements TaskFacade {
 						emptyValuePseudonymizer.pseudonymizeDto(
 							CaseReferenceDto.class,
 							t.getCaze(),
-							caseJurisdictionChecker.isInJurisdictionOrOwned(t.getJurisdiction().getCaseJurisdiction()),
+							caseService.inJurisdictionOrOwned(caseService.getByUuid(t.getCaze().getUuid())),
 							null);
 					}
 
@@ -564,7 +549,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			pseudonymizer.pseudonymizeDto(
 				ContactReferenceDto.PersonName.class,
 				contactReference.getCaseName(),
-				caseJurisdictionChecker.isInJurisdictionOrOwned(contactJurisdiction.getCaseJurisdiction()),
+				caseService.inJurisdictionOrOwned(contactService.getByUuid(contactReference.getUuid()).getCaze()),
 				null);
 		}
 	}
