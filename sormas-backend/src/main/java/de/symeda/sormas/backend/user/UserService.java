@@ -41,6 +41,8 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -184,6 +186,50 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		cq.distinct(true).orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public List<UserReference> getReferenceList(
+		List<String> regionUuids,
+		List<String> districtUuids,
+		boolean includeSupervisors,
+		boolean filterByJurisdiction,
+		boolean activeOnly,
+		UserRole... userRoles) {
+
+		return getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, Arrays.asList(userRoles));
+	}
+
+	public List<UserReference> getReferenceList(
+		List<String> regionUuids,
+		List<String> districtUuids,
+		boolean includeSupervisors,
+		boolean filterByJurisdiction,
+		boolean activeOnly,
+		List<UserRole> userRoles) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<UserReference> cq = cb.createQuery(UserReference.class);
+		Root<UserReference> root = cq.from(UserReference.class);
+
+		// WHERE
+		Predicate filter = null;
+		// TODO #5614: Where conditions missing
+		if (activeOnly) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, root));
+		}
+		if (CollectionUtils.isNotEmpty(userRoles)) {
+			filter = CriteriaBuilderHelper.and(cb, filter, root.join(User.USER_ROLES, JoinType.LEFT).in(userRoles));
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.distinct(true);
+		cq.orderBy(cb.asc(root.get(User.ID)));
+
+		List<UserReference> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 
 	public List<User> getInformantsOfFacility(Facility facility) {
@@ -534,7 +580,11 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return currentUser.getRegion().getUuid().equals(regionReference.getUuid());
 	}
 
-	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, User> root) {
+	/**
+	 * @param root
+	 *            root to {@link User} or {@link UserReference}.
+	 */
+	private Predicate createDefaultFilter(CriteriaBuilder cb, From<?, ?> root) {
 		return cb.isTrue(root.get(User.ACTIVE));
 	}
 

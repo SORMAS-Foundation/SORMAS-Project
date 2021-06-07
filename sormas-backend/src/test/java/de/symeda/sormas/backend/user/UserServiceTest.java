@@ -1,5 +1,11 @@
 package de.symeda.sormas.backend.user;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -8,6 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +25,7 @@ import org.junit.Test;
 import org.mockito.MockedStatic;
 
 import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
@@ -39,6 +47,43 @@ public class UserServiceTest extends AbstractBeanTest {
 		assertNotNull(mockAuthProvider);
 		//Important: release static mock.
 		mockAuthProvider.closeOnDemand();
+	}
+
+	@Test
+	public void testGetReferenceList() {
+
+		List<String> regionUuids = null;
+		List<String> districtUuids = null;
+		boolean includeSupervisors = false;
+		boolean filterByJurisdiction = false;
+		boolean activeOnly = false;
+		List<UserRole> userRoles = null;
+
+		// 0. No conditions, test signature with userRoles varArg parameter
+		List<UserReference> result =
+			getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly);
+		assertThat(result, hasSize(1));
+		UserReference admin = result.get(0);
+		assertThat(admin.getUserRoles(), containsInAnyOrder(UserRole.ADMIN, UserRole.NATIONAL_USER));
+
+		// 1a. Find admin with several conditions
+		activeOnly = true;
+		userRoles = Arrays.asList(UserRole.ADMIN);
+		result = getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		assertThat(result, contains(admin));
+		userRoles = Arrays.asList(UserRole.NATIONAL_USER);
+		result = getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		assertThat(result, contains(admin));
+		userRoles = Arrays.asList(UserRole.ADMIN, UserRole.CASE_OFFICER);
+		result = getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		assertThat(result, contains(admin));
+
+		// 1b. Exclude admin by role
+		userRoles = Arrays.asList(UserRole.CASE_OFFICER);
+		result = getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		assertThat(result, is(empty()));
+
+		// TODO #5614: Append test for other where conditions
 	}
 
 	@Test
