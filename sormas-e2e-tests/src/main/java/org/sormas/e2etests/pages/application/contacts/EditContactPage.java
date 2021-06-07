@@ -25,16 +25,12 @@ public class EditContactPage {
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot.v-slot-h2.v-slot-vspace-top-none.v-slot-primary");
   public static final By REPORT_DATE = By.cssSelector("#reportDateTime input");
-  public static final By DISEASE_COMBOBOX_INPUT = By.cssSelector("#disease input");
   public static final By DISEASE_COMBOBOX =
       By.cssSelector(".v-verticallayout [location='disease'] [role='combobox'] div");
   public static final By CASE_ID_IN_EXTERNAL_SYSTEM_INPUT = By.cssSelector("#caseIdExternalSystem");
   public static final By LAST_CONTACT_DATE = By.cssSelector("#lastContactDate input");
   public static final By CASE_OR_EVENT_INFORMATION_INPUT =
       By.cssSelector("#caseOrEventInformation");
-  public static final By RESPONSIBLE_REGION_COMBOBOX_INPUT = By.cssSelector("#region input");
-  public static final By RESPONSIBLE_DISTRICT_COMBOBOX_INPUT = By.cssSelector("#district input");
-  public static final By RESPONSIBLE_COMMUNITY_COMBOBOX_INPUT = By.cssSelector("#community input");
   public static final By RESPONSIBLE_REGION_COMBOBOX =
       By.cssSelector(".v-verticallayout [location='region'] [role='combobox'] div");
   public static final By RESPONSIBLE_DISTRICT_COMBOBOX =
@@ -43,8 +39,6 @@ public class EditContactPage {
       By.cssSelector(".v-verticallayout [location='community'] [role='combobox'] div");
   public static final By ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT =
       By.cssSelector("#contactProximityDetails");
-  public static final By RELATIONSHIP_WITH_CASE_COMBOBOX_INPUT =
-      By.cssSelector("#relationToCase input");
   public static final By RELATIONSHIP_WITH_CASE_COMBOBOX =
       By.cssSelector(".v-verticallayout [location='relationToCase'] [role='combobox'] div");
   public static final By DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT =
@@ -68,8 +62,6 @@ public class EditContactPage {
   public static final By CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX =
       By.cssSelector(
           ".v-verticallayout [location='contactIdentificationSource'] [role='combobox'] div");
-  public static final By IDENTIFICATION_SOURCE_DETAILS_COMBOBOX_INPUT =
-      By.cssSelector("#contactIdentificationSource input");
   public static final By PROHIBITION_TO_WORK_OPTIONS = By.cssSelector("#prohibitionToWork label");
   public static final By HOME_BASED_QUARANTINE_OPTIONS =
       By.cssSelector("#quarantineHomePossible label");

@@ -383,18 +383,15 @@ public class EditContactSteps implements En {
         .returningTraveler(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RETURNING_TRAVELER_OPTIONS))
         .reportDate(parsedDateOfReport)
-        .diseaseOfSourceCase(webDriverHelpers.getValueFromWebElement(DISEASE_COMBOBOX_INPUT))
+        .diseaseOfSourceCase(webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX))
         .caseIdInExternalSystem(
             webDriverHelpers.getValueFromWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT))
         .dateOfLastContact(parsedLastDateOfContact)
         .caseOrEventInformation(
             webDriverHelpers.getValueFromWebElement(CASE_OR_EVENT_INFORMATION_INPUT))
-        .responsibleRegion(
-            webDriverHelpers.getValueFromWebElement(RESPONSIBLE_REGION_COMBOBOX_INPUT))
-        .responsibleDistrict(
-            webDriverHelpers.getValueFromWebElement(RESPONSIBLE_DISTRICT_COMBOBOX_INPUT))
-        .responsibleCommunity(
-            webDriverHelpers.getValueFromWebElement(RESPONSIBLE_COMMUNITY_COMBOBOX_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
+        .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
+        .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
         .additionalInformationOnContactType(
             webDriverHelpers.getValueFromWebElement(
                 ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
@@ -403,7 +400,7 @@ public class EditContactSteps implements En {
         .contactCategory(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
         .relationshipWithCase(
-            webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_COMBOBOX_INPUT))
+            webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
         .descriptionOfHowContactTookPlace(
             webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
@@ -446,7 +443,7 @@ public class EditContactSteps implements En {
         .caseOrEventInformation(
             webDriverHelpers.getValueFromWebElement(CASE_OR_EVENT_INFORMATION_INPUT))
         .identificationSource(
-            webDriverHelpers.getValueFromWebElement(IDENTIFICATION_SOURCE_DETAILS_COMBOBOX_INPUT))
+            webDriverHelpers.getValueFromCombobox(CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX))
         .identificationSourceDetails(identificationSource)
         .typeOfContact(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))

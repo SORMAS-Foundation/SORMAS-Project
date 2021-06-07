@@ -430,7 +430,6 @@ public class WebDriverHelpers {
   }
 
   public String getTextFromLabelIfCheckboxIsChecked(By checkbox) {
-    waitUntilIdentifiedElementIsPresent(checkbox);
     scrollToElement(checkbox);
     if (getAttributeFromWebElement(checkbox, "checked").equals("true")) {
       return baseSteps.getDriver().findElement(checkbox).findElement(CHECKBOX_TEXT_LABEL).getText();
