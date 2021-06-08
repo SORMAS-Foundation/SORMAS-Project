@@ -17,13 +17,21 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
+import static de.symeda.sormas.ui.utils.DownloadUtil.createFileNameWithCurrentDate;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
@@ -55,6 +63,7 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 
 @SuppressWarnings("serial")
 public class AboutView extends VerticalLayout implements View {
@@ -157,8 +166,21 @@ public class AboutView extends VerticalLayout implements View {
 				Button dataDictionaryButton =
 					ButtonHelper.createButton(Captions.aboutDataDictionary, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 				documentsLayout.addComponent(dataDictionaryButton);
-				FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
-				dataDictionaryDownloader.extend(dataDictionaryButton);
+
+				new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
+					try {
+						String documentPath = FacadeProvider.getInfoFacae().generateDataDictionary();
+						IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
+					} catch (IOException e) {
+						LoggerFactory.getLogger(AboutView.class).error("Failed to generate data dictionary", e);
+
+						// fall back to pre-generated document
+						InputStream preGeneratedDocumentStream = new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx").getStream().getStream();
+						IOUtils.copy(preGeneratedDocumentStream, out);
+					}
+
+				}, (e) -> {
+				}), createFileNameWithCurrentDate(ExportEntityName.DATA_DICTIONARY, ".xlsx"))).extend(dataDictionaryButton);
 			}
 
 			// This link is hidden until an updated version of the document is provided

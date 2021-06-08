@@ -42,6 +42,7 @@ public class WebDriverHelpers {
   public static final By SELECTED_RADIO_BUTTON =
       By.xpath("ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
+  public static final By CHECKBOX_TEXT_LABEL = By.xpath("ancestor::span//label");
 
   private final BaseSteps baseSteps;
   private final AssertHelpers assertHelpers;
@@ -425,6 +426,15 @@ public class WebDriverHelpers {
       if (Instant.now().isAfter(start.plus(1, ChronoUnit.MINUTES))) {
         throw new Error("The field didn't clear");
       }
+    }
+  }
+
+  public String getTextFromLabelIfCheckboxIsChecked(By checkbox) {
+    scrollToElement(checkbox);
+    if (getAttributeFromWebElement(checkbox, "checked").equals("true")) {
+      return baseSteps.getDriver().findElement(checkbox).findElement(CHECKBOX_TEXT_LABEL).getText();
+    } else {
+      throw new Error("checked was found as NULL");
     }
   }
 }

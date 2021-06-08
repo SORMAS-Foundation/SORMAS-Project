@@ -37,8 +37,16 @@ public class EditEventPage {
       By.cssSelector("#eventInvestigationStatus input:checked");
   public static final By DISEASE_INPUT = By.cssSelector("#disease input");
   public static final By SOURCE_TYPE_INPUT = By.cssSelector(" #srcType input");
-  public static final By TYPE_OF_PLACE_INPUT = By.cssSelector(" #typeOfPlace input");
-  public static final By REPORT_DATE_INPUT = By.cssSelector(" #reportDateTime input");
+  public static final By TYPE_OF_PLACE_INPUT = By.cssSelector("#typeOfPlace input");
+  public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDateTime input");
   public static final By EVENT_DATA_SAVED_MESSAGE =
       By.xpath("//*[contains(text(),'Event data saved')]");
+  public static final By RISK_LEVEL_COMBOBOX = By.cssSelector("#riskLevel div");
+  public static final By EVENT_MANAGEMENT_STATUS_OPTIONS =
+      By.cssSelector("#eventManagementStatus .v-select-option label");
+  public static final By EVENT_INVESTIGATION_STATUS_OPTIONS =
+      By.cssSelector("#eventInvestigationStatus label");
+  public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
+  public static final By SOURCE_TYPE_COMBOBOX = By.cssSelector("#srcType div");
+  public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(" #typeOfPlace div");
 }
