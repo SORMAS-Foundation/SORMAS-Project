@@ -39,8 +39,10 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -853,7 +855,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return eventJurisdictionChecker.isInJurisdictionOrOwned(event) && !sormasToSormasShareInfoService.isEventOwnershipHandedOver(event);
 	}
 
-	public void updateExternalData(List<ExternalDataDto> externalData) {
+	@Transactional(rollbackOn = Exception.class)
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		if (externalData.isEmpty()) {
 			return;
 		}
@@ -862,11 +865,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		Map<String, ExternalDataDto> externalDataDtoMap = externalData.stream().collect(Collectors.toMap(ExternalDataDto::getUuid, Function.identity()));
 
 		List<Event> eventsToUpdate = getByUuids(uuids);
-		eventsToUpdate.forEach(event -> {
+		for (Event event : eventsToUpdate) {
 			ExternalDataDto externalDataUpdate = externalDataDtoMap.get(event.getUuid());
 			if ((event.getExternalId() != null && externalDataUpdate.getExternalId() != null) ||
 					(event.getExternalToken() != null && externalDataUpdate.getExternalToken() != null)) {
-				throw new RuntimeException("Cannot update externalId or externalToken on entities with the fields already set");
+				throw new ExternalDataUpdateException("Cannot update externalId or externalToken on entities with the fields already set");
 			}
 
 			if (externalDataUpdate.getExternalId() != null) {
@@ -876,7 +879,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				event.setExternalToken(externalDataUpdate.getExternalToken());
 			}
 			ensurePersisted(event);
-		});
+		}
 
 	}
 }

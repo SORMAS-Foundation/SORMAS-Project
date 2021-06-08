@@ -28,6 +28,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -92,5 +93,5 @@ public interface PersonFacade {
 
 	List<PersonDto> getByExternalIds(List<String> externalIds);
 
-	void updateExternalData(List<ExternalDataDto> externalData);
+	void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 }

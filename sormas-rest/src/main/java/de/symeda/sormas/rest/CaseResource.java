@@ -30,6 +30,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/cases")
@@ -132,8 +134,13 @@ public class CaseResource extends EntityDtoResource {
 
 	@POST
 	@Path("/externalData")
-	public void updateExternalData(List<ExternalDataDto> externalData) {
-		FacadeProvider.getCaseFacade().updateExternalData(externalData);
+	public Response updateExternalData(List<ExternalDataDto> externalData) {
+		try {
+			FacadeProvider.getCaseFacade().updateExternalData(externalData);
+			return Response.status(Response.Status.OK).build();
+		} catch (ExternalDataUpdateException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
 	}
 
 }

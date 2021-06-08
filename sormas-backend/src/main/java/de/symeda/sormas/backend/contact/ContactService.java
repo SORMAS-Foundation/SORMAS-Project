@@ -42,9 +42,11 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1386,7 +1388,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public void updateExternalData(List<ExternalDataDto> externalData) {
+	@Transactional(rollbackOn = Exception.class)
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException{
 		if (externalData.isEmpty()) {
 			return;
 		}
@@ -1395,11 +1398,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Map<String, ExternalDataDto> externalDataDtoMap = externalData.stream().collect(Collectors.toMap(ExternalDataDto::getUuid, Function.identity()));
 
 		List<Contact> contactsToUpdate = getByUuids(uuids);
-		contactsToUpdate.forEach(contact -> {
+		for (Contact contact : contactsToUpdate) {
 			ExternalDataDto externalDataUpdate = externalDataDtoMap.get(contact.getUuid());
 			if ((contact.getExternalID() != null && externalDataUpdate.getExternalId() != null) ||
 					(contact.getExternalToken() != null && externalDataUpdate.getExternalToken() != null)) {
-				throw new RuntimeException("Cannot update externalId or externalToken on entities with the fields already set");
+				throw new ExternalDataUpdateException("Cannot update externalId or externalToken on entities with the fields already set");
 			}
 
 			if (externalDataUpdate.getExternalId() != null) {
@@ -1409,7 +1412,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				contact.setExternalToken(externalDataUpdate.getExternalToken());
 			}
 			ensurePersisted(contact);
-		});
+		}
 	}
 
 }

@@ -70,6 +70,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -3624,7 +3625,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public void updateExternalData(List<ExternalDataDto> externalData) {
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		caseService.updateExternalData(externalData);
 	}
 

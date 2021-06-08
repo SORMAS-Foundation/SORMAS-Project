@@ -59,6 +59,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1938,7 +1939,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public void updateExternalData(List<ExternalDataDto> externalData) {
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		contactService.updateExternalData(externalData);
 	}
 

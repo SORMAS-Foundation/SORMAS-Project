@@ -50,8 +50,10 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
@@ -612,7 +614,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return geoLocationUpdated;
 	}
 
-	public void updateExternalData(List<ExternalDataDto> externalData) {
+	@Transactional(rollbackOn = Exception.class)
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		if (externalData.isEmpty()) {
 			return;
 		}
@@ -621,11 +624,12 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Map<String, ExternalDataDto> externalDataDtoMap = externalData.stream().collect(Collectors.toMap(ExternalDataDto::getUuid, Function.identity()));
 
 		List<Person> personsToUpdate = getByUuids(uuids);
-		personsToUpdate.forEach(person -> {
+		personsToUpdate.sort(Comparator.comparing(AbstractDomainObject::getCreationDate));
+		for (Person person : personsToUpdate) {
 			ExternalDataDto externalDataUpdate = externalDataDtoMap.get(person.getUuid());
 			if ((person.getExternalId() != null && externalDataUpdate.getExternalId() != null) ||
 					(person.getExternalToken() != null && externalDataUpdate.getExternalToken() != null)) {
-				throw new RuntimeException("Cannot update externalId or externalToken on entities with the fields already set");
+				throw new ExternalDataUpdateException("Cannot update externalId or externalToken on entities with the fields already set");
 			}
 
 			if (externalDataUpdate.getExternalId() != null) {
@@ -635,7 +639,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 				person.setExternalToken(externalDataUpdate.getExternalToken());
 			}
 			ensurePersisted(person);
-		});
+		}
 
 	}
 
