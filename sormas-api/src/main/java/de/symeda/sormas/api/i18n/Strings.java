@@ -192,6 +192,7 @@ public interface Strings {
 	String entityContacts = "entityContacts";
 	String entityContactVisits = "entityContactVisits";
 	String entityCountries = "entityCountries";
+	String entityDataDictionary = "entityDataDictionary";
 	String entityDistrict = "entityDistrict";
 	String entityDistricts = "entityDistricts";
 	String entityDocuments = "entityDocuments";
