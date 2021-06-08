@@ -18,15 +18,11 @@
 
 package org.sormas.e2etests.services.api;
 
-import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
 import org.sormas.e2etests.pojo.api.*;
 
 public class ContactApiService {
-
-  @Inject
-  public ContactApiService() {}
 
   public Contact buildGeneratedContact(Person person) {
     return Contact.builder()
@@ -34,8 +30,16 @@ public class ContactApiService {
         .uuid(UUID.randomUUID().toString())
         .reportDateTime(new Date())
         .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())
-        .district(District.builder().uuid("SZ75BK-5OUMFU-V2DTKG-5BYACHFE").build())
-        .region(Region.builder().uuid("SZ75BK-5OUMFU-V2DTKG-5BYACHFE").build())
+        .district(
+            District.builder()
+                .caption("Voreingestellter Landkreis")
+                .uuid("SZ75BK-5OUMFU-V2DTKG-5BYACHFE")
+                .build())
+        .region(
+            Region.builder()
+                .caption("Voreingestellte Bundesl\u00E4nder")
+                .uuid("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY")
+                .build())
         .relationToCase("")
         .contactClassification("UNCONFIRMED")
         .followUpStatus("FOLLOW_UP")
