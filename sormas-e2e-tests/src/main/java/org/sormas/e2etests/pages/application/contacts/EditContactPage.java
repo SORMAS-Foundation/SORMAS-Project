@@ -94,4 +94,5 @@ public class EditContactPage {
       By.cssSelector(".v-verticallayout [location='contactOfficer'] [role='combobox'] div");
   public static final By GENERAL_COMMENT_TEXT = By.id("additionalDetails");
   public static final By SAVE_EDIT_BUTTON = By.id("commit");
+  public static final By FOLLOW_UP_VISITS = By.id("tab-contacts-visits");
 }
