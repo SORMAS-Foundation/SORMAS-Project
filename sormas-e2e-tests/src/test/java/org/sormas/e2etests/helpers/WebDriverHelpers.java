@@ -28,6 +28,7 @@ import static org.sormas.e2etests.helpers.AssertHelpers.*;
 import com.google.common.truth.Truth;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.function.Predicate;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
@@ -90,6 +91,37 @@ public class WebDriverHelpers {
           () -> {
             assertThat(((WebElement) selector).isEnabled()).isTrue();
             assertThat(((WebElement) selector).isDisplayed()).isTrue();
+          });
+    } else {
+      throw new NotFoundException("This type is not available");
+    }
+  }
+
+  public void waitUntilIdentifiedElementDisappear(final Object selector) {
+    waitUntilIdentifiedElementDisappear(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
+  }
+
+  public void waitUntilIdentifiedElementDisappear(final Object selector, int seconds) {
+    if (selector instanceof By) {
+      assertHelpers.assertWithPoll(
+          () -> {
+            assertWithMessage(selector.getClass().getSimpleName() + "is still enabled")
+                .that(baseSteps.getDriver().findElement((By) selector).isEnabled())
+                .isFalse();
+            assertWithMessage(selector.getClass().getSimpleName() + "is still displayed")
+                .that(baseSteps.getDriver().findElement((By) selector).isDisplayed())
+                .isFalse();
+          },
+          seconds);
+    } else if (selector instanceof WebElement) {
+      assertHelpers.assertWithPoll15Second(
+          () -> {
+            assertWithMessage(selector.getClass().getSimpleName() + "is still enabled")
+                .that(((WebElement) selector).isEnabled())
+                .isFalse();
+            assertWithMessage(selector.getClass().getSimpleName() + "is still displayed")
+                .that(((WebElement) selector).isDisplayed())
+                .isFalse();
           });
     } else {
       throw new NotFoundException("This type is not available");
@@ -256,6 +288,22 @@ public class WebDriverHelpers {
             () -> new NotFoundException("The selector containing text has not been found"));
   }
 
+  public void waitUntilAListOfElementsHasText(By selector, String text) {
+    waitForPageLoaded();
+    try {
+      assertHelpers.assertWithPoll(
+          () -> {
+            List<WebElement> webElements = baseSteps.getDriver().findElements(selector);
+            scrollToElement(webElements.get(0));
+            assertThat(webElements.size()).isAtLeast(2);
+            assertThat(
+                webElements.stream().allMatch(webElement -> webElement.getText().equals(text)));
+          },
+          3);
+    } catch (Throwable ignored) {
+    }
+  }
+
   public WebElement getWebElementBySelectorAndText(final By selector, final String text) {
     return getWebElementByText(selector, webElement -> webElement.getText().contentEquals(text));
   }
@@ -325,6 +373,15 @@ public class WebDriverHelpers {
             assertWithMessage("Number of identified element should be %s", given)
                 .that(getNumberOfElements(selector))
                 .isLessThan(given));
+  }
+
+  public void waitUntilNumberOfElementsIsExactlyOrLess(By selector, int given) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
+    assertHelpers.assertWithPoll15Second(
+        () ->
+            assertWithMessage("Number of identified element should be %s", given)
+                .that(getNumberOfElements(selector))
+                .isAtMost(given));
   }
 
   public String getCheckedOptionFromHorizontalOptionGroup(By options) {

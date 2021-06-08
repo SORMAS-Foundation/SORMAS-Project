@@ -23,11 +23,17 @@ import lombok.Getter;
 
 @Getter
 public enum PathogenTestResults {
-  INDETERMINATE(),
-  PENDING(),
-  NEGATIVE(),
-  POSITIVE(),
-  NOT_DONE();
+  INDETERMINATE("Indeterminate"),
+  PENDING("Pending"),
+  NEGATIVE("Negative"),
+  POSITIVE("Positive"),
+  NOT_DONE("Not done");
+
+  private final String pathogenResults;
+
+  PathogenTestResults(String vPathogen) {
+    pathogenResults = vPathogen;
+  }
 
   public static String getRandomResult() {
     Random random = new Random();

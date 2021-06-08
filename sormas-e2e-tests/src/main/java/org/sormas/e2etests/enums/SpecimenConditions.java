@@ -23,8 +23,14 @@ import lombok.Getter;
 
 @Getter
 public enum SpecimenConditions {
-  ADEQUATE(),
-  NOT_ADEQUATE();
+  ADEQUATE("Adequate"),
+  NOT_ADEQUATE("Not adequate");
+
+  private final String condition;
+
+  SpecimenConditions(String aSpecimen) {
+    condition = aSpecimen;
+  }
 
   public static String getRandomCondition() {
     Random random = new Random();

@@ -17,16 +17,22 @@
  */
 package org.sormas.e2etests.steps.api;
 
+import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
+import org.sormas.e2etests.enums.LabCaption;
+import org.sormas.e2etests.enums.LabUuid;
 import org.sormas.e2etests.enums.PathogenTestResults;
 import org.sormas.e2etests.enums.SpecimenConditions;
 import org.sormas.e2etests.helpers.api.CaseHelper;
 import org.sormas.e2etests.helpers.api.PersonsHelper;
 import org.sormas.e2etests.helpers.api.SampleHelper;
 import org.sormas.e2etests.pojo.api.Case;
+import org.sormas.e2etests.pojo.api.Lab;
 import org.sormas.e2etests.pojo.api.Person;
 import org.sormas.e2etests.pojo.api.Sample;
 import org.sormas.e2etests.services.api.CaseApiService;
@@ -45,14 +51,23 @@ public class BusinessFlows implements En {
       SampleHelper sampleHelper,
       SampleApiService sampleApiService,
       ApiState apiState,
-      PersonsHelper personsHelper) {
+      PersonsHelper personsHelper,
+      Faker faker) {
     number = 10;
 
     When(
         "API: I create several new cases with a new sample foreach of them",
         () -> {
+          List<Sample> sampleList = new ArrayList<>();
+          String uuid = UUID.randomUUID().toString();
+          Person person = personApiService.buildGeneratedPerson();
+          person = person.toBuilder().firstName(person.getFirstName() + uuid).build();
           for (int i = 0; i < number; i++) {
-            Person person = personApiService.buildGeneratedPerson();
+            person =
+                person.toBuilder()
+                    .uuid(UUID.randomUUID().toString())
+                    .lastName(faker.name().lastName())
+                    .build();
             apiState.setEditPerson(person);
             personsHelper.createNewPerson(person);
 
@@ -68,10 +83,17 @@ public class BusinessFlows implements En {
                     .received(true)
                     .pathogenTestResult(PathogenTestResults.getRandomResult())
                     .specimenCondition(SpecimenConditions.getRandomCondition())
+                    .lab(
+                        Lab.builder()
+                            .caption(LabCaption.getRandomCaption())
+                            .uuid(LabUuid.getRandomUuid())
+                            .build())
                     .build();
 
             sampleHelper.createSample(sample);
+            sampleList.add(sample);
           }
+          apiState.setCreatedSamples(sampleList);
         });
   }
 }

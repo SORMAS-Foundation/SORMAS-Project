@@ -21,13 +21,13 @@ package org.sormas.e2etests.helpers;
 import static junit.framework.TestCase.fail;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
+import static org.sormas.e2etests.steps.BaseSteps.driver;
 import static recorders.StepsLogger.PROCESS_ID_STRING;
 
 import java.io.File;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -35,17 +35,9 @@ import org.awaitility.core.ConditionTimeoutException;
 import org.awaitility.core.ThrowingRunnable;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.sormas.e2etests.steps.BaseSteps;
 
 @Slf4j
 public class AssertHelpers {
-
-  private static RemoteWebDriver remoteWebDriver;
-
-  @Inject
-  public AssertHelpers(BaseSteps baseSteps) {
-    remoteWebDriver = baseSteps.getDriver();
-  }
 
   @SneakyThrows
   public void assertWithPoll(ThrowingRunnable throwingRunnable, int seconds) {
@@ -59,7 +51,7 @@ public class AssertHelpers {
     } catch (ConditionTimeoutException e) {
       log.error(PROCESS_ID_STRING + e.getMessage());
       log.error(PROCESS_ID_STRING + Arrays.toString(e.getStackTrace()));
-      takeScreenshot(remoteWebDriver);
+      takeScreenshot(driver);
       fail(e.getCause().getLocalizedMessage());
     }
   }

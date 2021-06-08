@@ -36,6 +36,7 @@ public class Sample {
   Date reportDateTime;
   Lab lab;
   String uuid;
+  String labDetails;
   Boolean received;
   String labSampleID;
   Date receivedDate;

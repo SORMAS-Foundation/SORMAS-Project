@@ -33,7 +33,7 @@ import recorders.StepsLogger;
 @Slf4j
 public class BaseSteps implements StepLifecycleListener {
 
-  private static RemoteWebDriver driver;
+  public static RemoteWebDriver driver;
   private final DriverManager driverManager;
 
   @Inject

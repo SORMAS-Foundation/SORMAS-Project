@@ -15,23 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.state;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-import io.restassured.response.Response;
-import java.util.List;
+package org.sormas.e2etests.enums;
+
+import java.util.Random;
 import lombok.Getter;
-import lombok.Setter;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Person;
-import org.sormas.e2etests.pojo.api.Sample;
 
-@ScenarioScoped
 @Getter
-@Setter
-public class ApiState {
-  Response response;
-  Person editPerson;
-  Case createdCase;
-  List<Sample> createdSamples;
+public enum LabUuid {
+  VOREINGESTELLTES("VQL6NJ-HPJY24-56F2R5-T5UV2HUI"),
+  NEW_LAB("SORMAS-CONSTID-OTHERS-FACILITY");
+
+  private final String UuidValue;
+
+  LabUuid(String idValue) {
+    UuidValue = idValue;
+  }
+
+  public static String getRandomUuid() {
+    Random random = new Random();
+    return String.valueOf(LabUuid.values()[random.nextInt(values().length)].UuidValue);
+  }
 }
