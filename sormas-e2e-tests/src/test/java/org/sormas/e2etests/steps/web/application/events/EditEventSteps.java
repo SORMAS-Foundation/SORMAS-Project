@@ -128,7 +128,7 @@ public class EditEventSteps implements En {
         });
 
     When(
-        "^I click on edit task icon$",
+        "^I click on edit task icon of the first created task$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_TASK_O);
         });

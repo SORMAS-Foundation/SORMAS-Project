@@ -86,5 +86,5 @@ Feature: Create events
       And I create a new task with specific data for an event
       And I click on the Tasks button from navbar
       And I am checking if the associated linked event appears in task management and click on it
-      And I click on edit task icon
+      And I click on edit task icon of the first created task
       And I check the created task is correctly displayed on Edit task page

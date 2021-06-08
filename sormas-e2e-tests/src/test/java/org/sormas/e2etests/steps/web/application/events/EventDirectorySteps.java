@@ -85,8 +85,6 @@ public class EventDirectorySteps implements En {
     When(
         "I am accessing the event tab using the created event via api",
         () -> {
-          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-          // NavBarPage.EVENTS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON);
           String eventUuid = apiState.getCreatedEvent().getUuid();
           String eventLinkPath = "/sormas-ui/#!events/data/";
