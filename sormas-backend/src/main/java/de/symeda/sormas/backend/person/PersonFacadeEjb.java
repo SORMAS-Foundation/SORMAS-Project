@@ -51,6 +51,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -232,6 +233,11 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public List<PersonDto> getByExternalIds(List<String> externalIds) {
 		return toPseudonymizedDtos(personService.getByExternalIdsBatched(externalIds));
+	}
+
+	@Override
+	public void updateExternalData(List<ExternalDataDto> externalData) {
+		personService.updateExternalData(externalData);
 	}
 
 	@Override

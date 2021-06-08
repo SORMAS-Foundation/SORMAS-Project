@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -39,6 +40,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -849,5 +851,32 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		return eventJurisdictionChecker.isInJurisdictionOrOwned(event) && !sormasToSormasShareInfoService.isEventOwnershipHandedOver(event);
+	}
+
+	public void updateExternalData(List<ExternalDataDto> externalData) {
+		if (externalData.isEmpty()) {
+			return;
+		}
+
+		List<String> uuids = externalData.stream().map(ExternalDataDto::getUuid).collect(Collectors.toList());
+		Map<String, ExternalDataDto> externalDataDtoMap = externalData.stream().collect(Collectors.toMap(ExternalDataDto::getUuid, Function.identity()));
+
+		List<Event> eventsToUpdate = getByUuids(uuids);
+		eventsToUpdate.forEach(event -> {
+			ExternalDataDto externalDataUpdate = externalDataDtoMap.get(event.getUuid());
+			if ((event.getExternalId() != null && externalDataUpdate.getExternalId() != null) ||
+					(event.getExternalToken() != null && externalDataUpdate.getExternalToken() != null)) {
+				throw new RuntimeException("Cannot update externalId or externalToken on entities with the fields already set");
+			}
+
+			if (externalDataUpdate.getExternalId() != null) {
+				event.setExternalId(externalDataUpdate.getExternalId());
+			}
+			if (externalDataUpdate.getExternalToken() != null) {
+				event.setExternalToken(externalDataUpdate.getExternalToken());
+			}
+			ensurePersisted(event);
+		});
+
 	}
 }

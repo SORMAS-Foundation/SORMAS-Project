@@ -32,6 +32,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
@@ -213,4 +214,6 @@ public interface CaseFacade {
 	List<CaseDataDto> getByPersonUuids(List<String> personUuids);
 
 	List<CaseDataDto> getByExternalId(String externalId);
+
+	void updateExternalData(List<ExternalDataDto> externalData);
 }

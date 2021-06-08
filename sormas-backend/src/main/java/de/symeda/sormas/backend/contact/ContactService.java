@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -43,6 +44,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1382,6 +1384,32 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		cq.where(personJoin.get(AbstractDomainObject.UUID).in(personUuids));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public void updateExternalData(List<ExternalDataDto> externalData) {
+		if (externalData.isEmpty()) {
+			return;
+		}
+
+		List<String> uuids = externalData.stream().map(ExternalDataDto::getUuid).collect(Collectors.toList());
+		Map<String, ExternalDataDto> externalDataDtoMap = externalData.stream().collect(Collectors.toMap(ExternalDataDto::getUuid, Function.identity()));
+
+		List<Contact> contactsToUpdate = getByUuids(uuids);
+		contactsToUpdate.forEach(contact -> {
+			ExternalDataDto externalDataUpdate = externalDataDtoMap.get(contact.getUuid());
+			if ((contact.getExternalID() != null && externalDataUpdate.getExternalId() != null) ||
+					(contact.getExternalToken() != null && externalDataUpdate.getExternalToken() != null)) {
+				throw new RuntimeException("Cannot update externalId or externalToken on entities with the fields already set");
+			}
+
+			if (externalDataUpdate.getExternalId() != null) {
+				contact.setExternalID(externalDataUpdate.getExternalId());
+			}
+			if (externalDataUpdate.getExternalToken() != null) {
+				contact.setExternalToken(externalDataUpdate.getExternalToken());
+			}
+			ensurePersisted(contact);
+		});
 	}
 
 }

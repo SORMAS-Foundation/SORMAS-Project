@@ -35,6 +35,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonIndexDto;
@@ -100,6 +101,12 @@ public class PersonResource extends EntityDtoResource {
 		@QueryParam("size") int size) {
 		return FacadeProvider.getPersonFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+	}
+
+	@POST
+	@Path("/externalData")
+	public void updateExternalData(List<ExternalDataDto> externalData) {
+		FacadeProvider.getPersonFacade().updateExternalData(externalData);
 	}
 
 }

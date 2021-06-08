@@ -29,6 +29,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -94,4 +95,6 @@ public interface EventFacade {
 	void validate(EventDto dto) throws ValidationRuntimeException;
 
 	Set<RegionReferenceDto> getAllRegionsRelatedToEventUuids(List<String> uuids);
+
+	void updateExternalData(List<ExternalDataDto> externalData);
 }

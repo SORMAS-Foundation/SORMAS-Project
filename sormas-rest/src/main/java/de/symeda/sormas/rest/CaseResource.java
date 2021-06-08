@@ -40,6 +40,7 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/cases")
@@ -127,6 +128,12 @@ public class CaseResource extends EntityDtoResource {
 	@Path("/{uuid}")
 	public CaseDataDto getByUuid(@PathParam("uuid") String uuid) {
 		return FacadeProvider.getCaseFacade().getByUuid(uuid);
+	}
+
+	@POST
+	@Path("/externalData")
+	public void updateExternalData(List<ExternalDataDto> externalData) {
+		FacadeProvider.getCaseFacade().updateExternalData(externalData);
 	}
 
 }

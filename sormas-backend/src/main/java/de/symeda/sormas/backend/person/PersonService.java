@@ -28,6 +28,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,6 +51,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
@@ -607,6 +610,33 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			}
 		}
 		return geoLocationUpdated;
+	}
+
+	public void updateExternalData(List<ExternalDataDto> externalData) {
+		if (externalData.isEmpty()) {
+			return;
+		}
+
+		List<String> uuids = externalData.stream().map(ExternalDataDto::getUuid).collect(Collectors.toList());
+		Map<String, ExternalDataDto> externalDataDtoMap = externalData.stream().collect(Collectors.toMap(ExternalDataDto::getUuid, Function.identity()));
+
+		List<Person> personsToUpdate = getByUuids(uuids);
+		personsToUpdate.forEach(person -> {
+			ExternalDataDto externalDataUpdate = externalDataDtoMap.get(person.getUuid());
+			if ((person.getExternalId() != null && externalDataUpdate.getExternalId() != null) ||
+					(person.getExternalToken() != null && externalDataUpdate.getExternalToken() != null)) {
+				throw new RuntimeException("Cannot update externalId or externalToken on entities with the fields already set");
+			}
+
+			if (externalDataUpdate.getExternalId() != null) {
+				person.setExternalId(externalDataUpdate.getExternalId());
+			}
+			if (externalDataUpdate.getExternalToken() != null) {
+				person.setExternalToken(externalDataUpdate.getExternalToken());
+			}
+			ensurePersisted(person);
+		});
+
 	}
 
 	public List<Person> getByExternalIdsBatched(List<String> externalIds) {

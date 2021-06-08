@@ -38,6 +38,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
@@ -105,4 +106,11 @@ public class ContactResource extends EntityDtoResource {
 		return FacadeProvider.getContactFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
+
+	@POST
+	@Path("/externalData")
+	public void updateExternalData(List<ExternalDataDto> externalData) {
+		FacadeProvider.getContactFacade().updateExternalData(externalData);
+	}
+
 }

@@ -53,6 +53,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -1157,6 +1158,11 @@ public class EventFacadeEjb implements EventFacade {
 			em.createQuery(cq).getResultList().stream().map(RegionReferenceDto::new).forEach(regionReferenceDtos::add);
 		});
 		return regionReferenceDtos;
+	}
+
+	@Override
+	public void updateExternalData(List<ExternalDataDto> externalData) {
+		eventService.updateExternalData(externalData);
 	}
 
 	@LocalBean

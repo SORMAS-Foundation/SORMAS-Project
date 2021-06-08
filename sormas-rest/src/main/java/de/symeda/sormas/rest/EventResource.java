@@ -38,6 +38,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/events")
@@ -93,5 +94,11 @@ public class EventResource extends EntityDtoResource {
 		@QueryParam("offset") int offset,
 		@QueryParam("size") int size) {
 		return FacadeProvider.getEventFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+	}
+
+	@POST
+	@Path("/externalData")
+	public void updateExternalData(List<ExternalDataDto> externalData) {
+		FacadeProvider.getEventFacade().updateExternalData(externalData);
 	}
 }
