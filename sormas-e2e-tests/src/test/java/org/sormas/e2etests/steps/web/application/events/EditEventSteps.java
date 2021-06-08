@@ -32,13 +32,16 @@ import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Event;
+import org.sormas.e2etests.pojo.web.EventGroup;
 import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.services.EventService;
+import org.sormas.e2etests.services.EventGroupService;
 
 public class EditEventSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static Event event;
+  public static EventGroup groupEvent;
   public static Person person;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
@@ -132,6 +135,21 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_TASK_O);
         });
+
+    When(
+        "^I click on link event group$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_GROUP);
+        });
+
+    When(
+        "^I create a new event group$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_GROUP_RADIOBUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_POPUP);
+          fillGroupEventName(faker.funnyName().name());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_POPUP);
+        });
   }
 
   public Person collectPersonUuid() {
@@ -216,5 +234,9 @@ public class EditEventSteps implements En {
 
   public void fillDateOfReport(LocalDate date) {
     webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
+  }
+
+  public void fillGroupEventName(String groupEventName) {
+    webDriverHelpers.fillInWebElement(GROUP_EVENT_NAME_POPUP_INPUT, groupEventName);
   }
 }
