@@ -314,6 +314,7 @@ public class EventFacadeEjb implements EventFacade {
 			responsibleUser.get(User.UUID),
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
+			eventService.jurisdictionSelector(cb, eventService.inJurisdictionOrOwned(cb, eventJoins)),
 			event.get(Event.CHANGE_DATE));
 
 		Predicate filter = null;
@@ -604,6 +605,7 @@ public class EventFacadeEjb implements EventFacade {
 			responsibleUser.get(User.UUID),
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
+			eventService.jurisdictionSelector(cb, eventService.inJurisdictionOrOwned(cb, eventJoins)),
 			event.get(Event.EVENT_MANAGEMENT_STATUS));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
