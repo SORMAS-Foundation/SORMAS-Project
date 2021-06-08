@@ -22,13 +22,18 @@ import static org.sormas.e2etests.pages.application.samples.SampleManagementPage
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 
 public class SampleManagementSteps implements En {
 
   @Inject
-  public SampleManagementSteps(WebDriverHelpers webDriverHelpers) {
+  public SampleManagementSteps(
+      WebDriverHelpers webDriverHelpers,
+      @Named("ENVIRONMENT_URL") String environmentUrl,
+      ApiState apiState) {
 
     When(
         "^I search last created Sample by Case ID$",
@@ -50,6 +55,14 @@ public class SampleManagementSteps implements En {
               SAMPLE_SEARCH_INPUT, CreateNewSampleSteps.sampleId);
           webDriverHelpers.waitUntilWebElementHasAttributeWithValue(
               SEARCH_RESULT_SAMPLE, "title", CreateNewSampleSteps.sampleId);
+        });
+
+    When(
+        "I am accessing the Sample page using the created Sample via api",
+        () -> {
+          String CREATED_SAMPLE_VIA_API_URL =
+              environmentUrl + "/sormas-ui/#!samples/data/" + apiState.getCreatedSample().getUuid();
+          webDriverHelpers.accessWebSite(CREATED_SAMPLE_VIA_API_URL);
         });
   }
 }

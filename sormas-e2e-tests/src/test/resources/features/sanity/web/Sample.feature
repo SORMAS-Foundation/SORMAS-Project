@@ -20,3 +20,10 @@ Feature: Create Sample
     When I open last created case
     When I click on edit Sample
     Then I check the created Sample is correctly displayed on Edit Sample page
+
+  Scenario: Add a Pathogen test from Samples and verify the fields
+    Given API: I create a new person
+    And API: I create a new case
+    And API: I create a new sample
+    When I log in with the user
+    And I am accessing the Sample page using the created Sample via api

@@ -15,22 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.state;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-import io.restassured.response.Response;
-import lombok.Getter;
-import lombok.Setter;
-import org.sormas.e2etests.pojo.api.*;
+package org.sormas.e2etests.pages.application.samples;
 
-@ScenarioScoped
-@Getter
-@Setter
-public class ApiState {
-  Response response;
-  Person editPerson;
-  Case createdCase;
-  Contact createdContact;
-  Task createdTask;
-  Sample createdSample;
+import org.openqa.selenium.By;
+
+public class EditSamplePage {
+
+    public static final By PATHOGEN_NEW_TEST_RESULT_BTN = By.cssSelector("[id='pathogenTestNewTest']");
 }
