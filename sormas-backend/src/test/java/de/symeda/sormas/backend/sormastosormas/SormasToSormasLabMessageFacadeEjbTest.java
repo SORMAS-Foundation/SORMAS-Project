@@ -94,8 +94,8 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 		Date dateNow = new Date();
 		setLabMessageFields(labMessage, dateNow);
 
-		byte[] encryptedData = encryptShareDataAsArray(labMessage);
-		getSormasToSormasLabMessageFacade().saveLabMessages(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(labMessage);
+		getSormasToSormasLabMessageFacade().saveLabMessages(encryptedData);
 
 		LabMessageDto savedLabMessage = getLabMessageFacade().getByUuid(labMessage.getUuid());
 		assertThat(savedLabMessage, is(notNullValue()));
