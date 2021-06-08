@@ -21,6 +21,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoFacade;
+import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "SormasToSormasOriginInfoFacade")
@@ -31,6 +32,9 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 
 	@EJB
 	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
+
+	@EJB
+	private SormasToSormasShareRequestService sormasToSormasShareRequestService;
 
 	public SormasToSormasOriginInfoDto saveOriginInfo(SormasToSormasOriginInfoDto originInfoDto) {
 

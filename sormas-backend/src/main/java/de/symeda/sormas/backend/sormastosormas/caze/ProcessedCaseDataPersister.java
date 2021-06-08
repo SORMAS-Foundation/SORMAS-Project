@@ -41,8 +41,8 @@ import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersisterHelper;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersisterHelper.ReturnedAssociatedEntityCallback;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean

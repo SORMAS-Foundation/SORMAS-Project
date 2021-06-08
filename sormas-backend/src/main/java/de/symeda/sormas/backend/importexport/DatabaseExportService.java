@@ -34,6 +34,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.backend.action.Action;
 import org.hibernate.Session;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
@@ -106,6 +107,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTS, new DatabaseExportConfiguration(Event.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTGROUPS, new DatabaseExportConfiguration(EventGroup.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTPARTICIPANTS, new DatabaseExportConfiguration(EventParticipant.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.ACTIONS, new DatabaseExportConfiguration(Action.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.SAMPLES, new DatabaseExportConfiguration(Sample.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.SAMPLETESTS, new DatabaseExportConfiguration(PathogenTest.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.TASKS, new DatabaseExportConfiguration(Task.TABLE_NAME));

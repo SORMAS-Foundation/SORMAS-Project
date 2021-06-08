@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -66,22 +65,23 @@ public class SormasToSormasFacadeHelper {
 		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 	}
 
-	public void sendEntitiesToSormas(List<?> entities, SormasToSormasOptionsDto options, RestCall restCall) throws SormasToSormasException {
+	public void sendEntitiesToSormas(Object entities, SormasToSormasOptionsDto options, EncryptedRestCall restCall) throws SormasToSormasException {
+		String organizationId = options.getOrganization().getUuid();
+		SormasToSormasEncryptedDataDto encryptedEntities = encryptionService.signAndEncrypt(entities, organizationId);
+		sendRequestToSormas(organizationId, (host, authToken) -> restCall.call(host, authToken, encryptedEntities), null);
+	}
 
-		OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerAccessData()
-			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
-		OrganizationServerAccessData targetServerAccessData = getOrganizationServerAccessData(options.getOrganization().getUuid())
+	public <T> T sendRequestToSormas(String organizationId, RestCall restCall, Class<T> responseType) throws SormasToSormasException {
+		OrganizationServerAccessData targetServerAccessData = getOrganizationServerAccessData(organizationId)
 			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 
 		String userCredentials = StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + targetServerAccessData.getRestUserPassword();
 
 		Response response;
 		try {
-			byte[] encryptedEntities = encryptionService.signAndEncrypt(objectMapper.writeValueAsBytes(entities), targetServerAccessData.getId());
 			response = restCall.call(
 				targetServerAccessData.getHostName(),
-				"Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8),
-				new SormasToSormasEncryptedDataDto(serverAccessData.getId(), encryptedEntities));
+				"Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
 		} catch (JsonProcessingException e) {
 			LOGGER.error("Unable to send data sormas", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasSend));
@@ -100,7 +100,7 @@ public class SormasToSormasFacadeHelper {
 		}
 
 		int statusCode = response.getStatus();
-		if (statusCode != HttpStatus.SC_NO_CONTENT) {
+		if (statusCode != HttpStatus.SC_NO_CONTENT && statusCode != HttpStatus.SC_OK) {
 			String errorMessage = response.readEntity(String.class);
 			Map<String, ValidationErrors> errors = null;
 
@@ -114,30 +114,26 @@ public class SormasToSormasFacadeHelper {
 
 			if (statusCode != HttpStatus.SC_BAD_REQUEST) {
 				// don't log validation errors, will be displayed on the UI
-				LOGGER.error("Share case failed: {}; {}", statusCode, errorMessage);
+				LOGGER.error("Share request failed: {}; {}", statusCode, errorMessage);
 			}
 
 			throw new SormasToSormasException(errorMessage, errors);
 		}
-	}
 
-	public <T> T[] decryptSharedData(SormasToSormasEncryptedDataDto encryptedData, Class<T[]> dataType) throws SormasToSormasException {
-		try {
-			byte[] decryptedData = encryptionService.decryptAndVerify(encryptedData.getData(), encryptedData.getOrganizationId());
-
-			return objectMapper.readValue(decryptedData, dataType);
-		} catch (IOException e) {
-			LOGGER.error("Can't parse shared data", e);
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDecrypt));
-		}
+		return responseType != null ? response.readEntity(responseType) : null;
 	}
 
 	public Optional<OrganizationServerAccessData> getOrganizationServerAccessData(String id) {
 		return serverAccessDataService.getServerListItemById(id);
 	}
 
-	public interface RestCall {
+	public interface EncryptedRestCall {
 
 		Response call(String host, String authToken, SormasToSormasEncryptedDataDto encryptedData) throws JsonProcessingException;
+	}
+
+	public interface RestCall {
+
+		Response call(String host, String authToken) throws JsonProcessingException;
 	}
 }

@@ -24,6 +24,7 @@ import lombok.Setter;
 import org.sormas.e2etests.pojo.api.Case;
 import org.sormas.e2etests.pojo.api.Contact;
 import org.sormas.e2etests.pojo.api.Person;
+import org.sormas.e2etests.pojo.api.Task;
 
 @ScenarioScoped
 @Getter
@@ -33,4 +34,5 @@ public class ApiState {
   Person editPerson;
   Case createdCase;
   Contact createdContact;
+  Task createdTask;
 }
