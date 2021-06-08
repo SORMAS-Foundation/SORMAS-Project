@@ -58,6 +58,23 @@ public class CreateNewTaskSteps implements En {
         });
 
     When(
+        "^I create a new task with specific data for an event$",
+        () -> {
+          task = taskService.buildGeneratedTaskForEvent();
+          selectTaskType(task.getTaskType());
+          fillSuggestedStartDate(task.getSuggestedStartDate());
+          fillSuggestedStartTime(task.getSuggestedStartTime());
+          fillDueDateDate(task.getDueDateDate());
+          fillDueDateTime(task.getDueDateTime());
+          selectAssignedTo(task.getAssignedTo());
+          selectPriority(task.getPriority());
+          fillCommentsOnTask(task.getCommentsOnTask());
+          fillCommentsOnExecution(task.getCommentsOnExecution());
+          selectTaskStatus(task.getTaskStatus());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
         "^I check the created task is correctly displayed on Edit task page",
         () -> {
           final Task actualTask = collectTaskData();
@@ -127,7 +144,7 @@ public class CreateNewTaskSteps implements En {
 
   public Task collectTaskData() {
     return Task.builder()
-        .taskContext("GENERAL")
+        .taskContext(getTaskContext())
         .taskType(webDriverHelpers.getValueFromWebElement(TASK_TYPE_INPUT))
         .suggestedStartDate(getSuggestedStartDate())
         .suggestedStartTime(getSuggestedStartTime())
@@ -182,5 +199,9 @@ public class CreateNewTaskSteps implements En {
 
   public String getStatus() {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TASK_STATUS_OPTIONS);
+  }
+
+  public String getTaskContext() {
+    return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SELECTED_TASK_CONTEXT);
   }
 }

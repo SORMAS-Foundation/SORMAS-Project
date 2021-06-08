@@ -62,7 +62,7 @@ public class TaskManagementSteps implements En {
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERAL_SEARCH_INPUT);
           webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventUuid);
-          // webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
         });
   }

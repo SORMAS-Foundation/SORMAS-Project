@@ -61,4 +61,12 @@ public class TaskService {
         .taskStatus("DONE")
         .build();
   }
+
+  public Task buildGeneratedTaskForEvent() {
+    return buildGeneratedTask().toBuilder()
+        .taskContext("EVENT")
+        .taskType("vaccination activities")
+        .assignedTo("National USER - National User")
+        .build();
+  }
 }
