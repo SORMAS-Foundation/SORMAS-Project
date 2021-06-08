@@ -32,6 +32,7 @@ public interface Captions {
 	String Action_priority = "Action.priority";
 	String Action_reply = "Action.reply";
 	String Action_title = "Action.title";
+	String actionAccept = "actionAccept";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionApplyFilters = "actionApplyFilters";
 	String actionArchive = "actionArchive";
@@ -79,6 +80,7 @@ public interface Captions {
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
+	String actionReject = "actionReject";
 	String actionRemindMeLater = "actionRemindMeLater";
 	String actionResetEnumCache = "actionResetEnumCache";
 	String actionResetFilters = "actionResetFilters";
@@ -1349,6 +1351,7 @@ public interface Captions {
 	String mainMenuPersons = "mainMenuPersons";
 	String mainMenuReports = "mainMenuReports";
 	String mainMenuSamples = "mainMenuSamples";
+	String mainMenuShareRequests = "mainMenuShareRequests";
 	String mainMenuStatistics = "mainMenuStatistics";
 	String mainMenuTasks = "mainMenuTasks";
 	String mainMenuUsers = "mainMenuUsers";
@@ -1766,7 +1769,13 @@ public interface Captions {
 	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
 	String SormasToSormasOptions_withEventParticipants = "SormasToSormasOptions.withEventParticipants";
 	String SormasToSormasOptions_withSamples = "SormasToSormasOptions.withSamples";
+	String sormasToSormasOwnershipHandedOver = "sormasToSormasOwnershipHandedOver";
+	String SormasToSormasPerson_address = "SormasToSormasPerson.address";
+	String SormasToSormasPerson_birthdDate = "SormasToSormasPerson.birthdDate";
+	String SormasToSormasPerson_personName = "SormasToSormasPerson.personName";
+	String SormasToSormasPerson_sex = "SormasToSormasPerson.sex";
 	String sormasToSormasReturn = "sormasToSormasReturn";
+	String sormasToSormasRevokeShare = "sormasToSormasRevokeShare";
 	String sormasToSormasSampleNotShared = "sormasToSormasSampleNotShared";
 	String sormasToSormasSendLabMessage = "sormasToSormasSendLabMessage";
 	String sormasToSormasSentFrom = "sormasToSormasSentFrom";
@@ -1774,6 +1783,15 @@ public interface Captions {
 	String sormasToSormasSharedBy = "sormasToSormasSharedBy";
 	String sormasToSormasSharedDate = "sormasToSormasSharedDate";
 	String sormasToSormasSharedWith = "sormasToSormasSharedWith";
+	String SormasToSormasShareRequest_cases = "SormasToSormasShareRequest.cases";
+	String SormasToSormasShareRequest_contacts = "SormasToSormasShareRequest.contacts";
+	String SormasToSormasShareRequest_creationDate = "SormasToSormasShareRequest.creationDate";
+	String SormasToSormasShareRequest_dataType = "SormasToSormasShareRequest.dataType";
+	String SormasToSormasShareRequest_events = "SormasToSormasShareRequest.events";
+	String SormasToSormasShareRequest_organizationName = "SormasToSormasShareRequest.organizationName";
+	String SormasToSormasShareRequest_senderName = "SormasToSormasShareRequest.senderName";
+	String SormasToSormasShareRequest_status = "SormasToSormasShareRequest.status";
+	String SormasToSormasShareRequest_uuid = "SormasToSormasShareRequest.uuid";
 	String sormasToSormasSync = "sormasToSormasSync";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
@@ -2186,6 +2204,7 @@ public interface Captions {
 	String View_samples_data = "View.samples.data";
 	String View_samples_labMessages = "View.samples.labMessages";
 	String View_samples_sub = "View.samples.sub";
+	String View_shareRequests = "View.shareRequests";
 	String View_statistics = "View.statistics";
 	String View_statistics_database_export = "View.statistics.database-export";
 	String View_tasks = "View.tasks";
