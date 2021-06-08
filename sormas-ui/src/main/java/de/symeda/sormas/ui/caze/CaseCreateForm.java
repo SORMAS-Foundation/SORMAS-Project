@@ -39,6 +39,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextField;
@@ -139,7 +140,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			TextField externalIdField = addField(CaseDataDto.EXTERNAL_ID, TextField.class);
 			style(externalIdField, ERROR_COLOR_PRIMARY);
 		} else {
-			CaseFormHelper.addDontShareWithReportingTool(this, getContent(), CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL, DONT_SHARE_WARNING_LOC);
+			CheckBox dontShareCheckbox = addField(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL, CheckBox.class);
+			CaseFormHelper.addDontShareWithReportingTool(getContent(), () -> dontShareCheckbox, DONT_SHARE_WARNING_LOC);
 		}
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);

@@ -17,13 +17,14 @@ package de.symeda.sormas.ui.caze;
 
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 
+import java.util.function.Supplier;
+
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.ui.CheckBox;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class CaseFormHelper {
@@ -31,18 +32,17 @@ public class CaseFormHelper {
 	private CaseFormHelper() {
 	}
 
-	public static void addDontShareWithReportingTool(AbstractEditForm<?> form, CustomLayout layout, String checkboxLoc, String warningLoc) {
-		addDontShareWithReportingTool(form, layout, checkboxLoc, warningLoc, Strings.messageDontShareWithReportingToolWarning);
+	public static void addDontShareWithReportingTool(CustomLayout layout, Supplier<CheckBox> addCheckbox, String warningLoc) {
+		addDontShareWithReportingTool(layout, addCheckbox, warningLoc, Strings.messageDontShareWithReportingToolWarning);
 	}
 
 	public static void addDontShareWithReportingTool(
-		AbstractEditForm<?> form,
 		CustomLayout layout,
-		String checkboxLoc,
+		Supplier<CheckBox> checkBoxSupplier,
 		String warningLoc,
 		String warningMessageKey) {
 		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
-			CheckBox dontShareCheckbox = form.addField(checkboxLoc, CheckBox.class);
+			CheckBox dontShareCheckbox = checkBoxSupplier.get();
 			dontShareCheckbox.addStyleName(VSPACE_3);
 			dontShareCheckbox.addValueChangeListener(e -> {
 				Boolean dontShare = (Boolean) e.getProperty().getValue();

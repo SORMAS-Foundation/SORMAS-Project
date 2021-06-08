@@ -73,7 +73,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		// external tokens ("Aktenzeichen") are not globally unique in Germany due to SurvNet, therefore, do not
 		// transmit the token to other GAs, but let them generate their own token based on their local, configurable
 		// format
-		if (!sormasToSormasConfig.getRetainCaseExternalToken()){
+		if (!sormasToSormasConfig.getRetainCaseExternalToken()) {
 			cazeDto.setExternalToken(null);
 		}
 
@@ -119,6 +119,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		cazeDto.setSurveillanceOfficer(null);
 		cazeDto.setCaseOfficer(null);
 		cazeDto.setSormasToSormasOriginInfo(null);
+		cazeDto.setDontShareWithReportingTool(false);
 
 		return cazeDto;
 	}

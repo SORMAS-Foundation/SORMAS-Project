@@ -1603,7 +1603,7 @@ public class CaseController {
 		}
 
 		// Show an error when at least one selected case is not owned by this server because ownership has been handed over
-		String notSharableUuid = FacadeProvider.getCaseFacade().getFirstCaseUuidNotShareableWithExternalTools(selectedUuids);
+		String notSharableUuid = FacadeProvider.getCaseFacade().getFirstUuidNotShareableWithExternalReportingTools(selectedUuids);
 		if (notSharableUuid != null) {
 			Notification.show(
 				String.format(

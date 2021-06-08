@@ -203,7 +203,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public <F extends Field> F addField(String propertyId, Class<F> fieldType) {
+	protected <F extends Field> F addField(String propertyId, Class<F> fieldType) {
 		return addField(getContent(), propertyId, fieldType);
 	}
 

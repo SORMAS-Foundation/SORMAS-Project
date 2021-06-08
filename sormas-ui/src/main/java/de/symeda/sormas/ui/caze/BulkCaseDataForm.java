@@ -350,13 +350,13 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 			shareWithReportingToolCheckbox.addStyleName(VSPACE_3);
 			getContent().addComponent(shareWithReportingToolCheckbox, SHARE_CHECKBOX);
 
+			CheckBox dontShareCheckbox = addField(CaseBulkEditData.DONT_SHARE_WITH_REPORTING_TOOL, CheckBox.class);
 			CaseFormHelper.addDontShareWithReportingTool(
-				this,
 				getContent(),
-				CaseBulkEditData.DONT_SHARE_WITH_REPORTING_TOOL,
+				() -> dontShareCheckbox,
 				DONT_SHARE_WARNING_LOC,
 				Strings.messageBulkDontShareWithReportingToolWarning);
-			CheckBox dontShareCheckbox = getField(CaseBulkEditData.DONT_SHARE_WITH_REPORTING_TOOL);
+
 			dontShareCheckbox.setEnabled(false);
 			FieldHelper.setEnabledWhen(
 				shareWithReportingToolCheckbox,
