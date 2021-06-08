@@ -10,7 +10,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -31,13 +31,17 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 	private final ComboBox<RegionReferenceDto> region;
 	private final ComboBox<DistrictReferenceDto> district;
 
-	public SharedInfoField(CaseReferenceDto caseReferenceDto) {
-		caseSelector = caseReferenceDto != null
-			? new CaseSelector(caseReferenceDto)
+	private final CaseDataDto caseDataDto;
+
+	public SharedInfoField(CaseDataDto caseDataDto) {
+		caseSelector = caseDataDto != null
+			? new CaseSelector(caseDataDto.toReference())
 			: new CaseSelector(I18nProperties.getString(Strings.infoNoSourceCaseSelectedLineListing));
 		disease = new ComboBox<>(I18nProperties.getCaption(Captions.disease));
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
 		district = new ComboBox<>(I18nProperties.getCaption(Captions.district));
+
+		this.caseDataDto = caseDataDto;
 	}
 
 	@Override
@@ -65,15 +69,24 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 		district.setId("district");
 		sharedInformationBar.addComponent(district);
 
+		binder.forField(caseSelector).bind(SharedInfoFieldDto.CAZE);
+		if (caseDataDto != null) {
+			binder.forField(disease).bind(SharedInfoFieldDto.DISEASE);
+		} else {
+			binder.forField(disease).asRequired().bind(SharedInfoFieldDto.DISEASE);
+		}
+		binder.forField(region).asRequired().bind(SharedInfoFieldDto.REGION);
+		binder.forField(district).asRequired().bind(SharedInfoFieldDto.DISTRICT);
+
+		if (caseDataDto != null) {
+			disease.setSelectedItem(caseDataDto.getDisease());
+			disease.setEnabled(false);
+		}
+
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = e.getValue();
 			updateDistricts(regionDto);
 		});
-
-		binder.forField(caseSelector).bind(SharedInfoFieldDto.CAZE);
-		binder.forField(disease).asRequired().bind(SharedInfoFieldDto.DISEASE);
-		binder.forField(region).asRequired().bind(SharedInfoFieldDto.REGION);
-		binder.forField(district).asRequired().bind(SharedInfoFieldDto.DISTRICT);
 
 		layout.addComponent(sharedInformationBar);
 

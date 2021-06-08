@@ -17,6 +17,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -47,7 +48,7 @@ public class LineListingLayout extends VerticalLayout {
 	private final Window window;
 	private Consumer<List<ContactLineDto>> saveCallback;
 
-	public LineListingLayout(Window window, CaseReferenceDto caseReferenceDto) {
+	public LineListingLayout(Window window, CaseDataDto caseReferenceDto) {
 
 		this.window = window;
 

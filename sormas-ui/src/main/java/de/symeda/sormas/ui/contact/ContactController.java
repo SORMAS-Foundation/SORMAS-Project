@@ -105,10 +105,10 @@ public class ContactController {
 		openLineListingWindow(null);
 	}
 
-	public void openLineListingWindow(CaseReferenceDto caseReferenceDto) {
+	public void openLineListingWindow(CaseDataDto caseDataDto) {
 		Window window = new Window(I18nProperties.getString(Strings.headingLineListing));
 
-		LineListingLayout lineListingForm = new LineListingLayout(window, caseReferenceDto);
+		LineListingLayout lineListingForm = new LineListingLayout(window, caseDataDto);
 		lineListingForm.setSaveCallback(contacts -> saveContactsFromLineListing(lineListingForm, contacts));
 
 		lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
