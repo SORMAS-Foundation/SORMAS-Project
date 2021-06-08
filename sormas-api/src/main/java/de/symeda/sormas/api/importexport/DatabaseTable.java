@@ -38,6 +38,7 @@ public enum DatabaseTable {
 	EVENTS(DatabaseTableType.SORMAS, null, "events"),
 	EVENTGROUPS(DatabaseTableType.SORMAS, EVENTS, "eventgroups"),
 	EVENTPARTICIPANTS(DatabaseTableType.SORMAS, EVENTS, "event_persons_involved"),
+	ACTIONS(DatabaseTableType.SORMAS, EVENTS, "actions"),
 	SAMPLES(DatabaseTableType.SORMAS, null, "samples"),
 	SAMPLETESTS(DatabaseTableType.SORMAS, SAMPLES, "sample_tests"),
 	TASKS(DatabaseTableType.SORMAS, null, "tasks"),
