@@ -11,6 +11,7 @@ import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -37,7 +38,7 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 		caseSelector = caseDataDto != null
 			? new CaseSelector(caseDataDto.toReference())
 			: new CaseSelector(I18nProperties.getString(Strings.infoNoSourceCaseSelectedLineListing));
-		disease = new ComboBox<>(I18nProperties.getCaption(Captions.disease));
+		disease = new ComboBox<>(I18nProperties.getCaption(Captions.lineListingDiseaseOfSourceCase));
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
 		district = new ComboBox<>(I18nProperties.getCaption(Captions.district));
 
@@ -77,6 +78,16 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 		}
 		binder.forField(region).asRequired().bind(SharedInfoFieldDto.REGION);
 		binder.forField(district).asRequired().bind(SharedInfoFieldDto.DISTRICT);
+
+		caseSelector.addValueChangeListener(e -> {
+			CaseReferenceDto caseReferenceDto = e.getValue();
+			if (caseReferenceDto != null) {
+				CaseDataDto selectedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(e.getValue().getUuid());
+				disease.setSelectedItem(selectedCase.getDisease());
+			} else {
+				disease.setSelectedItem(null);
+			}
+		});
 
 		if (caseDataDto != null) {
 			disease.setSelectedItem(caseDataDto.getDisease());

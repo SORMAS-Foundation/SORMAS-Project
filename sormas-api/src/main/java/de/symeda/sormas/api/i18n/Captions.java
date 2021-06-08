@@ -1300,6 +1300,7 @@ public interface Captions {
 	String lineListingAddLine = "lineListingAddLine";
 	String lineListingDisableAll = "lineListingDisableAll";
 	String lineListingDisableAllShort = "lineListingDisableAllShort";
+	String lineListingDiseaseOfSourceCase = "lineListingDiseaseOfSourceCase";
 	String lineListingEdit = "lineListingEdit";
 	String lineListingEnableAll = "lineListingEnableAll";
 	String lineListingEnableForDisease = "lineListingEnableForDisease";
