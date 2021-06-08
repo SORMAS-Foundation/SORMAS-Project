@@ -36,7 +36,6 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
@@ -69,8 +68,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private UserService userService;
 	@EJB
 	private ServerAccessDataService serverAccessDataService;
-	@EJB
-	private SormasToSormasFacadeHelper sormasToSormasFacadeHelper;
 	@Inject
 	private SormasToSormasRestClient sormasToSormasRestClient;
 	@EJB
@@ -89,7 +86,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	public ServerAccessDataReferenceDto getOrganizationRef(String id) {
-		return sormasToSormasFacadeHelper.getOrganizationServerAccessData(id).map(OrganizationServerAccessData::toReference).orElseGet(null);
+		return serverAccessDataService.getServerListItemById(id).map(OrganizationServerAccessData::toReference).orElseGet(null);
 	}
 
 	@Override
@@ -129,11 +126,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	public void revokeShare(String shareInfoUuid) throws SormasToSormasException {
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByUuid(shareInfoUuid);
 
-		sormasToSormasFacadeHelper.sendRequestToSormas(
-			shareInfo.getOrganizationId(),
-			(host, authToken) -> sormasToSormasRestClient
-				.post(host, REVOKE_REQUEST_ENDPOINT, authToken, Collections.singletonList(shareInfo.getRequestUuid())),
-			SormasToSormasEncryptedDataDto.class);
+		sormasToSormasRestClient
+			.post(shareInfo.getOrganizationId(), REVOKE_REQUEST_ENDPOINT, Collections.singletonList(shareInfo.getRequestUuid()), null);
 
 		shareInfo.setRequestStatus(ShareRequestStatus.REVOKED);
 		shareInfoService.ensurePersisted(shareInfo);
@@ -160,7 +154,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		DtoHelper.fillDto(target, source);
 
-		OrganizationServerAccessData serverAccessData = sormasToSormasFacadeHelper.getOrganizationServerAccessData(source.getOrganizationId())
+		OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerListItemById(source.getOrganizationId())
 			.orElseGet(() -> new OrganizationServerAccessData(source.getOrganizationId(), source.getOrganizationId()));
 		target.setTarget(serverAccessData.toReference());
 
