@@ -25,7 +25,7 @@ public class CaseStatisticsComponent extends DiseaseSectionStatisticsComponent {
 
 		// Count layout
 		caseClassificationConfirmed =
-			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CountElementStyle.CRITICAL);
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardConfirmedCase), CountElementStyle.CRITICAL);
 		caseClassificationConfirmedNoSymptoms = new DashboardStatisticsCountElement(
 			I18nProperties.getCaption(Captions.dashboardConfirmedNoSymptoms),
 			CountElementStyle.CRITICAL_TRANSPARENT);

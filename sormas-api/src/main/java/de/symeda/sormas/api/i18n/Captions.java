@@ -718,7 +718,7 @@ public interface Captions {
 	String dashboardComparedToPreviousPeriod = "dashboardComparedToPreviousPeriod";
 	String dashboardCompletedFollowUp = "dashboardCompletedFollowUp";
 	String dashboardCompletedFollowUpShort = "dashboardCompletedFollowUpShort";
-	String dashboardConfirmed = "dashboardConfirmed";
+	String dashboardConfirmedCase = "dashboardConfirmedCase";
 	String dashboardConfirmedContact = "dashboardConfirmedContact";
 	String dashboardConfirmedNoSymptoms = "dashboardConfirmedNoSymptoms";
 	String dashboardConfirmedUnknownSymptoms = "dashboardConfirmedUnknownSymptoms";

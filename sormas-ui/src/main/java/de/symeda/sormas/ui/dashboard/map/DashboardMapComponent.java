@@ -660,7 +660,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_PROBABLE, I18nProperties.getCaption(Captions.dashboardProbable));
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				casesKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_CONFIRMED, I18nProperties.getCaption(Captions.dashboardConfirmed));
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.CASE_CONFIRMED, I18nProperties.getCaption(Captions.dashboardConfirmedCase));
 				casesKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(casesKeyLayout);
