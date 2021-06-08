@@ -23,15 +23,18 @@ import lombok.Getter;
 
 @Getter
 public enum LabCaption {
-  VOREINGESTELLTES_LABOR("Voreingestelltes Labor", "Voreingestelltes Labor"),
-  OTHER_FACILITY("Andere Einrichtung", "Other facility");
+  VOREINGESTELLTES_LABOR(
+      "Voreingestelltes Labor", "Voreingestelltes Labor", "VQL6NJ-HPJY24-56F2R5-T5UV2HUI"),
+  OTHER_FACILITY("Andere Einrichtung", "Other facility", "SORMAS-CONSTID-OTHERS-FACILITY");
 
   private final String caption;
   private final String captionEnglish;
+  private final String uuidValue;
 
-  LabCaption(String captionType, String captionTypeEnglish) {
+  LabCaption(String captionType, String captionTypeEnglish, String idValue) {
     caption = captionType;
     captionEnglish = captionTypeEnglish;
+    uuidValue = idValue;
   }
 
   public static String getRandomCaption() {

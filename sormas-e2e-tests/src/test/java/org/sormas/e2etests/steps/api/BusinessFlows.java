@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
-import org.sormas.e2etests.enums.LabCaption;
 import org.sormas.e2etests.enums.LabUuid;
 import org.sormas.e2etests.enums.PathogenTestResults;
 import org.sormas.e2etests.enums.SpecimenConditions;
@@ -83,11 +82,7 @@ public class BusinessFlows implements En {
                     .received(true)
                     .pathogenTestResult(PathogenTestResults.getRandomResult())
                     .specimenCondition(SpecimenConditions.getRandomCondition())
-                    .lab(
-                        Lab.builder()
-                            .caption(LabCaption.getRandomCaption())
-                            .uuid(LabUuid.getRandomUuid())
-                            .build())
+                    .lab(Lab.builder().uuid(LabUuid.getRandomUuid()).build())
                     .build();
 
             sampleHelper.createSample(sample);

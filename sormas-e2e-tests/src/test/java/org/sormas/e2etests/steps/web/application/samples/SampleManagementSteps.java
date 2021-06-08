@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import org.sormas.e2etests.enums.LabCaption;
 import org.sormas.e2etests.enums.PathogenTestResults;
 import org.sormas.e2etests.enums.SpecimenConditions;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
@@ -34,7 +35,8 @@ import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 public class SampleManagementSteps implements En {
 
   @Inject
-  public SampleManagementSteps(WebDriverHelpers webDriverHelpers, ApiState apiState) {
+  public SampleManagementSteps(
+      WebDriverHelpers webDriverHelpers, ApiState apiState, AssertHelpers assertHelpers) {
 
     When(
         "^I search last created Sample by Case ID$",
@@ -131,16 +133,19 @@ public class SampleManagementSteps implements En {
                       webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
                       webDriverHelpers.waitUntilAListOfElementsHasText(
                           FINAL_LABORATORY_RESULT, caption.getCaptionEnglish());
-                      Truth.assertThat(
-                              apiState.getCreatedSamples().stream()
-                                  .filter(
-                                      sample ->
-                                          sample
-                                              .getLab()
-                                              .getCaption()
-                                              .contentEquals(caption.getCaption()))
-                                  .count())
-                          .isEqualTo(webDriverHelpers.getNumberOfElements(LIST_OF_SAMPLES));
+                      assertHelpers.assertWithPoll15Second(
+                          () ->
+                              Truth.assertThat(
+                                      apiState.getCreatedSamples().stream()
+                                          .filter(
+                                              sample ->
+                                                  sample
+                                                      .getLab()
+                                                      .getUuid()
+                                                      .contentEquals(caption.getUuidValue()))
+                                          .count())
+                                  .isEqualTo(
+                                      webDriverHelpers.getNumberOfElements(LIST_OF_SAMPLES)));
                     }));
   }
 }
