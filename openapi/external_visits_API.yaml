@@ -114,17 +114,13 @@ info:
     firstName\" : \"Maria\",<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;,\"\
     lastName\" : \"Muster\",<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\"\
     gender\" : \"female\"<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\"\
-    birthday\" : null<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;},<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>&emsp;&emsp;&emsp;&emsp;}<br>&emsp;&emsp;]<br>}<br>Currently\
-    \ SORMAS allows the use of one contact detail for several persons when they are\
-    \ assumed to be in the same family.<br>Persons are assumed to live in the same\
-    \ family when their lastNames are identical. So currently SORMAS allows to continue\
-    \ with the registration of a new person only when all the persons of the response\
-    \ share the same lastName with it (or if the response does not contain any matches,\
-    \ which needs to show in <tt>PatientDiaryQueryResponse.count == 0</tt>).<br>This\
-    \ is going to change soon, as persons of the same family don't always share the\
-    \ same lastName. Instead, SORMAS will check if all firstNames are unique. That\
-    \ is necessary to avoid confusion of person related data.<br><br>When there are\
-    \ no validation errors in the process described above, SORMAS fetches an authentication\
+    birthday\" : null<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;},<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>&emsp;&emsp;&emsp;&emsp;}<br>&emsp;&emsp;]<br>}<br>SORMAS\
+    \ allows to continue with the registration of a new person only when the person\
+    \ has a unique first name, so when all persons of the response have a different\
+    \ one (or if the response does not contain any matches, which needs to show in\
+    \ PatientDiaryQueryResponse.count == 0). This validation is necessary to avoid\
+    \ confusion of person related data in some external journals.<br><br>When there\
+    \ are no validation errors in the process described above, SORMAS fetches an authentication\
     \ token as described in 1. and then uses it to request the external journal to\
     \ register the person:<br><tt>POST [interface.patientdiary.probandsurl]/external-data/[personUUID]</tt><br>The\
     \ [personUUID] is replaced with the UUID of the person, which is later used to\
