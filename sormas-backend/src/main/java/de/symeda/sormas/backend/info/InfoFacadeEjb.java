@@ -33,6 +33,8 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Strings;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -245,11 +247,11 @@ public class InfoFacadeEjb implements InfoFacade {
 					usesFacilityReference = true;
 				}
 			} else if (String.class.isAssignableFrom(fieldType)) {
-				fieldValueCell.setCellValue(I18nProperties.getCaption("text"));
+				fieldValueCell.setCellValue(I18nProperties.getString(Strings.text));
 			} else if (Date.class.isAssignableFrom(fieldType)) {
-				fieldValueCell.setCellValue(I18nProperties.getCaption("date"));
+				fieldValueCell.setCellValue(I18nProperties.getString(Captions.date));
 			} else if (Number.class.isAssignableFrom(fieldType)) {
-				fieldValueCell.setCellValue(I18nProperties.getCaption("number"));
+				fieldValueCell.setCellValue(I18nProperties.getString(Strings.number));
 			} else if (Boolean.class.isAssignableFrom(fieldType) || boolean.class.isAssignableFrom(fieldType)) {
 				fieldValueCell.setCellValue(Boolean.TRUE + ", " + Boolean.FALSE);
 			} else if (Collection.class.isAssignableFrom(fieldType)) {
@@ -257,7 +259,7 @@ public class InfoFacadeEjb implements InfoFacade {
 					.values()
 					.stream()
 					.findFirst()
-					.ifPresent(type -> fieldValueCell.setCellValue(String.format(I18nProperties.getString("listOf"), getSimpleDtoName((Class<?>) type))));
+					.ifPresent(type -> fieldValueCell.setCellValue(String.format(I18nProperties.getString(Strings.listOf), getSimpleDtoName((Class<?>) type))));
 			}
 
 			//sensitive data

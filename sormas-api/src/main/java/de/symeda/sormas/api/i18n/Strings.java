@@ -750,6 +750,7 @@ public interface Strings {
 	String lastTwoYears = "lastTwoYears";
 	String lastWeek = "lastWeek";
 	String lastYear = "lastYear";
+	String listOf = "listOf";
 	String max = "max";
 	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
