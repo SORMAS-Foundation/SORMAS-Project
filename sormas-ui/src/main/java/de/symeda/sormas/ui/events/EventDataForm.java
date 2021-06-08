@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.utils.CheckBoxTree;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Label;
@@ -76,6 +75,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -105,7 +105,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			loc(EVENT_DATA_HEADING_LOC) +
 					fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
 					fluidRowLocs(EventDto.EVENT_STATUS, EventDto.RISK_LEVEL) +
-					fluidRowLocs(EventDto.EVENT_MANAGEMENT_STATUS) +
+					fluidRowLocs(EventDto.EVENT_MANAGEMENT_STATUS, EventDto.EVENT_IDENTIFICATION_SOURCE) +
 					fluidRowLocs(EventDto.MULTI_DAY_EVENT) +
 					fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
 					fluidRowLocs(EventDto.EVOLUTION_DATE, EventDto.EVOLUTION_COMMENT) +
@@ -222,6 +222,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.RISK_LEVEL);
 
 		addField(EventDto.EVENT_MANAGEMENT_STATUS, NullableOptionGroup.class);
+		addField(EventDto.EVENT_IDENTIFICATION_SOURCE, NullableOptionGroup.class);
 
 		addField(EventDto.EVENT_INVESTIGATION_STATUS, NullableOptionGroup.class);
 		addField(EventDto.EVENT_INVESTIGATION_START_DATE, DateField.class);

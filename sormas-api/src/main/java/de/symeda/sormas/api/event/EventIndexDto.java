@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String SURVEILLANCE_TOOL_LAST_SHARE_DATE = "surveillanceToolLastShareDate";
 	public static final String SURVEILLANCE_TOOL_SHARE_COUNT = "surveillanceToolShareCount";
 	public static final String SURVEILLANCE_TOOL_STATUS = "surveillanceToolStatus";
+	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 
 	private Long id;
 	private String uuid;
@@ -106,6 +107,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private UserReferenceDto responsibleUser;
 	private EventJurisdictionDto jurisdiction;
 	private EventGroupsIndexDto eventGroups;
+	private EventIdentificationSource eventIdentificationSource;
 
 	private Date surveillanceToolLastShareDate;
 	private Long surveillanceToolShareCount;
@@ -150,7 +152,8 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String responsibleUserUuid,
 		String responsibleUserFirstName,
 		String responsibleUserLastName,
-		Date changeDate) {
+		Date changeDate,
+		EventIdentificationSource eventIdentificationSource) {
 
 		this.id = id;
 		this.uuid = uuid;
@@ -178,6 +181,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
 		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null);
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 
 	public Long getId() {
@@ -462,6 +466,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setSurveillanceToolStatus(ExternalShareStatus surveillanceToolStatus) {
 		this.surveillanceToolStatus = surveillanceToolStatus;
+	}
+
+	public EventIdentificationSource getEventIdentificationSource() {
+		return eventIdentificationSource;
+	}
+
+	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 
 	public EventReferenceDto toReference() {

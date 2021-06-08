@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -320,7 +320,8 @@ public class EventFacadeEjb implements EventFacade {
 			responsibleUser.get(User.UUID),
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
-			event.get(Event.CHANGE_DATE));
+			event.get(Event.CHANGE_DATE),
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE));
 
 		Predicate filter = null;
 
@@ -612,7 +613,8 @@ public class EventFacadeEjb implements EventFacade {
 			responsibleUser.get(User.UUID),
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
-			event.get(Event.EVENT_MANAGEMENT_STATUS));
+			event.get(Event.EVENT_MANAGEMENT_STATUS),
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
@@ -986,6 +988,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getShareInfoEvents().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
+		target.setEventIdentificationSource(source.getEventIdentificationSource());
+
 		return target;
 	}
 
@@ -1084,6 +1088,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
 
 		target.setInternalToken(source.getInternalToken());
+
+		target.setEventIdentificationSource(source.getEventIdentificationSource());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));

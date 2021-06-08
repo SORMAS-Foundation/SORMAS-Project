@@ -959,6 +959,7 @@ public interface Captions {
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventGroupCount = "Event.eventGroupCount";
 	String Event_eventGroups = "Event.eventGroups";
+	String Event_eventIdentificationSource = "Event.eventIdentificationSource";
 	String Event_eventInvestigationEndDate = "Event.eventInvestigationEndDate";
 	String Event_eventInvestigationStartDate = "Event.eventInvestigationStartDate";
 	String Event_eventInvestigationStatus = "Event.eventInvestigationStatus";

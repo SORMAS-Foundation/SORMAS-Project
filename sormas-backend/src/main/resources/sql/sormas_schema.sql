@@ -7433,4 +7433,10 @@ ALTER TABLE cases ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
 ALTER TABLE cases_history ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (377, 'Add a checkbox to avoid sending this case to SurvNet #5324');
+
+-- 2021-06-07 Event identification source (#5526)
+ALTER TABLE events ADD COLUMN eventidentificationsource varchar(255);
+ALTER TABLE events_history ADD COLUMN eventidentificationsource varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (378, 'Event identification source (#5526)');
 -- *** Insert new sql commands BEFORE this line ***
