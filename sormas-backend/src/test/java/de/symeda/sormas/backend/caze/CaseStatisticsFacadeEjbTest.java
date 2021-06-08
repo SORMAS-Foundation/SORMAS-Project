@@ -44,7 +44,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.setApproximateAge(30);
 		cazePerson.setApproximateAgeReferenceDate(new Date());
 		cazePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
-		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
@@ -90,7 +90,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.setApproximateAge(30);
 		cazePerson.setApproximateAgeReferenceDate(new Date());
 		cazePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
-		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
@@ -124,7 +124,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.setApproximateAge(30);
 		cazePerson.setApproximateAgeReferenceDate(new Date());
 		cazePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
-		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),

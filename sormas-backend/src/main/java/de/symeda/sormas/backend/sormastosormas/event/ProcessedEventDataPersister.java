@@ -41,8 +41,8 @@ import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersisterHelper;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersisterHelper.ReturnedAssociatedEntityCallback;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
@@ -140,7 +140,7 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 		throws SormasToSormasValidationException {
 		for (EventParticipantDto ep : eventParticipants) {
 			handleValidationError(
-				() -> personFacade.savePersonAndNotifyExternalJournal(ep.getPerson(), false),
+				() -> personFacade.savePerson(ep.getPerson(), false),
 				Captions.EventParticipant,
 				buildEventValidationGroupName(ep.getEvent()));
 

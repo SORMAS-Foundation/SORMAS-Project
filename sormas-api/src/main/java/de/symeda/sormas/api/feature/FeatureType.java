@@ -43,11 +43,14 @@ public enum FeatureType {
 			CASE_SURVEILANCE,
 			EVENT_SURVEILLANCE }),
 	DOCUMENTS_MULTI_UPLOAD(true,
-			true,
-			new FeatureType[] {
-					DOCUMENTS
-			}),
+		true,
+		new FeatureType[] {
+			DOCUMENTS }),
 	EVENT_GROUPS(true,
+		true,
+		new FeatureType[] {
+			EVENT_SURVEILLANCE }),
+	EVENT_HIERARCHIES(true,
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE }),
@@ -150,7 +153,13 @@ public enum FeatureType {
 	TASK_GENERATION_GENERAL(true,
 		true,
 		new FeatureType[] {
-			TASK_MANAGEMENT });
+			TASK_MANAGEMENT }),
+	SORMAS_TO_SORMAS_ACCEPT_REJECT(true,
+		false,
+		new FeatureType[] {
+			CASE_SURVEILANCE,
+			CONTACT_TRACING,
+			EVENT_SURVEILLANCE });
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

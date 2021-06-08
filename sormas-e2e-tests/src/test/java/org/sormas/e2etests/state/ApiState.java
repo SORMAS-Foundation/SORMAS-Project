@@ -23,8 +23,10 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.sormas.e2etests.pojo.api.Case;
+import org.sormas.e2etests.pojo.api.Contact;
 import org.sormas.e2etests.pojo.api.Person;
 import org.sormas.e2etests.pojo.api.Sample;
+import org.sormas.e2etests.pojo.api.Task;
 
 @ScenarioScoped
 @Getter
@@ -34,4 +36,6 @@ public class ApiState {
   Person editPerson;
   Case createdCase;
   List<Sample> createdSamples;
+  Contact createdContact;
+  Task createdTask;
 }

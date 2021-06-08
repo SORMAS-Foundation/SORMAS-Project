@@ -104,7 +104,7 @@ public class TestDataCreator {
 		PersonDto cazePerson = PersonDto.build();
 		cazePerson.setFirstName(firstName);
 		cazePerson.setLastName(lastName);
-		cazePerson = FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		cazePerson = FacadeProvider.getPersonFacade().savePerson(cazePerson);
 
 		return cazePerson;
 	}

@@ -14,14 +14,16 @@
  */
 package de.symeda.sormas.backend.sormastosormas;
 
-import java.io.FileInputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -30,14 +32,19 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.bouncycastle.cms.CMSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.backend.crypt.CmsCreator;
 import de.symeda.sormas.backend.crypt.CmsReader;
@@ -53,58 +60,84 @@ public class SormasToSormasEncryptionService {
 	@EJB
 	protected ServerAccessDataService serverAccessDataService;
 
-	public byte[] encrypt(byte[] data, String instanceID) throws SormasToSormasException {
+	private final ObjectMapper objectMapper;
+
+	public SormasToSormasEncryptionService() {
+		objectMapper = new ObjectMapper();
+		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+	}
+
+	private KeyStore getKeystore() throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException {
+		return loadStore(sormasToSormasConfig.getKeystoreName(), sormasToSormasConfig.getKeystorePass());
+	}
+
+	private KeyStore getTruststore() throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException {
+		return loadStore(sormasToSormasConfig.getTruststoreName(), sormasToSormasConfig.getTruststorePass());
+	}
+
+	private KeyStore loadStore(String name, String password) throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
+		String filePath = sormasToSormasConfig.getPath();
+		Path storePath = Paths.get(filePath, name);
+		KeyStore store = KeyStore.getInstance("pkcs12");
+		try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(storePath))) {
+			store.load(in, password.toCharArray());
+		}
+
+		return store;
+	}
+
+	private enum Mode {
+		ENCRYPTION,
+		DECRYPTION
+	}
+
+	private byte[] cipher(Mode mode, byte[] data, String otherId)
+		throws SormasToSormasException, CMSException, CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException,
+		UnrecoverableKeyException {
+		String ownId = getOrganizationId();
+		KeyStore keystore = getKeystore();
+		KeyStore truststore = getTruststore();
+		X509Certificate ownCert = (X509Certificate) keystore.getCertificate(ownId);
+		// todo private key should have own password
+		PrivateKey ownKey = (PrivateKey) keystore.getKey(ownId, sormasToSormasConfig.getKeystorePass().toCharArray());
+		X509Certificate otherCert = (X509Certificate) truststore.getCertificate(otherId);
+
+		if (otherCert == null) {
+			throw new SormasToSormasException(String.format("No certificate for id %s could be found", otherId));
+		}
+
+		switch (mode) {
+		case ENCRYPTION:
+			return CmsCreator.signAndEncrypt(data, ownCert, ownKey, otherCert, true);
+		case DECRYPTION:
+			return CmsReader.decryptAndVerify(data, Lists.newArrayList(otherCert), ownCert, ownKey);
+		default:
+			throw new IllegalArgumentException("Unknown mode " + mode);
+		}
+	}
+
+	public SormasToSormasEncryptedDataDto signAndEncrypt(Object entities, String recipientId) throws SormasToSormasException {
 		try {
-			String filePath = sormasToSormasConfig.getPath();
-			String keystoreName = sormasToSormasConfig.getKeystoreName();
-			Path keystorePath = Paths.get(filePath, keystoreName);
-			String keystorePass = sormasToSormasConfig.getKeystorePass();
+			OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerAccessData()
+				.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 
-			KeyStore keystore = getKeyStore(keystorePath, keystorePass);
-			String organizationId = getOrganizationId();
-
-			X509Certificate signerCertificate = (X509Certificate) keystore.getCertificate(organizationId);
-			PrivateKey privateKey = (PrivateKey) keystore.getKey(organizationId, keystorePass.toCharArray());
-
-			Path truststorePath = Paths.get(filePath, sormasToSormasConfig.getTruststoreName());
-			KeyStore truststore = getKeyStore(truststorePath, sormasToSormasConfig.getTruststorePass());
-			X509Certificate recipientCertificate = (X509Certificate) truststore.getCertificate(instanceID);
-
-			return CmsCreator.signAndEncrypt(data, signerCertificate, privateKey, recipientCertificate, true);
+			byte[] encryptedData = cipher(Mode.ENCRYPTION, objectMapper.writeValueAsBytes(entities), recipientId);
+			return new SormasToSormasEncryptedDataDto(serverAccessData.getId(), encryptedData);
 		} catch (Exception e) {
-			LOGGER.error("Couldn't encrypt data", e);
+			LOGGER.error("Could not sign and encrypt data", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasEncrypt));
 		}
 	}
 
-	public byte[] decrypt(byte[] data, String instanceID) throws SormasToSormasException {
+	public <T> T decryptAndVerify(SormasToSormasEncryptedDataDto encryptedData, Class<T> dataType) throws SormasToSormasException {
 		try {
-			String filePath = sormasToSormasConfig.getPath();
-
-			Path keystorePath = Paths.get(filePath, sormasToSormasConfig.getKeystoreName());
-			String keystorePass = sormasToSormasConfig.getKeystorePass();
-			KeyStore keystore = getKeyStore(keystorePath, keystorePass);
-
-			String organizationId = getOrganizationId();
-			X509Certificate recipientCertificate = (X509Certificate) keystore.getCertificate(organizationId);
-			PrivateKey recipientPrivateKey = (PrivateKey) keystore.getKey(organizationId, keystorePass.toCharArray());
-
-			Path truststorePath = Paths.get(filePath, sormasToSormasConfig.getTruststoreName());
-			KeyStore truststore = getKeyStore(truststorePath, sormasToSormasConfig.getTruststorePass());
-			X509Certificate singatureCert = (X509Certificate) truststore.getCertificate(instanceID);
-
-			return CmsReader.decryptAndVerify(data, Lists.newArrayList(singatureCert), recipientCertificate, recipientPrivateKey);
+			byte[] decryptedData = cipher(Mode.DECRYPTION, encryptedData.getData(), encryptedData.getOrganizationId());
+			return objectMapper.readValue(decryptedData, dataType);
 		} catch (Exception e) {
-			LOGGER.error("Couldn't decrypt data", e);
+			LOGGER.error("Could not decrypt and verify data", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDecrypt));
 		}
-	}
-
-	private KeyStore getKeyStore(Path keystorePath, String keystorePass)
-		throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
-		KeyStore keystore = KeyStore.getInstance("pkcs12");
-		keystore.load(new FileInputStream(keystorePath.toFile()), keystorePass.toCharArray());
-		return keystore;
 	}
 
 	private String getOrganizationId() throws SormasToSormasException {

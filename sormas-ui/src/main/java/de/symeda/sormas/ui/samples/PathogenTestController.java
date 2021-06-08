@@ -342,7 +342,7 @@ public class PathogenTestController {
 			});
 	}
 
-	private void showConfirmCaseDialog(CaseDataDto caze) {
+	public void showConfirmCaseDialog(CaseDataDto caze) {
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.caseConfirmCase),

@@ -40,31 +40,33 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SharedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.SharedDataProcessorHelper;
-import de.symeda.sormas.backend.sormastosormas.SharedDataProcessorHelper.InfrastructureData;
+import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessor;
+import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessorHelper;
+import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessorHelper.InfrastructureData;
 
 @Stateless
 @LocalBean
-public class SharedCaseProcessor implements SharedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData> {
+public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData, SormasToSormasCasePreview> {
 
 	@EJB
-	private SharedDataProcessorHelper dataProcessorHelper;
+	private ReceivedDataProcessorHelper dataProcessorHelper;
 	@EJB
 	private ContactFacadeEjbLocal contactFacade;
 
 	@Override
-	public ProcessedCaseData processSharedData(SormasToSormasCaseDto sharedCase, CaseDataDto existingCaseData)
+	public ProcessedCaseData processReceivedData(SormasToSormasCaseDto receivedCase, CaseDataDto existingCaseData)
 		throws SormasToSormasValidationException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 
-		PersonDto person = sharedCase.getPerson();
-		CaseDataDto caze = sharedCase.getEntity();
-		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts = sharedCase.getAssociatedContacts();
-		List<SormasToSormasSampleDto> samples = sharedCase.getSamples();
-		SormasToSormasOriginInfoDto originInfo = sharedCase.getOriginInfo();
+		PersonDto person = receivedCase.getPerson();
+		CaseDataDto caze = receivedCase.getEntity();
+		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts = receivedCase.getAssociatedContacts();
+		List<SormasToSormasSampleDto> samples = receivedCase.getSamples();
+		SormasToSormasOriginInfoDto originInfo = receivedCase.getOriginInfo();
 
 		ValidationErrors caseValidationErrors = new ValidationErrors();
 
@@ -93,6 +95,52 @@ public class SharedCaseProcessor implements SharedDataProcessor<CaseDataDto, Sor
 		}
 
 		return new ProcessedCaseData(person, caze, associatedContacts, samples, originInfo);
+	}
+
+	@Override
+	public SormasToSormasCasePreview processReceivedPreview(SormasToSormasCasePreview preview) throws SormasToSormasValidationException {
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+
+		ValidationErrors caseValidationErrors = new ValidationErrors();
+
+		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
+			preview.getRegion(),
+			preview.getDistrict(),
+			preview.getCommunity(),
+			preview.getFacilityType(),
+			preview.getHealthFacility(),
+			preview.getHealthFacilityDetails(),
+			preview.getPointOfEntry(),
+			preview.getPointOfEntryDetails());
+
+		dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
+			preview.setRegion(infrastructureData.getRegion());
+			preview.setDistrict(infrastructureData.getDistrict());
+			preview.setCommunity(infrastructureData.getCommunity());
+			preview.setHealthFacility(infrastructureData.getFacility());
+			preview.setHealthFacilityDetails(infrastructureData.getFacilityDetails());
+			preview.setPointOfEntry(infrastructureData.getPointOfEntry());
+			preview.setPointOfEntryDetails(infrastructureData.getPointOfEntryDetails());
+		});
+
+		if (caseValidationErrors.hasError()) {
+			validationErrors.put(buildCaseValidationGroupName(preview), caseValidationErrors);
+		}
+
+		ValidationErrors personValidationErrors = dataProcessorHelper.processPersonPreview(preview.getPerson());
+		caseValidationErrors.addAll(personValidationErrors);
+
+		List<SormasToSormasContactPreview> contacts = preview.getContacts();
+		if (contacts != null && contacts.size() > 0) {
+			Map<String, ValidationErrors> contactValidationErrors = processContactPreviews(contacts);
+			validationErrors.putAll(contactValidationErrors);
+		}
+
+		if (validationErrors.size() > 0) {
+			throw new SormasToSormasValidationException(validationErrors);
+		}
+
+		return preview;
 	}
 
 	private ValidationErrors processCaseData(CaseDataDto caze, PersonDto person, CaseDataDto existingCaseData) {
@@ -197,6 +245,20 @@ public class SharedCaseProcessor implements SharedDataProcessor<CaseDataDto, Sor
 			ContactDto contact = associatedContact.getContact();
 			ValidationErrors contactErrors =
 				dataProcessorHelper.processContactData(contact, associatedContact.getPerson(), existingContactsMap.get(contact.getUuid()));
+
+			if (contactErrors.hasError()) {
+				validationErrors.put(buildContactValidationGroupName(contact), contactErrors);
+			}
+		}
+
+		return validationErrors;
+	}
+
+	private Map<String, ValidationErrors> processContactPreviews(List<SormasToSormasContactPreview> contacts) {
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+
+		for (SormasToSormasContactPreview contact : contacts) {
+			ValidationErrors contactErrors = dataProcessorHelper.processContactPreview(contact);
 
 			if (contactErrors.hasError()) {
 				validationErrors.put(buildContactValidationGroupName(contact), contactErrors);

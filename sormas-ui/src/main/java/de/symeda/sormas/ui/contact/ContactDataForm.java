@@ -626,7 +626,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 							followUpPeriod,
 							null,
 							FacadeProvider.getVisitFacade().getVisitsByContact(new ContactReferenceDto(getValue().getUuid())),
-							FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration(getSelectedDisease()))
+							FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(getSelectedDisease()))
 						.getFollowUpEndDate();
 
 				dfFollowUpUntil.addValidator(
