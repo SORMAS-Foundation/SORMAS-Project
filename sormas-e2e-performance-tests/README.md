@@ -13,15 +13,17 @@ This project aims to help identify performance issues on the Sormas rest api's.
 
 * Install Java JDK 11 on your local machine
 * Install apache Jmeter
-*  Clone the project and open the *sormas-e2e-performance-tests* subproject
+* Clone the project and open the *sormas-e2e-performance-tests* subproject
 
 ## Test execution
 
 Non-GUI execution of the performance tests is recommended:
 
 > Execution from a terminal window:
+
 * open the console and navigate to the Jmeter bin folder
-* type the following in the command line:  jmeter -n -t 'PathToTheJMXFile'\SormasPoc.jmx -Jmodule='moduleName'
+* type the following in the command line:  
+  jmeter -n -t 'PathToTheJMXFile'\SormasPoc.jmx -Jmodule='moduleName'
   -l 'PathWhereTheResultsWillBeSaved'\Results.csv -e -o 'PathWhereTheHtmlReportWillBeSaved'\reports
   
 -Jmodule=daily-build-scenario
@@ -30,7 +32,6 @@ Non-GUI execution of the performance tests is recommended:
 > Example:
 jmeter -n -t C:\projects\sormas\performance\SormasPoc.jmx -Jmodule=daily-build-scenario
 -l C:\projects\sormas\performance\results\Results3.csv -e -o C:\projects\sormas\performance\reports
-
 
 ## Reporting
 
