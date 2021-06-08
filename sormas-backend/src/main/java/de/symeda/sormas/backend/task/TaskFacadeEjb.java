@@ -52,7 +52,6 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -89,7 +88,6 @@ import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
-import de.symeda.sormas.backend.event.EventJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -132,8 +130,6 @@ public class TaskFacadeEjb implements TaskFacade {
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
-	@EJB
-	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
 	private TaskJurisdictionChecker taskJurisdictionChecker;
 
@@ -242,12 +238,8 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 
 			if (source.getEvent() != null) {
-				EventJurisdictionDto contactJurisdiction = JurisdictionHelper.createEventJurisdictionDto(source.getEvent());
-				pseudonymizer.pseudonymizeDto(
-					EventReferenceDto.class,
-					target.getEvent(),
-					eventJurisdictionChecker.isInJurisdictionOrOwned(contactJurisdiction),
-					null);
+				pseudonymizer
+					.pseudonymizeDto(EventReferenceDto.class, target.getEvent(), eventService.inJurisdictionOrOwned(source.getEvent()), null);
 			}
 		});
 
@@ -525,7 +517,7 @@ public class TaskFacadeEjb implements TaskFacade {
 						emptyValuePseudonymizer.pseudonymizeDto(
 							EventReferenceDto.class,
 							t.getEvent(),
-							eventJurisdictionChecker.isInJurisdictionOrOwned(t.getJurisdiction().getEventJurisdiction()),
+							eventService.inJurisdictionOrOwned(eventService.getByUuid(t.getEvent().getUuid())),
 							null);
 					}
 				},

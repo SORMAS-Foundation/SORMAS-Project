@@ -80,6 +80,7 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.EventJoins;
@@ -97,7 +98,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	@EJB
 	private CaseService caseService;
 	@EJB
-	private EventJurisdictionChecker eventJurisdictionChecker;
+	private UserService userService;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
@@ -835,6 +836,56 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			return event.getSormasToSormasOriginInfo().isOwnershipHandedOver();
 		}
 
-		return eventJurisdictionChecker.isInJurisdictionOrOwned(event) && !sormasToSormasShareInfoService.isEventOwnershipHandedOver(event);
+		return inJurisdictionOrOwned(event) && !sormasToSormasShareInfoService.isEventOwnershipHandedOver(event);
+	}
+
+	public boolean inJurisdiction(Event event) {
+		return !getInJurisdictionIDs(Collections.singletonList(event), false).isEmpty();
+	}
+
+	public boolean inJurisdictionOrOwned(Event event) {
+		return !getInJurisdictionIDs(Collections.singletonList(event), true).isEmpty();
+	}
+
+	public List<Long> getInJurisdictionIDs(final List<Event> selectedEvents, boolean orOwned) {
+		if (selectedEvents.size() == 0) {
+			return Collections.emptyList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
+		final Root<Event> eventRoot = inJurisdictionQuery.from(Event.class);
+
+		inJurisdictionQuery.select(eventRoot.get(AbstractDomainObject.ID));
+
+		final Predicate isFromSelectedEvents =
+			cb.in(eventRoot.get(AbstractDomainObject.ID)).value(selectedEvents.stream().map(Event::getId).collect(Collectors.toList()));
+		if (orOwned) {
+			inJurisdictionQuery.where(cb.and(isFromSelectedEvents, inJurisdictionOrOwned(cb, new EventJoins<>(eventRoot))));
+		} else {
+			inJurisdictionQuery.where(cb.and(isFromSelectedEvents, inJurisdiction(cb, new EventJoins<>(eventRoot))));
+		}
+
+		return em.createQuery(inJurisdictionQuery).getResultList();
+	}
+
+	public Predicate inJurisdiction(CriteriaBuilder cb, EventJoins<?> joins) {
+		final User currentUser = userService.getCurrentUser();
+
+		return EventJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
+	}
+
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, EventJoins<?> joins) {
+		final User currentUser = userService.getCurrentUser();
+
+		final Predicate reportedByCurrentUser =
+			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
+
+		final Predicate currentUserResponsible =
+			cb.and(cb.isNotNull(joins.getResponsibleUser()), cb.equal(joins.getResponsibleUser().get(User.UUID), currentUser.getUuid()));
+
+		final Predicate jurisdictionPredicate = inJurisdiction(cb, joins);
+
+		return cb.or(reportedByCurrentUser, currentUserResponsible, jurisdictionPredicate);
 	}
 }

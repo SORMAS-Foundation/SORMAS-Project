@@ -34,7 +34,6 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -77,8 +76,6 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
 	private EventService eventService;
-	@EJB
-	private EventJurisdictionChecker eventJurisdictionChecker;
 
 	@Override
 	public DocumentDto getDocumentByUuid(String uuid) {
@@ -190,7 +187,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 			return contactJurisdictionChecker.isInJurisdictionOrOwned(contact);
 		case EVENT:
 			Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
-			return eventJurisdictionChecker.isInJurisdictionOrOwned(event);
+			return eventService.inJurisdictionOrOwned(event);
 		}
 		return true;
 	}

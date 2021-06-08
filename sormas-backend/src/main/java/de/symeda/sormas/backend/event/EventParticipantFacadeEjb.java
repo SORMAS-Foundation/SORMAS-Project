@@ -45,8 +45,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +63,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -88,6 +87,7 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -141,8 +141,6 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private DistrictService districtService;
 	@EJB
 	private MessagingService messagingService;
-	@EJB
-	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
 	private VaccinationInfoFacadeEjbLocal vaccinationInfoFacade;
 	@EJB
@@ -231,7 +229,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		EventReferenceDto eventReferenceDto = dto.getEvent();
 		Event event = eventService.getByUuid(eventReferenceDto.getUuid());
 
-		if (!eventJurisdictionChecker.isInJurisdiction(event) && (dto.getRegion() == null || dto.getDistrict() == null)) {
+		if (!eventService.inJurisdiction(event) && (dto.getRegion() == null || dto.getDistrict() == null)) {
 			Region region = user.getRegion();
 			dto.setRegion(region != null ? new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()) : null);
 			District district = user.getDistrict();
@@ -262,7 +260,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
 		Map<String, User> responsibleUserByEventUuid = eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
-			eventParticipant.getPerson().getUuid(), event.getUuid(), event.getDisease(), fromDate);
+			eventParticipant.getPerson().getUuid(),
+			event.getUuid(),
+			event.getDisease(),
+			fromDate);
 		for (Map.Entry<String, User> entry : responsibleUserByEventUuid.entrySet()) {
 			try {
 				messagingService.sendMessage(
