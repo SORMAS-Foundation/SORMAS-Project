@@ -20,46 +20,51 @@ package org.sormas.e2etests.steps.web.application.actions;
 
 import static org.sormas.e2etests.pages.application.actions.EditActionPage.*;
 
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
-import org.assertj.core.api.SoftAssertions;
+import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Action;
+import org.sormas.e2etests.steps.BaseSteps;
 
 public class EditActionSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
+  private final BaseSteps baseSteps;
   public static Action action;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
-  public EditActionSteps(WebDriverHelpers webDriverHelpers, SoftAssertions softly) {
+  public EditActionSteps(
+      WebDriverHelpers webDriverHelpers, BaseSteps baseSteps) {
     this.webDriverHelpers = webDriverHelpers;
+    this.baseSteps = baseSteps;
 
     When(
         "I check that Action created from Event tab is correctly displayed in Event Actions tab",
         () -> {
           action = CreateNewActionSteps.action;
           Action collectedAction = collectActionData();
-          softly.assertThat(action.getDate().equals(collectedAction.getDate()));
-          softly.assertThat(action.getPriority().equals(collectedAction.getPriority()));
-          softly.assertThat(action.getMeasure().equals(collectedAction.getMeasure()));
-          softly.assertThat(action.getTitle().equals(collectedAction.getTitle()));
-          softly.assertThat(action.getActionStatus().equals(collectedAction.getActionStatus()));
-          softly.assertAll();
+          Truth.assertThat(action.equals(collectedAction));
         });
   }
 
   public Action collectActionData() {
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(DATE_INPUT);
+    WebElement descriptionIFrame = baseSteps.getDriver().findElement(DESCRIPTION_IFRAME);
+    baseSteps.getDriver().switchTo().frame(descriptionIFrame);
+    String descriptionFieldData = webDriverHelpers.getTextFromWebElement(DESCRIPTION_INPUT);
+    baseSteps.getDriver().switchTo().defaultContent();
 
     return Action.builder()
         .date(LocalDate.parse(collectedDateOfReport, DATE_FORMATTER))
         .priority(webDriverHelpers.getValueFromCombobox(PRIORITY_COMBOBOX))
         .measure(webDriverHelpers.getValueFromCombobox(MEASURE_COMBOBOX))
         .title(webDriverHelpers.getValueFromWebElement(TITLE_INPUT))
+        .description(descriptionFieldData)
         .actionStatus(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(ACTION_STATUS_OPTIONS))
         .build();

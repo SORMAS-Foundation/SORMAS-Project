@@ -25,6 +25,7 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Action;
@@ -52,7 +53,7 @@ public class CreateNewActionSteps implements En {
           selectPriority(action.getPriority());
           selectMeasure(action.getMeasure());
           fillTitle(action.getTitle());
-          // fillDescription("to be fixed");
+          fillDescription("Dummy description for automated test");
           selectActionStatus(action.getActionStatus());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
@@ -78,6 +79,8 @@ public class CreateNewActionSteps implements En {
   public void fillDescription(String description) {
     WebElement iFrame = baseSteps.getDriver().findElement(DESCRIPTION_IFRAME);
     baseSteps.getDriver().switchTo().frame(iFrame);
+    baseSteps.getDriver().findElement(By.cssSelector("body")).sendKeys(description);
+    baseSteps.getDriver().switchTo().defaultContent();
   }
 
   public void selectActionStatus(String option) {

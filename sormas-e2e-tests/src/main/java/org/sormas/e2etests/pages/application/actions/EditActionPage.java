@@ -28,5 +28,6 @@ public class EditActionPage {
   public static final By MEASURE_COMBOBOX = By.cssSelector("#actionMeasure > div");
   public static final By TITLE_INPUT = By.id("title");
   public static final By DESCRIPTION_IFRAME = By.cssSelector("#description > iframe");
+  public static final By DESCRIPTION_INPUT = By.cssSelector("body");
   public static final By ACTION_STATUS_OPTIONS = By.cssSelector("#actionStatus label");
 }

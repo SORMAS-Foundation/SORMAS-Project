@@ -81,6 +81,7 @@ Feature: Create events
   Scenario: Add a New action from event and verify the fields.
     Given API: I create a new event
     Given I log in with the user
+    And I click on the Events button from navbar
     Then I open the last created event via api
     And I click on New Action button from Event tab
     Then I create New Action from event tab
