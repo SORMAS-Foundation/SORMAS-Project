@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -166,6 +167,7 @@ public class EventParticipantDto extends PseudonymizableDto implements SormasToS
 	}
 
 	@Override
+	@ImportIgnore
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}

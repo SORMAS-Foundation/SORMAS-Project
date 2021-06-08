@@ -13,23 +13,27 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas.shareinfo;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
-import de.symeda.sormas.backend.caze.Case;
+import org.hibernate.annotations.Where;
+
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "sormastosormasshareinfo")
@@ -37,23 +41,25 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8368155805122562791L;
 
-	public static final String CAZE = "caze";
-	public static final String CONTACT = "contact";
-	public static final String SAMPLE = "sample";
-	public static final String EVENT = "event";
-	public static final String EVENT_PARTICIPANT = "eventParticipant";
+	public static final String CASES = "cases";
+	public static final String CONTACTS = "contacts";
+	public static final String SAMPLES = "samples";
+	public static final String EVENTS = "events";
+	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	public static final String ORGANIZATION_ID = "organizationId";
+	public static final String REQUEST_UUID = "requestUuid";
+	public static final String REQUEST_STATUS = "requestStatus";
 
-	private Case caze;
+	private List<ShareInfoCase> cases;
 
-	private Contact contact;
+	private List<ShareInfoContact> contacts;
 
-	private Sample sample;
+	private List<ShareInfoSample> samples;
 
-	private Event event;
+	private List<ShareInfoEvent> events;
 
-	private EventParticipant eventParticipant;
+	private List<ShareInfoEventParticipant> eventParticipants;
 
 	private String organizationId;
 
@@ -73,54 +79,65 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	private String comment;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn
-	public Case getCaze() {
-		return caze;
+	private String requestUuid;
+	private ShareRequestStatus requestStatus;
+
+	public SormasToSormasShareInfo() {
+		cases = new ArrayList<>();
+		contacts = new ArrayList<>();
+		samples = new ArrayList<>();
+		events = new ArrayList<>();
+		eventParticipants = new ArrayList<>();
 	}
 
-	public void setCaze(Case caze) {
-		this.caze = caze;
+	@OneToMany(mappedBy = ShareInfoCase.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoCase.class)
+	@Where(clause = "type='CASE'")
+	public List<ShareInfoCase> getCases() {
+		return cases;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn
-	public Contact getContact() {
-		return contact;
+	public void setCases(List<ShareInfoCase> cases) {
+		this.cases = cases;
 	}
 
-	public void setContact(Contact contact) {
-		this.contact = contact;
+	@OneToMany(mappedBy = ShareInfoContact.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoContact.class)
+	@Where(clause = "type='CONTACT'")
+	public List<ShareInfoContact> getContacts() {
+		return contacts;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn
-	public Sample getSample() {
-		return sample;
+	public void setContacts(List<ShareInfoContact> contacts) {
+		this.contacts = contacts;
 	}
 
-	public void setSample(Sample sample) {
-		this.sample = sample;
+	@OneToMany(mappedBy = ShareInfoSample.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoSample.class)
+	@Where(clause = "type='SAMPLE'")
+	public List<ShareInfoSample> getSamples() {
+		return samples;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn
-	public Event getEvent() {
-		return event;
+	public void setSamples(List<ShareInfoSample> samples) {
+		this.samples = samples;
 	}
 
-	public void setEvent(Event event) {
-		this.event = event;
+	@OneToMany(mappedBy = ShareInfoEvent.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoEvent.class)
+	@Where(clause = "type='EVENT'")
+	public List<ShareInfoEvent> getEvents() {
+		return events;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn
-	public EventParticipant getEventParticipant() {
-		return eventParticipant;
+	public void setEvents(List<ShareInfoEvent> events) {
+		this.events = events;
 	}
 
-	public void setEventParticipant(EventParticipant eventParticipant) {
-		this.eventParticipant = eventParticipant;
+	@OneToMany(mappedBy = ShareInfoEventParticipant.SHARE_INFO, cascade = CascadeType.ALL, targetEntity = ShareInfoEventParticipant.class)
+	@Where(clause = "type='EVENT_PARTICIPANT'")
+	public List<ShareInfoEventParticipant> getEventParticipants() {
+		return eventParticipants;
+	}
+
+	public void setEventParticipants(List<ShareInfoEventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
@@ -196,12 +213,30 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 		this.pseudonymizedSensitiveData = pseudonymizedSensitiveData;
 	}
 
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getComment() {
 		return comment;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	@Column(unique = true, length = 36)
+	public String getRequestUuid() {
+		return requestUuid;
+	}
+
+	public void setRequestUuid(String requestUuid) {
+		this.requestUuid = requestUuid;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ShareRequestStatus getRequestStatus() {
+		return requestStatus;
+	}
+
+	public void setRequestStatus(ShareRequestStatus requestStatus) {
+		this.requestStatus = requestStatus;
 	}
 }
