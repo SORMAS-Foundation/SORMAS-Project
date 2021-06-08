@@ -407,7 +407,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 					DTO existingEntity = existingEntitiesMap.get(receivedEntity.getUuid());
 					PROCESSED processedData = getReceivedDataProcessor().processReceivedData(receivedS2SEntity, existingEntity);
 
-					processedData.getEntity().setSormasToSormasOriginInfo(originInfo != null ? originInfo : processedData.getOriginInfo());
+					if (existingEntities.isEmpty()) {
+						// update origin info if we receive a new entity
+						processedData.getEntity().setSormasToSormasOriginInfo(originInfo != null ? originInfo : processedData.getOriginInfo());
+					}
 
 					entitiesToPersist.add(processedData);
 				}
