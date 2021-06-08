@@ -14,7 +14,7 @@ This project aims to help identify performance issues on the Sormas rest api's.
 * Install Java JDK 11 on your local machine
 * Install apache Jmeter
 * Download the property file reader external library from:
-  https://www.vinsguru.com/download/87/?_ga=2.188716968.1652712557.1623012940-501989637.1623012940
+  [tag-jmeter-extn-1.1.zip](#https://www.vinsguru.com/download/87/?_ga=2.188716968.1652712557.1623012940-501989637.1623012940)
 * Place the downloaded jar in the JMETER_HOME/lib/ext foler.
 * Clone the project and open the *sormas-e2e-performance-tests* subproject
 
