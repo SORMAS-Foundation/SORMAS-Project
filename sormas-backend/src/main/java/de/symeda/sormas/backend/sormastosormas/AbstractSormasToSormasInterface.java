@@ -35,8 +35,6 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -89,6 +87,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	private ReceivedDataProcessorHelper dataProcessorHelper;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private SormasToSormasEncryptionService encryptionService;
 
 	private final String requestEndpoint;
 	private final String requestRejectEndpoint;
@@ -167,7 +167,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	@Override
 	public void saveShareRequest(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
-		ShareRequestData<PREVIEW> shareData = sormasToSormasFacadeHelper.decryptSharedData(encryptedData, previewType);
+		ShareRequestData<PREVIEW> shareData = encryptionService.decryptAndVerify(encryptedData, previewType);
 
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		List<PREVIEW> previews = shareData.getPreviews();
@@ -234,12 +234,12 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
 
-		byte[] encryptedData = sormasToSormasFacadeHelper.sendRequestToSormas(
+		SormasToSormasEncryptedDataDto encryptedData = sormasToSormasFacadeHelper.sendRequestToSormas(
 			organizationId,
 			(host, authToken) -> sormasToSormasRestClient.post(host, requestAcceptEndpoint, authToken, Collections.singletonList(uuid)),
-			byte[].class);
+			SormasToSormasEncryptedDataDto.class);
 
-		saveSharedEntities(new SormasToSormasEncryptedDataDto(organizationId, encryptedData), shareRequest.getOriginInfo());
+		saveSharedEntities(encryptedData, shareRequest.getOriginInfo());
 
 		shareRequest.setChangeDate(new Date());
 		shareRequest.setStatus(ShareRequestStatus.ACCEPTED);
@@ -247,7 +247,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	}
 
 	@Override
-	public byte[] getDataForShareRequest(String uuid) throws SormasToSormasException {
+	public SormasToSormasEncryptedDataDto getDataForShareRequest(String uuid) throws SormasToSormasException {
 		User currentUser = userService.getCurrentUser();
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByRequestUuid(uuid);
 
@@ -256,16 +256,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		List<S> entitiesToSend = shareData.stream().map(ShareData::getDto).collect(Collectors.toList());
 		validateEntitiesBeforeShare(shareData.stream().map(ShareData::getEntity).collect(Collectors.toList()), shareInfo.isOwnershipHandedOver());
 
-		byte[] encrypted;
-		try {
-			encrypted = sormasToSormasFacadeHelper.encryptEntities(entitiesToSend, shareInfo.getOrganizationId());
+		SormasToSormasEncryptedDataDto encrypted = encryptionService.signAndEncrypt(entitiesToSend, shareInfo.getOrganizationId());
 
-			shareInfo.setRequestStatus(ShareRequestStatus.ACCEPTED);
-			shareInfoService.ensurePersisted(shareInfo);
-		} catch (JsonProcessingException e) {
-			LOGGER.error("Unable to send data sormas", e);
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasSend));
-		}
+		shareInfo.setRequestStatus(ShareRequestStatus.ACCEPTED);
+		shareInfoService.ensurePersisted(shareInfo);
 
 		return encrypted;
 	}
@@ -379,7 +373,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		SormasToSormasOriginInfoDto originInfo)
 		throws SormasToSormasException, SormasToSormasValidationException {
 
-		S[] receivedS2SEntities = sormasToSormasFacadeHelper.decryptSharedData(encryptedData, getShareDataClass());
+		S[] receivedS2SEntities = encryptionService.decryptAndVerify(encryptedData, getShareDataClass());
 
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		List<PROCESSED> entitiesToPersist = new ArrayList<>(receivedS2SEntities.length);
@@ -426,7 +420,6 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		for (PROCESSED data : entitiesToPersist) {
 			persister.call(data);
 		}
-
 	}
 
 	private String buildEntityValidationGroupName(HasUuid entity) {

@@ -36,6 +36,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
@@ -132,7 +133,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			shareInfo.getOrganizationId(),
 			(host, authToken) -> sormasToSormasRestClient
 				.post(host, REVOKE_REQUEST_ENDPOINT, authToken, Collections.singletonList(shareInfo.getRequestUuid())),
-			byte[].class);
+			SormasToSormasEncryptedDataDto.class);
 
 		shareInfo.setRequestStatus(ShareRequestStatus.REVOKED);
 		shareInfoService.ensurePersisted(shareInfo);

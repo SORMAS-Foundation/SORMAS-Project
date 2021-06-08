@@ -66,26 +66,9 @@ public class SormasToSormasFacadeHelper {
 	}
 
 	public void sendEntitiesToSormas(Object entities, SormasToSormasOptionsDto options, EncryptedRestCall restCall) throws SormasToSormasException {
-
-		OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerAccessData()
-			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 		String organizationId = options.getOrganization().getUuid();
-
-		try {
-			byte[] encryptedEntities = encryptEntities(entities, organizationId);
-
-			sendRequestToSormas(
-				organizationId,
-				(host, authToken) -> restCall.call(host, authToken, new SormasToSormasEncryptedDataDto(serverAccessData.getId(), encryptedEntities)),
-				null);
-		} catch (JsonProcessingException e) {
-			LOGGER.error("Unable to send data sormas", e);
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasSend));
-		}
-	}
-
-	public byte[] encryptEntities(Object entities, String organizationId) throws SormasToSormasException, JsonProcessingException {
-		return encryptionService.signAndEncrypt(objectMapper.writeValueAsBytes(entities), organizationId);
+		SormasToSormasEncryptedDataDto encryptedEntities = encryptionService.signAndEncrypt(entities, organizationId);
+		sendRequestToSormas(organizationId, (host, authToken) -> restCall.call(host, authToken, encryptedEntities), null);
 	}
 
 	public <T> T sendRequestToSormas(String organizationId, RestCall restCall, Class<T> responseType) throws SormasToSormasException {
@@ -138,17 +121,6 @@ public class SormasToSormasFacadeHelper {
 		}
 
 		return responseType != null ? response.readEntity(responseType) : null;
-	}
-
-	public <T> T decryptSharedData(SormasToSormasEncryptedDataDto encryptedData, Class<T> dataType) throws SormasToSormasException {
-		try {
-			byte[] decryptedData = encryptionService.decryptAndVerify(encryptedData.getData(), encryptedData.getOrganizationId());
-
-			return objectMapper.readValue(decryptedData, dataType);
-		} catch (IOException e) {
-			LOGGER.error("Can't parse shared data", e);
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDecrypt));
-		}
 	}
 
 	public Optional<OrganizationServerAccessData> getOrganizationServerAccessData(String id) {
