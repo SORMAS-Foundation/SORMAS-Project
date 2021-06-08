@@ -77,7 +77,7 @@ Feature: Create events
       And I search for specific event in event directory
       And I click on the searched event
      Then I check the modified event data is correctly displayed
-@run
+
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
     Given I log in with the user
