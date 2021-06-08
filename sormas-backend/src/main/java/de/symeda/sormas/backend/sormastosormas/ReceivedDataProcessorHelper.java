@@ -55,6 +55,8 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
@@ -72,7 +74,7 @@ import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class SharedDataProcessorHelper {
+public class ReceivedDataProcessorHelper {
 
 	@EJB
 	private UserService userService;
@@ -139,7 +141,15 @@ public class SharedDataProcessorHelper {
 
 		return validationErrors;
 	}
-	
+
+	public ValidationErrors processPersonPreview(SormasToSormasPersonPreview person) {
+		ValidationErrors validationErrors = new ValidationErrors();
+
+		processLocation(person.getAddress(), Captions.Person, validationErrors);
+
+		return validationErrors;
+	}
+
 	private CountryReferenceDto processCountry(CountryReferenceDto country, String errorCaption, ValidationErrors validationErrors) {
 		CountryReferenceDto localCountry = loadLocalCountry(country);
 		if (country != null && localCountry == null) {
@@ -156,15 +166,26 @@ public class SharedDataProcessorHelper {
 	}
 
 	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
-			RegionReferenceDto region,
-			DistrictReferenceDto district,
-			CommunityReferenceDto community,
-			FacilityType facilityType,
-			FacilityReferenceDto facility,
-			String facilityDetails,
-			PointOfEntryReferenceDto pointOfEntry,
-			String pointOfEntryDetails) {
-		return loadLocalInfrastructure(null, null, null, region, district, community, facilityType, facility, facilityDetails, pointOfEntry, pointOfEntryDetails);
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		CommunityReferenceDto community,
+		FacilityType facilityType,
+		FacilityReferenceDto facility,
+		String facilityDetails,
+		PointOfEntryReferenceDto pointOfEntry,
+		String pointOfEntryDetails) {
+		return loadLocalInfrastructure(
+			null,
+			null,
+			null,
+			region,
+			district,
+			community,
+			facilityType,
+			facility,
+			facilityDetails,
+			pointOfEntry,
+			pointOfEntryDetails);
 	}
 
 	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
@@ -327,6 +348,21 @@ public class SharedDataProcessorHelper {
 		return validationErrors;
 	}
 
+	public ValidationErrors processContactPreview(SormasToSormasContactPreview contact) {
+		ValidationErrors validationErrors = new ValidationErrors();
+
+		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
+			loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
+
+		handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
+			contact.setRegion(infrastructure.region);
+			contact.setDistrict(infrastructure.district);
+			contact.setCommunity(infrastructure.community);
+		}));
+
+		return validationErrors;
+	}
+
 	public void processEpiData(EpiDataDto epiData, ValidationErrors validationErrors) {
 		if (epiData != null) {
 			epiData.getExposures().forEach(exposure -> {
@@ -350,7 +386,7 @@ public class SharedDataProcessorHelper {
 		entity.setReportingUser(reportingUser);
 	}
 
-	private void processLocation(LocationDto address, String groupNameTag, ValidationErrors validationErrors) {
+	public void processLocation(LocationDto address, String groupNameTag, ValidationErrors validationErrors) {
 		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = loadLocalInfrastructure(
 			address.getContinent(),
 			address.getSubcontinent(),
@@ -375,7 +411,6 @@ public class SharedDataProcessorHelper {
 			address.setFacilityDetails(infrastructure.facilityDetails);
 		}));
 	}
-
 
 	private ContinentReferenceDto loadLocalContinent(ContinentReferenceDto continent) {
 		if (continent == null) {
@@ -413,9 +448,8 @@ public class SharedDataProcessorHelper {
 		Optional<CountryReferenceDto> localCountry =
 			country.getExternalId() != null ? countryFacade.getByExternalId(country.getExternalId(), false).stream().findFirst() : Optional.empty();
 
-		if(!localCountry.isPresent()) {
-			localCountry = Optional.ofNullable(countryFacade.getByIsoCode(country.getIsoCode(), false))
-					.map(CountryFacadeEjb::toReferenceDto);
+		if (!localCountry.isPresent()) {
+			localCountry = Optional.ofNullable(countryFacade.getByIsoCode(country.getIsoCode(), false)).map(CountryFacadeEjb::toReferenceDto);
 		}
 
 		if (!localCountry.isPresent()) {
@@ -569,7 +603,7 @@ public class SharedDataProcessorHelper {
 		public CountryReferenceDto getCountry() {
 			return country;
 		}
-		
+
 		public RegionReferenceDto getRegion() {
 			return region;
 		}

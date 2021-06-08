@@ -18,23 +18,32 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.*;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 
+import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.Event;
+import org.sormas.e2etests.pojo.web.Event;
+import org.sormas.e2etests.pojo.web.Person;
+import org.sormas.e2etests.services.EventService;
 
 public class EditEventSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static Event event;
+  public static Person person;
+  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
-  public EditEventSteps(WebDriverHelpers webDriverHelpers) {
+  public EditEventSteps(WebDriverHelpers webDriverHelpers, EventService eventService, Faker faker) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -72,6 +81,55 @@ public class EditEventSteps implements En {
           Truth.assertThat(event.getEventLocation())
               .isEqualTo(CreateNewEventSteps.newEvent.getEventLocation());
         });
+
+    When(
+        "I change the fields of event and save",
+        () -> {
+          event = eventService.buildEditEvent();
+          fillDateOfReport(event.getReportDate());
+          fillStartData(event.getEventDate());
+          event =
+              event.toBuilder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
+          selectEventStatus(event.getEventStatus());
+          selectEventInvestigationStatusOptions(event.getInvestigationStatus());
+          selectEventManagementStatusOption(event.getEventManagementStatus());
+          selectRiskLevel(event.getRiskLevel());
+          selectDisease(event.getDisease());
+          fillTitle(event.getTitle());
+          selectSourceType(event.getSourceType());
+          selectTypeOfPlace(event.getEventLocation());
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);
+        });
+
+    When(
+        "I check the modified event data is correctly displayed",
+        () -> {
+          final Event currentEvent = collectEventData();
+          Truth.assertThat(event).isEqualTo(currentEvent);
+        });
+
+    When(
+        "I add a participant to the event",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());
+          webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, faker.name().lastName());
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE);
+          person = collectPersonUuid();
+          selectResponsibleRegion("Region1");
+          selectResponsibleDistrict("District11");
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(PERSON_DATA_SAVED);
+        });
+  }
+
+  public Person collectPersonUuid() {
+    return Person.builder().uuid(webDriverHelpers.getValueFromWebElement(POPUP_PERSON_ID)).build();
   }
 
   public Event collectEventUuid() {
@@ -79,11 +137,10 @@ public class EditEventSteps implements En {
   }
 
   public Event collectEventData() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
     String reportingDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
-    LocalDate reportDate = LocalDate.parse(reportingDate, formatter);
+    LocalDate reportDate = LocalDate.parse(reportingDate, DATE_FORMATTER);
     String eventStartDate = webDriverHelpers.getValueFromWebElement(START_DATA_INPUT);
-    LocalDate eventDate = LocalDate.parse(eventStartDate, formatter);
+    LocalDate eventDate = LocalDate.parse(eventStartDate, DATE_FORMATTER);
 
     return Event.builder()
         .reportDate(reportDate)
@@ -107,5 +164,51 @@ public class EditEventSteps implements En {
 
   public void selectEventStatus(String eventStatus) {
     webDriverHelpers.clickWebElementByText(EVENT_STATUS_OPTIONS, eventStatus);
+  }
+
+  public void selectResponsibleRegion(String region) {
+    webDriverHelpers.selectFromCombobox(POPUP_RESPONSIBLE_REGION_COMBOBOX, region);
+  }
+
+  public void selectResponsibleDistrict(String district) {
+    webDriverHelpers.selectFromCombobox(POPUP_RESPONSIBLE_DISTRICT_COMBOBOX, district);
+  }
+
+  public void selectRiskLevel(String riskLevel) {
+    webDriverHelpers.selectFromCombobox(RISK_LEVEL_COMBOBOX, riskLevel);
+  }
+
+  public void selectEventManagementStatusOption(String eventManagementStatusOption) {
+    webDriverHelpers.clickWebElementByText(
+        EVENT_MANAGEMENT_STATUS_OPTIONS, eventManagementStatusOption);
+  }
+
+  public void fillStartData(LocalDate date) {
+    webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER.format(date));
+  }
+
+  public void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
+    webDriverHelpers.clickWebElementByText(
+        EVENT_INVESTIGATION_STATUS_OPTIONS, eventInvestigationStatusOption);
+  }
+
+  public void selectDisease(String disease) {
+    webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
+  }
+
+  public void fillTitle(String title) {
+    webDriverHelpers.fillInWebElement(TITLE_INPUT, title);
+  }
+
+  public void selectSourceType(String sourceType) {
+    webDriverHelpers.selectFromCombobox(SOURCE_TYPE_COMBOBOX, sourceType);
+  }
+
+  public void selectTypeOfPlace(String typeOfPlace) {
+    webDriverHelpers.selectFromCombobox(TYPE_OF_PLACE_COMBOBOX, typeOfPlace);
+  }
+
+  public void fillDateOfReport(LocalDate date) {
+    webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 }

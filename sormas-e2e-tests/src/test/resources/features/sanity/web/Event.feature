@@ -47,3 +47,33 @@ Feature: Create events
       And I search for specific event in event directory
       And I click on the searched event
      Then I check the created data is correctly displayed in event edit page
+
+  Scenario: Add a participant to an event
+    Given I log in as a National User
+      And I click on the Events button from navbar
+      And I click on the NEW EVENT button
+      And I create a new event with status EVENT
+      And I click on the Events button from navbar
+      And I search for specific event in event directory
+      And I click on the searched event
+      And I collect the UUID displayed on Edit event page
+    Given I add a participant to the event
+     Then I check if participant appears in the event participants list
+      And I click on the Persons button from navbar
+      And I search for specific person in person directory
+      And I click on specific person in person directory
+     Then I check if event is available at person information
+
+  Scenario: Create and edit a new event
+    Given I log in as a National User
+      And I click on the Events button from navbar
+      And I click on the NEW EVENT button
+     When I create a new event with specific data
+      And I click on the Events button from navbar
+      And I search for specific event in event directory
+      And I click on the searched event
+      And I change the fields of event and save
+      And I click on the Events button from navbar
+      And I search for specific event in event directory
+      And I click on the searched event
+     Then I check the modified event data is correctly displayed
