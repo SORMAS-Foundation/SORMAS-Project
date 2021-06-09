@@ -217,12 +217,22 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		CriteriaQuery<UserReference> cq = cb.createQuery(UserReference.class);
 		Root<UserReference> root = cq.from(UserReference.class);
 		Join<UserReference, UserRole> rolesJoin = root.join(User.USER_ROLES, JoinType.LEFT);
+		Root<User> userRoot = cq.from(User.class);
+		cq.select(root);
 
 		// WHERE inner AND
 		Predicate filter = null;
-		// TODO #5614: Where conditions missing. Do "UserReference JOIN User" on uuid to reuse existing Criteria queries.
+		boolean userEntityJoinUsed = false;
+		// TODO #5614: Where conditions missing. Use userRoot to reuse existing Criteria queries.
+		if (filterByJurisdiction) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createJurisdictionFilter(cb, userRoot));
+			userEntityJoinUsed = true;
+		}
 		if (CollectionUtils.isNotEmpty(userRoles)) {
 			filter = CriteriaBuilderHelper.and(cb, filter, rolesJoin.in(userRoles));
+		}
+		if (userEntityJoinUsed) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(UserReference.ID), userRoot.get(User.ID)));
 		}
 
 		// WHERE OR

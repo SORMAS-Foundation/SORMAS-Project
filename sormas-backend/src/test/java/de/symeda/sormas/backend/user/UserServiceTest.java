@@ -101,6 +101,15 @@ public class UserServiceTest extends AbstractBeanTest {
 		getUserFacade().disableUsers(Arrays.asList(supervisor.getUuid()));
 		result = getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
 		assertThat(result, is(empty()));
+
+		// 4. filterByJurisdiction to test that the invocation works and filters correctly concerning activeOnly
+		filterByJurisdiction = true;
+		result = getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		assertThat(result, is(empty()));
+		activeOnly = false;
+		result = getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		assertThat(result, hasSize(1));
+		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
 	}
 
 	@Test
