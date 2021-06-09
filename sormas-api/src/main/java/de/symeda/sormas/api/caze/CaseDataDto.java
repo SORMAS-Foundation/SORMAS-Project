@@ -1611,6 +1611,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	}
 
 	@Override
+	@ImportIgnore
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}

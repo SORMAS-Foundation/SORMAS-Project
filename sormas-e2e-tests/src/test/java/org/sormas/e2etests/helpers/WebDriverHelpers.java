@@ -18,8 +18,7 @@
 
 package org.sormas.e2etests.helpers;
 
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
+import static com.google.common.truth.Truth.*;
 import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
@@ -27,7 +26,9 @@ import static org.sormas.e2etests.helpers.AssertHelpers.takeScreenshot;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +43,12 @@ public class WebDriverHelpers {
   public static final By SELECTED_RADIO_BUTTON =
       By.xpath("ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
+  public static final By CHECKBOX_TEXT_LABEL = By.xpath("ancestor::span//label");
 
   private final BaseSteps baseSteps;
   private final AssertHelpers assertHelpers;
+  private static final String SCROLL_TO_WEB_ELEMENT_SCRIPT =
+      "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});";
 
   @Inject
   public WebDriverHelpers(BaseSteps baseSteps, AssertHelpers assertHelpers) {
@@ -53,19 +57,11 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoaded() {
-    try {
-      assertHelpers.assertWithPoll15Second(
-          () ->
-              assertThat(
-                      baseSteps
-                          .getDriver()
-                          .executeScript("return document.readyState")
-                          .toString()
-                          .contentEquals("complete"))
-                  .isTrue());
-    } catch (Throwable ignored) {
 
-    }
+    assertHelpers.assertWithPoll15Second(
+        () ->
+            assertThat(baseSteps.getDriver().executeScript("return document.readyState").toString())
+                .isEqualTo("complete"));
   }
 
   public void waitUntilElementIsVisibleAndClickable(By selector) {
@@ -109,35 +105,24 @@ public class WebDriverHelpers {
     }
   }
 
-  public void waitUntilIdentifiedElementDisappear(final Object selector) {
-    waitUntilIdentifiedElementDisappear(selector, FLUENT_WAIT_TIMEOUT_SECONDS);
-  }
-
-  public void waitUntilIdentifiedElementDisappear(final Object selector, int seconds) {
-    if (selector instanceof By) {
-      assertHelpers.assertWithPoll(
-          () -> {
-            assertWithMessage(selector.getClass().getSimpleName() + "is still enabled")
-                .that(baseSteps.getDriver().findElement((By) selector).isEnabled())
-                .isFalse();
-            assertWithMessage(selector.getClass().getSimpleName() + "is still displayed")
-                .that(baseSteps.getDriver().findElement((By) selector).isDisplayed())
-                .isFalse();
-          },
-          seconds);
-    } else if (selector instanceof WebElement) {
-      assertHelpers.assertWithPoll15Second(
-          () -> {
-            assertWithMessage(selector.getClass().getSimpleName() + "is still enabled")
-                .that(((WebElement) selector).isEnabled())
-                .isFalse();
-            assertWithMessage(selector.getClass().getSimpleName() + "is still displayed")
-                .that(((WebElement) selector).isDisplayed())
-                .isFalse();
-          });
-    } else {
-      throw new NotFoundException("This type is not available");
-    }
+  public void waitUntilAListOfWebElementsAreNotEmpty(final By selector) {
+    assertHelpers.assertWithPoll(
+        () -> {
+          List<String> webElementsTexts =
+              baseSteps.getDriver().findElements(selector).stream()
+                  .map(
+                      webElement -> {
+                        scrollToElement(webElement);
+                        return webElement.getText();
+                      })
+                  .collect(Collectors.toList());
+          webElementsTexts.forEach(
+              text ->
+                  assertWithMessage("The element was empty or null: %s", text)
+                      .that(text)
+                      .isNotEmpty());
+        },
+        FLUENT_WAIT_TIMEOUT_SECONDS);
   }
 
   public void fillInWebElement(By selector, String text) {
@@ -279,14 +264,34 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsPresent(selector);
     try {
       if (selector instanceof WebElement) {
-        javascriptExecutor.executeScript(
-            "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});",
-            selector);
+        javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
       } else {
         waitUntilIdentifiedElementIsPresent(selector);
         javascriptExecutor.executeScript(
-            "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});",
-            baseSteps.getDriver().findElement((By) selector));
+            SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
+      }
+    } catch (Exception ignored) {
+    }
+    waitForPageLoaded();
+  }
+
+  public void scrollToElementUntilIsVisible(final Object selector) {
+    JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
+    waitUntilIdentifiedElementIsPresent(selector);
+    try {
+      if (selector instanceof WebElement) {
+        assertHelpers.assertWithPoll15Second(
+            () -> {
+              javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
+              assertThat(((WebElement) selector).isDisplayed()).isTrue();
+            });
+      } else {
+        assertHelpers.assertWithPoll15Second(
+            () -> {
+              javascriptExecutor.executeScript(
+                  SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
+              assertThat(baseSteps.getDriver().findElement((By) selector).isDisplayed()).isTrue();
+            });
       }
     } catch (Exception ignored) {
     }
@@ -425,6 +430,15 @@ public class WebDriverHelpers {
       if (Instant.now().isAfter(start.plus(1, ChronoUnit.MINUTES))) {
         throw new Error("The field didn't clear");
       }
+    }
+  }
+
+  public String getTextFromLabelIfCheckboxIsChecked(By checkbox) {
+    scrollToElement(checkbox);
+    if (getAttributeFromWebElement(checkbox, "checked").equals("true")) {
+      return baseSteps.getDriver().findElement(checkbox).findElement(CHECKBOX_TEXT_LABEL).getText();
+    } else {
+      throw new Error("checked was found as NULL");
     }
   }
 }

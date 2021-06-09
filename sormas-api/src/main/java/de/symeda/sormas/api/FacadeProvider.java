@@ -55,6 +55,7 @@ import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.i18n.I18nFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.info.InfoFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
@@ -81,6 +82,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -420,8 +422,16 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(UserRightsFacade.class);
 	}
 
+	public static SormasToSormasShareRequestFacade getSormasToSormasShareRequestFacade() {
+		return get().lookupEjbRemote(SormasToSormasShareRequestFacade.class);
+	}
+
 	public static CustomizableEnumFacade getCustomizableEnumFacade() {
 		return get().lookupEjbRemote(CustomizableEnumFacade.class);
+	}
+
+	public static InfoFacade getInfoFacae() {
+		return get().lookupEjbRemote(InfoFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")
