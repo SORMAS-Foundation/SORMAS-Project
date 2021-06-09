@@ -57,7 +57,7 @@ public class HospitalizationTabSteps implements En {
           fillEndOfStayDate(hospitalization.getEndOfStayDate());
           fillSpecifyReason(hospitalization.getSpecifyReason());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SUCCESSFUL_SAVE_POPUP);
         });
 
     When(

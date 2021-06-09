@@ -40,7 +40,8 @@ public class HospitalizationTabPage {
       By.cssSelector("#leftAgainstAdvice label");
   public static final By SPECIFY_REASON_INPUT = By.id("otherHospitalizationReason");
   public static final By NEW_ENTRY_LINK = By.id("actionNewEntry");
-  public static final By SAVE_BUTTON = By.cssSelector("#commit");
+  public static final By SAVE_BUTTON = By.id("commit");
   public static final By FIRST_PREVIOUS_HOSPITALIZATION_ENTRY =
       By.xpath("//div[contains(@id, 'de.symeda.sormas.api.hospitalization')]");
+  public static final By SUCCESSFUL_SAVE_POPUP = By.xpath("//h1[text()='Case saved']");
 }
