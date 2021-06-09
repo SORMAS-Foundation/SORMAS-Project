@@ -210,15 +210,23 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<UserReference> cq = cb.createQuery(UserReference.class);
 		Root<UserReference> root = cq.from(UserReference.class);
+		Join<UserReference, UserRole> rolesJoin = root.join(User.USER_ROLES, JoinType.LEFT);
 
-		// WHERE
+		// WHERE AND
 		Predicate filter = null;
 		// TODO #5614: Where conditions missing
 		if (activeOnly) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, root));
 		}
 		if (CollectionUtils.isNotEmpty(userRoles)) {
-			filter = CriteriaBuilderHelper.and(cb, filter, root.join(User.USER_ROLES, JoinType.LEFT).in(userRoles));
+			filter = CriteriaBuilderHelper.and(cb, filter, rolesJoin.in(userRoles));
+		}
+
+		// WHERE OR
+		if (includeSupervisors) {
+			Predicate supervisorFilter = rolesJoin.in(
+				Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR));
+			filter = CriteriaBuilderHelper.or(cb, filter, supervisorFilter);
 		}
 
 		if (filter != null) {

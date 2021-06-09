@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -25,9 +26,11 @@ import org.junit.Test;
 import org.mockito.MockedStatic;
 
 import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 public class UserServiceTest extends AbstractBeanTest {
 
@@ -82,6 +85,17 @@ public class UserServiceTest extends AbstractBeanTest {
 		userRoles = Arrays.asList(UserRole.CASE_OFFICER);
 		result = getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
 		assertThat(result, is(empty()));
+
+		// 2. Include supervisors
+		userRoles = Arrays.asList(UserRole.CONTACT_OFFICER);
+		RDCF rdcf = creator.createRDCF();
+		UserDto supervisor = creator.createUser(rdcf, UserRole.CONTACT_SUPERVISOR);
+		result = getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		assertThat(result, is(empty()));
+		includeSupervisors = true;
+		result = getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		assertThat(result, hasSize(1));
+		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
 
 		// TODO #5614: Append test for other where conditions
 	}
