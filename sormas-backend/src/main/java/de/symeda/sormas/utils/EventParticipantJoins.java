@@ -16,6 +16,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
+import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 
 public class EventParticipantJoins<T> extends AbstractDomainObjectJoins<T, EventParticipant> {
 
@@ -31,6 +32,7 @@ public class EventParticipantJoins<T> extends AbstractDomainObjectJoins<T, Event
 	private Join<Location, Community> addressCommunity;
 	private Join<Location, Facility> addressFacility;
 
+	private Join<EventParticipant, VaccinationInfo> vaccinationInfo;
 
 	private Join<EventParticipant, Case> resultingCase;
 	private Join<Case, Person> casePerson;
@@ -128,6 +130,14 @@ public class EventParticipantJoins<T> extends AbstractDomainObjectJoins<T, Event
 
 	public void setAddressFacility(Join<Location, Facility> addressFacility) {
 		this.addressFacility = addressFacility;
+	}
+
+	public Join<EventParticipant, VaccinationInfo> getVaccinationInfo() {
+		return getOrCreate(vaccinationInfo, EventParticipant.VACCINATION_INFO, JoinType.LEFT, this::setVaccinationInfo);
+	}
+
+	public void setVaccinationInfo(Join<EventParticipant, VaccinationInfo> vaccinationInfo) {
+		this.vaccinationInfo = vaccinationInfo;
 	}
 
 	public Join<EventParticipant, Case> getResultingCase() {

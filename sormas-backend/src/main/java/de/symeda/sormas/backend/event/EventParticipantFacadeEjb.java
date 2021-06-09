@@ -112,6 +112,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb.VaccinationInfoFacadeEjbLocal;
+import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless(name = "EventParticipantFacade")
 public class EventParticipantFacadeEjb implements EventParticipantFacade {
@@ -343,12 +344,12 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		final CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
 		final Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		final EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
+		EventParticipantJoins<EventParticipant> joins = new EventParticipantJoins<>(eventParticipant);
 
-		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
-		Join<EventParticipant, Case> resultingCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
-		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
-		Join<EventParticipant, VaccinationInfo> vaccinationInfoJoin = eventParticipant.join(EventParticipant.VACCINATION_INFO, JoinType.LEFT);
-		Join<Object, Object> reportingUser = eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT);
+		Join<EventParticipant, Person> person = joins.getPerson();
+		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
+		Join<EventParticipant, Event> event = joins.getEvent();
+		Join<EventParticipant, VaccinationInfo> vaccinationInfoJoin = joins.getVaccinationInfo();
 		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
 
 		cq.multiselect(
@@ -367,7 +368,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			// all samples have the same date, but have to be aggregated
 			cb.max(samples.get(Sample.SAMPLE_DATE_TIME)),
 			vaccinationInfoJoin.get(VaccinationInfo.VACCINATION),
-			reportingUser.get(User.UUID));
+			joins.getEventParticipantReportingUser().get(User.UUID),
+			eventParticipantService.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, joins)));
 		cq.groupBy(
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.UUID),
@@ -380,7 +382,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
 			vaccinationInfoJoin.get(VaccinationInfo.VACCINATION),
-			reportingUser.get(User.UUID));
+			joins.getEventParticipantReportingUser().get(User.UUID));
 
 		Subquery<Date> dateSubquery = cq.subquery(Date.class);
 		Root<Sample> subRoot = dateSubquery.from(Sample.class);
@@ -522,20 +524,21 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		CriteriaQuery<EventParticipantExportDto> cq = cb.createQuery(EventParticipantExportDto.class);
 		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
+		EventParticipantJoins<EventParticipant> joins = new EventParticipantJoins<>(eventParticipant);
 
-		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
+		Join<EventParticipant, Person> person = joins.getPerson();
 
 		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
 
-		Join<Person, Location> address = person.join(Person.ADDRESS);
+		Join<Person, Location> address = joins.getAddress();
 		Join<Person, Country> birthCountry = person.join(Person.BIRTH_COUNTRY, JoinType.LEFT);
 		Join<Person, Country> citizenship = person.join(Person.CITIZENSHIP, JoinType.LEFT);
 
-		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
-		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		Join<EventParticipant, Event> event = joins.getEvent();
+		Join<Event, Location> eventLocation = joins.getEventAddress();
 
-		Join<EventParticipant, Case> resultingCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
-		Join<EventParticipant, VaccinationInfo> vaccinationInfo = eventParticipant.join(EventParticipant.VACCINATION_INFO, JoinType.LEFT);
+		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
+		Join<EventParticipant, VaccinationInfo> vaccinationInfo = joins.getVaccinationInfo();
 
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.ID),
@@ -544,7 +547,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.NATIONAL_HEALTH_ID),
 			person.get(Location.ID),
-			eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT).get(User.UUID),
+			eventParticipantService.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, joins)),
 
 			event.get(Event.UUID),
 
@@ -580,9 +583,9 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.BURIAL_CONDUCTOR),
 			person.get(Person.BURIAL_PLACE_DESCRIPTION),
 
-			address.join(Location.REGION, JoinType.LEFT).get(Region.NAME),
-			address.join(Location.DISTRICT, JoinType.LEFT).get(District.NAME),
-			address.join(Location.COMMUNITY, JoinType.LEFT).get(Community.NAME),
+			joins.getAddressRegion().get(Region.NAME),
+			joins.getAddressDistrict().get(District.NAME),
+			joins.getAddressCommunity().get(Community.NAME),
 			address.get(Location.CITY),
 			address.get(Location.STREET),
 			address.get(Location.HOUSE_NUMBER),
