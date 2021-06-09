@@ -14,7 +14,12 @@ public class ClassificationEventClusterCriteriaDto extends ClassificationCriteri
 
 	@Override
 	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events) {
-		return events.stream().anyMatch(eventDto -> eventDto.getEventStatus() == EventStatus.CLUSTER);
+		for (EventDto eventDto : events) {
+			if (eventDto.getEventStatus() == EventStatus.CLUSTER) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
