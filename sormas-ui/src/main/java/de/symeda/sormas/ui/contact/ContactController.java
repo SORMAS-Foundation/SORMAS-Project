@@ -152,10 +152,23 @@ public class ContactController {
 			newPerson.setBirthdateDD(contactLineDto.getDateOfBirthDD());
 			newPerson.setSex(contactLineDto.getSex());
 
-			PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
-			newContact.setPerson(savedPerson.toReference());
+			ControllerProvider.getPersonController()
+				.selectOrCreatePerson(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
+					if (selectedPerson != null) {
+						newContact.setPerson(selectedPerson);
 
-			FacadeProvider.getContactFacade().saveContact(newContact);
+						selectOrCreateContact(
+							newContact,
+							FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()),
+							I18nProperties.getString(Strings.infoSelectOrCreateContact),
+							uuid -> {
+								if (uuid == null) {
+									FacadeProvider.getContactFacade().saveContact(newContact);
+									Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.ASSISTIVE_NOTIFICATION);
+								}
+							});
+					}
+				}, true);
 		}
 
 		lineListingForm.closeWindow();
@@ -321,7 +334,7 @@ public class ContactController {
 		if (casePerson != null && asSourceContact) {
 			createForm.setPerson(casePerson);
 		}
-		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(
+		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE),
 			createForm.getFieldGroup());
@@ -484,9 +497,7 @@ public class ContactController {
 				}
 			});
 
-			contactSelect.setSelectionChangeCallback((commitAllowed) -> {
-				component.getCommitButton().setEnabled(commitAllowed);
-			});
+			contactSelect.setSelectionChangeCallback(component.getCommitButton()::setEnabled);
 
 			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateContact));
 			contactSelect.selectBestMatch();
@@ -510,10 +521,8 @@ public class ContactController {
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
 		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized);
 		editForm.setValue(contact);
-		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(
-			editForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
-			editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactDataForm> editComponent =
+			new CommitDiscardWrapperComponent<>(editForm, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT), editForm.getFieldGroup());
 
 		editComponent.addCommitListener(new CommitDiscardWrapperComponent.CommitListener() {
 
@@ -535,7 +544,6 @@ public class ContactController {
 						FacadeProvider.getPersonFacade().savePerson(person);
 					}
 
-					dto = FacadeProvider.getContactFacade().saveContact(dto);
 					Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
 					SormasUI.refreshView();
 				}
@@ -741,7 +749,7 @@ public class ContactController {
 		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), ContactDto.class, contact.getEpiData().isPseudonymized(), null);
 		epiDataForm.setValue(contact.getEpiData());
 
-		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
+		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<>(
 			epiDataForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
 			epiDataForm.getFieldGroup());
