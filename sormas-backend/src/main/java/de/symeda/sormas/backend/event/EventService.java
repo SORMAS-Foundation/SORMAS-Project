@@ -850,4 +850,30 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		return eventJurisdictionChecker.isInJurisdictionOrOwned(event) && !sormasToSormasShareInfoService.isEventOwnershipHandedOver(event);
 	}
+
+	public List<Event> getAllByCase(String caseUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
+		Root<Event> from = cq.from(getElementClass());
+		from.fetch(Event.EVENT_LOCATION);
+
+		Predicate filter = createActiveEventsFilter(cb, from);
+
+		User user = getCurrentUser();
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		}
+
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			cb.equal(from.join(Event.EVENT_PERSONS, JoinType.LEFT).join(EventParticipant.RESULTING_CASE, JoinType.LEFT).get(Case.UUID), caseUuid));
+
+		cq.where(filter);
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
+	}
 }

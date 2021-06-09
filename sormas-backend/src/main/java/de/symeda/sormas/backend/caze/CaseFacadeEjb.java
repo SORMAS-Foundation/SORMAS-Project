@@ -1662,15 +1662,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Update case classification if the feature is enabled
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
 			if (associatedCase.getCaseClassification() != CaseClassification.NO_CASE) {
-				List<PathogenTest> pathogenTests = pathogenTestService.getAllByCase(associatedCase);
-				if (pathogenTests.size() == 0) {
+				Long pathogenTestsCount = pathogenTestService.countByCase(associatedCase);
+				if (pathogenTestsCount == 0) {
 					return;
 				}
 				// calculate classification
-				List<PathogenTestDto> pathogenTestDtos = pathogenTests.stream().map(PathogenTestFacadeEjbLocal::toDto).collect(Collectors.toList());
 				CaseDataDto newCaseDto = toDto(associatedCase);
 
-				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto, pathogenTestDtos);
+				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto);
 
 				// only update when classification by system changes - user may overwrite this
 				if (classification != associatedCase.getSystemCaseClassification()) {
@@ -1784,10 +1783,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				// calculate classification
 				CaseDataDto newCaseDto = toDto(newCase);
-				List<PathogenTestDto> pathogenTests =
-					pathogenTestService.getAllByCase(newCase).stream().map(s -> PathogenTestFacadeEjbLocal.toDto(s)).collect(Collectors.toList());
 
-				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto, pathogenTests);
+				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto);
 
 				// only update when classification by system changes - user may overwrite this
 				if (classification != newCase.getSystemCaseClassification()) {

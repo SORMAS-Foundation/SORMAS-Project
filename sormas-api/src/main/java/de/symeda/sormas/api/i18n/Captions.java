@@ -230,6 +230,7 @@ public interface Captions {
 	String caseBackToDirectory = "caseBackToDirectory";
 	String caseCalculateCompleteness = "caseCalculateCompleteness";
 	String caseCasesList = "caseCasesList";
+	String caseClassificationCalculationButton = "caseClassificationCalculationButton";
 	String caseCloneCaseWithNewDisease = "caseCloneCaseWithNewDisease";
 	String caseConfirmCase = "caseConfirmCase";
 	String caseContacts = "caseContacts";
