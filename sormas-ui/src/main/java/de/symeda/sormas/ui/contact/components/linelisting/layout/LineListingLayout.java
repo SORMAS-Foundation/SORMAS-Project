@@ -132,6 +132,7 @@ public class LineListingLayout extends VerticalLayout {
 			result.setRegion(layoutBean.getSharedInfoField().getRegion());
 			result.setDistrict(layoutBean.getSharedInfoField().getDistrict());
 			result.setDateOfReport(layoutBean.getLineField().getDateOfReport());
+			result.setMultiDayContact(layoutBean.getLineField().getMultiDaySelector().isMultiDay());
 			result.setFirstContactDate(layoutBean.getLineField().getMultiDaySelector().getStartDate());
 			result.setLastContactDate(layoutBean.getLineField().getMultiDaySelector().getEndDate());
 			result.setTypeOfContact(layoutBean.getLineField().getTypeOfContact());
@@ -254,6 +255,7 @@ public class LineListingLayout extends VerticalLayout {
 		private RegionReferenceDto region;
 		private DistrictReferenceDto district;
 		private LocalDate dateOfReport;
+		private boolean multiDayContact;
 		private LocalDate firstContactDate;
 		private LocalDate lastContactDate;
 		private ContactProximity typeOfContact;
@@ -303,6 +305,14 @@ public class LineListingLayout extends VerticalLayout {
 
 		public void setDateOfReport(LocalDate dateOfReport) {
 			this.dateOfReport = dateOfReport;
+		}
+
+		public boolean isMultiDayContact() {
+			return multiDayContact;
+		}
+
+		public void setMultiDayContact(boolean multiDayContact) {
+			this.multiDayContact = multiDayContact;
 		}
 
 		public LocalDate getFirstContactDate() {
