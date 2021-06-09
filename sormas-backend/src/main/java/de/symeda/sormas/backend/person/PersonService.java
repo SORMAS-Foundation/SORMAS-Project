@@ -49,8 +49,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -81,6 +79,8 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
 import de.symeda.sormas.utils.EventParticipantJoins;
 
@@ -397,7 +397,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		eventParticipantJurisdictionSubQuery.where(
 			cb.and(
 				cb.equal(eventParticipantRoot.get(EventParticipant.PERSON).get(Person.ID), personId),
-				eventParticipantService.isInJurisdictionOrOwned(cb, cq, eventParticipantRoot, new EventParticipantJoins<>(eventParticipantRoot))));
+				eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins<>(eventParticipantRoot))));
 		final Predicate isEventParticipantInJurisdiction = cb.exists(eventParticipantJurisdictionSubQuery);
 
 		return cb.or(isCaseInJurisdiction, isContactInJurisdiction, isEventParticipantInJurisdiction);
@@ -617,7 +617,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		} else if (externalIds.size() > ModelConstants.PARAMETER_LIMIT) {
 			List<Person> persons = new LinkedList<>();
 			IterableHelper
-					.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> persons.addAll(getByExternalIds(externalIds)));
+				.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> persons.addAll(getByExternalIds(externalIds)));
 			return persons;
 		} else {
 			return getByExternalIds(externalIds);

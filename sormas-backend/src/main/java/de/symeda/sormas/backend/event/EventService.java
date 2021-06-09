@@ -847,7 +847,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return !getInJurisdictionIDs(Collections.singletonList(event), true).isEmpty();
 	}
 
-	public List<Long> getInJurisdictionIDs(final List<Event> selectedEvents, boolean orOwned) {
+	private List<Long> getInJurisdictionIDs(final List<Event> selectedEvents, boolean orOwned) {
 		if (selectedEvents.size() == 0) {
 			return Collections.emptyList();
 		}

@@ -92,7 +92,6 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
-import de.symeda.sormas.backend.event.EventParticipantJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -164,8 +163,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
 	private SampleJurisdictionChecker sampleJurisdictionChecker;
-	@EJB
-	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 	@EJB
@@ -953,7 +950,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 			boolean samplePseudonimized = true;
 			if (dto.getAssociatedEventParticipant() != null) {
-				samplePseudonimized = eventParticipantJurisdictionChecker.isPseudonymized(dto.getAssociatedEventParticipant().getUuid());
+				samplePseudonimized = eventParticipantService.inJurisdictionOrOwned(dto.getAssociatedEventParticipant().getUuid());
 			}
 			EventParticipantReferenceDto eventParticipantReference = dto.getAssociatedEventParticipant();
 
@@ -1016,7 +1013,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			pseudonymizer.pseudonymizeDto(
 				EventParticipantReferenceDto.class,
 				sampleEventParticipant,
-				eventParticipantJurisdictionChecker.isPseudonymized(sampleEventParticipant.getUuid()),
+				eventParticipantService.inJurisdictionOrOwned(sampleEventParticipant.getUuid()),
 				null);
 		}
 	}

@@ -10,7 +10,6 @@ import de.symeda.sormas.api.sample.SampleJurisdictionDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.jurisdiction.SampleJurisdictionHelper;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.event.EventParticipantJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -22,8 +21,6 @@ public class SampleJurisdictionChecker {
 
 	@EJB
 	private UserService userService;
-	@EJB
-	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
 	@EJB
 	private EventParticipantService eventParticipantService;
 
@@ -41,7 +38,7 @@ public class SampleJurisdictionChecker {
 			if (sampleJurisdiction.getEventParticipantJurisdiction() != null) {
 				EventParticipant sampleEventParticipant =
 					eventParticipantService.getByUuid(sampleJurisdiction.getEventParticipantJurisdiction().getEventParticipantUuid());
-				return eventParticipantJurisdictionChecker.isInJurisdiction(sampleEventParticipant);
+				return eventParticipantService.inJurisdiction(sampleEventParticipant);
 			}
 		}
 
@@ -52,7 +49,7 @@ public class SampleJurisdictionChecker {
 	public boolean isPseudonymized(Sample sample) {
 
 		if (sample.getAssociatedEventParticipant() != null) {
-			eventParticipantJurisdictionChecker.isPseudonymized(sample.getAssociatedEventParticipant());
+			eventParticipantService.inJurisdictionOrOwned(sample.getAssociatedEventParticipant());
 		}
 
 		return false;

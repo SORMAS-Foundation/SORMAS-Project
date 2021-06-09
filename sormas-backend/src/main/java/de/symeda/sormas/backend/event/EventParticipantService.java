@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -70,8 +71,6 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	private SampleService sampleService;
 	@EJB
 	private VaccinationInfoService vaccinationInfoService;
-	@EJB
-	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
@@ -382,8 +381,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			return eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver();
 		}
 
-		return eventParticipantJurisdictionChecker.isInJurisdiction(eventParticipant)
-			&& !sormasToSormasShareInfoService.isEventOwnershipHandedOver(eventParticipant);
+		// FIXME: Does this intentionally not ask for inJurisdictionOrOwned?
+		return inJurisdiction(eventParticipant) && !sormasToSormasShareInfoService.isEventOwnershipHandedOver(eventParticipant);
 	}
 
 	public Collection<EventParticipant> getByPersonUuids(List<String> personUuids) {
@@ -413,11 +412,53 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return em.createQuery(cq).getResultList();
 	}
 
-	public Predicate isInJurisdictionOrOwned(
-		CriteriaBuilder cb,
-		CriteriaQuery<?> cq,
-		Root<EventParticipant> eventParticipantRoot,
-		EventParticipantJoins joins) {
+	private List<Long> getInJurisdictionIDs(final List<EventParticipant> selectedEventParticipants, boolean orOwned) {
+		if (selectedEventParticipants.size() == 0) {
+			return Collections.emptyList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
+		final Root<EventParticipant> eventParticipantRoot = inJurisdictionQuery.from(EventParticipant.class);
+
+		inJurisdictionQuery.select(eventParticipantRoot.get(AbstractDomainObject.ID));
+
+		final Predicate isFromSelectedEventParticipants = cb.in(eventParticipantRoot.get(AbstractDomainObject.ID))
+			.value(selectedEventParticipants.stream().map(EventParticipant::getId).collect(Collectors.toList()));
+
+		if (orOwned) {
+			inJurisdictionQuery
+				.where(cb.and(isFromSelectedEventParticipants, inJurisdictionOrOwned(cb, new EventParticipantJoins(eventParticipantRoot))));
+		} else {
+			inJurisdictionQuery.where(cb.and(isFromSelectedEventParticipants, inJurisdiction(cb, new EventParticipantJoins(eventParticipantRoot))));
+		}
+
+		return em.createQuery(inJurisdictionQuery).getResultList();
+	}
+
+	public boolean inJurisdictionOrOwned(EventParticipant eventParticipant) {
+		return !getInJurisdictionIDs(Collections.singletonList(eventParticipant), true).isEmpty();
+	}
+
+	public boolean inJurisdictionOrOwned(String eventParticipantUuid) {
+		EventParticipant eventParticipant = getByUuid(eventParticipantUuid);
+		return inJurisdictionOrOwned(eventParticipant);
+	}
+
+	public boolean inJurisdiction(EventParticipant eventParticipant) {
+		return !getInJurisdictionIDs(Collections.singletonList(eventParticipant), false).isEmpty();
+	}
+
+	public Predicate inJurisdiction(CriteriaBuilder cb, EventParticipantJoins joins) {
+		final User currentUser = this.getCurrentUser();
+
+		Predicate jurisdictionPredicate =
+			EventParticipantJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
+
+		return jurisdictionPredicate;
+	}
+
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, EventParticipantJoins joins) {
 
 		final User currentUser = this.getCurrentUser();
 
@@ -425,8 +466,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			cb.isNotNull(joins.getEventParticipantReportingUser()),
 			cb.equal(joins.getEventParticipantReportingUser().get(User.UUID), currentUser.getUuid()));
 
-		final Predicate jurisdictionPredicate =
-			EventParticipantJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
+		final Predicate jurisdictionPredicate = inJurisdiction(cb, joins);
 
 		return cb.or(reportedByCurrentUser, jurisdictionPredicate);
 	}

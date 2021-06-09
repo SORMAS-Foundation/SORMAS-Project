@@ -132,8 +132,6 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@EJB
 	private UserService userService;
 	@EJB
-	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
-	@EJB
 	private ContactService contactService;
 	@EJB
 	private RegionService regionService;
@@ -465,7 +463,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			EventParticipantIndexDto.class,
 			indexList,
-			p -> eventParticipantJurisdictionChecker.isPseudonymized(p.getUuid()),
+			p -> eventParticipantService.inJurisdictionOrOwned(p.getUuid()),
 			null);
 
 		return indexList;
@@ -506,7 +504,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			EventParticipantListEntryDto.class,
 			result,
-			p -> eventParticipantJurisdictionChecker.isPseudonymized(p.getUuid()),
+			p -> eventParticipantService.inJurisdictionOrOwned(p.getUuid()),
 			null);
 
 		return result;
@@ -651,7 +649,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			for (EventParticipantExportDto exportDto : eventParticipantResultList) {
 //				final boolean inJurisdiction = eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(exportDto.getJurisdiction());
-				final boolean inJurisdiction = eventParticipantJurisdictionChecker.isPseudonymized(exportDto.getEventParticipantUuid());
+				final boolean inJurisdiction = eventParticipantService.inJurisdictionOrOwned(exportDto.getEventParticipantUuid());
 
 				if (personAddresses != null) {
 					Optional.ofNullable(personAddresses.get(exportDto.getPersonAddressId()))
@@ -826,7 +824,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer) {
 
 		if (source != null) {
-			boolean inJurisdiction = eventParticipantJurisdictionChecker.isPseudonymized(source);
+			boolean inJurisdiction = eventParticipantService.inJurisdictionOrOwned(source);
 
 			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
 			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, inJurisdiction, null));
@@ -844,7 +842,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 				EventParticipantDto.class,
 				dto,
 				originalDto,
-				eventParticipantJurisdictionChecker.isPseudonymized(originalEventParticipant));
+				eventParticipantService.inJurisdictionOrOwned(originalEventParticipant));
 		}
 	}
 
@@ -969,7 +967,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			SimilarEventParticipantDto.class,
 			participants,
-			p -> eventParticipantJurisdictionChecker.isPseudonymized(p.getUuid()),
+			p -> eventParticipantService.inJurisdictionOrOwned(p.getUuid()),
 			null);
 
 		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {
