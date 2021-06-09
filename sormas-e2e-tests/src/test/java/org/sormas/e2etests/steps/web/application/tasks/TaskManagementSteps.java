@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.tasks;
 
 import static java.util.function.Predicate.*;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.*;
 
@@ -76,6 +77,22 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(
               GENERAL_SEARCH_INPUT, EditCaseSteps.aCase.getUuid());
         });
+
+    When(
+        "^I am checking if the associated linked event appears in task management and click on it$",
+        () -> {
+          String eventUuid = apiState.getCreatedEvent().getUuid();
+          webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventUuid);
+          webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
+        });
+
+      When(
+              "^I am checking if the associated linked event appears in task management and click on it$",
+              () -> {
+                  String eventUuid = apiState.getCreatedEvent().getUuid();
+                  webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventUuid);
+                  webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
+              });
 
     When(
         "^I search last created task by API using Contact UUID and wait for (\\d+) results to be displayed$",
