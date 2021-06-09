@@ -52,13 +52,13 @@ public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 				new EpiCurveSeriesElement(Captions.dashboardProbable, "#FF4500", probableNumbers),
 				new EpiCurveSeriesElement(Captions.dashboardConfirmedUnknownSymptoms, "rgba(200, 0, 0, 0.5)", confirmedUnknownSymptomsNumbers),
 				new EpiCurveSeriesElement(Captions.dashboardConfirmedNoSymptoms, "rgba(200, 0, 0, 0.7)", confirmedNoSymptomsNumbers),
-				new EpiCurveSeriesElement(Captions.dashboardConfirmedCase, "#B22222", confirmedNumbers));
+				new EpiCurveSeriesElement(Captions.dashboardConfirmed, "#B22222", confirmedNumbers));
 		} else {
 			return Arrays.asList(
 				new EpiCurveSeriesElement(Captions.dashboardNotYetClassified, "#808080", notYetClassifiedNumbers),
 				new EpiCurveSeriesElement(Captions.dashboardSuspect, "#FFD700", suspectNumbers),
 				new EpiCurveSeriesElement(Captions.dashboardProbable, "#FF4500", probableNumbers),
-				new EpiCurveSeriesElement(Captions.dashboardConfirmedCase, "#B22222", confirmedNumbers));
+				new EpiCurveSeriesElement(Captions.dashboardConfirmed, "#B22222", confirmedNumbers));
 		}
 	}
 }
