@@ -48,8 +48,6 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.security.auth.x500.X500Principal;
 
-import org.hzi.sormas.lbds.messaging.LbdsKeyHelper;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -66,6 +64,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserRoleConfig;
+import de.symeda.sormas.app.lbds.LbdsKeyHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.SormasProperties;
 
