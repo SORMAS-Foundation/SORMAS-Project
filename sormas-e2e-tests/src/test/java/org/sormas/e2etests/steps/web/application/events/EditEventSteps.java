@@ -126,6 +126,12 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(PERSON_DATA_SAVED);
         });
+
+    When(
+        "^I click on edit task icon of the first created task$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_FIRST_TASK);
+        });
   }
 
   public Person collectPersonUuid() {
