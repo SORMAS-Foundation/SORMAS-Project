@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
@@ -49,11 +50,11 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests, List<EventDto> events) {
 
 		int amount = 0;
 		for (ClassificationCriteriaDto classificationCriteria : classificationCriteria) {
-			if (classificationCriteria.eval(caze, person, sampleTests)) {
+			if (classificationCriteria.eval(caze, person, sampleTests, events)) {
 				amount++;
 				if (amount >= requiredAmount) {
 					return true;
