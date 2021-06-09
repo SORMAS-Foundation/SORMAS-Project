@@ -67,6 +67,7 @@ public class SampleManagementSteps implements En {
           int maximumNumberOfRows = 23;
           webDriverHelpers.waitUntilNumberOfElementsIsExactlyOrLess(
               SEARCH_RESULT_SAMPLE, maximumNumberOfRows);
+          Thread.sleep(1000); //reset filter acts chaotic, to be modified in the future
           webDriverHelpers.fillAndSubmitInWebElement(
               SAMPLE_SEARCH_INPUT, apiState.getEditPerson().getFirstName());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
@@ -110,16 +111,18 @@ public class SampleManagementSteps implements En {
                       webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
                       webDriverHelpers.waitUntilAListOfElementsHasText(
                           FINAL_LABORATORY_RESULT, aSpecimen.getCondition());
-
-                      Truth.assertThat(
-                              apiState.getCreatedSamples().stream()
-                                  .filter(
-                                      sample ->
-                                          sample
-                                              .getSpecimenCondition()
-                                              .contentEquals(aSpecimen.toString()))
-                                  .count())
-                          .isEqualTo(webDriverHelpers.getNumberOfElements(LIST_OF_SAMPLES));
+                      assertHelpers.assertWithPoll15Second(
+                          () ->
+                              Truth.assertThat(
+                                      apiState.getCreatedSamples().stream()
+                                          .filter(
+                                              sample ->
+                                                  sample
+                                                      .getSpecimenCondition()
+                                                      .contentEquals(aSpecimen.toString()))
+                                          .count())
+                                  .isEqualTo(
+                                      webDriverHelpers.getNumberOfElements(LIST_OF_SAMPLES)));
                     }));
 
     Then(
