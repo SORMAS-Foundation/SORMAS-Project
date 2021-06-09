@@ -238,7 +238,7 @@ public class Event extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode;
 
-	@Column(columnDefinition = "text")
+	@Column(name = "internalid")
 	private String internalToken;
 
 	public EventStatus getEventStatus() {
