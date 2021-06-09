@@ -428,6 +428,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			cb.equal(cb.lower(root.get(Case.UUID)), searchTerm.toLowerCase()),
 			cb.equal(cb.lower(root.get(Case.EPID_NUMBER)), searchTerm.toLowerCase()),
 			cb.equal(cb.lower(root.get(Case.EXTERNAL_TOKEN)), searchTerm.toLowerCase()),
+			cb.equal(cb.lower(root.get(Case.INTERNAL_TOKEN)), searchTerm.toLowerCase()),
 			cb.equal(cb.lower(root.get(Case.EXTERNAL_ID)), searchTerm.toLowerCase()));
 
 		cq.where(filter);

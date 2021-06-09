@@ -172,6 +172,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
 	public static final String INFECTION_SETTING = "infectionSetting";
@@ -331,6 +332,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	private String additionalDetails;
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 	private boolean sharedToCountry;
 
 	private QuarantineType quarantine;
@@ -1240,6 +1242,15 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	@Column

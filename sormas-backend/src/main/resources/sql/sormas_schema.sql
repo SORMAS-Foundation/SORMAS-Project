@@ -7411,4 +7411,20 @@ ALTER TABLE sormastosormasshareinfo
     ALTER COLUMN requestUuid SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (375, '[SORMAS2SORMAS] accept or reject a shared case from another SORMAS Instance #4423');
+
+-- 2020-05-26 Introduce an internal token field #5224
+ALTER TABLE cases ADD COLUMN internaltoken text;
+ALTER TABLE cases_history ADD COLUMN internaltoken text;
+
+ALTER TABLE contact ADD COLUMN internaltoken text;
+ALTER TABLE contact_history ADD COLUMN internaltoken text;
+
+ALTER TABLE person ADD COLUMN internaltoken text;
+ALTER TABLE person_history ADD COLUMN internaltoken text;
+
+ALTER TABLE events RENAME internalid TO internaltoken;
+ALTER TABLE events_history RENAME internalid TO internaltoken;
+
+INSERT INTO schema_version (version_number, comment) VALUES (376, 'Introduce an internal token field #5224');
+
 -- *** Insert new sql commands BEFORE this line ***
