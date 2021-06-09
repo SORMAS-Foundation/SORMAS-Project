@@ -22,9 +22,12 @@ public interface Strings {
 	String classificationAllOf = "classificationAllOf";
 	String classificationClassificationRules = "classificationClassificationRules";
 	String classificationConfirmed = "classificationConfirmed";
+	String classificationConfirmedNoSymptoms = "classificationConfirmedNoSymptoms";
+	String classificationConfirmedUnknownSymptoms = "classificationConfirmedUnknownSymptoms";
 	String classificationCriteriaForExposureType = "classificationCriteriaForExposureType";
 	String classificationCriteriaForTestType = "classificationCriteriaForTestType";
 	String classificationDaysBeforeCaseStart = "classificationDaysBeforeCaseStart";
+	String classificationEventCluster = "classificationEventCluster";
 	String classificationForDisease = "classificationForDisease";
 	String classificationGeneratedFor = "classificationGeneratedFor";
 	String classificationInfoNumberText = "classificationInfoNumberText";
@@ -40,6 +43,7 @@ public interface Strings {
 	String classificationProbable = "classificationProbable";
 	String classificationRulesFor = "classificationRulesFor";
 	String classificationSuspect = "classificationSuspect";
+	String classificationSymptomsAllOf = "classificationSymptomsAllOf";
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
 	String comparedTo = "comparedTo";
@@ -133,11 +137,13 @@ public interface Strings {
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	String confirmationPickContactAndDeleteOther = "confirmationPickContactAndDeleteOther";
 	String confirmationReduceQuarantine = "confirmationReduceQuarantine";
+	String confirmationRejectSormasToSormasShareRequest = "confirmationRejectSormasToSormasShareRequest";
 	String confirmationRemoveGridRowCancel = "confirmationRemoveGridRowCancel";
 	String confirmationRemoveGridRowConfirm = "confirmationRemoveGridRowConfirm";
 	String confirmationRemoveGridRowMessage = "confirmationRemoveGridRowMessage";
 	String confirmationRemoveGridRowTitle = "confirmationRemoveGridRowTitle";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
+	String confirmationRevokeSormasToSormasShareRequest = "confirmationRevokeSormasToSormasShareRequest";
 	String confirmationSetMissingGeoCoordinates = "confirmationSetMissingGeoCoordinates";
 	String confirmationSuperordinateEventDiscardUnsavedChanges = "confirmationSuperordinateEventDiscardUnsavedChanges";
 	String confirmationUnclearLabMessage = "confirmationUnclearLabMessage";
@@ -190,6 +196,7 @@ public interface Strings {
 	String entityContacts = "entityContacts";
 	String entityContactVisits = "entityContactVisits";
 	String entityCountries = "entityCountries";
+	String entityDataDictionary = "entityDataDictionary";
 	String entityDistrict = "entityDistrict";
 	String entityDistricts = "entityDistricts";
 	String entityDocuments = "entityDocuments";
@@ -264,6 +271,7 @@ public interface Strings {
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
 	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
 	String errorSormasToSormasNotEditable = "errorSormasToSormasNotEditable";
+	String errorSormasToSormasOwnershipAlreadyHandedOver = "errorSormasToSormasOwnershipAlreadyHandedOver";
 	String errorSormasToSormasPersonEnrolled = "errorSormasToSormasPersonEnrolled";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
@@ -538,10 +546,12 @@ public interface Strings {
 	String headingReduceQuarantine = "headingReduceQuarantine";
 	String headingReferCaseFromPointOfEntry = "headingReferCaseFromPointOfEntry";
 	String headingReferSample = "headingReferSample";
+	String headingRejectSormasToSormasShareRequest = "headingRejectSormasToSormasShareRequest";
 	String headingRemoveCaseFromContact = "headingRemoveCaseFromContact";
 	String headingRequestedAdditionalTests = "headingRequestedAdditionalTests";
 	String headingRequestedPathogenTests = "headingRequestedPathogenTests";
 	String headingResults = "headingResults";
+	String headingRevokeSormasToSormasShareRequest = "headingRevokeSormasToSormasShareRequest";
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSaveNotification = "headingSaveNotification";
 	String headingSaveUser = "headingSaveUser";
@@ -549,6 +559,11 @@ public interface Strings {
 	String headingSelectCampaign = "headingSelectCampaign";
 	String headingSelectSourceCase = "headingSelectSourceCase";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
+	String headingShareRequestCases = "headingShareRequestCases";
+	String headingShareRequestContacts = "headingShareRequestContacts";
+	String headingShareRequestDetails = "headingShareRequestDetails";
+	String headingShareRequestEventParticipants = "headingShareRequestEventParticipants";
+	String headingShareRequestEvents = "headingShareRequestEvents";
 	String headingShowLabMessage = "headingShowLabMessage";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
 	String headingSomeCasesNotDeleted = "headingSomeCasesNotDeleted";
@@ -739,6 +754,7 @@ public interface Strings {
 	String lastTwoYears = "lastTwoYears";
 	String lastWeek = "lastWeek";
 	String lastYear = "lastYear";
+	String listOf = "listOf";
 	String max = "max";
 	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
@@ -1140,6 +1156,7 @@ public interface Strings {
 	String quarterShort = "quarterShort";
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
+	String setTo = "setTo";
 	String step = "step";
 	String text = "text";
 	String toCase = "toCase";

@@ -88,7 +88,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String SMS_AUTH_KEY = "sms.auth.key";
 	public static final String SMS_AUTH_SECRET = "sms.auth.secret";
 
+	public static final String DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES = "duplicatechecks.excludepersonsonlylinkedtoarchivedentries";
 	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
+
 	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
 
 	public static final String INTERFACE_SYMPTOM_JOURNAL_URL = "interface.symptomjournal.url";
@@ -362,6 +364,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getSmsAuthSecret() {
 		return getProperty(SMS_AUTH_SECRET, "");
+	}
+
+	@Override
+	public boolean isDuplicateChecksExcludePersonsOfArchivedEntries() {
+		return getBoolean(DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES, false);
 	}
 
 	@Override

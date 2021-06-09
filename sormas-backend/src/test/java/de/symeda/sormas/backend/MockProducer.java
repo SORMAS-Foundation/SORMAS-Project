@@ -167,4 +167,8 @@ public class MockProducer {
 	public static ManagedScheduledExecutorService getManagedScheduledExecutorService() {
 		return managedScheduledExecutorService;
 	}
+
+	public static void mockProperty(String property, String value) {
+		properties.setProperty(property, value);
+	}
 }

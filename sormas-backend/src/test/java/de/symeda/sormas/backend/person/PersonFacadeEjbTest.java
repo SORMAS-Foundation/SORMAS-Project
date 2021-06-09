@@ -108,7 +108,6 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetMatchingNameDtos() {
-
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 
@@ -139,8 +138,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			.stream()
 			.map(dto -> dto.getUuid())
 			.collect(Collectors.toList());
-		assertThat(relevantNameUuids, hasSize(3));
-		assertThat(relevantNameUuids, containsInAnyOrder(person1.getUuid(), person2.getUuid(), person3.getUuid()));
+		assertThat(relevantNameUuids, hasSize(6));
+		assertThat(
+			relevantNameUuids,
+			containsInAnyOrder(person1.getUuid(), person2.getUuid(), person3.getUuid(), person5.getUuid(), person6.getUuid(), person7.getUuid()));
 
 		creator.createCase(user.toReference(), person4.toReference(), rdcf);
 		getCaseFacade().archiveOrDearchiveCase(inactiveCase.getUuid(), false);

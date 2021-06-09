@@ -33,12 +33,14 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessorHelper;
 
 @Stateless
 @LocalBean
-public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, ProcessedContactData> {
+public class ReceivedContactProcessor
+	implements ReceivedDataProcessor<ContactDto, SormasToSormasContactDto, ProcessedContactData, SormasToSormasContactPreview> {
 
 	@EJB
 	private ReceivedDataProcessorHelper dataProcessorHelper;
@@ -75,5 +77,22 @@ public class ReceivedContactProcessor implements ReceivedDataProcessor<ContactDt
 		}
 
 		return new ProcessedContactData(person, contact, samples, originInfo);
+	}
+
+	@Override
+	public SormasToSormasContactPreview processReceivedPreview(SormasToSormasContactPreview preview) throws SormasToSormasValidationException {
+		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+
+		ValidationErrors contactErrors = dataProcessorHelper.processContactPreview(preview);
+
+		if (contactErrors.hasError()) {
+			validationErrors.put(buildContactValidationGroupName(preview), contactErrors);
+		}
+
+		if (validationErrors.size() > 0) {
+			throw new SormasToSormasValidationException(validationErrors);
+		}
+
+		return preview;
 	}
 }

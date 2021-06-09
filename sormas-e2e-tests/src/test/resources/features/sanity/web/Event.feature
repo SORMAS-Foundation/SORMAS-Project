@@ -88,3 +88,14 @@ Feature: Create events
     And I click on Event Actions tab
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
+
+  Scenario: Add a Task from event and verify the fields
+    Given API: I create a new event
+    Given I log in with the user
+     When I am accessing the event tab using the created event via api
+     Then I click on New Task from event tab
+      And I create a new task with specific data for an event
+      And I click on the Tasks button from navbar
+      And I am checking if the associated linked event appears in task management and click on it
+      And I click on edit task icon of the first created task
+      And I check the created task is correctly displayed on Edit task page

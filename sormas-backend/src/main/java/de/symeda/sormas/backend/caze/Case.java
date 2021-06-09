@@ -88,7 +88,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -172,6 +172,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
 	public static final String INFECTION_SETTING = "infectionSetting";
@@ -203,7 +204,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String CONVERTED_FROM_CONTACT = "convertedContact";
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
-	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String SHARE_INFO_CASES = "shareInfoCases";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String EXTERNAL_SHARES = "externalShares";
 
@@ -331,6 +332,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	private String additionalDetails;
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 	private boolean sharedToCountry;
 
 	private QuarantineType quarantine;
@@ -399,7 +401,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	private User followUpStatusChangeUser;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
+	private List<ShareInfoCase> shareInfoCases = new ArrayList<>(0);
 	private List<ExternalShareInfo> externalShares = new ArrayList<>(0);
 
 	@ManyToOne(cascade = {})
@@ -1242,6 +1244,15 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 		this.externalToken = externalToken;
 	}
 
+	@Column(columnDefinition = "text")
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
+	}
+
 	@Column
 	public boolean isSharedToCountry() {
 		return sharedToCountry;
@@ -1677,13 +1688,14 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(mappedBy = SormasToSormasShareInfo.CAZE, fetch = FetchType.LAZY)
-	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
-		return sormasToSormasShares;
+	@OneToMany(mappedBy = ShareInfoCase.CAZE, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public List<ShareInfoCase> getShareInfoCases() {
+		return shareInfoCases;
 	}
 
-	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
-		this.sormasToSormasShares = sormasToSormasShares;
+	public void setShareInfoCases(List<ShareInfoCase> shareInfoCases) {
+		this.shareInfoCases = shareInfoCases;
 	}
 
 	@OneToMany(mappedBy = ExternalShareInfo.CAZE, fetch = FetchType.LAZY)

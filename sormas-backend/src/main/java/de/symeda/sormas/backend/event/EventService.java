@@ -73,7 +73,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -445,7 +445,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	private ChangeDateFilterBuilder addChangeDateFilter(ChangeDateFilterBuilder filterBuilder, From<?, Event> eventPath) {
 
-		filterBuilder.add(eventPath).add(eventPath, Event.EVENT_LOCATION).add(eventPath, Contact.SORMAS_TO_SORMAS_SHARES);
+		filterBuilder.add(eventPath).add(eventPath, Event.EVENT_LOCATION).add(eventPath, Event.SHARE_INFO_EVENTS);
 
 		return filterBuilder;
 	}
@@ -571,6 +571,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					CriteriaBuilderHelper.ilike(cb, from.get(Event.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EVENT_TITLE), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EVENT_DESC), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.SRC_FIRST_NAME), textFilter),
@@ -849,5 +850,31 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		return eventJurisdictionChecker.isInJurisdictionOrOwned(event) && !sormasToSormasShareInfoService.isEventOwnershipHandedOver(event);
+	}
+
+	public List<Event> getAllByCase(String caseUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
+		Root<Event> from = cq.from(getElementClass());
+		from.fetch(Event.EVENT_LOCATION);
+
+		Predicate filter = createActiveEventsFilter(cb, from);
+
+		User user = getCurrentUser();
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		}
+
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			cb.equal(from.join(Event.EVENT_PERSONS, JoinType.LEFT).join(EventParticipant.RESULTING_CASE, JoinType.LEFT).get(Case.UUID), caseUuid));
+
+		cq.where(filter);
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
 	}
 }

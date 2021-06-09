@@ -22,9 +22,24 @@ import javax.ejb.Remote;
 @Remote
 public interface SormasToSormasEntityInterface {
 
+	void share(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
+
+	void sendShareRequest(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
+
+	void saveShareRequest(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
+
+	void sendRejectShareRequest(String uuid) throws SormasToSormasException;
+
+	void rejectShareRequest(String uuids) throws SormasToSormasException;
+
+	void acceptShareRequest(String uuid) throws SormasToSormasException, SormasToSormasValidationException;
+
+	SormasToSormasEncryptedDataDto getDataForShareRequest(String uuid) throws SormasToSormasException;
+
 	void shareEntities(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
 
-	void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
+	void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData, SormasToSormasOriginInfoDto originInfo)
+		throws SormasToSormasException, SormasToSormasValidationException;
 
 	void returnEntity(String entityUuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
 
