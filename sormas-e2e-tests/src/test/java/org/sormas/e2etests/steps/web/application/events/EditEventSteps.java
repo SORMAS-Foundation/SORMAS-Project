@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.events;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.*;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 
@@ -34,8 +35,8 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Event;
 import org.sormas.e2etests.pojo.web.EventGroup;
 import org.sormas.e2etests.pojo.web.Person;
-import org.sormas.e2etests.services.EventService;
 import org.sormas.e2etests.services.EventGroupService;
+import org.sormas.e2etests.services.EventService;
 
 public class EditEventSteps implements En {
 
@@ -46,7 +47,11 @@ public class EditEventSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
-  public EditEventSteps(WebDriverHelpers webDriverHelpers, EventService eventService, Faker faker) {
+  public EditEventSteps(
+      WebDriverHelpers webDriverHelpers,
+      EventService eventService,
+      Faker faker,
+      EventGroupService eventGroupService) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -145,10 +150,25 @@ public class EditEventSteps implements En {
     When(
         "^I create a new event group$",
         () -> {
+          groupEvent = eventGroupService.buildGroupEvent();
+          webDriverHelpers.scrollToElement(NEW_EVENT_GROUP_RADIOBUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_GROUP_RADIOBUTTON);
+          groupEvent =
+              groupEvent.toBuilder()
+                  .uuid(webDriverHelpers.getValueFromWebElement(GROUP_EVENT_UUID2))
+                  .build();
+          fillGroupEventName(groupEvent.getName());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_POPUP);
-          fillGroupEventName(faker.funnyName().name());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_POPUP);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_GROUP_EVENT_CREATED_MESSAGE);
+        });
+
+    When(
+        "^I am checking event group name and id is correctly displayed$",
+        () -> {
+          final String eventGroupUuid = groupEvent.getUuid();
+          final String eventGroupName = groupEvent.getName();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventGroupUuid));
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getGroupEventName(eventGroupName));
         });
   }
 
@@ -238,5 +258,11 @@ public class EditEventSteps implements En {
 
   public void fillGroupEventName(String groupEventName) {
     webDriverHelpers.fillInWebElement(GROUP_EVENT_NAME_POPUP_INPUT, groupEventName);
+  }
+
+  public EventGroup collectEventGroupUuid() {
+    return EventGroup.builder()
+        .uuid(webDriverHelpers.getValueFromWebElement(GROUP_EVENT_UUID))
+        .build();
   }
 }

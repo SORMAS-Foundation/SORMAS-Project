@@ -23,16 +23,14 @@ import com.google.inject.Inject;
 import org.sormas.e2etests.pojo.web.EventGroup;
 
 public class EventGroupService {
-    private final Faker faker;
+  private final Faker faker;
 
-    @Inject
-    public EventGroupService(Faker faker) {
-        this.faker = faker;
-    }
+  @Inject
+  public EventGroupService(Faker faker) {
+    this.faker = faker;
+  }
 
-    public EventGroup buildGroupEvent (){
-        return EventGroup.builder().
-                name(faker.funnyName().name()).
-                build();
-    }
+  public EventGroup buildGroupEvent() {
+    return EventGroup.builder().name(faker.funnyName().name()).build();
+  }
 }

@@ -86,14 +86,6 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
         });
 
-      When(
-              "^I am checking if the associated linked event appears in task management and click on it$",
-              () -> {
-                  String eventUuid = apiState.getCreatedEvent().getUuid();
-                  webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventUuid);
-                  webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
-              });
-
     When(
         "^I search last created task by API using Contact UUID and wait for (\\d+) results to be displayed$",
         (Integer displayedResults) -> {

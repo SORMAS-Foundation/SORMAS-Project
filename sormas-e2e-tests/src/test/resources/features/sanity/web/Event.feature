@@ -89,14 +89,11 @@ Feature: Create events
       And I click on edit task icon of the first created task
       And I check the created task is correctly displayed on Edit task page
 
-  Scenario: Add a New Groups Event from event and verify the fields.
+  Scenario: Add a New Groups Event from event and verify the fields
     Given API: I create a new event
     Given I log in with the user
      When I am accessing the event tab using the created event via api
       And I click on link event group
       And I create a new event group
-
-     Then I create New Groups Event from event tab
-      And I click on save
-     When I am accessing the event tab using of created event via api
-      And I am checking all data is saved and displayed
+     When I am accessing the event tab using the created event via api
+     Then I am checking event group name and id is correctly displayed

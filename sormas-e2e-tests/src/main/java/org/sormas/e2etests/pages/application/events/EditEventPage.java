@@ -58,6 +58,11 @@ public class EditEventPage {
   public static final By GROUP_EVENT_NAME_POPUP_INPUT = By.cssSelector(".popupContent #name");
   public static final By GROUP_EVENT_UUID =
       By.xpath("//*[contains(text(),'Group id')]/../following-sibling::input[1]");
+  public static final By GROUP_EVENT_UUID2 = By.cssSelector(".popupContent #uuid");
   public static final By NEW_GROUP_EVENT_CREATED_MESSAGE =
       By.xpath("//*[contains(text(),'New group event created')]");
+
+  public static By getGroupEventName(String groupEventName) {
+    return By.xpath("//*[contains(text(),'" + groupEventName + "')]");
+  }
 }
