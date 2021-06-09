@@ -20,6 +20,8 @@ public abstract class PseudonymizableDto extends EntityDto implements Pseudonymi
 
 	private static final long serialVersionUID = 4181307802683421947L;
 
+	public static final String PSEUDONYMIZED = "pseudonymized";
+
 	private boolean pseudonymized;
 
 	public boolean isPseudonymized() {

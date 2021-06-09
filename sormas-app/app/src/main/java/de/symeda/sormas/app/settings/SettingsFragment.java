@@ -17,31 +17,16 @@ package de.symeda.sormas.app.settings;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
-import java.nio.charset.StandardCharsets;
-import java.security.PublicKey;
-import java.util.Arrays;
 import java.util.List;
-
-import org.hzi.sormas.lbds.core.http.HttpContainer;
-import org.hzi.sormas.lbds.core.http.HttpMethod;
-import org.hzi.sormas.lbds.messaging.LbdsPropagateKexToLbdsIntent;
-import org.hzi.sormas.lbds.messaging.LbdsRelated;
-import org.hzi.sormas.lbds.messaging.LbdsSendIntent;
-import org.hzi.sormas.lbds.messaging.util.KeySerializationUtil;
-
-import com.google.gson.Gson;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.Language;
@@ -59,8 +44,6 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.backend.person.PersonDao;
-import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -71,6 +54,7 @@ import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
+import de.symeda.sormas.app.lbds.LbdsIntentSender;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -298,54 +282,11 @@ public class SettingsFragment extends BaseLandingFragment {
 	}
 
 	public void kexLbds() {
-		Log.i("SORMAS_LBDS", "==========================");
-		Log.i("SORMAS_LBDS", "Key Exchange LBDS");
-
-		try {
-			PublicKey lbdsSormasPublicKey = ConfigProvider.getLbdsSormasPublicKey();
-			Log.i("SORMAS_LBDS", "send SORMAS public key: " + KeySerializationUtil.serializePublicKey(lbdsSormasPublicKey));
-			LbdsPropagateKexToLbdsIntent kexToLbdsIntent = new LbdsPropagateKexToLbdsIntent(lbdsSormasPublicKey);
-			ContextCompat.startForegroundService(getContext(), kexToLbdsIntent);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		Log.i("SORMAS_LBDS", "==========================");
+		LbdsIntentSender.sendKexLbdsIntent(getContext());
 	}
 
 	public void syncLbds() {
-		Log.i("SORMAS_LBDS", "==========================");
-		Log.i("SORMAS_LBDS", "Sync LBDS");
-		PersonDto target = new PersonDto();
-		PersonDao personDao = DatabaseHelper.getPersonDao();
-		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
-		List<Person> modifiedEntities = personDao.getModifiedEntities();
-		String payload = "Test";
-		if (!modifiedEntities.isEmpty()) {
-			Person firstEntry = modifiedEntities.get(0);
-			personDtoHelper.fillInnerFromAdo(target, firstEntry);
-			resetFields(target);
-			payload = new Gson().toJson(Arrays.asList(target));
-		}
-		Log.i("SORMAS_LBDS", "Send object: " + payload);
-
-		String authBasicCredentials = ConfigProvider.getUsername() + ":" + ConfigProvider.getPassword();
-		String headers = "Authorization: Basic " + Base64.encodeToString(authBasicCredentials.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
-		// "Content-Type: application/json";
-
-		HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, "http://localhost:6080/sormas-rest/persons/push", headers, payload);
-		// HttpMethod method = new HttpMethod(HttpMethod.MethodType.GET, "http://perdu.com");
-
-		String lbdsAesSecret = ConfigProvider.getLbdsAesSecret();
-		Log.i("SORMAS_LBDS", "AES secret: " + lbdsAesSecret);
-		HttpContainer httpContainer = new HttpContainer(method);
-		LbdsSendIntent lbdsSendIntent = new LbdsSendIntent(httpContainer, lbdsAesSecret);
-		lbdsSendIntent.setComponent(LbdsRelated.componentName);
-
-		HttpContainer httpContainerRead = lbdsSendIntent.getHttpContainer(lbdsAesSecret);
-		Log.i("SORMAS_LBDS", "HttpContainer: " + httpContainerRead);
-
-		ContextCompat.startForegroundService(getContext(), lbdsSendIntent);
-		Log.i("SORMAS_LBDS", "==========================");
+		LbdsIntentSender.sendLbdsSendIntent(getContext());
 	}
 
 	private void resetFields(PersonDto personDto) {

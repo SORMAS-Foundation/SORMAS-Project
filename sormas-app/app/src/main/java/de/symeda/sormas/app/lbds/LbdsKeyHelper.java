@@ -1,4 +1,4 @@
-package org.hzi.sormas.lbds.messaging;
+package de.symeda.sormas.app.lbds;
 
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;

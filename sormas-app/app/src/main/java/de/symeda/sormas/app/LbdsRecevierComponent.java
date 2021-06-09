@@ -11,6 +11,7 @@ import org.hzi.sormas.lbds.messaging.Constants;
 import org.hzi.sormas.lbds.messaging.IntentType;
 import org.hzi.sormas.lbds.messaging.IntentTypeCarrying;
 import org.hzi.sormas.lbds.messaging.LbdsPropagateKexToSormasIntent;
+import org.hzi.sormas.lbds.messaging.LbdsResponseIntent;
 import org.hzi.sormas.lbds.messaging.util.KeySerializationUtil;
 
 import com.google.gson.Gson;
@@ -79,9 +80,9 @@ public class LbdsRecevierComponent extends IntentService {
 
 				break;
 			case HTTP_RESPONSE_INTENT:
+				LbdsResponseIntent responseIntent = (LbdsResponseIntent) IntentTypeCarrying.toStrongTypedIntent(intent);
 				break;
 			case KEX_TO_SORMAS_INTENT:
-				// LbdsPropagateKexToSormasIntent kexToSormasIntent = LbdsHelper.getLbdsPropagateKexToSormasIntent(intent);
 				LbdsPropagateKexToSormasIntent kexToSormasIntent = (LbdsPropagateKexToSormasIntent) IntentTypeCarrying.toStrongTypedIntent(intent);
 
 				Log.i("SORMAS_LBDS", "Process LbdsPropagateKexToSormasIntent..");

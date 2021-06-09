@@ -130,39 +130,16 @@ public final class RetroProvider {
 			throw new ServerConnectionException(404);
 		}
 
-		RuntimeTypeAdapterFactory<ClassificationCriteriaDto> classificationCriteriaFactory =
-			RuntimeTypeAdapterFactory.of(ClassificationCriteriaDto.class, "type")
-				.registerSubtype(ClassificationAllOfCriteriaDto.class, "ClassificationAllOfCriteriaDto")
-				.registerSubtype(ClassificationCaseCriteriaDto.class, "ClassificationCaseCriteriaDto")
-				.registerSubtype(ClassificationNoneOfCriteriaDto.class, "ClassificationNoneOfCriteriaDto")
-				.registerSubtype(ClassificationPersonAgeBetweenYearsCriteriaDto.class, "ClassificationPersonAgeBetweenYearsCriteriaDto")
-				.registerSubtype(ClassificationPathogenTestPositiveResultCriteriaDto.class, "ClassificationPathogenTestPositiveResultCriteriaDto")
-				.registerSubtype(ClassificationPathogenTestNegativeResultCriteriaDto.class, "ClassificationPathogenTestNegativeResultCriteriaDto")
-				.registerSubtype(
-					ClassificationPathogenTestOtherPositiveResultCriteriaDto.class,
-					"ClassificationPathogenTestOtherPositiveResultCriteriaDto")
-				.registerSubtype(ClassificationXOfCriteriaDto.class, "ClassificationXOfCriteriaDto")
-				.registerSubtype(ClassificationEpiDataCriteriaDto.class, "ClassificationEpiDataCriteriaDto")
-				.registerSubtype(ClassificationNotInStartDateRangeCriteriaDto.class, "ClassificationNotInStartDateRangeCriteriaDto")
-				.registerSubtype(ClassificationSymptomsCriteriaDto.class, "ClassificationSymptomsCriteriaDto")
-				.registerSubtype(ClassificationPathogenTestCriteriaDto.class, "ClassificationPathogenTestCriteriaDto")
-				.registerSubtype(ClassificationExposureCriteriaDto.class, "ClassificationExposureCriteriaDto")
-				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto.class, "ClassificationXOfSubCriteriaDto")
-				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto.class, "ClassificationOneOfCompactCriteriaDto")
-				.registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto");
+		retrofit = buildRetrofit(serverUrl);
 
-		Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
-			if (json.isJsonNull()) {
-				return null;
-			}
-			long milliseconds = json.getAsLong();
-			return new Date(milliseconds);
-		}).registerTypeAdapter(Date.class, (JsonSerializer<Date>) (src, typeOfSrc, context12) -> {
-			if (src == null) {
-				return JsonNull.INSTANCE;
-			}
-			return new JsonPrimitive(src.getTime());
-		}).registerTypeAdapterFactory(classificationCriteriaFactory).create();
+		checkCompatibility();
+
+		updateLocale();
+		updateCountryName();
+	}
+
+	public static Retrofit buildRetrofit(String serverUrl) {
+		Gson gson = initGson();
 
 		// Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit
 
@@ -193,13 +170,43 @@ public final class RetroProvider {
 			return chain.proceed(builder.build());
 		});
 
-		retrofit =
-			new Retrofit.Builder().baseUrl(serverUrl).addConverterFactory(GsonConverterFactory.create(gson)).client(httpClient.build()).build();
+		return new Retrofit.Builder().baseUrl(serverUrl).addConverterFactory(GsonConverterFactory.create(gson)).client(httpClient.build()).build();
+	}
 
-		checkCompatibility();
+	public static Gson initGson() {
+		RuntimeTypeAdapterFactory<ClassificationCriteriaDto> classificationCriteriaFactory =
+			RuntimeTypeAdapterFactory.of(ClassificationCriteriaDto.class, "type")
+				.registerSubtype(ClassificationAllOfCriteriaDto.class, "ClassificationAllOfCriteriaDto")
+				.registerSubtype(ClassificationCaseCriteriaDto.class, "ClassificationCaseCriteriaDto")
+				.registerSubtype(ClassificationNoneOfCriteriaDto.class, "ClassificationNoneOfCriteriaDto")
+				.registerSubtype(ClassificationPersonAgeBetweenYearsCriteriaDto.class, "ClassificationPersonAgeBetweenYearsCriteriaDto")
+				.registerSubtype(ClassificationPathogenTestPositiveResultCriteriaDto.class, "ClassificationPathogenTestPositiveResultCriteriaDto")
+				.registerSubtype(ClassificationPathogenTestNegativeResultCriteriaDto.class, "ClassificationPathogenTestNegativeResultCriteriaDto")
+				.registerSubtype(
+					ClassificationPathogenTestOtherPositiveResultCriteriaDto.class,
+					"ClassificationPathogenTestOtherPositiveResultCriteriaDto")
+				.registerSubtype(ClassificationXOfCriteriaDto.class, "ClassificationXOfCriteriaDto")
+				.registerSubtype(ClassificationEpiDataCriteriaDto.class, "ClassificationEpiDataCriteriaDto")
+				.registerSubtype(ClassificationNotInStartDateRangeCriteriaDto.class, "ClassificationNotInStartDateRangeCriteriaDto")
+				.registerSubtype(ClassificationSymptomsCriteriaDto.class, "ClassificationSymptomsCriteriaDto")
+				.registerSubtype(ClassificationPathogenTestCriteriaDto.class, "ClassificationPathogenTestCriteriaDto")
+				.registerSubtype(ClassificationExposureCriteriaDto.class, "ClassificationExposureCriteriaDto")
+				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto.class, "ClassificationXOfSubCriteriaDto")
+				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto.class, "ClassificationOneOfCompactCriteriaDto")
+				.registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto");
 
-		updateLocale();
-		updateCountryName();
+		return new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
+			if (json.isJsonNull()) {
+				return null;
+			}
+			long milliseconds = json.getAsLong();
+			return new Date(milliseconds);
+		}).registerTypeAdapter(Date.class, (JsonSerializer<Date>) (src, typeOfSrc, context12) -> {
+			if (src == null) {
+				return JsonNull.INSTANCE;
+			}
+			return new JsonPrimitive(src.getTime());
+		}).registerTypeAdapterFactory(classificationCriteriaFactory).create();
 	}
 
 	public static int getLastConnectionId() {
