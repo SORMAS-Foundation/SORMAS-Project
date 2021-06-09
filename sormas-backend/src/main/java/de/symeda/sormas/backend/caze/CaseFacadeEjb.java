@@ -694,8 +694,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getResponsibleRegion().get(Region.NAME),
 				joins.getResponsibleDistrict().get(District.NAME),
 				joins.getResponsibleCommunity().get(Community.NAME),
-				caseService.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, joins))
-				);
+				caseService.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, joins)));
 		//@formatter:on
 
 		cq.distinct(true);

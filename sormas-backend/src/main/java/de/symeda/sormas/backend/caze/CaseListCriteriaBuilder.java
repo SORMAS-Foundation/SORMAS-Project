@@ -184,12 +184,10 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.INVESTIGATION_STATUS),
 			joins.getPerson().get(Person.PRESENT_CONDITION),
 			root.get(Case.REPORT_DATE),
-			joins.getReportingUser().get(User.UUID),
 			root.get(AbstractDomainObject.CREATION_DATE),
 			joins.getRegion().get(Region.UUID),
 			joins.getDistrict().get(District.UUID),
 			joins.getDistrict().get(District.NAME),
-			joins.getCommunity().get(Community.UUID),
 			joins.getFacility().get(Facility.UUID),
 			joins.getFacility().get(Facility.NAME),
 			root.get(Case.HEALTH_FACILITY_DETAILS),
@@ -214,7 +212,6 @@ public class CaseListCriteriaBuilder {
 			joins.getFacility().get(Facility.ID),
 			joins.getResponsibleRegion().get(Region.UUID),
 			joins.getResponsibleDistrict().get(District.UUID),
-			joins.getResponsibleCommunity().get(Community.UUID),
 			caseService.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, joins)));
 	}
 

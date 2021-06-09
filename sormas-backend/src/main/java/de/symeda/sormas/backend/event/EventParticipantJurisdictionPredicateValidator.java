@@ -66,11 +66,11 @@ public class EventParticipantJurisdictionPredicateValidator extends Jurisdiction
 
 	@Override
 	protected Predicate whenPointOfEntryLevel() {
-		return null;
+		return cb.disjunction();
 	}
 
 	@Override
 	protected Predicate whenLaboratoryLevel() {
-		return null;
+		return cb.disjunction();
 	}
 }

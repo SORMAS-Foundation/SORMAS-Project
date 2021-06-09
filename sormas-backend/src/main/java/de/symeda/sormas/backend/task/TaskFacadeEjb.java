@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -84,7 +83,6 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
-import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
@@ -128,8 +126,6 @@ public class TaskFacadeEjb implements TaskFacade {
 	private MessagingService messagingService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
-	@EJB
-	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
 	private TaskJurisdictionChecker taskJurisdictionChecker;
 
@@ -233,8 +229,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 
 			if (source.getContact() != null) {
-				ContactJurisdictionDto contactJurisdiction = JurisdictionHelper.createContactJurisdictionDto(source.getContact());
-				pseudonymizeContactReference(pseudonymizer, target.getContact(), contactJurisdiction);
+				pseudonymizeContactReference(pseudonymizer, target.getContact());
 			}
 
 			if (source.getEvent() != null) {
@@ -510,7 +505,7 @@ public class TaskFacadeEjb implements TaskFacade {
 					}
 
 					if (t.getContact() != null) {
-						pseudonymizeContactReference(emptyValuePseudonymizer, t.getContact(), t.getJurisdiction().getContactJurisdiction());
+						pseudonymizeContactReference(emptyValuePseudonymizer, t.getContact());
 					}
 
 					if (t.getEvent() != null) {
@@ -528,20 +523,20 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	private void pseudonymizeContactReference(
-		Pseudonymizer pseudonymizer,
-		ContactReferenceDto contactReference,
-		ContactJurisdictionDto contactJurisdiction) {
+			Pseudonymizer pseudonymizer,
+			ContactReferenceDto contactReference) {
+		Contact byUuid = contactService.getByUuid(contactReference.getUuid());
 		pseudonymizer.pseudonymizeDto(
 			ContactReferenceDto.PersonName.class,
 			contactReference.getContactName(),
-			contactJurisdictionChecker.isInJurisdictionOrOwned(contactJurisdiction),
+			contactService.inJurisdictionOrOwned(byUuid),
 			null);
 
 		if (contactReference.getCaseName() != null) {
 			pseudonymizer.pseudonymizeDto(
 				ContactReferenceDto.PersonName.class,
 				contactReference.getCaseName(),
-				caseService.inJurisdictionOrOwned(contactService.getByUuid(contactReference.getUuid()).getCaze()),
+				caseService.inJurisdictionOrOwned(byUuid.getCaze()),
 				null);
 		}
 	}

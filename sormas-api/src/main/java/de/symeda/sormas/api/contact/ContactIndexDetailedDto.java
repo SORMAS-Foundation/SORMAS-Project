@@ -61,15 +61,15 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	//@formatter:off
 	public ContactIndexDetailedDto(String uuid, String personFirstName, String personLastName,
 								   String cazeUuid,
-								   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid, String regionName,
-								   String districtUuid, String districtName, String communityUuid, Date lastContactDate, ContactCategory contactCategory,
+								   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionName,
+								   String districtName, Date lastContactDate, ContactCategory contactCategory,
 								   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
 								   FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Vaccination vaccination, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
-								   CaseClassification caseClassification, String caseReportingUserUid,
-								   String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,String caseRegionUuid, String caseRegionName, String caseDistrictUuid,
-								   String caseDistrictName, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+								   CaseClassification caseClassification,
+								   String caseRegionName,
+								   String caseDistrictName, 
 								   Date changeDate, // XXX: unused, only here for TypedQuery mapping
-								   String externalID, String externalToken,
+								   String externalID, String externalToken, boolean isInJurisdiction,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								   String reportingUserFirstName, String reportingUserLastName, ContactRelation relationToCase, int visitCount
@@ -78,10 +78,9 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 
 		//@formatter:off
 		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
-			regionUuid, regionName, districtUuid, districtName, communityUuid,
-			lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, completeness, followUpStatus, followUpUntil,
-			symptomJournalStatus, vaccination, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
-			caseReportingUserUid, caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid, caseRegionUuid, caseRegionName, caseDistrictUuid, caseDistrictName, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, changeDate, externalID, externalToken, visitCount);
+			regionName, districtName, lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus,
+				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccination, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
+			caseRegionName, caseDistrictName, changeDate, externalID, externalToken, isInJurisdiction, visitCount);
 
 		//@formatter:on
 

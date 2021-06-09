@@ -208,9 +208,12 @@ public class ContactExportDto implements Serializable {
 
 	private String reportingDistrict;
 
-	private ContactJurisdictionDto jurisdiction;
-	private Date followUpStatusChangeDate;
-	private UserReferenceDto followUpStatusChangeUser;
+	private String reportingUserUuid;
+	private String regionUuid;
+	private String districtUuid;
+	private String communityUuid;
+
+	private Boolean isInJurisdiction;
 
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
@@ -238,10 +241,7 @@ public class ContactExportDto implements Serializable {
 							String externalID, String externalToken,
 							String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 							String reportingDistrict,
-							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
-							String caseReportingUserUuid,
-							String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,
-							String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
+							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid, boolean isInJurisdiction
 	) {
 	//@formatter:on
 
@@ -337,17 +337,12 @@ public class ContactExportDto implements Serializable {
 		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
 		this.reportingDistrict = reportingDistrict;
 
-		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
-			? null
-			: new CaseJurisdictionDto(
-				caseReportingUserUuid,
-				ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
-				caseRegionUuid,
-				caseDistrictUuid,
-				caseCommunityUuid,
-				caseHealthFacilityUuid,
-				casePointOfEntryUuid);
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
+		this.reportingUserUuid = reportingUserUuid;
+		this.regionUuid = regionUuid;
+		this.districtUuid = districtUuid;
+		this.communityUuid = communityUuid;
+
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public ContactReferenceDto toReference() {
@@ -1304,23 +1299,19 @@ public class ContactExportDto implements Serializable {
 	}
 
 	public String getReportingUserUuid() {
-		return jurisdiction.getReportingUserUuid();
+		return reportingUserUuid;
 	}
 
 	public String getRegionUuid() {
-		return jurisdiction.getRegionUuid();
+		return regionUuid;
 	}
 
 	public String getDistrictUuid() {
-		return jurisdiction.getDistrictUuid();
+		return districtUuid;
 	}
 
 	public String getCommunityUuid() {
-		return jurisdiction.getCommunityUuid();
-	}
-
-	public ContactJurisdictionDto getJurisdiction() {
-		return jurisdiction;
+		return communityUuid;
 	}
 
 	public void setFacility(String facility) {
@@ -1329,5 +1320,9 @@ public class ContactExportDto implements Serializable {
 
 	public void setOtherContactDetails(String otherContactDetails) {
 		this.otherContactDetails = otherContactDetails;
+	}
+
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 }

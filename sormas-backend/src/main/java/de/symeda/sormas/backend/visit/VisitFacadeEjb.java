@@ -309,7 +309,7 @@ public class VisitFacadeEjb implements VisitFacade {
 				cb,
 				cb.or(
 					caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(caseJoin)),
-					contactService.inJurisdictionOrOwned(cb, cq, contactJoin, new ContactJoins(contactJoin)))));
+					contactService.inJurisdictionOrOwned(cb, new ContactJoins(contactJoin)))));
 
 		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visit));
 
@@ -408,7 +408,7 @@ public class VisitFacadeEjb implements VisitFacade {
 				cb,
 				cb.or(
 					caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(caseJoin)),
-					contactService.inJurisdictionOrOwned(cb, cq, contactJoin, new ContactJoins(contactJoin)))));
+					contactService.inJurisdictionOrOwned(cb, new ContactJoins(contactJoin)))));
 
 		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot);
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, visitRoot.get(Visit.UUID));

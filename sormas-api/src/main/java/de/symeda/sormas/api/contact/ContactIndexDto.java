@@ -74,6 +74,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private Date followUpUntil;
 	private SymptomJournalStatus symptomJournalStatus;
 	private Vaccination vaccination;
+	private String districtUuid;
 	private String contactOfficerUuid;
 	private Date reportDateTime;
 	private ContactCategory contactCategory;
@@ -86,21 +87,18 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private String caseRegionName;
 	private String caseDistrictName;
 
-	private ContactJurisdictionDto jurisdiction;
-	private CaseJurisdictionDto caseJurisdiction;
+	private boolean isInJurisdiction;
 
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
-						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid, String regionName,
-						   String districtUuid, String districtName, String communityUuid, Date lastContactDate, ContactCategory contactCategory,
+						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionName,
+						   String districtName, Date lastContactDate, ContactCategory contactCategory,
 						   ContactProximity contactProximity, ContactClassification contactClassification, ContactStatus contactStatus, Float completeness,
-						   FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Vaccination vaccination, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
-						   CaseClassification caseClassification, String caseReportingUserUid,
-						   String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,
-						   String caseRegionUuid, String caseRegionName, String caseDistrictUuid,
-						   String caseDistrictName, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Vaccination vaccination, String contactOfficerUuid,
+						   String reportingUserUuid, Date reportDateTime,
+						   CaseClassification caseClassification, String caseRegionName, String caseDistrictName,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
-						   String externalID, String externalToken,
+						   String externalID, String externalToken, boolean isInJurisdiction,
 						   int visitCount) {
 	//@formatter:on
 
@@ -110,14 +108,6 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 
 		if (cazeUuid != null) {
 			this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
-			this.caseJurisdiction = new CaseJurisdictionDto(
-				caseReportingUserUid,
-				ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
-				caseRegionUuid,
-				caseDistrictUuid,
-				caseCommunityUuid,
-				caseHealthFacilityUuid,
-				casePointOfEntryUuid);
 		}
 
 		this.disease = disease;
@@ -143,7 +133,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.caseRegionName = caseRegionName;
 		this.caseDistrictName = caseDistrictName;
 
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -267,7 +257,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	}
 
 	public String getDistrictUuid() {
-		return jurisdiction.getDistrictUuid();
+		return districtUuid;
 	}
 
 	public String getContactOfficerUuid() {
@@ -362,12 +352,8 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		return new ContactReferenceDto(uuid);
 	}
 
-	public ContactJurisdictionDto getJurisdiction() {
-		return jurisdiction;
-	}
-
-	public CaseJurisdictionDto getCaseJurisdiction() {
-		return caseJurisdiction;
+	public boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 
 	@Override

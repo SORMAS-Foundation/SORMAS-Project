@@ -88,7 +88,6 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
-import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -165,8 +164,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
 	private SampleJurisdictionChecker sampleJurisdictionChecker;
-	@EJB
-	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
 	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
 	@EJB
@@ -1003,7 +1000,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			pseudonymizer.pseudonymizeDto(
 				ContactReferenceDto.PersonName.class,
 				sampleContact.getContactName(),
-				contactJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction()),
+				contactService.inJurisdictionOrOwned(contactService.getByUuid(sampleContact.getUuid())),
 				null);
 
 			if (sampleContact.getCaseName() != null) {

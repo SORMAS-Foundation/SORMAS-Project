@@ -388,7 +388,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		contactJurisdictionSubQuery.where(
 			cb.and(
 				cb.equal(contactRoot.get(Contact.PERSON).get(Person.ID), personId),
-				contactService.inJurisdictionOrOwned(cb, cq, contactRoot, new ContactJoins(contactRoot))));
+				contactService.inJurisdictionOrOwned(cb, new ContactJoins(contactRoot))));
 		final Predicate isContactInJurisdiction = cb.exists(contactJurisdictionSubQuery);
 
 		final Subquery<Long> eventParticipantJurisdictionSubQuery = cq.subquery(Long.class);

@@ -96,6 +96,7 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
@@ -123,8 +124,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
-	private ContactJurisdictionChecker contactJurisdictionChecker;
-	@EJB
 	private ExposureService exposureService;
 	@EJB
 	private VaccinationInfoService vaccinationInfoService;
@@ -134,6 +133,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
 	@EJB
 	private ExternalJournalService externalJournalService;
+	@EJB
+	private UserService userService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -1338,49 +1339,25 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		final Predicate isFromSelectedCases =
 				cb.in(root.get(AbstractDomainObject.ID)).value(selectedContacts.stream().map(AbstractDomainObject::getId).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedCases, inJurisdictionOrOwned(cb, inJurisdictionQuery, root, new ContactJoins(root))));
+		inJurisdictionQuery.where(cb.and(isFromSelectedCases, inJurisdictionOrOwned(cb, new ContactJoins(root))));
 
 		return em.createQuery(inJurisdictionQuery).getResultList();
 	}
 
-	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, ?> contactRoot, ContactJoins joins) {
-		final User currentUser = this.getCurrentUser();
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, ContactJoins<?> joins) {
 
-		final Subquery<Long> contactCaseJurisdictionSubQuery = cq.subquery(Long.class);
-		final Root<Case> contactCaseRoot = contactCaseJurisdictionSubQuery.from(Case.class);
-		contactCaseJurisdictionSubQuery.select(contactCaseRoot.get(Contact.ID));
-		contactCaseJurisdictionSubQuery.where(
-			cb.and(
-				cb.equal(contactCaseRoot, joins.getRoot().get(Contact.CAZE)),
-				caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(contactCaseRoot))));
-
-		final Predicate contactCaseInJurisdiction = cb.exists(contactCaseJurisdictionSubQuery);
+		final User currentUser = userService.getCurrentUser();
 
 		final Predicate reportedByCurrentUser =
 			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		final Predicate jurisdictionPredicate;
-		switch (jurisdictionLevel) {
-		case NATION:
-			jurisdictionPredicate = cb.conjunction();
-			break;
-		case REGION:
-			jurisdictionPredicate = cb.equal(joins.getRegion().get(Region.ID), currentUser.getRegion().getId());
-			break;
-		case DISTRICT:
-			jurisdictionPredicate = cb.equal(joins.getDistrict().get(District.ID), currentUser.getDistrict().getId());
-			break;
-		case LABORATORY:
-		case EXTERNAL_LABORATORY:
-		case NONE:
-		case COMMUNITY:
-		case HEALTH_FACILITY:
-		case POINT_OF_ENTRY:
-		default:
-			jurisdictionPredicate = cb.disjunction();
-		}
-		return cb.or(reportedByCurrentUser, jurisdictionPredicate, cb.and(cb.isNull(contactRoot.get(Contact.REGION)), contactCaseInJurisdiction));
+		final Predicate jurisdictionPredicate =
+			ContactJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
+
+		return cb.or(
+			reportedByCurrentUser,
+			jurisdictionPredicate,
+			cb.and(cb.isNull(joins.getRoot().get(Contact.REGION)), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
 	}
 
 	public boolean isContactEditAllowed(Contact contact) {
@@ -1388,7 +1365,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return contact.getSormasToSormasOriginInfo().isOwnershipHandedOver();
 		}
 
-		return contactJurisdictionChecker.isInJurisdictionOrOwned(contact) && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
+		return inJurisdictionOrOwned(contact) && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
 	}
 
 	public List<Contact> getByPersonUuids(List<String> personUuids) {

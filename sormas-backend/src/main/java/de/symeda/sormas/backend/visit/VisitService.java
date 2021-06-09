@@ -91,19 +91,18 @@ public class VisitService extends BaseAdoService<Visit> {
 
 		final Predicate isFromSelectedCases =
 				cb.in(root.get(AbstractDomainObject.ID)).value(selectedEntities.stream().map(AbstractDomainObject::getId).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedCases, inJurisdiction(cb, inJurisdictionQuery, caseJoin, contactJoin)));
+		inJurisdictionQuery.where(cb.and(isFromSelectedCases, inJurisdiction(cb, caseJoin, contactJoin)));
 
 		return em.createQuery(inJurisdictionQuery).getResultList();
 	}
 
 	private Predicate inJurisdiction(
 		CriteriaBuilder cb,
-		CriteriaQuery<Long> inJurisdictionQuery,
 		Join<Visit, Case> caseJoin,
 		Join<Visit, Contact> contactJoin) {
 		return cb.or(
 			caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(caseJoin)),
-			contactService.inJurisdictionOrOwned(cb, inJurisdictionQuery, contactJoin, new ContactJoins(contactJoin)));
+			contactService.inJurisdictionOrOwned(cb, new ContactJoins(contactJoin)));
 	}
 
 	public List<String> getAllActiveUuids(User user) {

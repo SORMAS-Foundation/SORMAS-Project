@@ -38,35 +38,21 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements Serial
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
-	private ContactJurisdictionDto jurisdiction;
-	private CaseJurisdictionDto caseJurisdiction;
+	private Boolean isInJurisdiction;
 
 	//@formatter:off
 	public SimilarContactDto(String firstName, String lastName, String uuid,
 							 String cazeUuid, String caseFirstName, String caseLastName, String caseIdExternalSystem,
 							 Date lastContactDate, ContactProximity contactProximity, ContactClassification contactClassification,
-							 ContactStatus contactStatus, FollowUpStatus followUpStatus,
-
-							 String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
-							 String caseReportingUuid, String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,
-							 String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid) {
+							 ContactStatus contactStatus, FollowUpStatus followUpStatus, boolean isInJurisdiction) {
 		//@formatter:on
 
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.uuid = uuid;
 
-		CaseJurisdictionDto caseJurisdiction = null;
 		if (cazeUuid != null) {
 			this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
-			this.caseJurisdiction = new CaseJurisdictionDto(
-				caseReportingUuid,
-				ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
-				caseRegionUuid,
-				caseDistrictUuid,
-				caseCommunityUuid,
-				caseHealthFacilityUuid,
-				casePointOfEntryUuid);
 		}
 		this.caseIdExternalSystem = caseIdExternalSystem;
 		this.lastContactDate = lastContactDate;
@@ -74,8 +60,7 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements Serial
 		this.contactClassification = contactClassification;
 		this.contactStatus = contactStatus;
 		this.followUpStatus = followUpStatus;
-
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public CaseReferenceDto getCaze() {
@@ -158,11 +143,7 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements Serial
 		this.followUpStatus = followUpStatus;
 	}
 
-	public ContactJurisdictionDto getJurisdiction() {
-		return jurisdiction;
-	}
-
-	public CaseJurisdictionDto getCaseJurisdiction() {
-		return caseJurisdiction;
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 }
