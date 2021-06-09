@@ -51,7 +51,7 @@ public class EditEventPage {
   public static final By SOURCE_TYPE_COMBOBOX = By.cssSelector("#srcType div");
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(" #typeOfPlace div");
   public static final By NEW_TASK_BUTTON = By.id("taskNewTask");
-  public static final By EDIT_TASK_O = By.cssSelector("#edit-task-0");
+  public static final By EDIT_FIRST_TASK = By.cssSelector("#edit-task-0");
   public static final By LINK_EVENT_GROUP = By.cssSelector("div#Link\\ event\\ group");
   public static final By NEW_EVENT_GROUP_RADIOBUTTON =
       By.xpath("//*[contains(text(),'New event group')]/..");

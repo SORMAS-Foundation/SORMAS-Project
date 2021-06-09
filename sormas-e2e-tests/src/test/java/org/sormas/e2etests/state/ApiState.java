@@ -35,6 +35,6 @@ public class ApiState {
   Person editPerson;
   Case createdCase;
   Contact createdContact;
-  Task createdTask;
   Event createdEvent;
+  Task createdTask;
 }

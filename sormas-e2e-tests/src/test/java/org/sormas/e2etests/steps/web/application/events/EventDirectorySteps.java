@@ -35,7 +35,6 @@ public class EventDirectorySteps implements En {
   @Inject
   public EventDirectorySteps(
       WebDriverHelpers webDriverHelpers,
-      EventApiService eventApiService,
       ApiState apiState,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
 
@@ -86,15 +85,13 @@ public class EventDirectorySteps implements En {
         "I am accessing the event tab using the created event via api",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON);
-          String eventUuid = apiState.getCreatedEvent().getUuid();
-          String eventLinkPath = "/sormas-ui/#!events/data/";
+          final String eventUuid = apiState.getCreatedEvent().getUuid();
+          final String eventLinkPath = "/sormas-ui/#!events/data/";
           webDriverHelpers.accessWebSite(environmentUrl + eventLinkPath + eventUuid);
         });
 
     When(
         "I click on New Task from event tab",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_BUTTON);
-        });
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_BUTTON));
   }
 }
