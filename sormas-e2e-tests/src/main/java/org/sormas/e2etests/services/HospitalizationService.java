@@ -5,7 +5,7 @@ import static org.sormas.e2etests.enums.YesNoUnknownOptions.YES;
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
-import org.sormas.e2etests.pojo.web.Hospitalization;
+import org.sormas.e2etests.pojo.web.*;
 
 public class HospitalizationService {
   private final Faker faker;
