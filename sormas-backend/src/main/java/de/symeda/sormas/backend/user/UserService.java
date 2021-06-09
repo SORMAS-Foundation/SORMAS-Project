@@ -199,6 +199,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, Arrays.asList(userRoles));
 	}
 
+	// TODO #5614: Add Javadoc to all methods when Signatures are settled
 	public List<UserReference> getReferenceList(
 		List<String> regionUuids,
 		List<String> districtUuids,
@@ -207,17 +208,19 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		boolean activeOnly,
 		List<UserRole> userRoles) {
 
+		/*
+		 * Conditions to combine if parameter is set:
+		 * ((regionUuids & districtUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly
+		 */
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<UserReference> cq = cb.createQuery(UserReference.class);
 		Root<UserReference> root = cq.from(UserReference.class);
 		Join<UserReference, UserRole> rolesJoin = root.join(User.USER_ROLES, JoinType.LEFT);
 
-		// WHERE AND
+		// WHERE inner AND
 		Predicate filter = null;
-		// TODO #5614: Where conditions missing
-		if (activeOnly) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, root));
-		}
+		// TODO #5614: Where conditions missing. Do "UserReference JOIN User" on uuid to reuse existing Criteria queries.
 		if (CollectionUtils.isNotEmpty(userRoles)) {
 			filter = CriteriaBuilderHelper.and(cb, filter, rolesJoin.in(userRoles));
 		}
@@ -227,6 +230,11 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			Predicate supervisorFilter = rolesJoin.in(
 				Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR));
 			filter = CriteriaBuilderHelper.or(cb, filter, supervisorFilter);
+		}
+
+		// WHERE outer AND
+		if (activeOnly) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, root));
 		}
 
 		if (filter != null) {

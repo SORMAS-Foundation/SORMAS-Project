@@ -97,7 +97,10 @@ public class UserServiceTest extends AbstractBeanTest {
 		assertThat(result, hasSize(1));
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
 
-		// TODO #5614: Append test for other where conditions
+		// 3. Exclude inactive user as overall condition
+		getUserFacade().disableUsers(Arrays.asList(supervisor.getUuid()));
+		result = getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		assertThat(result, is(empty()));
 	}
 
 	@Test
