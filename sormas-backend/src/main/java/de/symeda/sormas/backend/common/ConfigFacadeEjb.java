@@ -58,6 +58,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String COUNTRY_EPID_PREFIX = "country.epidprefix";
 	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
 	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
+	private static final String MAP_USE_COUNTRY_CENTER = "map.usecountrycenter";
 	private static final String MAP_ZOOM = "map.zoom";
 
 	public static final String VERSION_PLACEHOLER = "%version";
@@ -249,6 +250,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public GeoLatLon getCountryCenter() {
 		return new GeoLatLon(getDouble(COUNTRY_CENTER_LAT, 0), getDouble(COUNTRY_CENTER_LON, 0));
+	}
+
+	@Override
+	public boolean isMapUseCountryCenter() {
+		return getBoolean(MAP_USE_COUNTRY_CENTER, false);
 	}
 
 	@Override
