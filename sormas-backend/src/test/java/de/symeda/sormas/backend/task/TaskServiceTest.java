@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.task;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyObject;
 
 import java.util.Collections;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.TaskCreationException;
@@ -23,6 +25,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserService;
 
 public class TaskServiceTest extends AbstractBeanTest {
@@ -57,8 +60,16 @@ public class TaskServiceTest extends AbstractBeanTest {
 		Contact contact = new Contact();
 		contact.setDistrict(district);
 
-		Mockito.when(userService.getAllByDistrict(any(District.class), anyBoolean(), anyObject()))
-			.thenReturn(Collections.singletonList(contactOfficer));
+		Mockito.when(
+			userService.getReferenceList(
+				anyList(),
+				anyList(),
+				anyBoolean(),
+				anyBoolean(),
+				anyBoolean(),
+				(UserRole[]) anyObject()))
+			.thenReturn(Collections.singletonList(new UserReference()));
+		Mockito.when(userService.getRandomUser(anyList())).thenReturn(contactOfficer);
 
 		User actualAssignee = taskService.getTaskAssignee(contact);
 		assertEquals(actualAssignee.getId(), contactOfficer.getId());

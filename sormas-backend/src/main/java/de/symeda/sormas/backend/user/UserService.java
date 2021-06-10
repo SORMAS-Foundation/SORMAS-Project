@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -112,10 +113,14 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return entity;
 	}
 
+	// XXX #5614: Replaced
+	@Deprecated
 	public List<User> getAllByUserRoles(UserRole... userRoles) {
 		return getAllByUserRoles(Arrays.asList(userRoles));
 	}
 
+	// XXX #5614: Replaced
+	@Deprecated
 	public List<User> getAllByUserRoles(Collection<UserRole> userRoles) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
@@ -135,22 +140,29 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	// XXX #5614: In use for WeeklyReports and messageRecipients
 	public List<User> getAllByRegionAndUserRoles(Region region, UserRole... userRoles) {
 		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles), null);
 	}
 
+	// XXX #5614: In use for WeeklyReports and messageRecipients
 	public List<User> getAllByRegionsAndUserRoles(List<Region> regions, UserRole... userRoles) {
 		return getAllByRegionsAndUserRoles(regions, Arrays.asList(userRoles), null);
 	}
 
+	// XXX #5614: In use for WeeklyReports
 	public List<User> getAllByRegionAndUserRolesInJurisdiction(Region region, UserRole... userRoles) {
 		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles), this::createJurisdictionFilter);
 	}
 
+	// XXX #5614 Unused
+	@Deprecated
 	public List<User> getAllByRegionsAndUserRolesInJurisdiction(Region region, UserRole... userRoles) {
 		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles), this::createJurisdictionFilter);
 	}
 
+	// XXX #5614: Replaced
+	@Deprecated
 	public List<User> getAllByRegionsAndUserRolesInJurisdiction(List<Region> regions, UserRole... userRoles) {
 		return getAllByRegionsAndUserRoles(regions, Arrays.asList(userRoles), this::createJurisdictionFilter);
 	}
@@ -268,6 +280,26 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return resultList;
 	}
 
+	public User getRandomUser(District district, UserRole... userRoles) {
+
+		return getRandomUser(getReferenceList(null, Arrays.asList(district.getUuid()), false, false, true, userRoles));
+	}
+
+	public User getRandomUser(Region region, UserRole... userRoles) {
+
+		return getRandomUser(getReferenceList(Arrays.asList(region.getUuid()), null, false, false, true, userRoles));
+	}
+
+	public User getRandomUser(List<UserReference> candidates) {
+
+		if (CollectionUtils.isEmpty(candidates)) {
+			return null;
+		}
+
+		UserReference chosenUser = candidates.get(new Random().nextInt(candidates.size()));
+		return getByUuid(chosenUser.getUuid());
+	}
+
 	public List<User> getInformantsOfFacility(Facility facility) {
 
 		if (facility == null || !FacilityType.HOSPITAL.equals(facility.getType())) {
@@ -322,18 +354,26 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	 * @param userRoles
 	 * @return
 	 */
+	// XXX #5614: Replaced
+	@Deprecated
 	public List<User> getAllByDistrict(District district, boolean includeSupervisors, UserRole... userRoles) {
 		return getAllByDistricts(Collections.singletonList(district), includeSupervisors, Arrays.asList(userRoles), null);
 	}
 
+	// XXX #5614: Replaced
+	@Deprecated
 	public List<User> getAllByDistrictInJurisdiction(District district, boolean includeSupervisors, UserRole... userRoles) {
 		return getAllByDistricts(Collections.singletonList(district), includeSupervisors, Arrays.asList(userRoles), this::createJurisdictionFilter);
 	}
 
+	// XXX #5614: Replaced
+	@Deprecated
 	public List<User> getAllByDistrictsInJurisdiction(List<District> districts, boolean includeSupervisors, UserRole... userRoles) {
 		return getAllByDistricts(districts, includeSupervisors, Arrays.asList(userRoles), this::createJurisdictionFilter);
 	}
 
+	// XXX #5614: Replaced
+	@Deprecated
 	private List<User> getAllByDistricts(
 		List<District> districts,
 		boolean includeSupervisors,
@@ -379,6 +419,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	// XXX #5614: Replaced
+	@Deprecated
 	public List<User> getAllInJurisdiction(boolean includeInactive) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
@@ -547,6 +589,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return null;
 	}
 
+	// XXX #5614: Replaced
+	@Deprecated
 	private Predicate buildDistrictFilter(
 		CriteriaBuilder cb,
 		Root<User> from,
