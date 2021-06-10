@@ -126,6 +126,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String BIRTH_COUNTRY = "birthCountry";
 	public static final String CITIZENSHIP = "citizenship";
 	public static final String CASES = "cases";
@@ -194,6 +195,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	private boolean covidCodeDelivered;
 	private String externalId;
 	private String externalToken;
+	private String internalToken;
 
 	private Country birthCountry;
 	private Country citizenship;
@@ -660,6 +662,15 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	@Column
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	@ManyToOne

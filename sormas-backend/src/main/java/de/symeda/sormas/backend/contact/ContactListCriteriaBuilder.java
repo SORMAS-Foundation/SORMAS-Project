@@ -127,7 +127,8 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID),
 			contact.get(Contact.CHANGE_DATE),
 			contact.get(Contact.EXTERNAL_ID),
-			contact.get(Contact.EXTERNAL_TOKEN));
+			contact.get(Contact.EXTERNAL_TOKEN),
+			contact.get(Contact.INTERNAL_TOKEN));
 	}
 
 	public List<Selection<?>> getMergeContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
@@ -176,6 +177,7 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDto.CASE_CLASSIFICATION:
 		case ContactIndexDto.EXTERNAL_ID:
 		case ContactIndexDto.EXTERNAL_TOKEN:
+		case ContactIndexDto.INTERNAL_TOKEN:
 			expressions.add(contact.get(sortProperty.propertyName));
 			break;
 		case ContactIndexDto.PERSON_FIRST_NAME:

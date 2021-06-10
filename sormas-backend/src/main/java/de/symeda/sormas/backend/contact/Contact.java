@@ -67,7 +67,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
@@ -110,6 +110,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -146,7 +147,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
-	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String SHARE_INFO_CONTACTS = "shareInfoContacts";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
 	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
@@ -190,6 +191,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	private String description;
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 
 	private Case resultingCase;
 	private User resultingCaseUser;
@@ -247,7 +249,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	private User followUpStatusChangeUser;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
+	private List<ShareInfoContact> shareInfoContacts = new ArrayList<>(0);
 
 	private Contact duplicateOf;
 
@@ -591,6 +593,15 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.externalToken = externalToken;
 	}
 
+	@Column(columnDefinition = "text")
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
+	}
+
 	@ManyToOne(cascade = {})
 	public Region getRegion() {
 		return region;
@@ -907,13 +918,13 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(mappedBy = SormasToSormasShareInfo.CONTACT, fetch = FetchType.LAZY)
-	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
-		return sormasToSormasShares;
+	@OneToMany(mappedBy = ShareInfoContact.CONTACT, fetch = FetchType.LAZY)
+	public List<ShareInfoContact> getShareInfoContacts() {
+		return shareInfoContacts;
 	}
 
-	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
-		this.sormasToSormasShares = sormasToSormasShares;
+	public void setShareInfoContacts(List<ShareInfoContact> shareInfoContacts) {
+		this.shareInfoContacts = shareInfoContacts;
 	}
 
 	@Enumerated(EnumType.STRING)

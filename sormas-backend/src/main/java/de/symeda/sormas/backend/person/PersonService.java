@@ -28,8 +28,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,8 +53,7 @@ import javax.transaction.Transactional;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
-import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -87,6 +84,8 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
 import de.symeda.sormas.utils.EventParticipantJoins;
 
@@ -411,6 +410,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	public List<PersonNameDto> getMatchingNameDtos(PersonSimilarityCriteria criteria, Integer limit) {
 
 		setSimilarityThresholdQuery();
+		boolean activeEntriesOnly = configFacade.isDuplicateChecksExcludePersonsOfArchivedEntries();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		Predicate caseContactEventParticipantLinkPredicate;
@@ -425,17 +425,18 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		// Persons of active cases
 		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
-		Predicate activeCasesFilter = caseService.createActiveCasesFilter(cb, personCaseJoin);
+		Predicate activeCasesFilter = activeEntriesOnly ? caseService.createActiveCasesFilter(cb, personCaseJoin) : null;
 		Predicate caseUserFilter = caseService.createUserFilter(cb, personQuery, personCaseJoin);
 		Predicate personCasePredicate = and(cb, personCaseJoin.get(Case.ID).isNotNull(), activeCasesFilter, caseUserFilter);
 
 		// Persons of active contacts
-		Predicate activeContactsFilter = contactService.createActiveContactsFilter(cb, personContactJoin);
+		Predicate activeContactsFilter = activeEntriesOnly ? contactService.createActiveContactsFilter(cb, personContactJoin) : null;
 		Predicate contactUserFilter = contactService.createUserFilter(cb, personQuery, personContactJoin);
 		Predicate personContactPredicate = and(cb, personContactJoin.get(Contact.ID).isNotNull(), contactUserFilter, activeContactsFilter);
 
 		// Persons of event participants in active events
-		Predicate activeEventParticipantsFilter = eventParticipantService.createActiveEventParticipantsFilter(cb, personEventParticipantJoin);
+		Predicate activeEventParticipantsFilter =
+			activeEntriesOnly ? eventParticipantService.createActiveEventParticipantsFilter(cb, personEventParticipantJoin) : null;
 		Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, personQuery, personEventParticipantJoin);
 		Predicate personEventParticipantPredicate =
 			and(cb, personEventParticipantJoin.get(EventParticipant.ID).isNotNull(), activeEventParticipantsFilter, eventParticipantUserFilter);

@@ -31,7 +31,6 @@ public class ExternalDataUtil {
 		List<String> uuids = new ArrayList<>(externalDataDtoMap.keySet());
 
 		List<T> entitiesToUpdate = entityRetrieveFunction.apply(uuids);
-		entitiesToUpdate.sort(Comparator.comparing(AbstractDomainObject::getCreationDate));
 		for (T externalDataEntity : entitiesToUpdate) {
 			ExternalDataDto externalDataUpdate = externalDataDtoMap.get(externalDataEntity.getUuid());
 			if ((externalDataEntity.getExternalId() != null && externalDataUpdate.getExternalId() != null)

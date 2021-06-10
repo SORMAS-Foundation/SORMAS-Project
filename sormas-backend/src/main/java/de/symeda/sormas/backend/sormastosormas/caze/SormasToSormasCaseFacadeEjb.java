@@ -19,11 +19,11 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CAS
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CASE_SYNC_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -34,11 +34,14 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -47,13 +50,18 @@ import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.ShareDataBuilder;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 
 @Stateless(name = "SormasToSormasCaseFacade")
-public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface<Case, CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData>
+public class SormasToSormasCaseFacadeEjb
+	extends AbstractSormasToSormasInterface<Case, CaseDataDto, SormasToSormasCaseDto, SormasToSormasCasePreview, ProcessedCaseData>
 	implements SormasToSormasCaseFacade {
 
+	public static final String CASE_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_ENDPOINT;
+	public static final String CASE_REQUEST_REJECT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_REJECT_ENDPOINT;
+	public static final String CASE_REQUEST_ACCEPT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_ACCEPT_ENDPOINT;
 	public static final String SAVE_SHARED_CASE_ENDPOINT = RESOURCE_PATH + CASE_ENDPOINT;
 	public static final String SYNC_CASE_ENDPOINT = RESOURCE_PATH + CASE_SYNC_ENDPOINT;
 
@@ -71,7 +79,15 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	private SormasToSormasShareInfoService shareInfoService;
 
 	public SormasToSormasCaseFacadeEjb() {
-		super(SAVE_SHARED_CASE_ENDPOINT, SYNC_CASE_ENDPOINT, Captions.CaseData);
+		super(
+			CASE_REQUEST_ENDPOINT,
+			CASE_REQUEST_REJECT_ENDPOINT,
+			CASE_REQUEST_ACCEPT_ENDPOINT,
+			SAVE_SHARED_CASE_ENDPOINT,
+			SYNC_CASE_ENDPOINT,
+			Captions.CaseData,
+			ShareRequestDataType.CASE,
+			CaseShareRequestData.class);
 	}
 
 	@Override
@@ -80,11 +96,11 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	}
 
 	@Override
-	protected ShareDataBuilder<Case, SormasToSormasCaseDto> getShareDataBuilder() {
+	protected ShareDataBuilder<Case, SormasToSormasCaseDto, SormasToSormasCasePreview> getShareDataBuilder() {
 		return caseShareDataBuilder;
 	}
 
-	protected ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData> getReceivedDataProcessor() {
+	protected ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData, SormasToSormasCasePreview> getReceivedDataProcessor() {
 		return receivedCaseProcessor;
 	}
 
@@ -99,7 +115,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	}
 
 	@Override
-	protected void validateEntitiesBeforeSend(List<Case> entities, SormasToSormasOptionsDto options) throws SormasToSormasException {
+	protected void validateEntitiesBeforeShare(List<Case> entities, boolean handOverOwnership) throws SormasToSormasException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		for (Case caze : entities) {
 			if (!caseService.isCaseEditAllowed(caze)) {
@@ -108,7 +124,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 					ValidationErrors
 						.create(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
 			}
-			if (options.isHandOverOwnership() && caze.getPerson().isEnrolledInExternalJournal()) {
+			if (handOverOwnership && caze.getPerson().isEnrolledInExternalJournal()) {
 				validationErrors.put(
 						buildCaseValidationGroupName(caze),
 						ValidationErrors
@@ -123,17 +139,17 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 
 	@Override
 	protected ValidationErrors validateSharedEntity(CaseDataDto entity) {
-		ValidationErrors errors = new ValidationErrors();
-		if (caseFacade.exists(entity.getUuid())) {
-			errors.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasCaseExists));
-		}
-
-		return errors;
+		return validateSharedUuid(entity.getUuid());
 	}
 
 	@Override
-	protected void setEntityShareInfoAssociatedObject(SormasToSormasShareInfo sormasToSormasShareInfo, Case entity) {
-		sormasToSormasShareInfo.setCaze(entity);
+	protected ValidationErrors validateSharedPreview(SormasToSormasCasePreview preview) {
+		return validateSharedUuid(preview.getUuid());
+	}
+
+	@Override
+	protected void addEntityToShareInfo(SormasToSormasShareInfo shareInfo, List<Case> cases) {
+		shareInfo.getCases().addAll(cases.stream().map(c -> new ShareInfoCase(shareInfo, c)).collect(Collectors.toList()));
 	}
 
 	@Override
@@ -144,6 +160,25 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	@Override
 	protected List<CaseDataDto> loadExistingEntities(List<String> uuids) {
 		return caseFacade.getByUuids(uuids);
+	}
+
+	@Override
+	protected void setShareRequestPreviewData(SormasToSormasShareRequestDto request, List<SormasToSormasCasePreview> previews) {
+		request.setCases(previews);
+	}
+
+	private ValidationErrors validateSharedUuid(String uuid) {
+		ValidationErrors errors = new ValidationErrors();
+		if (caseFacade.exists(uuid)) {
+			errors.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasCaseExists));
+		}
+
+		return errors;
+	}
+
+	@Override
+	protected List<String> getUuidsWithPendingOwnershipHandedOver(List<Case> entities) {
+		return shareInfoService.getCaseUuidsWithPendingOwnershipHandOver(entities);
 	}
 
 	@LocalBean
