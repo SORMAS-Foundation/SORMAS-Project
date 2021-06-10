@@ -26,6 +26,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
@@ -33,6 +34,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -40,15 +42,18 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 	public static final String CREATE_PERSON = "createPerson";
-	public static final String SELECT_PERSON = "selectPerson";
+	public static final String SELECT_PERSON = Captions.personSelect;
+	public static final String SEARCH_AND_SELECT_PERSON = Captions.personSearchAndSelect;
 
 	private PersonDto referencePerson;
 	private String infoText;
 	private VerticalLayout mainLayout;
 	private PersonSelectionGrid personGrid;
+	private PersonSimilarityCriteria defaultCriteria;
 	private RadioButtonGroup<String> rbSelectPerson;
 	private RadioButtonGroup<String> rbCreatePerson;
 	private Consumer<Boolean> selectionChangeCallback;
+	private PersonSelectionFilterForm filterForm;
 
 	/**
 	 * Generate a selection field which contains a grid containing all similar persons to the `referencePerson`.
@@ -142,17 +147,27 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 	private void addSelectPersonRadioGroup() {
 		rbSelectPerson = new RadioButtonGroup<>();
-		rbSelectPerson.setItems(SELECT_PERSON);
-		rbSelectPerson.setItemCaptionGenerator((item) -> {
-			return I18nProperties.getCaption(Captions.personSelect);
-		});
+		rbSelectPerson.setItems(SELECT_PERSON, SEARCH_AND_SELECT_PERSON);
+		rbSelectPerson.setItemCaptionGenerator(I18nProperties::getCaption);
 		CssStyles.style(rbSelectPerson, CssStyles.VSPACE_NONE);
+
 		rbSelectPerson.addValueChangeListener(e -> {
-			if (e.getValue() != null) {
+			String value = e.getValue();
+			if (value != null) {
 				rbCreatePerson.setValue(null);
 				personGrid.setEnabled(true);
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(personGrid.getSelectedRow() != null);
+				}
+
+				if (SELECT_PERSON.equals(value)) {
+					filterForm.setVisible(false);
+					personGrid.loadData(defaultCriteria);
+					selectBestMatch();
+				} else {
+					filterForm.setVisible(true);
+					personGrid.loadData(filterForm.getValue());
+					setValue(null);
 				}
 			}
 		});
@@ -160,11 +175,30 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		mainLayout.addComponent(rbSelectPerson);
 	}
 
+	private void addFilterForm() {
+		filterForm = new PersonSelectionFilterForm();
+		filterForm.setVisible(false);
+
+		PersonSimilarityCriteria searchCriteria =
+			new PersonSimilarityCriteria().firstName(referencePerson.getFirstName()).lastName(referencePerson.getLastName());
+		filterForm.setValue(searchCriteria);
+		filterForm.addApplyHandler((e) -> {
+			if (filterForm.validateNameFields()) {
+				personGrid.loadData(filterForm.getValue());
+			}
+		});
+		filterForm.addResetHandler((e) -> {
+			filterForm.setValue(new PersonSimilarityCriteria());
+		});
+
+		mainLayout.addComponent(filterForm);
+	}
+
 	/**
 	 * Load a grid of all persons similar to the given reference person.
 	 */
 	private void initializeGrid() {
-		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName(referencePerson.getFirstName())
+		defaultCriteria = new PersonSimilarityCriteria().firstName(referencePerson.getFirstName())
 			.lastName(referencePerson.getLastName())
 			.sex(referencePerson.getSex())
 			.birthdateDD(referencePerson.getBirthdateDD())
@@ -172,7 +206,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 			.birthdateYYYY(referencePerson.getBirthdateYYYY())
 			.passportNumber(referencePerson.getPassportNumber())
 			.nationalHealthId(referencePerson.getNationalHealthId());
-		personGrid = new PersonSelectionGrid(criteria);
+		personGrid = new PersonSelectionGrid();
 
 		personGrid.addSelectionListener(e -> {
 			if (e.getSelected().size() > 0) {
@@ -188,9 +222,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	private void addCreatePersonRadioGroup() {
 		rbCreatePerson = new RadioButtonGroup<>();
 		rbCreatePerson.setItems(CREATE_PERSON);
-		rbCreatePerson.setItemCaptionGenerator((item) -> {
-			return I18nProperties.getCaption(Captions.personCreateNew);
-		});
+		rbCreatePerson.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.personCreateNew));
 		rbCreatePerson.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
 				rbSelectPerson.setValue(null);
@@ -217,12 +249,11 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		addInfoComponent();
 		addPersonDetailsComponent();
 		addSelectPersonRadioGroup();
+		addFilterForm();
 		mainLayout.addComponent(personGrid);
 		addCreatePersonRadioGroup();
 
 		rbSelectPerson.setValue(SELECT_PERSON);
-
-		//		setInternalValue(super.getInternalValue());
 
 		return mainLayout;
 	}
@@ -247,15 +278,15 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 	@Override
 	protected void doSetValue(SimilarPersonDto newValue) {
-		rbSelectPerson.setValue(SELECT_PERSON);
-
-		if (newValue != null) {
-			personGrid.select(newValue);
+		if (rbSelectPerson.getValue() == null) {
+			rbSelectPerson.setValue(SELECT_PERSON);
 		}
+
+		personGrid.select(newValue);
 	}
 
 	public boolean hasMatches() {
-		return personGrid.getContainerDataSource().size() > 0;
+		return FacadeProvider.getPersonFacade().checkMatchingNameInDatabase(UserProvider.getCurrent().getUserReference(), defaultCriteria);
 	}
 
 	/**

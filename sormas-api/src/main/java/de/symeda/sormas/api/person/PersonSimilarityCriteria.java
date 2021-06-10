@@ -6,6 +6,9 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 @SuppressWarnings("serial")
 public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable {
 
+	public static String FIRST_NAME = "firstName";
+	public static String LAST_NAME = "lastName";
+
 	private String firstName;
 	private String lastName;
 	private Sex sex;
@@ -20,6 +23,10 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 		return firstName;
 	}
 
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
 	public PersonSimilarityCriteria firstName(String firstName) {
 		this.firstName = firstName;
 		return this;
@@ -28,6 +35,10 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	@IgnoreForUrl
 	public String getLastName() {
 		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public PersonSimilarityCriteria lastName(String lastName) {
