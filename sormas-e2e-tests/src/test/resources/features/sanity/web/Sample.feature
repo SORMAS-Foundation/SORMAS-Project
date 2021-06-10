@@ -24,3 +24,13 @@ Feature: Sample Functionalities
     When I open last created case
     When I click on edit Sample
     Then I check the created Sample is correctly displayed on Edit Sample page
+
+  Scenario: Delete created sample
+    Given I log in with the user
+    Given API: I create a new event
+    Given API: I create a new sample
+    When I click on the Sample button from navbar
+    Then I open the last created sample via API
+    Then I delete the sample
+    Then I search after recently deleted sample
+    And I check that number of displayed sample results is 0
