@@ -7433,4 +7433,10 @@ ALTER TABLE cases ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
 ALTER TABLE cases_history ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (377, 'Add a checkbox to avoid sending this case to SurvNet #5324');
+
+-- 2021-06-11 Add disease variant to event #5525
+ALTER TABLE events ADD COLUMN diseasevariant text;
+ALTER TABLE events_history ADD COLUMN diseasevariant text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (378, 'Add disease variant to event #5525');
 -- *** Insert new sql commands BEFORE this line ***
