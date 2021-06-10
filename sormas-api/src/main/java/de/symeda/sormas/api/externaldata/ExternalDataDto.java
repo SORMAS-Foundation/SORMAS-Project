@@ -2,7 +2,7 @@ package de.symeda.sormas.api.externaldata;
 
 import java.io.Serializable;
 
-public class ExternalDataDto implements Serializable {
+public class ExternalDataDto implements Serializable, HasExternalData {
 
     private String uuid;
     private String externalId;

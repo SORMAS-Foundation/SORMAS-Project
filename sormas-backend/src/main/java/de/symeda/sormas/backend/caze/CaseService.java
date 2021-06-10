@@ -52,6 +52,7 @@ import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.backend.util.ExternalDataUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1301,28 +1302,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	@Transactional(rollbackOn = Exception.class)
 	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
-		if (externalData.isEmpty()) {
-			return;
-		}
-
-		List<String> uuids = externalData.stream().map(ExternalDataDto::getUuid).collect(Collectors.toList());
-		Map<String, ExternalDataDto> externalDataDtoMap = externalData.stream().collect(Collectors.toMap(ExternalDataDto::getUuid, Function.identity()));
-
-		List<Case> casesToUpdate = getByUuids(uuids);
-		for (Case caze : casesToUpdate) {
-			ExternalDataDto externalDataUpdate = externalDataDtoMap.get(caze.getUuid());
-			if ((caze.getExternalID() != null && externalDataUpdate.getExternalId() != null) ||
-					(caze.getExternalToken() != null && externalDataUpdate.getExternalToken() != null)) {
-				throw new ExternalDataUpdateException("Cannot update externalId or externalToken on entities with the fields already set");
-			}
-
-			if (externalDataUpdate.getExternalId() != null) {
-				caze.setExternalID(externalDataUpdate.getExternalId());
-			}
-			if (externalDataUpdate.getExternalToken() != null) {
-				caze.setExternalToken(externalDataUpdate.getExternalToken());
-			}
-			ensurePersisted(caze);
-		}
+		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
 	}
 }

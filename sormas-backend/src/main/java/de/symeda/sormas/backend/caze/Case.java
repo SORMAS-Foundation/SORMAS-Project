@@ -66,6 +66,7 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -97,7 +98,7 @@ import de.symeda.sormas.backend.visit.Visit;
 
 @Entity(name = "cases")
 @Audited
-public class Case extends CoreAdo implements SormasToSormasEntity {
+public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalData {
 
 	private static final long serialVersionUID = -2697795184663562129L;
 
@@ -1231,6 +1232,23 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	/**
+	 * Extra getter for externalID needed to comply with the HasExternalData interface
+	 *
+	 * @return the externalID
+	 */
+	public String getExternalId() {
+		return externalID;
+	}
+
+	/**
+	 * Extra setter for externalID needed to comply with the HasExternalData interface
+	 * @param externalId the value to be set for externalID
+	 */
+	public void setExternalId(String externalId) {
+		this.externalID = externalId;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)

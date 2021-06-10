@@ -43,6 +43,7 @@ import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.backend.util.ExternalDataUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -857,29 +858,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	@Transactional(rollbackOn = Exception.class)
 	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
-		if (externalData.isEmpty()) {
-			return;
-		}
-
-		List<String> uuids = externalData.stream().map(ExternalDataDto::getUuid).collect(Collectors.toList());
-		Map<String, ExternalDataDto> externalDataDtoMap = externalData.stream().collect(Collectors.toMap(ExternalDataDto::getUuid, Function.identity()));
-
-		List<Event> eventsToUpdate = getByUuids(uuids);
-		for (Event event : eventsToUpdate) {
-			ExternalDataDto externalDataUpdate = externalDataDtoMap.get(event.getUuid());
-			if ((event.getExternalId() != null && externalDataUpdate.getExternalId() != null) ||
-					(event.getExternalToken() != null && externalDataUpdate.getExternalToken() != null)) {
-				throw new ExternalDataUpdateException("Cannot update externalId or externalToken on entities with the fields already set");
-			}
-
-			if (externalDataUpdate.getExternalId() != null) {
-				event.setExternalId(externalDataUpdate.getExternalId());
-			}
-			if (externalDataUpdate.getExternalToken() != null) {
-				event.setExternalToken(externalDataUpdate.getExternalToken());
-			}
-			ensurePersisted(event);
-		}
-
+		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
 	}
 }

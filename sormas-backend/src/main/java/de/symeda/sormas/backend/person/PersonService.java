@@ -54,6 +54,7 @@ import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
@@ -616,31 +617,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 	@Transactional(rollbackOn = Exception.class)
 	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
-		if (externalData.isEmpty()) {
-			return;
-		}
-
-		List<String> uuids = externalData.stream().map(ExternalDataDto::getUuid).collect(Collectors.toList());
-		Map<String, ExternalDataDto> externalDataDtoMap = externalData.stream().collect(Collectors.toMap(ExternalDataDto::getUuid, Function.identity()));
-
-		List<Person> personsToUpdate = getByUuids(uuids);
-		personsToUpdate.sort(Comparator.comparing(AbstractDomainObject::getCreationDate));
-		for (Person person : personsToUpdate) {
-			ExternalDataDto externalDataUpdate = externalDataDtoMap.get(person.getUuid());
-			if ((person.getExternalId() != null && externalDataUpdate.getExternalId() != null) ||
-					(person.getExternalToken() != null && externalDataUpdate.getExternalToken() != null)) {
-				throw new ExternalDataUpdateException("Cannot update externalId or externalToken on entities with the fields already set");
-			}
-
-			if (externalDataUpdate.getExternalId() != null) {
-				person.setExternalId(externalDataUpdate.getExternalId());
-			}
-			if (externalDataUpdate.getExternalToken() != null) {
-				person.setExternalToken(externalDataUpdate.getExternalToken());
-			}
-			ensurePersisted(person);
-		}
-
+		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
 	}
 
 	public List<Person> getByExternalIdsBatched(List<String> externalIds) {
