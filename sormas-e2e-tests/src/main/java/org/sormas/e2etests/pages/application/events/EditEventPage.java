@@ -26,7 +26,7 @@ public class EditEventPage {
   public static final By UUID_INPUT = By.id("uuid");
   public static final By TITLE_INPUT = By.cssSelector("#eventTitle");
   public static final By SAVE_BUTTON = By.id("commit");
-  public static final By SAVE_BUTTON_POPUP = By.cssSelector(".popupContent #commit");
+  public static final By SAVE_BUTTON_FOR_POPUP_WINDOWS = By.cssSelector(".popupContent #commit");
   public static final By EVENT_STATUS_OPTIONS =
       By.cssSelector("#eventStatus .v-select-option label");
   public static final By SELECTED_EVENT_STATUS = By.cssSelector("#eventStatus input:checked");
@@ -52,13 +52,12 @@ public class EditEventPage {
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(" #typeOfPlace div");
   public static final By NEW_TASK_BUTTON = By.id("taskNewTask");
   public static final By EDIT_FIRST_TASK = By.cssSelector("#edit-task-0");
-  public static final By LINK_EVENT_GROUP = By.cssSelector("div#Link\\ event\\ group");
+  public static final By LINK_EVENT_GROUP_BUTTON = By.cssSelector("div#Link\\ event\\ group");
   public static final By NEW_EVENT_GROUP_RADIOBUTTON =
       By.xpath("//*[contains(text(),'New event group')]/..");
   public static final By GROUP_EVENT_NAME_POPUP_INPUT = By.cssSelector(".popupContent #name");
   public static final By GROUP_EVENT_UUID =
       By.xpath("//*[contains(text(),'Group id')]/../following-sibling::input[1]");
-  public static final By GROUP_EVENT_UUID2 = By.cssSelector(".popupContent #uuid");
   public static final By NEW_GROUP_EVENT_CREATED_MESSAGE =
       By.xpath("//*[contains(text(),'New event group created')]");
 

@@ -142,8 +142,8 @@ public class EditEventSteps implements En {
     When(
         "^I click on link event group$",
         () -> {
-          webDriverHelpers.scrollToElement(LINK_EVENT_GROUP);
-          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_GROUP);
+          webDriverHelpers.scrollToElement(LINK_EVENT_GROUP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_GROUP_BUTTON);
         });
 
     When(
@@ -151,13 +151,13 @@ public class EditEventSteps implements En {
         () -> {
           groupEvent = eventGroupService.buildGroupEvent();
           webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_GROUP_RADIOBUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
           groupEvent =
               groupEvent.toBuilder()
                   .uuid(webDriverHelpers.getValueFromWebElement(GROUP_EVENT_UUID))
                   .build();
           fillGroupEventName(groupEvent.getName());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_GROUP_EVENT_CREATED_MESSAGE);
         });
 
