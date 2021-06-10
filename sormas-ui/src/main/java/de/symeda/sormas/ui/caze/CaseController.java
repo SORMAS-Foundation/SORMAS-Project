@@ -48,6 +48,7 @@ import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -1319,6 +1320,24 @@ public class CaseController {
 				classificationRulesLayout.addComponent(confirmedContent);
 			}
 
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+				if (diseaseCriteria.getConfirmedNoSymptomsCriteria() != null) {
+					Label confirmedNoSymptomsContent = new Label();
+					confirmedNoSymptomsContent.setContentMode(ContentMode.HTML);
+					confirmedNoSymptomsContent.setWidth(100, Unit.PERCENTAGE);
+					confirmedNoSymptomsContent.setValue(ClassificationHtmlRenderer.createConfirmedNoSymptomsHtmlString(diseaseCriteria));
+					classificationRulesLayout.addComponent(confirmedNoSymptomsContent);
+				}
+
+				if (diseaseCriteria.getConfirmedUnknownSymptomsCriteria() != null) {
+					Label confirmedUnknownSymptomsContent = new Label();
+					confirmedUnknownSymptomsContent.setContentMode(ContentMode.HTML);
+					confirmedUnknownSymptomsContent.setWidth(100, Unit.PERCENTAGE);
+					confirmedUnknownSymptomsContent.setValue(ClassificationHtmlRenderer.createConfirmedUnknownSymptomsHtmlString(diseaseCriteria));
+					classificationRulesLayout.addComponent(confirmedUnknownSymptomsContent);
+				}
+			}
+
 			if (diseaseCriteria.getNotACaseCriteria() != null) {
 				Label notACaseContent = new Label();
 				notACaseContent.setContentMode(ContentMode.HTML);
@@ -1603,12 +1622,12 @@ public class CaseController {
 		}
 
 		// Show an error when at least one selected case is not owned by this server because ownership has been handed over
-		String ownershipHandedOverUuid = FacadeProvider.getCaseFacade().getFirstCaseUuidWithOwnershipHandedOver(selectedUuids);
-		if (ownershipHandedOverUuid != null) {
+		String notSharableUuid = FacadeProvider.getCaseFacade().getFirstUuidNotShareableWithExternalReportingTools(selectedUuids);
+		if (notSharableUuid != null) {
 			Notification.show(
 				String.format(
-					I18nProperties.getString(Strings.errorExternalSurveillanceToolCaseNotOwned),
-					DataHelper.getShortUuid(ownershipHandedOverUuid)),
+					I18nProperties.getString(Strings.errorExternalSurveillanceToolCaseNotSharable),
+					DataHelper.getShortUuid(notSharableUuid)),
 				"",
 				Type.ERROR_MESSAGE);
 			return;

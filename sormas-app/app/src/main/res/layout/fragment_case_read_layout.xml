@@ -200,6 +200,11 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_internalToken"
+                    app:value="@{data.internalToken}"
+                    style="@style/ControlSingleColumnStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_caseIdIsm"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@{data.caseIdIsm}" />

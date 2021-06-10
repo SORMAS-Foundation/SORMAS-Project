@@ -69,7 +69,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,String caseRegionUuid, String caseRegionName, String caseDistrictUuid,
 								   String caseDistrictName, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 								   Date changeDate, // XXX: unused, only here for TypedQuery mapping
-								   String externalID, String externalToken,
+								   String externalID, String externalToken, String internalToken,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								   String reportingUserFirstName, String reportingUserLastName, ContactRelation relationToCase, int visitCount
@@ -81,7 +81,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 			regionUuid, regionName, districtUuid, districtName, communityUuid,
 			lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, completeness, followUpStatus, followUpUntil,
 			symptomJournalStatus, vaccination, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
-			caseReportingUserUid, caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid, caseRegionUuid, caseRegionName, caseDistrictUuid, caseDistrictName, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, changeDate, externalID, externalToken, visitCount);
+			caseReportingUserUid, caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid, caseRegionUuid, caseRegionName, caseDistrictUuid, caseDistrictName, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, changeDate, externalID, externalToken, internalToken, visitCount);
 
 		//@formatter:on
 

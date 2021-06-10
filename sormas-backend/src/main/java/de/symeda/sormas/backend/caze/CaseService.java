@@ -428,6 +428,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			cb.equal(cb.lower(root.get(Case.UUID)), searchTerm.toLowerCase()),
 			cb.equal(cb.lower(root.get(Case.EPID_NUMBER)), searchTerm.toLowerCase()),
 			cb.equal(cb.lower(root.get(Case.EXTERNAL_TOKEN)), searchTerm.toLowerCase()),
+			cb.equal(cb.lower(root.get(Case.INTERNAL_TOKEN)), searchTerm.toLowerCase()),
 			cb.equal(cb.lower(root.get(Case.EXTERNAL_ID)), searchTerm.toLowerCase()));
 
 		cq.where(filter);
@@ -800,6 +801,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithReinfection())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.RE_INFECTION), YesNoUnknown.YES));
+		}
+		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithDontShareWithExternalSurvTool())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(from.get(Case.DONT_SHARE_WITH_REPORTING_TOOL)));
 		}
 
 		filter = CriteriaBuilderHelper.and(

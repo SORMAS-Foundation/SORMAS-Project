@@ -23,6 +23,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -51,7 +52,7 @@ public class ClassificationExposureCriteriaDto extends ClassificationCaseCriteri
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events) {
 
 		for (ExposureDto exposure : caze.getEpiData().getExposures()) {
 			if (exposureType != null && exposure.getExposureType() != exposureType) {

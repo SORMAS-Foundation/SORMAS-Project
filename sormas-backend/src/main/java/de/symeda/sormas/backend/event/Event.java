@@ -84,6 +84,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
@@ -204,7 +205,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 	private List<Task> tasks;
 	private List<EventGroup> eventGroups;
 
-	private String internalId;
+	private String internalToken;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -738,12 +739,12 @@ public class Event extends CoreAdo implements SormasToSormasEntity {
 	}
 
 	@Column(columnDefinition = "text")
-	public String getInternalId() {
-		return internalId;
+	public String getInternalToken() {
+		return internalToken;
 	}
 
-	public void setInternalId(String internalId) {
-		this.internalId = internalId;
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	@AuditedIgnore

@@ -170,6 +170,7 @@ public interface Captions {
 	String bulkCancelFollowUp = "bulkCancelFollowUp";
 	String bulkCaseClassification = "bulkCaseClassification";
 	String bulkCaseOutcome = "bulkCaseOutcome";
+	String bulkCaseShareWithReportingTool = "bulkCaseShareWithReportingTool";
 	String bulkContactClassification = "bulkContactClassification";
 	String bulkContactOfficer = "bulkContactOfficer";
 	String bulkDelete = "bulkDelete";
@@ -230,6 +231,7 @@ public interface Captions {
 	String caseBackToDirectory = "caseBackToDirectory";
 	String caseCalculateCompleteness = "caseCalculateCompleteness";
 	String caseCasesList = "caseCasesList";
+	String caseClassificationCalculationButton = "caseClassificationCalculationButton";
 	String caseCloneCaseWithNewDisease = "caseCloneCaseWithNewDisease";
 	String caseConfirmCase = "caseConfirmCase";
 	String caseContacts = "caseContacts";
@@ -264,6 +266,7 @@ public interface Captions {
 	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
+	String CaseData_dontShareWithReportingTool = "CaseData.dontShareWithReportingTool";
 	String CaseData_doses = "CaseData.doses";
 	String CaseData_endOfIsolationReason = "CaseData.endOfIsolationReason";
 	String CaseData_endOfIsolationReasonDetails = "CaseData.endOfIsolationReasonDetails";
@@ -287,6 +290,7 @@ public interface Captions {
 	String CaseData_healthFacilityName = "CaseData.healthFacilityName";
 	String CaseData_hospitalization = "CaseData.hospitalization";
 	String CaseData_infectionSetting = "CaseData.infectionSetting";
+	String CaseData_internalToken = "CaseData.internalToken";
 	String CaseData_investigatedDate = "CaseData.investigatedDate";
 	String CaseData_investigationStatus = "CaseData.investigationStatus";
 	String CaseData_laboratoryDiagnosticConfirmation = "CaseData.laboratoryDiagnosticConfirmation";
@@ -444,6 +448,7 @@ public interface Captions {
 	String caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool = "caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesNotSharedWithExternalSurvTool = "caseFilterOnlyCasesNotSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesSharedWithExternalSurvToo = "caseFilterOnlyCasesSharedWithExternalSurvToo";
+	String caseFilterOnlyCasesWithDontShareWithExternalSurvTool = "caseFilterOnlyCasesWithDontShareWithExternalSurvTool";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
@@ -577,6 +582,7 @@ public interface Captions {
 	String Contact_highPriority = "Contact.highPriority";
 	String Contact_immunosuppressiveTherapyBasicDisease = "Contact.immunosuppressiveTherapyBasicDisease";
 	String Contact_immunosuppressiveTherapyBasicDiseaseDetails = "Contact.immunosuppressiveTherapyBasicDiseaseDetails";
+	String Contact_internalToken = "Contact.internalToken";
 	String Contact_lastContactDate = "Contact.lastContactDate";
 	String Contact_lastName = "Contact.lastName";
 	String Contact_latestEventId = "Contact.latestEventId";
@@ -968,7 +974,7 @@ public interface Captions {
 	String Event_humanTransmissionMode = "Event.humanTransmissionMode";
 	String Event_infectionPathCertainty = "Event.infectionPathCertainty";
 	String Event_informationSource = "Event.informationSource";
-	String Event_internalId = "Event.internalId";
+	String Event_internalToken = "Event.internalToken";
 	String Event_laboratoryDiagnosticEvidence = "Event.laboratoryDiagnosticEvidence";
 	String Event_latestEventGroup = "Event.latestEventGroup";
 	String Event_meansOfTransport = "Event.meansOfTransport";
@@ -1475,6 +1481,7 @@ public interface Captions {
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
 	String Person_hasCovidApp = "Person.hasCovidApp";
 	String Person_healthcare_occupationDetails = "Person.healthcare.occupationDetails";
+	String Person_internalToken = "Person.internalToken";
 	String Person_lastDisease = "Person.lastDisease";
 	String Person_matchingCase = "Person.matchingCase";
 	String Person_mothersMaidenName = "Person.mothersMaidenName";

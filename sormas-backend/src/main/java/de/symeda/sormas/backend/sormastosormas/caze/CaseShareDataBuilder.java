@@ -185,6 +185,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		cazeDto.setSurveillanceOfficer(null);
 		cazeDto.setCaseOfficer(null);
 		cazeDto.setSormasToSormasOriginInfo(null);
+		cazeDto.setDontShareWithReportingTool(false);
 
 		return cazeDto;
 	}

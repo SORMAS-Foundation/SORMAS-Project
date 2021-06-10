@@ -75,7 +75,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	private UserReferenceDto reportingUser;
 
 	//@formatter:off
-	public CaseIndexDetailedDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String personFirstName, String personLastName,
+	public CaseIndexDetailedDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken, String personFirstName, String personLastName,
 								Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 								PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate,
 								String regionUuid, String districtUuid, String districtName, String communityUuid,
@@ -90,7 +90,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								String responsibleRegion, String responsibleDistrict, String responsibleCommunity,
 								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
 
-		super(id, uuid, epidNumber, externalID, externalToken, personFirstName, personLastName, disease, diseaseVariant, diseaseDetails, caseClassification, investigationStatus,
+		super(id, uuid, epidNumber, externalID, externalToken, internalToken, personFirstName, personLastName, disease, diseaseVariant, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid, districtUuid, districtName, communityUuid,
 				healthFacilityUuid, healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,
