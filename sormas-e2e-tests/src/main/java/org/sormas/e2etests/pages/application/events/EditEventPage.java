@@ -23,6 +23,7 @@ import org.openqa.selenium.By;
 public class EditEventPage {
   public static final By EVENT_PARTICIPANTS_TAB =
       By.cssSelector("#tab-events-eventparticipants span");
+  public static final By EVENT_ACTIONS_TAB = By.cssSelector("#tab-events-eventactions span");
   public static final By UUID_INPUT = By.id("uuid");
   public static final By TITLE_INPUT = By.cssSelector("#eventTitle");
   public static final By SAVE_BUTTON = By.id("commit");
@@ -49,6 +50,7 @@ public class EditEventPage {
   public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
   public static final By SOURCE_TYPE_COMBOBOX = By.cssSelector("#srcType div");
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(" #typeOfPlace div");
+  public static final By NEW_ACTION_BUTTON = By.id("actionNewAction");
   public static final By NEW_TASK_BUTTON = By.id("taskNewTask");
   public static final By EDIT_FIRST_TASK = By.cssSelector("#edit-task-0");
 }

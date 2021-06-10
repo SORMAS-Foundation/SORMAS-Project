@@ -27,7 +27,6 @@ import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
-import org.sormas.e2etests.services.api.EventApiService;
 import org.sormas.e2etests.state.ApiState;
 
 public class EventDirectorySteps implements En {

@@ -86,7 +86,6 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
         });
 
-
     When(
         "^I search last created task by API using Contact UUID and wait for (\\d+) results to be displayed$",
         (Integer displayedResults) -> {
