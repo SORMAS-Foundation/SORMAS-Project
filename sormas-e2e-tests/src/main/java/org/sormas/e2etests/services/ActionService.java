@@ -16,25 +16,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pojo;
+package org.sormas.e2etests.services;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.github.javafaker.Faker;
+import com.google.inject.Inject;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import org.sormas.e2etests.pojo.web.Action;
 
-@Builder(toBuilder = true, builderClassName = "builder")
-@Value
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@NonNull
-public class Sample {
-  String uuid;
-  LocalDate dateOfCollection;
-  LocalTime timeOfCollection;
-  String sampleType;
-  String reasonForSample;
-  long sampleID;
-  String commentsOnSample;
+public class ActionService {
+  private final Faker faker;
+
+  @Inject
+  public ActionService(Faker faker) {
+    this.faker = faker;
+  }
+
+  public Action buildGeneratedAction() {
+    String timestamp = String.valueOf(System.currentTimeMillis());
+    return Action.builder()
+        .date(LocalDate.now())
+        .priority("Normal")
+        .measure("Closure of facility")
+        .title("Dummy Action " + timestamp)
+        .description("Dummy Action " + timestamp)
+        .actionStatus("PENDING")
+        .build();
+  }
 }

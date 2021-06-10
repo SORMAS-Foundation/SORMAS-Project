@@ -19,6 +19,7 @@ package org.sormas.e2etests.state;
 
 import cucumber.runtime.java.guice.ScenarioScoped;
 import io.restassured.response.Response;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.sormas.e2etests.pojo.api.*;
@@ -30,7 +31,9 @@ public class ApiState {
   Response response;
   Person editPerson;
   Case createdCase;
+  List<Sample> createdSamples;
   Contact createdContact;
+  Event createdEvent;
   Task createdTask;
   Sample createdSample;
 }

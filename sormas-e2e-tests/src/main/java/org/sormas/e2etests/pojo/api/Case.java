@@ -54,4 +54,5 @@ public class Case {
   Region region;
   HealthFacility healthFacility;
   MaternalHistory maternalHistory;
+  String facilityType;
 }

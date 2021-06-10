@@ -44,17 +44,14 @@ public class CreateNewTaskSteps implements En {
         "^I create a new task with specific data$",
         () -> {
           task = taskService.buildGeneratedTask();
-          selectTaskType(task.getTaskType());
-          fillSuggestedStartDate(task.getSuggestedStartDate());
-          fillSuggestedStartTime(task.getSuggestedStartTime());
-          fillDueDateDate(task.getDueDateDate());
-          fillDueDateTime(task.getDueDateTime());
-          selectAssignedTo(task.getAssignedTo());
-          selectPriority(task.getPriority());
-          fillCommentsOnTask(task.getCommentsOnTask());
-          fillCommentsOnExecution(task.getCommentsOnExecution());
-          selectTaskStatus(task.getTaskStatus());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+            fillAllFields(task);
+        });
+
+    When(
+        "^I create a new task with specific data for an event$",
+        () -> {
+          task = taskService.buildGeneratedTaskForEvent();
+            fillAllFields(task);
         });
 
     When(
@@ -68,21 +65,25 @@ public class CreateNewTaskSteps implements En {
         "^I change all fields and save$",
         () -> {
           task = taskService.buildEditTask();
-          selectTaskType(task.getTaskType());
-          fillSuggestedStartDate(task.getSuggestedStartDate());
-          fillSuggestedStartTime(task.getSuggestedStartTime());
-          fillDueDateDate(task.getDueDateDate());
-          fillDueDateTime(task.getDueDateTime());
-          selectAssignedTo(task.getAssignedTo());
-          selectPriority(task.getPriority());
-          fillCommentsOnTask(task.getCommentsOnTask());
-          fillCommentsOnExecution(task.getCommentsOnExecution());
-          selectTaskStatus(task.getTaskStatus());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+            fillAllFields(task);
         });
   }
 
-  public void selectTaskType(String taskType) {
+    private void fillAllFields(Task task) {
+        selectTaskType(task.getTaskType());
+        fillSuggestedStartDate(task.getSuggestedStartDate());
+        fillSuggestedStartTime(task.getSuggestedStartTime());
+        fillDueDateDate(task.getDueDateDate());
+        fillDueDateTime(task.getDueDateTime());
+        selectAssignedTo(task.getAssignedTo());
+        selectPriority(task.getPriority());
+        fillCommentsOnTask(task.getCommentsOnTask());
+        fillCommentsOnExecution(task.getCommentsOnExecution());
+        selectTaskStatus(task.getTaskStatus());
+        webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+    }
+
+    public void selectTaskType(String taskType) {
     webDriverHelpers.selectFromCombobox(TASK_TYPE_COMBOBOX, taskType);
   }
 
@@ -127,7 +128,7 @@ public class CreateNewTaskSteps implements En {
 
   public Task collectTaskData() {
     return Task.builder()
-        .taskContext("GENERAL")
+        .taskContext(getTaskContext())
         .taskType(webDriverHelpers.getValueFromWebElement(TASK_TYPE_INPUT))
         .suggestedStartDate(getSuggestedStartDate())
         .suggestedStartTime(getSuggestedStartTime())
@@ -182,5 +183,9 @@ public class CreateNewTaskSteps implements En {
 
   public String getStatus() {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TASK_STATUS_OPTIONS);
+  }
+
+  public String getTaskContext() {
+    return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SELECTED_TASK_CONTEXT);
   }
 }

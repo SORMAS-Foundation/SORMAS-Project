@@ -116,6 +116,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				EventIndexDto.UUID,
 				EventIndexDto.EXTERNAL_ID,
 				EventIndexDto.EXTERNAL_TOKEN,
+				EventIndexDto.INTERNAL_TOKEN,
 				EventIndexDto.EVENT_STATUS,
 				EventIndexDto.RISK_LEVEL,
 				EventIndexDto.EVENT_INVESTIGATION_STATUS,

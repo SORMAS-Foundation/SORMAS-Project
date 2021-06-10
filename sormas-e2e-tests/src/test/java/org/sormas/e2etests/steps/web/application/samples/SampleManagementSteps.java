@@ -20,9 +20,15 @@ package org.sormas.e2etests.steps.web.application.samples;
 
 import static org.sormas.e2etests.pages.application.samples.SampleManagementPage.*;
 
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.util.Arrays;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.sormas.e2etests.enums.LabCaption;
+import org.sormas.e2etests.enums.PathogenTestResults;
+import org.sormas.e2etests.enums.SpecimenConditions;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
@@ -33,7 +39,8 @@ public class SampleManagementSteps implements En {
   public SampleManagementSteps(
       WebDriverHelpers webDriverHelpers,
       @Named("ENVIRONMENT_URL") String environmentUrl,
-      ApiState apiState) {
+      ApiState apiState,
+      AssertHelpers assertHelpers) {
 
     When(
         "^I search last created Sample by Case ID$",
@@ -64,5 +71,96 @@ public class SampleManagementSteps implements En {
               environmentUrl + "/sormas-ui/#!samples/data/" + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(CREATED_SAMPLE_VIA_API_URL);
         });
+
+    When(
+        "^I search for samples created with the API",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
+          int maximumNumberOfRows = 23;
+          webDriverHelpers.waitUntilNumberOfElementsIsExactlyOrLess(
+              SEARCH_RESULT_SAMPLE, maximumNumberOfRows);
+          Thread.sleep(1000); // reset filter acts chaotic, to be modified in the future
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SAMPLE_SEARCH_INPUT, apiState.getEditPerson().getFirstName());
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
+          webDriverHelpers.waitUntilNumberOfElementsIsExactlyOrLess(
+              SEARCH_RESULT_SAMPLE, apiState.getCreatedSamples().size());
+          Truth.assertThat(apiState.getCreatedSamples().size())
+              .isEqualTo(webDriverHelpers.getNumberOfElements(LIST_OF_SAMPLES));
+        });
+
+    Then(
+        "^I check the displayed test results filter dropdown",
+        () ->
+            Arrays.stream(PathogenTestResults.values())
+                .forEach(
+                    vPathogen -> {
+                      webDriverHelpers.selectFromCombobox(
+                          TEST_RESULTS_SEARCH_COMBOBOX, vPathogen.getPathogenResults());
+                      webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
+                      webDriverHelpers.waitUntilAListOfElementsHasText(
+                          FINAL_LABORATORY_RESULT, vPathogen.getPathogenResults());
+
+                      Truth.assertThat(
+                              apiState.getCreatedSamples().stream()
+                                  .filter(
+                                      sample ->
+                                          sample
+                                              .getPathogenTestResult()
+                                              .contentEquals(vPathogen.toString()))
+                                  .count())
+                          .isEqualTo(webDriverHelpers.getNumberOfElements(LIST_OF_SAMPLES));
+                    }));
+
+    Then(
+        "^I check the displayed specimen condition filter dropdown",
+        () ->
+            Arrays.stream(SpecimenConditions.values())
+                .forEach(
+                    aSpecimen -> {
+                      webDriverHelpers.selectFromCombobox(
+                          SPECIMEN_CONDITION_SEARCH_COMBOBOX, aSpecimen.getCondition());
+                      webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
+                      webDriverHelpers.waitUntilAListOfElementsHasText(
+                          FINAL_LABORATORY_RESULT, aSpecimen.getCondition());
+                      assertHelpers.assertWithPoll15Second(
+                          () ->
+                              Truth.assertThat(
+                                      apiState.getCreatedSamples().stream()
+                                          .filter(
+                                              sample ->
+                                                  sample
+                                                      .getSpecimenCondition()
+                                                      .contentEquals(aSpecimen.toString()))
+                                          .count())
+                                  .isEqualTo(
+                                      webDriverHelpers.getNumberOfElements(LIST_OF_SAMPLES)));
+                    }));
+
+    Then(
+        "^I check the displayed Laboratory filter dropdown",
+        () ->
+            Arrays.stream(LabCaption.values())
+                .forEach(
+                    caption -> {
+                      webDriverHelpers.selectFromCombobox(
+                          LABORATORY_SEARCH_COMBOBOX, caption.getCaptionEnglish());
+                      webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
+                      webDriverHelpers.waitUntilAListOfElementsHasText(
+                          FINAL_LABORATORY_RESULT, caption.getCaptionEnglish());
+                      assertHelpers.assertWithPoll15Second(
+                          () ->
+                              Truth.assertThat(
+                                      apiState.getCreatedSamples().stream()
+                                          .filter(
+                                              sample ->
+                                                  sample
+                                                      .getLab()
+                                                      .getUuid()
+                                                      .contentEquals(caption.getUuidValue()))
+                                          .count())
+                                  .isEqualTo(
+                                      webDriverHelpers.getNumberOfElements(LIST_OF_SAMPLES)));
+                    }));
   }
 }
