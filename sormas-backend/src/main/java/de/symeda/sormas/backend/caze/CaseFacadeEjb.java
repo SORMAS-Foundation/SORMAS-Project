@@ -74,6 +74,8 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
@@ -290,7 +292,6 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.utils.CaseJoins;
-import net.minidev.json.JSONObject;
 
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
@@ -587,10 +588,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		return cases;
 	}
 
-	public CaseDataDto postUpdate(String uuid, JSONObject caseDataDtoJson) {
+	public CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson) {
 		CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
-		CaseDataDto patchedObject = PatchHelper.<CaseDataDto> postUpdate(caseDataDtoJson, CaseDataDto.class, existingCaseDto);
-		return saveCase(patchedObject);
+		PatchHelper.postUpdate(caseDataDtoJson, existingCaseDto);
+		return saveCase(existingCaseDto);
 
 	}
 

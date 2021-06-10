@@ -31,6 +31,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -41,7 +43,6 @@ import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import net.minidev.json.JSONObject;
 
 @Path("/cases")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
@@ -136,14 +137,14 @@ public class CaseResource extends EntityDtoResource {
 	 * which fields are not provided and which are intended to be reset it, the payload needs to be a Json object and not a dto
 	 * 
 	 * @param uuid
-	 * @param CaseDataDtoJson
+	 * @param caseDataDtoJson
 	 *            - a subset of caseDataDto fields, same structure as caseDataDto
 	 * @return - the updated caseDataDto
 	 * @throws Exception
 	 */
 	@POST
 	@Path("/postUpdate/{uuid}")
-	public CaseDataDto postUpdate(@PathParam("uuid") String uuid, JSONObject caseDataDtoJson) throws Exception {
+	public CaseDataDto postUpdate(@PathParam("uuid") String uuid, JsonNode caseDataDtoJson) throws Exception {
 		return FacadeProvider.getCaseFacade().postUpdate(uuid, caseDataDtoJson);
 	}
 

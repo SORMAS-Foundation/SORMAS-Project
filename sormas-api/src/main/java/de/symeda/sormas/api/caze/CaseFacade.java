@@ -26,6 +26,8 @@ import java.util.Random;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -43,7 +45,6 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import net.minidev.json.JSONObject;
 
 @Remote
 public interface CaseFacade {
@@ -65,7 +66,7 @@ public interface CaseFacade {
 
 	List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer offset, Integer max, List<SortProperty> sortProperties);
 
-	CaseDataDto postUpdate(String uuid, JSONObject caseDataDtoJson);
+	CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson);
 
 	List<CaseExportDto> getExportList(
 		CaseCriteria caseCriteria,
