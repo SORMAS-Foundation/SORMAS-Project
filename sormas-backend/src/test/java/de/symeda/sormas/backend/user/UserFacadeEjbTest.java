@@ -10,7 +10,6 @@ import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.DISTRICT_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.EVENT_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.HOSPITAL_INFORMANT;
-import static de.symeda.sormas.api.user.UserRole.LAB_USER;
 import static de.symeda.sormas.api.user.UserRole.NATIONAL_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_INFORMANT;
@@ -19,12 +18,12 @@ import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -37,7 +36,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -47,9 +45,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import de.symeda.sormas.api.AuthProvider;
-import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -57,7 +53,6 @@ import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
@@ -115,11 +110,12 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetUserByRoleAndJurisdiction() {
+	public void testGetReferencesByRoleAndJurisdiction() {
+
 		UserReferenceDto userAdmin = getUserFacade().getAllUserRefs(false).get(0);
 
-		RDCF rdcf1 = creator.createRDCF("Region1", "District1_1", "Community1_1", "Facility1", "PointOfEntry1");
-		RDCF rdcf2 = creator.createRDCF("Region2", "District2", "Community2", "Facility2", "PointOfEntry2");
+		RDCF rdcf1 = creator.createRDCF("Region1", "District1_1", "Community1_1", "Facility1");
+		RDCF rdcf2 = creator.createRDCF("Region2", "District2", "Community2", null);
 
 		RegionReferenceDto region1 = rdcf1.region;
 		RegionReferenceDto region2 = rdcf2.region;
@@ -134,40 +130,30 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		CommunityReferenceDto community2 = rdcf2.community;
 
 		FacilityReferenceDto facility1 = rdcf1.facility;
-		FacilityReferenceDto facility2 = rdcf2.facility;
-
-		PointOfEntryReferenceDto pointOfEntry1 = rdcf1.pointOfEntry;
-		PointOfEntryReferenceDto pointOfEntry2 = rdcf2.pointOfEntry;
 
 		//Jurisdiction Region
-		UserDto userR1 = creator.createUser(region1.getUuid(), null, null, null, "Irmin", "Schmidt", EVENT_OFFICER);
-		UserDto userR2 = creator.createUser(region2.getUuid(), null, null, null, "Michael", "Karoli", STATE_OBSERVER);
+		UserReferenceDto userR1 = creator.createUserRef(region1.getUuid(), null, null, null, "Irmin", "Schmidt", EVENT_OFFICER);
+		UserReferenceDto userR2 = creator.createUserRef(region2.getUuid(), null, null, null, "Michael", "Karoli", STATE_OBSERVER);
 
 		// Jurisdiction District
-		UserDto userD1 = creator.createUser(region1.getUuid(), district1_1.getUuid(), null, null, "Malcolm", "Mooney", CASE_OFFICER);
-		UserDto userD2 = creator.createUser(region1.getUuid(), district1_2.getUuid(), null, null, "Rosko", "Gee", SURVEILLANCE_OFFICER);
-		UserDto userD3 = creator.createUser(region2.getUuid(), district2.getUuid(), null, null, "Tim", "Hardin", CONTACT_OFFICER);
+		UserReferenceDto userD1 = creator.createUserRef(region1.getUuid(), district1_1.getUuid(), null, null, "Malcolm", "Mooney", CASE_OFFICER);
+		UserReferenceDto userD2 = creator.createUserRef(region1.getUuid(), district1_2.getUuid(), null, null, "Rosko", "Gee", SURVEILLANCE_OFFICER);
+		UserReferenceDto userD3 = creator.createUserRef(region2.getUuid(), district2.getUuid(), null, null, "Tim", "Hardin", CONTACT_OFFICER);
 
 		// Jurisdiction Community
-		UserDto userC1 =
-			creator.createUser(region1.getUuid(), district1_1.getUuid(), community1_1.getUuid(), null, "Blixa", "Bargeld", COMMUNITY_INFORMANT);
-		UserDto userC2 =
-			creator.createUser(region1.getUuid(), district1_1.getUuid(), community1_2.getUuid(), null, "Jaki", "Liebezeit", COMMUNITY_OFFICER);
-		UserDto userC3 =
-			creator.createUser(region1.getUuid(), district2.getUuid(), community2.getUuid(), null, "Holger", "Czukay", COMMUNITY_INFORMANT);
+		UserReferenceDto userC1 =
+			creator.createUserRef(region1.getUuid(), district1_1.getUuid(), community1_1.getUuid(), null, "Blixa", "Bargeld", COMMUNITY_INFORMANT);
+		UserReferenceDto userC2 =
+			creator.createUserRef(region1.getUuid(), district1_1.getUuid(), community1_2.getUuid(), null, "Jaki", "Liebezeit", COMMUNITY_OFFICER);
+		UserReferenceDto userC3 =
+			creator.createUserRef(region1.getUuid(), district2.getUuid(), community2.getUuid(), null, "Holger", "Czukay", COMMUNITY_INFORMANT);
 
 		// Jurisdiction Nation
-		UserDto userN1 = creator.createUser(null, null, null, null, "Fred", "Cole", NATIONAL_USER);
-		UserDto userN2 = creator.createUser(null, null, null, null, "Toody", "Cole", NATIONAL_OBSERVER);
+		UserReferenceDto userN1 = creator.createUserRef(null, null, null, null, "Fred", "Cole", NATIONAL_USER);
+		UserReferenceDto userN2 = creator.createUserRef(null, null, null, null, "Toody", "Cole", NATIONAL_OBSERVER);
 
 		// Jurisdiction Health Facility
-		UserDto userHF1 = creator.createUser(null, null, facility1.getUuid(), "FM", "Einheit", HOSPITAL_INFORMANT);
-
-		// Jurisdiction Point of Entry
-		UserDto userPOE1 = creator.createPoeUser(pointOfEntry1.getUuid(), "Alexander", "Hacke", POE_INFORMANT);
-
-		// Jurisdiction Laboratory		
-		UserDto userLab1 = creator.createLabUser(facility2.getUuid(), "Damo", "Suzuki", LAB_USER);
+		UserReferenceDto userHF1 = creator.createUserRef(null, null, null, facility1.getUuid(), "FM", "Einheit", HOSPITAL_INFORMANT);
 
 		// Supervisors
 		UserDto userS1 = creator.createUser(region1.getUuid(), null, facility1.getUuid(), "Joey", "Ramone", CASE_SUPERVISOR);
@@ -176,73 +162,43 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		UserDto userS4 = creator.createUser(region2.getUuid(), null, facility1.getUuid(), "Tommy", "Ramone", POE_SUPERVISOR);
 
 		// Tests
-		assertResult(getUserFacade().getUsersByRegionAndRoles(region1, COMMUNITY_OFFICER, SURVEILLANCE_OFFICER), userD2, userC2);
-		assertResult(
+		assertThat(getUserFacade().getUsersByRegionAndRoles(region1, COMMUNITY_OFFICER, SURVEILLANCE_OFFICER), containsInAnyOrder(userD2, userC2));
+		assertThat(
 			getUserFacade()
 				.getUsersByRegionsAndRoles(Arrays.asList(region1, region2), COMMUNITY_INFORMANT, CASE_OFFICER, CONTACT_OFFICER, STATE_OBSERVER),
-			userR2,
-			userD1,
-			userD3,
-			userC1,
-			userC3);
+			containsInAnyOrder(userR2, userD1, userD3, userC1, userC3));
 
-		assertResult(
+		assertThat(
 			getUserFacade().getUserRefsByDistrict(district1_1, false, STATE_OBSERVER, CASE_OFFICER, COMMUNITY_OFFICER, POE_INFORMANT),
-			userD1,
-			userC2);
-		assertResult(
+			containsInAnyOrder(userD1, userC2));
+		assertThat(
 			getUserFacade()
 				.getUserRefsByDistricts(Arrays.asList(district1_1, district2), false, SURVEILLANCE_OFFICER, CONTACT_OFFICER, COMMUNITY_INFORMANT),
-			userD3,
-			userC1,
-			userC3);
+			containsInAnyOrder(userD3, userC1, userC3));
 
-		assertResult(getUserFacade().getUserRefsByDistrict(district1_1, true, CASE_OFFICER), userD1, userS1, userS2, userS3);
+		assertThat(getUserFacade().getUserRefsByDistrict(district1_1, true, CASE_OFFICER), containsInAnyOrder(userD1, userS1, userS2, userS3));
 
-		assertResult(getUserFacade().getUsersWithSuperiorJurisdiction(userN1));
-		assertResult(getUserFacade().getUsersWithSuperiorJurisdiction(userR1), userAdmin, userN1, userN2);
-		assertResult(getUserFacade().getUsersWithSuperiorJurisdiction(userD1), userR1, userS1, userS2);
-		assertResult(getUserFacade().getUsersWithSuperiorJurisdiction(userC1), userD1);
+		assertThat(getUserFacade().getUsersWithSuperiorJurisdiction(getUserFacade().getByUuid(userN1.getUuid())), nullValue());
+		assertThat(
+			getUserFacade().getUsersWithSuperiorJurisdiction(getUserFacade().getByUuid(userR1.getUuid())),
+			containsInAnyOrder(userAdmin, userN1, userN2));
+		assertThat(
+			getUserFacade().getUsersWithSuperiorJurisdiction(getUserFacade().getByUuid(userD1.getUuid())),
+			containsInAnyOrder(userR1, userS1, userS2));
+		assertThat(getUserFacade().getUsersWithSuperiorJurisdiction(getUserFacade().getByUuid(userC1.getUuid())), containsInAnyOrder(userD1));
 
 		// Bug? userC2 is in a different community
-		assertResult(getUserFacade().getUsersWithSuperiorJurisdiction(userHF1), userD1, userC1, userC2);
+		assertThat(
+			getUserFacade().getUsersWithSuperiorJurisdiction(getUserFacade().getByUuid(userHF1.getUuid())),
+			containsInAnyOrder(userD1, userC1, userC2));
 
-		assertEquals(18, getUserFacade().getAllUserRefs(false).size());
+		assertThat(getUserFacade().getAllUserRefs(false), hasSize(16));
 
 		userS4.setActive(false);
 		getUserFacade().saveUser(userS4);
 
-		assertEquals(17, getUserFacade().getAllUserRefs(false).size());
-		assertEquals(18, getUserFacade().getAllUserRefs(true).size());
-	}
-
-	private <T extends HasUuid> void assertResult(List<T> list, HasUuid... elements) {
-		Pair<String, Boolean> comparisonResult = containsExactly(list, elements);
-		assertTrue(comparisonResult.getElement0(), comparisonResult.getElement1());
-	}
-
-	private <T extends HasUuid> Pair<String, Boolean> containsExactly(List<T> list, HasUuid... elements) {
-		List<HasUuid> list2 = Arrays.asList(elements);
-
-		if (list == null) {
-			return list2.isEmpty() ? new Pair<>("Ok", true) : new Pair<>("Expected a nonempty list, but got null", false);
-		}
-
-		List<String> uuids1 = list.stream().map(e -> e.getUuid()).sorted().collect(Collectors.toList());
-		List<String> uuids2 = list2.stream().map(e -> e.getUuid()).sorted().collect(Collectors.toList());
-
-		String failMessage = "Expected [" + StringUtils.join(uuids2, ", ") + "] but got [" + StringUtils.join(uuids1, ", ") + "]";
-
-		if (uuids1.size() != uuids2.size()) {
-			return new Pair<>(failMessage, false);
-		}
-
-		for (int i = 0; i < list.size(); i++) {
-			if (!uuids1.get(i).equals(uuids2.get(i))) {
-				return new Pair<>(failMessage, false);
-			}
-		}
-		return new Pair<>("Ok", true);
+		assertThat(getUserFacade().getAllUserRefs(false), hasSize(15));
+		assertThat(getUserFacade().getAllUserRefs(true), hasSize(16));
 	}
 
 	/**
