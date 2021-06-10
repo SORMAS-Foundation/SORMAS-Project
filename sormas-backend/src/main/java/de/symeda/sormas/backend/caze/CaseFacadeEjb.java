@@ -1462,6 +1462,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (Objects.nonNull(updatedCaseBulkEditData.getHealthFacilityDetails())) {
 			existingCase.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 		}
+
+		if (updatedCaseBulkEditData.getDontShareWithReportingTool() != null) {
+			existingCase.setDontShareWithReportingTool(updatedCaseBulkEditData.getDontShareWithReportingTool());
+		}
 	}
 
 	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges, boolean checkChangeDate) throws ValidationRuntimeException {
@@ -2455,6 +2459,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (source.getFollowUpStatusChangeUser() != null) {
 			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
 		}
+		target.setDontShareWithReportingTool(source.isDontShareWithReportingTool());
 
 		return target;
 	}
@@ -2632,6 +2637,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
 		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
+		target.setDontShareWithReportingTool(source.isDontShareWithReportingTool());
 
 		return target;
 	}
@@ -3464,7 +3470,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public String getFirstCaseUuidWithOwnershipHandedOver(List<String> caseUuids) {
+	public String getFirstUuidNotShareableWithExternalReportingTools(List<String> caseUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caseRoot = cq.from(Case.class);
@@ -3472,7 +3478,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			caseRoot.join(Case.SHARE_INFO_CASES, JoinType.LEFT).join(ShareInfoCase.SHARE_INFO, JoinType.LEFT);
 
 		cq.select(caseRoot.get(Case.UUID));
-		cq.where(cb.and(caseRoot.get(Case.UUID).in(caseUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
+		cq.where(
+			cb.or(
+				cb.isTrue(caseRoot.get(Case.DONT_SHARE_WITH_REPORTING_TOOL)),
+				cb.and(caseRoot.get(Case.UUID).in(caseUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)))));
 		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));
 
 		try {

@@ -242,7 +242,7 @@ public interface Strings {
 	String errorEntityOutdated = "errorEntityOutdated";
 	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
 	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
-	String errorExternalSurveillanceToolCaseNotOwned = "errorExternalSurveillanceToolCaseNotOwned";
+	String errorExternalSurveillanceToolCaseNotSharable = "errorExternalSurveillanceToolCaseNotSharable";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";
 	String errorExternalSurveillanceToolNonClusterEvent = "errorExternalSurveillanceToolNonClusterEvent";
 	String errorExternalSurveillanceToolNonCoronavirusCase = "errorExternalSurveillanceToolNonCoronavirusCase";
@@ -769,6 +769,7 @@ public interface Strings {
 	String messageAreasArchived = "messageAreasArchived";
 	String messageAreasArchivingNotPossible = "messageAreasArchivingNotPossible";
 	String messageAreasDearchived = "messageAreasDearchived";
+	String messageBulkDontShareWithReportingToolWarning = "messageBulkDontShareWithReportingToolWarning";
 	String messageCampaignArchived = "messageCampaignArchived";
 	String messageCampaignCreated = "messageCampaignCreated";
 	String messageCampaignDearchived = "messageCampaignDearchived";
@@ -850,6 +851,7 @@ public interface Strings {
 	String messageDistrictsArchivingNotPossible = "messageDistrictsArchivingNotPossible";
 	String messageDistrictsDearchived = "messageDistrictsDearchived";
 	String messageDistrictsDearchivingNotPossible = "messageDistrictsDearchivingNotPossible";
+	String messageDontShareWithReportingToolWarning = "messageDontShareWithReportingToolWarning";
 	String messageEnterSms = "messageEnterSms";
 	String messageEntryCreated = "messageEntryCreated";
 	String messageEpiDataHint = "messageEpiDataHint";

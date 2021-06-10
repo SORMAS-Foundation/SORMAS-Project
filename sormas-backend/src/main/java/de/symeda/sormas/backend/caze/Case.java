@@ -228,6 +228,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	public static final String NOT_A_CASE_REASON_DETAILS = "notACaseReasonDetails";
 	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
 	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
+	public static final String DONT_SHARE_WITH_REPORTING_TOOL = "dontShareWithReportingTool";
 
 	private Person person;
 	private String description;
@@ -399,6 +400,8 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	private YesNoUnknown bloodOrganOrTissueDonated;
 	private Date followUpStatusChangeDate;
 	private User followUpStatusChangeUser;
+
+	private boolean dontShareWithReportingTool;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<ShareInfoCase> shareInfoCases = new ArrayList<>(0);
@@ -1723,5 +1726,13 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 
 	public void setFollowUpStatusChangeUser(User followUpStatusChangeUser) {
 		this.followUpStatusChangeUser = followUpStatusChangeUser;
+	}
+
+	public boolean isDontShareWithReportingTool() {
+		return dontShareWithReportingTool;
+	}
+
+	public void setDontShareWithReportingTool(boolean dontShareWithReportingTool) {
+		this.dontShareWithReportingTool = dontShareWithReportingTool;
 	}
 }
