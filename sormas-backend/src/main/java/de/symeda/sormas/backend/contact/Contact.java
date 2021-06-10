@@ -39,6 +39,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
@@ -572,6 +573,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	 *
 	 * @return the externalID
 	 */
+	@Transient
 	public String getExternalId() {
 		return externalID;
 	}
