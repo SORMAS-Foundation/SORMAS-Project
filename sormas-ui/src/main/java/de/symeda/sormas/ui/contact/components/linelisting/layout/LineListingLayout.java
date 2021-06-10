@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.contact.components.linelisting.layout;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -16,17 +15,12 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactProximity;
-import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineField;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineFieldDto;
@@ -35,6 +29,7 @@ import de.symeda.sormas.ui.contact.components.linelisting.sharedinfo.SharedInfoF
 import de.symeda.sormas.ui.contact.components.linelisting.sharedinfo.SharedInfoFieldDto;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
 import de.symeda.sormas.ui.utils.components.linelisting.line.LineLayout;
 
@@ -127,23 +122,29 @@ public class LineListingLayout extends VerticalLayout {
 			ContactLineLayoutDto layoutBean = line.getBean();
 			ContactLineDto result = new ContactLineDto();
 
-			result.setCaze(layoutBean.getSharedInfoField().getCaze());
-			result.setDisease(layoutBean.getSharedInfoField().getDisease());
-			result.setRegion(layoutBean.getSharedInfoField().getRegion());
-			result.setDistrict(layoutBean.getSharedInfoField().getDistrict());
-			result.setDateOfReport(layoutBean.getLineField().getDateOfReport());
-			result.setMultiDayContact(layoutBean.getLineField().getMultiDaySelector().isMultiDay());
-			result.setFirstContactDate(layoutBean.getLineField().getMultiDaySelector().getStartDate());
-			result.setLastContactDate(layoutBean.getLineField().getMultiDaySelector().getEndDate());
-			result.setTypeOfContact(layoutBean.getLineField().getTypeOfContact());
-			result.setRelationToCase(layoutBean.getLineField().getRelationToCase());
+			final ContactDto contact = ContactDto.build();
+			contact.setCaze(layoutBean.getSharedInfoField().getCaze());
+			contact.setDisease(layoutBean.getSharedInfoField().getDisease());
+			contact.setRegion(layoutBean.getSharedInfoField().getRegion());
+			contact.setDistrict(layoutBean.getSharedInfoField().getDistrict());
+			contact.setReportDateTime(DateHelper8.toDate(layoutBean.getLineField().getDateOfReport()));
+			contact.setMultiDayContact(layoutBean.getLineField().getMultiDaySelector().isMultiDay());
+			contact.setFirstContactDate(DateHelper8.toDate(layoutBean.getLineField().getMultiDaySelector().getStartDate()));
+			contact.setLastContactDate(DateHelper8.toDate(layoutBean.getLineField().getMultiDaySelector().getEndDate()));
+			contact.setContactProximity(layoutBean.getLineField().getTypeOfContact());
+			contact.setRelationToCase(layoutBean.getLineField().getRelationToCase());
 
-			result.setFirstName(layoutBean.getLineField().getPerson().getFirstName());
-			result.setLastName(layoutBean.getLineField().getPerson().getLastName());
-			result.setDateOfBirthYYYY(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthYYYY());
-			result.setDateOfBirthMM(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthMM());
-			result.setDateOfBirthDD(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthDD());
-			result.setSex(layoutBean.getLineField().getPerson().getSex());
+			result.setContact(contact);
+
+			final PersonDto person = PersonDto.build();
+			person.setFirstName(layoutBean.getLineField().getPerson().getFirstName());
+			person.setLastName(layoutBean.getLineField().getPerson().getLastName());
+			person.setBirthdateYYYY(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthYYYY());
+			person.setBirthdateMM(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthMM());
+			person.setBirthdateDD(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthDD());
+			person.setSex(layoutBean.getLineField().getPerson().getSex());
+
+			result.setPerson(person);
 
 			return result;
 		}).collect(Collectors.toList());
@@ -250,149 +251,23 @@ public class LineListingLayout extends VerticalLayout {
 
 	public static class ContactLineDto implements Serializable {
 
-		private CaseReferenceDto caze;
-		private Disease disease;
-		private RegionReferenceDto region;
-		private DistrictReferenceDto district;
-		private LocalDate dateOfReport;
-		private boolean multiDayContact;
-		private LocalDate firstContactDate;
-		private LocalDate lastContactDate;
-		private ContactProximity typeOfContact;
-		private ContactRelation relationToCase;
-		private String firstName;
-		private String lastName;
-		private Integer dateOfBirthDD;
-		private Integer dateOfBirthMM;
-		private Integer dateOfBirthYYYY;
-		private Sex sex;
+		private ContactDto contact;
+		private PersonDto person;
 
-		public CaseReferenceDto getCaze() {
-			return caze;
+		public ContactDto getContact() {
+			return contact;
 		}
 
-		public void setCaze(CaseReferenceDto caze) {
-			this.caze = caze;
+		public void setContact(ContactDto contact) {
+			this.contact = contact;
 		}
 
-		public Disease getDisease() {
-			return disease;
+		public PersonDto getPerson() {
+			return person;
 		}
 
-		public void setDisease(Disease disease) {
-			this.disease = disease;
-		}
-
-		public RegionReferenceDto getRegion() {
-			return region;
-		}
-
-		public void setRegion(RegionReferenceDto region) {
-			this.region = region;
-		}
-
-		public DistrictReferenceDto getDistrict() {
-			return district;
-		}
-
-		public void setDistrict(DistrictReferenceDto district) {
-			this.district = district;
-		}
-
-		public LocalDate getDateOfReport() {
-			return dateOfReport;
-		}
-
-		public void setDateOfReport(LocalDate dateOfReport) {
-			this.dateOfReport = dateOfReport;
-		}
-
-		public boolean isMultiDayContact() {
-			return multiDayContact;
-		}
-
-		public void setMultiDayContact(boolean multiDayContact) {
-			this.multiDayContact = multiDayContact;
-		}
-
-		public LocalDate getFirstContactDate() {
-			return firstContactDate;
-		}
-
-		public void setFirstContactDate(LocalDate firstContactDate) {
-			this.firstContactDate = firstContactDate;
-		}
-
-		public LocalDate getLastContactDate() {
-			return lastContactDate;
-		}
-
-		public void setLastContactDate(LocalDate lastContactDate) {
-			this.lastContactDate = lastContactDate;
-		}
-
-		public ContactProximity getTypeOfContact() {
-			return typeOfContact;
-		}
-
-		public void setTypeOfContact(ContactProximity typeOfContact) {
-			this.typeOfContact = typeOfContact;
-		}
-
-		public ContactRelation getRelationToCase() {
-			return relationToCase;
-		}
-
-		public void setRelationToCase(ContactRelation relationToCase) {
-			this.relationToCase = relationToCase;
-		}
-
-		public String getFirstName() {
-			return firstName;
-		}
-
-		public void setFirstName(String firstName) {
-			this.firstName = firstName;
-		}
-
-		public String getLastName() {
-			return lastName;
-		}
-
-		public void setLastName(String lastName) {
-			this.lastName = lastName;
-		}
-
-		public Integer getDateOfBirthDD() {
-			return dateOfBirthDD;
-		}
-
-		public void setDateOfBirthDD(Integer dateOfBirthDD) {
-			this.dateOfBirthDD = dateOfBirthDD;
-		}
-
-		public Integer getDateOfBirthMM() {
-			return dateOfBirthMM;
-		}
-
-		public void setDateOfBirthMM(Integer dateOfBirthMM) {
-			this.dateOfBirthMM = dateOfBirthMM;
-		}
-
-		public Integer getDateOfBirthYYYY() {
-			return dateOfBirthYYYY;
-		}
-
-		public void setDateOfBirthYYYY(Integer dateOfBirthYYYY) {
-			this.dateOfBirthYYYY = dateOfBirthYYYY;
-		}
-
-		public Sex getSex() {
-			return sex;
-		}
-
-		public void setSex(Sex sex) {
-			this.sex = sex;
+		public void setPerson(PersonDto person) {
+			this.person = person;
 		}
 	}
 }

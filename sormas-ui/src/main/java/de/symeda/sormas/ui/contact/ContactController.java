@@ -76,7 +76,6 @@ import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -131,27 +130,12 @@ public class ContactController {
 		}
 
 		for (LineListingLayout.ContactLineDto contactLineDto : contacts) {
-			final ContactDto newContact = ContactDto.build();
+			ContactDto newContact = contactLineDto.getContact();
+			if (UserProvider.getCurrent() != null) {
+				newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
+			}
 
-			newContact.setCaze(contactLineDto.getCaze());
-			newContact.setDisease(contactLineDto.getDisease());
-			newContact.setRegion(contactLineDto.getRegion());
-			newContact.setDistrict(contactLineDto.getDistrict());
-			newContact.setReportDateTime(DateHelper8.toDate(contactLineDto.getDateOfReport()));
-			newContact.setMultiDayContact(contactLineDto.isMultiDayContact());
-			newContact.setFirstContactDate(DateHelper8.toDate(contactLineDto.getFirstContactDate()));
-			newContact.setLastContactDate(DateHelper8.toDate(contactLineDto.getLastContactDate()));
-			newContact.setRelationToCase(contactLineDto.getRelationToCase());
-
-			newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
-
-			final PersonDto newPerson = PersonDto.build();
-			newPerson.setFirstName(contactLineDto.getFirstName());
-			newPerson.setLastName(contactLineDto.getLastName());
-			newPerson.setBirthdateYYYY(contactLineDto.getDateOfBirthYYYY());
-			newPerson.setBirthdateMM(contactLineDto.getDateOfBirthMM());
-			newPerson.setBirthdateDD(contactLineDto.getDateOfBirthDD());
-			newPerson.setSex(contactLineDto.getSex());
+			PersonDto newPerson = contactLineDto.getPerson();
 
 			ControllerProvider.getPersonController()
 				.selectOrCreatePerson(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
