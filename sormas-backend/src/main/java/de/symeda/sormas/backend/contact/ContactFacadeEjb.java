@@ -58,6 +58,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -567,6 +569,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_ATC_CODE),
 					contact.get(Contact.EXTERNAL_ID),
 					contact.get(Contact.EXTERNAL_TOKEN),
+					contact.get(Contact.INTERNAL_TOKEN),
 					joins.getPerson().get(Person.BIRTH_NAME),
 					joins.getPersonBirthCountry().get(Country.ISO_CODE),
 					joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
@@ -1189,6 +1192,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -1434,6 +1438,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
@@ -1934,6 +1939,11 @@ public class ContactFacadeEjb implements ContactFacade {
 		Contact contact = contactService.getByUuid(uuid);
 		contact.setCompleteness(calculateCompleteness(contact));
 		contactService.ensurePersisted(contact);
+	}
+
+	@Override
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+		contactService.updateExternalData(externalData);
 	}
 
 	private float calculateCompleteness(Contact contact) {

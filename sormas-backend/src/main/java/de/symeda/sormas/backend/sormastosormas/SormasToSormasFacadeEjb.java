@@ -68,8 +68,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private UserService userService;
 	@EJB
 	private ServerAccessDataService serverAccessDataService;
-	@EJB
-	private SormasToSormasFacadeHelper sormasToSormasFacadeHelper;
 	@Inject
 	private SormasToSormasRestClient sormasToSormasRestClient;
 	@EJB
@@ -88,7 +86,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	public ServerAccessDataReferenceDto getOrganizationRef(String id) {
-		return sormasToSormasFacadeHelper.getOrganizationServerAccessData(id).map(OrganizationServerAccessData::toReference).orElseGet(null);
+		return serverAccessDataService.getServerListItemById(id).map(OrganizationServerAccessData::toReference).orElseGet(null);
 	}
 
 	@Override
@@ -128,11 +126,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	public void revokeShare(String shareInfoUuid) throws SormasToSormasException {
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByUuid(shareInfoUuid);
 
-		sormasToSormasFacadeHelper.sendRequestToSormas(
-			shareInfo.getOrganizationId(),
-			(host, authToken) -> sormasToSormasRestClient
-				.post(host, REVOKE_REQUEST_ENDPOINT, authToken, Collections.singletonList(shareInfo.getRequestUuid())),
-			byte[].class);
+		sormasToSormasRestClient
+			.post(shareInfo.getOrganizationId(), REVOKE_REQUEST_ENDPOINT, Collections.singletonList(shareInfo.getRequestUuid()), null);
 
 		shareInfo.setRequestStatus(ShareRequestStatus.REVOKED);
 		shareInfoService.ensurePersisted(shareInfo);
@@ -159,7 +154,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		DtoHelper.fillDto(target, source);
 
-		OrganizationServerAccessData serverAccessData = sormasToSormasFacadeHelper.getOrganizationServerAccessData(source.getOrganizationId())
+		OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerListItemById(source.getOrganizationId())
 			.orElseGet(() -> new OrganizationServerAccessData(source.getOrganizationId(), source.getOrganizationId()));
 		target.setTarget(serverAccessData.toReference());
 

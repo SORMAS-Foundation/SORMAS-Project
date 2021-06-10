@@ -77,6 +77,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String ONLY_ENTITIES_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyEntitiesSharedWithExternalSurvTool";
 	public static final String ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL =
 		"onlyEntitiesChangedSinceLastSharedWithExternalSurvTool";
+	public static final String ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL = "onlyCasesWithDontShareWithExternalSurvTool";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
@@ -131,6 +132,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean onlyEntitiesNotSharedWithExternalSurvTool;
 	private Boolean onlyEntitiesSharedWithExternalSurvTool;
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
+	private Boolean onlyCasesWithDontShareWithExternalSurvTool;
 
 	public CaseCriteria() {
 		super(NewCaseDateType.class);
@@ -664,5 +666,13 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public void setOnlyEntitiesChangedSinceLastSharedWithExternalSurvTool(Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool) {
 		this.onlyEntitiesChangedSinceLastSharedWithExternalSurvTool = onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
+	}
+
+	public Boolean getOnlyCasesWithDontShareWithExternalSurvTool() {
+		return onlyCasesWithDontShareWithExternalSurvTool;
+	}
+
+	public void setOnlyCasesWithDontShareWithExternalSurvTool(Boolean onlyCasesWithDontShareWithExternalSurvTool) {
+		this.onlyCasesWithDontShareWithExternalSurvTool = onlyCasesWithDontShareWithExternalSurvTool;
 	}
 }

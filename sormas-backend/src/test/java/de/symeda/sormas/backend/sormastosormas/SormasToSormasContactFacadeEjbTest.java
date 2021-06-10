@@ -206,9 +206,9 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 
 		ContactDto contact = createRemoteContactDto(rdcf.remoteRdcf, person);
 
-		byte[] encryptedData =
+		SormasToSormasEncryptedDataDto encryptedData =
 			encryptShareDataAsArray(new SormasToSormasContactDto(person, contact, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
-		getSormasToSormasContactFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
+		getSormasToSormasContactFacade().saveSharedEntities(encryptedData, null);
 
 		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
 
@@ -243,8 +243,8 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 			new SormasToSormasContactDto(person, contact, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false));
 		shareData.setSamples(Collections.singletonList(sample));
 
-		byte[] encryptedData = encryptShareDataAsArray(shareData);
-		getSormasToSormasContactFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(shareData);
+		getSormasToSormasContactFacade().saveSharedEntities(encryptedData, null);
 
 		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
 		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getSample().getUuid());
@@ -354,9 +354,9 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 				new SormasToSormasSampleDto(sharedSample, Collections.emptyList(), Collections.emptyList()),
 				new SormasToSormasSampleDto(newSample, Collections.emptyList(), Collections.emptyList())));
 
-		byte[] encryptedData = encryptShareDataAsArray(shareData);
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(shareData);
 
-		getSormasToSormasContactFacade().saveReturnedEntity(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		getSormasToSormasContactFacade().saveReturnedEntity(encryptedData);
 
 		ContactDto returnedContact = getContactFacade().getContactByUuid(contact.getUuid());
 		assertThat(returnedContact.getQuarantine(), is(QuarantineType.HOTEL));

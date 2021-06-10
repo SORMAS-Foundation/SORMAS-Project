@@ -312,6 +312,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			cq.where(jurisdictionFilter);
 		}
 
+		cq.distinct(true);
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 
 		return em.createQuery(cq).getResultList();
@@ -331,7 +332,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 			cq.orderBy(cb.asc(eventRoot.get(Event.UUID)));
 
-			responsibleUserByEventUuid.putAll(em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(row -> (String) row[0], row -> (User) row[1])));
+			responsibleUserByEventUuid
+				.putAll(em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(row -> (String) row[0], row -> (User) row[1])));
 		});
 		return responsibleUserByEventUuid;
 	}

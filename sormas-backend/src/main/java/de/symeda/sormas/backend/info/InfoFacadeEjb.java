@@ -18,11 +18,13 @@ package de.symeda.sormas.backend.info;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -31,6 +33,9 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Strings;
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.util.AreaReference;
@@ -235,20 +240,26 @@ public class InfoFacadeEjb implements InfoFacade {
 					usedEnums.add((Class<Enum<?>>) fieldType);
 				}
 			} else if (EntityDto.class.isAssignableFrom(fieldType)) {
-				fieldValueCell.setCellValue(fieldType.getSimpleName().replaceAll("Dto", ""));
+				fieldValueCell.setCellValue(getSimpleDtoName(fieldType));
 			} else if (ReferenceDto.class.isAssignableFrom(fieldType)) {
-				fieldValueCell.setCellValue(fieldType.getSimpleName().replaceAll("Dto", ""));
+				fieldValueCell.setCellValue(getSimpleDtoName(fieldType));
 				if (FacilityReferenceDto.class.isAssignableFrom(fieldType)) {
 					usesFacilityReference = true;
 				}
 			} else if (String.class.isAssignableFrom(fieldType)) {
-				fieldValueCell.setCellValue(I18nProperties.getCaption("text"));
+				fieldValueCell.setCellValue(I18nProperties.getString(Strings.text));
 			} else if (Date.class.isAssignableFrom(fieldType)) {
-				fieldValueCell.setCellValue(I18nProperties.getCaption("date"));
+				fieldValueCell.setCellValue(I18nProperties.getString(Captions.date));
 			} else if (Number.class.isAssignableFrom(fieldType)) {
-				fieldValueCell.setCellValue(I18nProperties.getCaption("number"));
+				fieldValueCell.setCellValue(I18nProperties.getString(Strings.number));
 			} else if (Boolean.class.isAssignableFrom(fieldType) || boolean.class.isAssignableFrom(fieldType)) {
-				fieldValueCell.setCellValue(Boolean.TRUE.toString() + ", " + Boolean.FALSE.toString());
+				fieldValueCell.setCellValue(Boolean.TRUE + ", " + Boolean.FALSE);
+			} else if (Collection.class.isAssignableFrom(fieldType)) {
+				TypeUtils.getTypeArguments((ParameterizedType) field.getGenericType())
+					.values()
+					.stream()
+					.findFirst()
+					.ifPresent(type -> fieldValueCell.setCellValue(String.format(I18nProperties.getString(Strings.listOf), getSimpleDtoName((Class<?>) type))));
 			}
 
 			//sensitive data
@@ -343,7 +354,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		// Create
 		XSSFTable table = sheet.createTable();
-		String safeTableName = (sheet.getSheetName() + FacilityReferenceDto.class.getSimpleName().replaceAll("Dto", "")).replaceAll("\\s", "_");
+		String safeTableName = (sheet.getSheetName() + getSimpleDtoName(FacilityReferenceDto.class)).replaceAll("\\s", "_");
 		table.setName(safeTableName);
 		table.setDisplayName(safeTableName);
 		XssfHelper.styleTable(table, 2);
@@ -370,7 +381,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 			cell = row.createCell(EnumColumn.TYPE.ordinal());
 			if (constantFacility.equals(constantFacilities.get(0))) {
-				cell.setCellValue(FacilityReferenceDto.class.getSimpleName().replaceAll("Dto", ""));
+				cell.setCellValue(getSimpleDtoName(FacilityReferenceDto.class));
 			}
 
 			cell = row.createCell(EnumColumn.VALUE.ordinal());
@@ -461,6 +472,10 @@ public class InfoFacadeEjb implements InfoFacade {
 		table.getCTTable().addNewAutoFilter();
 
 		return rowNumber;
+	}
+
+	private <T> String getSimpleDtoName(Class<T> dto) {
+		return dto.getSimpleName().replaceAll("Dto", "");
 	}
 
 	@LocalBean

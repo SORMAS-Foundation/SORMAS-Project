@@ -39,6 +39,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
@@ -66,6 +67,7 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -97,7 +99,7 @@ import de.symeda.sormas.backend.visit.Visit;
 
 @Entity(name = "cases")
 @Audited
-public class Case extends CoreAdo implements SormasToSormasEntity {
+public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalData {
 
 	private static final long serialVersionUID = -2697795184663562129L;
 
@@ -172,6 +174,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
 	public static final String INFECTION_SETTING = "infectionSetting";
@@ -227,6 +230,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	public static final String NOT_A_CASE_REASON_DETAILS = "notACaseReasonDetails";
 	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
 	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
+	public static final String DONT_SHARE_WITH_REPORTING_TOOL = "dontShareWithReportingTool";
 
 	private Person person;
 	private String description;
@@ -331,6 +335,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	private String additionalDetails;
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 	private boolean sharedToCountry;
 
 	private QuarantineType quarantine;
@@ -397,6 +402,8 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 	private YesNoUnknown bloodOrganOrTissueDonated;
 	private Date followUpStatusChangeDate;
 	private User followUpStatusChangeUser;
+
+	private boolean dontShareWithReportingTool;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<ShareInfoCase> shareInfoCases = new ArrayList<>(0);
@@ -1233,6 +1240,24 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 		this.externalID = externalID;
 	}
 
+	/**
+	 * Extra getter for externalID needed to comply with the HasExternalData interface
+	 *
+	 * @return the externalID
+	 */
+	@Transient
+	public String getExternalId() {
+		return externalID;
+	}
+
+	/**
+	 * Extra setter for externalID needed to comply with the HasExternalData interface
+	 * @param externalId the value to be set for externalID
+	 */
+	public void setExternalId(String externalId) {
+		this.externalID = externalId;
+	}
+
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getExternalToken() {
 		return externalToken;
@@ -1240,6 +1265,15 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	@Column
@@ -1712,5 +1746,13 @@ public class Case extends CoreAdo implements SormasToSormasEntity {
 
 	public void setFollowUpStatusChangeUser(User followUpStatusChangeUser) {
 		this.followUpStatusChangeUser = followUpStatusChangeUser;
+	}
+
+	public boolean isDontShareWithReportingTool() {
+		return dontShareWithReportingTool;
+	}
+
+	public void setDontShareWithReportingTool(boolean dontShareWithReportingTool) {
+		this.dontShareWithReportingTool = dontShareWithReportingTool;
 	}
 }

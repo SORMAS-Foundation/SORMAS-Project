@@ -30,6 +30,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -42,6 +43,8 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/cases")
@@ -131,11 +134,22 @@ public class CaseResource extends EntityDtoResource {
 		return FacadeProvider.getCaseFacade().getByUuid(uuid);
 	}
 
+	@POST
+	@Path("/externalData")
+	public Response updateExternalData(List<ExternalDataDto> externalData) {
+		try {
+			FacadeProvider.getCaseFacade().updateExternalData(externalData);
+			return Response.status(Response.Status.OK).build();
+		} catch (ExternalDataUpdateException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
+	}
+
 	/**
 	 * This endpoint is used to partially update the CaseData.
 	 * For allowing only a subset of the fields of the caseDataDto to be updated, and ensuring that the system can determine
 	 * which fields are not provided and which are intended to be reset it, the payload needs to be a Json object and not a dto
-	 * 
+	 *
 	 * @param uuid
 	 * @param caseDataDtoJson
 	 *            - a subset of caseDataDto fields, same structure as caseDataDto

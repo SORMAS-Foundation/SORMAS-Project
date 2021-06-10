@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
@@ -25,7 +26,7 @@ public class ClassificationPathogenTestNegativeResultCriteriaDto extends Classif
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events) {
 
 		for (PathogenTestDto pathogenTest : pathogenTests) {
 			if (pathogenTest.getTestResult() == PathogenTestResultType.NEGATIVE) {

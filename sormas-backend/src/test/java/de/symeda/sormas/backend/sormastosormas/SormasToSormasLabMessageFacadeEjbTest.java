@@ -27,9 +27,8 @@ import java.util.Date;
 
 import javax.ws.rs.core.Response;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,12 +49,15 @@ import de.symeda.sormas.backend.common.StartupShutdownService;
 public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	@Test
-	public void testSendLabMessage() throws JsonProcessingException, SormasToSormasException {
+	public void testSendLabMessage() throws SormasToSormasException {
 		Date dateNow = new Date();
 
 		LabMessageDto labMessage = creator.createLabMessage((lm) -> setLabMessageFields(lm, dateNow));
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any()))
 			.thenAnswer(invocation -> {
 				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_REST_URL));
 				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/labmessages"));
@@ -84,7 +86,7 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 		getSormasToSormasLabMessageFacade().sendLabMessages(Collections.singletonList(labMessage.getUuid()), options);
 
 		Mockito.verify(MockProducer.getSormasToSormasClient(), Mockito.times(1))
-			.post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any());
+			.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any());
 		assertThat(getLabMessageFacade().getByUuid(labMessage.getUuid()).getStatus(), is(LabMessageStatus.FORWARDED));
 	}
 
@@ -94,15 +96,14 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 		Date dateNow = new Date();
 		setLabMessageFields(labMessage, dateNow);
 
-		byte[] encryptedData = encryptShareDataAsArray(labMessage);
-		getSormasToSormasLabMessageFacade().saveLabMessages(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(labMessage);
+		getSormasToSormasLabMessageFacade().saveLabMessages(encryptedData);
 
 		LabMessageDto savedLabMessage = getLabMessageFacade().getByUuid(labMessage.getUuid());
 		assertThat(savedLabMessage, is(notNullValue()));
 		assertLabMessageFields(savedLabMessage, dateNow);
 	}
 
-	@NotNull
 	private void setLabMessageFields(LabMessageDto labMessage, Date dateValue) {
 		labMessage.setMessageDateTime(dateValue);
 		labMessage.setSampleDateTime(dateValue);

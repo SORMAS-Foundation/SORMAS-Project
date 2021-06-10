@@ -69,6 +69,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -698,6 +700,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				eventCountSq,
 				caseRoot.get(Case.EXTERNAL_ID),
 				caseRoot.get(Case.EXTERNAL_TOKEN),
+				caseRoot.get(Case.INTERNAL_TOKEN),
 				joins.getPerson().get(Person.BIRTH_NAME),
 				joins.getPersonBirthCountry().get(Country.ISO_CODE),
 				joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
@@ -1471,6 +1474,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (Objects.nonNull(updatedCaseBulkEditData.getHealthFacilityDetails())) {
 			existingCase.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 		}
+
+		if (updatedCaseBulkEditData.getDontShareWithReportingTool() != null) {
+			existingCase.setDontShareWithReportingTool(updatedCaseBulkEditData.getDontShareWithReportingTool());
+		}
 	}
 
 	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges, boolean checkChangeDate) throws ValidationRuntimeException {
@@ -1672,15 +1679,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Update case classification if the feature is enabled
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
 			if (associatedCase.getCaseClassification() != CaseClassification.NO_CASE) {
-				List<PathogenTest> pathogenTests = pathogenTestService.getAllByCase(associatedCase);
-				if (pathogenTests.size() == 0) {
+				Long pathogenTestsCount = pathogenTestService.countByCase(associatedCase);
+				if (pathogenTestsCount == 0) {
 					return;
 				}
 				// calculate classification
-				List<PathogenTestDto> pathogenTestDtos = pathogenTests.stream().map(PathogenTestFacadeEjbLocal::toDto).collect(Collectors.toList());
 				CaseDataDto newCaseDto = toDto(associatedCase);
 
-				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto, pathogenTestDtos);
+				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto);
 
 				// only update when classification by system changes - user may overwrite this
 				if (classification != associatedCase.getSystemCaseClassification()) {
@@ -1794,10 +1800,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				// calculate classification
 				CaseDataDto newCaseDto = toDto(newCase);
-				List<PathogenTestDto> pathogenTests =
-					pathogenTestService.getAllByCase(newCase).stream().map(s -> PathogenTestFacadeEjbLocal.toDto(s)).collect(Collectors.toList());
 
-				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto, pathogenTests);
+				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto);
 
 				// only update when classification by system changes - user may overwrite this
 				if (classification != newCase.getSystemCaseClassification()) {
@@ -2407,6 +2411,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
@@ -2466,6 +2471,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (source.getFollowUpStatusChangeUser() != null) {
 			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
 		}
+		target.setDontShareWithReportingTool(source.isDontShareWithReportingTool());
 
 		return target;
 	}
@@ -2580,6 +2586,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
@@ -2642,6 +2649,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNotACaseReasonDifferentPathogen(source.isNotACaseReasonDifferentPathogen());
 		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
+		target.setDontShareWithReportingTool(source.isDontShareWithReportingTool());
 
 		return target;
 	}
@@ -3474,7 +3482,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public String getFirstCaseUuidWithOwnershipHandedOver(List<String> caseUuids) {
+	public String getFirstUuidNotShareableWithExternalReportingTools(List<String> caseUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caseRoot = cq.from(Case.class);
@@ -3482,7 +3490,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			caseRoot.join(Case.SHARE_INFO_CASES, JoinType.LEFT).join(ShareInfoCase.SHARE_INFO, JoinType.LEFT);
 
 		cq.select(caseRoot.get(Case.UUID));
-		cq.where(cb.and(caseRoot.get(Case.UUID).in(caseUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
+		cq.where(
+			cb.or(
+				cb.isTrue(caseRoot.get(Case.DONT_SHARE_WITH_REPORTING_TOOL)),
+				cb.and(caseRoot.get(Case.UUID).in(caseUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)))));
 		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));
 
 		try {
@@ -3633,6 +3644,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	public List<CaseDataDto> getByExternalId(String externalId) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return caseService.getByExternalId(externalId).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+	}
+
+	@Override
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+		caseService.updateExternalData(externalData);
 	}
 
 	@LocalBean

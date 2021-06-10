@@ -38,7 +38,11 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.backend.util.ExternalDataUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -571,6 +575,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					CriteriaBuilderHelper.ilike(cb, from.get(Event.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EVENT_TITLE), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EVENT_DESC), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.SRC_FIRST_NAME), textFilter),
@@ -849,5 +854,36 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		return eventJurisdictionChecker.isInJurisdictionOrOwned(event) && !sormasToSormasShareInfoService.isEventOwnershipHandedOver(event);
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
+	}
+
+	public List<Event> getAllByCase(String caseUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
+		Root<Event> from = cq.from(getElementClass());
+		from.fetch(Event.EVENT_LOCATION);
+
+		Predicate filter = createActiveEventsFilter(cb, from);
+
+		User user = getCurrentUser();
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		}
+
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			cb.equal(from.join(Event.EVENT_PERSONS, JoinType.LEFT).join(EventParticipant.RESULTING_CASE, JoinType.LEFT).get(Case.UUID), caseUuid));
+
+		cq.where(filter);
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
 	}
 }
