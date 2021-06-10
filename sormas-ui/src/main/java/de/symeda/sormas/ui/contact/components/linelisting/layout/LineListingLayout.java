@@ -24,7 +24,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineField;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineFieldDto;
-import de.symeda.sormas.ui.contact.components.linelisting.section.LineListingSection;
 import de.symeda.sormas.ui.contact.components.linelisting.sharedinfo.SharedInfoField;
 import de.symeda.sormas.ui.contact.components.linelisting.sharedinfo.SharedInfoFieldDto;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -32,6 +31,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
 import de.symeda.sormas.ui.utils.components.linelisting.line.LineLayout;
+import de.symeda.sormas.ui.utils.components.linelisting.section.LineListingSection;
 
 public class LineListingLayout extends VerticalLayout {
 

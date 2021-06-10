@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.contact.components.linelisting.section;
+package de.symeda.sormas.ui.utils.components.linelisting.section;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;

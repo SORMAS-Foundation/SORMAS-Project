@@ -15,7 +15,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -49,6 +48,7 @@ import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
 import de.symeda.sormas.ui.utils.components.linelisting.line.LineLayout;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonField;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
+import de.symeda.sormas.ui.utils.components.linelisting.section.LineListingSection;
 
 public class LineListingLayout extends VerticalLayout {
 
@@ -76,13 +76,8 @@ public class LineListingLayout extends VerticalLayout {
 
 		setSpacing(false);
 
-		VerticalLayout sharedInformationComponent = new VerticalLayout();
-		sharedInformationComponent.setMargin(false);
-		sharedInformationComponent.setSpacing(false);
-		Label sharedInformationLabel = new Label();
-		sharedInformationLabel.setValue(I18nProperties.getCaption(Captions.lineListingSharedInformation));
-		sharedInformationLabel.addStyleName(CssStyles.H3);
-		sharedInformationComponent.addComponent(sharedInformationLabel);
+		LineListingSection sharedInformationComponent = new LineListingSection(Captions.lineListingSharedInformation);
+
 		HorizontalLayout sharedInformationBar = new HorizontalLayout();
 		sharedInformationBar.addStyleName(CssStyles.SPACING_SMALL);
 		disease = new ComboBox<>(I18nProperties.getCaption(Captions.disease));
@@ -141,15 +136,9 @@ public class LineListingLayout extends VerticalLayout {
 
 		addComponent(sharedInformationComponent);
 
+		LineListingSection lineComponent = new LineListingSection(Captions.lineListingNewCasesList);
+
 		caseLines = new ArrayList<>();
-		VerticalLayout lineComponent = new VerticalLayout();
-		lineComponent.setMargin(false);
-
-		Label lineComponentLabel = new Label();
-		lineComponentLabel.setValue(I18nProperties.getCaption(Captions.lineListingNewCasesList));
-		lineComponentLabel.addStyleName(CssStyles.H3);
-		lineComponent.addComponent(lineComponentLabel);
-
 		CaseLineLayout line = buildNewLine(lineComponent);
 		caseLines.add(line);
 		lineComponent.addComponent(line);
