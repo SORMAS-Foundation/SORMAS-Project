@@ -110,6 +110,16 @@ public class UserServiceTest extends AbstractBeanTest {
 		result = getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
 		assertThat(result, hasSize(1));
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
+
+		// 5. regions filter
+		result = getUserService().getReferenceList(Arrays.asList(rdcf.region.getUuid()), null, false, false, false);
+		assertThat(result, hasSize(1));
+		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
+
+		// 6. districts filter
+		result = getUserService().getReferenceList(null, Arrays.asList(rdcf.district.getUuid()), false, false, false);
+		assertThat(result, hasSize(1));
+		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
 	}
 
 	@Test
