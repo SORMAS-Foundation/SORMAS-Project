@@ -22,5 +22,6 @@ import org.openqa.selenium.By;
 
 public class EditSamplePage {
 
-    public static final By PATHOGEN_NEW_TEST_RESULT_BTN = By.cssSelector("[id='pathogenTestNewTest']");
+  public static final By PATHOGEN_NEW_TEST_RESULT_BTN =
+      By.cssSelector("[id='pathogenTestNewTest']");
 }

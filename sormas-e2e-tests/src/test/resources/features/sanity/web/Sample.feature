@@ -27,3 +27,4 @@ Feature: Create Sample
     And API: I create a new sample
     When I log in with the user
     And I am accessing the Sample page using the created Sample via api
+    And I click on the new pathogen test from the Edit Sample page
