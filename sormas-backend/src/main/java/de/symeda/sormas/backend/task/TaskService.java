@@ -20,9 +20,11 @@ package de.symeda.sormas.backend.task;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -49,10 +51,12 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
@@ -61,6 +65,8 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.utils.EventJoins;
 
 @Stateless
 @LocalBean
@@ -459,5 +465,52 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		cu.where(root.get(Task.UUID).in(taskUuids));
 
 		em.createQuery(cu).executeUpdate();
+	}
+
+	public boolean inJurisdictionOrOwned(Task task) {
+		return !getInJurisdictionIDs(Collections.singletonList(task)).isEmpty();
+	}
+
+	private List<Long> getInJurisdictionIDs(final List<Task> selectedTasks) {
+		if (selectedTasks.size() == 0) {
+			return Collections.emptyList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
+		final Root<Task> taskRoot = inJurisdictionQuery.from(Task.class);
+
+		inJurisdictionQuery.select(taskRoot.get(AbstractDomainObject.ID));
+
+		final Predicate isFromSelectedTasks =
+			cb.in(taskRoot.get(AbstractDomainObject.ID)).value(selectedTasks.stream().map(Task::getId).collect(Collectors.toList()));
+		inJurisdictionQuery.where(cb.and(isFromSelectedTasks, inJurisdictionOrOwned(cb, new TaskJoins(taskRoot))));
+
+		List<Long> resL = em.createQuery(inJurisdictionQuery).getResultList();
+		return resL;
+	}
+
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, TaskJoins joins) {
+		final User currentUser = userService.getCurrentUser();
+
+		final Predicate createdByCurrentUser =
+			cb.and(cb.isNotNull(joins.getCreator()), cb.equal(joins.getCreator().get(User.UUID), currentUser.getUuid()));
+
+		final Predicate assignedToCurrentUser =
+			cb.and(cb.isNotNull(joins.getAssignee()), cb.equal(joins.getAssignee().get(User.UUID), currentUser.getUuid()));
+
+		final Predicate jurisdictionPredicate =
+			TaskJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
+
+		final Predicate caseJurisdiction =
+			cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())));
+
+		final Predicate contactJurisdiction =
+			cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(cb, new ContactJoins<>(joins.getContact())));
+
+		final Predicate eventJurisdiction =
+			cb.and(cb.isNotNull(joins.getEvent()), eventService.inJurisdictionOrOwned(cb, new EventJoins<>(joins.getEvent())));
+
+		return cb.or(createdByCurrentUser, assignedToCurrentUser, jurisdictionPredicate, caseJurisdiction, contactJurisdiction, eventJurisdiction);
 	}
 }
