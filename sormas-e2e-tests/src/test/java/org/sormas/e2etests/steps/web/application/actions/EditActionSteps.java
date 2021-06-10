@@ -38,8 +38,7 @@ public class EditActionSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
-  public EditActionSteps(
-      WebDriverHelpers webDriverHelpers, BaseSteps baseSteps) {
+  public EditActionSteps(WebDriverHelpers webDriverHelpers, BaseSteps baseSteps) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
