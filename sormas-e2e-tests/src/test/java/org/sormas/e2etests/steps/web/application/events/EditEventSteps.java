@@ -137,13 +137,12 @@ public class EditEventSteps implements En {
 
     When(
         "^I click on edit task icon of the first created task$",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(EDIT_FIRST_TASK);
-        });
+        () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_FIRST_TASK));
 
     When(
         "^I click on link event group$",
         () -> {
+          webDriverHelpers.scrollToElement(LINK_EVENT_GROUP);
           webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_GROUP);
         });
 
@@ -151,11 +150,11 @@ public class EditEventSteps implements En {
         "^I create a new event group$",
         () -> {
           groupEvent = eventGroupService.buildGroupEvent();
-          webDriverHelpers.scrollToElement(NEW_EVENT_GROUP_RADIOBUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_GROUP_RADIOBUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_POPUP);
           groupEvent =
               groupEvent.toBuilder()
-                  .uuid(webDriverHelpers.getValueFromWebElement(GROUP_EVENT_UUID2))
+                  .uuid(webDriverHelpers.getValueFromWebElement(GROUP_EVENT_UUID))
                   .build();
           fillGroupEventName(groupEvent.getName());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_POPUP);
