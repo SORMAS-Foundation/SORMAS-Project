@@ -146,17 +146,38 @@ public class TestDataCreator {
 		String firstName,
 		String lastName,
 		UserRole... roles) {
-		UserDto user = UserDto.build();
-		user.setFirstName(firstName);
-		user.setLastName(lastName);
-		user.setUserName(firstName + lastName);
-		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
+		UserDto user = buildUser(firstName, lastName, roles);
 		user.setRegion(beanTest.getRegionFacade().getRegionReferenceByUuid(regionUuid));
 		user.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(districtUuid));
 		user.setCommunity(beanTest.getCommunityFacade().getCommunityReferenceByUuid(communityUuid));
 		user.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
 		user = beanTest.getUserFacade().saveUser(user);
 
+		return user;
+	}
+
+	public UserDto createPoeUser(String pointOfEntryUuid, String firstName, String lastName, UserRole... roles) {
+		UserDto user = buildUser(firstName, lastName, roles);
+		user.setPointOfEntry(beanTest.getPointOfEntryFacade().getByUuid(pointOfEntryUuid).toReference());
+		user = beanTest.getUserFacade().saveUser(user);
+
+		return user;
+	}
+
+	public UserDto createLabUser(String labUuid, String firstName, String lastName, UserRole... roles) {
+		UserDto user = buildUser(firstName, lastName, roles);
+		user.setLaboratory(beanTest.getFacilityFacade().getByUuid(labUuid).toReference());
+		user = beanTest.getUserFacade().saveUser(user);
+
+		return user;
+	}
+
+	private UserDto buildUser(String firstName, String lastName, UserRole[] roles) {
+		UserDto user = UserDto.build();
+		user.setFirstName(firstName);
+		user.setLastName(lastName);
+		user.setUserName(firstName + lastName);
+		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
 		return user;
 	}
 
@@ -1365,7 +1386,7 @@ public class TestDataCreator {
 
 	public SystemEventDto createSystemEvent(SystemEventType type, Date startDate, SystemEventStatus status) {
 		return createSystemEvent(type, startDate, new Date(startDate.getTime() + 1000), status, "Generated for test purposes");
-	};
+	}
 
 	public SystemEventDto createSystemEvent(SystemEventType type, Date startDate, Date endDate, SystemEventStatus status, String additionalInfo) {
 		SystemEventDto systemEvent = SystemEventDto.build();
