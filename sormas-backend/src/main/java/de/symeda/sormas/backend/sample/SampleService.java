@@ -21,6 +21,7 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -57,12 +58,14 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -72,13 +75,18 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless
 @LocalBean
 public class SampleService extends AbstractCoreAdoService<Sample> {
 
+	@EJB
+	private UserService userService;
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -362,6 +370,42 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		}
 
 		return filter;
+	}
+
+	protected boolean inJurisdictionOrOwned(Sample sample) {
+		return !getInJurisdictionIDs(Collections.singletonList(sample)).isEmpty();
+	}
+
+	public List<Long> getInJurisdictionIDs(final List<Sample> selectedSamples) {
+		if (selectedSamples.size() == 0) {
+			return Collections.emptyList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
+		final Root<Sample> root = inJurisdictionQuery.from(Sample.class);
+
+		inJurisdictionQuery.select(root.get(AbstractDomainObject.ID));
+
+		final Predicate isFromSelectedEntries =
+				cb.in(root.get(AbstractDomainObject.ID)).value(selectedSamples.stream().map(AbstractDomainObject::getId).collect(Collectors.toList()));
+		inJurisdictionQuery.where(cb.and(isFromSelectedEntries, inJurisdictionOrOwned(cb, new SampleJoins<>(root))));
+
+		return em.createQuery(inJurisdictionQuery).getResultList();
+	}
+
+	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, SampleJoins<?> joins) {
+		final User currentUser = userService.getCurrentUser();
+
+		final Predicate reportedByCurrentUser =
+				cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
+
+		final Predicate jurisdictionPredicate = cb.or(
+				SampleJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel()),
+				caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())),
+				contactService.inJurisdictionOrOwned(cb, new ContactJoins(joins.getContact())),
+				eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(joins.getEventParticipant())));
+		return cb.or(reportedByCurrentUser, jurisdictionPredicate);
 	}
 
 	public Predicate buildCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {

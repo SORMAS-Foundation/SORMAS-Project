@@ -17,11 +17,8 @@ package de.symeda.sormas.api.utils.jurisdiction.caze;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
-import de.symeda.sormas.api.sample.SampleJurisdictionDto;
-import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
-import de.symeda.sormas.api.utils.jurisdiction.SampleJurisdictionHelper;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 
 public class CaseJurisdictionBooleanValidator extends JurisdictionValidator<Boolean> {
