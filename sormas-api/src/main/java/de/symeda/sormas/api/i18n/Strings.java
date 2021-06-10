@@ -22,9 +22,12 @@ public interface Strings {
 	String classificationAllOf = "classificationAllOf";
 	String classificationClassificationRules = "classificationClassificationRules";
 	String classificationConfirmed = "classificationConfirmed";
+	String classificationConfirmedNoSymptoms = "classificationConfirmedNoSymptoms";
+	String classificationConfirmedUnknownSymptoms = "classificationConfirmedUnknownSymptoms";
 	String classificationCriteriaForExposureType = "classificationCriteriaForExposureType";
 	String classificationCriteriaForTestType = "classificationCriteriaForTestType";
 	String classificationDaysBeforeCaseStart = "classificationDaysBeforeCaseStart";
+	String classificationEventCluster = "classificationEventCluster";
 	String classificationForDisease = "classificationForDisease";
 	String classificationGeneratedFor = "classificationGeneratedFor";
 	String classificationInfoNumberText = "classificationInfoNumberText";
@@ -40,6 +43,7 @@ public interface Strings {
 	String classificationProbable = "classificationProbable";
 	String classificationRulesFor = "classificationRulesFor";
 	String classificationSuspect = "classificationSuspect";
+	String classificationSymptomsAllOf = "classificationSymptomsAllOf";
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
 	String comparedTo = "comparedTo";
@@ -1154,6 +1158,7 @@ public interface Strings {
 	String quarterShort = "quarterShort";
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
+	String setTo = "setTo";
 	String step = "step";
 	String text = "text";
 	String toCase = "toCase";

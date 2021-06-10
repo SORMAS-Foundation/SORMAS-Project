@@ -688,6 +688,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				eventCountSq,
 				caseRoot.get(Case.EXTERNAL_ID),
 				caseRoot.get(Case.EXTERNAL_TOKEN),
+				caseRoot.get(Case.INTERNAL_TOKEN),
 				joins.getPerson().get(Person.BIRTH_NAME),
 				joins.getPersonBirthCountry().get(Country.ISO_CODE),
 				joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
@@ -1666,15 +1667,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		// Update case classification if the feature is enabled
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
 			if (associatedCase.getCaseClassification() != CaseClassification.NO_CASE) {
-				List<PathogenTest> pathogenTests = pathogenTestService.getAllByCase(associatedCase);
-				if (pathogenTests.size() == 0) {
+				Long pathogenTestsCount = pathogenTestService.countByCase(associatedCase);
+				if (pathogenTestsCount == 0) {
 					return;
 				}
 				// calculate classification
-				List<PathogenTestDto> pathogenTestDtos = pathogenTests.stream().map(PathogenTestFacadeEjbLocal::toDto).collect(Collectors.toList());
 				CaseDataDto newCaseDto = toDto(associatedCase);
 
-				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto, pathogenTestDtos);
+				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto);
 
 				// only update when classification by system changes - user may overwrite this
 				if (classification != associatedCase.getSystemCaseClassification()) {
@@ -1788,10 +1788,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				// calculate classification
 				CaseDataDto newCaseDto = toDto(newCase);
-				List<PathogenTestDto> pathogenTests =
-					pathogenTestService.getAllByCase(newCase).stream().map(s -> PathogenTestFacadeEjbLocal.toDto(s)).collect(Collectors.toList());
 
-				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto, pathogenTests);
+				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto);
 
 				// only update when classification by system changes - user may overwrite this
 				if (classification != newCase.getSystemCaseClassification()) {
@@ -2401,6 +2399,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
@@ -2575,6 +2574,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());

@@ -48,6 +48,7 @@ import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -1317,6 +1318,24 @@ public class CaseController {
 				confirmedContent.setWidth(100, Unit.PERCENTAGE);
 				confirmedContent.setValue(ClassificationHtmlRenderer.createConfirmedHtmlString(diseaseCriteria));
 				classificationRulesLayout.addComponent(confirmedContent);
+			}
+
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+				if (diseaseCriteria.getConfirmedNoSymptomsCriteria() != null) {
+					Label confirmedNoSymptomsContent = new Label();
+					confirmedNoSymptomsContent.setContentMode(ContentMode.HTML);
+					confirmedNoSymptomsContent.setWidth(100, Unit.PERCENTAGE);
+					confirmedNoSymptomsContent.setValue(ClassificationHtmlRenderer.createConfirmedNoSymptomsHtmlString(diseaseCriteria));
+					classificationRulesLayout.addComponent(confirmedNoSymptomsContent);
+				}
+
+				if (diseaseCriteria.getConfirmedUnknownSymptomsCriteria() != null) {
+					Label confirmedUnknownSymptomsContent = new Label();
+					confirmedUnknownSymptomsContent.setContentMode(ContentMode.HTML);
+					confirmedUnknownSymptomsContent.setWidth(100, Unit.PERCENTAGE);
+					confirmedUnknownSymptomsContent.setValue(ClassificationHtmlRenderer.createConfirmedUnknownSymptomsHtmlString(diseaseCriteria));
+					classificationRulesLayout.addComponent(confirmedUnknownSymptomsContent);
+				}
 			}
 
 			if (diseaseCriteria.getNotACaseCriteria() != null) {

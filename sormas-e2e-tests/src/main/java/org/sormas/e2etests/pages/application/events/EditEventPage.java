@@ -49,4 +49,6 @@ public class EditEventPage {
   public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
   public static final By SOURCE_TYPE_COMBOBOX = By.cssSelector("#srcType div");
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(" #typeOfPlace div");
+  public static final By NEW_TASK_BUTTON = By.id("taskNewTask");
+  public static final By EDIT_FIRST_TASK = By.cssSelector("#edit-task-0");
 }

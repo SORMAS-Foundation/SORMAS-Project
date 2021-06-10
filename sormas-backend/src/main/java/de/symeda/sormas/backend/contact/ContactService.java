@@ -1124,6 +1124,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					CriteriaBuilderHelper.ilike(cb, from.get(Contact.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Contact.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Contact.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Contact.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
 					phoneNumberPredicate(
@@ -1133,6 +1134,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.ilike(cb, caze.get(Case.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EPID_NUMBER), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.LAST_NAME), textFilter),
