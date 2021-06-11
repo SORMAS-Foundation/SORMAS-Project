@@ -146,11 +146,12 @@ public class TestDataCreator {
 		String firstName,
 		String lastName,
 		UserRole... roles) {
-		UserDto user = UserDto.build();
-		user.setFirstName(firstName);
-		user.setLastName(lastName);
-		user.setUserName(firstName + lastName);
-		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
+		UserDto user1 = UserDto.build();
+		user1.setFirstName(firstName);
+		user1.setLastName(lastName);
+		user1.setUserName(firstName + lastName);
+		user1.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
+		UserDto user = user1;
 		user.setRegion(beanTest.getRegionFacade().getRegionReferenceByUuid(regionUuid));
 		user.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(districtUuid));
 		user.setCommunity(beanTest.getCommunityFacade().getCommunityReferenceByUuid(communityUuid));
@@ -158,6 +159,17 @@ public class TestDataCreator {
 		user = beanTest.getUserFacade().saveUser(user);
 
 		return user;
+	}
+
+	public UserReferenceDto createUserRef(
+		String regionUuid,
+		String districtUuid,
+		String communityUuid,
+		String facilityUuid,
+		String firstName,
+		String lastName,
+		UserRole... roles) {
+		return createUser(regionUuid, districtUuid, communityUuid, facilityUuid, firstName, lastName, roles).toReference();
 	}
 
 	public PersonDto createPerson() {
@@ -1365,7 +1377,7 @@ public class TestDataCreator {
 
 	public SystemEventDto createSystemEvent(SystemEventType type, Date startDate, SystemEventStatus status) {
 		return createSystemEvent(type, startDate, new Date(startDate.getTime() + 1000), status, "Generated for test purposes");
-	};
+	}
 
 	public SystemEventDto createSystemEvent(SystemEventType type, Date startDate, Date endDate, SystemEventStatus status, String additionalInfo) {
 		SystemEventDto systemEvent = SystemEventDto.build();

@@ -78,6 +78,17 @@ Feature: Create events
       And I click on the searched event
      Then I check the modified event data is correctly displayed
 
+  Scenario: Add a New action from event and verify the fields.
+    Given API: I create a new event
+    Given I log in with the user
+    And I click on the Events button from navbar
+    Then I open the last created event via api
+    And I click on New Action button from Event tab
+    Then I create New Action from event tab
+    And I click on Event Actions tab
+    And I open the Action recently created from Event tab
+    And I check that Action created from Event tab is correctly displayed in Event Actions tab
+
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
     Given I log in with the user
