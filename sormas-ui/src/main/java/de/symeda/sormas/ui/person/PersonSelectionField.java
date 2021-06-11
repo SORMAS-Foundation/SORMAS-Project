@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Component;
@@ -27,6 +29,7 @@ import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
@@ -146,8 +149,14 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	}
 
 	private void addSelectPersonRadioGroup() {
+		List<String> selectPersonOption = new ArrayList<>();
+		selectPersonOption.add(SELECT_PERSON);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)) {
+			selectPersonOption.add(SEARCH_AND_SELECT_PERSON);
+		}
+
 		rbSelectPerson = new RadioButtonGroup<>();
-		rbSelectPerson.setItems(SELECT_PERSON, SEARCH_AND_SELECT_PERSON);
+		rbSelectPerson.setItems(selectPersonOption);
 		rbSelectPerson.setItemCaptionGenerator(I18nProperties::getCaption);
 		CssStyles.style(rbSelectPerson, CssStyles.VSPACE_NONE);
 
