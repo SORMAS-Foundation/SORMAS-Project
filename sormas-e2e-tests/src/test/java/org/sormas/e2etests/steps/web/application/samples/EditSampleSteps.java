@@ -19,7 +19,7 @@
 package org.sormas.e2etests.steps.web.application.samples;
 
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.*;
-import static org.sormas.e2etests.pages.application.samples.SampleManagementPage.SAMPLE_SEARCH_INPUT;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SEARCH_INPUT;
 
 import cucumber.api.java8.En;
 import java.time.format.DateTimeFormatter;
@@ -51,6 +51,7 @@ public class EditSampleSteps implements En {
     When(
         "I delete the sample",
         () -> {
+          webDriverHelpers.scrollToElement(DELETE_SAMPLE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_SAMPLE_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SAMPLE_DELETION_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_DELETION_POPUP_YES_BUTTON);

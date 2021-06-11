@@ -22,7 +22,7 @@ import org.openqa.selenium.By;
 
 public class EditSamplePage {
 
-  public static final By DELETE_SAMPLE_BUTTON = By.id("delete");
+  public static final By DELETE_SAMPLE_BUTTON = By.cssSelector("#delete");
   public static final By SAMPLE_DELETION_POPUP = By.cssSelector(".v-window .popupContent");
   public static final By SAMPLE_DELETION_POPUP_YES_BUTTON = By.id("actionConfirm");
 }
