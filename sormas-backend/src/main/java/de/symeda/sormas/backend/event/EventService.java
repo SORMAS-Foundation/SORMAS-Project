@@ -370,10 +370,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 						currentUser.getHealthFacility().getDistrict()));
 			}
 		case LABORATORY:
-			Subquery<Long> sampleEventSubquery = cq.subquery(Long.class);
-			Root<Sample> sampleRoot = sampleEventSubquery.from(Sample.class);
-			sampleEventSubquery.where(sampleService.createUserFilterWithoutCase(cb, new SampleJoins(sampleRoot)));
-			sampleEventSubquery.select(sampleRoot.get(Sample.ASSOCIATED_EVENT_PARTICIPANT).get(EventParticipant.EVENT).get(Event.ID));
+			final Subquery<Long> sampleEventSubquery = cq.subquery(Long.class);
+			final Root<Sample> sampleRoot = sampleEventSubquery.from(Sample.class);
+			final SampleJoins joins = new SampleJoins(sampleRoot);
+			final Join eventJoin = joins.getEvent();
+			sampleEventSubquery.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutCase(cb, joins), cb.isNotNull(eventJoin)));
+			sampleEventSubquery.select(eventJoin.get(Event.ID));
 			filter = CriteriaBuilderHelper.or(cb, filter, cb.in(eventPath.get(Event.ID)).value(sampleEventSubquery));
 			break;
 		default:

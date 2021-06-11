@@ -75,7 +75,6 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 	private Join<Person, Country> personBirthCountry;
 	private Join<Person, Country> personCitizenship;
 	private Join<Case, District> reportingDistrict;
-	private Join<Case, DiseaseVariant> diseaseVariant;
 	private Join<Case, SormasToSormasShareInfo> shareInfoCases;
 	private Join<Case, ExternalShareInfo> externalShareInfo;
 

@@ -59,6 +59,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
 	private UserDto user2;
+	private UserDto labUser;
 
 	@Override
 	public void init() {
@@ -71,6 +72,10 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		user2 = creator
 			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+		labUser = creator
+			.createUser(null, null, null, "Lab", "Off", UserRole.LAB_USER);
+		labUser.setLaboratory(rdcf1.facility);
+		getUserFacade().saveUser(labUser);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -89,6 +94,33 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		SampleDto sample = createCaseSample(caze, user1);
 
 		assertPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()));
+	}
+
+	@Test
+	public void testGetSampleWithLabUserOfSampleLab() {
+		when(MockProducer.getPrincipal().getName()).thenReturn("LabOff");
+		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
+		SampleDto sample = createCaseSample(caze, user1);
+
+		assertNotPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()));
+	}
+
+	@Test
+	public void testGetSampleWithLabUserNotOfSampleLab() {
+		when(MockProducer.getPrincipal().getName()).thenReturn("LabOff");
+		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
+		SampleDto sample = createCaseSample(caze, user2);
+
+		assertPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()));
+	}
+
+	@Test
+	public void testGetSampleWithLabUserCreatedBySameLabUser() {
+		when(MockProducer.getPrincipal().getName()).thenReturn("LabOff");
+		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
+		SampleDto sample = createCaseSample(caze, labUser);
+
+		assertNotPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()));
 	}
 
 	@Test

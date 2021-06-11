@@ -82,6 +82,6 @@ public class ContactJurisdictionPredicateValidator extends JurisdictionValidator
 
 	@Override
 	protected Predicate whenLaboratoryLevel() {
-		return cb.equal(joins.getSampleLabs().get(Facility.ID), currentUser.getHealthFacility().getId());
+		return cb.equal(joins.getSampleLabs().get(Facility.ID), currentUser.getLaboratory().getId());
 	}
 }
