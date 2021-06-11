@@ -87,7 +87,9 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 			} else {
 				disease.setSelectedItem(null);
 			}
+			disease.setEnabled(caseReferenceDto == null);
 
+			binder.getBinding(SharedInfoFieldDto.DISEASE).get().setAsRequiredEnabled(caseReferenceDto == null);
 			binder.getBinding(SharedInfoFieldDto.REGION).get().setAsRequiredEnabled(caseReferenceDto == null);
 			binder.getBinding(SharedInfoFieldDto.DISTRICT).get().setAsRequiredEnabled(caseReferenceDto == null);
 		});
