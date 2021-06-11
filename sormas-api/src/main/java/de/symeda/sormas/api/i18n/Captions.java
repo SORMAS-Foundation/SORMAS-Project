@@ -82,10 +82,12 @@ public interface Captions {
 	String actionPick = "actionPick";
 	String actionReject = "actionReject";
 	String actionRemindMeLater = "actionRemindMeLater";
+	String actionReset = "actionReset";
 	String actionResetEnumCache = "actionResetEnumCache";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
+	String actionSearch = "actionSearch";
 	String actionSelectAll = "actionSelectAll";
 	String actionSend = "actionSend";
 	String actionSettings = "actionSettings";

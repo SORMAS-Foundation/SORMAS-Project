@@ -567,6 +567,18 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(personFrom.get(Person.PASSPORT_NUMBER), criteria.getPassportNumber()));
 		}
 
+		String uuidExternalIdExternalTokenLike = criteria.getUuidExternalIdExternalTokenLike();
+		if (!StringUtils.isBlank(uuidExternalIdExternalTokenLike)) {
+			Predicate uudExternalIdExternalTokenFilter = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
+				cb,
+				uuidExternalIdExternalTokenLike,
+				(searchTerm) -> cb.or(
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.UUID), searchTerm),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_ID), searchTerm),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_TOKEN), searchTerm)));
+			filter = CriteriaBuilderHelper.or(cb, filter, uudExternalIdExternalTokenFilter);
+		}
+
 		return filter;
 	}
 
@@ -618,7 +630,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		} else if (externalIds.size() > ModelConstants.PARAMETER_LIMIT) {
 			List<Person> persons = new LinkedList<>();
 			IterableHelper
-					.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> persons.addAll(getByExternalIds(externalIds)));
+				.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> persons.addAll(getByExternalIds(externalIds)));
 			return persons;
 		} else {
 			return getByExternalIds(externalIds);

@@ -5,9 +5,9 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 @SuppressWarnings("serial")
 public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable {
-
 	public static String FIRST_NAME = "firstName";
 	public static String LAST_NAME = "lastName";
+	public static String UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE = "uuidExternalIdExternalTokenLike";
 
 	private String firstName;
 	private String lastName;
@@ -17,7 +17,7 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	private Integer birthdateDD;
 	private String passportNumber;
 	private String nationalHealthId;
-
+	private String uuidExternalIdExternalTokenLike;
 	@IgnoreForUrl
 	public String getFirstName() {
 		return firstName;
@@ -104,5 +104,13 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	public PersonSimilarityCriteria nationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
 		return this;
+	}
+
+	public String getUuidExternalIdExternalTokenLike() {
+		return uuidExternalIdExternalTokenLike;
+	}
+
+	public void setUuidExternalIdExternalTokenLike(String uuidExternalIdExternalTokenLike) {
+		this.uuidExternalIdExternalTokenLike = uuidExternalIdExternalTokenLike;
 	}
 }

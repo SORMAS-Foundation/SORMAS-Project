@@ -16,14 +16,19 @@
 package de.symeda.sormas.ui.person;
 
 import com.vaadin.server.UserError;
+import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldConfiguration;
 
 public class PersonSelectionFilterForm extends AbstractFilterForm<PersonSimilarityCriteria> {
 
@@ -33,39 +38,63 @@ public class PersonSelectionFilterForm extends AbstractFilterForm<PersonSimilari
 	private TextField lastName;
 
 	protected PersonSelectionFilterForm() {
-		super(PersonSimilarityCriteria.class, CaseDataDto.I18N_PREFIX);
+		super(PersonSimilarityCriteria.class, CaseDataDto.I18N_PREFIX, null, Captions.actionSearch, Captions.actionReset);
 	}
 
 	@Override
 	protected String[] getMainFilterLocators() {
 		return new String[] {
 			PersonSimilarityCriteria.FIRST_NAME,
-			PersonSimilarityCriteria.LAST_NAME };
+			PersonSimilarityCriteria.LAST_NAME,
+			PersonSimilarityCriteria.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE };
 	}
 
 	@Override
 	protected void addFields() {
-		firstName = addField(PersonSimilarityCriteria.FIRST_NAME);
-		firstName.setInputPrompt(I18nProperties.getCaption(Captions.firstName));
+		firstName = addField(
+			FieldConfiguration.withCaptionAndPixelSized(PersonSimilarityCriteria.FIRST_NAME, I18nProperties.getCaption(Captions.firstName), 100));
+		lastName = addField(
+			FieldConfiguration.withCaptionAndPixelSized(PersonSimilarityCriteria.LAST_NAME, I18nProperties.getCaption(Captions.lastName), 100));
 
-		lastName = addField(PersonSimilarityCriteria.LAST_NAME);
-		lastName.setInputPrompt(I18nProperties.getCaption(Captions.lastName));
+		addField(
+			FieldConfiguration.withCaptionAndPixelSized(
+				PersonSimilarityCriteria.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE,
+				I18nProperties.getString(Strings.promptPersonDuplicateSearchIdExternalId),
+				150)).addStyleName(CssStyles.HSPACE_RIGHT_3);
 	}
 
-	public boolean validateNameFields() {
-		boolean valid = true;
-		if (firstName.isEmpty()) {
-			firstName.setComponentError(
-				new UserError(I18nProperties.getValidationError(Validations.required, I18nProperties.getCaption(Captions.firstName))));
-			valid = false;
+	public boolean validateFields() {
+		String validationError = I18nProperties.getValidationError(Validations.nameOrAnyOtherFieldShouldBeFilled);
+
+		getFieldGroup().getFields().forEach(f -> {
+			if (AbstractField.class.isAssignableFrom(f.getClass())) {
+				((AbstractField<?>) f).setComponentError(null);
+			}
+		});
+
+		if (getFieldGroup().getFields().stream().allMatch(Field::isEmpty)) {
+			getFieldGroup().getFields().forEach(f -> {
+				if (AbstractField.class.isAssignableFrom(f.getClass())) {
+					((AbstractField<?>) f).setComponentError(new UserError(validationError));
+				}
+			});
+
+			return false;
+		} else {
+			if (!firstName.isEmpty() && lastName.isEmpty()) {
+				lastName.setComponentError(
+					new UserError(I18nProperties.getValidationError(Validations.required, I18nProperties.getCaption(Captions.lastName))));
+				return false;
+			}
+
+			if (firstName.isEmpty() && !lastName.isEmpty()) {
+				firstName.setComponentError(
+					new UserError(I18nProperties.getValidationError(Validations.required, I18nProperties.getCaption(Captions.firstName))));
+
+				return false;
+			}
 		}
 
-		if (lastName.isEmpty()) {
-			lastName.setComponentError(
-				new UserError(I18nProperties.getValidationError(Validations.required, I18nProperties.getCaption(Captions.lastName))));
-			valid = false;
-		}
-
-		return valid;
+		return true;
 	}
 }
