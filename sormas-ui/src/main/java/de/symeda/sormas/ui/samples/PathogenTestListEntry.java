@@ -92,23 +92,41 @@ public class PathogenTestListEntry extends HorizontalLayout {
 		middleLabelLayout.setMargin(false);
 		middleLabelLayout.setWidth(100, Unit.PERCENTAGE);
 		labelLayout.addComponent(middleLabelLayout);
-		Label labelLeft =
+
+		Label labelMiddleLeft =
 			new Label(DataHelper.toStringNullable(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails())));
-		middleLabelLayout.addComponent(labelLeft);
+		middleLabelLayout.addComponent(labelMiddleLeft);
 
-		Label labelRight = new Label(DateFormatHelper.formatLocalDateTime(pathogenTest.getTestDateTime()));
-		labelRight.addStyleName(CssStyles.ALIGN_RIGHT);
-		middleLabelLayout.addComponent(labelRight);
-		middleLabelLayout.setComponentAlignment(labelRight, Alignment.TOP_RIGHT);
+		Label labelMiddleRight = new Label(DateFormatHelper.formatLocalDateTime(pathogenTest.getTestDateTime()));
+		labelMiddleRight.addStyleName(CssStyles.ALIGN_RIGHT);
+		middleLabelLayout.addComponent(labelMiddleRight);
+		middleLabelLayout.setComponentAlignment(labelMiddleRight, Alignment.TOP_RIGHT);
 
-		Label labelBottom = new Label(DataHelper.toStringNullable(pathogenTest.getTestResult()));
-		CssStyles.style(labelBottom, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
-		if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE) {
-			CssStyles.style(labelBottom, CssStyles.LABEL_CRITICAL);
-		} else {
-			CssStyles.style(labelBottom, CssStyles.LABEL_WARNING);
+		if (pathogenTest.getTestedDiseaseVariant() != null || pathogenTest.getCqValue() != null) {
+			HorizontalLayout bottomLabelLayout = new HorizontalLayout();
+			bottomLabelLayout.setSpacing(false);
+			bottomLabelLayout.setMargin(false);
+			bottomLabelLayout.setWidth(100, Unit.PERCENTAGE);
+			labelLayout.addComponent(bottomLabelLayout);
+
+			Label labelBottomLeft = new Label(pathogenTest.getTestedDiseaseVariant().toString());
+			bottomLabelLayout.addComponent(labelBottomLeft);
+
+			Label labelButtonRight =
+				new Label(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.CQ_VALUE) + ": " + pathogenTest.getCqValue());
+			labelButtonRight.addStyleName(CssStyles.ALIGN_RIGHT);
+			bottomLabelLayout.addComponent(labelButtonRight);
+			bottomLabelLayout.setComponentAlignment(labelButtonRight, Alignment.TOP_RIGHT);
 		}
-		labelLayout.addComponent(labelBottom);
+
+		Label labelResult = new Label(DataHelper.toStringNullable(pathogenTest.getTestResult()));
+		CssStyles.style(labelResult, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+		if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE) {
+			CssStyles.style(labelResult, CssStyles.LABEL_CRITICAL);
+		} else {
+			CssStyles.style(labelResult, CssStyles.LABEL_WARNING);
+		}
+		labelLayout.addComponent(labelResult);
 	}
 
 	public void addEditListener(ClickListener editClickListener) {
