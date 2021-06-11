@@ -68,6 +68,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String SURVEILLANCE_TOOL_SHARE_COUNT = "surveillanceToolShareCount";
 	public static final String SURVEILLANCE_TOOL_STATUS = "surveillanceToolStatus";
 
+	private Long id;
 	private String uuid;
 	private String externalId;
 	private String externalToken;
@@ -111,6 +112,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private ExternalShareStatus surveillanceToolStatus;
 
 	public EventIndexDto(
+		Long id,
 		String uuid,
 		String externalId,
 		String externalToken,
@@ -150,6 +152,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String responsibleUserLastName,
 		Date changeDate) {
 
+		this.id = id;
 		this.uuid = uuid;
 		this.externalId = externalId;
 		this.externalToken = externalToken;
@@ -175,6 +178,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
 		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null);
 		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getUuid() {

@@ -23,8 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 
-import javax.ejb.EJB;
-import javax.enterprise.inject.Alternative;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Entity;
@@ -51,20 +49,20 @@ import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.backend.common.StartupShutdownService;
 import de.symeda.sormas.backend.util.ClientHelper;
 
-@Alternative
 public class SormasToSormasRestClient {
 
 	public static final String SORMAS_REST_URL_TEMPLATE = "https://%s" + SORMAS_REST_PATH + "%s";
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasRestClient.class);
-	@EJB
-	private ServerAccessDataService serverAccessDataService;
+	private final ServerAccessDataService serverAccessDataService;
 
-	@EJB
-	protected SormasToSormasEncryptionService encryptionService;
+	private final SormasToSormasEncryptionService encryptionService;
 
 	private final ObjectMapper mapper;
 
-	public SormasToSormasRestClient() {
+	public SormasToSormasRestClient(ServerAccessDataService serverAccessDataService, SormasToSormasEncryptionService encryptionService) {
+		this.serverAccessDataService = serverAccessDataService;
+		this.encryptionService = encryptionService;
+
 		mapper = new ObjectMapper();
 		mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
 		mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
