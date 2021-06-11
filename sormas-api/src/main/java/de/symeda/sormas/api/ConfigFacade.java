@@ -93,6 +93,8 @@ public interface ConfigFacade {
 
 	GeoLatLon getCountryCenter();
 
+	boolean isMapUseCountryCenter();
+
 	int getMapZoom();
 
 	String getGeocodingServiceUrlTemplate();

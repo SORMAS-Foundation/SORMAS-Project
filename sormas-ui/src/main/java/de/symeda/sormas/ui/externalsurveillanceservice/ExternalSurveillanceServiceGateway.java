@@ -39,11 +39,17 @@ public class ExternalSurveillanceServiceGateway {
 		CustomLayout targetLayout,
 		DirtyStateComponent editComponent,
 		CaseDataDto caze) {
-		return addComponentToLayout(targetLayout, editComponent, I18nProperties.getString(Strings.entityCase), () -> {
-			FacadeProvider.getExternalSurveillanceToolFacade().sendCases(Collections.singletonList(caze.getUuid()));
-		}, () -> {
-			FacadeProvider.getExternalSurveillanceToolFacade().deleteCases(Collections.singletonList(caze));
-		}, new ExternalShareInfoCriteria().caze(caze.toReference()));
+		return addComponentToLayout(
+			targetLayout,
+			editComponent,
+			I18nProperties.getString(Strings.entityCase),
+			caze.isDontShareWithReportingTool() ? null : () -> {
+				FacadeProvider.getExternalSurveillanceToolFacade().sendCases(Collections.singletonList(caze.getUuid()));
+			},
+			() -> {
+				FacadeProvider.getExternalSurveillanceToolFacade().deleteCases(Collections.singletonList(caze));
+			},
+			new ExternalShareInfoCriteria().caze(caze.toReference()));
 	}
 
 	public static ExternalSurveillanceShareComponent addComponentToLayout(
@@ -68,13 +74,13 @@ public class ExternalSurveillanceServiceGateway {
 			return null;
 		}
 
-		ExternalSurveillanceShareComponent shareComponent = new ExternalSurveillanceShareComponent(entityName, () -> {
+		ExternalSurveillanceShareComponent shareComponent = new ExternalSurveillanceShareComponent(entityName, gatewaySendCall != null ? () -> {
 			sendToExternalSurveillanceTool(
 				entityName,
 				gatewaySendCall,
 				I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntrySent),
 				SormasUI::refreshView);
-		}, () -> {
+		} : null, () -> {
 			deleteInExternalSurveillanceTool(entityName, gatewayDeleteCall, SormasUI::refreshView);
 		}, shareInfoCriteria, editComponent);
 		targetLayout.addComponent(shareComponent, EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC);

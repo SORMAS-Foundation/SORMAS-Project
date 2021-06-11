@@ -18,9 +18,11 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.NEW_ACTION_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventActionsPage.CREATE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.*;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 
@@ -30,10 +32,12 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Event;
 import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.services.EventService;
+import org.sormas.e2etests.state.ApiState;
 
 public class EditEventSteps implements En {
 
@@ -43,7 +47,12 @@ public class EditEventSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
-  public EditEventSteps(WebDriverHelpers webDriverHelpers, EventService eventService, Faker faker) {
+  public EditEventSteps(
+      WebDriverHelpers webDriverHelpers,
+      EventService eventService,
+      Faker faker,
+      @Named("ENVIRONMENT_URL") String environmentUrl,
+      ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -131,6 +140,28 @@ public class EditEventSteps implements En {
         "^I click on edit task icon of the first created task$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_FIRST_TASK);
+        });
+
+    When(
+        "I open the last created event via api",
+        () -> {
+          String LAST_CREATED_EVENT_URL =
+              environmentUrl + "/sormas-ui/#!events/data/" + apiState.getCreatedEvent().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_URL);
+        });
+
+    When(
+        "I click on New Action button from Event tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_ACTION_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ACTION_POPUP);
+        });
+
+    Then(
+        "I click on Event Actions tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_ACTIONS_TAB);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CREATE_BUTTON);
         });
   }
 
