@@ -167,6 +167,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return getAllByRegionsAndUserRoles(regions, Arrays.asList(userRoles), this::createJurisdictionFilter);
 	}
 
+	// XXX #5614: Only used with extra filter null or createJurisdictionFilter
 	private List<User> getAllByRegionsAndUserRoles(
 		List<Region> regions,
 		Collection<UserRole> userRoles,
@@ -314,10 +315,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		Predicate filter = cb.and(
 			createDefaultFilter(cb, from),
 			cb.equal(from.get(User.HEALTH_FACILITY), facility),
-			joinRoles.in(
-				Arrays.asList(
-					new UserRole[] {
-						UserRole.HOSPITAL_INFORMANT })));
+			joinRoles.in(Arrays.asList(UserRole.HOSPITAL_INFORMANT)));
 
 		cq.where(filter).distinct(true);
 		return em.createQuery(cq).getResultList();
@@ -337,11 +335,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		Predicate filter = cb.and(
 			createDefaultFilter(cb, from),
 			cb.equal(from.get(User.LABORATORY), facility),
-			joinRoles.in(
-				Arrays.asList(
-					new UserRole[] {
-						UserRole.LAB_USER,
-						UserRole.EXTERNAL_LAB_USER })));
+			joinRoles.in(Arrays.asList(UserRole.LAB_USER, UserRole.EXTERNAL_LAB_USER)));
 		cq.where(filter).distinct(true);
 
 		return em.createQuery(cq).getResultList();
