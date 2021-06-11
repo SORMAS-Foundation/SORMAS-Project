@@ -75,9 +75,6 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetUsersByRegionAndRoles() {
-		// Questions:
-		// - What is the intention of passing a null region to a region  filter? Options: "users with region null" or "do not apply a region filter"
-		// - Can this happen in real life usage?
 		getUserFacade().getUsersByRegionAndRoles(null, SURVEILLANCE_OFFICER);
 	}
 

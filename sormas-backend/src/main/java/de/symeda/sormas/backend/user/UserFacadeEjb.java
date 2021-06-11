@@ -45,6 +45,7 @@ import javax.validation.ValidationException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
+import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -177,11 +178,20 @@ public class UserFacadeEjb implements UserFacade {
 		return dto;
 	}
 
+	private List<String> toUuidList(HasUuid hasUuid) {
+
+		/*
+		 * Supports conversion of a null object into a list with one "null" value in it.
+		 * Uncertain if that use case exists, but wasn't suppose to be broken when replacing the Dto to Entity lookup.
+		 */
+		return Arrays.asList(hasUuid == null ? null : hasUuid.getUuid());
+	}
+
 	@Override
 	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles) {
 
 		return userService.getReferenceList(
-			Arrays.asList(regionRef.getUuid()),
+			toUuidList(regionRef),
 			null,
 			false,
 			true,
@@ -261,7 +271,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		return userService.getReferenceList(
 			null,
-			Arrays.asList(districtRef.getUuid()),
+			toUuidList(districtRef),
 			includeSupervisors,
 			true,
 			true,
