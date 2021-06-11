@@ -2808,21 +2808,13 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private User getRandomSurveillanceOfficer(District district) {
-		List<User> officers = userService.getAllByDistrict(district, false, UserRole.SURVEILLANCE_OFFICER);
-		if (!officers.isEmpty()) {
-			return officers.get(new Random().nextInt(officers.size()));
-		}
 
-		return null;
+		return userService.getRandomUser(district, UserRole.SURVEILLANCE_OFFICER);
 	}
 
 	private User getRandomRegionUser(Region region) {
-		List<User> supervisors = userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR);
-		if (!supervisors.isEmpty()) {
-			return supervisors.get(new Random().nextInt(supervisors.size()));
-		}
 
-		return null;
+		return userService.getRandomUser(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR);
 	}
 
 	@Override
