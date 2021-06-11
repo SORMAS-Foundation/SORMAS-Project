@@ -311,6 +311,7 @@ public class VisitFacadeEjb implements VisitFacade {
 					caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(caseJoin)),
 					contactService.inJurisdictionOrOwned(cb, new ContactJoins(contactJoin)))));
 
+		cq.distinct(true);
 		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visit));
 
 		if (sortProperties != null && sortProperties.size() > 0) {
