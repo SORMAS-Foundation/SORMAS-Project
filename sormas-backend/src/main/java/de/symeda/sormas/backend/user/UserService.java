@@ -113,61 +113,23 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return entity;
 	}
 
-	// XXX #5614: Replaced
-	@Deprecated
-	public List<User> getAllByUserRoles(UserRole... userRoles) {
-		return getAllByUserRoles(Arrays.asList(userRoles));
-	}
-
-	// XXX #5614: Replaced
-	@Deprecated
-	public List<User> getAllByUserRoles(Collection<UserRole> userRoles) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
-		Root<User> from = cq.from(getElementClass());
-
-		Predicate filter = createDefaultFilter(cb, from);
-
-		if (userRoles.size() > 0) {
-			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			Predicate rolesFilter = joinRoles.in(userRoles);
-			filter = CriteriaBuilderHelper.and(cb, filter, rolesFilter);
-			cq.where(filter);
-		}
-
-		cq.distinct(true).orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	// XXX #5614: In use for WeeklyReports and messageRecipients
 	public List<User> getAllByRegionAndUserRoles(Region region, UserRole... userRoles) {
 		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles), null);
 	}
 
-	// XXX #5614: In use for WeeklyReports and messageRecipients
 	public List<User> getAllByRegionsAndUserRoles(List<Region> regions, UserRole... userRoles) {
 		return getAllByRegionsAndUserRoles(regions, Arrays.asList(userRoles), null);
 	}
 
-	// XXX #5614: In use for WeeklyReports
 	public List<User> getAllByRegionAndUserRolesInJurisdiction(Region region, UserRole... userRoles) {
 		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles), this::createJurisdictionFilter);
 	}
 
-	// XXX #5614 Unused
-	@Deprecated
-	public List<User> getAllByRegionsAndUserRolesInJurisdiction(Region region, UserRole... userRoles) {
-		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles), this::createJurisdictionFilter);
-	}
-
-	// XXX #5614: Replaced
-	@Deprecated
-	public List<User> getAllByRegionsAndUserRolesInJurisdiction(List<Region> regions, UserRole... userRoles) {
-		return getAllByRegionsAndUserRoles(regions, Arrays.asList(userRoles), this::createJurisdictionFilter);
-	}
-
-	// XXX #5614: Only used with extra filter null or createJurisdictionFilter
+	/**
+	 * @see #getReferenceList(List, List, boolean, boolean, boolean, List) This method is partly a duplication for getReferenceList,
+	 *      but it's still in use for WeeklyReports and messageRecipients where more information of the user is needed
+	 *      and method signatures rely on {@link User}.
+	 */
 	private List<User> getAllByRegionsAndUserRoles(
 		List<Region> regions,
 		Collection<UserRole> userRoles,
@@ -201,6 +163,20 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	/**
+	 * Loads users filtered by combinable filter conditions.<br />
+	 * Condition combination if parameter is set:<br />
+	 * {@code ((regionUuids & districtUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly}
+	 * 
+	 * @see #createJurisdictionFilter(CriteriaBuilder, From)
+	 * @param regionUuids
+	 * @param districtUuids
+	 * @param includeSupervisors
+	 *            If set to {@code true}, all supervisors are returned independent of other filters.
+	 * @param filterByJurisdiction
+	 * @param activeOnly
+	 * @param userRoles
+	 */
 	public List<UserReference> getReferenceList(
 		List<String> regionUuids,
 		List<String> districtUuids,
@@ -212,7 +188,20 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, Arrays.asList(userRoles));
 	}
 
-	// TODO #5614: Add Javadoc to all methods when Signatures are settled
+	/**
+	 * Loads users filtered by combinable filter conditions.<br />
+	 * Condition combination if parameter is set:<br />
+	 * {@code ((regionUuids & districtUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly}
+	 * 
+	 * @see #createJurisdictionFilter(CriteriaBuilder, From)
+	 * @param regionUuids
+	 * @param districtUuids
+	 * @param includeSupervisors
+	 *            If set to {@code true}, all supervisors are returned independent of other filters.
+	 * @param filterByJurisdiction
+	 * @param activeOnly
+	 * @param userRoles
+	 */
 	public List<UserReference> getReferenceList(
 		List<String> regionUuids,
 		List<String> districtUuids,
@@ -220,11 +209,6 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		boolean filterByJurisdiction,
 		boolean activeOnly,
 		List<UserRole> userRoles) {
-
-		/*
-		 * Conditions to combine if parameter is set:
-		 * ((regionUuids & districtUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly
-		 */
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<UserReference> cq = cb.createQuery(UserReference.class);
@@ -342,58 +326,6 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	}
 
 	/**
-	 * @param district
-	 * @param includeSupervisors
-	 *            If set to true, all supervisors are returned independent of the district
-	 * @param userRoles
-	 * @return
-	 */
-	// XXX #5614: Replaced
-	@Deprecated
-	public List<User> getAllByDistrict(District district, boolean includeSupervisors, UserRole... userRoles) {
-		return getAllByDistricts(Collections.singletonList(district), includeSupervisors, Arrays.asList(userRoles), null);
-	}
-
-	// XXX #5614: Replaced
-	@Deprecated
-	public List<User> getAllByDistrictInJurisdiction(District district, boolean includeSupervisors, UserRole... userRoles) {
-		return getAllByDistricts(Collections.singletonList(district), includeSupervisors, Arrays.asList(userRoles), this::createJurisdictionFilter);
-	}
-
-	// XXX #5614: Replaced
-	@Deprecated
-	public List<User> getAllByDistrictsInJurisdiction(List<District> districts, boolean includeSupervisors, UserRole... userRoles) {
-		return getAllByDistricts(districts, includeSupervisors, Arrays.asList(userRoles), this::createJurisdictionFilter);
-	}
-
-	// XXX #5614: Replaced
-	@Deprecated
-	private List<User> getAllByDistricts(
-		List<District> districts,
-		boolean includeSupervisors,
-		Collection<UserRole> userRoles,
-		BiFunction<CriteriaBuilder, Root<User>, Predicate> createExtraFilters) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
-		Root<User> from = cq.from(getElementClass());
-
-		Predicate filter = cb.and(createDefaultFilter(cb, from), buildDistrictFilter(cb, from, districts, includeSupervisors, userRoles));
-
-		if (createExtraFilters != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createExtraFilters.apply(cb, from));
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	/**
 	 * @param associatedOfficer
 	 * @param userRoles
 	 * @return
@@ -408,29 +340,6 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		filter = CriteriaBuilderHelper.and(cb, filter, buildUserRolesFilter(from, Arrays.asList(userRoles)));
 		cq.where(filter);
 
-		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	// XXX #5614: Replaced
-	@Deprecated
-	public List<User> getAllInJurisdiction(boolean includeInactive) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
-		Root<User> from = cq.from(getElementClass());
-
-		Predicate jurisdictionFilter = createJurisdictionFilter(cb, from);
-
-		if (!includeInactive) {
-			jurisdictionFilter = CriteriaBuilderHelper.and(cb, jurisdictionFilter, createDefaultFilter(cb, from));
-		}
-
-		if (jurisdictionFilter != null) {
-			cq.where(jurisdictionFilter);
-		}
-
-		cq.distinct(true);
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 
 		return em.createQuery(cq).getResultList();
@@ -581,31 +490,6 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		}
 
 		return null;
-	}
-
-	// XXX #5614: Replaced
-	@Deprecated
-	private Predicate buildDistrictFilter(
-		CriteriaBuilder cb,
-		Root<User> from,
-		List<District> district,
-		boolean includeSupervisors,
-		Collection<UserRole> userRoles) {
-
-		Predicate filter = CriteriaBuilderHelper.and(cb, from.get(User.DISTRICT).in(district), buildUserRolesFilter(from, userRoles));
-
-		if (includeSupervisors) {
-			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			Predicate supervisorFilter = joinRoles.in(
-				Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR));
-			if (filter != null) {
-				filter = cb.or(filter, supervisorFilter);
-			} else {
-				filter = supervisorFilter;
-			}
-		}
-
-		return filter;
 	}
 
 	public Long countByAssignedOfficer(User officer, UserRole... userRoles) {
