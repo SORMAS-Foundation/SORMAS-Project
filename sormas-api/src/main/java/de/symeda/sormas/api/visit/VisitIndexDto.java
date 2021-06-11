@@ -7,6 +7,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
@@ -38,6 +39,7 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 	private Float temperature;
 	private TemperatureSource temperatureSource;
 	private VisitOrigin origin;
+	private UserReferenceDto visitUser;
 
 	private Boolean isInJurisdiction;
 
@@ -52,6 +54,9 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 		Float temperature,
 		TemperatureSource temperatureSource,
 		VisitOrigin origin,
+		String visitUserUuid,
+		String visitUserFirstName,
+		String visitUserLastName,
 		boolean isInJurisdiction) {
 
 		this.id = id;
@@ -64,6 +69,7 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.temperature = temperature;
 		this.temperatureSource = temperatureSource;
 		this.origin = origin;
+		this.visitUser = visitUserUuid != null ? new UserReferenceDto(visitUserUuid, visitUserFirstName, visitUserLastName, null) : null;
 		this.isInJurisdiction = isInJurisdiction;
 	}
 
@@ -141,6 +147,14 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setOrigin(VisitOrigin origin) {
 		this.origin = origin;
+	}
+
+	public UserReferenceDto getVisitUser() {
+		return visitUser;
+	}
+
+	public void setVisitUser(UserReferenceDto visitUser) {
+		this.visitUser = visitUser;
 	}
 
 	public Boolean getInJurisdiction() {

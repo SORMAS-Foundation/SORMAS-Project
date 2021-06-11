@@ -335,7 +335,6 @@ public class EditCaseSteps implements En {
   }
 
   public void fillDateOfReport(LocalDate date) {
-
     webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 

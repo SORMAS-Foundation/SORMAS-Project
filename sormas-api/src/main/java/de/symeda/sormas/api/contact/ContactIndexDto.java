@@ -55,6 +55,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String COMPLETENESS = "completeness";
 
 	private String uuid;
@@ -82,6 +83,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private int visitCount;
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 	private String regionName;
 	private String districtName;
 	private String caseRegionName;
@@ -98,7 +100,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 						   String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification, String caseRegionName, String caseDistrictName,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
-						   String externalID, String externalToken, boolean isInJurisdiction,
+						   String externalID, String externalToken, String internalToken, boolean isInJurisdiction,
 						   int visitCount) {
 	//@formatter:on
 
@@ -128,6 +130,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.visitCount = visitCount;
 		this.externalID = externalID;
 		this.externalToken = externalToken;
+		this.internalToken = internalToken;
 		this.regionName = regionName;
 		this.districtName = districtName;
 		this.caseRegionName = caseRegionName;
@@ -314,6 +317,14 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	public String getRegionName() {

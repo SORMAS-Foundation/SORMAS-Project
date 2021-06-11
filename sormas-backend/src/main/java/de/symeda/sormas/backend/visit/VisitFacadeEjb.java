@@ -293,6 +293,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		Join<Visit, Symptoms> symptoms = visit.join(Visit.SYMPTOMS, JoinType.LEFT);
 		Join<Visit, Case> caseJoin = visit.join(Visit.CAZE, JoinType.LEFT);
 		Join<Visit, Contact> contactJoin = visit.join(Visit.CONTACTS, JoinType.LEFT);
+		Join<Visit, User> visitUser = visit.join(Visit.VISIT_USER, JoinType.LEFT);
 
 		cq.multiselect(
 			visit.get(Visit.ID),
@@ -305,6 +306,9 @@ public class VisitFacadeEjb implements VisitFacade {
 			symptoms.get(Symptoms.TEMPERATURE),
 			symptoms.get(Symptoms.TEMPERATURE_SOURCE),
 			visit.get(Visit.ORIGIN),
+			visitUser.get(User.UUID),
+			visitUser.get(User.FIRST_NAME),
+			visitUser.get(User.LAST_NAME),
 			caseService.jurisdictionSelector(
 				cb,
 				cb.or(

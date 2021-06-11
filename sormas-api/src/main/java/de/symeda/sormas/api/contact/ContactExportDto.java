@@ -199,6 +199,7 @@ public class ContactExportDto implements Serializable {
 	private String latestEventTitle;
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 
 	@PersonalData
 	@SensitiveData
@@ -238,7 +239,7 @@ public class ContactExportDto implements Serializable {
 							Vaccine vaccineName, String otherVaccineName, VaccineManufacturer vaccineManufacturer, String otherVaccineManufacturer,
 							String vaccineInn, String vaccineBatchNumber, String vaccineUniiCode, String vaccineAtcCode,
 
-							String externalID, String externalToken,
+							String externalID, String externalToken, String internalToken,
 							String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 							String reportingDistrict,
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid, boolean isInJurisdiction
@@ -332,6 +333,7 @@ public class ContactExportDto implements Serializable {
 
 		this.externalID = externalID;
 		this.externalToken = externalToken;
+		this.internalToken = internalToken;
 		this.birthName = birthName;
 		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
 		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
@@ -1152,6 +1154,13 @@ public class ContactExportDto implements Serializable {
 	@ExportGroup(ExportGroupType.CORE)
 	public String getExternalToken() {
 		return externalToken;
+	}
+
+	@Order(120)
+	@ExportProperty(ContactDto.INTERNAL_TOKEN)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getInternalToken() {
+		return internalToken;
 	}
 
 	public void setEventCount(Long eventCount) {

@@ -100,6 +100,7 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.CHANGE_DATE),
 			contact.get(Contact.EXTERNAL_ID),
 			contact.get(Contact.EXTERNAL_TOKEN),
+			contact.get(Contact.INTERNAL_TOKEN),
 			contactService.jurisdictionSelector(
 				cb,
 				cb.or(contactService.inJurisdictionOrOwned(cb, joins), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))));
@@ -151,6 +152,7 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDto.CASE_CLASSIFICATION:
 		case ContactIndexDto.EXTERNAL_ID:
 		case ContactIndexDto.EXTERNAL_TOKEN:
+		case ContactIndexDto.INTERNAL_TOKEN:
 			expressions.add(contact.get(sortProperty.propertyName));
 			break;
 		case ContactIndexDto.PERSON_FIRST_NAME:

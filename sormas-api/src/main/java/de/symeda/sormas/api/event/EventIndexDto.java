@@ -35,6 +35,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String UUID = "uuid";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
@@ -70,6 +71,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private String uuid;
 	private String externalId;
 	private String externalToken;
+	private String internalToken;
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
@@ -113,6 +115,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String uuid,
 		String externalId,
 		String externalToken,
+		String internalToken,
 		EventStatus eventStatus,
 		RiskLevel riskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
@@ -152,6 +155,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.uuid = uuid;
 		this.externalId = externalId;
 		this.externalToken = externalToken;
+		this.internalToken = internalToken;
 		this.eventStatus = eventStatus;
 		this.riskLevel = riskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
@@ -198,6 +202,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	public EventStatus getEventStatus() {

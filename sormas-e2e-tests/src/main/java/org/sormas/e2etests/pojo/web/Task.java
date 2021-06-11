@@ -19,6 +19,7 @@
 package org.sormas.e2etests.pojo.web;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.*;
 
@@ -38,4 +39,10 @@ public class Task {
   String commentsOnTask;
   String commentsOnExecution;
   String taskStatus;
+  String associatedLink;
+  String region;
+  String district;
+  String createdBy;
+  LocalDateTime suggestedStartDateTime;
+  LocalDateTime dueDateDateTime;
 }

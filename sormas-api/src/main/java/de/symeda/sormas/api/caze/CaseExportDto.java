@@ -290,6 +290,7 @@ public class CaseExportDto implements Serializable {
 	private EventStatus latestEventStatus;
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 
 	@PersonalData
 	@SensitiveData
@@ -338,7 +339,7 @@ public class CaseExportDto implements Serializable {
 						 String vaccineInn, String vaccineBatchNumber, String vaccineUniiCode, String vaccineAtcCode,
 
 						 YesNoUnknown postpartum, Trimester trimester,
-						 long eventCount, String externalID, String externalToken,
+						 long eventCount, String externalID, String externalToken, String internalToken,
 						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 						 String reportingDistrict, CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType,
 						 // responsible jurisdiction
@@ -455,6 +456,7 @@ public class CaseExportDto implements Serializable {
 		this.eventCount = eventCount;
 		this.externalID = externalID;
 		this.externalToken = externalToken;
+		this.internalToken = internalToken;
 		this.birthName = birthName;
 		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
 		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
@@ -567,6 +569,16 @@ public class CaseExportDto implements Serializable {
 
 	@Order(6)
 	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.INTERNAL_TOKEN)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	@Order(7)
+	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(CaseDataDto.DISEASE)
@@ -575,7 +587,7 @@ public class CaseExportDto implements Serializable {
 		return disease;
 	}
 
-	@Order(7)
+	@Order(8)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -585,7 +597,7 @@ public class CaseExportDto implements Serializable {
 		return diseaseDetails;
 	}
 
-	@Order(8)
+	@Order(9)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -2383,6 +2395,10 @@ public class CaseExportDto implements Serializable {
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
