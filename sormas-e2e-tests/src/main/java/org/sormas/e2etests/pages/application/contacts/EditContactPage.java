@@ -94,4 +94,10 @@ public class EditContactPage {
       By.cssSelector(".v-verticallayout [location='contactOfficer'] [role='combobox'] div");
   public static final By GENERAL_COMMENT_TEXT = By.id("additionalDetails");
   public static final By SAVE_EDIT_BUTTON = By.id("commit");
+  public static final By CHOOSE_SOURCE_CASE_BUTTON = By.id("contactChooseSourceCase");
+  public static final By DISCARD_POPUP_YES_BUTTON = By.id("actionConfirm");
+  public static final By SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON = By.id("caseSearchCase");
+  public static final By SOURCE_CASE_WINDOW_CASE_INPUT = By.cssSelector(".v-window-wrap input");
+  public static final By SOURCE_CASE_WINDOW_CONFIRM_BUTTON =
+      By.cssSelector(".v-window-wrap #commit");
 }

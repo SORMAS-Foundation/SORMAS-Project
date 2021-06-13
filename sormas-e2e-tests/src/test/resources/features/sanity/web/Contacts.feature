@@ -28,3 +28,14 @@ Feature: Contacts end to end tests
     And I change all contact fields and save
     And I navigate to the last created contact via the url
     Then I check the edited data is correctly displayed on Edit Contact page after editing
+
+  Scenario: Source case selected for contact
+    Given I log in with the user
+    Given API: I create a new person
+    Given API: I create a new case
+    When API: I create a new person
+    And API: I create a new contact
+    And I navigate to the last created contact via the url
+    And I click on the CHOOSE SOURCE CASE button
+    And I click yes on the DISCARD UNSAVED CHANGES popup
+    And I search for the last case uuid in the CHOOSE SOURCE window
