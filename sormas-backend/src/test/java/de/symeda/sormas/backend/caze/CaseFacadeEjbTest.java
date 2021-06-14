@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -43,7 +44,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.FacadeProvider;
 import org.apache.commons.lang3.time.DateUtils;
+import org.geotools.util.factory.FactoryIteratorProvider;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
@@ -1844,4 +1847,52 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(indexList, hasSize(0));
 
 	}
+
+	@Test
+	public void testCaseCompletenessWhenCaseFound() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		CaseDataDto caseNoCompleteness = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
+		query.setParameter("uuid", caseNoCompleteness.getUuid());
+		Case caseNoCompletenessSingleResult = (Case) query.getSingleResult();
+		caseNoCompletenessSingleResult.setCompleteness(null);
+		em.save(caseNoCompletenessSingleResult);
+
+		PersonDto cazePerson2 = creator.createPerson("Case2", "Person2", Sex.MALE, 1981, 1, 1);
+		CaseDataDto caseWithCompleteness = creator.createCase(
+			user.toReference(),
+			cazePerson2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateUtils.addMinutes(new Date(), -3),
+			rdcf);
+
+		QueryImplementor query2 = em.createQuery("select c from cases c where c.uuid=:uuid");
+		query2.setParameter("uuid", caseWithCompleteness.getUuid());
+		Case caseWithCompletenessSingleResult = (Case) query2.getSingleResult();
+		caseWithCompletenessSingleResult.setCompleteness(200f);
+		em.save(caseWithCompletenessSingleResult);
+
+		getCaseFacade().updateCompletenessTask();
+
+		Case completenessUpdateResult = getCaseService().getByUuid(caseNoCompleteness.getUuid());
+		Case completenessUpdateResult2 = getCaseService().getByUuid(caseWithCompleteness.getUuid());
+
+		MatcherAssert.assertThat(completenessUpdateResult.getCompleteness(), notNullValue());
+		MatcherAssert.assertThat(completenessUpdateResult2.getCompleteness(), is(200f));
+	}
 }
+

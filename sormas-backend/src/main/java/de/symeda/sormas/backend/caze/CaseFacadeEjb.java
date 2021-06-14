@@ -1332,10 +1332,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	public void updateCompleteness(String caseUuid) {
-
-		Case caze = caseService.getByUuid(caseUuid);
-		caze.setCompleteness(calculateCompleteness(caze));
-		caseService.ensurePersisted(caze);
+		caseService.updateCompleteness(caseUuid);
 	}
 
 	private void selectIndexDtoFields(CriteriaQuery<CaseIndexDto> cq, Root<Case> root) {
@@ -1818,7 +1815,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		// Update completeness value
-		newCase.setCompleteness(calculateCompleteness(newCase));
+		newCase.setCompleteness(null);
 
 		// Send an email to all responsible supervisors when the case classification has
 		// changed
@@ -1999,40 +1996,34 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	}
 
-	private float calculateCompleteness(Case caze) {
+	@Override
+	public void updateCompletenessTask() {
+		List<String> getCompletenessCheckCaseList = getCompletenessCheckNeededCaseList();
 
-		float completeness = 0f;
+		if (!getCompletenessCheckCaseList.isEmpty()) {
+			long timeStart = System.currentTimeMillis();
+			IterableHelper
+				.executeBatched(getCompletenessCheckCaseList, 100, caseCompletionBatch -> caseService.updateCompleteness(caseCompletionBatch));
+			long timeStop = System.currentTimeMillis();
+			logger.debug(
+				"Completeness check, found " + getCompletenessCheckCaseList.size() + " cases" + " started at " + new Timestamp(timeStart)
+					+ " duration " + (timeStop - timeStart) + " miliseconds");
+		} else {
+			logger.debug("no case with completeness null found at " + new Timestamp(System.currentTimeMillis()));
+		}
+	}
 
-		if (InvestigationStatus.DONE.equals(caze.getInvestigationStatus())) {
-			completeness += 0.2f;
-		}
-		if (!CaseClassification.NOT_CLASSIFIED.equals(caze.getCaseClassification())) {
-			completeness += 0.2f;
-		}
-		if (sampleService
-			.exists((cb, root) -> cb.and(sampleService.createDefaultFilter(cb, root), cb.equal(root.get(Sample.ASSOCIATED_CASE), caze)))) {
-			completeness += 0.15f;
-		}
-		if (Boolean.TRUE.equals(caze.getSymptoms().getSymptomatic())) {
-			completeness += 0.15f;
-		}
-		if (contactService.exists((cb, root) -> cb.and(contactService.createDefaultFilter(cb, root), cb.equal(root.get(Contact.CAZE), caze)))) {
-			completeness += 0.10f;
-		}
-		if (!CaseOutcome.NO_OUTCOME.equals(caze.getOutcome())) {
-			completeness += 0.05f;
-		}
-		if (caze.getPerson().getBirthdateYYYY() != null || caze.getPerson().getApproximateAge() != null) {
-			completeness += 0.05f;
-		}
-		if (caze.getPerson().getSex() != null) {
-			completeness += 0.05f;
-		}
-		if (caze.getSymptoms().getOnsetDate() != null) {
-			completeness += 0.05f;
-		}
+	private List<String> getCompletenessCheckNeededCaseList() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caze = cq.from(Case.class);
 
-		return completeness;
+		cq.where(cb.isNull(caze.get(Case.COMPLETENESS)));
+
+		cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
+		cq.select(caze.get(Case.UUID));
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	@Override
