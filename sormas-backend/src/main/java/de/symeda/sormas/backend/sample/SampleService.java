@@ -372,25 +372,8 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	}
 
 	protected boolean inJurisdictionOrOwned(Sample sample) {
-		return !getInJurisdictionIDs(Collections.singletonList(sample)).isEmpty();
-	}
-
-	public List<Long> getInJurisdictionIDs(final List<Sample> selectedSamples) {
-		if (selectedSamples.size() == 0) {
-			return Collections.emptyList();
-		}
-
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
-		final Root<Sample> root = inJurisdictionQuery.from(Sample.class);
-
-		inJurisdictionQuery.select(root.get(AbstractDomainObject.ID));
-
-		final Predicate isFromSelectedEntries =
-				cb.in(root.get(AbstractDomainObject.ID)).value(selectedSamples.stream().map(AbstractDomainObject::getId).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedEntries, inJurisdictionOrOwned(cb, new SampleJoins<>(root))));
-
-		return em.createQuery(inJurisdictionQuery).getResultList();
+		return exists(
+			(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), sample.getId()), inJurisdictionOrOwned(cb, new SampleJoins<>(root))));
 	}
 
 	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, SampleJoins<?> joins) {

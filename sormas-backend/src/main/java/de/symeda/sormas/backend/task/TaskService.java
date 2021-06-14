@@ -468,26 +468,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	}
 
 	public boolean inJurisdictionOrOwned(Task task) {
-		return !getInJurisdictionIDs(Collections.singletonList(task)).isEmpty();
-	}
-
-	private List<Long> getInJurisdictionIDs(final List<Task> selectedTasks) {
-		if (selectedTasks.size() == 0) {
-			return Collections.emptyList();
-		}
-
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
-		final Root<Task> taskRoot = inJurisdictionQuery.from(Task.class);
-
-		inJurisdictionQuery.select(taskRoot.get(AbstractDomainObject.ID));
-
-		final Predicate isFromSelectedTasks =
-			cb.in(taskRoot.get(AbstractDomainObject.ID)).value(selectedTasks.stream().map(Task::getId).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedTasks, inJurisdictionOrOwned(cb, new TaskJoins(taskRoot))));
-
-		List<Long> resL = em.createQuery(inJurisdictionQuery).getResultList();
-		return resL;
+		return exists(
+				(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), task.getId()), inJurisdictionOrOwned(cb, new TaskJoins(root))));
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, TaskJoins joins) {

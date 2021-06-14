@@ -412,32 +412,11 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return em.createQuery(cq).getResultList();
 	}
 
-	private List<Long> getInJurisdictionIDs(final List<EventParticipant> selectedEventParticipants, boolean orOwned) {
-		if (selectedEventParticipants.size() == 0) {
-			return Collections.emptyList();
-		}
-
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
-		final Root<EventParticipant> eventParticipantRoot = inJurisdictionQuery.from(EventParticipant.class);
-
-		inJurisdictionQuery.select(eventParticipantRoot.get(AbstractDomainObject.ID));
-
-		final Predicate isFromSelectedEventParticipants = cb.in(eventParticipantRoot.get(AbstractDomainObject.ID))
-			.value(selectedEventParticipants.stream().map(EventParticipant::getId).collect(Collectors.toList()));
-
-		if (orOwned) {
-			inJurisdictionQuery
-				.where(cb.and(isFromSelectedEventParticipants, inJurisdictionOrOwned(cb, new EventParticipantJoins(eventParticipantRoot))));
-		} else {
-			inJurisdictionQuery.where(cb.and(isFromSelectedEventParticipants, inJurisdiction(cb, new EventParticipantJoins(eventParticipantRoot))));
-		}
-
-		return em.createQuery(inJurisdictionQuery).getResultList();
-	}
-
 	public boolean inJurisdictionOrOwned(EventParticipant eventParticipant) {
-		return !getInJurisdictionIDs(Collections.singletonList(eventParticipant), true).isEmpty();
+		return exists(
+			(cb, root) -> cb.and(
+				cb.equal(root.get(AbstractDomainObject.ID), eventParticipant.getId()),
+				inJurisdictionOrOwned(cb, new EventParticipantJoins(root))));
 	}
 
 	public boolean inJurisdictionOrOwned(String eventParticipantUuid) {
@@ -446,7 +425,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	public boolean inJurisdiction(EventParticipant eventParticipant) {
-		return !getInJurisdictionIDs(Collections.singletonList(eventParticipant), false).isEmpty();
+		return exists(
+				(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), eventParticipant.getId()), inJurisdiction(cb, new EventParticipantJoins(root))));
 	}
 
 	public Predicate inJurisdiction(CriteriaBuilder cb, EventParticipantJoins joins) {

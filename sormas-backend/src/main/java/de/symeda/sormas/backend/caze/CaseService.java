@@ -48,7 +48,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -125,6 +124,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
@@ -1253,25 +1253,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public boolean inJurisdictionOrOwned(Case caze) {
-		return !getInJurisdictionIDs(Collections.singletonList(caze)).isEmpty();
-	}
-
-	public List<Long> getInJurisdictionIDs(final List<Case> selectedCases) {
-		if (selectedCases.size() == 0) {
-			return Collections.emptyList();
-		}
-
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
-		final Root<Case> caseRoot = inJurisdictionQuery.from(Case.class);
-
-		inJurisdictionQuery.select(caseRoot.get(AbstractDomainObject.ID));
-
-		final Predicate isFromSelectedCases =
-				cb.in(caseRoot.get(AbstractDomainObject.ID)).value(selectedCases.stream().map(Case::getId).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedCases, inJurisdictionOrOwned(cb, new CaseJoins<>(caseRoot))));
-
-		return em.createQuery(inJurisdictionQuery).getResultList();
+		return exists(
+			(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), caze.getId()), inJurisdictionOrOwned(cb, new CaseJoins<>(root))));
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CaseJoins<?> joins) {

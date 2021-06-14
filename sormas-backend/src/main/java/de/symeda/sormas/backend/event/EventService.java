@@ -847,33 +847,13 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	public boolean inJurisdiction(Event event) {
-		return !getInJurisdictionIDs(Collections.singletonList(event), false).isEmpty();
+		return exists(
+			(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), event.getId()), inJurisdiction(cb, new EventJoins<>(root))));
 	}
 
 	public boolean inJurisdictionOrOwned(Event event) {
-		return !getInJurisdictionIDs(Collections.singletonList(event), true).isEmpty();
-	}
-
-	private List<Long> getInJurisdictionIDs(final List<Event> selectedEvents, boolean orOwned) {
-		if (selectedEvents.size() == 0) {
-			return Collections.emptyList();
-		}
-
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
-		final Root<Event> eventRoot = inJurisdictionQuery.from(Event.class);
-
-		inJurisdictionQuery.select(eventRoot.get(AbstractDomainObject.ID));
-
-		final Predicate isFromSelectedEvents =
-			cb.in(eventRoot.get(AbstractDomainObject.ID)).value(selectedEvents.stream().map(Event::getId).collect(Collectors.toList()));
-		if (orOwned) {
-			inJurisdictionQuery.where(cb.and(isFromSelectedEvents, inJurisdictionOrOwned(cb, new EventJoins<>(eventRoot))));
-		} else {
-			inJurisdictionQuery.where(cb.and(isFromSelectedEvents, inJurisdiction(cb, new EventJoins<>(eventRoot))));
-		}
-
-		return em.createQuery(inJurisdictionQuery).getResultList();
+		return exists(
+				(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), event.getId()), inJurisdictionOrOwned(cb, new EventJoins<>(root))));
 	}
 
 	public Predicate inJurisdiction(CriteriaBuilder cb, EventJoins<?> joins) {

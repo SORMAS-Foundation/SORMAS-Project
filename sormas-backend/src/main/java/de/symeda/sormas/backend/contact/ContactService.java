@@ -1332,25 +1332,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public boolean inJurisdictionOrOwned(Contact contact) {
-		return !getInJurisdictionIDs(Collections.singletonList(contact)).isEmpty();
-	}
-
-	public List<Long> getInJurisdictionIDs(final List<Contact> selectedContacts) {
-		if (selectedContacts.size() == 0) {
-			return Collections.emptyList();
-		}
-
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
-		final Root<Contact> root = inJurisdictionQuery.from(Contact.class);
-
-		inJurisdictionQuery.select(root.get(AbstractDomainObject.ID));
-
-		final Predicate isFromSelectedCases =
-				cb.in(root.get(AbstractDomainObject.ID)).value(selectedContacts.stream().map(AbstractDomainObject::getId).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedCases, inJurisdictionOrOwned(cb, new ContactJoins(root))));
-
-		return em.createQuery(inJurisdictionQuery).getResultList();
+		return exists(
+				(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), contact.getId()), inJurisdictionOrOwned(cb, new ContactJoins<>(root))));
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, ContactJoins<?> joins) {

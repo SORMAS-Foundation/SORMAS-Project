@@ -19,7 +19,6 @@ package de.symeda.sormas.backend.visit;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -72,28 +71,10 @@ public class VisitService extends BaseAdoService<Visit> {
 	}
 
 	protected boolean inJurisdiction(Visit visit) {
-		return !getInJurisdictionIDs(Collections.singletonList(visit)).isEmpty();
-	}
-
-	public List<Long> getInJurisdictionIDs(final List<Visit> selectedEntities) {
-		if (selectedEntities.size() == 0) {
-			return Collections.emptyList();
-		}
-
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
-		final Root<Visit> root = inJurisdictionQuery.from(Visit.class);
-
-		Join<Visit, Case> caseJoin = root.join(Visit.CAZE, JoinType.LEFT);
-		Join<Visit, Contact> contactJoin = root.join(Visit.CONTACTS, JoinType.LEFT);
-
-		inJurisdictionQuery.select(root.get(AbstractDomainObject.ID));
-
-		final Predicate isFromSelectedCases =
-				cb.in(root.get(AbstractDomainObject.ID)).value(selectedEntities.stream().map(AbstractDomainObject::getId).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedCases, inJurisdiction(cb, caseJoin, contactJoin)));
-
-		return em.createQuery(inJurisdictionQuery).getResultList();
+		return exists(
+			(cb, root) -> cb.and(
+				cb.equal(root.get(AbstractDomainObject.ID), visit.getId()),
+				inJurisdiction(cb, root.join(Visit.CAZE, JoinType.LEFT), root.join(Visit.CONTACTS, JoinType.LEFT))));
 	}
 
 	private Predicate inJurisdiction(
