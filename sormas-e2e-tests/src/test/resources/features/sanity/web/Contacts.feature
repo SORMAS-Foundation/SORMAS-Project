@@ -34,8 +34,8 @@ Feature: Contacts end to end tests
     Given API: I create a new contact
     Given I log in with the user
     When I am accessing the Follow-up visits tab using of created contact via api
-    Then I check and fill all data
-    And I click on save
+    And I create a new Follow-up visit
+    Then I check all data
     And I am accessing the contacts
     When I am accessing the Follow-up visits tab using of created contact via api
     And I am checking all data is saved and displayed

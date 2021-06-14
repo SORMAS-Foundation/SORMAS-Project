@@ -18,7 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
@@ -32,7 +31,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.sormas.e2etests.pages.application.contacts.CreateNewVisitPage.*;
-import static org.sormas.e2etests.pages.application.contacts.FollowUpVisitsPage.*;
 
 public class FollowUpVisitsTabSteps implements En {
 
@@ -66,77 +64,7 @@ public class FollowUpVisitsTabSteps implements En {
         return FollowUpVisit.builder()
                 .personAvailableAndCooperative(
                         webDriverHelpers.getValueFromWebElement(PERSON_AVAILABLE_AND_COOPERATIVE))
-                .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRST_SYMPTOM_COMBOBOX))
+              //  .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRST_SYMPTOM_COMBOBOX))
                 .build();
-    }
-
-    private LocalDate getDateOfVisit() {
-        String dateOfReport = webDriverHelpers.getValueFromWebElement(DATE_AND_TIME_OF_VISIT_INPUT);
-        return LocalDate.parse(dateOfReport, DATE_FORMATTER);
-    }
-
-    public void selectSourceOfBodyTemperature(String sourceOfBodyTemperature) {
-        webDriverHelpers.selectFromCombobox(
-                SOURCE_OF_BODY_TEMPERATURE_COMBOBOX, sourceOfBodyTemperature);
-    }
-
-    public void selectChillsOrSweats(String chillsOrSweats) {
-        webDriverHelpers.clickWebElementByText(CHILLS_OR_SWATS_LABEL, chillsOrSweats);
-    }
-
-    public void selectHeadache(String headache) {
-        webDriverHelpers.clickWebElementByText(HEADACHE_LABEL, headache);
-    }
-
-    public void selectFeelingIll(String feelingIll) {
-        webDriverHelpers.clickWebElementByText(FEELING_ILL_LABEL, feelingIll);
-    }
-
-    public void selectMusclePain(String musclePain) {
-        webDriverHelpers.clickWebElementByText(MUSCLE_PAIN_LABEL, musclePain);
-    }
-
-//    public void selectFever(String fever) {
-//        webDriverHelpers.clickWebElementByText(, fever);
-//    }
-
-    public void selectShivering(String shivering) {
-        webDriverHelpers.clickWebElementByText(SHIVERING_LABEL, shivering);
-    }
-
-//    public void selectAcuteRespiratoryDistressSyndrome(String acuteRespiratoryDistressSyndrome) {
-//        webDriverHelpers.clickWebElementByText(
-//                , acuteRespiratoryDistressSyndrome);
-//    }
-
-    public void selectOxygenSaturationLower94(String oxygenSaturationLower94) {
-        webDriverHelpers.clickWebElementByText(
-                OXIGEN_SATURANTION_LABEL, oxygenSaturationLower94);
-    }
-
-    public void selectPneumoniaClinicalOrRadiologic(String pneumoniaClinicalOrRadiologic) {
-        webDriverHelpers.clickWebElementByText(
-                PNEUMONIA_LABEL, pneumoniaClinicalOrRadiologic);
-    }
-
-//    public void selectDifficultyBreathing(String difficultyBreathing) {
-//        webDriverHelpers.clickWebElementByText(, difficultyBreathing);
-//    }
-
-    public void selectRapidBreathing(String rapidBreathing) {
-        webDriverHelpers.clickWebElementByText(RAPID_BREATHING_LABEL, rapidBreathing);
-    }
-
-    public void selectRespiratoryDiseaseVentilation(String respiratoryDiseaseVentilation) {
-        webDriverHelpers.clickWebElementByText(
-                RESPIRATORY_DISEASE_REQUIRING_VENTILATION_LABEL, respiratoryDiseaseVentilation);
-    }
-
-    public void selectRunnyNose(String runnyNose) {
-        webDriverHelpers.clickWebElementByText(RUNNY_NOSE_LABEL, runnyNose);
-    }
-
-    public void fillDateOfSymptomOnset(LocalDate dateOfSymptomOnset) {
-        webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_ONSET_INPUT, DATE_FORMATTER.format(dateOfSymptomOnset));
     }
 }

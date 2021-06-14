@@ -33,7 +33,7 @@ public class FollowUpVisitService {
         this.faker = faker;
     }
 
-    public FollowUpVisit buildGeneratedSample() {
+    public FollowUpVisit buildGeneratedFollowUpVisit() {
         long currentTimeMillis = System.currentTimeMillis();
         return FollowUpVisit.builder()
                 .personAvailableAndCooperative("Available and cooperative")
