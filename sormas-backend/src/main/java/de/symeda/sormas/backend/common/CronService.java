@@ -156,7 +156,7 @@ public class CronService {
 	@Schedule(hour = "1", minute = "35", second = "0", persistent = false)
 	public void fetchLabMessages() {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
-			labMessageFacade.fetchAndSaveExternalLabMessages();
+			labMessageFacade.fetchAndSaveExternalLabMessages(null);
 		}
 	}
 
