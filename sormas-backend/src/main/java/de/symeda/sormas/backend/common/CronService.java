@@ -165,7 +165,7 @@ public class CronService {
 	public void calculateCaseCompletion() {
 
 		long timeStart = System.currentTimeMillis();
-		int casesUpdated = caseFacade.updateCompletenessTask();
+		int casesUpdated = caseFacade.updateCompleteness();
 		long timeStop = System.currentTimeMillis();
 		logger.debug(
 			"Completeness check, found {} cases started at {} duration {} milliseconds",

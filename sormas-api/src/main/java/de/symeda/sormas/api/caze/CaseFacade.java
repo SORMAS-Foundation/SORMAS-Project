@@ -218,5 +218,5 @@ public interface CaseFacade {
 
 	void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
-	int updateCompletenessTask();
+	int updateCompleteness();
 }

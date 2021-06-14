@@ -1997,7 +1997,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public int updateCompletenessTask() {
+	public int updateCompleteness() {
 		List<String> getCompletenessCheckCaseList = getCompletenessCheckNeededCaseList();
 
 			IterableHelper

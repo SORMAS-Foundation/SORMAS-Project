@@ -44,9 +44,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.FacadeProvider;
 import org.apache.commons.lang3.time.DateUtils;
-import org.geotools.util.factory.FactoryIteratorProvider;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
@@ -1853,7 +1851,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
 
-		int casesWithNoCompletenessFound = getCaseFacade().updateCompletenessTask();
+		int casesWithNoCompletenessFound = getCaseFacade().updateCompleteness();
 		MatcherAssert.assertThat(casesWithNoCompletenessFound, is(0));
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
@@ -1883,7 +1881,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caseWithCompletenessSingleResult.setCompleteness(0.7f);
 		em.save(caseWithCompletenessSingleResult);
 
-		int changedCases = getCaseFacade().updateCompletenessTask();
+		int changedCases = getCaseFacade().updateCompleteness();
 
 		Case completenessUpdateResult = getCaseService().getByUuid(caseNoCompleteness.getUuid());
 		Case completenessUpdateResult2 = getCaseService().getByUuid(caseWithCompleteness.getUuid());
@@ -1892,7 +1890,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(completenessUpdateResult2.getCompleteness(), is(0.7f));
 		MatcherAssert.assertThat(changedCases, is(1));
 
-		int changedCasesAfterUpdateCompleteness = getCaseFacade().updateCompletenessTask();
+		int changedCasesAfterUpdateCompleteness = getCaseFacade().updateCompleteness();
 
 		MatcherAssert.assertThat(changedCasesAfterUpdateCompleteness, is(0));
 	}
