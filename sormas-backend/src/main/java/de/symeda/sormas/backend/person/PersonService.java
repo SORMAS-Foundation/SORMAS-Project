@@ -50,15 +50,13 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.api.externaldata.ExternalDataDto;
-import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
-import de.symeda.sormas.backend.util.ExternalDataUtil;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
@@ -84,6 +82,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
@@ -574,14 +573,14 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		String uuidExternalIdExternalTokenLike = criteria.getUuidExternalIdExternalTokenLike();
 		if (!StringUtils.isBlank(uuidExternalIdExternalTokenLike)) {
-			Predicate uudExternalIdExternalTokenFilter = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
+			Predicate uuidExternalIdExternalTokenFilter = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
 				cb,
 				uuidExternalIdExternalTokenLike,
 				(searchTerm) -> cb.or(
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.UUID), searchTerm),
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_ID), searchTerm),
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_TOKEN), searchTerm)));
-			filter = CriteriaBuilderHelper.or(cb, filter, uudExternalIdExternalTokenFilter);
+			filter = CriteriaBuilderHelper.or(cb, filter, uuidExternalIdExternalTokenFilter);
 		}
 
 		return filter;
