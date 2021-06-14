@@ -22,17 +22,19 @@ import javax.inject.Inject;
 import org.sormas.e2etests.helpers.api.EventHelper;
 import org.sormas.e2etests.pojo.api.Event;
 import org.sormas.e2etests.services.api.EventApiService;
+import org.sormas.e2etests.state.ApiState;
 
 public class EventSteps implements En {
 
   @Inject
-  public EventSteps(EventHelper eventHelper, EventApiService eventApiService) {
+  public EventSteps(EventHelper eventHelper, EventApiService eventApiService, ApiState apiState) {
 
     When(
         "API: I create a new event",
         () -> {
           Event eve = eventApiService.buildGeneratedEvent();
           eventHelper.createEvent(eve);
+          apiState.setCreatedEvent(eve);
         });
   }
 }

@@ -221,7 +221,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 				return ImportLineResultDto.errorResult(I18nProperties.getString(Strings.messageEpidNumberWarning));
 			}
 
-			PersonDto savedPerson = personFacade.savePersonAndNotifyExternalJournal(person);
+			PersonDto savedPerson = personFacade.savePerson(person);
 			caze.setPerson(savedPerson.toReference());
 			// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 			// Should be changed when doing #2265
@@ -425,9 +425,9 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 				} else if (CaseExportDto.BIRTH_DATE.equals(headerPathElementName)) {
 					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, language);
 					if (birthDateDto != null) {
-						person.setBirthdateDD(birthDateDto.getBirthdateDD());
-						person.setBirthdateMM(birthDateDto.getBirthdateMM());
-						person.setBirthdateYYYY(birthDateDto.getBirthdateYYYY());
+						person.setBirthdateDD(birthDateDto.getDateOfBirthDD());
+						person.setBirthdateMM(birthDateDto.getDateOfBirthMM());
+						person.setBirthdateYYYY(birthDateDto.getDateOfBirthYYYY());
 					}
 				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());

@@ -69,7 +69,6 @@ public class EditCasePage {
   public static final By RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector("#responsibleDistrict div");
   public static final By RESPONSIBLE_COMMUNITY_COMBOBOX =
       By.cssSelector("#responsibleCommunity div");
-  public static final By NOSOCOMIAL_OUTBREAK_OPTIONS = By.cssSelector("#nosocomialOutbreak label");
   public static final By PROHIBITION_TO_WORK_OPTIONS = By.cssSelector("#prohibitionToWork label");
   public static final By HOME_BASED_QUARANTINE_POSSIBLE_OPTIONS =
       By.cssSelector("#quarantineHomePossible label");
@@ -92,4 +91,6 @@ public class EditCasePage {
       By.cssSelector("#nationalLevelDate input");
   public static final By GENERAL_COMMENT_TEXTAREA = By.cssSelector("textarea#additionalDetails");
   public static final By SAVE_BUTTON = By.id("commit");
+  public static final By DELETE_BUTTON = By.id("delete");
+  public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
 }

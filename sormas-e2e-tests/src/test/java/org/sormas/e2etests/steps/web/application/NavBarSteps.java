@@ -44,6 +44,10 @@ public class NavBarSteps implements En {
         "^I click on the Tasks button from navbar$",
         () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.TASKS_BUTTON));
 
+    And(
+        "^I click on the Persons button from navbar$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.PERSONS_BUTTON));
+
     When(
         "^I click on the Dashboard button from navbar$",
         () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON));
@@ -51,5 +55,9 @@ public class NavBarSteps implements En {
     When(
         "^I click on the Sample button from navbar$",
         () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.SAMPLE_BUTTON));
+
+    And(
+        "^I confirm navigation$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONFIRM_NAVIGATION));
   }
 }

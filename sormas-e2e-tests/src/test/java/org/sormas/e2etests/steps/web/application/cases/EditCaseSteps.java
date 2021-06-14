@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 
 import com.google.common.truth.Truth;
@@ -28,7 +29,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pages.application.cases.CreateNewCasePage;
 import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.services.CaseService;
 
@@ -36,6 +36,7 @@ public class EditCaseSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static Case aCase;
+  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
   public EditCaseSteps(
@@ -203,7 +204,15 @@ public class EditCaseSteps implements En {
           Truth.assertThat(editCase.getDateReceivedAtNationalLevel())
               .isEqualTo(aCase.getDateReceivedAtNationalLevel());
           Truth.assertThat(editCase.getGeneralComment()).isEqualTo(aCase.getGeneralComment());
-          //          Truth.assertAll();
+        });
+
+    When(
+        "I delete the case",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
         });
   }
 
@@ -219,8 +228,8 @@ public class EditCaseSteps implements En {
         .firstName(userInfo.getFirstName())
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
-        .externalId(webDriverHelpers.getValueFromWebElement(CreateNewCasePage.EXTERNAL_ID_INPUT))
-        .uuid(webDriverHelpers.getTextFromWebElement(UUID_INPUT))
+        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
         .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
@@ -287,37 +296,37 @@ public class EditCaseSteps implements En {
   }
 
   private LocalDate getDateOfReport() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+
     String dateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
-    return LocalDate.parse(dateOfReport, formatter);
+    return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
   private LocalDate getDateReceivedAtDistrictLevel() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+
     String dateOfReport =
         webDriverHelpers.getValueFromWebElement(DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT);
-    return LocalDate.parse(dateOfReport, formatter);
+    return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
   private LocalDate getDateReceivedAtRegionLevel() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+
     String dateOfReport =
         webDriverHelpers.getValueFromWebElement(DATE_RECEIVED_AT_REGION_LEVEL_INPUT);
-    return LocalDate.parse(dateOfReport, formatter);
+    return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
   private LocalDate getDateReceivedAtNationalLevel() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+
     String dateOfReport =
         webDriverHelpers.getValueFromWebElement(DATE_RECEIVED_AT_NATIONAL_LEVEL_INPUT);
-    return LocalDate.parse(dateOfReport, formatter);
+    return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
   public Case getUserInformation() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+
     String userInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String[] userInfos = userInfo.split(" ");
-    LocalDate localDate = LocalDate.parse(userInfos[3].replace(")", ""), formatter);
+    LocalDate localDate = LocalDate.parse(userInfos[3].replace(")", ""), DATE_FORMATTER);
     return Case.builder()
         .firstName(userInfos[0])
         .lastName(userInfos[1])
@@ -326,8 +335,7 @@ public class EditCaseSteps implements En {
   }
 
   public void fillDateOfReport(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
-    webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, formatter.format(date));
+    webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 
   public void selectCaseClassification(String caseClassification) {
@@ -461,21 +469,20 @@ public class EditCaseSteps implements En {
   }
 
   public void fillDateReceivedAtDistrictLevel(LocalDate dateReceivedAtDistrictLevel) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+
     webDriverHelpers.fillInWebElement(
-        DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT, formatter.format(dateReceivedAtDistrictLevel));
+        DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT, DATE_FORMATTER.format(dateReceivedAtDistrictLevel));
   }
 
   public void fillDateReceivedAtRegionLevel(LocalDate dateReceivedAtRegionLevel) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+
     webDriverHelpers.fillInWebElement(
-        DATE_RECEIVED_AT_REGION_LEVEL_INPUT, formatter.format(dateReceivedAtRegionLevel));
+        DATE_RECEIVED_AT_REGION_LEVEL_INPUT, DATE_FORMATTER.format(dateReceivedAtRegionLevel));
   }
 
   public void fillDateReceivedAtNationalLevel(LocalDate dateReceivedAtNationalLevel) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
     webDriverHelpers.fillInWebElement(
-        DATE_RECEIVED_AT_NATIONAL_LEVEL_INPUT, formatter.format(dateReceivedAtNationalLevel));
+        DATE_RECEIVED_AT_NATIONAL_LEVEL_INPUT, DATE_FORMATTER.format(dateReceivedAtNationalLevel));
   }
 
   public void fillGeneralComment(String generalComment) {

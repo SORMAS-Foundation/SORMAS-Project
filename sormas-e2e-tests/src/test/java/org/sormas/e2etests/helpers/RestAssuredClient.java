@@ -23,6 +23,8 @@ import com.google.inject.Provider;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.config.EncoderConfig;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -58,7 +60,7 @@ public class RestAssuredClient {
                         .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
         .contentType(ContentType.JSON)
         .accept(ContentType.JSON)
-        .filters(new AllureRestAssured());
+        .filters(new RequestLoggingFilter(), new ResponseLoggingFilter(), new AllureRestAssured());
   }
 
   @SneakyThrows

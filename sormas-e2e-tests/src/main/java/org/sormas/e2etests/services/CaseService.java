@@ -35,10 +35,10 @@ public class CaseService {
   public Case buildGeneratedCase() {
     return Case.builder()
         .caseOrigin("IN-COUNTRY")
-        .dateOfReport(LocalDate.now())
+        .dateOfReport(LocalDate.now().minusDays(1))
         .externalId(UUID.randomUUID().toString())
         .disease("COVID-19")
-        .responsibleRegion("Voreingestellte")
+        .responsibleRegion("Voreingestellte Bundesl\u00E4nder")
         .responsibleDistrict("Voreingestellter Landkreis")
         .responsibleCommunity("Voreingestellte Gemeinde")
         .placeOfStay("HOME")

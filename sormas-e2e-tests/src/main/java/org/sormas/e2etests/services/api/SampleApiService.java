@@ -38,7 +38,12 @@ public class SampleApiService {
         .sampleMaterial("BLOOD")
         .samplePurpose("EXTERNAL")
         .pathogenTestResult("PENDING")
-        .lab(Lab.builder().uuid(UUID.randomUUID().toString()).build())
+        .lab(
+            Lab.builder()
+                .uuid(UUID.randomUUID().toString())
+                .caption("Voreingestelltes Labor")
+                .build())
+        .labDetails("Dexter laboratory")
         .build();
   }
 }

@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -47,11 +48,27 @@ public class ExternalJournalUtil {
 	 * If the person is not registered in the external journal, a create account/register button is returned
 	 * If the person is registered, a button is returned which opens a popup with further options.
 	 *
+	 * The button is:
+	 * 	- enabled if the associated sormasToSormasEntity(case or contact) is not shared or it is shared and the current SORMAS instance has ownership
+	 * 	- disabled if the associated sormasToSormasEntity(case or contact) is shared and the current SORMAS instance does not have ownership
+	 *
 	 * @param person
 	 *            person to be managed by the external journal
+	 * @param sormasToSormasEntity
+	 * 			  the associated case or contact
 	 * @return Optional containing appropriate Button
 	 */
-	public static Optional<Button> getExternalJournalUiButton(PersonDto person) {
+	public static Optional<Button> getExternalJournalUiButton(PersonDto person, SormasToSormasEntityDto sormasToSormasEntity) {
+		Optional<Button> externalJournalUiButton = getExternalJournalUiButton(person);
+		return externalJournalUiButton.map(button -> {
+			boolean buttonEnabled = !sormasToSormasEntity.isOwnershipHandedOver() &&
+					(sormasToSormasEntity.getSormasToSormasOriginInfo() == null || sormasToSormasEntity.getSormasToSormasOriginInfo().isOwnershipHandedOver());
+			button.setEnabled(buttonEnabled);
+			return button;
+		});
+	}
+
+	private static Optional<Button> getExternalJournalUiButton(PersonDto person) {
 		if (FacadeProvider.getConfigFacade().getSymptomJournalConfig().isActive()) {
 			if (person.isEnrolledInExternalJournal()) {
 				return Optional.of(createSymptomJournalOptionsButton(person));
@@ -208,7 +225,7 @@ public class ExternalJournalUtil {
 
 	private static void cancelPatientDiaryFollowUp(PersonDto personDto) {
 		PatientDiaryResult result = externalJournalFacade.cancelPatientDiaryFollowUp(personDto);
-		showPatientDiaryResultPopup(result, Captions.patientDiaryCancelError);
+		showPatientDiaryResultPopup(result, I18nProperties.getCaption(Captions.patientDiaryCancelError));
 		if (result.isSuccess()) {
 			SormasUI.refreshView();
 		}
@@ -227,7 +244,7 @@ public class ExternalJournalUtil {
 			showExternalJournalWarningPopup(validationResult.getMessage());
 		} else {
 			PatientDiaryResult registerResult = externalJournalFacade.registerPatientDiaryPerson(person);
-			showPatientDiaryResultPopup(registerResult, Captions.patientDiaryRegistrationError);
+			showPatientDiaryResultPopup(registerResult, I18nProperties.getCaption(Captions.patientDiaryRegistrationError));
 			if (registerResult.isSuccess()) {
 				SormasUI.refreshView();
 			}

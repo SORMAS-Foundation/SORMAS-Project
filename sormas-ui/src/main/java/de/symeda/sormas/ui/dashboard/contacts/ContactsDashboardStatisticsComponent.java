@@ -106,9 +106,9 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 
 		allContactsCountLayout = firstComponent.createCountLayout(true);
 		contactClassificationUnconfirmed =
-			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUnconfirmed), CountElementStyle.MINOR);
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUnconfirmedContact), CountElementStyle.MINOR);
 		contactClassificationConfirmed =
-			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CountElementStyle.PRIMARY);
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardConfirmedContact), CountElementStyle.PRIMARY);
 		contactClassificationNotAContact =
 			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotAContact), CountElementStyle.POSITIVE);
 		newContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNew), CountElementStyle.NEUTRAL);
@@ -122,9 +122,9 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		firstComponent.addComponentToContent(allContactsCountLayout);
 
 		contactClassificationUnconfirmedLarge =
-			new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardUnconfirmed), CssStyles.SVG_FILL_MINOR);
+			new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardUnconfirmedContact), CssStyles.SVG_FILL_MINOR);
 		contactClassificationConfirmedLarge =
-			new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CssStyles.SVG_FILL_CRITICAL);
+			new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardConfirmedContact), CssStyles.SVG_FILL_CRITICAL);
 		contactClassificationNotAContactLarge =
 			new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardNotAContact), CssStyles.SVG_FILL_POSITIVE);
 		newContactsLarge = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardNew), CssStyles.SVG_FILL_NEUTRAL);

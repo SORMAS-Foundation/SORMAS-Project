@@ -320,7 +320,7 @@ public class ExternalJournalService {
 			} else {
 				logger.info("Successfully registered patient " + person.getUuid() + " in patient diary.");
 				person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
-				personFacade.savePersonAndNotifyExternalJournal(person);
+				personFacade.savePerson(person);
 			}
 			return new PatientDiaryResult(success, message);
 		} catch (IOException e) {
@@ -458,16 +458,12 @@ public class ExternalJournalService {
 			.map(PatientDiaryIdatId::getIdat)
 			.map(PatientDiaryPersonDto::getPersonUUID)
 			.anyMatch(uuid -> person.getUuid().equals(uuid));
-		boolean sameFamily = response.getResults()
+		boolean differentFirstNames = response.getResults()
 			.stream()
 			.map(PatientDiaryPersonData::getIdatId)
 			.map(PatientDiaryIdatId::getIdat)
-			.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
-		return notUsed || samePerson || sameFamily;
-	}
-
-	private boolean inSameFamily(PersonDto person, PatientDiaryPersonDto patientDiaryPerson) {
-		return patientDiaryPerson.getLastName().equals(person.getLastName()) && !patientDiaryPerson.getFirstName().equals(person.getFirstName());
+			.noneMatch(patientDiaryPerson -> person.getFirstName().equals(patientDiaryPerson.getFirstName()));
+		return notUsed || samePerson || differentFirstNames;
 	}
 
 	private boolean isPhoneAvailable(PersonDto person, String phone) {
@@ -480,12 +476,12 @@ public class ExternalJournalService {
 			.map(PatientDiaryIdatId::getIdat)
 			.map(PatientDiaryPersonDto::getPersonUUID)
 			.anyMatch(uuid -> person.getUuid().equals(uuid));
-		boolean sameFamily = response.getResults()
+		boolean differentFirstNames = response.getResults()
 			.stream()
 			.map(PatientDiaryPersonData::getIdatId)
 			.map(PatientDiaryIdatId::getIdat)
-			.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
-		return notUsed || samePerson || sameFamily;
+			.noneMatch(patientDiaryPerson -> person.getFirstName().equals(patientDiaryPerson.getFirstName()));
+		return notUsed || samePerson || differentFirstNames;
 	}
 
 	/**
@@ -544,7 +540,7 @@ public class ExternalJournalService {
 			} else {
 				logger.info("Successfully cancelled follow-up for person " + person.getUuid() + " in patient diary.");
 				person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
-				personFacade.savePersonAndNotifyExternalJournal(person);
+				personFacade.savePerson(person);
 			}
 			return new PatientDiaryResult(success, message);
 		} catch (IOException e) {
