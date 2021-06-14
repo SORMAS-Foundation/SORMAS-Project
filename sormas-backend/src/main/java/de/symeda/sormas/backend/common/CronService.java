@@ -26,6 +26,8 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
+import de.symeda.sormas.api.utils.DateHelper;
+import org.jboss.resteasy.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,9 +166,9 @@ public class CronService {
 	@Schedule(hour = "*", minute = "*/2", second = "0", persistent = false)
 	public void calculateCaseCompletion() {
 
-		long timeStart = System.currentTimeMillis();
+		long timeStart = DateHelper.startTime();
 		int casesUpdated = caseFacade.updateCompleteness();
-		long timeStop = System.currentTimeMillis();
+		long timeStop = DateHelper.durationSeconds(timeStart);
 		logger.debug(
 			"Completeness check, found {} cases started at {} duration {} milliseconds",
 			casesUpdated,
