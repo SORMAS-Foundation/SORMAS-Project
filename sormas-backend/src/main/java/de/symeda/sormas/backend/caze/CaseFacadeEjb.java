@@ -2098,14 +2098,8 @@ public class CaseFacadeEjb implements CaseFacade {
 					&& existingPerson.getCauseOfDeathDisease() == newCase.getDisease()
 					&& dateThreshold) {
 					// Make sure no other case associated with the person has Outcome=DECEASED
-					boolean doNotUpdatePersonCondition = false;
-					for (CaseDataDto caze : getAllCasesOfPerson(existingPerson.UUID)) {
-						if (caze.getOutcome() == CaseOutcome.DECEASED) {
-							doNotUpdatePersonCondition = true;
-							break;
-						}
-					}
-					if (!doNotUpdatePersonCondition) {
+					if (getAllCasesOfPerson(existingPerson.getUuid()).stream()
+						.noneMatch(caze -> caze.getOutcome() == CaseOutcome.DECEASED && !caze.getUuid().equals(existingCase.getUuid()))) {
 						newCase.getPerson().setPresentCondition(PresentCondition.ALIVE);
 						newCase.getPerson().setBurialDate(null);
 						newCase.getPerson().setDeathDate(null);
@@ -2124,11 +2118,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				|| newCase.getPerson().getPresentCondition() == PresentCondition.BURIED)
 			&& existingCase.getOutcomeDate() != newCase.getOutcomeDate()
 			&& newCase.getOutcomeDate() != null) {
-			// outcomeDate was changed, but person & case are considered dead
-			if (existingCase.getOutcomeDate() == newCase.getPerson().getDeathDate()
+			// outcomeDate of a deceased case was changed, but person is already considered dead
+			if (newCase.getOutcomeDate() != null
 				&& newCase.getPerson().getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
 				&& newCase.getPerson().getCauseOfDeathDisease() == existingCase.getDisease()) {
-				// update the deathdate of the person, if the previous outcomedate equals the previous deathdate
+				// update the deathdate of the person
 				PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
 				newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
 				personFacade.onPersonChanged(existingPerson, newCase.getPerson());
@@ -2139,9 +2133,6 @@ public class CaseFacadeEjb implements CaseFacade {
 				&& newCase.getPerson().getPresentCondition() != PresentCondition.BURIED
 				&& newCase.getPerson().getPresentCondition() != PresentCondition.DEAD) {
 				// person is alive but case has outcome deceased
-				if (newCase.getOutcomeDate() == null) {
-					newCase.setOutcomeDate(new Date());
-				}
 				PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
 				newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
 				newCase.getPerson().setPresentCondition(PresentCondition.DEAD);
