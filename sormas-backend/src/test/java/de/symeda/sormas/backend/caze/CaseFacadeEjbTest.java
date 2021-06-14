@@ -954,6 +954,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		cazePerson.setPresentCondition(PresentCondition.ALIVE);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
 		CaseDataDto firstCase = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
