@@ -186,7 +186,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		// Create
 		XSSFTable table = sheet.createTable();
-		String safeTableName = safeName.replaceAll("\\s", "_");
+		String safeTableName = safeName.replaceAll("\\s|\\p{Punct}", "_");
 		table.setName(safeTableName);
 		table.setDisplayName(safeTableName);
 
@@ -354,7 +354,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		// Create
 		XSSFTable table = sheet.createTable();
-		String safeTableName = (sheet.getSheetName() + getSimpleDtoName(FacilityReferenceDto.class)).replaceAll("\\s", "_");
+		String safeTableName = (sheet.getSheetName() + getSimpleDtoName(FacilityReferenceDto.class)).replaceAll("\\s|\\p{Punct}", "_");
 		table.setName(safeTableName);
 		table.setDisplayName(safeTableName);
 		XssfHelper.styleTable(table, 2);
