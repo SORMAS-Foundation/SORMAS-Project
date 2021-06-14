@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -41,8 +42,12 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.backend.util.ExternalDataUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -89,8 +94,8 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -195,7 +200,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		dateFilter = cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
 		dateFilter = cb.or(dateFilter, healthConditionsService.createChangeDateFilter(cb, from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT), date));
 		dateFilter = cb.or(dateFilter, vaccinationInfoService.createChangeDateFilter(cb, from.join(Contact.VACCINATION_INFO, JoinType.LEFT), date));
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_SHARES));
+		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SHARE_INFO_CONTACTS));
 
 		return dateFilter;
 	}
@@ -1124,6 +1129,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					CriteriaBuilderHelper.ilike(cb, from.get(Contact.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Contact.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, from.get(Contact.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Contact.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
 					phoneNumberPredicate(
@@ -1133,6 +1139,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.UUID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.ilike(cb, caze.get(Case.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, caze.get(Case.EPID_NUMBER), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.LAST_NAME), textFilter),
@@ -1230,12 +1237,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.equal(joins.getCaseEvent().get(Event.UUID), contactCriteria.getOnlyContactsWithSourceCaseInGivenEvent().getUuid()));
 		}
 		if (Boolean.TRUE.equals(contactCriteria.getOnlyContactsFromOtherInstances())) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.or(
-					cb.isNotNull(joins.getSormasToSormasShareInfo().get(SormasToSormasShareInfo.CONTACT)),
-					cb.isNotNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO))));
+			Subquery<Long> sharesSubQuery = contactQueryContext.getQuery().subquery(Long.class);
+			Root<ShareInfoContact> sharesRoot = sharesSubQuery.from(ShareInfoContact.class);
+			sharesSubQuery.where(cb.equal(sharesRoot.get(ShareInfoContact.CONTACT), from));
+			sharesSubQuery.select(sharesRoot.get(ShareInfoContact.ID));
+
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.or(cb.exists(sharesSubQuery), cb.isNotNull(from.get(Contact.SORMAS_TO_SORMAS_ORIGIN_INFO))));
 		}
 		if (contactCriteria.getDiseaseVariant() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getCaze().get(Case.DISEASE_VARIANT), contactCriteria.getDiseaseVariant()));
@@ -1382,6 +1390,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		cq.where(personJoin.get(AbstractDomainObject.UUID).in(personUuids));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException{
+		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
 	}
 
 }

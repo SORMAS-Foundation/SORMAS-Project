@@ -21,7 +21,7 @@ package org.sormas.e2etests.services;
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
-import org.sormas.e2etests.pojo.Event;
+import org.sormas.e2etests.pojo.web.Event;
 
 public class EventService {
   private final Faker faker;
@@ -44,6 +44,22 @@ public class EventService {
         .eventLocation("Home")
         .riskLevel("Moderate risk")
         .sourceType("Not applicable")
+        .build();
+  }
+
+  public Event buildEditEvent() {
+    String timestamp = String.valueOf(System.currentTimeMillis());
+    return Event.builder()
+        .eventStatus("DROPPED")
+        .investigationStatus("INVESTIGATION DONE")
+        .eventManagementStatus("DONE")
+        .disease("COVID-19")
+        .title("EVENT_AUTOMATION_" + timestamp + faker.address().city())
+        .eventDate(LocalDate.now().minusDays(1))
+        .reportDate(LocalDate.now())
+        .eventLocation("Public place")
+        .riskLevel("High risk")
+        .sourceType("Mathematical model")
         .build();
   }
 }

@@ -24,3 +24,12 @@ Feature: Case end to end tests
     And I open the last created Case via API
     And I delete the case
     Then I check that number of displayed cases results is 0
+
+  Scenario: Edit all fields from Case Contacts tab
+    Given API: I create a new person
+    Then API: I create a new case
+    When I open the Case Contacts tab of the created case via api
+    Then I click on new contact button from Case Contacts tab
+    Then I create a new contact from Cases Contacts tab
+    And I open the Case Contacts tab of the created case via api
+    And I verify that created contact from Case Contacts tab is correctly displayed

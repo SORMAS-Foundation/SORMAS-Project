@@ -30,11 +30,14 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonIndexDto;
@@ -100,6 +103,17 @@ public class PersonResource extends EntityDtoResource {
 		@QueryParam("size") int size) {
 		return FacadeProvider.getPersonFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+	}
+
+	@POST
+	@Path("/externalData")
+	public Response updateExternalData(List<ExternalDataDto> externalData) {
+		try {
+			FacadeProvider.getPersonFacade().updateExternalData(externalData);
+			return Response.status(Response.Status.OK).build();
+		} catch (ExternalDataUpdateException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+		}
 	}
 
 }

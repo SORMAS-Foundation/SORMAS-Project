@@ -50,6 +50,9 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -234,6 +237,11 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public List<PersonDto> getByExternalIds(List<String> externalIds) {
 		return toPseudonymizedDtos(personService.getByExternalIdsBatched(externalIds));
+	}
+
+	@Override
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+		personService.updateExternalData(externalData);
 	}
 
 	@Override
@@ -857,6 +865,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
 		target.setExternalId(source.getExternalId());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setBirthCountry(CountryFacadeEjb.toReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(CountryFacadeEjb.toReferenceDto(source.getCitizenship()));
@@ -1370,6 +1379,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
 		target.setExternalId(source.getExternalId());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setBirthCountry(countryService.getByReferenceDto(source.getBirthCountry()));
 		target.setCitizenship(countryService.getByReferenceDto(source.getCitizenship()));

@@ -55,6 +55,8 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
@@ -136,6 +138,14 @@ public class ReceivedDataProcessorHelper {
 
 		CountryReferenceDto citizenship = processCountry(person.getCitizenship(), Captions.Person_citizenship, validationErrors);
 		person.setCitizenship(citizenship);
+
+		return validationErrors;
+	}
+
+	public ValidationErrors processPersonPreview(SormasToSormasPersonPreview person) {
+		ValidationErrors validationErrors = new ValidationErrors();
+
+		processLocation(person.getAddress(), Captions.Person, validationErrors);
 
 		return validationErrors;
 	}
@@ -338,6 +348,21 @@ public class ReceivedDataProcessorHelper {
 		return validationErrors;
 	}
 
+	public ValidationErrors processContactPreview(SormasToSormasContactPreview contact) {
+		ValidationErrors validationErrors = new ValidationErrors();
+
+		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
+			loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
+
+		handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
+			contact.setRegion(infrastructure.region);
+			contact.setDistrict(infrastructure.district);
+			contact.setCommunity(infrastructure.community);
+		}));
+
+		return validationErrors;
+	}
+
 	public void processEpiData(EpiDataDto epiData, ValidationErrors validationErrors) {
 		if (epiData != null) {
 			epiData.getExposures().forEach(exposure -> {
@@ -361,7 +386,7 @@ public class ReceivedDataProcessorHelper {
 		entity.setReportingUser(reportingUser);
 	}
 
-	private void processLocation(LocationDto address, String groupNameTag, ValidationErrors validationErrors) {
+	public void processLocation(LocationDto address, String groupNameTag, ValidationErrors validationErrors) {
 		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = loadLocalInfrastructure(
 			address.getContinent(),
 			address.getSubcontinent(),

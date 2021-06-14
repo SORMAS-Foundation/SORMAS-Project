@@ -395,6 +395,7 @@ public class SampleDto extends PseudonymizableDto implements SormasToSormasEntit
 	}
 
 	@Override
+	@ImportIgnore
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
