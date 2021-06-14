@@ -966,9 +966,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// simulate short delay between transmissions
 		Thread.sleep(DtoHelper.CHANGE_DATE_TOLERANCE_MS + 1);
 
-		// case deceased -> person has to set to dead
-		firstCase.setOutcome(CaseOutcome.DECEASED);
+		// set person to dead so that case will be updated automatically
 		cazePerson.setPresentCondition(PresentCondition.DEAD);
+		cazePerson.setDeathDate(new Date());
+		cazePerson.setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
+		cazePerson.setCauseOfDeathDisease(firstCase.getDisease());
 		cazePerson = getPersonFacade().savePerson(cazePerson);
 
 		// this should throw an exception
