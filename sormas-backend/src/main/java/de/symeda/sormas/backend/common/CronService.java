@@ -80,6 +80,13 @@ public class CronService {
 		taskFacade.sendNewAndDueTaskMessages();
 	}
 
+	@Schedule(hour = "*", minute = "*/2", second = "0", persistent = false)
+	public void calculateCaseCompletion() {
+		long timeStart = DateHelper.startTime();
+		int casesUpdated = caseFacade.updateCompleteness();
+		logger.debug("calculateCaseCompletion finished. {} cases, {} s", casesUpdated, DateHelper.durationSeconds(timeStart));
+	}
+
 	@Schedule(hour = "1", minute = "0", second = "0", persistent = false)
 	public void deleteAllExpiredFeatureConfigurations() {
 
@@ -161,12 +168,5 @@ public class CronService {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
 			labMessageFacade.fetchAndSaveExternalLabMessages(null);
 		}
-	}
-
-	@Schedule(hour = "*", minute = "*/2", second = "0", persistent = false)
-	public void calculateCaseCompletion() {
-		long timeStart = DateHelper.startTime();
-		int casesUpdated = caseFacade.updateCompleteness();
-		logger.debug("calculateCaseCompletion finished. {} cases, {} s", casesUpdated, DateHelper.durationSeconds(timeStart));
 	}
 }
