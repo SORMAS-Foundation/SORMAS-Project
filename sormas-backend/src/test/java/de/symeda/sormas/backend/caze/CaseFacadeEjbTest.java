@@ -836,16 +836,22 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			today,
 			rdcf);
 
-		// case deceased -> person should be set to dead, outcomedate to today, deathdate to outcomedate
+		// case deceased -> person should be set to dead, causeofdeath(disease) filled in
 		firstCase.setOutcome(CaseOutcome.DECEASED);
 		firstCase = getCaseFacade().saveCase(firstCase);
 		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
-		assertNotNull(firstCase.getOutcomeDate());
-		assertTrue(DateHelper.isSameDay(firstCase.getOutcomeDate(), today));
+
+		assertNull(firstCase.getOutcomeDate());
 		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
-		assertTrue(DateHelper.isSameDay(firstCase.getOutcomeDate(), cazePerson.getDeathDate()));
 		assertEquals(CauseOfDeath.EPIDEMIC_DISEASE, cazePerson.getCauseOfDeath());
 		assertEquals(firstCase.getDisease(), cazePerson.getCauseOfDeathDisease());
+
+		// update just the outcomeDate -> person should also get the deathdate set
+		firstCase.setOutcomeDate(today);
+		firstCase = getCaseFacade().saveCase(firstCase);
+		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+
+		assertTrue(DateHelper.isSameDay(firstCase.getOutcomeDate(), cazePerson.getDeathDate()));
 
 		// case has no outcome again -> person should be alive
 		firstCase.setOutcome(CaseOutcome.NO_OUTCOME);
@@ -853,11 +859,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
 		assertNull(firstCase.getOutcomeDate());
 		assertEquals(PresentCondition.ALIVE, cazePerson.getPresentCondition());
+		assertNull(cazePerson.getDeathDate());
 
-		// additional, newest case for the the person. set to deceased -> person has to be dead
+		// additional, newer cases for the the person
 		firstCase.setReportDate(DateHelper.subtractDays(today, 17));
 		firstCase.getSymptoms().setOnsetDate(firstCase.getReportDate());
-		firstCase.setOutcomeDate(DateHelper.subtractDays(today, 15));
 		firstCase = getCaseFacade().saveCase(firstCase);
 		CaseDataDto secondCase = creator.createCase(
 			user.toReference(),
@@ -873,7 +879,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto thirdCase = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
-			Disease.EVD,
+			Disease.MEASLES,
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
 			DateHelper.subtractDays(today, 7),
@@ -882,6 +888,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		thirdCase.setOutcomeDate(DateHelper.subtractDays(today, 5));
 		thirdCase = getCaseFacade().saveCase(thirdCase);
 
+		// the newest case is set to deceased -> person should be dead
 		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
 		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
@@ -892,7 +899,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
 		assertEquals(CaseOutcome.DECEASED, thirdCase.getOutcome());
 		assertTrue(DateHelper.isSameDay(cazePerson.getDeathDate(), thirdCase.getOutcomeDate()));
-		assertNotNull(thirdCase.getOutcomeDate());
 
 		// person alive again -> deceased case has to be set to no outcome
 		cazePerson.setPresentCondition(PresentCondition.ALIVE);
@@ -903,31 +909,41 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
 		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
 		assertEquals(CaseOutcome.NO_OUTCOME, thirdCase.getOutcome());
+		assertNull(thirdCase.getOutcomeDate());
 
-		// move 1st and 2nd case to past, so that they should no longer be affected by anything
+		// move 1st and 3rd case to past, so that they should no longer be affected by anything
 		firstCase.setReportDate(DateHelper.subtractDays(today, 100));
+		firstCase.getSymptoms().setOnsetDate(firstCase.getReportDate());
 		thirdCase.setReportDate(DateHelper.subtractDays(today, 100));
+		thirdCase.getSymptoms().setOnsetDate(thirdCase.getReportDate());
 		firstCase = getCaseFacade().saveCase(firstCase);
 		thirdCase = getCaseFacade().saveCase(thirdCase);
-		// Set Case to deceased again
+
+		// Set 2nd Case to deceased again
 		secondCase.setOutcome(CaseOutcome.DECEASED);
 		secondCase = getCaseFacade().saveCase(secondCase);
+		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+
 		// manually set the persons deathdate to 32 days in the past
-		cazePerson.setDeathDate(DateHelper.subtractDays(today, 32));
+		cazePerson.setDeathDate(DateHelper.subtractDays(secondCase.getReportDate(), 32));
 		cazePerson = getPersonFacade().savePerson(cazePerson);
-		// Change Person to alive -> case should not change, because deathdate is over 30 days away from case reportdate
-		cazePerson.setPresentCondition(PresentCondition.ALIVE);
-		cazePerson = getPersonFacade().savePerson(cazePerson);
-		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
-		assertEquals(secondCase.getOutcome(), CaseOutcome.DECEASED);
-		// setting the case back to alive should also not affect the person
-		cazePerson.setPresentCondition(PresentCondition.DEAD);
-		cazePerson.setDeathDate(today);
-		cazePerson = getPersonFacade().savePerson(cazePerson);
+
+		// Change Case to RECOVERD -> person should not change, because deathdate is over 30 days away from case reportdate
 		secondCase.setOutcome(CaseOutcome.RECOVERED);
 		secondCase = getCaseFacade().saveCase(secondCase);
 		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+
 		assertEquals(cazePerson.getPresentCondition(), PresentCondition.DEAD);
+
+		// update the present condition to dead -> case should still not be affected because of the date threshold
+		cazePerson.setPresentCondition(PresentCondition.DEAD);
+		cazePerson.setDeathDate(today);
+		cazePerson.setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
+		cazePerson.setCauseOfDeathDisease(secondCase.getDisease());
+		cazePerson = getPersonFacade().savePerson(cazePerson);
+		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
+
+		assertEquals(secondCase.getOutcome(), CaseOutcome.RECOVERED);
 	}
 
 	@Test
