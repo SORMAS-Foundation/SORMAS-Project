@@ -1,16 +1,14 @@
 package org.sormas.e2etests.pojo.web;
 
-import java.time.LocalDate;
 import lombok.*;
-import org.sormas.e2etests.enums.YesNoUnknownOptions;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
 public class ExposureDetails {
-  LocalDate startOfExposure;
-  LocalDate endOfExposure;
+  String startOfExposure;
+  String endOfExposure;
   String exposureDescription;
   String typeOfActivity;
   String exposureDetailsRole;
@@ -41,4 +39,7 @@ public class ExposureDetails {
   String city;
   String areaType;
   String communityContactPerson;
+  String gpsLatitude;
+  String gpsLongitude;
+  String gpsAccuracy;
 }

@@ -20,8 +20,6 @@ package org.sormas.e2etests.enums;
 
 import lombok.Getter;
 
-import java.util.Random;
-
 @Getter
 public enum ActivityTypes {
   VISIT("Visit"),

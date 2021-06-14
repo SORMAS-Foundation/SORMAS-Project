@@ -5,9 +5,7 @@ Scenario: Cover Epidemiological data Tab from Contacts
   When API: I create a new person
   Then API: I create a new contact
   When I am accessing the Epidemiological tab using of created contact via api
-  Then I check and fill all data
-  And I click on save
-  And I am accessing the contacts
-  When I am accessing the Epidemiological tab using of created contact via api
-  And I am checking all data is saved and displayed
+  And I check and fill all data
+  Then I refresh Epidemiological data for contact page
+  And I am checking all data is saved and displayed on edit Exposure page
 
