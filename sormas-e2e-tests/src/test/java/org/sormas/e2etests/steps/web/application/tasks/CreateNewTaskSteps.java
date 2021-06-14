@@ -44,14 +44,16 @@ public class CreateNewTaskSteps implements En {
         "^I create a new task with specific data$",
         () -> {
           task = taskService.buildGeneratedTask();
-            fillAllFields(task);
+          fillAllFields(task);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
     When(
         "^I create a new task with specific data for an event$",
         () -> {
           task = taskService.buildGeneratedTaskForEvent();
-            fillAllFields(task);
+          fillAllFields(task);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
     When(
@@ -65,25 +67,25 @@ public class CreateNewTaskSteps implements En {
         "^I change all fields and save$",
         () -> {
           task = taskService.buildEditTask();
-            fillAllFields(task);
+          fillAllFields(task);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
   }
 
-    private void fillAllFields(Task task) {
-        selectTaskType(task.getTaskType());
-        fillSuggestedStartDate(task.getSuggestedStartDate());
-        fillSuggestedStartTime(task.getSuggestedStartTime());
-        fillDueDateDate(task.getDueDateDate());
-        fillDueDateTime(task.getDueDateTime());
-        selectAssignedTo(task.getAssignedTo());
-        selectPriority(task.getPriority());
-        fillCommentsOnTask(task.getCommentsOnTask());
-        fillCommentsOnExecution(task.getCommentsOnExecution());
-        selectTaskStatus(task.getTaskStatus());
-        webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-    }
+  private void fillAllFields(Task task) {
+    selectTaskType(task.getTaskType());
+    fillSuggestedStartDate(task.getSuggestedStartDate());
+    fillSuggestedStartTime(task.getSuggestedStartTime());
+    fillDueDateDate(task.getDueDateDate());
+    fillDueDateTime(task.getDueDateTime());
+    selectAssignedTo(task.getAssignedTo());
+    selectPriority(task.getPriority());
+    fillCommentsOnTask(task.getCommentsOnTask());
+    fillCommentsOnExecution(task.getCommentsOnExecution());
+    selectTaskStatus(task.getTaskStatus());
+  }
 
-    public void selectTaskType(String taskType) {
+  public void selectTaskType(String taskType) {
     webDriverHelpers.selectFromCombobox(TASK_TYPE_COMBOBOX, taskType);
   }
 
