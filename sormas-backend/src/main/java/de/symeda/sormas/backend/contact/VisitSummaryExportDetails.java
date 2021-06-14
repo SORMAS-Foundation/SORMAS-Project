@@ -17,9 +17,6 @@ package de.symeda.sormas.backend.contact;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 

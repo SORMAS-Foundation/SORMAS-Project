@@ -22,9 +22,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -57,6 +55,9 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	public static final String EXTERNAL_TOKEN = "externalToken";
 	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String COMPLETENESS = "completeness";
+	public static final String REGION_UUID = "regionUuid";
+	public static final String DISTRICT_UUID = "districtUuid";
+	public static final String COMMUNITY_UUID = "communityUuid";
 
 	private String uuid;
 	@PersonalData

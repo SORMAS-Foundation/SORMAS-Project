@@ -20,14 +20,11 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.utils.CaseJoins;
 
 public class ContactJurisdictionPredicateValidator extends JurisdictionValidator<Predicate> {
 

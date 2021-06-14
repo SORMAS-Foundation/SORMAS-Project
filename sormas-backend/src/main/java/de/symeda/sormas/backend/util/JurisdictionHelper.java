@@ -17,25 +17,10 @@ package de.symeda.sormas.backend.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
-import de.symeda.sormas.api.event.EventJurisdictionDto;
-import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
-import de.symeda.sormas.api.sample.SampleJurisdictionDto;
-import de.symeda.sormas.api.task.TaskJurisdictionDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.task.Task;
-import de.symeda.sormas.backend.user.User;
 
 public class JurisdictionHelper {
 

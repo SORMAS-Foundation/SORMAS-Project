@@ -23,7 +23,6 @@ import javax.persistence.criteria.Selection;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
@@ -164,10 +163,10 @@ public class ContactListCriteriaBuilder {
 			expressions.add(joins.getCasePerson().get(Person.FIRST_NAME));
 			expressions.add(joins.getCasePerson().get(Person.LAST_NAME));
 			break;
-		case ContactJurisdictionDto.REGION_UUID:
+		case ContactIndexDto.REGION_UUID:
 			expressions.add(joins.getRegion().get(Region.NAME));
 			break;
-		case ContactJurisdictionDto.DISTRICT_UUID:
+		case ContactIndexDto.DISTRICT_UUID:
 			expressions.add(joins.getDistrict().get(District.NAME));
 			break;
 		case ContactIndexDto.VACCINATION:
