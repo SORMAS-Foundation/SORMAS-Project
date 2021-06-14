@@ -152,8 +152,12 @@ public class PatchHelper {
 
 		if (HasUuid.class.isAssignableFrom(listElementClass) && listElement.hasNonNull(EntityDto.UUID)) {
 			Object existingListElement = getListElementByUuid(existingObject, existingObjectField, listElement.get(EntityDto.UUID).textValue());
-			postUpdate(listElement, existingListElement);
-			tempNewElementList.add(existingListElement);
+			if (existingListElement != null) {
+				postUpdate(listElement, existingListElement);
+				tempNewElementList.add(existingListElement);
+			} else {
+				addObjectToList(tempNewElementList, listElement, listElementClass);
+			}
 
 		} else {
 			addObjectToList(tempNewElementList, listElement, listElementClass);
@@ -273,7 +277,7 @@ public class PatchHelper {
 					e.printStackTrace();
 					throw new RuntimeException(e);
 				}
-			}).findFirst().orElseThrow();
+			}).findFirst().orElse(null);
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
