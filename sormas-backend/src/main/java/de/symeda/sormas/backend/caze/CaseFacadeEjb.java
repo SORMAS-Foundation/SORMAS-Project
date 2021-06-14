@@ -114,6 +114,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -205,6 +206,8 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.document.Document;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -405,6 +408,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
+	@EJB
+	private DocumentService documentService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -3193,6 +3198,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			otherVisit.setPerson(leadCaseData.getPerson());
 			otherVisit.setDisease(leadCaseData.getDisease());
 			visitFacade.saveVisit(otherVisit);
+		}
+
+		// 6 Documents
+		List<Document> documents = documentService.getRelatedToEntity(DocumentRelatedEntityType.CASE, otherCase.getUuid());
+		for (Document document : documents) {
+			document.setRelatedEntityUuid(leadCaseData.getUuid());
+
+			documentService.ensurePersisted(document);
 		}
 	}
 

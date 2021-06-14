@@ -30,6 +30,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -73,6 +75,8 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.document.DocumentDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -1140,7 +1144,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testMergeCase() {
+	public void testMergeCase() throws IOException {
 
 		useNationalUserLogin();
 		// 1. Create
@@ -1207,6 +1211,23 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		VisitDto otherVisit = creator.createVisit(otherCase.getDisease(), otherCase.getPerson(), otherCase.getReportDate());
 		otherVisit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(otherVisit);
+
+		DocumentDto document = creator.createDocument(
+			leadUserReference,
+			"document.pdf",
+			"application/pdf",
+			42L,
+			DocumentRelatedEntityType.CASE,
+			leadCase.getUuid(),
+			"content".getBytes(StandardCharsets.UTF_8));
+		DocumentDto otherDocument = creator.createDocument(
+			leadUserReference,
+			"other_document.pdf",
+			"application/pdf",
+			42L,
+			DocumentRelatedEntityType.CASE,
+			otherCase.getUuid(),
+			"other content".getBytes(StandardCharsets.UTF_8));
 
 		// 2. Merge
 
@@ -1285,6 +1306,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(SymptomState.YES, mergedCase.getSymptoms().getAbdominalPain());
 		assertEquals(SymptomState.YES, mergedCase.getSymptoms().getAnorexiaAppetiteLoss());
 		assertTrue(mergedCase.getSymptoms().getSymptomatic());
+
+		// 5 Documents
+		List<DocumentDto> mergedDocuments = getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.CASE, leadCase.getUuid());
+
+		assertEquals(mergedDocuments.size(), 2);
+		List<String> documentUuids = mergedDocuments.stream().map(DocumentDto::getUuid).collect(Collectors.toList());
+		assertTrue(documentUuids.contains(document.getUuid()));
+		assertTrue(documentUuids.contains(otherDocument.getUuid()));
 	}
 
 	@Test
