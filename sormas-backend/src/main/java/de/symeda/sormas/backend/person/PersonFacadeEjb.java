@@ -968,9 +968,7 @@ public class PersonFacadeEjb implements PersonFacade {
 				(c1, c2) -> CaseLogic.getStartDate(c1.getSymptoms().getOnsetDate(), c1.getReportDate())
 					.before(CaseLogic.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getReportDate())) ? 1 : -1);
 
-			if (newPerson.getPresentCondition() != null
-				&& existingPerson.getPresentCondition() != null
-				&& existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
+			if (newPerson.getPresentCondition() != null && existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
 				// Update case list after previous onCaseChanged
 				Case personCase = personCases.isEmpty() ? null : personCases.get(0);
 				if (newPerson.getPresentCondition().isDeceased()
@@ -988,7 +986,9 @@ public class PersonFacadeEjb implements PersonFacade {
 						personCase.setOutcomeDate(newPerson.getDeathDate());
 						caseFacade.onCaseChanged(existingCase, personCase);
 					}
-				} else if (!newPerson.getPresentCondition().isDeceased() && existingPerson.getPresentCondition().isDeceased()) {
+				} else if (!newPerson.getPresentCondition().isDeceased()
+					&& (existingPerson.getPresentCondition() == PresentCondition.DEAD
+						|| existingPerson.getPresentCondition() == PresentCondition.BURIED)) {
 					// Person was put "back alive"
 					// make sure other values are set to null
 					newPerson.setCauseOfDeath(null);
