@@ -15,30 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.state;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-import io.restassured.response.Response;
-import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Contact;
-import org.sormas.e2etests.pojo.api.Event;
-import org.sormas.e2etests.pojo.api.Person;
-import org.sormas.e2etests.pojo.api.Sample;
-import org.sormas.e2etests.pojo.api.Task;
+package org.sormas.e2etests.pages.application.samples;
 
-@ScenarioScoped
-@Getter
-@Setter
-public class ApiState {
-  Response response;
-  Person editPerson;
-  Case createdCase;
-  List<Sample> createdSamples;
-  Contact createdContact;
-  Event createdEvent;
-  Task createdTask;
-  Sample createdSample;
+import org.openqa.selenium.By;
+
+public class EditSamplePage {
+
+  public static final By DELETE_SAMPLE_BUTTON = By.cssSelector("#delete");
+  public static final By SAMPLE_DELETION_POPUP = By.cssSelector(".v-window .popupContent");
+  public static final By SAMPLE_DELETION_POPUP_YES_BUTTON = By.id("actionConfirm");
 }
