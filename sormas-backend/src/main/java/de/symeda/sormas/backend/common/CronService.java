@@ -165,13 +165,8 @@ public class CronService {
 
 	@Schedule(hour = "*", minute = "*/2", second = "0", persistent = false)
 	public void calculateCaseCompletion() {
-
 		long timeStart = DateHelper.startTime();
 		int casesUpdated = caseFacade.updateCompleteness();
-		logger.debug(
-			"Completeness check, found {} cases started at {} duration {} seconds",
-			casesUpdated,
-			new Timestamp(timeStart),
-			DateHelper.durationSeconds(timeStart));
+		logger.debug("calculateCaseCompletion finished. {} cases, {} s", casesUpdated, DateHelper.durationSeconds(timeStart));
 	}
 }
