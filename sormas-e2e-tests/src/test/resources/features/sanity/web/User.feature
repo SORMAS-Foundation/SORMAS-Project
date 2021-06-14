@@ -28,7 +28,7 @@ Feature: Create user
     And I create a new user with <rights>
     When I search for created user
     And I change user data and save the changes
-    And I search for created user
+    And I search for edited user
     Then I check the edited data is correctly displayed on Edit User page
 
     Examples:

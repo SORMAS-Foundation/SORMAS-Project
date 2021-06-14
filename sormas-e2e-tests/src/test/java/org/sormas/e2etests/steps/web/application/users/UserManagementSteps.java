@@ -49,6 +49,13 @@ public class UserManagementSteps implements En {
           searchForUser(CreateNewUserSteps.user.getUserName());
           selectFirstElementFromList();
         });
+
+    When(
+        "^I search for edited user$",
+        () -> {
+          searchForUser(CreateNewUserSteps.editUser.getUserName());
+          selectFirstElementFromList();
+        });
   }
 
   private void searchForUser(String userName) {

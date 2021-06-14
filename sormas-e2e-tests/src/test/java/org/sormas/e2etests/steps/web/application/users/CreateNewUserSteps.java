@@ -29,7 +29,8 @@ import org.sormas.e2etests.services.UserService;
 
 public class CreateNewUserSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
-  protected static User user;
+  public static User user;
+  public static User editUser;
 
   @Inject
   public CreateNewUserSteps(WebDriverHelpers webDriverHelpers, UserService userService) {
@@ -60,8 +61,8 @@ public class CreateNewUserSteps implements En {
           fillGpsLatitude(user.getGpsLatitude());
           fillGpsLongitude(user.getGpsLongitude());
           fillGpsAccuracy(user.getGpsAccuracy());
+          selectActive(user.getActive());
           fillUserName(user.getUserName());
-          selectActive();
           selectUserRole(rights);
           selectLimitedDisease(user.getLimitedDisease());
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
@@ -71,31 +72,34 @@ public class CreateNewUserSteps implements En {
     And(
         "^I change user data and save the changes$",
         () -> {
-          user = userService.buildEditUser();
-          fillFirstName(user.getFirstName());
-          fillLastName(user.getLastName());
-          fillEmailAddress(user.getEmailAddress());
-          fillPhoneNumber(user.getPhoneNumber());
-          selectLanguage(user.getLanguage());
-          selectCountry(user.getCountry());
-          selectFacilityCategory(user.getFacilityCategory());
-          selectFacilityType(user.getFacilityType());
-          selectFacility(user.getFacility());
-          fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
-          fillStreet(user.getStreet());
-          fillHouseNr(user.getHouseNumber());
-          fillAdditionalInformation(user.getAdditionalInformation());
-          fillPostalCode(user.getPostalCode());
-          fillCity(user.getCity());
-          selectAreaType(user.getAreaType());
-          fillGpsLatitude(user.getGpsLatitude());
-          fillGpsLongitude(user.getGpsLongitude());
-          fillGpsAccuracy(user.getGpsAccuracy());
-          selectActive();
-          fillUserName(user.getUserName());
+          editUser = userService.buildEditUser();
+          fillFirstName(editUser.getFirstName());
+          fillLastName(editUser.getLastName());
+          fillEmailAddress(editUser.getEmailAddress());
+          fillPhoneNumber(editUser.getPhoneNumber());
+          selectLanguage(editUser.getLanguage());
+          selectCountry(editUser.getCountry());
+          selectRegion(editUser.getRegion());
+          selectDistrict(editUser.getDistrict());
+          selectCommunity(editUser.getCommunity());
+          selectFacilityCategory(editUser.getFacilityCategory());
+          selectFacilityType(editUser.getFacilityType());
+          selectFacility(editUser.getFacility());
+          fillFacilityNameAndDescription(editUser.getFacilityNameAndDescription());
+          fillStreet(editUser.getStreet());
+          fillHouseNr(editUser.getHouseNumber());
+          fillAdditionalInformation(editUser.getAdditionalInformation());
+          fillPostalCode(editUser.getPostalCode());
+          fillCity(editUser.getCity());
+          selectAreaType(editUser.getAreaType());
+          fillGpsLatitude(editUser.getGpsLatitude());
+          fillGpsLongitude(editUser.getGpsLongitude());
+          fillGpsAccuracy(editUser.getGpsAccuracy());
+          fillUserName(editUser.getUserName());
+          selectActive(user.getActive());
           selectActiveUserRole();
-          selectUserRole(user.getUserRole());
-          selectLimitedDisease(user.getLimitedDisease());
+          selectUserRole(editUser.getUserRole());
+          selectLimitedDisease(editUser.getLimitedDisease());
           webDriverHelpers.scrollToElement(CreateNewUserPage.SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CreateNewUserPage.SAVE_BUTTON);
         });
@@ -199,8 +203,8 @@ public class CreateNewUserSteps implements En {
     webDriverHelpers.fillInWebElement(LAT_LON_ACCURACY_INPUT, gpsAccuracy);
   }
 
-  public void selectActive() {
-    webDriverHelpers.clickOnWebElementBySelector(ACTIVE_CHECKBOX);
+  public void selectActive(String active) {
+    webDriverHelpers.clickWebElementByText(ACTIVE_CHECKBOX, active);
   }
 
   public void selectActiveUserRole() {

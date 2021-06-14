@@ -23,7 +23,7 @@ import org.openqa.selenium.By;
 public class EditUserPage {
   public static final By FIRST_NAME_OF_USER_INPUT = By.id("firstName");
   public static final By LAST_NAME_OF_USER_INPUT = By.id("lastName");
-  public static final By CREATE_NEW_PASSWORD = By.id("userResetPassword");
+  public static final By CREATE_NEW_PASSWORD_INPUT = By.id("userResetPassword");
   public static final By EMAIL_ADDRESS_INPUT = By.id("userEmail");
   public static final By PHONE_INPUT = By.id("phone");
   public static final By COUNTRY_COMBOBOX_INPUT = By.cssSelector("#country input");

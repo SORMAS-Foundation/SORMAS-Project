@@ -20,6 +20,7 @@ package org.sormas.e2etests.steps.web.application.users;
 
 import static org.sormas.e2etests.pages.application.users.EditUserPage.*;
 
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
@@ -118,75 +119,42 @@ public class EditUserSteps implements En {
     Then(
         "^I check the edited data is correctly displayed on Edit User page$",
         () -> {
-          final User editUser = collectUserData();
-          softly
-              .assertThat(editUser.getFirstName())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getFirstName());
-          softly
-              .assertThat(editUser.getLastName())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getLastName());
-          softly
-              .assertThat(editUser.getEmailAddress())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getEmailAddress());
-          softly
-              .assertThat(editUser.getPhoneNumber())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getPhoneNumber());
-          softly
-              .assertThat(editUser.getLanguage())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getLanguage());
-          softly
-              .assertThat(editUser.getCountry())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getCountry());
-          softly
-              .assertThat(editUser.getFacilityCategory())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getFacilityCategory());
-          softly
-              .assertThat(editUser.getFacilityType())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getFacilityType());
-          softly
-              .assertThat(editUser.getFacility())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getFacility());
-          softly
-              .assertThat(editUser.getFacilityNameAndDescription())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getFacilityNameAndDescription());
-          softly
-              .assertThat(editUser.getStreet())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getStreet());
-          softly
-              .assertThat(editUser.getHouseNumber())
-              .isEqualTo(CreateNewUserSteps.user.getHouseNumber());
-          softly
-              .assertThat(editUser.getAdditionalInformation())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getAdditionalInformation());
-          softly
-              .assertThat(editUser.getPostalCode())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getPostalCode());
-          softly
-              .assertThat(editUser.getCity())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getCity());
-          softly
-              .assertThat(editUser.getAreaType())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getAreaType());
-          softly
-              .assertThat(editUser.getGpsLongitude())
-              .isEqualTo(CreateNewUserSteps.user.getGpsLongitude());
-          softly
-              .assertThat(editUser.getGpsLatitude())
-              .isEqualTo(CreateNewUserSteps.user.getGpsLatitude());
-          softly
-              .assertThat(editUser.getGpsAccuracy())
-              .isEqualTo(CreateNewUserSteps.user.getGpsAccuracy());
-          softly
-              .assertThat(editUser.getUserName())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getUserName());
-          softly
-              .assertThat(editUser.getUserRole())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getUserRole());
-          softly
-              .assertThat(editUser.getLimitedDisease())
-              .isEqualToIgnoringCase(CreateNewUserSteps.user.getLimitedDisease());
-          softly.assertAll();
+          user = collectEditUserData();
+          Truth.assertThat(CreateNewUserSteps.editUser).isEqualTo(user);
         });
+  }
+
+  public User collectEditUserData() {
+    return User.builder()
+        .firstName(webDriverHelpers.getValueFromWebElement(FIRST_NAME_OF_USER_INPUT))
+        .lastName(webDriverHelpers.getValueFromWebElement(LAST_NAME_OF_USER_INPUT))
+        .emailAddress(webDriverHelpers.getValueFromWebElement(EMAIL_ADDRESS_INPUT))
+        .phoneNumber(webDriverHelpers.getValueFromWebElement(PHONE_INPUT))
+        .language(webDriverHelpers.getValueFromWebElement(LANGUAGE_COMBOBOX_INPUT))
+        .country(webDriverHelpers.getValueFromWebElement(COUNTRY_COMBOBOX_INPUT))
+        .region(webDriverHelpers.getValueFromWebElement(REGION_COMBOBOX_INPUT))
+        .district(webDriverHelpers.getValueFromWebElement(DISTRICT_COMBOBOX_INPUT))
+        .community(webDriverHelpers.getValueFromWebElement(COMMUNITY_COMBOBOX_INPUT))
+        .facilityCategory(webDriverHelpers.getValueFromWebElement(FACILITY_CATEGORY_COMBOBOX_INPUT))
+        .facilityType(webDriverHelpers.getValueFromWebElement(FACILITY_TYPE_COMBOBOX_INPUT))
+        .facility(webDriverHelpers.getValueFromWebElement(FACILITY_COMBOBOX_INPUT))
+        .facilityNameAndDescription(
+            webDriverHelpers.getValueFromWebElement(FACILITY_NAME_DESCRIPTION_VALUE))
+        .street(webDriverHelpers.getValueFromWebElement(STREET_INPUT))
+        .houseNumber(webDriverHelpers.getValueFromWebElement(HOUSE_NUMBER_INPUT))
+        .additionalInformation(
+            webDriverHelpers.getValueFromWebElement(ADDITIONAL_INFORMATION_INPUT))
+        .postalCode(webDriverHelpers.getValueFromWebElement(POSTAL_CODE_INPUT))
+        .city(webDriverHelpers.getValueFromWebElement(CITY_INPUT))
+        .areaType(webDriverHelpers.getValueFromWebElement(AREA_TYPE_COMBOBOX_INPUT))
+        .gpsLatitude(webDriverHelpers.getValueFromWebElement(LATITUDE_INPUT))
+        .gpsLongitude(webDriverHelpers.getValueFromWebElement(LONGITUDE_INPUT))
+        .gpsAccuracy(webDriverHelpers.getValueFromWebElement(LAT_LON_ACCURACY_INPUT))
+        .active(webDriverHelpers.getTextFromLabelIfCheckboxIsChecked(ACTIVE_CHECKBOX))
+        .userName(webDriverHelpers.getValueFromWebElement(USER_NAME_INPUT))
+        .limitedDisease(webDriverHelpers.getValueFromWebElement(LIMITED_DISEASE_COMBOBOX_INPUT))
+        .userRole(webDriverHelpers.getTextFromWebElement(USER_ROLE_CHECKBOX_TEXT))
+        .build();
   }
 
   public User collectUserData() {
@@ -215,7 +183,6 @@ public class EditUserSteps implements En {
         .gpsLatitude(webDriverHelpers.getValueFromWebElement(LATITUDE_INPUT))
         .gpsLongitude(webDriverHelpers.getValueFromWebElement(LONGITUDE_INPUT))
         .gpsAccuracy(webDriverHelpers.getValueFromWebElement(LAT_LON_ACCURACY_INPUT))
-        .active(webDriverHelpers.getValueFromWebElement(ACTIVE_CHECKBOX))
         .userName(webDriverHelpers.getValueFromWebElement(USER_NAME_INPUT))
         .limitedDisease(webDriverHelpers.getValueFromWebElement(LIMITED_DISEASE_COMBOBOX_INPUT))
         .userRole(webDriverHelpers.getTextFromWebElement(USER_ROLE_CHECKBOX_TEXT))
