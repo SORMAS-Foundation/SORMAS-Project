@@ -168,11 +168,10 @@ public class CronService {
 
 		long timeStart = DateHelper.startTime();
 		int casesUpdated = caseFacade.updateCompleteness();
-		long timeStop = DateHelper.durationSeconds(timeStart);
 		logger.debug(
-			"Completeness check, found {} cases started at {} duration {} milliseconds",
+			"Completeness check, found {} cases started at {} duration {} seconds",
 			casesUpdated,
 			new Timestamp(timeStart),
-			(timeStop - timeStart));
+			DateHelper.durationSeconds(timeStart));
 	}
 }
