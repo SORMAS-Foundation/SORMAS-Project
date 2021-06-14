@@ -1135,6 +1135,7 @@ public interface Strings {
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
+	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";
 	String promptPersonsSearchField = "promptPersonsSearchField";
 	String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	String promptRegion = "promptRegion";
