@@ -999,15 +999,14 @@ public class PersonFacadeEjb implements PersonFacade {
 				&& newPerson.getDeathDate() != existingPerson.getDeathDate()
 				&& newPerson.getDeathDate() != null) {
 				// only Deathdate has changed
-				// update the latest associated case to the new deathdate, if the previous outcome date matches the previous deathdate
+				// update the latest associated case to the new deathdate, if causeOfDeath matches
 				Case personCase = personCases.get(0);
-				if (personCase.getOutcome() == CaseOutcome.DECEASED && personCase.getOutcomeDate() == existingPerson.getDeathDate()) {
+				if (personCase.getOutcome() == CaseOutcome.DECEASED
+					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
+					&& newPerson.getCauseOfDeathDisease() == personCase.getDisease()) {
 					CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
-					if (newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
-						&& newPerson.getCauseOfDeathDisease() == existingCase.getDisease()) {
-						personCase.setOutcomeDate(newPerson.getDeathDate());
-						caseFacade.onCaseChanged(existingCase, personCase);
-					}
+					personCase.setOutcomeDate(newPerson.getDeathDate());
+					caseFacade.onCaseChanged(existingCase, personCase);
 				}
 			}
 		}
