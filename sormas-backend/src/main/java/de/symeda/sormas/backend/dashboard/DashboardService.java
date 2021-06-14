@@ -48,6 +48,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
 import de.symeda.sormas.utils.EventJoins;
@@ -339,7 +340,7 @@ public class DashboardService {
 				eventDistrict.get(District.NAME),
 				eventDistrict.get(District.UUID),
 				eventJoins.getCommunity().get(Community.UUID),
-				eventService.jurisdictionSelector(cb, eventService.inJurisdictionOrOwned(cb, eventJoins)));
+				JurisdictionHelper.jurisdictionSelector(cb, eventService.inJurisdictionOrOwned(cb, eventJoins)));
 
 			result = em.createQuery(cq).getResultList();
 

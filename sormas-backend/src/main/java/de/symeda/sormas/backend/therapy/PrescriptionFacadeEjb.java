@@ -36,6 +36,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.utils.CaseJoins;
@@ -63,19 +64,19 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		PrescriptionJoins joins = new PrescriptionJoins(prescription);
 
 		cq.multiselect(
-						prescription.get(Prescription.UUID),
-						prescription.get(Prescription.PRESCRIPTION_TYPE),
-						prescription.get(Prescription.PRESCRIPTION_DETAILS),
-						prescription.get(Prescription.TYPE_OF_DRUG),
-						prescription.get(Prescription.PRESCRIPTION_DATE),
-						prescription.get(Prescription.PRESCRIPTION_START),
-						prescription.get(Prescription.PRESCRIPTION_END),
-						prescription.get(Prescription.FREQUENCY),
-						prescription.get(Prescription.DOSE),
-						prescription.get(Prescription.ROUTE),
-						prescription.get(Prescription.ROUTE_DETAILS),
-						prescription.get(Prescription.PRESCRIBING_CLINICIAN),
-				caseService.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			prescription.get(Prescription.UUID),
+			prescription.get(Prescription.PRESCRIPTION_TYPE),
+			prescription.get(Prescription.PRESCRIPTION_DETAILS),
+			prescription.get(Prescription.TYPE_OF_DRUG),
+			prescription.get(Prescription.PRESCRIPTION_DATE),
+			prescription.get(Prescription.PRESCRIPTION_START),
+			prescription.get(Prescription.PRESCRIPTION_END),
+			prescription.get(Prescription.FREQUENCY),
+			prescription.get(Prescription.DOSE),
+			prescription.get(Prescription.ROUTE),
+			prescription.get(Prescription.ROUTE_DETAILS),
+			prescription.get(Prescription.PRESCRIBING_CLINICIAN),
+			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
 
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, prescription));
@@ -185,7 +186,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 			prescription.get(Prescription.ROUTE),
 			prescription.get(Prescription.ROUTE_DETAILS),
 			prescription.get(Prescription.ADDITIONAL_NOTES),
-			caseService.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
 
 		Predicate filter = service.createUserFilter(cb, cq, prescription);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, new CaseQueryContext(cb, cq, joins.getCaze()));

@@ -41,6 +41,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -406,7 +407,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
 				districtSelect,
 				joins.getLab().get(Facility.UUID),
-				sampleService.jurisdictionSelector(cb, sampleService.inJurisdictionOrOwned(cb, joins)));
+				JurisdictionHelper.jurisdictionSelector(cb, sampleService.inJurisdictionOrOwned(cb, joins)));
 
 		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
 
@@ -661,8 +662,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			joins.getContact().get(Contact.CONTACT_STATUS),
 			joins.getLab().get(Facility.UUID),
 			joins.getCaseFacility().get(Facility.UUID),
-			sampleService
-				.jurisdictionSelector(cb, sampleService.inJurisdictionOrOwned(cb, joins)));
+			JurisdictionHelper.jurisdictionSelector(cb, sampleService.inJurisdictionOrOwned(cb, joins)));
 
 		Predicate filter = sampleService.createUserFilter(cb, cq, sampleRoot);
 

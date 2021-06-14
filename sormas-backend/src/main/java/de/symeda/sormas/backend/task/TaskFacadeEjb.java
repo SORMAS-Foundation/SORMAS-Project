@@ -221,18 +221,18 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setClosedLon(source.getClosedLon());
 		target.setClosedLatLonAccuracy(source.getClosedLatLonAccuracy());
 
-		pseudonymizer.pseudonymizeDto(TaskDto.class, target, taskService.inJurisdictionOrOwned(source), t -> {
+		boolean isInJurisdiction = taskService.inJurisdictionOrOwned(source);
+		pseudonymizer.pseudonymizeDto(TaskDto.class, target, isInJurisdiction, t -> {
 			if (source.getCaze() != null) {
-				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, target.getCaze(), caseService.inJurisdictionOrOwned(source.getCaze()), null);
+				pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, target.getCaze(), isInJurisdiction, null);
 			}
 
 			if (source.getContact() != null) {
-				pseudonymizeContactReference(pseudonymizer, target.getContact());
+				pseudonymizeContactReference(pseudonymizer, target.getContact(), isInJurisdiction);
 			}
 
 			if (source.getEvent() != null) {
-				pseudonymizer
-					.pseudonymizeDto(EventReferenceDto.class, target.getEvent(), eventService.inJurisdictionOrOwned(source.getEvent()), null);
+				pseudonymizer.pseudonymizeDto(EventReferenceDto.class, target.getEvent(), isInJurisdiction, null);
 			}
 		});
 
@@ -372,19 +372,41 @@ public class TaskFacadeEjb implements TaskFacade {
 					.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.NAME))
 					.otherwise(joins.getEventCommunity().get(Community.NAME)));
 
-		//@formatter:off
-		cq.multiselect(task.get(Task.UUID), task.get(Task.TASK_CONTEXT),
-				joins.getCaze().get(Case.UUID), joins.getCasePerson().get(Person.FIRST_NAME), joins.getCasePerson().get(Person.LAST_NAME),
-				joins.getEvent().get(Event.UUID), joins.getEvent().get(Event.EVENT_TITLE), joins.getEvent().get(Event.DISEASE), joins.getEvent().get(Event.DISEASE_DETAILS), 
-				joins.getEvent().get(Event.EVENT_STATUS), joins.getEvent().get(Event.EVENT_INVESTIGATION_STATUS), joins.getEvent().get(Event.START_DATE), 
-				joins.getContact().get(Contact.UUID), joins.getContactPerson().get(Person.FIRST_NAME), joins.getContactPerson().get(Person.LAST_NAME), 
-				joins.getContactCasePerson().get(Person.FIRST_NAME), joins.getContactCasePerson().get(Person.LAST_NAME),
-				task.get(Task.TASK_TYPE), task.get(Task.PRIORITY), task.get(Task.DUE_DATE), task.get(Task.SUGGESTED_START), task.get(Task.TASK_STATUS),
-				joins.getCreator().get(User.UUID), joins.getCreator().get(User.FIRST_NAME), joins.getCreator().get(User.LAST_NAME), task.get(Task.CREATOR_COMMENT),
-				joins.getAssignee().get(User.UUID), joins.getAssignee().get(User.FIRST_NAME), joins.getAssignee().get(User.LAST_NAME), task.get(Task.ASSIGNEE_REPLY),
-				region, district, community, taskService.jurisdictionSelector(cb, taskService.inJurisdictionOrOwned(cb, joins))
-		);
-		//@formatter:on
+		cq.multiselect(
+			task.get(Task.UUID),
+			task.get(Task.TASK_CONTEXT),
+			joins.getCaze().get(Case.UUID),
+			joins.getCasePerson().get(Person.FIRST_NAME),
+			joins.getCasePerson().get(Person.LAST_NAME),
+			joins.getEvent().get(Event.UUID),
+			joins.getEvent().get(Event.EVENT_TITLE),
+			joins.getEvent().get(Event.DISEASE),
+			joins.getEvent().get(Event.DISEASE_DETAILS),
+			joins.getEvent().get(Event.EVENT_STATUS),
+			joins.getEvent().get(Event.EVENT_INVESTIGATION_STATUS),
+			joins.getEvent().get(Event.START_DATE),
+			joins.getContact().get(Contact.UUID),
+			joins.getContactPerson().get(Person.FIRST_NAME),
+			joins.getContactPerson().get(Person.LAST_NAME),
+			joins.getContactCasePerson().get(Person.FIRST_NAME),
+			joins.getContactCasePerson().get(Person.LAST_NAME),
+			task.get(Task.TASK_TYPE),
+			task.get(Task.PRIORITY),
+			task.get(Task.DUE_DATE),
+			task.get(Task.SUGGESTED_START),
+			task.get(Task.TASK_STATUS),
+			joins.getCreator().get(User.UUID),
+			joins.getCreator().get(User.FIRST_NAME),
+			joins.getCreator().get(User.LAST_NAME),
+			task.get(Task.CREATOR_COMMENT),
+			joins.getAssignee().get(User.UUID),
+			joins.getAssignee().get(User.FIRST_NAME),
+			joins.getAssignee().get(User.LAST_NAME),
+			task.get(Task.ASSIGNEE_REPLY),
+			region,
+			district,
+			community,
+			JurisdictionHelper.jurisdictionSelector(cb, taskService.inJurisdictionOrOwned(cb, joins)));
 
 		Predicate filter = null;
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
@@ -481,23 +503,15 @@ public class TaskFacadeEjb implements TaskFacade {
 			Pseudonymizer emptyValuePseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			pseudonymizer.pseudonymizeDtoCollection(TaskIndexDto.class, tasks, t -> t.getInJurisdiction(), (t, ignored) -> {
 				if (t.getCaze() != null) {
-					emptyValuePseudonymizer.pseudonymizeDto(
-						CaseReferenceDto.class,
-						t.getCaze(),
-						caseService.inJurisdictionOrOwned(caseService.getByUuid(t.getCaze().getUuid())),
-						null);
+					emptyValuePseudonymizer.pseudonymizeDto(CaseReferenceDto.class, t.getCaze(), t.getInJurisdiction(), null);
 				}
 
 				if (t.getContact() != null) {
-					pseudonymizeContactReference(emptyValuePseudonymizer, t.getContact());
+					pseudonymizeContactReference(emptyValuePseudonymizer, t.getContact(), t.getInJurisdiction());
 				}
 
 				if (t.getEvent() != null) {
-					emptyValuePseudonymizer.pseudonymizeDto(
-						EventReferenceDto.class,
-						t.getEvent(),
-						eventService.inJurisdictionOrOwned(eventService.getByUuid(t.getEvent().getUuid())),
-						null);
+					emptyValuePseudonymizer.pseudonymizeDto(EventReferenceDto.class, t.getEvent(), t.getInJurisdiction(), null);
 				}
 			}, true);
 		}
@@ -505,20 +519,11 @@ public class TaskFacadeEjb implements TaskFacade {
 		return tasks;
 	}
 
-	private void pseudonymizeContactReference(Pseudonymizer pseudonymizer, ContactReferenceDto contactReference) {
-		Contact byUuid = contactService.getByUuid(contactReference.getUuid());
-		pseudonymizer.pseudonymizeDto(
-			ContactReferenceDto.PersonName.class,
-			contactReference.getContactName(),
-			contactService.inJurisdictionOrOwned(byUuid),
-			null);
+	private void pseudonymizeContactReference(Pseudonymizer pseudonymizer, ContactReferenceDto contactReference, boolean isInJurisdiction) {
+		pseudonymizer.pseudonymizeDto(ContactReferenceDto.PersonName.class, contactReference.getContactName(), isInJurisdiction, null);
 
 		if (contactReference.getCaseName() != null) {
-			pseudonymizer.pseudonymizeDto(
-				ContactReferenceDto.PersonName.class,
-				contactReference.getCaseName(),
-				caseService.inJurisdictionOrOwned(byUuid.getCaze()),
-				null);
+			pseudonymizer.pseudonymizeDto(ContactReferenceDto.PersonName.class, contactReference.getCaseName(), isInJurisdiction, null);
 		}
 	}
 

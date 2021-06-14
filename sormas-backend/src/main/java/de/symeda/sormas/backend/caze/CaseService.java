@@ -48,6 +48,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -297,7 +298,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				caze.get(Case.REPORT_LON),
 				joins.getPersonAddress().get(Location.LATITUDE),
 				joins.getPersonAddress().get(Location.LONGITUDE),
-				jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)));
+				JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)));
 
 			result = em.createQuery(cq).getResultList();
 		} else {

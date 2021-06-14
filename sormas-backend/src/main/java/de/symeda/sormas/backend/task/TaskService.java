@@ -499,9 +499,6 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		final Predicate assignedToCurrentUser =
 			cb.and(cb.isNotNull(joins.getAssignee()), cb.equal(joins.getAssignee().get(User.UUID), currentUser.getUuid()));
 
-		final Predicate jurisdictionPredicate =
-			TaskJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
-
 		final Predicate caseJurisdiction =
 			cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())));
 
@@ -511,6 +508,6 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		final Predicate eventJurisdiction =
 			cb.and(cb.isNotNull(joins.getEvent()), eventService.inJurisdictionOrOwned(cb, new EventJoins<>(joins.getEvent())));
 
-		return cb.or(createdByCurrentUser, assignedToCurrentUser, jurisdictionPredicate, caseJurisdiction, contactJurisdiction, eventJurisdiction);
+		return cb.or(createdByCurrentUser, assignedToCurrentUser, caseJurisdiction, contactJurisdiction, eventJurisdiction);
 	}
 }

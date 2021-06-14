@@ -17,12 +17,19 @@ package de.symeda.sormas.backend.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.region.Region;
 
 public class JurisdictionHelper {
+
+	private JurisdictionHelper() {
+	}
 
 	public static JurisdictionLevel getSuperordinateJurisdiction(JurisdictionLevel jurisdition) {
 		switch (jurisdition) {
@@ -64,5 +71,9 @@ public class JurisdictionHelper {
 		}
 
 		return regions;
+	}
+
+	public static Expression<Object> jurisdictionSelector(CriteriaBuilder cb, Predicate jurisdictionPredicate) {
+		return cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false));
 	}
 }

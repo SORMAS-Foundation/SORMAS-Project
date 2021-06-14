@@ -50,6 +50,7 @@ import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.utils.CaseJoins;
@@ -96,7 +97,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			joins.getSymptoms().get(Symptoms.BLOOD_PRESSURE_DIASTOLIC),
 			joins.getSymptoms().get(Symptoms.HEART_RATE),
 			joins.getSymptoms().get(Symptoms.ID),
-			caseService.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
 
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, visit));
@@ -254,7 +255,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			clinicalVisit.get(ClinicalVisit.VISIT_REMARKS),
 			clinicalVisit.get(ClinicalVisit.VISITING_PERSON),
 			joins.getSymptoms().get(Symptoms.ID),
-			caseService.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
 
 		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit);
 

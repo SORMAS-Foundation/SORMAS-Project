@@ -45,6 +45,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
 
@@ -213,7 +214,7 @@ public class CaseListCriteriaBuilder {
 			joins.getFacility().get(Facility.ID),
 			joins.getResponsibleRegion().get(Region.UUID),
 			joins.getResponsibleDistrict().get(District.UUID),
-			caseService.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, joins)));
+			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, joins)));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {

@@ -35,6 +35,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.utils.CaseJoins;
@@ -75,7 +76,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 			treatment.get(Treatment.ROUTE),
 			treatment.get(Treatment.ROUTE_DETAILS),
 			treatment.get(Treatment.EXECUTING_CLINICIAN),
-			caseService.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
 
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, treatment));
@@ -160,19 +161,19 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		TreatmentJoins joins = new TreatmentJoins(treatment);
 
 		cq.multiselect(
-						joins.getCaze().get(Case.UUID),
-						joins.getCasePerson().get(Person.FIRST_NAME),
-						joins.getCasePerson().get(Person.LAST_NAME),
-						treatment.get(Treatment.TREATMENT_DATE_TIME),
-						treatment.get(Treatment.EXECUTING_CLINICIAN),
-						treatment.get(Treatment.TREATMENT_TYPE),
-						treatment.get(Treatment.TREATMENT_DETAILS),
-						treatment.get(Treatment.TYPE_OF_DRUG),
-						treatment.get(Treatment.DOSE),
-						treatment.get(Treatment.ROUTE),
-						treatment.get(Treatment.ROUTE_DETAILS),
-						treatment.get(Treatment.ADDITIONAL_NOTES),
-				caseService.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			joins.getCaze().get(Case.UUID),
+			joins.getCasePerson().get(Person.FIRST_NAME),
+			joins.getCasePerson().get(Person.LAST_NAME),
+			treatment.get(Treatment.TREATMENT_DATE_TIME),
+			treatment.get(Treatment.EXECUTING_CLINICIAN),
+			treatment.get(Treatment.TREATMENT_TYPE),
+			treatment.get(Treatment.TREATMENT_DETAILS),
+			treatment.get(Treatment.TYPE_OF_DRUG),
+			treatment.get(Treatment.DOSE),
+			treatment.get(Treatment.ROUTE),
+			treatment.get(Treatment.ROUTE_DETAILS),
+			treatment.get(Treatment.ADDITIONAL_NOTES),
+			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
 
 		Predicate filter = service.createUserFilter(cb, cq, treatment);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, new CaseQueryContext(cb, cq, joins.getCaze()));

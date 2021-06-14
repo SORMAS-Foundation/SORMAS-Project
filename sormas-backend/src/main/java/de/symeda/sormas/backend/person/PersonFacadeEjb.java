@@ -50,6 +50,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1110,7 +1111,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			phoneSubQuery.alias(PersonIndexDto.PHONE),
 			emailSubQuery.alias(PersonIndexDto.EMAIL_ADDRESS),
 			person.get(Person.CHANGE_DATE),
-			personService.jurisdictionSelector(cb, jurisdictionPredicate));
+			JurisdictionHelper.jurisdictionSelector(cb, jurisdictionPredicate));
 
 		Predicate filter = personService.createUserFilter(cb, cq, person);
 		if (criteria != null) {

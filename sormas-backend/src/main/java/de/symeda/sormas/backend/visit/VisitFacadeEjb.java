@@ -309,11 +309,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitUser.get(User.UUID),
 			visitUser.get(User.FIRST_NAME),
 			visitUser.get(User.LAST_NAME),
-			caseService.jurisdictionSelector(
-				cb,
-				cb.or(
-					caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(caseJoin)),
-					contactService.inJurisdictionOrOwned(cb, new ContactJoins(contactJoin)))));
+			jurisdictionSelector(cb, caseJoin, contactJoin));
 
 		cq.distinct(true);
 		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visit));
@@ -409,11 +405,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitRoot.get(Visit.REPORT_LON),
 			visitRoot.get(Visit.ORIGIN),
 			personJoin.get(Person.UUID),
-			caseService.jurisdictionSelector(
-				cb,
-				cb.or(
-					caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(caseJoin)),
-					contactService.inJurisdictionOrOwned(cb, new ContactJoins(contactJoin)))));
+			jurisdictionSelector(cb, caseJoin, contactJoin));
 
 		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot);
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, visitRoot.get(Visit.UUID));
@@ -459,6 +451,14 @@ public class VisitFacadeEjb implements VisitFacade {
 		}
 
 		return resultList;
+	}
+
+	private Expression<Object> jurisdictionSelector(CriteriaBuilder cb, Join<Visit, Case> caseJoin, Join<Visit, Contact> contactJoin) {
+		return JurisdictionHelper.jurisdictionSelector(
+			cb,
+			cb.or(
+				caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(caseJoin)),
+				contactService.inJurisdictionOrOwned(cb, new ContactJoins(contactJoin))));
 	}
 
 	public Visit fromDto(@NotNull VisitDto source, boolean checkChangeDate) {

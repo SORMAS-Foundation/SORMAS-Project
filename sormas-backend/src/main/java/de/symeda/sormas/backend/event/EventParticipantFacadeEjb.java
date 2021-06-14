@@ -45,6 +45,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -369,7 +370,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			cb.max(samples.get(Sample.SAMPLE_DATE_TIME)),
 			vaccinationInfoJoin.get(VaccinationInfo.VACCINATION),
 			joins.getEventParticipantReportingUser().get(User.UUID),
-			eventParticipantService.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, joins)));
+			JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, joins)));
 		cq.groupBy(
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.UUID),
@@ -547,7 +548,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.NATIONAL_HEALTH_ID),
 			person.get(Location.ID),
-			eventParticipantService.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, joins)),
+			JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, joins)),
 
 			event.get(Event.UUID),
 
@@ -769,7 +770,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	public boolean isEventParticipantEditAllowed(String uuid) {
 		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
 
-		return eventParticipantService.isEventParticiapntEditAllowed(eventParticipant);
+		return eventParticipantService.isEventParticipantEditAllowed(eventParticipant);
 	}
 
 	@Override

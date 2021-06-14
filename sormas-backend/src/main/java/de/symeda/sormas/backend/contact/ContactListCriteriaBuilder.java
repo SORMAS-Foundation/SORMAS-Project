@@ -33,6 +33,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.utils.CaseJoins;
@@ -100,9 +101,7 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.EXTERNAL_ID),
 			contact.get(Contact.EXTERNAL_TOKEN),
 			contact.get(Contact.INTERNAL_TOKEN),
-			contactService.jurisdictionSelector(
-				cb,
-				cb.or(contactService.inJurisdictionOrOwned(cb, joins), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))));
+			JurisdictionHelper.jurisdictionSelector(cb, contactService.inJurisdictionOrOwned(cb, joins)));
 	}
 
 	public List<Selection<?>> getMergeContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {

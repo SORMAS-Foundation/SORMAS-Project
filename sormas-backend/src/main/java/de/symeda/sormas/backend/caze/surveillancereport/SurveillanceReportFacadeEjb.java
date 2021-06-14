@@ -134,8 +134,6 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 			resultList = em.createQuery(cq).getResultList();
 		}
 
-//		caseService.jurisdictionSelector(cb, caseService.inJurisdiction(cb, new CaseJoins<>(root.get(SurveillanceReport.CAZE))));
-
 		List<SurveillanceReportDto> reports = resultList.stream().map(SurveillanceReportFacadeEjb::toDto).collect(Collectors.toList());
 
 		User currentUser = userService.getCurrentUser();
