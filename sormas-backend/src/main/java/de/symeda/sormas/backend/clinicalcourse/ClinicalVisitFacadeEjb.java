@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -14,6 +15,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
@@ -27,11 +30,13 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitExportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
@@ -82,8 +87,38 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	//	private String countPositiveSymptomsQuery;
 
+	public long count(ClinicalVisitCriteria clinicalVisitCriteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ClinicalVisit> visit = cq.from(ClinicalVisit.class);
+		Predicate filter = null;
+
+		if (clinicalVisitCriteria != null) {
+
+			Predicate criteriaFilter = service.buildCriteriaFilter(clinicalVisitCriteria, cb, visit);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.select(cb.countDistinct(visit));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	public Page<ClinicalVisitIndexDto> getIndexPage(
+		ClinicalVisitCriteria clinicalVisitCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<ClinicalVisitIndexDto> eventIndexList = getIndexList(clinicalVisitCriteria, offset, size, sortProperties);
+		long totalElementCount = count(clinicalVisitCriteria);
+		return new Page<>(eventIndexList, offset, size, totalElementCount);
+	}
+
 	@Override
-	public List<ClinicalVisitIndexDto> getIndexList(ClinicalVisitCriteria criteria) {
+	public List<ClinicalVisitIndexDto> getIndexList(ClinicalVisitCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ClinicalVisitIndexDto> cq = cb.createQuery(ClinicalVisitIndexDto.class);
@@ -111,9 +146,34 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			cq.where(service.buildCriteriaFilter(criteria, cb, visit));
 		}
 
-		cq.orderBy(cb.desc(visit.get(ClinicalVisit.VISIT_DATE_TIME)));
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case ClinicalVisitDto.UUID:
+				case ClinicalVisitDto.DISEASE:
+				case ClinicalVisitDto.VISIT_DATE_TIME:
+				case ClinicalVisitDto.CLINICAL_COURSE:
+					expression = visit.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(visit.get(ClinicalVisit.VISIT_DATE_TIME)));
+		}
 
-		List<ClinicalVisitIndexDto> results = em.createQuery(cq).getResultList();
+		List<ClinicalVisitIndexDto> results;
+		if (first != null && max != null) {
+
+			results = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			results = em.createQuery(cq).getResultList();
+		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(

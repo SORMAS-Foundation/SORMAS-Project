@@ -28,6 +28,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -36,6 +37,7 @@ import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
+import de.symeda.sormas.api.common.Page;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/clinicalvisits")
@@ -76,7 +78,11 @@ public class ClinicalVisitResource extends EntityDtoResource {
 
 	@POST
 	@Path("/indexList")
-	public List<ClinicalVisitIndexDto> getIndexList(@RequestBody CriteriaWithSorting<ClinicalVisitCriteria> criteriaWithSorting) {
-		return FacadeProvider.getClinicalVisitFacade().getIndexList(criteriaWithSorting.getCriteria());
+	public Page<ClinicalVisitIndexDto> getIndexList(
+		@RequestBody CriteriaWithSorting<ClinicalVisitCriteria> criteriaWithSorting,
+		@QueryParam("offset") int offset,
+		@QueryParam("size") int size) {
+		return FacadeProvider.getClinicalVisitFacade()
+			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 }
