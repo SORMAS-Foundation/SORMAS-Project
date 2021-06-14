@@ -1,24 +1,21 @@
-package org.sormas.e2etests.pojo.web.epidemiologicalData;
-
-import lombok.*;
-import org.sormas.e2etests.enums.YesNoUnknownOptions;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivity;
+package org.sormas.e2etests.pojo.web;
 
 import java.time.LocalDate;
+import lombok.*;
+import org.sormas.e2etests.enums.YesNoUnknownOptions;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
-public class Exposure {
+public class ExposureDetails {
   LocalDate startOfExposure;
   LocalDate endOfExposure;
   String exposureDescription;
-  TypeOfActivity typeOfActivity;
-  ExposureDetailsRole exposureDetailsRole;
-  YesNoUnknownOptions riskArea;
-  YesNoUnknownOptions indoors;
+  String typeOfActivity;
+  String exposureDetailsRole;
+  String riskArea;
+  String indoors;
   String outdoors;
   String wearingMask;
   String wearingPpe;

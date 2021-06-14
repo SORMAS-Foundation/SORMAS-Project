@@ -1,30 +1,12 @@
-/*
- * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
-package org.sormas.e2etests.pages.application.cases;
+package org.sormas.e2etests.pages.application.contacts;
 
 import org.openqa.selenium.By;
 
-public class EpidemiologicalDataCasePage {
+public class ExposureNewEntryPage {
   public static final By EXPOSURE_DETAILS_KNOWN =
       By.cssSelector("#exposureDetailsKnown span:nth-child(1)");
-  public static final By EXPOSURE_DETAILS_NEW_ENTRY = By.cssSelector("#exposures #actionNewEntry");
-  public static final By EXPOSURE_UUID = By.cssSelector(".v-window #uuid");
+  public static final By EXPOSURE_DETAILS_NEW_ENTRY = By.cssSelector("div#actionNewEntry");
+  public static final By EXPOSURE_UUID = By.cssSelector("input#uuid");
   public static final By START_OF_EXPOSURE = By.cssSelector(".v-window #startDate");
   public static final By END_OF_EXPOSURE = By.cssSelector(".v-window #endDate");
   public static final By EXPOSURE_DESCRIPTION = By.cssSelector(".v-window #description");

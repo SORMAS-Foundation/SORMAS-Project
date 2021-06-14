@@ -7,7 +7,8 @@ import lombok.*;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
 public class ExposureInvestigation {
-    String exposureDetailsKnown;
-    String highTransmissionRiskArea;
-    String largeOutbreaksArea;
+  String exposureDetailsKnown;
+  String highTransmissionRiskArea;
+  String largeOutbreaksArea;
+  Boolean exposureNewEntry;
 }

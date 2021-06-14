@@ -67,7 +67,7 @@ public class SampleManagementSteps implements En {
           int maximumNumberOfRows = 23;
           webDriverHelpers.waitUntilNumberOfElementsIsExactlyOrLess(
               SEARCH_RESULT_SAMPLE, maximumNumberOfRows);
-          Thread.sleep(1000); //reset filter acts chaotic, to be modified in the future
+          Thread.sleep(1000); // reset filter acts chaotic, to be modified in the future
           webDriverHelpers.fillAndSubmitInWebElement(
               SAMPLE_SEARCH_INPUT, apiState.getEditPerson().getFirstName());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);

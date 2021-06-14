@@ -1,83 +1,73 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
-import com.google.common.truth.Truth;
-import cucumber.api.java8.En;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.Contact;
-import org.sormas.e2etests.pojo.web.ExposureInvestigation;
-import org.sormas.e2etests.pojo.web.Symptoms;
-import org.sormas.e2etests.services.ContactService;
-import org.sormas.e2etests.services.ExposureInvestigationService;
-import org.sormas.e2etests.services.SymptomService;
-import org.sormas.e2etests.state.ApiState;
+import static org.sormas.e2etests.pages.application.contacts.EditEpidemiologicalDataContactPage.*;
 
+import cucumber.api.java8.En;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
-import static org.sormas.e2etests.pages.application.contacts.EditEpidemiologicalDataContactPage.*;
-import static org.sormas.e2etests.pages.application.contacts.EditEpidemiologicalDataContactPage.SAVE_BUTTON;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.web.ExposureDetails;
+import org.sormas.e2etests.pojo.web.ExposureInvestigation;
+import org.sormas.e2etests.services.ExposureDetailsService;
+import org.sormas.e2etests.services.ExposureInvestigationService;
+import org.sormas.e2etests.state.ApiState;
 
 public class ExposureInContactEpiDataSteps implements En {
 
-    private final WebDriverHelpers webDriverHelpers;
-    public static ExposureInvestigation exposureInvestigationInput;
-    @Inject
-    public ExposureInContactEpiDataSteps(WebDriverHelpers webDriverHelpers,
-                                         ExposureInvestigationService exposureInvestigationService,
-                                         ApiState apiState,
-                                         @Named("ENVIRONMENT_URL") String environmentUrl) {
-        this.webDriverHelpers = webDriverHelpers;
+  private final WebDriverHelpers webDriverHelpers;
+  public static ExposureInvestigation exposureInvestigationInput;
+  public static ExposureDetails exposureDetailsInput;
 
-        When (
-            "I am accessing the Epidemiological tab using of created contact via api",
-            () -> {
-                String EPIDATA_FOR_LAST_CREATED_CONTACT_URL =
-                        environmentUrl + "/sormas-ui/#!contacts/epidata/" + apiState.getCreatedContact().getUuid();
-                webDriverHelpers.accessWebSite(EPIDATA_FOR_LAST_CREATED_CONTACT_URL);
-            });
+  @Inject
+  public ExposureInContactEpiDataSteps(
+      WebDriverHelpers webDriverHelpers,
+      ExposureInvestigationService exposureInvestigationService,
+      ExposureDetailsService exposureDetailsService,
+      ApiState apiState,
+      @Named("ENVIRONMENT_URL") String environmentUrl) {
+    this.webDriverHelpers = webDriverHelpers;
 
-        Then (
-                "I check and fill all data",
-                () -> {
-                    exposureInvestigationInput = exposureInvestigationService.buildInputExposureInvestigation();
-                    checkExposureDetailsKnown(exposureInvestigationInput.getExposureDetailsKnown());
-                    checkHighTransmissionRiskArea(exposureInvestigationInput.getHighTransmissionRiskArea());
-                    checkLargeOutbreaksArea(exposureInvestigationInput.getLargeOutbreaksArea());
-                });
-        Then (
-                "I click on save",
-                () -> {
-                    webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-                });
-        Then (
-                "I am accessing the contacts",
-                () -> {
+    When(
+        "I am accessing the Epidemiological tab using of created contact via api",
+        () -> {
+          String EPIDATA_FOR_LAST_CREATED_CONTACT_URL =
+              environmentUrl
+                  + "/sormas-ui/#!contacts/epidata/"
+                  + apiState.getCreatedContact().getUuid();
+          webDriverHelpers.accessWebSite(EPIDATA_FOR_LAST_CREATED_CONTACT_URL);
+          Thread.sleep(30000);
+        });
 
-                });
-        When (
-                "I am accessing the Epidemiological tab using of created contact via api",
-                () -> {
+    Then(
+        "I check and fill all data",
+        () -> {
+          exposureInvestigationInput =
+              exposureInvestigationService.buildInputExposureInvestigation();
+          exposureIvestigationOnContact(exposureInvestigationInput);
+          // exposureDetailsInput = exposureDetailsService.buildInputExposureDetails();
 
-                });
-        When (
-                "I am checking all data is saved and displayed",
-                () -> {
+          Thread.sleep(30000);
+        });
+    Then(
+        "I click on save",
+        () -> {
+          // webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+    Then("I am accessing the contacts", () -> {});
 
-                });
+    When("I am checking all data is saved and displayed", () -> {});
+  }
 
-        }
-
-    public void checkExposureDetailsKnown(String knownStatus) {
-        webDriverHelpers.clickWebElementByText(EXPOSURE_DETAILS_KNOWN, knownStatus);
+  public void exposureIvestigationOnContact(ExposureInvestigation exposureInvestigationInput) {
+    webDriverHelpers.clickWebElementByText(
+        EXPOSURE_DETAILS_KNOWN, exposureInvestigationInput.getExposureDetailsKnown().toString());
+    webDriverHelpers.clickWebElementByText(
+        HIGH_TRANSMISSION_RISK_AREA,
+        exposureInvestigationInput.getHighTransmissionRiskArea().toString());
+    webDriverHelpers.clickWebElementByText(
+        LARGE_OUTBREAKS_AREA, exposureInvestigationInput.getLargeOutbreaksArea());
+    if (exposureInvestigationInput.getExposureNewEntry()) {
+      webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_DETAILS_NEW_ENTRY);
     }
-
-    public void checkHighTransmissionRiskArea(String riskArea) {
-        webDriverHelpers.clickWebElementByText(HIGH_TRANSMISSION_RISK_AREA, riskArea);
-    }
-
-    public void checkLargeOutbreaksArea(String largeOutbreaks) {
-        webDriverHelpers.clickWebElementByText(LARGE_OUTBREAKS_AREA, largeOutbreaks);
-    }
-
+  }
 }
