@@ -50,9 +50,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.externaldata.ExternalDataDto;
-import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -70,6 +67,8 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -971,14 +970,15 @@ public class PersonFacadeEjb implements PersonFacade {
 
 			if (newPerson.getPresentCondition() != null && existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
 				// Update case list after previous onCaseChanged
-				Case personCase = personCases.get(0);
+				Case personCase = personCases.isEmpty() ? null : personCases.get(0);
 				if (newPerson.getPresentCondition().isDeceased()
 					&& newPerson.getDeathDate() != null
 					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
 					&& newPerson.getCauseOfDeathDisease() != null) {
 
 					// update the latest associated case
-					if (personCase.getOutcome() != CaseOutcome.DECEASED
+					if (personCase != null
+						&& personCase.getOutcome() != CaseOutcome.DECEASED
 						&& (personCase.getReportDate().before(DateHelper.addDays(newPerson.getDeathDate(), 30))
 							&& personCase.getReportDate().after(DateHelper.subtractDays(newPerson.getDeathDate(), 30)))) {
 						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
@@ -996,7 +996,9 @@ public class PersonFacadeEjb implements PersonFacade {
 					newPerson.setBurialDate(null);
 					newPerson.setCauseOfDeathDisease(null);
 					// update the latest associated case, if it was set to deceased && and if the case-disease was also the causeofdeath-disease
-					if (personCase.getOutcome() == CaseOutcome.DECEASED && personCase.getDisease() == existingPerson.getCauseOfDeathDisease()) {
+					if (personCase != null
+						&& personCase.getOutcome() == CaseOutcome.DECEASED
+						&& personCase.getDisease() == existingPerson.getCauseOfDeathDisease()) {
 						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 						personCase.setOutcome(CaseOutcome.NO_OUTCOME);
 						personCase.setOutcomeDate(null);
@@ -1009,8 +1011,9 @@ public class PersonFacadeEjb implements PersonFacade {
 				&& newPerson.getDeathDate() != null) {
 				// only Deathdate has changed
 				// update the latest associated case to the new deathdate, if causeOfDeath matches
-				Case personCase = personCases.get(0);
-				if (personCase.getOutcome() == CaseOutcome.DECEASED
+				Case personCase = personCases.isEmpty() ? null : personCases.get(0);
+				if (personCase != null
+					&& personCase.getOutcome() == CaseOutcome.DECEASED
 					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
 					&& newPerson.getCauseOfDeathDisease() == personCase.getDisease()) {
 					CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
