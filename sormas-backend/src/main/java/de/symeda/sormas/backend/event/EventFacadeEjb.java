@@ -68,6 +68,8 @@ import de.symeda.sormas.api.event.EventGroupsIndexDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -280,9 +282,11 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Event, User> responsibleUser = event.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
 
 		cq.multiselect(
+			event.get(Event.ID),
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EXTERNAL_TOKEN),
+			event.get(Event.INTERNAL_TOKEN),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
@@ -341,6 +345,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.UUID:
 				case EventIndexDto.EXTERNAL_ID:
 				case EventIndexDto.EXTERNAL_TOKEN:
+				case EventIndexDto.INTERNAL_TOKEN:
 				case EventIndexDto.EVENT_STATUS:
 				case EventIndexDto.RISK_LEVEL:
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:
@@ -421,6 +426,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (CollectionUtils.isNotEmpty(indexList)) {
 			List<String> eventUuids = indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
+			List<Long> eventIds = indexList.stream().map(EventIndexDto::getId).collect(Collectors.toList());
 			List<Object[]> objectQueryList = null;
 
 			// Participant, Case and Death Count
@@ -513,7 +519,7 @@ public class EventFacadeEjb implements EventFacade {
 			}
 
 			if (externalSurveillanceToolFacade.isFeatureEnabled()) {
-				survToolShareCountAndDates = externalShareInfoService.getEventShareCountAndLatestDate(eventUuids)
+				survToolShareCountAndDates = externalShareInfoService.getEventShareCountAndLatestDate(eventIds)
 					.stream()
 					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
 			}
@@ -562,6 +568,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EXTERNAL_TOKEN),
+			event.get(Event.INTERNAL_TOKEN),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
@@ -974,7 +981,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setLaboratoryDiagnosticEvidence(source.getLaboratoryDiagnosticEvidence());
 		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
 
-		target.setInternalId(source.getInternalId());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getShareInfoEvents().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
@@ -1076,7 +1083,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setLaboratoryDiagnosticEvidence(source.getLaboratoryDiagnosticEvidence());
 		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
 
-		target.setInternalId(source.getInternalId());
+		target.setInternalToken(source.getInternalToken());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
@@ -1160,6 +1167,11 @@ public class EventFacadeEjb implements EventFacade {
 			em.createQuery(cq).getResultList().stream().map(RegionReferenceDto::new).forEach(regionReferenceDtos::add);
 		});
 		return regionReferenceDtos;
+	}
+
+	@Override
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+		eventService.updateExternalData(externalData);
 	}
 
 	@LocalBean

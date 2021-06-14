@@ -24,7 +24,7 @@ import org.sormas.e2etests.pojo.web.Person;
 
 public class PersonComparator {
 
-  private SoftAssertions softly;
+  private final SoftAssertions softly;
 
   @Inject
   public PersonComparator(SoftAssertions softly) {

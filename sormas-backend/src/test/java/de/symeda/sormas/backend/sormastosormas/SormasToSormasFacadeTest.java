@@ -51,6 +51,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
@@ -158,15 +159,14 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return shareInfo;
 	}
 
-	protected byte[] encryptShareDataAsArray(Object shareData) throws JsonProcessingException, SormasToSormasException {
+	protected SormasToSormasEncryptedDataDto encryptShareDataAsArray(Object shareData) throws JsonProcessingException, SormasToSormasException {
 		return encryptShareData(Collections.singletonList(shareData));
 	}
 
-	protected byte[] encryptShareData(Object shareData) throws JsonProcessingException, SormasToSormasException {
+	protected SormasToSormasEncryptedDataDto encryptShareData(Object shareData) throws SormasToSormasException {
 		mockDefaultServerAccess();
 
-		byte[] data = objectMapper.writeValueAsBytes(shareData);
-		byte[] encryptedData = getSormasToSormasEncryptionService().signAndEncrypt(data, SECOND_SERVER_ACCESS_CN);
+		SormasToSormasEncryptedDataDto encryptedData = getSormasToSormasEncryptionService().signAndEncrypt(shareData, SECOND_SERVER_ACCESS_CN);
 
 		mockSecondServerAccess();
 
@@ -176,12 +176,12 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 	protected <T> T decryptSharesData(byte[] data, Class<T> dataType) throws SormasToSormasException, IOException {
 		mockSecondServerAccess();
 
-		byte[] decryptData = getSormasToSormasEncryptionService().decryptAndVerify(data, DEFAULT_SERVER_ACCESS_CN);
-		T parsedData = objectMapper.readValue(decryptData, dataType);
+		T decryptData =
+			getSormasToSormasEncryptionService().decryptAndVerify(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, data), dataType);
 
 		mockDefaultServerAccess();
 
-		return parsedData;
+		return decryptData;
 	}
 
 	protected void mockDefaultServerAccess() {

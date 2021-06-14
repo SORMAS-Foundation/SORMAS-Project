@@ -62,5 +62,9 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.USERS_BUTTON);
         });
+
+    And(
+        "^I confirm navigation$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONFIRM_NAVIGATION));
   }
 }

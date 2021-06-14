@@ -28,7 +28,6 @@ import java.io.File;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -39,9 +38,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 @Slf4j
 public class AssertHelpers {
-
-  @Inject
-  public AssertHelpers() {}
 
   @SneakyThrows
   public void assertWithPoll(ThrowingRunnable throwingRunnable, int seconds) {

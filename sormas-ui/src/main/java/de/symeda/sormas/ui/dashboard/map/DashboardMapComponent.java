@@ -154,21 +154,27 @@ public class DashboardMapComponent extends VerticalLayout {
 			GeoShapeProvider geoShapeProvider = FacadeProvider.getGeoShapeProvider();
 
 			final GeoLatLon mapCenter;
-			if (UserProvider.getCurrent().hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER)) {
-				mapCenter = geoShapeProvider.getCenterOfAllRegions();
-
+			// If map.usecountrycenter=true, use config coordinates. Else try to calculate the center of the user region/country
+			if (FacadeProvider.getConfigFacade().isMapUseCountryCenter()) {
+				mapCenter = FacadeProvider.getConfigFacade().getCountryCenter();
+				map.setCenter(mapCenter);
 			} else {
-				UserDto user = UserProvider.getCurrent().getUser();
-				if (user.getRegion() != null) {
-					mapCenter = geoShapeProvider.getCenterOfRegion(user.getRegion());
-				} else {
+				if (UserProvider.getCurrent().hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER)) {
 					mapCenter = geoShapeProvider.getCenterOfAllRegions();
+
+				} else {
+					UserDto user = UserProvider.getCurrent().getUser();
+					if (user.getRegion() != null) {
+						mapCenter = geoShapeProvider.getCenterOfRegion(user.getRegion());
+					} else {
+						mapCenter = geoShapeProvider.getCenterOfAllRegions();
+					}
 				}
+
+				GeoLatLon center = Optional.ofNullable(mapCenter).orElseGet(FacadeProvider.getConfigFacade()::getCountryCenter);
+				map.setCenter(center);
 			}
 
-			GeoLatLon center = Optional.ofNullable(mapCenter).orElseGet(FacadeProvider.getConfigFacade()::getCountryCenter);
-
-			map.setCenter(center);
 		}
 
 		map.setZoom(FacadeProvider.getConfigFacade().getMapZoom());

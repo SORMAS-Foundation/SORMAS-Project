@@ -256,10 +256,10 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		event.setSrcMediaName("Test media website");
 		event.setSrcMediaDetails("Test media details");
 
-		byte[] encryptedData =
+		SormasToSormasEncryptedDataDto encryptedData =
 			encryptShareDataAsArray(new SormasToSormasEventDto(event, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false)));
 
-		getSormasToSormasEventFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
+		getSormasToSormasEventFacade().saveSharedEntities(encryptedData, null);
 
 		EventDto savedEvent = getEventFacade().getEventByUuid(event.getUuid());
 
@@ -295,9 +295,9 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		SormasToSormasEventDto shareData = new SormasToSormasEventDto(event, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, false));
 		shareData.setEventParticipants(Collections.singletonList(eventParticipant));
 
-		byte[] encryptedData = encryptShareDataAsArray(shareData);
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(shareData);
 
-		getSormasToSormasEventFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
+		getSormasToSormasEventFacade().saveSharedEntities(encryptedData, null);
 
 		EventParticipantDto savedParticipant = getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid());
 
@@ -344,9 +344,9 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		shareData.setSamples(
 			Collections.singletonList(
 				new SormasToSormasSampleDto(sample, Collections.singletonList(pathogenTest), Collections.singletonList(additionalTest))));
-		byte[] encryptedData = encryptShareDataAsArray(shareData);
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(shareData);
 
-		getSormasToSormasEventFacade().saveSharedEntities(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData), null);
+		getSormasToSormasEventFacade().saveSharedEntities(encryptedData, null);
 
 		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getUuid());
 		assertThat(savedSample, is(notNullValue()));
@@ -466,9 +466,9 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		shareData.setEventParticipants(Arrays.asList(eventParticipant, newEventParticipant));
 		shareData.setSamples(Collections.singletonList(new SormasToSormasSampleDto(newSample, Collections.emptyList(), Collections.emptyList())));
 
-		byte[] encryptedData = encryptShareDataAsArray(shareData);
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(shareData);
 
-		getSormasToSormasEventFacade().saveReturnedEntity(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		getSormasToSormasEventFacade().saveReturnedEntity(encryptedData);
 
 		EventDto returnedEvent = getEventFacade().getEventByUuid(event.getUuid());
 		assertThat(returnedEvent.getEventDesc(), is("Test updated description"));
@@ -509,16 +509,11 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		PersonDto person = creator.createPerson();
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer);
 
-		getSormasToSormasShareInfoService().persist(
-			createShareInfo(
-				getUserService().getByUuid(officer.getUuid()),
-				SECOND_SERVER_ACCESS_CN,
-				false,
-				i -> {
-					i.getEvents().add(new ShareInfoEvent(i, getEventService().getByUuid(event.getUuid())));
-					i.getEventParticipants()
-						.add(new ShareInfoEventParticipant(i, getEventParticipantService().getByUuid(eventParticipant.getUuid())));
-				}));
+		getSormasToSormasShareInfoService()
+			.persist(createShareInfo(getUserService().getByUuid(officer.getUuid()), SECOND_SERVER_ACCESS_CN, false, i -> {
+				i.getEvents().add(new ShareInfoEvent(i, getEventService().getByUuid(event.getUuid())));
+				i.getEventParticipants().add(new ShareInfoEventParticipant(i, getEventParticipantService().getByUuid(eventParticipant.getUuid())));
+			}));
 
 		EventParticipantDto newEventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer);
 
@@ -588,9 +583,9 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		SormasToSormasEventDto shareData = new SormasToSormasEventDto(event, createSormasToSormasOriginInfo(DEFAULT_SERVER_ACCESS_CN, true));
 		shareData.setEventParticipants(Arrays.asList(eventParticipant, newEventParticipant));
 
-		byte[] encryptedData = encryptShareDataAsArray(shareData);
+		SormasToSormasEncryptedDataDto encryptedData = encryptShareDataAsArray(shareData);
 
-		getSormasToSormasEventFacade().saveSyncedEntity(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_CN, encryptedData));
+		getSormasToSormasEventFacade().saveSyncedEntity(encryptedData);
 
 		EventDto syncedEvent = getEventFacade().getEventByUuid(event.getUuid());
 		assertThat(syncedEvent.getEventDesc(), is("Test updated description"));

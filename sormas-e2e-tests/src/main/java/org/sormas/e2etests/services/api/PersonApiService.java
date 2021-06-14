@@ -16,25 +16,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pojo;
+package org.sormas.e2etests.services.api;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import com.github.javafaker.Faker;
+import com.google.inject.Inject;
+import java.util.UUID;
+import org.sormas.e2etests.pojo.api.Person;
 
-@Builder(toBuilder = true, builderClassName = "builder")
-@Value
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@NonNull
-public class Sample {
-  String uuid;
-  LocalDate dateOfCollection;
-  LocalTime timeOfCollection;
-  String sampleType;
-  String reasonForSample;
-  long sampleID;
-  String commentsOnSample;
+public class PersonApiService {
+  private final Faker faker;
+
+  @Inject
+  public PersonApiService(Faker faker) {
+    this.faker = faker;
+  }
+
+  public Person buildGeneratedPerson() {
+    return Person.builder()
+        .uuid(UUID.randomUUID().toString())
+        .firstName(faker.name().firstName())
+        .lastName(faker.name().lastName())
+        .build();
+  }
 }

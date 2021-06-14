@@ -20,6 +20,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -141,5 +142,20 @@ public class CriteriaBuilderHelper {
 
 	public static Expression<String> windowCount(CriteriaBuilder cb, Path<Object> valueProperty, Path<Object> partitionProperty) {
 		return cb.function(ExtendedPostgreSQL94Dialect.WINDOW_COUNT, String.class, valueProperty, partitionProperty);
+	}
+
+	public static Predicate buildFreeTextSearchPredicate(CriteriaBuilder cb, String searchTerm, Function<String, Predicate> createTextFilter) {
+		Predicate predicate = cb.conjunction();
+
+		String[] textFilters = searchTerm.split("\\s+");
+		for (String textFilter : textFilters) {
+			if (DataHelper.isNullOrEmpty(textFilter)) {
+				continue;
+			}
+
+			predicate = CriteriaBuilderHelper.and(cb, predicate, createTextFilter.apply(textFilter));
+		}
+
+		return predicate;
 	}
 }
