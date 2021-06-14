@@ -1315,18 +1315,18 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public void updateCompleteness(String caseUuid) {
-		Case caze = getByUuid(caseUuid);
-		caze.setCompleteness(calculateCompleteness(caze));
-		ensurePersisted(caze);
+		updateCompleteness(getByUuid(caseUuid));
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void updateCompleteness(List<String> caseUuids) {
 		List<Case> casesForUpdate = getByUuids(caseUuids);
-		casesForUpdate.forEach(caze -> {
-			caze.setCompleteness(calculateCompleteness(caze));
-			ensurePersisted(caze);
-		});
+		casesForUpdate.forEach(this::updateCompleteness);
+	}
+
+	public void updateCompleteness(Case caze){
+		caze.setCompleteness(calculateCompleteness(caze));
+		ensurePersisted(caze);
 	}
 
 	private float calculateCompleteness(Case caze) {

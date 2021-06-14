@@ -1853,6 +1853,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
 
+		int casesWithNoCompletenessFound = getCaseFacade().updateCompletenessTask();
+		MatcherAssert.assertThat(casesWithNoCompletenessFound, is(0));
+
 		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
 		CaseDataDto caseNoCompleteness = creator.createCase(
 			user.toReference(),
@@ -1862,13 +1865,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
-
-		SessionImpl em = (SessionImpl) getEntityManager();
-		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
-		query.setParameter("uuid", caseNoCompleteness.getUuid());
-		Case caseNoCompletenessSingleResult = (Case) query.getSingleResult();
-		caseNoCompletenessSingleResult.setCompleteness(null);
-		em.save(caseNoCompletenessSingleResult);
 
 		PersonDto cazePerson2 = creator.createPerson("Case2", "Person2", Sex.MALE, 1981, 1, 1);
 		CaseDataDto caseWithCompleteness = creator.createCase(
@@ -1880,19 +1876,25 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateUtils.addMinutes(new Date(), -3),
 			rdcf);
 
+		SessionImpl em = (SessionImpl) getEntityManager();
 		QueryImplementor query2 = em.createQuery("select c from cases c where c.uuid=:uuid");
 		query2.setParameter("uuid", caseWithCompleteness.getUuid());
 		Case caseWithCompletenessSingleResult = (Case) query2.getSingleResult();
-		caseWithCompletenessSingleResult.setCompleteness(200f);
+		caseWithCompletenessSingleResult.setCompleteness(0.7f);
 		em.save(caseWithCompletenessSingleResult);
 
-		getCaseFacade().updateCompletenessTask();
+		int changedCases = getCaseFacade().updateCompletenessTask();
 
 		Case completenessUpdateResult = getCaseService().getByUuid(caseNoCompleteness.getUuid());
 		Case completenessUpdateResult2 = getCaseService().getByUuid(caseWithCompleteness.getUuid());
 
 		MatcherAssert.assertThat(completenessUpdateResult.getCompleteness(), notNullValue());
-		MatcherAssert.assertThat(completenessUpdateResult2.getCompleteness(), is(200f));
+		MatcherAssert.assertThat(completenessUpdateResult2.getCompleteness(), is(0.7f));
+		MatcherAssert.assertThat(changedCases, is(1));
+
+		int changedCasesAfterUpdateCompleteness = getCaseFacade().updateCompletenessTask();
+
+		MatcherAssert.assertThat(changedCasesAfterUpdateCompleteness, is(0));
 	}
 }
 

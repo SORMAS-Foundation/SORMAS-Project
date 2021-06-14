@@ -1997,20 +1997,13 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public void updateCompletenessTask() {
+	public int updateCompletenessTask() {
 		List<String> getCompletenessCheckCaseList = getCompletenessCheckNeededCaseList();
 
-		if (!getCompletenessCheckCaseList.isEmpty()) {
-			long timeStart = System.currentTimeMillis();
 			IterableHelper
-				.executeBatched(getCompletenessCheckCaseList, 100, caseCompletionBatch -> caseService.updateCompleteness(caseCompletionBatch));
-			long timeStop = System.currentTimeMillis();
-			logger.debug(
-				"Completeness check, found " + getCompletenessCheckCaseList.size() + " cases" + " started at " + new Timestamp(timeStart)
-					+ " duration " + (timeStop - timeStart) + " miliseconds");
-		} else {
-			logger.debug("no case with completeness null found at " + new Timestamp(System.currentTimeMillis()));
-		}
+				.executeBatched(getCompletenessCheckCaseList, 10, caseCompletionBatch -> caseService.updateCompleteness(caseCompletionBatch));
+
+		return getCompletenessCheckCaseList.size();
 	}
 
 	private List<String> getCompletenessCheckNeededCaseList() {

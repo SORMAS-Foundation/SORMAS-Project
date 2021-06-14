@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import javax.annotation.security.RunAs;
@@ -161,7 +162,15 @@ public class CronService {
 	}
 
 	@Schedule(hour = "*", minute = "*/2", second = "0", persistent = false)
-	public void calculateCaseCompletion(){
-		caseFacade.updateCompletenessTask();
+	public void calculateCaseCompletion() {
+
+		long timeStart = System.currentTimeMillis();
+		int casesUpdated = caseFacade.updateCompletenessTask();
+		long timeStop = System.currentTimeMillis();
+		logger.debug(
+			"Completeness check, found {} cases started at {} duration {} milliseconds",
+			casesUpdated,
+			new Timestamp(timeStart),
+			(timeStop - timeStart));
 	}
 }
