@@ -15,30 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.state;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-import io.restassured.response.Response;
-import java.util.List;
+package org.sormas.e2etests.enums;
+
+import java.util.Random;
 import lombok.Getter;
-import lombok.Setter;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Contact;
-import org.sormas.e2etests.pojo.api.Event;
-import org.sormas.e2etests.pojo.api.Person;
-import org.sormas.e2etests.pojo.api.Sample;
-import org.sormas.e2etests.pojo.api.Task;
 
-@ScenarioScoped
 @Getter
-@Setter
-public class ApiState {
-  Response response;
-  Person editPerson;
-  Case createdCase;
-  List<Case> createdCases;
-  List<Sample> createdSamples;
-  Contact createdContact;
-  Event createdEvent;
-  Task createdTask;
+public enum CaseOutcome {
+  NO_OUTCOME("No Outcome Yet"),
+  DECEASED("Deceased"),
+  RECOVERED("Recovered"),
+  UNKNOWN("Unknown");
+
+  private final String outcome;
+
+  CaseOutcome(String outcomeCase) {
+    outcome = outcomeCase;
+  }
+
+  public static String getRandomOutcome() {
+    Random random = new Random();
+    return String.valueOf(CaseOutcome.values()[random.nextInt(values().length)]);
+  }
 }

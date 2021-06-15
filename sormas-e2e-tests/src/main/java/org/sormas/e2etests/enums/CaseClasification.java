@@ -15,30 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.state;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-import io.restassured.response.Response;
-import java.util.List;
+package org.sormas.e2etests.enums;
+
+import java.util.Random;
 import lombok.Getter;
-import lombok.Setter;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Contact;
-import org.sormas.e2etests.pojo.api.Event;
-import org.sormas.e2etests.pojo.api.Person;
-import org.sormas.e2etests.pojo.api.Sample;
-import org.sormas.e2etests.pojo.api.Task;
 
-@ScenarioScoped
 @Getter
-@Setter
-public class ApiState {
-  Response response;
-  Person editPerson;
-  Case createdCase;
-  List<Case> createdCases;
-  List<Sample> createdSamples;
-  Contact createdContact;
-  Event createdEvent;
-  Task createdTask;
+public enum CaseClasification {
+  NOT_CLASSIFIED("Not yet classified"),
+  SUSPECT("Suspect case"),
+  PROBABLE("Probable case"),
+  CONFIRMED("Confirmed case"),
+  CONFIRMED_NO_SYMPTOMS("Confirmed case with no symptoms"),
+  CONFIRMED_UNKNOWN_SYMPTOMS("Confirmed case with unknown symptoms"),
+  NO_CASE("Not a case");
+
+  private final String classification;
+
+  CaseClasification(String caseClassification) {
+    classification = caseClassification;
+  }
+
+  public static String getRandomClassification() {
+    Random random = new Random();
+    return String.valueOf(CaseClasification.values()[random.nextInt(values().length)]);
+  }
 }
