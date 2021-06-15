@@ -40,4 +40,5 @@ public class ApiState {
   Contact createdContact;
   Event createdEvent;
   Task createdTask;
+  Sample createdSample;
 }

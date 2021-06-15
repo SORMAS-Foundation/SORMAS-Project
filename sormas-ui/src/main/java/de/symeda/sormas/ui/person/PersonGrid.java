@@ -8,8 +8,6 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.TextRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
-import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonCriteria;
@@ -58,9 +56,9 @@ public class PersonGrid extends FilteredGrid<PersonIndexDto, PersonCriteria> {
 						: PersonHelper.getAgeAndBirthdateString(
 						value.getAge(),
 						value.getAgeType(),
-						value.getBirthdateDD(),
-						value.getBirthdateMM(),
-						value.getBirthdateYYYY(),
+						value.getDateOfBirthDD(),
+						value.getDateOfBirthMM(),
+						value.getDateOfBirthYYYY(),
 						I18nProperties.getUserLanguage()),
 				new TextRenderer());
 

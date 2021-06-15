@@ -572,6 +572,18 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(personFrom.get(Person.PASSPORT_NUMBER), criteria.getPassportNumber()));
 		}
 
+		String uuidExternalIdExternalTokenLike = criteria.getUuidExternalIdExternalTokenLike();
+		if (!StringUtils.isBlank(uuidExternalIdExternalTokenLike)) {
+			Predicate uuidExternalIdExternalTokenFilter = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
+				cb,
+				uuidExternalIdExternalTokenLike,
+				(searchTerm) -> cb.or(
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.UUID), searchTerm),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_ID), searchTerm),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_TOKEN), searchTerm)));
+			filter = CriteriaBuilderHelper.or(cb, filter, uuidExternalIdExternalTokenFilter);
+		}
+
 		return filter;
 	}
 

@@ -393,13 +393,13 @@ public final class DataHelper {
 			return PersonHelper.getAgeAndBirthdateString(
 				ageAndBirthDate.getAge(),
 				ageAndBirthDate.getAgeType(),
-				ageAndBirthDate.getBirthdateDD(),
-				ageAndBirthDate.getBirthdateMM(),
-				ageAndBirthDate.getBirthdateYYYY(),
+				ageAndBirthDate.getDateOfBirthDD(),
+				ageAndBirthDate.getDateOfBirthMM(),
+				ageAndBirthDate.getDateOfBirthYYYY(),
 				userLanguage);
 		} else if (value instanceof BirthDateDto) {
 			BirthDateDto birthDate = (BirthDateDto) value;
-			return PersonHelper.formatBirthdate(birthDate.getBirthdateDD(), birthDate.getBirthdateMM(), birthDate.getBirthdateYYYY(), userLanguage);
+			return PersonHelper.formatBirthdate(birthDate.getDateOfBirthDD(), birthDate.getDateOfBirthMM(), birthDate.getDateOfBirthYYYY(), userLanguage);
 		} else {
 			return value.toString();
 		}

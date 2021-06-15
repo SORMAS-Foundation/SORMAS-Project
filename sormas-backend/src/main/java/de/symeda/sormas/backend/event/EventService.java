@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -200,29 +202,26 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(objects -> (String) objects[0], objects -> (User) objects[1]));
 	}
 
-	public Map<String, User> getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
-		String personUuid,
-		String excludedEventUuid,
-		Disease disease,
-		Date date) {
+	public Map<String, Optional<User>> getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(String personUuid, Disease disease, Date date) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Event> eventRoot = cq.from(Event.class);
 		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
 		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
-		Join<Event, User> responsibleUserJoin = eventRoot.join(Event.RESPONSIBLE_USER, JoinType.INNER);
+		Join<Event, User> responsibleUserJoin = eventRoot.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
 
 		Timestamp timestamp = DateHelper.toTimestampUpper(date);
 		Predicate filter = cb.and(
 			cb.equal(personJoin.get(Person.UUID), personUuid),
-			cb.not(cb.equal(eventRoot.get(Event.UUID), excludedEventUuid)),
 			cb.equal(eventRoot.get(Event.DISEASE), disease),
 			createActiveEventsFilter(cb, eventRoot),
-			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.REPORT_DATE_TIME), timestamp),
-			cb.isNotNull(responsibleUserJoin.get(User.USER_EMAIL)));
+			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.REPORT_DATE_TIME), timestamp));
 		cq.where(filter);
 		cq.multiselect(eventRoot.get(Event.UUID), responsibleUserJoin);
-		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(row -> (String) row[0], row -> (User) row[1]));
+		return em.createQuery(cq)
+			.getResultList()
+			.stream()
+			.collect(Collectors.toMap(row -> (String) row[0], row -> Optional.ofNullable((User) row[1])));
 	}
 
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {

@@ -186,7 +186,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		// Create
 		XSSFTable table = sheet.createTable();
-		String safeTableName = safeName.replaceAll("\\s", "_");
+		String safeTableName = getSafeTableName(safeName);
 		table.setName(safeTableName);
 		table.setDisplayName(safeTableName);
 
@@ -354,7 +354,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		// Create
 		XSSFTable table = sheet.createTable();
-		String safeTableName = (sheet.getSheetName() + getSimpleDtoName(FacilityReferenceDto.class)).replaceAll("\\s", "_");
+		String safeTableName = getSafeTableName(sheet.getSheetName() + getSimpleDtoName(FacilityReferenceDto.class));
 		table.setName(safeTableName);
 		table.setDisplayName(safeTableName);
 		XssfHelper.styleTable(table, 2);
@@ -422,7 +422,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		// Create
 		XSSFTable table = sheet.createTable();
-		String safeTableName = (sheet.getSheetName() + enumType.getSimpleName()).replaceAll("\\s", "_");
+		String safeTableName = getSafeTableName(sheet.getSheetName() + enumType.getSimpleName());
 		table.setName(safeTableName);
 		table.setDisplayName(safeTableName);
 		XssfHelper.styleTable(table, 2);
@@ -476,6 +476,10 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	private <T> String getSimpleDtoName(Class<T> dto) {
 		return dto.getSimpleName().replaceAll("Dto", "");
+	}
+
+	private String getSafeTableName(String name) {
+		return name.replaceAll("\\s|\\p{Punct}", "_");
 	}
 
 	@LocalBean

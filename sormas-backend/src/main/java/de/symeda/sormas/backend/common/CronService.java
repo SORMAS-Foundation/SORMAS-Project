@@ -25,6 +25,7 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,13 @@ public class CronService {
 	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
 	public void sendNewAndDueTaskMessages() {
 		taskFacade.sendNewAndDueTaskMessages();
+	}
+
+	@Schedule(hour = "*", minute = "*/2", second = "0", persistent = false)
+	public void calculateCaseCompletion() {
+		long timeStart = DateHelper.startTime();
+		int casesUpdated = caseFacade.updateCompleteness();
+		logger.debug("calculateCaseCompletion finished. {} cases, {} s", casesUpdated, DateHelper.durationSeconds(timeStart));
 	}
 
 	@Schedule(hour = "1", minute = "0", second = "0", persistent = false)
@@ -156,8 +164,7 @@ public class CronService {
 	@Schedule(hour = "1", minute = "35", second = "0", persistent = false)
 	public void fetchLabMessages() {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
-			labMessageFacade.fetchAndSaveExternalLabMessages();
+			labMessageFacade.fetchAndSaveExternalLabMessages(null);
 		}
 	}
-
 }

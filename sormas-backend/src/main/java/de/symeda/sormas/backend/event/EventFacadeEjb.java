@@ -283,6 +283,7 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Event, User> responsibleUser = eventJoins.getResponsibleUser();
 
 		cq.multiselect(
+			event.get(Event.ID),
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EXTERNAL_TOKEN),
@@ -427,6 +428,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (CollectionUtils.isNotEmpty(indexList)) {
 			List<String> eventUuids = indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
+			List<Long> eventIds = indexList.stream().map(EventIndexDto::getId).collect(Collectors.toList());
 			List<Object[]> objectQueryList = null;
 
 			// Participant, Case and Death Count
@@ -519,7 +521,7 @@ public class EventFacadeEjb implements EventFacade {
 			}
 
 			if (externalSurveillanceToolFacade.isFeatureEnabled()) {
-				survToolShareCountAndDates = externalShareInfoService.getEventShareCountAndLatestDate(eventUuids)
+				survToolShareCountAndDates = externalShareInfoService.getEventShareCountAndLatestDate(eventIds)
 					.stream()
 					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
 			}
