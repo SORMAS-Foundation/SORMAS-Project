@@ -16,18 +16,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pages.application;
+package org.sormas.e2etests.pages.application.users;
 
 import org.openqa.selenium.By;
 
-public class NavBarPage {
-  public static final By CASES_BUTTON = By.cssSelector("div#cases");
-  public static final By CONTACTS_BUTTON = By.cssSelector("div#contacts");
-  public static final By EVENTS_BUTTON = By.cssSelector("div#events");
-  public static final By TASKS_BUTTON = By.cssSelector("div#tasks");
-  public static final By PERSONS_BUTTON = By.cssSelector("div#persons");
-  public static final By DASHBOARD_BUTTON = By.cssSelector("div#dashboard");
-  public static final By SAMPLE_BUTTON = By.cssSelector("[id='samples']");
-  public static final By USERS_BUTTON = By.cssSelector("div#users");
-  public static final By CONFIRM_NAVIGATION = By.cssSelector(("[id=actionConfirm]"));
+public class UserManagementPage {
+  public static final By NEW_USER_BUTTON = By.id("userNewUser");
+  public static final By SEARCH_USER_INPUT = By.id("search");
+  public static final By USER_NAME_GRID_CELL = By.cssSelector("tr td:nth-child(5)");
+  public static final By FIRST_EDIT_BUTTON_FROM_LIST =
+      By.cssSelector(".v-grid-body tr:nth-child(1) .v-icon.v-icon-edit");
 }
