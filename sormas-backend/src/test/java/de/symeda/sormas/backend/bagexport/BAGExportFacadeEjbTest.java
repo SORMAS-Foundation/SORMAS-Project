@@ -188,9 +188,9 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(firstCase.getEmailAddress(), is("test@email.com"));
 		assertThat(firstCase.getSex(), is(Sex.MALE));
 
-		assertThat(firstCase.getBirthDate().getBirthdateYYYY(), is(1978));
-		assertThat(firstCase.getBirthDate().getBirthdateMM(), is(10));
-		assertThat(firstCase.getBirthDate().getBirthdateDD(), is(22));
+		assertThat(firstCase.getBirthDate().getDateOfBirthYYYY(), is(1978));
+		assertThat(firstCase.getBirthDate().getDateOfBirthMM(), is(10));
+		assertThat(firstCase.getBirthDate().getDateOfBirthDD(), is(22));
 
 		assertThat(firstCase.getOccupationType(), is(OccupationType.ACCOMMODATION_AND_FOOD_SERVICES));
 
@@ -362,9 +362,9 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(firstContact.getMobileNumber(), isEmptyOrNullString());
 		assertThat(firstContact.getSex(), is(Sex.MALE));
 
-		assertThat(firstContact.getBirthDate().getBirthdateYYYY(), is(1978));
-		assertThat(firstContact.getBirthDate().getBirthdateMM(), is(10));
-		assertThat(firstContact.getBirthDate().getBirthdateDD(), is(22));
+		assertThat(firstContact.getBirthDate().getDateOfBirthYYYY(), is(1978));
+		assertThat(firstContact.getBirthDate().getDateOfBirthMM(), is(10));
+		assertThat(firstContact.getBirthDate().getDateOfBirthDD(), is(22));
 
 		assertThat(firstContact.getOccupationType(), is(OccupationType.ACCOMMODATION_AND_FOOD_SERVICES));
 

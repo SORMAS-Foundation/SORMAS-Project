@@ -27,13 +27,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.Event;
+import org.sormas.e2etests.pojo.web.Event;
 import org.sormas.e2etests.services.EventService;
 
 public class CreateNewEventSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   protected static Event newEvent;
+  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
   public CreateNewEventSteps(WebDriverHelpers webDriverHelpers, EventService eventService) {
@@ -208,8 +209,7 @@ public class CreateNewEventSteps implements En {
   }
 
   public void fillStartData(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
-    webDriverHelpers.fillInWebElement(START_DATA_INPUT, formatter.format(date));
+    webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER.format(date));
   }
 
   public void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
@@ -243,7 +243,6 @@ public class CreateNewEventSteps implements En {
   }
 
   public void fillDateOfReport(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
-    webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, formatter.format(date));
+    webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 }

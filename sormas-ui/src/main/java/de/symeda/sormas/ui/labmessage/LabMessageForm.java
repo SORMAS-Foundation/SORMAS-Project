@@ -3,6 +3,8 @@ package de.symeda.sormas.ui.labmessage;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -27,7 +29,7 @@ public class LabMessageForm extends AbstractEditForm<LabMessageDto> {
 			fluidRowLocs(LabMessageDto.LAB_MESSAGE_DETAILS);
 	//@formatter:on
 
-	private Label labMessageDetails;
+	private Panel detailsPanel;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -38,8 +40,8 @@ public class LabMessageForm extends AbstractEditForm<LabMessageDto> {
 	@Override
 	protected void addFields() {
 		addFields(LabMessageDto.UUID, LabMessageDto.MESSAGE_DATE_TIME);
-		labMessageDetails = new Label();
-		Panel detailsPanel = new Panel(labMessageDetails);
+
+		detailsPanel = new Panel();
 		detailsPanel.setHeightFull();
 		getContent().addComponent(detailsPanel, LabMessageDto.LAB_MESSAGE_DETAILS);
 	}
@@ -56,19 +58,23 @@ public class LabMessageForm extends AbstractEditForm<LabMessageDto> {
 		try {
 			ExternalMessageResult<String> htmlConversionResult = FacadeProvider.getExternalLabResultsFacade().convertToHTML(labMessage);
 			if (htmlConversionResult.isSuccess()) {
-				labMessageDetails.setValue(htmlConversionResult.getValue());
-				labMessageDetails.setContentMode(ContentMode.HTML);
+				CustomLayout labMessageDetails = new CustomLayout();
+				labMessageDetails.setTemplateContents(htmlConversionResult.getValue());
+				detailsPanel.setContent(labMessageDetails);
 			} else {
-				String unformattedXml = labMessage.getLabMessageDetails();
-				this.labMessageDetails.setValue(unformattedXml);
-				this.labMessageDetails.setContentMode(ContentMode.PREFORMATTED);
+				detailsPanel.setContent(createXmlDisplay(labMessage.getLabMessageDetails()));
 				VaadinUiUtil.showWarningPopup(htmlConversionResult.getError());
 			}
 		} catch (NamingException e) {
-			String unformattedXml = labMessage.getLabMessageDetails();
-			this.labMessageDetails.setValue(unformattedXml);
-			this.labMessageDetails.setContentMode(ContentMode.PREFORMATTED);
+			detailsPanel.setContent(createXmlDisplay(labMessage.getLabMessageDetails()));
 			logger.error(e.getMessage());
 		}
+	}
+
+	private Component createXmlDisplay(String xml) {
+		Label label = new Label();
+		label.setValue(xml);
+		label.setContentMode(ContentMode.PREFORMATTED);
+		return label;
 	}
 }

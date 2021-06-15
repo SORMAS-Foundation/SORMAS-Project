@@ -153,7 +153,14 @@ public enum FeatureType {
 	TASK_GENERATION_GENERAL(true,
 		true,
 		new FeatureType[] {
-			TASK_MANAGEMENT });
+			TASK_MANAGEMENT }),
+	SORMAS_TO_SORMAS_ACCEPT_REJECT(true,
+		false,
+		new FeatureType[] {
+			CASE_SURVEILANCE,
+			CONTACT_TRACING,
+			EVENT_SURVEILLANCE }),
+	PERSON_DUPLICATE_CUSTOM_SEARCH(true, false, null);
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

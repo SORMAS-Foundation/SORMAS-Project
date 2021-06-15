@@ -14,16 +14,13 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.utils.AbstractMergeGrid;
 
 public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, ContactCriteria> {
@@ -71,9 +68,9 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 				: PersonHelper.getAgeAndBirthdateString(
 					value.getAge(),
 					value.getAgeType(),
-					value.getBirthdateDD(),
-					value.getBirthdateMM(),
-					value.getBirthdateYYYY(),
+					value.getDateOfBirthDD(),
+					value.getDateOfBirthMM(),
+					value.getDateOfBirthYYYY(),
 					I18nProperties.getUserLanguage()),
 			new TextRenderer());
 	}
