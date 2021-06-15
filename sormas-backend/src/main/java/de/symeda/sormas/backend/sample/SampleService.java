@@ -371,12 +371,12 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return filter;
 	}
 
-	protected boolean inJurisdictionOrOwned(Sample sample) {
+	public boolean inJurisdictionOrOwned(Sample sample) {
 		return exists(
 			(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), sample.getId()), inJurisdictionOrOwned(cb, new SampleJoins<>(root))));
 	}
 
-	protected Predicate inJurisdictionOrOwned(CriteriaBuilder cb, SampleJoins<?> joins) {
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, SampleJoins<?> joins) {
 		final User currentUser = userService.getCurrentUser();
 
 		final Predicate reportedByCurrentUser =
