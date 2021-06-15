@@ -381,8 +381,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			return eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver();
 		}
 
-		// FIXME: Does this intentionally not ask for inJurisdictionOrOwned?
-		return inJurisdiction(eventParticipant) && !sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant);
+		return inJurisdictionOrOwned(eventParticipant) && !sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant);
 	}
 
 	public Collection<EventParticipant> getByPersonUuids(List<String> personUuids) {
@@ -417,11 +416,6 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			(cb, root) -> cb.and(
 				cb.equal(root.get(AbstractDomainObject.ID), eventParticipant.getId()),
 				inJurisdictionOrOwned(cb, new EventParticipantJoins(root))));
-	}
-
-	public boolean inJurisdictionOrOwned(String eventParticipantUuid) {
-		EventParticipant eventParticipant = getByUuid(eventParticipantUuid);
-		return inJurisdictionOrOwned(eventParticipant);
 	}
 
 	public boolean inJurisdiction(EventParticipant eventParticipant) {

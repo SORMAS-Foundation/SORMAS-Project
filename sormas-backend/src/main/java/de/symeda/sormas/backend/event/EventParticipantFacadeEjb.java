@@ -45,7 +45,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,6 +108,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
@@ -463,11 +463,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			EventParticipantIndexDto.class,
-			indexList,
-			p -> eventParticipantService.inJurisdictionOrOwned(p.getUuid()),
-			null);
+		pseudonymizer.pseudonymizeDtoCollection(EventParticipantIndexDto.class, indexList, p -> p.getInJurisdiction(), null);
 
 		return indexList;
 	}
@@ -486,7 +482,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			event.get(Event.UUID),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.DISEASE),
-			event.get(Event.EVENT_TITLE));
+			event.get(Event.EVENT_TITLE),
+			JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(eventParticipant))));
 
 		Predicate filter = CriteriaBuilderHelper.and(
 			cb,
@@ -504,11 +501,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			EventParticipantListEntryDto.class,
-			result,
-			p -> eventParticipantService.inJurisdictionOrOwned(p.getUuid()),
-			null);
+		pseudonymizer.pseudonymizeDtoCollection(EventParticipantListEntryDto.class, result, p -> p.getInJurisdiction(), null);
 
 		return result;
 	}
@@ -652,8 +645,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			for (EventParticipantExportDto exportDto : eventParticipantResultList) {
-//				final boolean inJurisdiction = eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(exportDto.getJurisdiction());
-				final boolean inJurisdiction = eventParticipantService.inJurisdictionOrOwned(exportDto.getEventParticipantUuid());
+				final boolean inJurisdiction = exportDto.getInJurisdiction();
 
 				if (personAddresses != null) {
 					Optional.ofNullable(personAddresses.get(exportDto.getPersonAddressId()))
@@ -933,7 +925,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventJoin.get(Event.UUID),
 			eventJoin.get(Event.EVENT_STATUS),
 			eventJoin.get(Event.EVENT_TITLE),
-			eventJoin.get(Event.START_DATE));
+			eventJoin.get(Event.START_DATE),
+			JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(eventParticipantRoot))));
 		cq.groupBy(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),
@@ -968,11 +961,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		List<SimilarEventParticipantDto> participants = em.createQuery(cq).getResultList();
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		pseudonymizer.pseudonymizeDtoCollection(
-			SimilarEventParticipantDto.class,
-			participants,
-			p -> eventParticipantService.inJurisdictionOrOwned(p.getUuid()),
-			null);
+		pseudonymizer.pseudonymizeDtoCollection(SimilarEventParticipantDto.class, participants, p -> p.getInJurisdiction(), null);
 
 		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {
 			participants = participants.stream().filter(e -> !e.isPseudonymized()).collect(Collectors.toList());
