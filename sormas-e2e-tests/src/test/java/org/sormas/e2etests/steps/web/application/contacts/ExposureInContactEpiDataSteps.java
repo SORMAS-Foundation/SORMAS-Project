@@ -174,10 +174,9 @@ public class ExposureInContactEpiDataSteps implements En {
 
   public void exposureIvestigationOnContact(ExposureInvestigation exposureInvestigationInput) {
     webDriverHelpers.clickWebElementByText(
-        EXPOSURE_DETAILS_KNOWN, exposureInvestigationInput.getExposureDetailsKnown().toString());
+        EXPOSURE_DETAILS_KNOWN, exposureInvestigationInput.getExposureDetailsKnown());
     webDriverHelpers.clickWebElementByText(
-        HIGH_TRANSMISSION_RISK_AREA,
-        exposureInvestigationInput.getHighTransmissionRiskArea().toString());
+        HIGH_TRANSMISSION_RISK_AREA, exposureInvestigationInput.getHighTransmissionRiskArea());
     webDriverHelpers.clickWebElementByText(
         LARGE_OUTBREAKS_AREA, exposureInvestigationInput.getLargeOutbreaksArea());
     if (exposureInvestigationInput.getExposureNewEntry()) {
@@ -187,66 +186,49 @@ public class ExposureInContactEpiDataSteps implements En {
 
   public void addNewExposureEntry(ExposureDetails exposureDetailsInput)
       throws InterruptedException {
+    webDriverHelpers.fillInWebElement(START_OF_EXPOSURE, exposureDetailsInput.getStartOfExposure());
+    webDriverHelpers.fillInWebElement(END_OF_EXPOSURE, exposureDetailsInput.getEndOfExposure());
     webDriverHelpers.fillInWebElement(
-        START_OF_EXPOSURE, exposureDetailsInput.getStartOfExposure().toString());
-    webDriverHelpers.fillInWebElement(
-        END_OF_EXPOSURE, exposureDetailsInput.getEndOfExposure().toString());
-    webDriverHelpers.fillInWebElement(
-        EXPOSURE_DESCRIPTION, exposureDetailsInput.getExposureDescription().toString());
+        EXPOSURE_DESCRIPTION, exposureDetailsInput.getExposureDescription());
+    webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY, exposureDetailsInput.getTypeOfActivity());
     webDriverHelpers.selectFromCombobox(
-        TYPE_OF_ACTIVITY, exposureDetailsInput.getTypeOfActivity().toString());
-    webDriverHelpers.selectFromCombobox(
-        EXPOSURE_DETAILS_ROLE, exposureDetailsInput.getExposureDetailsRole().toString());
+        EXPOSURE_DETAILS_ROLE, exposureDetailsInput.getExposureDetailsRole());
+    webDriverHelpers.clickWebElementByText(RISK_AREA, exposureDetailsInput.getRiskArea());
+    webDriverHelpers.clickWebElementByText(INDOORS, exposureDetailsInput.getIndoors());
+    webDriverHelpers.clickWebElementByText(OUTDOORS, exposureDetailsInput.getOutdoors());
+    webDriverHelpers.clickWebElementByText(WEARING_MASK, exposureDetailsInput.getWearingMask());
+    webDriverHelpers.clickWebElementByText(WEARING_PPE, exposureDetailsInput.getWearingPpe());
     webDriverHelpers.clickWebElementByText(
-        RISK_AREA, exposureDetailsInput.getRiskArea().toString());
-    webDriverHelpers.clickWebElementByText(INDOORS, exposureDetailsInput.getIndoors().toString());
-    webDriverHelpers.clickWebElementByText(OUTDOORS, exposureDetailsInput.getOutdoors().toString());
+        OTHER_PROTECTIVE_MEASURES, exposureDetailsInput.getOtherProtectiveMeasures());
+    webDriverHelpers.clickWebElementByText(SHORT_DISTANCE, exposureDetailsInput.getShortDistance());
     webDriverHelpers.clickWebElementByText(
-        WEARING_MASK, exposureDetailsInput.getWearingMask().toString());
+        LONG_FACE_TO_FACE_CONTACT, exposureDetailsInput.getLongFaceToFaceContact());
+    webDriverHelpers.clickWebElementByText(ANIMAL_MARKET, exposureDetailsInput.getAnimalMarket());
+    webDriverHelpers.clickWebElementByText(PERCUTANEOUS, exposureDetailsInput.getPercutaneous());
     webDriverHelpers.clickWebElementByText(
-        WEARING_PPE, exposureDetailsInput.getWearingPpe().toString());
+        CONTACT_TO_BODY_FLUIDS, exposureDetailsInput.getContactToBodyFluids());
     webDriverHelpers.clickWebElementByText(
-        OTHER_PROTECTIVE_MEASURES, exposureDetailsInput.getOtherProtectiveMeasures().toString());
-    webDriverHelpers.clickWebElementByText(
-        SHORT_DISTANCE, exposureDetailsInput.getShortDistance().toString());
-    webDriverHelpers.clickWebElementByText(
-        LONG_FACE_TO_FACE_CONTACT, exposureDetailsInput.getLongFaceToFaceContact().toString());
-    webDriverHelpers.clickWebElementByText(
-        ANIMAL_MARKET, exposureDetailsInput.getAnimalMarket().toString());
-    webDriverHelpers.clickWebElementByText(
-        PERCUTANEOUS, exposureDetailsInput.getPercutaneous().toString());
-    webDriverHelpers.clickWebElementByText(
-        CONTACT_TO_BODY_FLUIDS, exposureDetailsInput.getContactToBodyFluids().toString());
-    webDriverHelpers.clickWebElementByText(
-        HANDLING_SAMPLES, exposureDetailsInput.getHandlingSamples().toString());
-    webDriverHelpers.selectFromCombobox(
-        TYPE_OF_PLACE, exposureDetailsInput.getTypeOfPlace().toString());
-    webDriverHelpers.selectFromCombobox(CONTINENT, exposureDetailsInput.getContinent().toString());
-    webDriverHelpers.selectFromCombobox(
-        SUBCONTINENT, exposureDetailsInput.getSubcontinent().toString());
-    webDriverHelpers.selectFromCombobox(COUNTRY, exposureDetailsInput.getCountry().toString());
-    webDriverHelpers.selectFromCombobox(
-        EXPOSURE_REGION, exposureDetailsInput.getExposureRegion().toString());
-    webDriverHelpers.selectFromCombobox(DISTRICT, exposureDetailsInput.getDistrict().toString());
-    webDriverHelpers.selectFromCombobox(COMMUNITY, exposureDetailsInput.getCommunity().toString());
-    webDriverHelpers.fillInWebElement(STREET, exposureDetailsInput.getStreet().toString());
+        HANDLING_SAMPLES, exposureDetailsInput.getHandlingSamples());
+    webDriverHelpers.selectFromCombobox(TYPE_OF_PLACE, exposureDetailsInput.getTypeOfPlace());
+    webDriverHelpers.selectFromCombobox(CONTINENT, exposureDetailsInput.getContinent());
+    webDriverHelpers.selectFromCombobox(SUBCONTINENT, exposureDetailsInput.getSubcontinent());
+    webDriverHelpers.selectFromCombobox(COUNTRY, exposureDetailsInput.getCountry());
+    webDriverHelpers.selectFromCombobox(EXPOSURE_REGION, exposureDetailsInput.getExposureRegion());
+    webDriverHelpers.selectFromCombobox(DISTRICT, exposureDetailsInput.getDistrict());
+    webDriverHelpers.selectFromCombobox(COMMUNITY, exposureDetailsInput.getCommunity());
+    webDriverHelpers.fillInWebElement(STREET, exposureDetailsInput.getStreet());
+    webDriverHelpers.fillInWebElement(HOUSE_NUMBER, exposureDetailsInput.getHouseNumber());
     webDriverHelpers.fillInWebElement(
-        HOUSE_NUMBER, exposureDetailsInput.getHouseNumber().toString());
+        ADDITIONAL_INFORMATION, exposureDetailsInput.getAdditionalInformation());
+    webDriverHelpers.fillInWebElement(POSTAL_CODE, exposureDetailsInput.getPostalCode());
+    webDriverHelpers.fillInWebElement(CITY, exposureDetailsInput.getCity());
+    webDriverHelpers.selectFromCombobox(AREA_TYPE, exposureDetailsInput.getAreaType());
     webDriverHelpers.fillInWebElement(
-        ADDITIONAL_INFORMATION, exposureDetailsInput.getAdditionalInformation().toString());
-    webDriverHelpers.fillInWebElement(POSTAL_CODE, exposureDetailsInput.getPostalCode().toString());
-    webDriverHelpers.fillInWebElement(CITY, exposureDetailsInput.getCity().toString());
-    webDriverHelpers.selectFromCombobox(AREA_TYPE, exposureDetailsInput.getAreaType().toString());
-    webDriverHelpers.fillInWebElement(
-        COMMUNITY_CONTACT_PERSON, exposureDetailsInput.getCommunityContactPerson().toString());
-    webDriverHelpers.fillInWebElement(
-        GPS_LATITUDE, exposureDetailsInput.getGpsLatitude().toString());
-      webDriverHelpers.fillInWebElement(
-              GPS_LATITUDE, exposureDetailsInput.getGpsLatitude().toString());
-    webDriverHelpers.fillInWebElement(
-        GPS_LONGITUDE, exposureDetailsInput.getGpsLongitude().toString());
-    webDriverHelpers.fillInWebElement(
-        GPS_ACCURACY, exposureDetailsInput.getGpsAccuracy().toString());
+        COMMUNITY_CONTACT_PERSON, exposureDetailsInput.getCommunityContactPerson());
+    webDriverHelpers.fillInWebElement(GPS_LATITUDE, exposureDetailsInput.getGpsLatitude());
+    webDriverHelpers.fillInWebElement(GPS_LATITUDE, exposureDetailsInput.getGpsLatitude());
+    webDriverHelpers.fillInWebElement(GPS_LONGITUDE, exposureDetailsInput.getGpsLongitude());
+    webDriverHelpers.fillInWebElement(GPS_ACCURACY, exposureDetailsInput.getGpsAccuracy());
   }
 
   public ExposureDetails getExposureDetailsOutput() {
