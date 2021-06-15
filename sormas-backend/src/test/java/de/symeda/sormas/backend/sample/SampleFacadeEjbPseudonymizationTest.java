@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -85,7 +86,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
 		SampleDto sample = createCaseSample(caze, user2);
 
-		assertNotPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()));
+		assertNotPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()), user2.getUuid());
 	}
 
 	@Test
@@ -93,34 +94,34 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
 		SampleDto sample = createCaseSample(caze, user1);
 
-		assertPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()));
+		assertPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()), "Lab");
 	}
 
 	@Test
 	public void testGetSampleWithLabUserOfSampleLab() {
-		when(MockProducer.getPrincipal().getName()).thenReturn("LabOff");
+		loginWith(user1);
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
-		SampleDto sample = createCaseSample(caze, user1);
-
-		assertNotPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()));
+		SampleDto sample = createCaseSample(caze, user1, rdcf1.facility);
+		loginWith(labUser);
+		assertNotPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()), user1.getUuid());
 	}
 
 	@Test
 	public void testGetSampleWithLabUserNotOfSampleLab() {
-		when(MockProducer.getPrincipal().getName()).thenReturn("LabOff");
+		loginWith(user2);
 		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
-		SampleDto sample = createCaseSample(caze, user2);
-
-		assertPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()));
+		SampleDto sample = createCaseSample(caze, user2, rdcf2.facility);
+		loginWith(labUser);
+		assertPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()), rdcf2.facility.getCaption());
 	}
 
 	@Test
 	public void testGetSampleWithLabUserCreatedBySameLabUser() {
-		when(MockProducer.getPrincipal().getName()).thenReturn("LabOff");
+		loginWith(user2);
 		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
-		SampleDto sample = createCaseSample(caze, labUser);
-
-		assertNotPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()));
+		loginWith(labUser);
+		SampleDto sample = createCaseSample(caze, labUser, rdcf2.facility);
+		assertNotPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()), labUser.getUuid());
 	}
 
 	@Test
@@ -323,10 +324,10 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		List<SampleDto> activeSamples = getSampleFacade().getAllActiveSamplesAfter(calendar.getTime());
 
 		SampleDto active1 = activeSamples.stream().filter(t -> t.getUuid().equals(sample1.getUuid())).findFirst().get();
-		assertNotPseudonymized(active1);
+		assertNotPseudonymized(active1, user2.getUuid());
 
 		SampleDto active2 = activeSamples.stream().filter(t -> t.getUuid().equals(sample2.getUuid())).findFirst().get();
-		assertPseudonymized(active2);
+		assertPseudonymized(active2, "Lab");
 
 		// case samples not yet implemented
 		Optional<SampleDto> active3 = activeSamples.stream().filter(t -> t.getUuid().equals(sample3.getUuid())).findFirst();
@@ -392,6 +393,17 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		});
 	}
 
+	private SampleDto createCaseSample(CaseDataDto caze, UserDto reportingUser, FacilityReferenceDto lab) {
+		return creator.createSample(caze.toReference(), reportingUser.toReference(), lab, s -> {
+			s.setReportLat(46.432);
+			s.setReportLon(23.234);
+			s.setReportLatLonAccuracy(10f);
+			s.setLabDetails("Test lab details");
+			s.setShipmentDetails("Test shipment details");
+			s.setComment("Test comment");
+		});
+	}
+
 	private SampleDto createContactSample(ContactDto contactDto) {
 		Facility lab = new Facility();
 		lab.setName("Lab");
@@ -400,12 +412,12 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		return creator.createSample(contactDto.toReference(), new Date(), new Date(), user1.toReference(), SampleMaterial.BLOOD, lab);
 	}
 
-	private void assertNotPseudonymized(SampleDto sample) {
+	private void assertNotPseudonymized(SampleDto sample, String reportingUserUuid) {
 		assertThat(sample.getAssociatedCase().getFirstName(), is("John"));
 		assertThat(sample.getAssociatedCase().getLastName(), is("Smith"));
 
 		//sensitive data
-		assertThat(sample.getReportingUser().getUuid(), is(user2.getUuid()));
+		assertThat(sample.getReportingUser().getUuid(), is(reportingUserUuid));
 		assertThat(sample.getReportLat(), is(46.432));
 		assertThat(sample.getReportLon(), is(23.234));
 		assertThat(sample.getReportLatLonAccuracy(), is(10f));
@@ -415,7 +427,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(sample.getComment(), is("Test comment"));
 	}
 
-	private void assertPseudonymized(SampleDto sample) {
+	private void assertPseudonymized(SampleDto sample, String labName) {
 		assertThat(sample.getAssociatedCase().getFirstName(), isEmptyString());
 		assertThat(sample.getAssociatedCase().getLastName(), isEmptyString());
 
@@ -424,7 +436,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(sample.getReportLat(), is(nullValue()));
 		assertThat(sample.getReportLon(), is(nullValue()));
 		assertThat(sample.getReportLatLonAccuracy(), is(10F));
-		assertThat(sample.getLab().getCaption(), is("Lab"));
+		assertThat(sample.getLab().getCaption(), is(labName));
 		assertThat(sample.getLabDetails(), isEmptyString());
 		assertThat(sample.getShipmentDetails(), isEmptyString());
 		assertThat(sample.getComment(), isEmptyString());

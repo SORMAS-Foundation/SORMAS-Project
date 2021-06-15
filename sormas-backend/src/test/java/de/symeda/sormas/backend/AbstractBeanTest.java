@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.user.CurrentUser;
+import de.symeda.sormas.backend.user.CurrentUserService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -527,6 +529,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(GeocodingService.class);
 	}
 
+	public CurrentUserService getCurrentUserService() {
+		return getBean(CurrentUserService.class);
+	}
+
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
 		if (rdcf == null) {
 			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -560,6 +566,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	protected void loginWith(UserDto user) {
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+		final CurrentUser currentUser = getCurrentUserService().getCurrentUser();
+		getUserService().setCurrentUser(currentUser.getUser());
 	}
 
 	public PathogenTestService getPathogenTestService() {
