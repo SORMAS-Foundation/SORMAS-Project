@@ -99,3 +99,12 @@ Feature: Create events
       And I am checking if the associated linked event appears in task management and click on it
       And I click on edit task icon of the first created task
       And I check the created task is correctly displayed on Edit task page
+
+  Scenario: Add a New Groups Event from event and verify the fields
+    Given API: I create a new event
+    Given I log in with the user
+     When I am accessing the event tab using the created event via api
+      And I click on link event group
+      And I create a new event group
+     When I am accessing the event tab using the created event via api
+     Then I am checking event group name and id is correctly displayed

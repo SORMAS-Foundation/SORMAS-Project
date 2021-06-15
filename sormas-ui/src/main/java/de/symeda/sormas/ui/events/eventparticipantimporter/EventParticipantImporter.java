@@ -252,9 +252,9 @@ public class EventParticipantImporter extends DataImporter {
 				} else if (EventParticipantExportDto.BIRTH_DATE.equals(headerPathElementName)) {
 					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, currentUser.getLanguage());
 					if (birthDateDto != null) {
-						person.setBirthdateDD(birthDateDto.getBirthdateDD());
-						person.setBirthdateMM(birthDateDto.getBirthdateMM());
-						person.setBirthdateYYYY(birthDateDto.getBirthdateYYYY());
+						person.setBirthdateDD(birthDateDto.getDateOfBirthDD());
+						person.setBirthdateMM(birthDateDto.getDateOfBirthMM());
+						person.setBirthdateYYYY(birthDateDto.getDateOfBirthYYYY());
 					}
 				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
