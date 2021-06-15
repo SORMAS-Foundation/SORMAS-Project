@@ -38,7 +38,7 @@ public class UserManagementSteps implements En {
                 NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT));
 
     When(
-        "^I select fists user from list$",
+        "^I select first user from list$",
         () -> {
           selectFirstElementFromList();
         });
@@ -51,7 +51,7 @@ public class UserManagementSteps implements En {
         });
 
     When(
-        "^I search for edited user$",
+        "^I search for recently edited user$",
         () -> {
           searchForUser(CreateNewUserSteps.editUser.getUserName());
           selectFirstElementFromList();
