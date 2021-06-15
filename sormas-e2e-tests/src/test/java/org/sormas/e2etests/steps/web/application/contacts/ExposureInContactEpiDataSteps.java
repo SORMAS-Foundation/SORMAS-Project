@@ -55,19 +55,16 @@ public class ExposureInContactEpiDataSteps implements En {
           exposureDetailsInput = exposureDetailsService.buildInputExposureDetails();
           addNewExposureEntry(exposureDetailsInput);
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
-          Thread.sleep(60000);
-        });
-    Then(
-        "I refresh Epidemiological data for contact page",
-        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.accessWebSite(EPIDATA_FOR_LAST_CREATED_CONTACT_URL);
-          Thread.sleep(5000);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_DATA_SAVED_POPUP);
         });
 
     Then(
         "I am checking all data is saved and displayed on edit Exposure page",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EXPOSURE_EDIT);
+          webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_EDIT);
           ExposureDetails exposureDetailsOutput = getExposureDetailsOutput();
           SoftAssertions softly = new SoftAssertions();
           softly
@@ -244,6 +241,8 @@ public class ExposureInContactEpiDataSteps implements En {
         COMMUNITY_CONTACT_PERSON, exposureDetailsInput.getCommunityContactPerson().toString());
     webDriverHelpers.fillInWebElement(
         GPS_LATITUDE, exposureDetailsInput.getGpsLatitude().toString());
+      webDriverHelpers.fillInWebElement(
+              GPS_LATITUDE, exposureDetailsInput.getGpsLatitude().toString());
     webDriverHelpers.fillInWebElement(
         GPS_LONGITUDE, exposureDetailsInput.getGpsLongitude().toString());
     webDriverHelpers.fillInWebElement(
