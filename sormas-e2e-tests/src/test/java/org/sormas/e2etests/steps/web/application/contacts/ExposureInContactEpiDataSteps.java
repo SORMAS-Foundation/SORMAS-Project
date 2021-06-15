@@ -63,7 +63,6 @@ public class ExposureInContactEpiDataSteps implements En {
     Then(
         "I am checking all data is saved and displayed on edit Exposure page",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EXPOSURE_EDIT);
           webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_EDIT);
           ExposureDetails exposureDetailsOutput = getExposureDetailsOutput();
           SoftAssertions softly = new SoftAssertions();
@@ -236,8 +235,8 @@ public class ExposureInContactEpiDataSteps implements En {
         .startOfExposure(webDriverHelpers.getValueFromWebElement(START_OF_EXPOSURE))
         .endOfExposure(webDriverHelpers.getValueFromWebElement(END_OF_EXPOSURE))
         .exposureDescription(webDriverHelpers.getValueFromWebElement(EXPOSURE_DESCRIPTION))
-        .typeOfActivity(webDriverHelpers.getValueFromWebElement(TYPE_OF_ACTIVITY))
-        .exposureDetailsRole(webDriverHelpers.getValueFromWebElement(EXPOSURE_DETAILS_ROLE))
+        .typeOfActivity(webDriverHelpers.getValueFromCombobox(TYPE_OF_ACTIVITY))
+        .exposureDetailsRole(webDriverHelpers.getValueFromCombobox(EXPOSURE_DETAILS_ROLE))
         .riskArea(webDriverHelpers.getValueFromWebElement(RISK_AREA))
         .indoors(webDriverHelpers.getValueFromWebElement(INDOORS))
         .outdoors(webDriverHelpers.getValueFromWebElement(OUTDOORS))
@@ -251,18 +250,18 @@ public class ExposureInContactEpiDataSteps implements En {
         .contactToBodyFluids(webDriverHelpers.getValueFromWebElement(CONTACT_TO_BODY_FLUIDS))
         .handlingSamples(webDriverHelpers.getValueFromWebElement(HANDLING_SAMPLES))
         .typeOfPlace(webDriverHelpers.getValueFromWebElement(TYPE_OF_PLACE))
-        .continent(webDriverHelpers.getValueFromWebElement(CONTINENT))
-        .subcontinent(webDriverHelpers.getValueFromWebElement(SUBCONTINENT))
-        .country(webDriverHelpers.getValueFromWebElement(COUNTRY))
-        .exposureRegion(webDriverHelpers.getValueFromWebElement(EXPOSURE_REGION))
-        .district(webDriverHelpers.getValueFromWebElement(DISTRICT))
-        .community(webDriverHelpers.getValueFromWebElement(COMMUNITY))
+        .continent(webDriverHelpers.getValueFromCombobox(CONTINENT))
+        .subcontinent(webDriverHelpers.getValueFromCombobox(SUBCONTINENT))
+        .country(webDriverHelpers.getValueFromCombobox(COUNTRY))
+        .exposureRegion(webDriverHelpers.getValueFromCombobox(EXPOSURE_REGION))
+        .district(webDriverHelpers.getValueFromCombobox(DISTRICT))
+        .community(webDriverHelpers.getValueFromCombobox(COMMUNITY))
         .street(webDriverHelpers.getValueFromWebElement(STREET))
         .houseNumber(webDriverHelpers.getValueFromWebElement(HOUSE_NUMBER))
         .additionalInformation(webDriverHelpers.getValueFromWebElement(ADDITIONAL_INFORMATION))
         .postalCode(webDriverHelpers.getValueFromWebElement(POSTAL_CODE))
         .city(webDriverHelpers.getValueFromWebElement(CITY))
-        .areaType(webDriverHelpers.getValueFromWebElement(AREA_TYPE))
+        .areaType(webDriverHelpers.getValueFromCombobox(AREA_TYPE))
         .communityContactPerson(webDriverHelpers.getValueFromWebElement(COMMUNITY_CONTACT_PERSON))
         .gpsLatitude(webDriverHelpers.getValueFromWebElement(GPS_LATITUDE))
         .gpsLongitude(webDriverHelpers.getValueFromWebElement(GPS_LONGITUDE))
