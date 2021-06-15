@@ -299,6 +299,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		query.select(cb.selectCase().when(exists, trueExpression).otherwise(falseExpression));
 
 		final TypedQuery<Object> typedQuery = em.createQuery(query);
+		typedQuery.setMaxResults(1);
 
 		try {
 			return (Boolean) typedQuery.getSingleResult();
