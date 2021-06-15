@@ -96,8 +96,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
 			+ fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER, CaseDataDto.EXTERNAL_ID)
-			+ fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL)
-			+ fluidRowLocs(DONT_SHARE_WARNING_LOC)
 			+ fluidRow(
 					fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
 					fluidColumn(6, 0,
@@ -109,6 +107,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			+ fluidRowLocs(FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE)
 			+ fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS)
 			+ fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
+			+ fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL)
+			+ fluidRowLocs(DONT_SHARE_WARNING_LOC)
 			+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
 			+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 			fluidRowLocs(PersonDto.SEX))

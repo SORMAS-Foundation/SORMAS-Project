@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -610,7 +611,8 @@ public class CasesView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
+			if (Objects.nonNull(UserProvider.getCurrent())
+					&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 				int daysAfterCaseGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterCaseGetsArchived();
 				if (daysAfterCaseGetsArchived > 0) {
 					relevanceStatusInfoLabel = new Label(
