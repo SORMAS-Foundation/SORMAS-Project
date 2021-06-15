@@ -18,222 +18,216 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
-import cucumber.api.java8.En;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.contacts.CreateNewVisitPage;
-import org.sormas.e2etests.pojo.web.Contact;
-import org.sormas.e2etests.pojo.web.FollowUpVisit;
-import org.sormas.e2etests.services.ContactService;
-import org.sormas.e2etests.services.FollowUpVisitService;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.Locale;
-
 import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.*;
-import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.NAUSEA_OPTIONS;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewVisitPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CREATED_POPUP;
 
+import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import javax.inject.Inject;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.web.FollowUpVisit;
+import org.sormas.e2etests.services.FollowUpVisitService;
+
 public class CreateNewVisitSteps implements En {
-    private final WebDriverHelpers webDriverHelpers;
-    public static FollowUpVisit followUpVisit;
-    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
-    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+  private final WebDriverHelpers webDriverHelpers;
+  public static FollowUpVisit followUpVisit;
+  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
+  @Inject
+  public CreateNewVisitSteps(
+      WebDriverHelpers webDriverHelpers, FollowUpVisitService followUpVisitService) {
+    this.webDriverHelpers = webDriverHelpers;
 
-    @Inject
-    public CreateNewVisitSteps(WebDriverHelpers webDriverHelpers, FollowUpVisitService followUpVisitService) {
-        this.webDriverHelpers = webDriverHelpers;
+    When(
+        "^I create a new Follow-up visit",
+        () -> {
+          followUpVisit = followUpVisitService.buildGeneratedFollowUpVisit();
 
-        When(
-                "^I create a new Follow-up visit",
-                () -> {
-                    followUpVisit = followUpVisitService.buildGeneratedFollowUpVisit();
+          selectPersonAvailableAndCooperative(followUpVisit.getPersonAvailableAndCooperative());
+          fillDateAndTimeVisit(
+              followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit(),
+              followUpVisitService.buildGeneratedFollowUpVisit().getTimeOfVisit());
+          fillVisitRemark(followUpVisit.getVisitRemarks());
+          selectBodyTemperature(followUpVisit.getCurrentBodyTemperature());
+          selectSourceOfBodyTemperature(followUpVisit.getSourceOfBodyTemperature());
+          selectChillsOrSweats(followUpVisit.getChillsOrSweats());
+          selectFeelingIll(followUpVisit.getFeelingIll());
+          selectFever(followUpVisit.getFever());
+          selectHeadache(followUpVisit.getHeadache());
+          selectMusclePain(followUpVisit.getMusclePain());
+          selectShivering(followUpVisit.getShivering());
+          selectAcuteRespiratoryDistressSyndrome(
+              followUpVisit.getAcuteRespiratoryDistressSyndrome());
+          selectCough(followUpVisit.getCough());
+          selectDifficultyBreathing(followUpVisit.getDifficultyBreathing());
+          selectOxygenSaturationLower94(followUpVisit.getOxygenSaturation94());
+          selectPneumoniaClinicalOrRadiologic(followUpVisit.getPneumoniaClinicalRadiologic());
+          selectRapidBreathing(followUpVisit.getRapidBreathing());
+          selectRespiratoryDiseaseVentilation(
+              followUpVisit.getRespiratoryDiseaseRequiringVentilation());
+          selectRunnyNose(followUpVisit.getRunnyNose());
+          selectSoreThroat(followUpVisit.getSoreThroatPharyngitis());
+          selectFastHeartRate(followUpVisit.getFastHeartRate());
+          selectDiarrhea(followUpVisit.getDiarrhea());
+          selectNausea(followUpVisit.getNausea());
+          selectLossOfSmell(followUpVisit.getNewLossOfSmell());
+          selectLossOfTaste(followUpVisit.getNewLossOfTaste());
+          selectOtherClinicalSymptoms(followUpVisit.getOtherClinicalSymptoms());
+          fillComments(followUpVisit.getComments());
+          selectFirstSymptom(followUpVisit.getFirstSymptom());
+          fillDateOfFirstSymptom(followUpVisit.getDateOfSymptomOnset());
 
-                    selectPersonAvailableAndCooperative(followUpVisit.getPersonAvailableAndCooperative());
-                    fillDateAndTimeVisit(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit(),
-                            followUpVisitService.buildGeneratedFollowUpVisit().getTimeOfVisit());
-                    fillVisitRemark(followUpVisit.getVisitRemarks());
-                    selectBodyTemperature(followUpVisit.getCurrentBodyTemperature());
-                    selectSourceOfBodyTemperature(followUpVisit.getSourceOfBodyTemperature());
-                    selectChillsOrSweats(followUpVisit.getChillsOrSweats());
-                    selectFeelingIll(followUpVisit.getFeelingIll());
-                    selectFever(followUpVisit.getFever());
-                    selectHeadache(followUpVisit.getHeadache());
-                    selectMusclePain(followUpVisit.getMusclePain());
-                    selectShivering(followUpVisit.getShivering());
-                    selectAcuteRespiratoryDistressSyndrome(followUpVisit.getAcuteRespiratoryDistressSyndrome());
-                    selectCough(followUpVisit.getCough());
-                    selectDifficultyBreathing(followUpVisit.getDifficultyBreathing());
-                    selectOxygenSaturationLower94(followUpVisit.getOxygenSaturation94());
-                    selectPneumoniaClinicalOrRadiologic(followUpVisit.getPneumoniaClinicalRadiologic());
-                    selectRapidBreathing(followUpVisit.getRapidBreathing());
-                    selectRespiratoryDiseaseVentilation(followUpVisit.getRespiratoryDiseaseRequiringVentilation());
-                    selectRunnyNose(followUpVisit.getRunnyNose());
-                    selectSoreThroat(followUpVisit.getSoreThroatPharyngitis());
-                    selectFastHeartRate(followUpVisit.getFastHeartRate());
-                    selectDiarrhea(followUpVisit.getDiarrhea());
-                    selectNausea(followUpVisit.getNausea());
-                    selectLossOfSmell(followUpVisit.getNewLossOfSmell());
-                    selectLossOfTaste(followUpVisit.getNewLossOfTaste());
-                    selectOtherClinicalSymptoms(followUpVisit.getOtherClinicalSymptoms());
-                    fillComments(followUpVisit.getComments());
-                    selectFirstSymptom(followUpVisit.getFirstSymptom());
-                    fillDateOfFirstSymptom(followUpVisit.getDateOfSymptomOnset());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_VISIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
+        });
+  }
 
-                    webDriverHelpers.clickOnWebElementBySelector(SAVE_VISIT_BUTTON);
-                    webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
-                });
-    }
+  public FollowUpVisit collectFollowUpData() {
+    return FollowUpVisit.builder()
+        .personAvailableAndCooperative(
+            webDriverHelpers.getValueFromWebElement(PERSON_AVAILABLE_AND_COOPERATIVE))
+        .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRST_SYMPTOM_COMBOBOX))
+        .build();
+  }
 
+  private LocalDate getDateOfVisit() {
+    String dateOfReport = webDriverHelpers.getValueFromWebElement(DATE_AND_TIME_OF_VISIT_INPUT);
+    return LocalDate.parse(dateOfReport, DATE_FORMATTER);
+  }
 
-    public FollowUpVisit collectFollowUpData() {
-        return FollowUpVisit.builder()
-                .personAvailableAndCooperative(
-                        webDriverHelpers.getValueFromWebElement(PERSON_AVAILABLE_AND_COOPERATIVE))
-                .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRST_SYMPTOM_COMBOBOX))
-                .build();
-    }
+  public void selectSourceOfBodyTemperature(String sourceOfBodyTemperature) {
+    webDriverHelpers.selectFromCombobox(SOURCE_BODY_TEMPERATURE_COMBOBOX, sourceOfBodyTemperature);
+  }
 
-    private LocalDate getDateOfVisit() {
-        String dateOfReport = webDriverHelpers.getValueFromWebElement(DATE_AND_TIME_OF_VISIT_INPUT);
-        return LocalDate.parse(dateOfReport, DATE_FORMATTER);
-    }
+  public void selectBodyTemperature(String bodyTemperature) {
+    webDriverHelpers.selectFromCombobox(CURRENT_BODY_TEMPERATURE_COMBOBOX, bodyTemperature);
+  }
 
-    public void selectSourceOfBodyTemperature(String sourceOfBodyTemperature) {
-        webDriverHelpers.selectFromCombobox(
-                SOURCE_BODY_TEMPERATURE_COMBOBOX, sourceOfBodyTemperature);
-    }
+  public void selectFirstSymptom(String firstSymptom) {
+    webDriverHelpers.selectFromCombobox(FIRSTSYMPTOM_COMBOBOX, firstSymptom);
+  }
 
-    public void selectBodyTemperature(String bodyTemperature) {
-        webDriverHelpers.selectFromCombobox(
-                CURRENT_BODY_TEMPERATURE_COMBOBOX, bodyTemperature);
-    }
+  public void selectChillsOrSweats(String chillsOrSweats) {
+    webDriverHelpers.clickWebElementByText(CHILLS_OR_SWATS_LABEL, chillsOrSweats);
+  }
 
-    public void selectFirstSymptom(String firstSymptom) {
-        webDriverHelpers.selectFromCombobox(FIRSTSYMPTOM_COMBOBOX, firstSymptom);
-    }
+  public void selectHeadache(String headache) {
+    webDriverHelpers.clickWebElementByText(HEADACHE_LABEL, headache);
+  }
 
-    public void selectChillsOrSweats(String chillsOrSweats) {
-        webDriverHelpers.clickWebElementByText(CHILLS_OR_SWATS_LABEL, chillsOrSweats);
-    }
+  public void selectFeelingIll(String feelingIll) {
+    webDriverHelpers.clickWebElementByText(FEELING_ILL_LABEL, feelingIll);
+  }
 
-    public void selectHeadache(String headache) {
-        webDriverHelpers.clickWebElementByText(HEADACHE_LABEL, headache);
-    }
+  public void selectMusclePain(String musclePain) {
+    webDriverHelpers.clickWebElementByText(MUSCLE_PAIN_LABEL, musclePain);
+  }
 
-    public void selectFeelingIll(String feelingIll) {
-        webDriverHelpers.clickWebElementByText(FEELING_ILL_LABEL, feelingIll);
-    }
+  public void fillDateOfFirstSymptom(LocalDate dateOfFirstSymptom) {
+    webDriverHelpers.fillInWebElement(
+        DATE_OF_SYMPTOM_ONSET_INPUT, DATE_FORMATTER.format(dateOfFirstSymptom));
+  }
 
-    public void selectMusclePain(String musclePain) {
-        webDriverHelpers.clickWebElementByText(MUSCLE_PAIN_LABEL, musclePain);
-    }
+  public void selectFever(String fever) {
+    webDriverHelpers.clickWebElementByText(FEVER_LABEL, fever);
+  }
 
-    public void fillDateOfFirstSymptom(LocalDate dateOfFirstSymptom) {
-        webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_ONSET_INPUT, DATE_FORMATTER.format(dateOfFirstSymptom));
-    }
+  public void selectShivering(String shivering) {
+    webDriverHelpers.clickWebElementByText(SHIVERING_LABEL, shivering);
+  }
 
-    public void selectFever(String fever) {
-        webDriverHelpers.clickWebElementByText(FEVER_LABEL, fever);
-    }
+  public void selectOtherClinicalSymptoms(String otherClinicalSymptoms) {
+    webDriverHelpers.clickWebElementByText(OTHER_CLINICAL_SYMPTOMS_LABEL, otherClinicalSymptoms);
+  }
 
-    public void selectShivering(String shivering) {
-        webDriverHelpers.clickWebElementByText(SHIVERING_LABEL, shivering);
-    }
+  public void selectAcuteRespiratoryDistressSyndrome(String acuteRespiratoryDistressSyndrome) {
+    webDriverHelpers.clickWebElementByText(
+        ACUTE_RESPIRATORY_DISTRESS_SYNDROME_LABEL, acuteRespiratoryDistressSyndrome);
+  }
 
-    public void selectOtherClinicalSymptoms(String otherClinicalSymptoms) {
-        webDriverHelpers.clickWebElementByText(OTHER_CLINICAL_SYMPTOMS_LABEL, otherClinicalSymptoms);
-    }
+  public void selectCough(String cough) {
+    webDriverHelpers.clickWebElementByText(COUGH_LABEL, cough);
+  }
 
-    public void selectAcuteRespiratoryDistressSyndrome(String acuteRespiratoryDistressSyndrome) {
-        webDriverHelpers.clickWebElementByText(ACUTE_RESPIRATORY_DISTRESS_SYNDROME_LABEL, acuteRespiratoryDistressSyndrome);
-    }
+  public void selectDifficultyBreathing(String difficultyBreathing) {
+    webDriverHelpers.clickWebElementByText(DIFFICULTY_BREATHING_LABEL, difficultyBreathing);
+  }
 
-    public void selectCough(String cough) {
-        webDriverHelpers.clickWebElementByText(COUGH_LABEL, cough);
-    }
+  public void selectOxygenSaturationLower94(String oxygenSaturationLower94) {
+    webDriverHelpers.clickWebElementByText(OXIGEN_SATURANTION_LABEL, oxygenSaturationLower94);
+  }
 
-    public void selectDifficultyBreathing(String difficultyBreathing) {
-        webDriverHelpers.clickWebElementByText(DIFFICULTY_BREATHING_LABEL, difficultyBreathing);
-    }
+  public void selectPneumoniaClinicalOrRadiologic(String pneumoniaClinicalOrRadiologic) {
+    webDriverHelpers.clickWebElementByText(PNEUMONIA_LABEL, pneumoniaClinicalOrRadiologic);
+  }
 
-    public void selectOxygenSaturationLower94(String oxygenSaturationLower94) {
-        webDriverHelpers.clickWebElementByText(
-                OXIGEN_SATURANTION_LABEL, oxygenSaturationLower94);
-    }
+  public void selectPersonAvailableAndCooperative(String available) {
+    webDriverHelpers.clickWebElementByText(PERSON_AVAILABLE_AND_COOPERATIVE, available);
+  }
 
-    public void selectPneumoniaClinicalOrRadiologic(String pneumoniaClinicalOrRadiologic) {
-        webDriverHelpers.clickWebElementByText(
-                PNEUMONIA_LABEL, pneumoniaClinicalOrRadiologic);
-    }
+  public void selectRapidBreathing(String rapidBreathing) {
+    webDriverHelpers.clickWebElementByText(RAPID_BREATHING_LABEL, rapidBreathing);
+  }
 
-    public void selectPersonAvailableAndCooperative(String available) {
-        webDriverHelpers.clickWebElementByText(
-                PERSON_AVAILABLE_AND_COOPERATIVE, available);
-    }
+  public void selectRespiratoryDiseaseVentilation(String respiratoryDiseaseVentilation) {
+    webDriverHelpers.clickWebElementByText(
+        RESPIRATORY_DISEASE_REQUIRING_VENTILATION_LABEL, respiratoryDiseaseVentilation);
+  }
 
-    public void selectRapidBreathing(String rapidBreathing) {
-        webDriverHelpers.clickWebElementByText(RAPID_BREATHING_LABEL, rapidBreathing);
-    }
+  public void selectRunnyNose(String runnyNose) {
+    webDriverHelpers.clickWebElementByText(RUNNY_NOSE_LABEL, runnyNose);
+  }
 
-    public void selectRespiratoryDiseaseVentilation(String respiratoryDiseaseVentilation) {
-        webDriverHelpers.clickWebElementByText(
-                RESPIRATORY_DISEASE_REQUIRING_VENTILATION_LABEL, respiratoryDiseaseVentilation);
-    }
+  public void fillDateOfSymptomOnset(LocalDate dateOfSymptomOnset) {
+    webDriverHelpers.fillInWebElement(
+        DATE_OF_SYMPTOM_ONSET_INPUT, DATE_FORMATTER.format(dateOfSymptomOnset));
+  }
 
-    public void selectRunnyNose(String runnyNose) {
-        webDriverHelpers.clickWebElementByText(RUNNY_NOSE_LABEL, runnyNose);
-    }
+  public void fillVisitRemark(String visitRemark) {
+    webDriverHelpers.fillInWebElement(VISIT_REMARKS_INPUT, "visit remark" + LocalTime.now());
+  }
 
-    public void fillDateOfSymptomOnset(LocalDate dateOfSymptomOnset) {
-        webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_ONSET_INPUT, DATE_FORMATTER.format(dateOfSymptomOnset));
-    }
+  public void selectSoreThroat(String soreThroat) {
+    webDriverHelpers.clickWebElementByText(SORE_THROAT_PHARYNGITIS_LABEL, soreThroat);
+  }
 
-    public void fillVisitRemark(String visitRemark) {
-        webDriverHelpers.fillInWebElement(VISIT_REMARKS_INPUT, "visit remark" + LocalTime.now());
-    }
+  public void selectFastHeartRate(String fastHeartRate) {
+    webDriverHelpers.clickWebElementByText(FAST_HEART_RATE_LABEL, fastHeartRate);
+  }
 
-    public void selectSoreThroat(String soreThroat) {
-        webDriverHelpers.clickWebElementByText(SORE_THROAT_PHARYNGITIS_LABEL, soreThroat);
-    }
+  public void selectDiarrhea(String diarrhea) {
+    webDriverHelpers.clickWebElementByText(DIARRHEA_LABEL, diarrhea);
+  }
 
-    public void selectFastHeartRate(String fastHeartRate) {
-        webDriverHelpers.clickWebElementByText(FAST_HEART_RATE_LABEL, fastHeartRate);
-    }
+  public void selectNausea(String nausea) {
+    webDriverHelpers.clickWebElementByText(NAUSEA_LABEL, nausea);
+  }
 
-    public void selectDiarrhea(String diarrhea) {
-        webDriverHelpers.clickWebElementByText(DIARRHEA_LABEL, diarrhea);
-    }
+  public void selectLossOfSmell(String lossOfSmell) {
+    webDriverHelpers.clickWebElementByText(LOSS_OF_SMELL_LABEL, lossOfSmell);
+  }
 
-    public void selectNausea(String nausea) {
-        webDriverHelpers.clickWebElementByText(NAUSEA_LABEL, nausea);
-    }
+  public void selectLossOfTaste(String lossOfTaste) {
+    webDriverHelpers.clickWebElementByText(LOSS_OF_TASTE_LABEL, lossOfTaste);
+  }
 
-    public void selectLossOfSmell(String lossOfSmell) {
-        webDriverHelpers.clickWebElementByText(LOSS_OF_SMELL_LABEL, lossOfSmell);
-    }
+  public void selectOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
+    webDriverHelpers.clickWebElementByText(
+        OTHER_CLINICAL_SYMPTOMS_LABEL, otherNonHemorrhagicSymptoms);
+  }
 
-    public void selectLossOfTaste(String lossOfTaste) {
-        webDriverHelpers.clickWebElementByText(LOSS_OF_TASTE_LABEL, lossOfTaste);
-    }
+  public void fillComments(String symptomsComments) {
+    webDriverHelpers.fillInWebElement(COMMENTS_INPUT, symptomsComments);
+  }
 
-    public void selectOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
-        webDriverHelpers.clickWebElementByText(
-                OTHER_CLINICAL_SYMPTOMS_LABEL, otherNonHemorrhagicSymptoms);
-    }
-
-    public void fillComments(String symptomsComments) {
-        webDriverHelpers.fillInWebElement(COMMENTS_INPUT, symptomsComments);
-    }
-
-    public void fillDateAndTimeVisit(LocalDate dateOfSymptomOnset, LocalTime timeOfVisit) {
-        webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_ONSET_INPUT, DATE_FORMATTER.format(dateOfSymptomOnset));
-        webDriverHelpers.fillInWebElement(TIME_OF_VISIT_INPUT, TIME_FORMATTER.format(timeOfVisit));
-    }
+  public void fillDateAndTimeVisit(LocalDate dateOfSymptomOnset, LocalTime timeOfVisit) {
+    webDriverHelpers.fillInWebElement(
+        DATE_OF_SYMPTOM_ONSET_INPUT, DATE_FORMATTER.format(dateOfSymptomOnset));
+    webDriverHelpers.fillInWebElement(TIME_OF_VISIT_INPUT, TIME_FORMATTER.format(timeOfVisit));
+  }
 }

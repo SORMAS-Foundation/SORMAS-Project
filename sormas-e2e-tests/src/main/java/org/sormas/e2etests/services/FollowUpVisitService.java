@@ -20,52 +20,51 @@ package org.sormas.e2etests.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
-import org.sormas.e2etests.pojo.web.FollowUpVisit;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.sormas.e2etests.pojo.web.FollowUpVisit;
 
 public class FollowUpVisitService {
-    private final Faker faker;
+  private final Faker faker;
 
-    @Inject
-    public FollowUpVisitService(Faker faker) {
-        this.faker = faker;
-    }
+  @Inject
+  public FollowUpVisitService(Faker faker) {
+    this.faker = faker;
+  }
 
-    public FollowUpVisit buildGeneratedFollowUpVisit() {
-        long currentTimeMillis = System.currentTimeMillis();
-        return FollowUpVisit.builder()
-                .personAvailableAndCooperative("Available and cooperative")
-                .dateOfVisit(LocalDate.now())
-                .timeOfVisit(LocalTime.of(11, 30))
-                .visitRemarks("Automated - visit remark" + String.valueOf(System.currentTimeMillis()))
-                .currentBodyTemperature("35.5 °C")
-                .sourceOfBodyTemperature("oral")
-                .chillsOrSweats("YES")
-                .feelingIll("YES")
-                .fever("YES")
-                .headache("NO")
-                .musclePain("NO")
-                .shivering("NO")
-                .acuteRespiratoryDistressSyndrome("NO")
-                .cough("NO")
-                .difficultyBreathing("NO")
-                .oxygenSaturation94("UNKNOWN")
-                .pneumoniaClinicalRadiologic("UNKNOWN")
-                .rapidBreathing("UNKNOWN")
-                .respiratoryDiseaseRequiringVentilation("UNKNOWN")
-                .runnyNose("UNKNOWN")
-                .soreThroatPharyngitis("UNKNOWN")
-                .fastHeartRate("NO")
-                .diarrhea("YES")
-                .nausea("NO")
-                .newLossOfSmell("YES")
-                .newLossOfTaste("NO")
-                .otherClinicalSymptoms("UNKNOWN")
-                .comments("Automated -comment" + LocalTime.now())
-                .firstSymptom("Fever")
-                .dateOfSymptomOnset(LocalDate.now())
-                .build();
-    }
+  public FollowUpVisit buildGeneratedFollowUpVisit() {
+    long currentTimeMillis = System.currentTimeMillis();
+    return FollowUpVisit.builder()
+        .personAvailableAndCooperative("Available and cooperative")
+        .dateOfVisit(LocalDate.now())
+        .timeOfVisit(LocalTime.of(11, 30))
+        .visitRemarks("Automated - visit remark" + String.valueOf(System.currentTimeMillis()))
+        .currentBodyTemperature("35.5 °C")
+        .sourceOfBodyTemperature("oral")
+        .chillsOrSweats("YES")
+        .feelingIll("YES")
+        .fever("YES")
+        .headache("NO")
+        .musclePain("NO")
+        .shivering("NO")
+        .acuteRespiratoryDistressSyndrome("NO")
+        .cough("NO")
+        .difficultyBreathing("NO")
+        .oxygenSaturation94("UNKNOWN")
+        .pneumoniaClinicalRadiologic("UNKNOWN")
+        .rapidBreathing("UNKNOWN")
+        .respiratoryDiseaseRequiringVentilation("UNKNOWN")
+        .runnyNose("UNKNOWN")
+        .soreThroatPharyngitis("UNKNOWN")
+        .fastHeartRate("NO")
+        .diarrhea("YES")
+        .nausea("NO")
+        .newLossOfSmell("YES")
+        .newLossOfTaste("NO")
+        .otherClinicalSymptoms("UNKNOWN")
+        .comments("Automated -comment" + LocalTime.now())
+        .firstSymptom("Fever")
+        .dateOfSymptomOnset(LocalDate.now())
+        .build();
+  }
 }

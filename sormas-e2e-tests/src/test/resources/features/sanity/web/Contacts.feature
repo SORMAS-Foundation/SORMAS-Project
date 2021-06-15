@@ -31,12 +31,13 @@ Feature: Contacts end to end tests
 
   @FollowUpVisit
   Scenario: Edit all fields from Follow-up visits  tab
-    Given API: I create a new contact
     Given I log in with the user
+    When API: I create a new contact
     When I am accessing the Follow-up visits tab using of created contact via api
     And I create a new Follow-up visit
     Then I check all data
     And I am accessing the contacts
+    And I change all Follow-up visit fields and save
     When I am accessing the Follow-up visits tab using of created contact via api
     And I am checking all data is saved and displayed
 

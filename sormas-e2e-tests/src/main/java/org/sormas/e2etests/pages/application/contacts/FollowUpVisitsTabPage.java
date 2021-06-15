@@ -21,6 +21,6 @@ package org.sormas.e2etests.pages.application.contacts;
 import org.openqa.selenium.By;
 
 public class FollowUpVisitsTabPage {
-    public static final By NEW_CONTACT_BUTTON = By.id("contactNewContact");
-    public static final By FIRST_VISITOR = By.cssSelector("tbody tr:nth-child(1) td:nth-child(1)");
+  public static final By NEW_CONTACT_BUTTON = By.id("contactNewContact");
+  public static final By FIRST_VISITOR = By.cssSelector("tbody tr:nth-child(1) td:nth-child(1)");
 }

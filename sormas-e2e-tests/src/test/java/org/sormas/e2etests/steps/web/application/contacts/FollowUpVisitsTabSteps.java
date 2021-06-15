@@ -18,53 +18,50 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.contacts.CreateNewVisitPage.*;
+
 import cucumber.api.java8.En;
+import java.time.format.DateTimeFormatter;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pojo.web.FollowUpVisit;
 import org.sormas.e2etests.services.FollowUpVisitService;
 import org.sormas.e2etests.state.ApiState;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import static org.sormas.e2etests.pages.application.contacts.CreateNewVisitPage.*;
-
 public class FollowUpVisitsTabSteps implements En {
 
-    private final WebDriverHelpers webDriverHelpers;
-    public static FollowUpVisit followUpVisit;
-    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  private final WebDriverHelpers webDriverHelpers;
+  public static FollowUpVisit followUpVisit;
+  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
-    @Inject
-    public FollowUpVisitsTabSteps(
-            WebDriverHelpers webDriverHelpers,
-            FollowUpVisitService followUpVisitService,
-            ApiState apiState,
-            @Named("ENVIRONMENT_URL") String environmentUrl) {
-        this.webDriverHelpers = webDriverHelpers;
+  @Inject
+  public FollowUpVisitsTabSteps(
+      WebDriverHelpers webDriverHelpers,
+      FollowUpVisitService followUpVisitService,
+      ApiState apiState,
+      @Named("ENVIRONMENT_URL") String environmentUrl) {
+    this.webDriverHelpers = webDriverHelpers;
 
-        When(
-                "I am checking all data is saved and displayed",
-                () -> {
-                });
+    When("I am checking all data is saved and displayed", () -> {});
 
-        When("^I am accessing the Follow-up visits tab using of created contact via api$", () -> {
-            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-                    NavBarPage.SAMPLE_BUTTON);
-            String caseLinkPath = "/sormas-ui/#!contacts/visits/";
-            String uuid = apiState.getCreatedContact().getUuid();
-            webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
+    When(
+        "^I am accessing the Follow-up visits tab using of created contact via api$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              NavBarPage.SAMPLE_BUTTON);
+          String caseLinkPath = "/sormas-ui/#!contacts/visits/";
+          String uuid = apiState.getCreatedContact().getUuid();
+          webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
         });
-    }
+  }
 
-    public FollowUpVisit collectFollowUpData() {
-        return FollowUpVisit.builder()
-                .personAvailableAndCooperative(
-                        webDriverHelpers.getValueFromWebElement(PERSON_AVAILABLE_AND_COOPERATIVE))
-              //  .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRST_SYMPTOM_COMBOBOX))
-                .build();
-    }
+  public FollowUpVisit collectFollowUpData() {
+    return FollowUpVisit.builder()
+        .personAvailableAndCooperative(
+            webDriverHelpers.getValueFromWebElement(PERSON_AVAILABLE_AND_COOPERATIVE))
+        //  .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRST_SYMPTOM_COMBOBOX))
+        .build();
+  }
 }
