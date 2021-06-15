@@ -45,8 +45,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +64,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -88,6 +88,7 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -103,7 +104,7 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -261,45 +262,54 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-		Map<String, User> responsibleUserByEventUuid = eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
-			eventParticipant.getPerson().getUuid(), event.getUuid(), event.getDisease(), fromDate);
-		for (Map.Entry<String, User> entry : responsibleUserByEventUuid.entrySet()) {
-			try {
-				messagingService.sendMessage(
-					entry.getValue(),
-					MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
-					String.format(
-						I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
-						DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
-						DataHelper.getShortUuid(eventParticipant.getUuid()),
-						DataHelper.getShortUuid(event.getUuid()),
-						User.buildCaptionForNotification(event.getResponsibleUser()),
-						User.buildCaptionForNotification(userService.getCurrentUser()),
-						buildEventListContentForNotification(responsibleUserByEventUuid)),
-					MessageType.EMAIL,
-					MessageType.SMS);
-			} catch (NotificationDeliveryFailedException e) {
-				logger.error(
-					String.format(
-						"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventPartipant related to other events. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-						entry.getValue().getUuid()));
-			}
+		Map<String, Optional<User>> responsibleUserByEventUuid = eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
+			eventParticipant.getPerson().getUuid(), event.getDisease(), fromDate);
+		if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
+			// it means the event participant is only appearing into the current event
+			return;
+		}
+
+		for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
+			entry.getValue()
+				.filter(user -> StringUtils.isNotEmpty(user.getUserEmail()))
+				.ifPresent(user -> {
+					try {
+						messagingService.sendMessage(
+							user,
+							MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+							String.format(
+								I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
+								DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
+								DataHelper.getShortUuid(eventParticipant.getUuid()),
+								DataHelper.getShortUuid(event.getUuid()),
+								User.buildCaptionForNotification(event.getResponsibleUser()),
+								User.buildCaptionForNotification(userService.getCurrentUser()),
+								buildEventListContentForNotification(responsibleUserByEventUuid)),
+							MessageType.EMAIL,
+							MessageType.SMS);
+					} catch (NotificationDeliveryFailedException e) {
+						logger.error(
+							String.format(
+								"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventPartipant related to other events. "
+									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+								user.getUuid()));
+					}
+				});
 		}
 	}
 
-	private String buildEventListContentForNotification(Map<String, User> responsibleUserByEventUuid) {
+	private String buildEventListContentForNotification(Map<String, Optional<User>> responsibleUserByEventUuid) {
 		return responsibleUserByEventUuid.entrySet()
 			.stream()
 			.map(entry -> buildEventListContentForNotification(entry.getKey(), entry.getValue()))
 			.collect(Collectors.joining("\n* ", "* ", ""));
 	}
 
-	private String buildEventListContentForNotification(String eventUuid, User responsibleUser) {
+	private String buildEventListContentForNotification(String eventUuid, Optional<User> responsibleUser) {
 		return String.format(
 			I18nProperties.getString(Strings.notificationEventWithResponsibleUserLine),
 			DataHelper.getShortUuid(eventUuid),
-			User.buildCaptionForNotification(responsibleUser));
+			User.buildCaptionForNotification(responsibleUser.orElse(null)));
 	}
 
 	@Override
@@ -825,6 +835,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer) {
 
 		if (source != null) {
+			validate(dto);
+
 			boolean inJurisdiction = eventParticipantJurisdictionChecker.isPseudonymized(source);
 
 			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
@@ -879,7 +891,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		target.setVaccinationInfo(VaccinationInfoFacadeEjbLocal.toDto(source.getVaccinationInfo()));
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
+		target.setOwnershipHandedOver(source.getShareInfoEventParticipants().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		return target;
 	}

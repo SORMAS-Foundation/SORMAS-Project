@@ -102,6 +102,7 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -451,19 +452,12 @@ public class CasesView extends AbstractView {
 		moreLayout.addComponent(searchSpecificCaseButton);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
-			final Button lineListingButton = ButtonHelper.createIconButton(
-				Captions.caseLineListing,
-				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getCaseController().openLineListingWindow(),
-				ValoTheme.BUTTON_PRIMARY);
-
+			final ExpandableButton lineListingButton =
+				new ExpandableButton(Captions.lineListing).expand(e -> ControllerProvider.getCaseController().openLineListingWindow());
 			addHeaderComponent(lineListingButton);
 
-			final Button createButton = ButtonHelper.createIconButton(
-				Captions.caseNewCase,
-				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getCaseController().create(),
-				ValoTheme.BUTTON_PRIMARY);
+			final ExpandableButton createButton =
+				new ExpandableButton(Captions.caseNewCase).expand(e -> ControllerProvider.getCaseController().create());
 			addHeaderComponent(createButton);
 		}
 		addHeaderComponent(moreButton);

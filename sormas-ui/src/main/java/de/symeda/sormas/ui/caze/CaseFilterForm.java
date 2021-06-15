@@ -105,7 +105,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			VSPACE_3,
 			CaseCriteria.ONLY_ENTITIES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL,
 			CaseCriteria.ONLY_ENTITIES_SHARED_WITH_EXTERNAL_SURV_TOOL,
-			CaseCriteria.ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL)
+			CaseCriteria.ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL,
+			CaseCriteria.ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL)
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected CaseFilterForm() {
@@ -369,6 +370,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				FieldConfiguration.withCaptionAndStyle(
 					CaseCriteria.ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL,
 					I18nProperties.getCaption(Captions.caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool),
+					null,
+					CssStyles.CHECKBOX_FILTER_INLINE));
+
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL,
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesWithDontShareWithExternalSurvTool),
 					null,
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}

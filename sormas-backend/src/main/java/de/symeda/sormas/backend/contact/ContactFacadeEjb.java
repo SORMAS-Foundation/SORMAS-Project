@@ -84,10 +84,13 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -131,6 +134,8 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.document.Document;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -159,7 +164,7 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.task.Task;
@@ -242,6 +247,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private SampleFacadeEjbLocal sampleFacade;
+	@EJB
+	private DocumentService documentService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -567,6 +574,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_ATC_CODE),
 					contact.get(Contact.EXTERNAL_ID),
 					contact.get(Contact.EXTERNAL_TOKEN),
+					contact.get(Contact.INTERNAL_TOKEN),
 					joins.getPerson().get(Person.BIRTH_NAME),
 					joins.getPersonBirthCountry().get(Country.ISO_CODE),
 					joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
@@ -1189,6 +1197,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -1434,6 +1443,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
@@ -1483,7 +1493,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
+		target.setOwnershipHandedOver(source.getShareInfoContacts().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		target.setVaccinationInfo(VaccinationInfoFacadeEjb.toDto(source.getVaccinationInfo()));
 		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
@@ -1757,6 +1767,14 @@ public class ContactFacadeEjb implements ContactFacade {
 			otherVisit.setDisease(leadContactDto.getDisease());
 			visitFacade.saveVisit(otherVisit);
 		}
+
+		// 4 Documents
+		List<Document> documents = documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, otherContact.getUuid());
+		for (Document document : documents) {
+			document.setRelatedEntityUuid(leadContact.getUuid());
+
+			documentService.ensurePersisted(document);
+		}
 	}
 
 	@Override
@@ -1934,6 +1952,11 @@ public class ContactFacadeEjb implements ContactFacade {
 		Contact contact = contactService.getByUuid(uuid);
 		contact.setCompleteness(calculateCompleteness(contact));
 		contactService.ensurePersisted(contact);
+	}
+
+	@Override
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+		contactService.updateExternalData(externalData);
 	}
 
 	private float calculateCompleteness(Contact contact) {

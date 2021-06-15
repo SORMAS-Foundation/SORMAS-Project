@@ -1,9 +1,9 @@
 package de.symeda.sormas.api.region;
 
-import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
-public class CountryReferenceDto extends ReferenceDto implements StatisticsGroupingKey {
+public class CountryReferenceDto extends InfrastructureDataReferenceDto implements StatisticsGroupingKey {
 
 	private static final long serialVersionUID = -7477992903590074568L;
 

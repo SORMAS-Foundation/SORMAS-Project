@@ -18,22 +18,79 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
-import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.TITLE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
+import org.sormas.e2etests.state.ApiState;
 
 public class EventDirectorySteps implements En {
 
   @Inject
-  public EventDirectorySteps(WebDriverHelpers webDriverHelpers) {
+  public EventDirectorySteps(
+      WebDriverHelpers webDriverHelpers,
+      ApiState apiState,
+      @Named("ENVIRONMENT_URL") String environmentUrl) {
 
     When(
         "I click on the NEW EVENT button",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 EventDirectoryPage.NEW_EVENT_BUTTON, TITLE_INPUT));
+
+    When(
+        "^I check if it appears under ([^\"]*) filter in event directory",
+        (String eventStatus) -> {
+          final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
+          webDriverHelpers.clickWebElementByText(EVENT_STATUS_FILTER_BUTTONS, eventStatus);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_STATUS_FILTER_BUTTONS);
+          webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_PARTICIPANTS_TAB);
+        });
+
+    When(
+        "^I search for specific event in event directory",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESET_FILTER);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
+          final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_EVENT_BY_FREE_TEXT_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+        });
+
+    When(
+        "I click on the searched event",
+        () -> {
+          final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+        });
+
+    When(
+        "I check if participant appears in the event participants list",
+        () -> {
+          final String personUuid = EditEventSteps.person.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
+        });
+
+    When(
+        "I am accessing the event tab using the created event via api",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON);
+          final String eventUuid = apiState.getCreatedEvent().getUuid();
+          final String eventLinkPath = "/sormas-ui/#!events/data/";
+          webDriverHelpers.accessWebSite(environmentUrl + eventLinkPath + eventUuid);
+        });
+
+    When(
+        "I click on New Task from event tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_BUTTON));
   }
 }

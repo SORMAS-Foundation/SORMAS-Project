@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -30,6 +31,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -73,6 +76,8 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.document.DocumentDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -337,7 +342,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(1, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 
 		cazePerson.setPhone("40742140797");
-		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		getPersonFacade().savePerson(cazePerson);
 
 		Assert.assertEquals(0, getCaseFacade().countCasesWithMissingContactInformation(Arrays.asList(caze.getUuid()), MessageType.SMS));
 	}
@@ -545,7 +550,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		PersonDto person3 = creator.createPerson("FirstName3", "LastName3", p -> {
+		PersonDto person3 = creator.createPerson("FirstName3", "Last Name3", p -> {
 			p.getAddress().setPostalCode("80331");
 			p.getAddress().setCity("Munich");
 			p.setPhone("+49 31 9018 20");
@@ -561,6 +566,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		Assert.assertEquals(3, getCaseFacade().getIndexList(null, 0, 100, null).size());
 		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("Munich"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("Last Name3"), 0, 100, null).size());
 		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("20095"), 0, 100, null).size());
 		Assert.assertEquals(2, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("+49-31-901-820"), 0, 100, null).size());
 		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("4930901822"), 0, 100, null).size());
@@ -634,7 +640,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 
 		cazePerson.getAddress().setCity("City");
-		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		getPersonFacade().savePerson(cazePerson);
 
 		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
 		exposure.getLocation().setDetails("Ghana");
@@ -677,7 +683,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				PersonContactDetailDto
 					.build(cazePerson.toReference(), false, PersonContactDetailType.OTHER, null, "SkypeID", "personSkype", "", false, "", ""));
 
-		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		getPersonFacade().savePerson(cazePerson);
 
 		List<CaseExportDto> results =
 			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
@@ -716,7 +722,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		cazePerson.getAddress().setCity("City");
-		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		getPersonFacade().savePerson(cazePerson);
 
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -856,7 +862,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// person alive again -> case has to be reset to no outcome
 		cazePerson.setPresentCondition(PresentCondition.ALIVE);
-		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
 
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
 		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
@@ -895,7 +901,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// person alive again -> deceased cases have to be set to no outcome
 		cazePerson.setPresentCondition(PresentCondition.ALIVE);
-		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
 		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
 		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
@@ -926,7 +932,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// case deceased -> person has to set to dead
 		firstCase.setOutcome(CaseOutcome.DECEASED);
 		cazePerson.setPresentCondition(PresentCondition.DEAD);
-		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
 
 		// this should throw an exception
 		exception.expect(OutdatedEntityException.class);
@@ -1051,7 +1057,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Thread.sleep(10L);
 
 		cazePerson.setBurialDate(new Date());
-		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		getPersonFacade().savePerson(cazePerson);
 
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
@@ -1079,7 +1085,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.getAddress().setStreet("new Street");
 		cazePerson.getAddress().setHouseNumber("new Number");
 		cazePerson.getAddress().setAdditionalInformation("new Information");
-		getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		getPersonFacade().savePerson(cazePerson);
 
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
@@ -1139,7 +1145,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testMergeCase() {
+	public void testMergeCase() throws IOException {
 
 		useNationalUserLogin();
 		// 1. Create
@@ -1169,7 +1175,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		UserReferenceDto otherUserReference = new UserReferenceDto(otherUser.getUuid());
 		PersonDto otherPerson = creator.createPerson("Max", "Smith");
 		otherPerson.setBirthWeight(2);
-		getPersonFacade().savePersonAndNotifyExternalJournal(otherPerson);
+		getPersonFacade().savePerson(otherPerson);
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
 		RDCF otherRdcf = creator.createRDCF();
 		CaseDataDto otherCase = creator.createCase(
@@ -1206,6 +1212,23 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		VisitDto otherVisit = creator.createVisit(otherCase.getDisease(), otherCase.getPerson(), otherCase.getReportDate());
 		otherVisit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(otherVisit);
+
+		DocumentDto document = creator.createDocument(
+			leadUserReference,
+			"document.pdf",
+			"application/pdf",
+			42L,
+			DocumentRelatedEntityType.CASE,
+			leadCase.getUuid(),
+			"content".getBytes(StandardCharsets.UTF_8));
+		DocumentDto otherDocument = creator.createDocument(
+			leadUserReference,
+			"other_document.pdf",
+			"application/pdf",
+			42L,
+			DocumentRelatedEntityType.CASE,
+			otherCase.getUuid(),
+			"other content".getBytes(StandardCharsets.UTF_8));
 
 		// 2. Merge
 
@@ -1284,6 +1307,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(SymptomState.YES, mergedCase.getSymptoms().getAbdominalPain());
 		assertEquals(SymptomState.YES, mergedCase.getSymptoms().getAnorexiaAppetiteLoss());
 		assertTrue(mergedCase.getSymptoms().getSymptomatic());
+
+		// 5 Documents
+		List<DocumentDto> mergedDocuments = getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.CASE, leadCase.getUuid());
+
+		assertEquals(mergedDocuments.size(), 2);
+		List<String> documentUuids = mergedDocuments.stream().map(DocumentDto::getUuid).collect(Collectors.toList());
+		assertTrue(documentUuids.contains(document.getUuid()));
+		assertTrue(documentUuids.contains(otherDocument.getUuid()));
 	}
 
 	@Test
@@ -1844,4 +1875,54 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(indexList, hasSize(0));
 
 	}
+
+	@Test
+	public void testCaseCompletenessWhenCaseFound() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+
+		int casesWithNoCompletenessFound = getCaseFacade().updateCompleteness();
+		MatcherAssert.assertThat(casesWithNoCompletenessFound, is(0));
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		CaseDataDto caseNoCompleteness = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		PersonDto cazePerson2 = creator.createPerson("Case2", "Person2", Sex.MALE, 1981, 1, 1);
+		CaseDataDto caseWithCompleteness = creator.createCase(
+			user.toReference(),
+			cazePerson2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateUtils.addMinutes(new Date(), -3),
+			rdcf);
+
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query2 = em.createQuery("select c from cases c where c.uuid=:uuid");
+		query2.setParameter("uuid", caseWithCompleteness.getUuid());
+		Case caseWithCompletenessSingleResult = (Case) query2.getSingleResult();
+		caseWithCompletenessSingleResult.setCompleteness(0.7f);
+		em.save(caseWithCompletenessSingleResult);
+
+		int changedCases = getCaseFacade().updateCompleteness();
+
+		Case completenessUpdateResult = getCaseService().getByUuid(caseNoCompleteness.getUuid());
+		Case completenessUpdateResult2 = getCaseService().getByUuid(caseWithCompleteness.getUuid());
+
+		MatcherAssert.assertThat(completenessUpdateResult.getCompleteness(), notNullValue());
+		MatcherAssert.assertThat(completenessUpdateResult2.getCompleteness(), is(0.7f));
+		MatcherAssert.assertThat(changedCases, is(1));
+
+		int changedCasesAfterUpdateCompleteness = getCaseFacade().updateCompleteness();
+
+		MatcherAssert.assertThat(changedCasesAfterUpdateCompleteness, is(0));
+	}
 }
+

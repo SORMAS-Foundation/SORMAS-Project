@@ -21,7 +21,7 @@ package org.sormas.e2etests.services;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.sormas.e2etests.pojo.Task;
+import org.sormas.e2etests.pojo.web.Task;
 
 public class TaskService {
 
@@ -59,6 +59,14 @@ public class TaskService {
         .commentsOnTask(currentTimeMillis + "Comment on task")
         .commentsOnExecution(currentTimeMillis + "Comment on execution")
         .taskStatus("DONE")
+        .build();
+  }
+
+  public Task buildGeneratedTaskForEvent() {
+    return buildGeneratedTask().toBuilder()
+        .taskContext("EVENT")
+        .taskType("vaccination activities")
+        .assignedTo("National USER - National User")
         .build();
   }
 }

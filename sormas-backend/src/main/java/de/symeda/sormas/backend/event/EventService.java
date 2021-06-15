@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -38,7 +40,11 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.backend.util.ExternalDataUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -73,7 +79,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
@@ -189,27 +195,26 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(objects -> (String) objects[0], objects -> (User) objects[1]));
 	}
 
-	public Map<String, User> getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(String personUuid, String excludedEventUuid, Disease disease, Date date) {
+	public Map<String, Optional<User>> getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(String personUuid, Disease disease, Date date) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Event> eventRoot = cq.from(Event.class);
 		Join<Event, EventParticipant> eventParticipantJoin = eventRoot.join(Event.EVENT_PERSONS, JoinType.INNER);
 		Join<EventParticipant, Person> personJoin = eventParticipantJoin.join(EventParticipant.PERSON, JoinType.INNER);
-		Join<Event, User> responsibleUserJoin = eventRoot.join(Event.RESPONSIBLE_USER, JoinType.INNER);
+		Join<Event, User> responsibleUserJoin = eventRoot.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
 
 		Timestamp timestamp = DateHelper.toTimestampUpper(date);
 		Predicate filter = cb.and(
 			cb.equal(personJoin.get(Person.UUID), personUuid),
-			cb.not(cb.equal(eventRoot.get(Event.UUID), excludedEventUuid)),
 			cb.equal(eventRoot.get(Event.DISEASE), disease),
 			createActiveEventsFilter(cb, eventRoot),
-			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.REPORT_DATE_TIME), timestamp),
-			cb.isNotNull(responsibleUserJoin.get(User.USER_EMAIL)));
+			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.REPORT_DATE_TIME), timestamp));
 		cq.where(filter);
 		cq.multiselect(eventRoot.get(Event.UUID), responsibleUserJoin);
-		return em.createQuery(cq).getResultList()
+		return em.createQuery(cq)
+			.getResultList()
 			.stream()
-			.collect(Collectors.toMap(row -> (String) row[0], row -> (User) row[1]));
+			.collect(Collectors.toMap(row -> (String) row[0], row -> Optional.ofNullable((User) row[1])));
 	}
 
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
@@ -445,7 +450,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	private ChangeDateFilterBuilder addChangeDateFilter(ChangeDateFilterBuilder filterBuilder, From<?, Event> eventPath) {
 
-		filterBuilder.add(eventPath).add(eventPath, Event.EVENT_LOCATION).add(eventPath, Contact.SORMAS_TO_SORMAS_SHARES);
+		filterBuilder.add(eventPath).add(eventPath, Event.EVENT_LOCATION).add(eventPath, Event.SHARE_INFO_EVENTS);
 
 		return filterBuilder;
 	}
@@ -571,6 +576,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					CriteriaBuilderHelper.ilike(cb, from.get(Event.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EXTERNAL_ID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EVENT_TITLE), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.EVENT_DESC), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Event.SRC_FIRST_NAME), textFilter),
@@ -849,5 +855,36 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		return eventJurisdictionChecker.isInJurisdictionOrOwned(event) && !sormasToSormasShareInfoService.isEventOwnershipHandedOver(event);
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
+	}
+
+	public List<Event> getAllByCase(String caseUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
+		Root<Event> from = cq.from(getElementClass());
+		from.fetch(Event.EVENT_LOCATION);
+
+		Predicate filter = createActiveEventsFilter(cb, from);
+
+		User user = getCurrentUser();
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		}
+
+		filter = CriteriaBuilderHelper.and(
+			cb,
+			filter,
+			cb.equal(from.join(Event.EVENT_PERSONS, JoinType.LEFT).join(EventParticipant.RESULTING_CASE, JoinType.LEFT).get(Case.UUID), caseUuid));
+
+		cq.where(filter);
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
 	}
 }

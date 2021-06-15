@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -62,12 +63,14 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.caze.CaseSelectionField;
+import de.symeda.sormas.ui.contact.components.linelisting.layout.LineListingLayout;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -95,6 +98,62 @@ public class ContactController {
 		navigator.addView(ContactPersonView.VIEW_NAME, ContactPersonView.class);
 		navigator.addView(ContactVisitsView.VIEW_NAME, ContactVisitsView.class);
 		navigator.addView(ContactEpiDataView.VIEW_NAME, ContactEpiDataView.class);
+	}
+
+	public void openLineListingWindow() {
+		openLineListingWindow(null);
+	}
+
+	public void openLineListingWindow(CaseDataDto caseDataDto) {
+		Window window = new Window(I18nProperties.getString(Strings.headingLineListing));
+
+		LineListingLayout lineListingForm = new LineListingLayout(window, caseDataDto);
+		lineListingForm.setSaveCallback(contacts -> saveContactsFromLineListing(lineListingForm, contacts));
+
+		lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
+
+		window.setContent(lineListingForm);
+		window.setModal(true);
+		window.setPositionX((int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - lineListingForm.getWidth())) / 2);
+		window.setPositionY(70);
+		window.setResizable(false);
+
+		UI.getCurrent().addWindow(window);
+	}
+
+	private void saveContactsFromLineListing(LineListingLayout lineListingForm, List<LineListingLayout.ContactLineDto> contacts) {
+		try {
+			lineListingForm.validate();
+		} catch (ValidationRuntimeException e) {
+			Notification.show(I18nProperties.getString(Strings.errorFieldValidationFailed), "", Type.ERROR_MESSAGE);
+			return;
+		}
+
+		for (LineListingLayout.ContactLineDto contactLineDto : contacts) {
+			ContactDto newContact = contactLineDto.getContact();
+			if (UserProvider.getCurrent() != null) {
+				newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
+			}
+
+			PersonDto newPerson = contactLineDto.getPerson();
+
+			ControllerProvider.getPersonController()
+				.selectOrCreatePerson(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
+					if (selectedPerson != null) {
+						newContact.setPerson(selectedPerson);
+
+						selectOrCreateContact(newContact, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+							if (uuid == null) {
+								FacadeProvider.getContactFacade().saveContact(newContact);
+								Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.ASSISTIVE_NOTIFICATION);
+							}
+						});
+					}
+				}, true);
+		}
+
+		lineListingForm.closeWindow();
+		ControllerProvider.getContactController().navigateToIndex();
 	}
 
 	public void create() {
@@ -265,7 +324,7 @@ public class ContactController {
 			if (!createForm.getFieldGroup().isModified()) {
 				final ContactDto dto = createForm.getValue();
 				if (asSourceContact && alternativeCallback != null && casePerson != null) {
-					selectOrCreateContact(dto, casePerson, I18nProperties.getString(Strings.infoSelectOrCreateContact), selectedContactUuid -> {
+					selectOrCreateContact(dto, casePerson, selectedContactUuid -> {
 						if (selectedContactUuid != null) {
 							ContactDto selectedContact = FacadeProvider.getContactFacade().getContactByUuid(selectedContactUuid);
 							selectedContact.setResultingCase(caze.toReference());
@@ -284,13 +343,13 @@ public class ContactController {
 					if (dbPerson == null) {
 						PersonDto personDto = PersonDto.build();
 						transferDataToPerson(createForm, personDto);
-						FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(personDto);
+						FacadeProvider.getPersonFacade().savePerson(personDto);
 						dto.setPerson(personDto.toReference());
 						createNewContact(dto, e -> {
 						});
 					} else {
 						transferDataToPerson(createForm, dbPerson);
-						FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(dbPerson);
+						FacadeProvider.getPersonFacade().savePerson(dbPerson);
 						createNewContact(dto, e -> {
 						});
 					}
@@ -313,18 +372,14 @@ public class ContactController {
 										personDto.getAddress().setDistrict(caseDto.getDistrict());
 										personDto.getAddress().setCommunity(caseDto.getCommunity());
 									}
-									FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(personDto);
+									FacadeProvider.getPersonFacade().savePerson(personDto);
 								}
 
-								selectOrCreateContact(
-									dto,
-									person,
-									I18nProperties.getString(Strings.infoSelectOrCreateContact),
-									selectedContactUuid -> {
-										if (selectedContactUuid != null) {
-											editData(selectedContactUuid);
-										}
-									});
+								selectOrCreateContact(dto, person, selectedContactUuid -> {
+									if (selectedContactUuid != null) {
+										editData(selectedContactUuid);
+									}
+								});
 							}
 						}, true);
 				}
@@ -386,10 +441,10 @@ public class ContactController {
 						personDto.getAddress().setDistrict(caseDto.getDistrict());
 						personDto.getAddress().setCommunity(caseDto.getCommunity());
 					}
-					FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(personDto);
+					FacadeProvider.getPersonFacade().savePerson(personDto);
 				}
 
-				selectOrCreateContact(dto, personDto, I18nProperties.getString(Strings.infoSelectOrCreateContact), selectedContactUuid -> {
+				selectOrCreateContact(dto, personDto, selectedContactUuid -> {
 					if (selectedContactUuid != null) {
 						editData(selectedContactUuid);
 					}
@@ -401,8 +456,12 @@ public class ContactController {
 		return createComponent;
 	}
 
-	public void selectOrCreateContact(final ContactDto contact, final PersonDto personDto, String infoText, Consumer<String> resultConsumer) {
-		ContactSelectionField contactSelect = new ContactSelectionField(contact, infoText, personDto.getFirstName(), personDto.getLastName());
+	public void selectOrCreateContact(final ContactDto contact, final PersonDto personDto, Consumer<String> resultConsumer) {
+		ContactSelectionField contactSelect = new ContactSelectionField(
+			contact,
+			I18nProperties.getString(Strings.infoSelectOrCreateContact),
+			personDto.getFirstName(),
+			personDto.getLastName());
 		contactSelect.setWidth(1024, Unit.PIXELS);
 
 		if (contactSelect.hasMatches()) {
@@ -467,7 +526,7 @@ public class ContactController {
 							person.getAddress().setDistrict(caze.getDistrict());
 							person.getAddress().setCommunity(caze.getCommunity());
 						}
-						FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(person);
+						FacadeProvider.getPersonFacade().savePerson(person);
 					}
 
 					dto = FacadeProvider.getContactFacade().saveContact(dto);

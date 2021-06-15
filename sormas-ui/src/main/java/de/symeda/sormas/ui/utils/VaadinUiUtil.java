@@ -339,22 +339,26 @@ public final class VaadinUiUtil {
 	}
 
 	public static HorizontalLayout createInfoComponent(String htmlContent) {
-		return createIconComponent(htmlContent, "img/info-icon.png");
+		return createIconComponent(htmlContent, "img/info-icon.png", 35);
 
 	}
 
 	public static HorizontalLayout createWarningComponent(String htmlContent) {
-		return createIconComponent(htmlContent, "img/warning-icon.png");
+		return createWarningComponent(htmlContent, 35);
+	}
+
+	public static HorizontalLayout createWarningComponent(String htmlContent, int iconSize) {
+		return createIconComponent(htmlContent, "img/warning-icon.png", iconSize);
 
 	}
 
-	public static HorizontalLayout createIconComponent(String htmlContent, String iconName) {
+	public static HorizontalLayout createIconComponent(String htmlContent, String iconName, int iconSize) {
 		HorizontalLayout infoLayout = new HorizontalLayout();
 		infoLayout.setWidth(100, Unit.PERCENTAGE);
 		infoLayout.setSpacing(true);
 		Image icon = new Image(null, new ThemeResource(iconName));
-		icon.setHeight(35, Unit.PIXELS);
-		icon.setWidth(35, Unit.PIXELS);
+		icon.setHeight(iconSize, Unit.PIXELS);
+		icon.setWidth(iconSize, Unit.PIXELS);
 		infoLayout.addComponent(icon);
 		infoLayout.setComponentAlignment(icon, Alignment.MIDDLE_LEFT);
 		Label infoLabel = new Label(htmlContent, ContentMode.HTML);

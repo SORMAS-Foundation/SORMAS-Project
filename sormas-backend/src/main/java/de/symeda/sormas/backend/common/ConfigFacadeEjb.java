@@ -58,6 +58,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String COUNTRY_EPID_PREFIX = "country.epidprefix";
 	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
 	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
+	private static final String MAP_USE_COUNTRY_CENTER = "map.usecountrycenter";
 	private static final String MAP_ZOOM = "map.zoom";
 
 	public static final String VERSION_PLACEHOLER = "%version";
@@ -88,7 +89,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String SMS_AUTH_KEY = "sms.auth.key";
 	public static final String SMS_AUTH_SECRET = "sms.auth.secret";
 
+	public static final String DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES = "duplicatechecks.excludepersonsonlylinkedtoarchivedentries";
 	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
+
 	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
 
 	public static final String INTERFACE_SYMPTOM_JOURNAL_URL = "interface.symptomjournal.url";
@@ -250,6 +253,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public boolean isMapUseCountryCenter() {
+		return getBoolean(MAP_USE_COUNTRY_CENTER, false);
+	}
+
+	@Override
 	public int getMapZoom() {
 		return getInt(MAP_ZOOM, 1);
 	}
@@ -362,6 +370,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getSmsAuthSecret() {
 		return getProperty(SMS_AUTH_SECRET, "");
+	}
+
+	@Override
+	public boolean isDuplicateChecksExcludePersonsOfArchivedEntries() {
+		return getBoolean(DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES, false);
 	}
 
 	@Override

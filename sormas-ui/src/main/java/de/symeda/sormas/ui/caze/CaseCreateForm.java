@@ -39,6 +39,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextField;
@@ -85,6 +86,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String FACILITY_TYPE_GROUP_LOC = "typeGroupLoc";
+	private static final String DONT_SHARE_WARNING_LOC = "dontShareWithReportingToolWarnLoc";
 
 	private ComboBox birthDateDay;
 	private NullableOptionGroup facilityOrHome;
@@ -105,6 +107,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			+ fluidRowLocs(FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE)
 			+ fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS)
 			+ fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
+			+ fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL)
+			+ fluidRowLocs(DONT_SHARE_WARNING_LOC)
 			+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
 			+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 			fluidRowLocs(PersonDto.SEX))
@@ -135,6 +139,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		if (!FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
 			TextField externalIdField = addField(CaseDataDto.EXTERNAL_ID, TextField.class);
 			style(externalIdField, ERROR_COLOR_PRIMARY);
+		} else {
+			CheckBox dontShareCheckbox = addField(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL, CheckBox.class);
+			CaseFormHelper.addDontShareWithReportingTool(getContent(), () -> dontShareCheckbox, DONT_SHARE_WARNING_LOC);
 		}
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);

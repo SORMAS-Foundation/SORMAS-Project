@@ -269,6 +269,20 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 		return dto;
 	}
 
+	public List<SubcontinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
+		return subcontinentService.getByExternalId(externalId, includeArchived)
+				.stream()
+				.map(SubcontinentFacadeEjb::toReferenceDto)
+				.collect(Collectors.toList());
+	}
+
+	public List<SubcontinentReferenceDto> getReferencesByName(String caption, boolean includeArchived) {
+		return subcontinentService.getByDefaultName(caption, includeArchived)
+				.stream()
+				.map(SubcontinentFacadeEjb::toReferenceDto)
+				.collect(Collectors.toList());
+	}
+
 	private Subcontinent fillOrBuildEntity(@NotNull SubcontinentDto source, Subcontinent target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Subcontinent::new, checkChangeDate);
 

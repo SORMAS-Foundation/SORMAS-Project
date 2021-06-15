@@ -32,6 +32,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +68,8 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.document.DocumentDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.event.EventDto;
@@ -960,7 +964,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactPerson.getAddress().setHouseNumber("Test number");
 		contactPerson.getAddress().setAdditionalInformation("Test information");
 		contactPerson.getAddress().setPostalCode("1234");
-		getPersonFacade().savePersonAndNotifyExternalJournal(contactPerson);
+		getPersonFacade().savePerson(contactPerson);
 
 		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
@@ -1332,7 +1336,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testMergeContact() {
+	public void testMergeContact() throws IOException {
 
 		useNationalUserLogin();
 		// 1. Create
@@ -1403,6 +1407,23 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		otherVisit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(otherVisit);
 
+		DocumentDto document = creator.createDocument(
+			leadUserReference,
+			"document.pdf",
+			"application/pdf",
+			42L,
+			DocumentRelatedEntityType.CONTACT,
+			leadContact.getUuid(),
+			"content".getBytes(StandardCharsets.UTF_8));
+		DocumentDto otherDocument = creator.createDocument(
+			leadUserReference,
+			"other_document.pdf",
+			"application/pdf",
+			42L,
+			DocumentRelatedEntityType.CONTACT,
+			otherContact.getUuid(),
+			"other content".getBytes(StandardCharsets.UTF_8));
+
 		// 2. Merge
 
 		getContactFacade().mergeContact(leadContact.getUuid(), otherContact.getUuid());
@@ -1444,5 +1465,14 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, mergedVisits.size());
 		assertTrue(mergedVisits.contains(leadVisit.getUuid()));
 		assertTrue(mergedVisits.contains(otherVisit.getUuid()));
+
+		// 5 Documents
+		List<DocumentDto> mergedDocuments = getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.CONTACT, leadContact.getUuid());
+
+		assertEquals(mergedDocuments.size(), 2);
+		List<String> documentUuids = mergedDocuments.stream().map(DocumentDto::getUuid).collect(Collectors.toList());
+		assertTrue(documentUuids.contains(document.getUuid()));
+		assertTrue(documentUuids.contains(otherDocument.getUuid()));
+
 	}
 }

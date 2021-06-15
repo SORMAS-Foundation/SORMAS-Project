@@ -247,6 +247,20 @@ public class ContinentFacadeEjb implements ContinentFacade {
 		return dto;
 	}
 
+	public List<ContinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
+		return continentService.getByExternalId(externalId, includeArchived)
+				.stream()
+				.map(ContinentFacadeEjb::toReferenceDto)
+				.collect(Collectors.toList());
+	}
+
+	public List<ContinentReferenceDto> getReferencesByName(String name, boolean includeArchived) {
+		return continentService.getByDefaultName(name, includeArchived)
+				.stream()
+				.map(ContinentFacadeEjb::toReferenceDto)
+				.collect(Collectors.toList());
+	}
+
 	private Continent fillOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Continent::new, checkChangeDate);
 

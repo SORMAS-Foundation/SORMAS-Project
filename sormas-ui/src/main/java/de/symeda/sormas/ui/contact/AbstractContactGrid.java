@@ -196,6 +196,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					ContactIndexDto.UUID,
 					ContactIndexDto.EXTERNAL_ID,
 					ContactIndexDto.EXTERNAL_TOKEN,
+					ContactIndexDto.INTERNAL_TOKEN,
 					DISEASE_SHORT,
 					ContactIndexDto.CONTACT_CLASSIFICATION,
 					ContactIndexDto.CONTACT_STATUS),

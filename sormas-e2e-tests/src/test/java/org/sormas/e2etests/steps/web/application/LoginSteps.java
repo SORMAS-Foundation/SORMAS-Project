@@ -55,7 +55,7 @@ public class LoginSteps implements En {
         "I click on the Log In button",
         () -> webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON));
 
-    When(
+    And(
         "I log in with the user",
         () -> {
           webDriverHelpers.accessWebSite(environmentUrl);
