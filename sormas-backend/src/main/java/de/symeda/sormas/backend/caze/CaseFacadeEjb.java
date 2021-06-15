@@ -3046,7 +3046,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		// 1 Merge Dtos
 		// 1.1 Case
-		DtoHelper.copyDtoValues(leadCaseData, otherCaseData, cloning);
+
+		copyDtoValues(leadCaseData, otherCaseData, cloning);
 		saveCase(leadCaseData, !cloning, true);
 
 		// 1.2 Person - Only merge when the persons have different UUIDs
@@ -3190,6 +3191,18 @@ public class CaseFacadeEjb implements CaseFacade {
 			document.setRelatedEntityUuid(leadCaseData.getUuid());
 
 			documentService.ensurePersisted(document);
+		}
+	}
+
+	private void copyDtoValues(CaseDataDto leadCaseData, CaseDataDto otherCaseData, boolean cloning) {
+		String leadAdditionalDetails = leadCaseData.getAdditionalDetails();
+		String leadFollowUpComment = leadCaseData.getFollowUpComment();
+
+		DtoHelper.copyDtoValues(leadCaseData, otherCaseData, cloning);
+
+		if (!cloning) {
+			leadCaseData.setAdditionalDetails(DataHelper.joinStrings(" ", leadAdditionalDetails, otherCaseData.getAdditionalDetails()));
+			leadCaseData.setFollowUpComment(DataHelper.joinStrings(" ", leadFollowUpComment, otherCaseData.getFollowUpComment()));
 		}
 	}
 

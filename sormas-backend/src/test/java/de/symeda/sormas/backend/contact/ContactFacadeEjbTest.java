@@ -1363,7 +1363,11 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			new Date(),
 			Disease.CORONAVIRUS,
-			leadRdcf);
+			leadRdcf,
+			(c) -> {
+				c.setAdditionalDetails("Test additional details");
+				c.setFollowUpComment("Test followup comment");
+			});
 		getContactFacade().saveContact(leadContact);
 		VisitDto leadVisit = creator.createVisit(leadContact.getDisease(), leadContact.getPerson(), leadContact.getReportDateTime());
 		getVisitFacade().saveVisit(leadVisit);
@@ -1384,7 +1388,11 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			new Date(),
 			Disease.CORONAVIRUS,
-			otherRdcf);
+			otherRdcf,
+			(c) -> {
+				c.setAdditionalDetails("Test other additional details");
+				c.setFollowUpComment("Test other followup comment");
+			});
 		ContactReferenceDto otherContactReference = getContactFacade().getReferenceByUuid(otherContact.getUuid());
 		ContactDto contact =
 			creator.createContact(otherUserReference, otherUserReference, otherPersonReference, sourceCase, new Date(), new Date(), null);
@@ -1445,6 +1453,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// Check 'lead has no value, other has'
 		assertEquals(otherPerson.getBirthWeight(), mergedPerson.getBirthWeight());
+
+		// Check merge comments
+		assertEquals(mergedContact.getAdditionalDetails(), "Test additional details Test other additional details");
+		assertEquals(mergedContact.getFollowUpComment(), "Test followup comment Test other followup comment");
 
 		// 4. Test Reference Changes
 		// 4.1 Samples
