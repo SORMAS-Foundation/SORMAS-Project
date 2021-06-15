@@ -26,17 +26,34 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.util.DateHelper8;
 
 public class ContactServiceTest extends AbstractBeanTest {
+
+	@Test
+	public void testExistsUuid() {
+
+		assertFalse(getContactService().exists("no-uuid"));
+
+		RDCF rdcf = creator.createRDCF();
+		UserReferenceDto reportingUser = creator.createUser(rdcf).toReference();
+		PersonReferenceDto contactPerson = creator.createPerson().toReference();
+		ContactDto contact = creator.createContact(reportingUser, contactPerson);
+
+		assertFalse(getContactService().exists("no-uuid"));
+		assertTrue(getContactService().exists(contact.getUuid()));
+	}
 
 	@Test
 	public void testGetAllRelevantContacts() {
