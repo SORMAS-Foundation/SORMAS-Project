@@ -406,7 +406,7 @@ public class CaseExportDto implements Serializable {
 		this.facilityType = facilityType;
 		this.healthFacility = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility);
 		this.healthFacilityDetails = healthFacilityDetails;
-		this.pointOfEntry = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntry);
+		this.pointOfEntry = pointOfEntry;
 		this.pointOfEntryDetails = pointOfEntryDetails;
 		this.admittedToHealthFacility = admittedToHealthFacility;
 		this.admissionDate = admissionDate;
