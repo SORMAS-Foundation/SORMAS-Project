@@ -33,6 +33,7 @@ public class EventActionIndexDto implements Serializable {
 
 	public static final String EVENT_UUID = "eventUuid";
 	public static final String EVENT_TITLE = "eventTitle";
+	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 	public static final String EVENT_START_DATE = "eventStartDate";
 	public static final String EVENT_END_DATE = "eventEndDate";
 	public static final String EVENT_STATUS = "eventStatus";
@@ -52,6 +53,7 @@ public class EventActionIndexDto implements Serializable {
 
 	private String eventUuid;
 	private String eventTitle;
+	private EventIdentificationSource eventIdentificationSource;
 	private Date eventStartDate;
 	private Date eventEndDate;
 	private EventStatus eventStatus;
@@ -72,6 +74,7 @@ public class EventActionIndexDto implements Serializable {
 	public EventActionIndexDto(
 		String eventUuid,
 		String eventTitle,
+		EventIdentificationSource eventIdentificationSource,
 		Date eventStartDate,
 		Date eventEndDate,
 		EventStatus eventStatus,
@@ -100,6 +103,7 @@ public class EventActionIndexDto implements Serializable {
 
 		this.eventUuid = eventUuid;
 		this.eventTitle = eventTitle;
+		this.eventIdentificationSource = eventIdentificationSource;
 		this.eventStartDate = eventStartDate;
 		this.eventEndDate = eventEndDate;
 		this.eventStatus = eventStatus;
@@ -133,6 +137,14 @@ public class EventActionIndexDto implements Serializable {
 
 	public void setEventTitle(String eventTitle) {
 		this.eventTitle = eventTitle;
+	}
+
+	public EventIdentificationSource getEventIdentificationSource() {
+		return eventIdentificationSource;
+	}
+
+	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 
 	public Date getEventStartDate() {

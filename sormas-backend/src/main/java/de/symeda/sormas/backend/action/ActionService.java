@@ -275,6 +275,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EVENT_TITLE),
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
 			event.get(Event.EVENT_STATUS),
@@ -311,6 +312,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 					break;
 				case EventActionIndexDto.EVENT_TITLE:
 					expression = cb.lower(event.get(Event.EVENT_TITLE));
+					break;
+				case EventActionIndexDto.EVENT_IDENTIFICATION_SOURCE:
+					expression = event.get(Event.EVENT_IDENTIFICATION_SOURCE);
 					break;
 				case EventActionIndexDto.EVENT_START_DATE:
 					expression = event.get(Event.START_DATE);
