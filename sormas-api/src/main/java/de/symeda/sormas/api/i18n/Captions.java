@@ -82,10 +82,12 @@ public interface Captions {
 	String actionPick = "actionPick";
 	String actionReject = "actionReject";
 	String actionRemindMeLater = "actionRemindMeLater";
+	String actionReset = "actionReset";
 	String actionResetEnumCache = "actionResetEnumCache";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
+	String actionSearch = "actionSearch";
 	String actionSelectAll = "actionSelectAll";
 	String actionSend = "actionSend";
 	String actionSettings = "actionSettings";
@@ -94,6 +96,7 @@ public interface Captions {
 	String actionSkip = "actionSkip";
 	String actionStatusChangeDate = "actionStatusChangeDate";
 	String actionUnclearLabMessage = "actionUnclearLabMessage";
+	String actionYes = "actionYes";
 	String actionYesForAll = "actionYesForAll";
 	String actionYesForSome = "actionYesForSome";
 	String ActivityAsCase_activityAsCaseDate = "ActivityAsCase.activityAsCaseDate";
@@ -170,6 +173,7 @@ public interface Captions {
 	String bulkCancelFollowUp = "bulkCancelFollowUp";
 	String bulkCaseClassification = "bulkCaseClassification";
 	String bulkCaseOutcome = "bulkCaseOutcome";
+	String bulkCaseShareWithReportingTool = "bulkCaseShareWithReportingTool";
 	String bulkContactClassification = "bulkContactClassification";
 	String bulkContactOfficer = "bulkContactOfficer";
 	String bulkDelete = "bulkDelete";
@@ -265,6 +269,7 @@ public interface Captions {
 	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
+	String CaseData_dontShareWithReportingTool = "CaseData.dontShareWithReportingTool";
 	String CaseData_doses = "CaseData.doses";
 	String CaseData_endOfIsolationReason = "CaseData.endOfIsolationReason";
 	String CaseData_endOfIsolationReasonDetails = "CaseData.endOfIsolationReasonDetails";
@@ -446,6 +451,7 @@ public interface Captions {
 	String caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool = "caseFilterOnlyCasesChangedSinceLastSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesNotSharedWithExternalSurvTool = "caseFilterOnlyCasesNotSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesSharedWithExternalSurvToo = "caseFilterOnlyCasesSharedWithExternalSurvToo";
+	String caseFilterOnlyCasesWithDontShareWithExternalSurvTool = "caseFilterOnlyCasesWithDontShareWithExternalSurvTool";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
@@ -473,7 +479,6 @@ public interface Captions {
 	String caseImportErrorDescription = "caseImportErrorDescription";
 	String caseImportMergeCase = "caseImportMergeCase";
 	String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
-	String caseLineListing = "caseLineListing";
 	String caseMergeDuplicates = "caseMergeDuplicates";
 	String caseMinusDays = "caseMinusDays";
 	String caseNewCase = "caseNewCase";
@@ -1302,15 +1307,18 @@ public interface Captions {
 	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
 	String lastName = "lastName";
+	String lineListing = "lineListing";
 	String lineListingAddLine = "lineListingAddLine";
 	String lineListingDisableAll = "lineListingDisableAll";
 	String lineListingDisableAllShort = "lineListingDisableAllShort";
+	String lineListingDiseaseOfSourceCase = "lineListingDiseaseOfSourceCase";
 	String lineListingEdit = "lineListingEdit";
 	String lineListingEnableAll = "lineListingEnableAll";
 	String lineListingEnableForDisease = "lineListingEnableForDisease";
 	String lineListingEndDate = "lineListingEndDate";
 	String lineListingInfrastructureData = "lineListingInfrastructureData";
 	String lineListingNewCasesList = "lineListingNewCasesList";
+	String lineListingNewContactsList = "lineListingNewContactsList";
 	String lineListingSetEndDateForAll = "lineListingSetEndDateForAll";
 	String lineListingSharedInformation = "lineListingSharedInformation";
 	String linkEvent = "linkEvent";
@@ -1536,6 +1544,7 @@ public interface Captions {
 	String personNoContactLinkedToPerson = "personNoContactLinkedToPerson";
 	String personNoEventParticipantLinkedToPerson = "personNoEventParticipantLinkedToPerson";
 	String personPersonsList = "personPersonsList";
+	String personSearchAndSelect = "personSearchAndSelect";
 	String personSelect = "personSelect";
 	String personsReplaceGeoCoordinates = "personsReplaceGeoCoordinates";
 	String personsSetMissingGeoCoordinates = "personsSetMissingGeoCoordinates";

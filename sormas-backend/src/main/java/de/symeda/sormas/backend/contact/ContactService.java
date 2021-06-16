@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -41,8 +42,12 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.backend.util.ExternalDataUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1385,6 +1390,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		cq.where(personJoin.get(AbstractDomainObject.UUID).in(personUuids));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException{
+		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
 	}
 
 }

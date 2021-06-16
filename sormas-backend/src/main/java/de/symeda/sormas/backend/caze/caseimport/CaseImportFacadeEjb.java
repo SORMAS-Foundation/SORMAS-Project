@@ -425,9 +425,9 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 				} else if (CaseExportDto.BIRTH_DATE.equals(headerPathElementName)) {
 					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, language);
 					if (birthDateDto != null) {
-						person.setBirthdateDD(birthDateDto.getBirthdateDD());
-						person.setBirthdateMM(birthDateDto.getBirthdateMM());
-						person.setBirthdateYYYY(birthDateDto.getBirthdateYYYY());
+						person.setBirthdateDD(birthDateDto.getDateOfBirthDD());
+						person.setBirthdateMM(birthDateDto.getDateOfBirthMM());
+						person.setBirthdateYYYY(birthDateDto.getDateOfBirthYYYY());
 					}
 				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
@@ -598,7 +598,10 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 				throw new ImportErrorException(entry, buildEntityProperty(entryHeaderPath));
 			} catch (ParseException e) {
 				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
+					I18nProperties.getValidationError(
+						Validations.importInvalidDate,
+						buildEntityProperty(entryHeaderPath),
+						DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {

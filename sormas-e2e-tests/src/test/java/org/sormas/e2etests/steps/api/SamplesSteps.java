@@ -35,6 +35,7 @@ public class SamplesSteps implements En {
         () -> {
           Sample sample = sampleApiService.buildGeneratedSample(apiState.getCreatedCase());
           sampleHelper.createSample(sample);
+          apiState.setCreatedSample(sample);
         });
   }
 }

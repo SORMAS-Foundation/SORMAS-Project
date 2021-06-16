@@ -20,13 +20,14 @@ package org.sormas.e2etests.pages.application.samples;
 
 import org.openqa.selenium.By;
 
-public class SampleManagementPage {
+public class SamplesDirectoryPage {
   public static final By SAMPLE_SEARCH_INPUT = By.cssSelector("[id='caseCodeIdLike']");
   public static final By SAMPLE_EDIT_PURPOSE_OPTIONS =
       By.cssSelector("#samplePurpose .v-select-option");
   public static final By TEST_RESULTS_SEARCH_COMBOBOX =
       By.cssSelector("[id='pathogenTestResult'] [class='v-filterselect-button']");
-  public static final By LIST_OF_SAMPLES = By.cssSelector("[class='v-grid-tablewrapper'] tbody>tr");
+  public static final By SAMPLE_GRID_RESULTS_ROWS =
+      By.cssSelector("[class='v-grid-tablewrapper'] tbody>tr");
   public static final By SPECIMEN_CONDITION_SEARCH_COMBOBOX =
       By.cssSelector("[id='specimenCondition'] [class='v-filterselect-button']");
   public static final By LABORATORY_SEARCH_COMBOBOX =

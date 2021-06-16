@@ -152,7 +152,7 @@ public class TaskGridComponent extends VerticalLayout {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW_ARCHIVED)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_VIEW)) {
 				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);

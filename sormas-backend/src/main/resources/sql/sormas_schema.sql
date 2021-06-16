@@ -7427,4 +7427,10 @@ ALTER TABLE events_history RENAME internalid TO internaltoken;
 
 INSERT INTO schema_version (version_number, comment) VALUES (376, 'Introduce an internal token field #5224');
 
+
+-- 2021-06-02 Add a checkbox to avoid sending this case to SurvNet #5324
+ALTER TABLE cases ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (377, 'Add a checkbox to avoid sending this case to SurvNet #5324');
 -- *** Insert new sql commands BEFORE this line ***

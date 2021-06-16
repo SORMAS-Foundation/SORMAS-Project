@@ -35,9 +35,11 @@ import android.util.Log;
 import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationEventClusterCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationExposureCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
@@ -149,7 +151,10 @@ public final class RetroProvider {
 				.registerSubtype(ClassificationExposureCriteriaDto.class, "ClassificationExposureCriteriaDto")
 				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto.class, "ClassificationXOfSubCriteriaDto")
 				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto.class, "ClassificationOneOfCompactCriteriaDto")
-				.registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto");
+				.registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto")
+				.registerSubtype(ClassificationEventClusterCriteriaDto.class, "ClassificationEventClusterCriteriaDto")
+				.registerSubtype(ClassificationAllSymptomsCriteriaDto.class, "ClassificationAllSymptomsCriteriaDto");
+
 
 		Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
 			if (json.isJsonNull()) {

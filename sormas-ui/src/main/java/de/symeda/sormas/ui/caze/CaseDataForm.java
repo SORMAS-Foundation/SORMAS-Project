@@ -164,6 +164,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String CASE_CONFIRMATION_BASIS = "caseConfirmationBasis";
 	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
 	private static final String DIFFERENT_JURISDICTION = "differentJurisdiction";
+	private static final String DONT_SHARE_WARNING_LOC = "dontShareWarning";
 	private static final String CASE_CLASSIFICATION_CALCULATE_BTN_LOC = "caseClassificationCalculateBtnLoc";
 
 	//@formatter:off
@@ -206,6 +207,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS) +
 					fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
 					fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC) +
+					fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL) +
+					fluidRowLocs(DONT_SHARE_WARNING_LOC) +
 					fluidRowLocs(DIFFERENT_JURISDICTION) +
 					fluidRowLocs(CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_COMMUNITY) +
 					fluidRowLocs(CaseDataDto.NOSOCOMIAL_OUTBREAK, CaseDataDto.INFECTION_SETTING) +
@@ -351,6 +354,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		Label epidNumberWarningLabel = new Label(I18nProperties.getString(Strings.messageEpidNumberWarning));
 		epidNumberWarningLabel.addStyleName(VSPACE_3);
 		addField(CaseDataDto.EXTERNAL_ID, TextField.class);
+
+		CheckBox dontShareCheckbox = addField(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL, CheckBox.class);
+		CaseFormHelper.addDontShareWithReportingTool(getContent(), () -> dontShareCheckbox, DONT_SHARE_WARNING_LOC);
 
 		TextField externalTokenField = addField(CaseDataDto.EXTERNAL_TOKEN, TextField.class);
 		Label externalTokenWarningLabel = new Label(I18nProperties.getString(Strings.messageCaseExternalTokenWarning));

@@ -45,6 +45,7 @@ public class CreateNewTaskSteps implements En {
         () -> {
           task = taskService.buildGeneratedTask();
           fillAllFields(task);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
     When(
@@ -52,6 +53,7 @@ public class CreateNewTaskSteps implements En {
         () -> {
           task = taskService.buildGeneratedTaskForEvent();
           fillAllFields(task);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
     When(
@@ -66,6 +68,7 @@ public class CreateNewTaskSteps implements En {
         () -> {
           task = taskService.buildEditTask();
           fillAllFields(task);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
   }
 
@@ -80,7 +83,6 @@ public class CreateNewTaskSteps implements En {
     fillCommentsOnTask(task.getCommentsOnTask());
     fillCommentsOnExecution(task.getCommentsOnExecution());
     selectTaskStatus(task.getTaskStatus());
-    webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
   }
 
   public void selectTaskType(String taskType) {
