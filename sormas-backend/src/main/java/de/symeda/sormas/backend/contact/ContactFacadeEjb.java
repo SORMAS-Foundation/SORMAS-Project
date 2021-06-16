@@ -113,6 +113,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -1731,7 +1732,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		// 1 Merge Dtos
 		// 1.1 Contact
-		DtoHelper.copyDtoValues(leadContactDto, otherContactDto, false);
+		copyDtoValues(leadContactDto, otherContactDto);
 		saveContact(leadContactDto);
 
 		// 1.2 Person
@@ -1775,6 +1776,16 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			documentService.ensurePersisted(document);
 		}
+	}
+
+	private void copyDtoValues(ContactDto leadContactDto, ContactDto otherContactDto) {
+		String leadAdditionalDetails = leadContactDto.getAdditionalDetails();
+		String leadFollowUpComment = leadContactDto.getFollowUpComment();
+
+		DtoHelper.copyDtoValues(leadContactDto, otherContactDto, false);
+
+		leadContactDto.setAdditionalDetails(DataHelper.joinStrings(" ", leadAdditionalDetails, otherContactDto.getAdditionalDetails()));
+		leadContactDto.setFollowUpComment(DataHelper.joinStrings(" ", leadFollowUpComment, otherContactDto.getFollowUpComment()));
 	}
 
 	@Override
