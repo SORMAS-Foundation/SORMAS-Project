@@ -36,7 +36,7 @@ public class ExposureInContactEpiDataSteps implements En {
     When(
         "I am accessing the Epidemiological tab using of created contact via api",
         () -> {
-          Thread.sleep(5000);
+          webDriverHelpers.waitForPageLoaded();
           EPIDATA_FOR_LAST_CREATED_CONTACT_URL =
               environmentUrl
                   + "/sormas-ui/#!contacts/epidata/"
@@ -63,7 +63,6 @@ public class ExposureInContactEpiDataSteps implements En {
     Then(
         "I am checking all data is saved and displayed on edit Exposure page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_EDIT);
           ExposureDetails exposureDetailsOutput = getExposureDetailsOutput();
           SoftAssertions softly = new SoftAssertions();
           softly
