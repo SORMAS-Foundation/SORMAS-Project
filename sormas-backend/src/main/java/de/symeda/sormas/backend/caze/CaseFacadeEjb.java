@@ -2117,7 +2117,6 @@ public class CaseFacadeEjb implements CaseFacade {
 					CaseCriteria caseCriteria = new CaseCriteria();
 					caseCriteria.setPerson(existingPerson.toReference());
 					caseCriteria.setOutcome(CaseOutcome.DECEASED);
-					// FIXME: How do I make sure this does not retrieved the current case?
 					if (count(caseCriteria, true) == 0) {
 						newCase.getPerson().setPresentCondition(PresentCondition.ALIVE);
 						newCase.getPerson().setBurialDate(null);
