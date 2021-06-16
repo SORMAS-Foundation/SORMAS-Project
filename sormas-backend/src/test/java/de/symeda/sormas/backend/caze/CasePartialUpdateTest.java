@@ -274,6 +274,10 @@ public class CasePartialUpdateTest extends AbstractBeanTest {
 
 		CaseDataDto casePostUpdated = getCaseFacade().postUpdate(caze.getUuid(), caseJson);
 		assertEquals(casePostUpdated.getEpiData(), caze.getEpiData());
+		assertEquals(casePostUpdated.getEpiData().getExposures().size(), 2);
+		assertEquals(casePostUpdated.getEpiData().getExposures(), casePostUpdated.getEpiData().getExposures());
+		assertEquals(casePostUpdated.getEpiData().getExposures().get(0).getLocation().getDetails(), "Ghana");
+		assertEquals(casePostUpdated.getEpiData().getExposures().get(1).getLocation().getDetails(), "Bat");
 
 		//remove the second exposure 
 		casePostUpdated.getEpiData().getExposures().remove(1);
@@ -292,9 +296,13 @@ public class CasePartialUpdateTest extends AbstractBeanTest {
 		EpiDataDto updatedEpiDataDto = mapper.treeToValue(updatedCaseJson.get("epiData"), EpiDataDto.class);
 		assertEquals(updatedEpiDataDto, casePostUpdated.getEpiData());
 
-		CaseDataDto casePostUpdatedSecond = getCaseFacade().postUpdate(caze.getUuid(), caseJson);
-		assertEquals(casePostUpdatedSecond.getEpiData(), casePostUpdated.getEpiData());
+		CaseDataDto casePostUpdatedSecond = getCaseFacade().postUpdate(caze.getUuid(), updatedCaseJson);
 
+		assertEquals(casePostUpdatedSecond.getEpiData(), casePostUpdated.getEpiData());
+		assertEquals(casePostUpdatedSecond.getEpiData().getExposures().size(), 2);
+		assertEquals(casePostUpdatedSecond.getEpiData().getExposures(), casePostUpdated.getEpiData().getExposures());
+		assertEquals(casePostUpdatedSecond.getEpiData().getExposures().get(0).getLocation().getDetails(), "China");
+		assertEquals(casePostUpdatedSecond.getEpiData().getExposures().get(1).getLocation().getDetails(), "Football match");
 	}
 
 }

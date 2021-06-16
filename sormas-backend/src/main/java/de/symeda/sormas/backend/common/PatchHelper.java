@@ -34,9 +34,18 @@ public class PatchHelper {
 	 * @param <T>
 	 *            - the type of the object
 	 */
-	public static <T> void postUpdate(@NotNull JsonNode jsonObject, @NotNull T existingObject) {
+	public static <T extends HasUuid> void postUpdate(@NotNull JsonNode jsonObject, @NotNull T existingObject) {
 
+		if (!existingObject.getUuid().equals(jsonObject.get(EntityDto.UUID).textValue())) {
+			throw new RuntimeException("The updated object must have a Uuid");
+		}
+		postUpdateOrReplace(jsonObject, existingObject);
+
+	}
+
+	private static <T extends HasUuid> void postUpdateOrReplace(@NotNull JsonNode jsonObject, @NotNull T existingObject) {
 		try {
+
 			Iterator<Map.Entry<String, JsonNode>> jsonObjectFieldMap = jsonObject.fields();
 			while (jsonObjectFieldMap.hasNext()) {
 				try {
@@ -82,7 +91,7 @@ public class PatchHelper {
 	 * @throws JsonProcessingException
 	 * @throws IllegalAccessException
 	 */
-	private static <T> void updateObjectList(T existingObject, JsonNode jsonObjectFieldNode, Field existingObjectField)
+	private static <T extends HasUuid> void updateObjectList(T existingObject, JsonNode jsonObjectFieldNode, Field existingObjectField)
 		throws JsonProcessingException, IllegalAccessException {
 		Class listElementClass = getParameterizedType(existingObjectField);
 		ArrayList tempNewElementList = new ArrayList();
@@ -117,13 +126,13 @@ public class PatchHelper {
 	 * @throws IllegalAccessException
 	 * @throws JsonProcessingException
 	 */
-	private static <T> void updateExistingObject(T existingObject, JsonNode jsonObjectFieldNode, Field existingObjectField)
+	private static <T extends HasUuid> void updateExistingObject(T existingObject, JsonNode jsonObjectFieldNode, Field existingObjectField)
 		throws IllegalAccessException, JsonProcessingException {
-		Object existingFieldValue = existingObjectField.get(existingObject);
+		T existingFieldValue = (T) existingObjectField.get(existingObject);
 		if (existingFieldValue == null) {
 			setFieldValue(existingObject, existingObjectField, jsonObjectFieldNode);
 		} else {
-			postUpdate(jsonObjectFieldNode, existingFieldValue);
+			postUpdateOrReplace(jsonObjectFieldNode, existingFieldValue);
 		}
 	}
 
@@ -142,7 +151,7 @@ public class PatchHelper {
 	 * @param <T>
 	 * @throws JsonProcessingException
 	 */
-	private static <T> void addOrReplaceListElement(
+	private static <T extends HasUuid> void addOrReplaceListElement(
 		T existingObject,
 		Field existingObjectField,
 		Class listElementClass,
@@ -151,7 +160,7 @@ public class PatchHelper {
 		throws JsonProcessingException {
 
 		if (HasUuid.class.isAssignableFrom(listElementClass) && listElement.hasNonNull(EntityDto.UUID)) {
-			Object existingListElement = getListElementByUuid(existingObject, existingObjectField, listElement.get(EntityDto.UUID).textValue());
+			T existingListElement = (T) getListElementByUuid(existingObject, existingObjectField, listElement.get(EntityDto.UUID).textValue());
 			if (existingListElement != null) {
 				postUpdate(listElement, existingListElement);
 				tempNewElementList.add(existingListElement);
@@ -263,9 +272,9 @@ public class PatchHelper {
 	 *            - the given uuid
 	 * @return
 	 */
-	private static Object getListElementByUuid(@NotNull Object obj, @NotNull Field arrayField, @NotNull String uuid) {
+	private static <T extends HasUuid> T getListElementByUuid(@NotNull Object obj, @NotNull Field arrayField, @NotNull String uuid) {
 		try {
-			return ((List) arrayField.get(obj)).stream().filter(listElement -> {
+			return (T) ((List) arrayField.get(obj)).stream().filter(listElement -> {
 				Field uuidField = getFieldByName(EntityDto.UUID, listElement.getClass());
 				if (uuidField == null) {
 					throw new RuntimeException("No such field exception!" + EntityDto.UUID);
