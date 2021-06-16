@@ -412,6 +412,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			event.get(Event.UUID),
 			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
 			event.get(Event.EVOLUTION_DATE),
