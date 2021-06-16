@@ -18,7 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.samples;
 
-import static org.sormas.e2etests.pages.application.samples.SampleManagementPage.*;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
@@ -33,10 +33,10 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 
-public class SampleManagementSteps implements En {
+public class SamplesDirectorySteps implements En {
 
   @Inject
-  public SampleManagementSteps(
+  public SamplesDirectorySteps(
       WebDriverHelpers webDriverHelpers,
       @Named("ENVIRONMENT_URL") String environmentUrl,
       ApiState apiState,
@@ -80,14 +80,14 @@ public class SampleManagementSteps implements En {
           int maximumNumberOfRows = 23;
           webDriverHelpers.waitUntilNumberOfElementsIsExactlyOrLess(
               SEARCH_RESULT_SAMPLE, maximumNumberOfRows);
-          Thread.sleep(1000); // reset filter acts chaotic, to be modified in the future
+          Thread.sleep(2000); // reset filter acts chaotic, to be modified in the future
           webDriverHelpers.fillAndSubmitInWebElement(
               SAMPLE_SEARCH_INPUT, apiState.getEditPerson().getFirstName());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
           webDriverHelpers.waitUntilNumberOfElementsIsExactlyOrLess(
               SEARCH_RESULT_SAMPLE, apiState.getCreatedSamples().size());
           Truth.assertThat(apiState.getCreatedSamples().size())
-              .isEqualTo(webDriverHelpers.getNumberOfElements(LIST_OF_SAMPLES));
+              .isEqualTo(webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS));
         });
 
     Then(
@@ -110,7 +110,8 @@ public class SampleManagementSteps implements En {
                                               .getPathogenTestResult()
                                               .contentEquals(vPathogen.toString()))
                                   .count())
-                          .isEqualTo(webDriverHelpers.getNumberOfElements(LIST_OF_SAMPLES));
+                          .isEqualTo(
+                              webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS));
                     }));
 
     Then(
@@ -135,7 +136,8 @@ public class SampleManagementSteps implements En {
                                                       .contentEquals(aSpecimen.toString()))
                                           .count())
                                   .isEqualTo(
-                                      webDriverHelpers.getNumberOfElements(LIST_OF_SAMPLES)));
+                                      webDriverHelpers.getNumberOfElements(
+                                          SAMPLE_GRID_RESULTS_ROWS)));
                     }));
 
     Then(
@@ -161,7 +163,24 @@ public class SampleManagementSteps implements En {
                                                       .contentEquals(caption.getUuidValue()))
                                           .count())
                                   .isEqualTo(
-                                      webDriverHelpers.getNumberOfElements(LIST_OF_SAMPLES)));
+                                      webDriverHelpers.getNumberOfElements(
+                                          SAMPLE_GRID_RESULTS_ROWS)));
                     }));
+
+    Then(
+        "I search after the last created Sample via API",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SAMPLE_SEARCH_INPUT, apiState.getCreatedSample().getUuid());
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
+        });
+
+    Then(
+        "I check that number of displayed sample results is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll15Second(
+                () ->
+                    Truth.assertThat(webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS))
+                        .isEqualTo(number)));
   }
 }

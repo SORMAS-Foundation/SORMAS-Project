@@ -19,7 +19,7 @@
 package org.sormas.e2etests.steps.web.application.samples;
 
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.*;
-import static org.sormas.e2etests.pages.application.samples.SampleManagementPage.*;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;

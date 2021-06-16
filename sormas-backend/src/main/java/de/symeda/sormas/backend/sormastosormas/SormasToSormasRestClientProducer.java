@@ -20,7 +20,9 @@ import javax.enterprise.inject.Produces;
 public class SormasToSormasRestClientProducer {
 
 	@Produces
-	public SormasToSormasRestClient sormasToSormasClient() {
-		return new SormasToSormasRestClient();
+	public SormasToSormasRestClient sormasToSormasClient(
+		ServerAccessDataService serverAccessDataService,
+		SormasToSormasEncryptionService encryptionService) {
+		return new SormasToSormasRestClient(serverAccessDataService, encryptionService);
 	}
 }

@@ -611,7 +611,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	}
 
 	private ClassificationAllSymptomsCriteriaDto allOfSymptoms(SymptomState symptomState, Disease disease) {
-		return new ClassificationAllSymptomsCriteriaDto(symptomState, disease);
+		return new ClassificationAllSymptomsCriteriaDto(symptomState, disease, configFacade.getCountryLocale());
 	}
 
 	private ClassificationEventClusterCriteriaDto partOfEventCluster() {

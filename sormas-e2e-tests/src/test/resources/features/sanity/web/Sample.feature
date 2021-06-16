@@ -35,3 +35,13 @@ Feature: Sample Functionalities
     And I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup and save
     Then I check that the created Pathogen is correctly displayed
+
+  Scenario: Delete created sample
+    Given I log in with the user
+    Given API: I create a new case
+    Given API: I create a new sample
+    When I click on the Sample button from navbar
+    Then I open the last created sample via API
+    Then I delete the sample
+    Then I search after the last created Sample via API
+    And I check that number of displayed sample results is 0

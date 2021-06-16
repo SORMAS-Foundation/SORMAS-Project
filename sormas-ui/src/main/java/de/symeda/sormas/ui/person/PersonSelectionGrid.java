@@ -41,9 +41,8 @@ public class PersonSelectionGrid extends Grid {
 	 * @param criteria
 	 *            The criteria used to query for similar persons.
 	 */
-	public PersonSelectionGrid(PersonSimilarityCriteria criteria) {
+	public PersonSelectionGrid() {
 		buildGrid();
-		loadData(criteria);
 	}
 
 	private void buildGrid() {
@@ -94,7 +93,7 @@ public class PersonSelectionGrid extends Grid {
 	 * @param criteria
 	 *            The person criteria.
 	 */
-	private void loadData(PersonSimilarityCriteria criteria) {
+	public void loadData(PersonSimilarityCriteria criteria) {
 		List<String> similarPersonUuids = FacadeProvider.getPersonFacade()
 			.getMatchingNameDtos(UserProvider.getCurrent().getUserReference(), criteria)
 			.stream()
