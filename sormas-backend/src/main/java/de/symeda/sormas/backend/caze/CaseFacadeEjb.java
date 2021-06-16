@@ -450,21 +450,31 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public long count(CaseCriteria caseCriteria) {
 
+		return count(caseCriteria, false);
+	}
+
+	@Override
+	public long count(CaseCriteria caseCriteria, boolean ignoreUserFilter) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> root = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
 
-		CaseUserFilterCriteria caseUserFilterCriteria = new CaseUserFilterCriteria();
-		if (caseCriteria != null) {
-			caseUserFilterCriteria.setIncludeCasesFromOtherJurisdictions(caseCriteria.getIncludeCasesFromOtherJurisdictions());
+		Predicate filter = null;
+
+		if (!ignoreUserFilter) {
+			CaseUserFilterCriteria caseUserFilterCriteria = new CaseUserFilterCriteria();
+			if (caseCriteria != null) {
+				caseUserFilterCriteria.setIncludeCasesFromOtherJurisdictions(caseCriteria.getIncludeCasesFromOtherJurisdictions());
+			}
+			filter = caseService.createUserFilter(cb, cq, root, caseUserFilterCriteria);
 		}
-		Predicate filter = caseService.createUserFilter(cb, cq, root, caseUserFilterCriteria);
 
 		if (caseCriteria != null) {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+			filter = filter == null ? criteriaFilter : CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 		if (filter != null) {
 			cq.where(filter);
@@ -2097,15 +2107,18 @@ public class CaseFacadeEjb implements CaseFacade {
 				&& existingCase.getOutcome() == CaseOutcome.DECEASED) {
 				// Case was put "back alive"
 				PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
-				boolean dateThreshold = newCase.getReportDate().before(DateHelper.addDays(existingPerson.getDeathDate(), 30))
+				boolean withinDateThreshold = newCase.getReportDate().before(DateHelper.addDays(existingPerson.getDeathDate(), 30))
 					&& newCase.getReportDate().after(DateHelper.subtractDays(existingPerson.getDeathDate(), 30));
 
 				if (existingPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
 					&& existingPerson.getCauseOfDeathDisease() == newCase.getDisease()
-					&& dateThreshold) {
+					&& withinDateThreshold) {
 					// Make sure no other case associated with the person has Outcome=DECEASED
-					if (getAllCasesOfPerson(existingPerson.getUuid()).stream()
-						.noneMatch(caze -> caze.getOutcome() == CaseOutcome.DECEASED && !caze.getUuid().equals(existingCase.getUuid()))) {
+					CaseCriteria caseCriteria = new CaseCriteria();
+					caseCriteria.setPerson(existingPerson.toReference());
+					caseCriteria.setOutcome(CaseOutcome.DECEASED);
+					// FIXME: How do I make sure this does not retrieved the current case?
+					if (count(caseCriteria, true) == 0) {
 						newCase.getPerson().setPresentCondition(PresentCondition.ALIVE);
 						newCase.getPerson().setBurialDate(null);
 						newCase.getPerson().setDeathDate(null);
@@ -2123,16 +2136,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			&& (newCase.getPerson().getPresentCondition() == PresentCondition.DEAD
 				|| newCase.getPerson().getPresentCondition() == PresentCondition.BURIED)
 			&& existingCase.getOutcomeDate() != newCase.getOutcomeDate()
-			&& newCase.getOutcomeDate() != null) {
+			&& newCase.getOutcomeDate() != null
+			&& newCase.getPerson().getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
+			&& newCase.getPerson().getCauseOfDeathDisease() == existingCase.getDisease()) {
 			// outcomeDate of a deceased case was changed, but person is already considered dead
-			if (newCase.getOutcomeDate() != null
-				&& newCase.getPerson().getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
-				&& newCase.getPerson().getCauseOfDeathDisease() == existingCase.getDisease()) {
-				// update the deathdate of the person
-				PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
-				newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
-				personFacade.onPersonChanged(existingPerson, newCase.getPerson());
-			}
+			// update the deathdate of the person
+			PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
+			newCase.getPerson().setDeathDate(newCase.getOutcomeDate());
+			personFacade.onPersonChanged(existingPerson, newCase.getPerson());
 		} else if (existingCase == null) {
 			// new Case; Still compare persons Condition and caseOutcome
 			if (newCase.getOutcome() == CaseOutcome.DECEASED

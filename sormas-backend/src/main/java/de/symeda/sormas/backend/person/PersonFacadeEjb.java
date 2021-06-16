@@ -960,6 +960,9 @@ public class PersonFacadeEjb implements PersonFacade {
 			caseFacade.onCaseChanged(existingCase, personCase);
 		}
 
+		// get the updated personCases
+		personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
+
 		// Update cases if present condition has changed
 		if (existingPerson != null) {
 			// sort cases based on recency
@@ -969,8 +972,9 @@ public class PersonFacadeEjb implements PersonFacade {
 					.before(CaseLogic.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getReportDate())) ? 1 : -1);
 
 			if (newPerson.getPresentCondition() != null && existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
-				// Update case list after previous onCaseChanged
-				Case personCase = personCases.isEmpty() ? null : personCases.get(0);
+				// get the latest case with disease==causeofdeathdisease
+				Case personCase =
+					personCases.stream().filter(caze -> caze.getDisease() == newPerson.getCauseOfDeathDisease()).findFirst().orElse(null);
 				if (newPerson.getPresentCondition().isDeceased()
 					&& newPerson.getDeathDate() != null
 					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
@@ -998,9 +1002,7 @@ public class PersonFacadeEjb implements PersonFacade {
 					newPerson.setBurialDate(null);
 					newPerson.setCauseOfDeathDisease(null);
 					// update the latest associated case, if it was set to deceased && and if the case-disease was also the causeofdeath-disease
-					if (personCase != null
-						&& personCase.getOutcome() == CaseOutcome.DECEASED
-						&& personCase.getDisease() == existingPerson.getCauseOfDeathDisease()) {
+					if (personCase != null && personCase.getOutcome() == CaseOutcome.DECEASED) {
 						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 						personCase.setOutcome(CaseOutcome.NO_OUTCOME);
 						personCase.setOutcomeDate(null);
@@ -1016,8 +1018,7 @@ public class PersonFacadeEjb implements PersonFacade {
 				Case personCase = personCases.isEmpty() ? null : personCases.get(0);
 				if (personCase != null
 					&& personCase.getOutcome() == CaseOutcome.DECEASED
-					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
-					&& newPerson.getCauseOfDeathDisease() == personCase.getDisease()) {
+					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE) {
 					CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 					personCase.setOutcomeDate(newPerson.getDeathDate());
 					caseFacade.onCaseChanged(existingCase, personCase);
