@@ -30,5 +30,8 @@ Feature: Sample Functionalities
     And API: I create a new case
     And API: I create a new sample
     When I log in with the user
-    And I am accessing the Sample page using the created Sample via api
+    And I click on the Sample button from navbar
+    And I am accessing the created sample via api
     And I click on the new pathogen test from the Edit Sample page
+    And I complete all fields from Pathogen test result popup and save
+    Then I check that the created Pathogen is correctly displayed

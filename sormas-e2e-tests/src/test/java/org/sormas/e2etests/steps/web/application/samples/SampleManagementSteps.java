@@ -65,11 +65,12 @@ public class SampleManagementSteps implements En {
         });
 
     When(
-        "I am accessing the Sample page using the created Sample via api",
+        "I am accessing the created sample via api",
         () -> {
           String CREATED_SAMPLE_VIA_API_URL =
               environmentUrl + "/sormas-ui/#!samples/data/" + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(CREATED_SAMPLE_VIA_API_URL);
+          webDriverHelpers.waitForPageLoaded();
         });
 
     When(

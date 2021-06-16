@@ -130,8 +130,34 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "^I complete all fields from Pathogen test result popup and save$",
+        () -> {
+          sampleTestResult = sampleService.buildPathogenTestResult();
+          fillReportDate(sampleTestResult.getReportDate());
+          selectTypeOfTest(sampleTestResult.getTypeOfTest());
+          selectTestedDisease(sampleTestResult.getTestedDisease());
+          selectPathogenLaboratory(sampleTestResult.getLaboratory());
+          selectTestResult(sampleTestResult.getSampleTestResults());
+          fillDateOfResult(sampleTestResult.getDateOfResult());
+          fillTimeOfResult(sampleTestResult.getTimeOfResult());
+          selectResultVerifiedByLabSupervisor(
+              sampleTestResult.getResultVerifiedByLabSupervisor(),
+              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          fillTestResultsComment(sampleTestResult.getTestResultsComment());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
         "I collect the sample UUID displayed on create new sample page",
         () -> sampleId = collectSampleUuid());
+
+    When(
+        "^I check that the created Pathogen is correctly displayed",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_TEST_RESULTS_BUTTON);
+          final Sample actualSampleTestResult = collectPathogenTestResultsData();
+          Truth.assertThat(sampleTestResult).isEqualTo(actualSampleTestResult);
+        });
   }
 
   public void selectPurposeOfSample(String samplePurpose, By element) {
@@ -166,6 +192,14 @@ public class CreateNewSampleSteps implements En {
 
   public void selectLaboratory(String laboratory) {
     webDriverHelpers.selectFromCombobox(LABORATORY_COMBOBOX, laboratory);
+  }
+
+  public void selectPathogenLaboratory(String laboratory) {
+    webDriverHelpers.selectFromCombobox(PATHOGEN_LABORATORY_COMBOBOX, laboratory);
+  }
+
+  public void selectTestResult(String testResult) {
+    webDriverHelpers.selectFromCombobox(PATHOGEN_TEST_RESULT_COMBOBOX, testResult);
   }
 
   public void selectSpecimenCondition(String specimenCondition) {
@@ -289,6 +323,14 @@ public class CreateNewSampleSteps implements En {
     return webDriverHelpers.getValueFromWebElement(LABORATORY_INPUT);
   }
 
+  public String getPathogenPopupLaboratory() {
+    return webDriverHelpers.getValueFromWebElement(PATHOGEN_LABORATORY_INPUT);
+  }
+
+  public String getPathogenPopupTestResult() {
+    return webDriverHelpers.getValueFromWebElement(PATHOGEN_TEST_RESULT_INPUT);
+  }
+
   public String getLaboratoryName() {
     return webDriverHelpers.getValueFromWebElement(LABORATORY_NAME_INPUT);
   }
@@ -347,5 +389,19 @@ public class CreateNewSampleSteps implements En {
   public String getResultVerifiedByLabSupervisor() {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
         RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS);
+  }
+
+  public Sample collectPathogenTestResultsData() {
+    return Sample.builder()
+        .sampleTestResults(getPathogenPopupTestResult())
+        .reportDate(getReportDate())
+        .typeOfTest(getTypeOfTest())
+        .testedDisease(getTestedDisease())
+        .dateOfResult(getDateOfResult())
+        .timeOfResult(getTimeOfResult())
+        .laboratory(getPathogenPopupLaboratory())
+        .resultVerifiedByLabSupervisor(getResultVerifiedByLabSupervisor())
+        .testResultsComment(getTestResultComment())
+        .build();
   }
 }

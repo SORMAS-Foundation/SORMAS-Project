@@ -96,4 +96,19 @@ public class SampleService {
         .testResultsComment(currentTimeMillis + "Comment on Edit Pathogen requests or received")
         .build();
   }
+
+  public Sample buildPathogenTestResult() {
+    long currentTimeMillis = System.currentTimeMillis();
+    return Sample.builder()
+        .reportDate(LocalDate.now().minusDays(10))
+        .typeOfTest("Histopathology")
+        .testedDisease("Anthrax")
+        .dateOfResult(LocalDate.now())
+        .timeOfResult(LocalTime.of(15, 15))
+        .laboratory("Voreingestelltes Labor")
+        .sampleTestResults("Positive")
+        .resultVerifiedByLabSupervisor("NO")
+        .testResultsComment(currentTimeMillis + "Comment on Edit Pathogen requests or received")
+        .build();
+  }
 }
