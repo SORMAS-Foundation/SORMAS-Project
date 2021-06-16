@@ -90,7 +90,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	private UserReferenceDto assigneeUser;
 	private String assigneeReply;
 
-	private boolean isInJurisdiction;
+	private TaskJurisdictionDto taskJurisdictionDto;
 
 	//@formatter:off
 	public TaskIndexDto(String uuid, TaskContext taskContext, String caseUuid, String caseFirstName, String caseLastName,
@@ -98,7 +98,8 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 			String contactUuid, String contactFirstName, String contactLastName, String contactCaseFirstName, String contactCaseLastName,
 			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus,
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
-			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply, String region, String district, String community, boolean isInJurisdiction) {
+			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply, String region, String district, String community,
+						boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventInJurisdiction) {
 	//@formatter:on
 
 		this.setUuid(uuid);
@@ -133,7 +134,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.district = district;
 		this.region = region;
 
-		this.isInJurisdiction = isInJurisdiction;
+		this.taskJurisdictionDto =  new TaskJurisdictionDto(isInJurisdiction, isCaseInJurisdiction, isContactInJurisdiction, isContactCaseInJurisdiction, isEventInJurisdiction);
 	}
 
 	public TaskContext getTaskContext() {
@@ -287,7 +288,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.community = community;
 	}
 
-	public boolean getInJurisdiction() {
-		return this.isInJurisdiction;
+	public TaskJurisdictionDto getTaskJurisdictionDto() {
+		return taskJurisdictionDto;
 	}
 }
