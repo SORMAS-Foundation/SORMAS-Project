@@ -37,7 +37,7 @@ public class EventActionIndexDto implements Serializable {
 	public static final String EVENT_TITLE = "eventTitle";
 	public static final String EVENT_DISEASE = "eventDisease";
 	public static final String EVENT_DISEASE_VARIANT = "eventDiseaseVariant";
-	public static final String EVENT_DISEASE_DETAIL = "eventDiseaseDetail";
+	public static final String EVENT_DISEASE_DETAILS = "eventDiseaseDetails";
 	public static final String EVENT_START_DATE = "eventStartDate";
 	public static final String EVENT_END_DATE = "eventEndDate";
 	public static final String EVENT_STATUS = "eventStatus";
