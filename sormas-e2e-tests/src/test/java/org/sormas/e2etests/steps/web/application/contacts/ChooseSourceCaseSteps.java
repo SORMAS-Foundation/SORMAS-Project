@@ -40,16 +40,6 @@ public class ChooseSourceCaseSteps implements En {
       final SoftAssertions softly) {
     this.webDriverHelpers = webDriverHelpers;
 
-    // When(
-    //    "^I navigate to the last created contact via the url$",
-    //    () -> {
-    //      String LAST_CREATED_CONTACT_URL =
-    //          environmentUrl
-    //              + "/sormas-ui/#!contacts/data/"
-    //              + apiState.getCreatedContact().getUuid();
-    //      webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
-    //    });
-
     When(
         "^I search for the last case uuid in the CHOOSE SOURCE window$",
         () -> {
