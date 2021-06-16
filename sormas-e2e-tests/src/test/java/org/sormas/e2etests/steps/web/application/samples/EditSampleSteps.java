@@ -65,7 +65,5 @@ public class EditSampleSteps implements En {
           webDriverHelpers.scrollToElement(PATHOGEN_NEW_TEST_RESULT_BTN);
           webDriverHelpers.clickOnWebElementBySelector(PATHOGEN_NEW_TEST_RESULT_BTN);
         });
-
-
   }
 }
