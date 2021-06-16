@@ -42,7 +42,7 @@ public class ExposureInContactEpiDataSteps implements En {
                   + "/sormas-ui/#!contacts/epidata/"
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(EPIDATA_FOR_LAST_CREATED_CONTACT_URL);
-          Thread.sleep(5000);
+          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
@@ -58,6 +58,7 @@ public class ExposureInContactEpiDataSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_DATA_SAVED_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_EDIT_BUTTON);
         });
 
     Then(
@@ -78,8 +79,8 @@ public class ExposureInContactEpiDataSteps implements En {
               .assertThat(exposureDetailsOutput.getTypeOfActivity())
               .isEqualToIgnoringCase(exposureDetailsInput.getTypeOfActivity());
           softly
-            .assertThat(exposureDetailsOutput.getExposureDetailsRole())
-            .isEqualToIgnoringCase(exposureDetailsInput.getExposureDetailsRole());
+              .assertThat(exposureDetailsOutput.getExposureDetailsRole())
+              .isEqualToIgnoringCase(exposureDetailsInput.getExposureDetailsRole());
           softly
               .assertThat(exposureDetailsOutput.getRiskArea())
               .isEqualToIgnoringCase(exposureDetailsInput.getRiskArea());
@@ -234,8 +235,8 @@ public class ExposureInContactEpiDataSteps implements En {
 
   public ExposureDetails getExposureDetailsOutput() {
     return ExposureDetails.builder()
-        .startOfExposure(webDriverHelpers.getValueFromWebElement(START_OF_EXPOSURE))
-        .endOfExposure(webDriverHelpers.getValueFromWebElement(END_OF_EXPOSURE))
+        .startOfExposure(webDriverHelpers.getTextFromWebElement(START_OF_EXPOSURE))
+        .endOfExposure(webDriverHelpers.getTextFromWebElement(END_OF_EXPOSURE))
         .exposureDescription(webDriverHelpers.getValueFromWebElement(EXPOSURE_DESCRIPTION))
         .typeOfActivity(webDriverHelpers.getValueFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX))
         .exposureDetailsRole(webDriverHelpers.getValueFromCombobox(EXPOSURE_DETAILS_ROLE_COMBOBOX))
