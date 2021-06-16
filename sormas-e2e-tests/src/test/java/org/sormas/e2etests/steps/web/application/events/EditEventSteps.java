@@ -191,8 +191,15 @@ public class EditEventSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ACTION_POPUP);
         });
 
+      When(
+              "I click on Event Action tab from Event details",
+              () -> {
+                  String LAST_CREATED_EVENT_ACTIONS_URL = environmentUrl + "/sormas-ui/#!events/eventactions/" + apiState.getCreatedEvent().getUuid();
+                  webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_ACTIONS_URL);
+              });
+
     Then(
-        "I click on Event Actions tab",
+        "I open last created Event Actions tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EVENT_ACTIONS_TAB);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CREATE_BUTTON);

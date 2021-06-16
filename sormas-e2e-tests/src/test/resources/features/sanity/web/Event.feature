@@ -89,6 +89,16 @@ Feature: Create events
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
 
+  Scenario: Add a New action from Event Actions tab and verify the fields.
+    Given API: I create a new event
+    Given I log in with the user
+    And I click on the Events button from navbar
+    Then I open last created Event Actions tab
+    Then I create New Action from event tab
+    And I click on Event Actions tab
+    And I open the Action recently created from Event tab
+    And I check that Action created from Event tab is correctly displayed in Event Actions tab
+
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
     Given I log in with the user
