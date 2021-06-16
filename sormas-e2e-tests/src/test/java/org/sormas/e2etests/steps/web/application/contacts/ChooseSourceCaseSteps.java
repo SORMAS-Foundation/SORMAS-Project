@@ -23,7 +23,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
-import javax.inject.Named;
+import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -37,7 +37,7 @@ public class ChooseSourceCaseSteps implements En {
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       AssertHelpers assertHelpers,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      final SoftAssertions softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     // When(
@@ -55,6 +55,15 @@ public class ChooseSourceCaseSteps implements En {
         () -> {
           webDriverHelpers.fillInWebElement(
               SOURCE_CASE_WINDOW_CASE_INPUT, apiState.getCreatedCase().getUuid());
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+
+    When(
+        "^I open the first found result in the CHOOSE SOURCE window$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+              SOURCE_CASE_WINDOW_CONFIRM_BUTTON, CHANGE_CASE_BUTTON);
         });
 
     When(
@@ -68,5 +77,39 @@ public class ChooseSourceCaseSteps implements En {
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 DISCARD_POPUP_YES_BUTTON, SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON));
+
+    Then(
+        "I check the linked case information is correctly displayed",
+        () -> {
+          String casePerson = webDriverHelpers.getTextFromWebElement(CASE_PERSON_LABEL);
+          String caseDisease =
+              (webDriverHelpers.getTextFromWebElement(CASE_DISEASE_LABEL).equals("COVID-19"))
+                  ? "CORONAVIRUS"
+                  : "Not expected string!";
+          String caseClassification =
+              (webDriverHelpers
+                      .getTextFromWebElement(CASE_CLASSIFICATION_LABEL)
+                      .equals("Not yet classified"))
+                  ? "NOT_CLASSIFIED"
+                  : "Not expected string!";
+          String caseId = webDriverHelpers.getTextFromWebElement(CASE_ID_LABEL);
+
+          softly
+              .assertThat(
+                  apiState.getCreatedCase().getPerson().getFirstName()
+                      + " "
+                      + apiState.getCreatedCase().getPerson().getLastName())
+              .isEqualToIgnoringCase(casePerson);
+          softly
+              .assertThat(apiState.getCreatedCase().getDisease())
+              .isEqualToIgnoringCase(caseDisease);
+          softly
+              .assertThat(apiState.getCreatedCase().getCaseClassification())
+              .isEqualToIgnoringCase(caseClassification);
+          softly
+              .assertThat(apiState.getCreatedCase().getUuid().substring(0, 6))
+              .isEqualToIgnoringCase(caseId);
+          softly.assertAll();
+        });
   }
 }

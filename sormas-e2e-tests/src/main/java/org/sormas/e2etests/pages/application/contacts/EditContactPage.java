@@ -100,4 +100,17 @@ public class EditContactPage {
   public static final By SOURCE_CASE_WINDOW_CASE_INPUT = By.cssSelector(".v-window-wrap input");
   public static final By SOURCE_CASE_WINDOW_CONFIRM_BUTTON =
       By.cssSelector(".v-window-wrap #commit");
+  public static final By SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION =
+      By.cssSelector("tr[class*='v-grid-row-has-data']");
+  public static final By CHANGE_CASE_BUTTON = By.id("contactChangeCase");
+  public static final By CASE_ID_LABEL = By.id("caseIdLabel");
+  public static final By CASE_PERSON_LABEL =
+      By.xpath(
+          "//span[contains(text(), 'Case person')]/ancestor::div[@class='v-caption']/following-sibling::div");
+  public static final By CASE_DISEASE_LABEL =
+      By.xpath(
+          "//span[contains(text(), 'Disease')]/ancestor::div[@class='v-caption']/following-sibling::div");
+  public static final By CASE_CLASSIFICATION_LABEL =
+      By.xpath(
+          "//span[contains(text(), 'Case classification')]/ancestor::div[@class='v-caption']/following-sibling::div");
 }

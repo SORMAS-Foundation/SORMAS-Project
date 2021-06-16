@@ -68,6 +68,7 @@ public class EditContactsSteps implements En {
           LAST_CREATED_CASE_CONTACTS_TAB_URL =
               environmentUrl + "/sormas-ui/#!cases/contacts/" + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_CONTACTS_TAB_URL);
+          webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
         });
 
     Then(
@@ -148,6 +149,44 @@ public class EditContactsSteps implements En {
           softly
               .assertThat(contact.getDescriptionOfHowContactTookPlace())
               .isEqualTo(collectedContact.getDescriptionOfHowContactTookPlace());
+          softly.assertAll();
+        });
+
+    Then(
+        "I check the linked contact information is correctly displayed",
+        () -> {
+          String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
+          String contactDisease =
+              (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 1).equals("COVID-19"))
+                  ? "CORONAVIRUS"
+                  : "Not expected string!";
+          String contactClassification =
+              (webDriverHelpers
+                      .getValueFromTableRowUsingTheHeader("Contact classification", 1)
+                      .equals("Unconfirmed contact"))
+                  ? "UNCONFIRMED"
+                  : "Not expected string!";
+          String firstName =
+              webDriverHelpers.getValueFromTableRowUsingTheHeader(
+                  "First name of contact person", 1);
+          String lastName =
+              webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 1);
+
+          softly
+              .assertThat(apiState.getCreatedContact().getUuid().substring(0, 6))
+              .isEqualToIgnoringCase(contactId);
+          softly
+              .assertThat(apiState.getCreatedContact().getDisease())
+              .isEqualToIgnoringCase(contactDisease);
+          softly
+              .assertThat(apiState.getCreatedContact().getContactClassification())
+              .isEqualToIgnoringCase(contactClassification);
+          softly
+              .assertThat(apiState.getCreatedContact().getPerson().getFirstName())
+              .isEqualToIgnoringCase(firstName);
+          softly
+              .assertThat(apiState.getCreatedContact().getPerson().getLastName())
+              .isEqualToIgnoringCase(lastName);
           softly.assertAll();
         });
   }
