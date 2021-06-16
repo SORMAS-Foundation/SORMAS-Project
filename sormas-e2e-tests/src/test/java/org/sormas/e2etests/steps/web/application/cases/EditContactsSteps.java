@@ -68,7 +68,6 @@ public class EditContactsSteps implements En {
           LAST_CREATED_CASE_CONTACTS_TAB_URL =
               environmentUrl + "/sormas-ui/#!cases/contacts/" + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_CONTACTS_TAB_URL);
-          webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
         });
 
     Then(
