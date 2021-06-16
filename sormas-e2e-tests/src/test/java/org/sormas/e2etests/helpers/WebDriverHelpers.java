@@ -367,6 +367,7 @@ public class WebDriverHelpers {
   }
 
   public void clickWebElementByText(final By selector, final String text) {
+    scrollToElement(selector);
     getWebElementBySelectorAndText(selector, text).click();
   }
 
