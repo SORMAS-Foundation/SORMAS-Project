@@ -74,12 +74,12 @@ public class ExposureInContactEpiDataSteps implements En {
           softly
               .assertThat(exposureDetailsOutput.getExposureDescription())
               .isEqualToIgnoringCase(exposureDetailsInput.getExposureDescription());
-          //          softly
-          //              .assertThat(exposureDetailsOutput.getTypeOfActivity())
-          //              .isEqualToIgnoringCase(exposureDetailsInput.getTypeOfActivity());
-          //          softly
-          //              .assertThat(exposureDetailsOutput.getExposureDetailsRole())
-          //              .isEqualToIgnoringCase(exposureDetailsInput.getExposureDetailsRole());
+          softly
+              .assertThat(exposureDetailsOutput.getTypeOfActivity())
+              .isEqualToIgnoringCase(exposureDetailsInput.getTypeOfActivity());
+          softly
+            .assertThat(exposureDetailsOutput.getExposureDetailsRole())
+            .isEqualToIgnoringCase(exposureDetailsInput.getExposureDetailsRole());
           softly
               .assertThat(exposureDetailsOutput.getRiskArea())
               .isEqualToIgnoringCase(exposureDetailsInput.getRiskArea());
