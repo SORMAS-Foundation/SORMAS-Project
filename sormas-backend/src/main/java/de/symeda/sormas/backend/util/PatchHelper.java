@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.common;
+package de.symeda.sormas.backend.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -20,11 +20,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.utils.Experimental;
 
 public class PatchHelper {
 
 	/**
-	 * This method updates the existingObject with the values received in the jsonObject
+	 * This method is used to partially update an existing object. It updates an existingObject with the values received in the jsonObject.
+	 * The existingObject has to be an object that contains a field UUID - thus an object instance of a class that implements HasUuid
+	 * interface
+	 * The jsonObject has to contain a field uuid and the existingObject uuid has to match with the uuid field in json.
+	 * The jsonObject can contains only the fields that are intended to be updated and the uuid of the object.
+	 * If the existingObject contains inner objects:
+	 * - a) of type HasUuid - those can be either updated or replaced.
+	 * In order to be updated the uuid of the inner object has to be provided and has to be the same as the existing one.
+	 * If the uuid differs the inner object is replaced.
+	 * - b) not of type HasUuid - are replaced.
+	 * !The logic if any inner object or value is allowed to be replaced or not relies entirely on the application!
+	 * 
+	 * THIS METHOD IS EXPERIMENTAL!!!!
 	 * 
 	 * @param jsonObject
 	 *            - the json payload containing the fields that are to be replaced. The structure of the json matches the structure of the
@@ -34,6 +47,7 @@ public class PatchHelper {
 	 * @param <T>
 	 *            - the type of the object
 	 */
+	@Experimental
 	public static <T extends HasUuid> void postUpdate(@NotNull JsonNode jsonObject, @NotNull T existingObject) {
 
 		if (!existingObject.getUuid().equals(jsonObject.get(EntityDto.UUID).textValue())) {
@@ -116,7 +130,7 @@ public class PatchHelper {
 	}
 
 	/**
-	 * This method update an existing object field. If the existingObject field id NULL a new instance is created.
+	 * This method update an existing object field. If the existingObject field is NULL a new instance is created.
 	 * If the existing object field is not NULL the postUpdate method is called on the object field
 	 * 
 	 * @param existingObject

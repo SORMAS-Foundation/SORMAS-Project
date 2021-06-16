@@ -198,7 +198,6 @@ import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.common.PatchHelper;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLogService;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
@@ -291,6 +290,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.PatchHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
@@ -2015,8 +2015,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public int updateCompleteness() {
 		List<String> getCompletenessCheckCaseList = getCompletenessCheckNeededCaseList();
 
-			IterableHelper
-				.executeBatched(getCompletenessCheckCaseList, 10, caseCompletionBatch -> caseService.updateCompleteness(caseCompletionBatch));
+		IterableHelper.executeBatched(getCompletenessCheckCaseList, 10, caseCompletionBatch -> caseService.updateCompleteness(caseCompletionBatch));
 
 		return getCompletenessCheckCaseList.size();
 	}

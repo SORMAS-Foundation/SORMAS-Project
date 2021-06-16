@@ -45,6 +45,7 @@ import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.utils.Experimental;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/cases")
@@ -147,9 +148,9 @@ public class CaseResource extends EntityDtoResource {
 
 	/**
 	 * This endpoint is used to partially update the CaseData.
-	 * For allowing only a subset of the fields of the caseDataDto to be updated, and ensuring that the system can determine
-	 * which fields are not provided and which are intended to be reset it, the payload needs to be a Json object and not a dto
-	 *
+	 * For allowing only a subset of the fields of the caseDataDto to be updated
+	 * THIS METHOD IS EXPERIMENTAL!!!
+	 * 
 	 * @param uuid
 	 * @param caseDataDtoJson
 	 *            - a subset of caseDataDto fields, same structure as caseDataDto
@@ -158,6 +159,7 @@ public class CaseResource extends EntityDtoResource {
 	 */
 	@POST
 	@Path("/postUpdate/{uuid}")
+	@Experimental
 	public CaseDataDto postUpdate(@PathParam("uuid") String uuid, JsonNode caseDataDtoJson) throws Exception {
 		return FacadeProvider.getCaseFacade().postUpdate(uuid, caseDataDtoJson);
 	}
