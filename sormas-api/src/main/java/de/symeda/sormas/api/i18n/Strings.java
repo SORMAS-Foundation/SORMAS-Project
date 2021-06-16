@@ -145,6 +145,7 @@ public interface Strings {
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationRevokeSormasToSormasShareRequest = "confirmationRevokeSormasToSormasShareRequest";
 	String confirmationSetMissingGeoCoordinates = "confirmationSetMissingGeoCoordinates";
+	String confirmationSinceLabMessages = "confirmationSinceLabMessages";
 	String confirmationSuperordinateEventDiscardUnsavedChanges = "confirmationSuperordinateEventDiscardUnsavedChanges";
 	String confirmationUnclearLabMessage = "confirmationUnclearLabMessage";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
@@ -1134,6 +1135,7 @@ public interface Strings {
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
+	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";
 	String promptPersonsSearchField = "promptPersonsSearchField";
 	String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	String promptRegion = "promptRegion";

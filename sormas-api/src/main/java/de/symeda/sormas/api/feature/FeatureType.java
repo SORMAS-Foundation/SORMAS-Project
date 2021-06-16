@@ -159,7 +159,8 @@ public enum FeatureType {
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			CONTACT_TRACING,
-			EVENT_SURVEILLANCE });
+			EVENT_SURVEILLANCE }),
+	PERSON_DUPLICATE_CUSTOM_SEARCH(true, false, null);
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

@@ -362,6 +362,20 @@ public class WebDriverHelpers {
     }
   }
 
+  public void waitUntilAListOfElementsIsPresent(By selector, int number) {
+    waitForPageLoaded();
+    try {
+      assertHelpers.assertWithPoll(
+          () -> {
+            List<WebElement> webElements = baseSteps.getDriver().findElements(selector);
+            scrollToElement(webElements.get(0));
+            assertThat(webElements.size()).isAtLeast(number);
+          },
+          4);
+    } catch (Throwable ignored) {
+    }
+  }
+
   public WebElement getWebElementBySelectorAndText(final By selector, final String text) {
     return getWebElementByText(selector, webElement -> webElement.getText().contentEquals(text));
   }

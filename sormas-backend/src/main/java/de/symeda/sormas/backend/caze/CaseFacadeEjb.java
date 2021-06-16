@@ -116,6 +116,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -208,6 +209,8 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.document.Document;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -408,6 +411,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
+	@EJB
+	private DocumentService documentService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -1342,10 +1347,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	public void updateCompleteness(String caseUuid) {
-
-		Case caze = caseService.getByUuid(caseUuid);
-		caze.setCompleteness(calculateCompleteness(caze));
-		caseService.ensurePersisted(caze);
+		caseService.updateCompleteness(caseUuid);
 	}
 
 	private void selectIndexDtoFields(CriteriaQuery<CaseIndexDto> cq, Root<Case> root) {
@@ -1828,7 +1830,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		// Update completeness value
-		newCase.setCompleteness(calculateCompleteness(newCase));
+		newCase.setCompleteness(null);
 
 		// Send an email to all responsible supervisors when the case classification has
 		// changed
@@ -2009,40 +2011,27 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	}
 
-	private float calculateCompleteness(Case caze) {
+	@Override
+	public int updateCompleteness() {
+		List<String> getCompletenessCheckCaseList = getCompletenessCheckNeededCaseList();
 
-		float completeness = 0f;
+			IterableHelper
+				.executeBatched(getCompletenessCheckCaseList, 10, caseCompletionBatch -> caseService.updateCompleteness(caseCompletionBatch));
 
-		if (InvestigationStatus.DONE.equals(caze.getInvestigationStatus())) {
-			completeness += 0.2f;
-		}
-		if (!CaseClassification.NOT_CLASSIFIED.equals(caze.getCaseClassification())) {
-			completeness += 0.2f;
-		}
-		if (sampleService
-			.exists((cb, root) -> cb.and(sampleService.createDefaultFilter(cb, root), cb.equal(root.get(Sample.ASSOCIATED_CASE), caze)))) {
-			completeness += 0.15f;
-		}
-		if (Boolean.TRUE.equals(caze.getSymptoms().getSymptomatic())) {
-			completeness += 0.15f;
-		}
-		if (contactService.exists((cb, root) -> cb.and(contactService.createDefaultFilter(cb, root), cb.equal(root.get(Contact.CAZE), caze)))) {
-			completeness += 0.10f;
-		}
-		if (!CaseOutcome.NO_OUTCOME.equals(caze.getOutcome())) {
-			completeness += 0.05f;
-		}
-		if (caze.getPerson().getBirthdateYYYY() != null || caze.getPerson().getApproximateAge() != null) {
-			completeness += 0.05f;
-		}
-		if (caze.getPerson().getSex() != null) {
-			completeness += 0.05f;
-		}
-		if (caze.getSymptoms().getOnsetDate() != null) {
-			completeness += 0.05f;
-		}
+		return getCompletenessCheckCaseList.size();
+	}
 
-		return completeness;
+	private List<String> getCompletenessCheckNeededCaseList() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caze = cq.from(Case.class);
+
+		cq.where(cb.isNull(caze.get(Case.COMPLETENESS)));
+
+		cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
+		cq.select(caze.get(Case.UUID));
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	@Override
@@ -3067,7 +3056,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		// 1 Merge Dtos
 		// 1.1 Case
-		DtoHelper.copyDtoValues(leadCaseData, otherCaseData, cloning);
+
+		copyDtoValues(leadCaseData, otherCaseData, cloning);
 		saveCase(leadCaseData, !cloning, true);
 
 		// 1.2 Person - Only merge when the persons have different UUIDs
@@ -3203,6 +3193,26 @@ public class CaseFacadeEjb implements CaseFacade {
 			otherVisit.setPerson(leadCaseData.getPerson());
 			otherVisit.setDisease(leadCaseData.getDisease());
 			visitFacade.saveVisit(otherVisit);
+		}
+
+		// 6 Documents
+		List<Document> documents = documentService.getRelatedToEntity(DocumentRelatedEntityType.CASE, otherCase.getUuid());
+		for (Document document : documents) {
+			document.setRelatedEntityUuid(leadCaseData.getUuid());
+
+			documentService.ensurePersisted(document);
+		}
+	}
+
+	private void copyDtoValues(CaseDataDto leadCaseData, CaseDataDto otherCaseData, boolean cloning) {
+		String leadAdditionalDetails = leadCaseData.getAdditionalDetails();
+		String leadFollowUpComment = leadCaseData.getFollowUpComment();
+
+		DtoHelper.copyDtoValues(leadCaseData, otherCaseData, cloning);
+
+		if (!cloning) {
+			leadCaseData.setAdditionalDetails(DataHelper.joinStrings(" ", leadAdditionalDetails, otherCaseData.getAdditionalDetails()));
+			leadCaseData.setFollowUpComment(DataHelper.joinStrings(" ", leadFollowUpComment, otherCaseData.getFollowUpComment()));
 		}
 	}
 
