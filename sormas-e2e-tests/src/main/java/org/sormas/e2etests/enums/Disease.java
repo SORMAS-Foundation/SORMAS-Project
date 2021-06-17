@@ -15,31 +15,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.state;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-import io.restassured.response.Response;
-import java.util.List;
+package org.sormas.e2etests.enums;
+
+import java.util.Random;
 import lombok.Getter;
-import lombok.Setter;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Contact;
-import org.sormas.e2etests.pojo.api.Event;
-import org.sormas.e2etests.pojo.api.Person;
-import org.sormas.e2etests.pojo.api.Sample;
-import org.sormas.e2etests.pojo.api.Task;
 
-@ScenarioScoped
 @Getter
-@Setter
-public class ApiState {
-  Response response;
-  Person editPerson;
-  Case createdCase;
-  List<Case> createdCases;
-  List<Sample> createdSamples;
-  Contact createdContact;
-  Event createdEvent;
-  Task createdTask;
-  Sample createdSample;
+public enum Disease {
+  AFP("Acute Flaccid Paralysis"),
+  ANTHRAX("Anthrax"),
+  CORONAVIRUS("COVID-19"),
+  CHOLERA("Cholera"),
+  DENGUE("Dengue Fever"),
+  EVD("Ebola Virus Disease"),
+  GUINEA_WORM("Guinea Worm"),
+  RABIES("Human Rabies"),
+  NEW_INFLUENZA("Influenza (New subtype)"),
+  LASSA("Lassa"),
+  MEASLES("Measles"),
+  CSM("Meningitis (CSM)"),
+  MONKEYPOX("Monkeypox"),
+  UNSPECIFIED_VHF("Unspecified VHF"),
+  YELLOW_FEVER("Yellow Fever");
+
+  private final String disease;
+
+  Disease(String aDisease) {
+    disease = aDisease;
+  }
+
+  public static String getRandomDisease() {
+    Random random = new Random();
+    return String.valueOf(Disease.values()[random.nextInt(values().length)]);
+  }
 }

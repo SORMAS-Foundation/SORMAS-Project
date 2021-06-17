@@ -30,11 +30,11 @@ public interface SormasToSormasEntityInterface {
 
 	void sendRejectShareRequest(String uuid) throws SormasToSormasException;
 
-	void rejectShareRequest(String uuids) throws SormasToSormasException;
+	void rejectShareRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 
 	void acceptShareRequest(String uuid) throws SormasToSormasException, SormasToSormasValidationException;
 
-	SormasToSormasEncryptedDataDto getDataForShareRequest(String uuid) throws SormasToSormasException;
+	SormasToSormasEncryptedDataDto getDataForShareRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 
 	void shareEntities(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException;
 

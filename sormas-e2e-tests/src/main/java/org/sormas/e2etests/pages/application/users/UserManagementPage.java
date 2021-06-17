@@ -15,31 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.state;
 
-import cucumber.runtime.java.guice.ScenarioScoped;
-import io.restassured.response.Response;
-import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Contact;
-import org.sormas.e2etests.pojo.api.Event;
-import org.sormas.e2etests.pojo.api.Person;
-import org.sormas.e2etests.pojo.api.Sample;
-import org.sormas.e2etests.pojo.api.Task;
+package org.sormas.e2etests.pages.application.users;
 
-@ScenarioScoped
-@Getter
-@Setter
-public class ApiState {
-  Response response;
-  Person editPerson;
-  Case createdCase;
-  List<Case> createdCases;
-  List<Sample> createdSamples;
-  Contact createdContact;
-  Event createdEvent;
-  Task createdTask;
-  Sample createdSample;
+import org.openqa.selenium.By;
+
+public class UserManagementPage {
+  public static final By NEW_USER_BUTTON = By.id("userNewUser");
+  public static final By SEARCH_USER_INPUT = By.id("search");
+  public static final By USER_NAME_GRID_CELL = By.cssSelector("tr td:nth-child(5)");
+  public static final By FIRST_EDIT_BUTTON_FROM_LIST =
+      By.cssSelector(".v-grid-body tr:nth-child(1) .v-icon.v-icon-edit");
 }

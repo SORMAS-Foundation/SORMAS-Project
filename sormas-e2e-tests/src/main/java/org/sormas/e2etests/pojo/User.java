@@ -15,45 +15,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo.api;
+
+package org.sormas.e2etests.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.Date;
-import lombok.*;
-import lombok.extern.jackson.Jacksonized;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 
-@Value
-@AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
-@Jacksonized
+@Value
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Case {
-  String caseClassification;
-  String uuid;
-  String followUpStatus;
-  ClinicalCourse clinicalCourse;
-  Date reportDate;
-  ReportingUser reportingUser;
-  SurveillanceOfficer surveillanceOfficer;
-  String outcome;
-  String investigationStatus;
-  String caseOrigin;
-  String disease;
-  String diseaseDetails;
-  String healthFacilityDetails;
-  Hospitalization hospitalization;
-  Therapy therapy;
-  Community community;
-  Long followUpUntil;
-  Symptoms symptoms;
-  EpiData epiData;
-  Boolean pseudonymized;
-  Person person;
-  PortHealthInfo portHealthInfo;
-  District district;
-  Region region;
-  HealthFacility healthFacility;
-  MaternalHistory maternalHistory;
+@NonNull
+public class User {
+  String firstName;
+  String lastName;
+  String emailAddress;
+  String phoneNumber;
+  String language;
+  String country;
+  String region;
+  String district;
+  String community;
+  String facilityCategory;
   String facilityType;
+  String facility;
+  String facilityNameAndDescription;
+  String street;
+  String houseNumber;
+  String additionalInformation;
+  String postalCode;
+  String city;
+  String areaType;
+  String communityContactPerson;
+  String gpsLatitude;
+  String gpsLongitude;
+  String gpsAccuracy;
+  String active;
+  String userName;
+  String userRole;
+  String limitedDisease;
 }
