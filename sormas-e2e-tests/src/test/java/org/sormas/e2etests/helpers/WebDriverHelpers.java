@@ -513,6 +513,9 @@ public class WebDriverHelpers {
   }
 
   // always needs the raw header value from the DOM, not the stylized one (the one displayed in UI)
+  // rowIndex parameter will return the demanded row. 0 is the header
+  // style.substring(style.length() - 17) matches the width value for the selector. it will be used
+  // to match the header and the rows by the lenght.
   public String getValueFromTableRowUsingTheHeader(String headerValue, int rowIndex) {
     By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
     scrollToElement(header);
