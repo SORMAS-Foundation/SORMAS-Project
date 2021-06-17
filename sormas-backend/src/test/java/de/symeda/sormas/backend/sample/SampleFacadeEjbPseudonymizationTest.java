@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 import java.util.Calendar;
@@ -30,7 +31,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -38,6 +38,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -103,7 +104,18 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
 		SampleDto sample = createCaseSample(caze, user1, rdcf1.facility);
 		loginWith(labUser);
-		assertNotPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()), user1.getUuid());
+
+		SampleDto sampleByUuid = getSampleFacade().getSampleByUuid(sample.getUuid());
+		assertThat(sampleByUuid.getAssociatedCase().getFirstName(), is("John"));
+		assertThat(sampleByUuid.getAssociatedCase().getLastName(), is("Smith"));
+		assertNull(sampleByUuid.getReportingUser()); // user is not a lab level user and not in the same lab so the lab user does not see it - is this correct ?
+		assertThat(sampleByUuid.getReportLat(), is(46.432));
+		assertThat(sampleByUuid.getReportLon(), is(23.234));
+		assertThat(sampleByUuid.getReportLatLonAccuracy(), is(10f));
+		assertThat(sampleByUuid.getLab(), is(notNullValue()));
+		assertThat(sampleByUuid.getLabDetails(), is("Test lab details"));
+		assertThat(sampleByUuid.getShipmentDetails(), is("Test shipment details"));
+		assertThat(sampleByUuid.getComment(), is("Test comment"));
 	}
 
 	@Test
