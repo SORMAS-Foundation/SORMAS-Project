@@ -6,10 +6,10 @@ import static org.sormas.e2etests.pages.application.contacts.EditEpidemiological
 import static org.sormas.e2etests.pages.application.contacts.EditEpidemiologicalDataContactPage.LARGE_OUTBREAKS_AREA;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.*;
 
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.ExposureDetails;
 import org.sormas.e2etests.pojo.web.ExposureInvestigation;
@@ -23,6 +23,7 @@ public class ExposureInContactEpiDataSteps implements En {
   private static ExposureInvestigation exposureInvestigationInput;
   private static ExposureDetails exposureDetailsInput;
   private String EPIDATA_FOR_LAST_CREATED_CONTACT_URL;
+  private ExposureDetails exposureDetailsOutput;
 
   @Inject
   public ExposureInContactEpiDataSteps(
@@ -36,7 +37,6 @@ public class ExposureInContactEpiDataSteps implements En {
     When(
         "I am accessing the Epidemiological tab using of created contact via api",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           EPIDATA_FOR_LAST_CREATED_CONTACT_URL =
               environmentUrl
                   + "/sormas-ui/#!contacts/epidata/"
@@ -46,11 +46,11 @@ public class ExposureInContactEpiDataSteps implements En {
         });
 
     When(
-        "I check and fill all data",
+        "I check and fill all data for a new EpiData Exposure",
         () -> {
           exposureInvestigationInput =
               exposureInvestigationService.buildInputExposureInvestigation();
-          exposureIvestigationOnContact(exposureInvestigationInput);
+          createExposureInvestigationOnContact(exposureInvestigationInput);
 
           exposureDetailsInput = exposureDetailsService.buildInputExposureDetails();
           addNewExposureEntry(exposureDetailsInput);
@@ -64,114 +64,14 @@ public class ExposureInContactEpiDataSteps implements En {
     Then(
         "I am checking all data is saved and displayed on edit Exposure page",
         () -> {
-          ExposureDetails exposureDetailsOutput = getExposureDetailsOutput();
-          SoftAssertions softly = new SoftAssertions();
-          softly
-              .assertThat(exposureDetailsOutput.getStartOfExposure())
-              .isEqualTo(exposureDetailsInput.getStartOfExposure());
-          softly
-              .assertThat(exposureDetailsOutput.getEndOfExposure())
-              .isEqualTo(exposureDetailsInput.getEndOfExposure());
-          softly
-              .assertThat(exposureDetailsOutput.getExposureDescription())
-              .isEqualToIgnoringCase(exposureDetailsInput.getExposureDescription());
-          softly
-              .assertThat(exposureDetailsOutput.getTypeOfActivity())
-              .isEqualToIgnoringCase(exposureDetailsInput.getTypeOfActivity());
-          softly
-              .assertThat(exposureDetailsOutput.getExposureDetailsRole())
-              .isEqualToIgnoringCase(exposureDetailsInput.getExposureDetailsRole());
-          softly
-              .assertThat(exposureDetailsOutput.getRiskArea())
-              .isEqualToIgnoringCase(exposureDetailsInput.getRiskArea());
-          softly
-              .assertThat(exposureDetailsOutput.getIndoors())
-              .isEqualToIgnoringCase(exposureDetailsInput.getIndoors());
-          softly
-              .assertThat(exposureDetailsOutput.getOutdoors())
-              .isEqualToIgnoringCase(exposureDetailsInput.getOutdoors());
-          softly
-              .assertThat(exposureDetailsOutput.getWearingMask())
-              .isEqualToIgnoringCase(exposureDetailsInput.getWearingMask());
-          softly
-              .assertThat(exposureDetailsOutput.getWearingPpe())
-              .isEqualToIgnoringCase(exposureDetailsInput.getWearingPpe());
-          softly
-              .assertThat(exposureDetailsOutput.getOtherProtectiveMeasures())
-              .isEqualToIgnoringCase(exposureDetailsInput.getOtherProtectiveMeasures());
-          softly
-              .assertThat(exposureDetailsOutput.getShortDistance())
-              .isEqualToIgnoringCase(exposureDetailsInput.getShortDistance());
-          softly
-              .assertThat(exposureDetailsOutput.getLongFaceToFaceContact())
-              .isEqualToIgnoringCase(exposureDetailsInput.getLongFaceToFaceContact());
-          softly
-              .assertThat(exposureDetailsOutput.getAnimalMarket())
-              .isEqualToIgnoringCase(exposureDetailsInput.getAnimalMarket());
-          softly
-              .assertThat(exposureDetailsOutput.getPercutaneous())
-              .isEqualToIgnoringCase(exposureDetailsInput.getPercutaneous());
-          softly
-              .assertThat(exposureDetailsOutput.getContactToBodyFluids())
-              .isEqualToIgnoringCase(exposureDetailsInput.getContactToBodyFluids());
-          softly
-              .assertThat(exposureDetailsOutput.getHandlingSamples())
-              .isEqualToIgnoringCase(exposureDetailsInput.getHandlingSamples());
-          softly
-              .assertThat(exposureDetailsOutput.getTypeOfPlace())
-              .isEqualToIgnoringCase(exposureDetailsInput.getTypeOfPlace());
-          softly
-              .assertThat(exposureDetailsOutput.getContinent())
-              .isEqualToIgnoringCase(exposureDetailsInput.getContinent());
-          softly
-              .assertThat(exposureDetailsOutput.getSubcontinent())
-              .isEqualToIgnoringCase(exposureDetailsInput.getSubcontinent());
-          softly
-              .assertThat(exposureDetailsOutput.getCountry())
-              .isEqualToIgnoringCase(exposureDetailsInput.getCountry());
-          softly
-              .assertThat(exposureDetailsOutput.getExposureRegion())
-              .isEqualToIgnoringCase(exposureDetailsInput.getExposureRegion());
-          softly
-              .assertThat(exposureDetailsOutput.getDistrict())
-              .isEqualToIgnoringCase(exposureDetailsInput.getDistrict());
-          softly
-              .assertThat(exposureDetailsOutput.getCommunity())
-              .isEqualToIgnoringCase(exposureDetailsInput.getCommunity());
-          softly
-              .assertThat(exposureDetailsOutput.getStreet())
-              .isEqualToIgnoringCase(exposureDetailsInput.getStreet());
-          softly
-              .assertThat(exposureDetailsOutput.getHouseNumber())
-              .isEqualToIgnoringCase(exposureDetailsInput.getHouseNumber());
-          softly
-              .assertThat(exposureDetailsOutput.getAdditionalInformation())
-              .isEqualToIgnoringCase(exposureDetailsInput.getAdditionalInformation());
-          softly
-              .assertThat(exposureDetailsOutput.getPostalCode())
-              .isEqualToIgnoringCase(exposureDetailsInput.getPostalCode());
-          softly
-              .assertThat(exposureDetailsOutput.getCity())
-              .isEqualToIgnoringCase(exposureDetailsInput.getCity());
-          softly
-              .assertThat(exposureDetailsOutput.getAreaType())
-              .isEqualToIgnoringCase(exposureDetailsInput.getAreaType());
-          softly
-              .assertThat(exposureDetailsOutput.getCommunityContactPerson())
-              .isEqualToIgnoringCase(exposureDetailsInput.getCommunityContactPerson());
-          softly
-              .assertThat(exposureDetailsOutput.getGpsLatitude())
-              .isEqualToIgnoringCase(exposureDetailsInput.getGpsLatitude());
-          softly
-              .assertThat(exposureDetailsOutput.getGpsLongitude())
-              .isEqualToIgnoringCase(exposureDetailsInput.getGpsLongitude());
-          softly
-              .assertThat(exposureDetailsOutput.getGpsAccuracy())
-              .isEqualToIgnoringCase(exposureDetailsInput.getGpsAccuracy());
+          exposureDetailsOutput = getExposureDetailsOutput();
+
+          Truth.assertThat(exposureDetailsOutput).isEqualTo(exposureDetailsInput);
         });
   }
 
-  public void exposureIvestigationOnContact(ExposureInvestigation exposureInvestigationInput) {
+  public void createExposureInvestigationOnContact(
+      ExposureInvestigation exposureInvestigationInput) {
     webDriverHelpers.clickWebElementByText(
         EXPOSURE_DETAILS_KNOWN, exposureInvestigationInput.getExposureDetailsKnown());
     webDriverHelpers.clickWebElementByText(
@@ -235,8 +135,11 @@ public class ExposureInContactEpiDataSteps implements En {
 
   public ExposureDetails getExposureDetailsOutput() {
     return ExposureDetails.builder()
-        .startOfExposure(webDriverHelpers.getTextFromWebElement(START_OF_EXPOSURE))
-        .endOfExposure(webDriverHelpers.getTextFromWebElement(END_OF_EXPOSURE))
+        // new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(date).replaceAll("0$", "");
+        .startOfExposure(
+            webDriverHelpers.getValueFromWebElement(START_OF_EXPOSURE).replaceFirst("^0+(?!$)", ""))
+        .endOfExposure(
+            webDriverHelpers.getValueFromWebElement(END_OF_EXPOSURE).replaceFirst("^0+(?!$)", ""))
         .exposureDescription(webDriverHelpers.getValueFromWebElement(EXPOSURE_DESCRIPTION))
         .typeOfActivity(webDriverHelpers.getValueFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX))
         .exposureDetailsRole(webDriverHelpers.getValueFromCombobox(EXPOSURE_DETAILS_ROLE_COMBOBOX))

@@ -3,10 +3,6 @@ package org.sormas.e2etests.pages.application.contacts;
 import org.openqa.selenium.By;
 
 public class ExposureNewEntryPage {
-  public static final By EXPOSURE_DETAILS_KNOWN =
-      By.cssSelector("#exposureDetailsKnown span:nth-child(1)");
-  public static final By EXPOSURE_DETAILS_NEW_ENTRY = By.cssSelector("div#actionNewEntry");
-  public static final By EXPOSURE_UUID = By.cssSelector("input #uuid");
   public static final By START_OF_EXPOSURE = By.cssSelector(".v-window #startDate input");
   public static final By END_OF_EXPOSURE = By.cssSelector(".v-window #endDate input");
   public static final By EXPOSURE_DESCRIPTION = By.cssSelector(".v-window #description");
@@ -56,5 +52,4 @@ public class ExposureNewEntryPage {
   public static final By GPS_LONGITUDE = By.cssSelector(".v-window #longitude");
   public static final By GPS_ACCURACY = By.cssSelector(".v-window #latLonAccuracy");
   public static final By DONE_BUTTON = By.cssSelector(".v-window #commit");
-  public static final By DISCARD_BUTTON = By.cssSelector(".v-window #discard");
 }

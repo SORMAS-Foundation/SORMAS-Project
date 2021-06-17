@@ -24,7 +24,6 @@ public class ExposureDetails {
   String percutaneous;
   String contactToBodyFluids;
   String handlingSamples;
-  String contactToSourceCase;
   String typeOfPlace;
   String continent;
   String subcontinent;

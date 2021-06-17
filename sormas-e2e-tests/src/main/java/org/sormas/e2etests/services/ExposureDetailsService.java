@@ -21,8 +21,9 @@ public class ExposureDetailsService {
   public ExposureDetails buildInputExposureDetails() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     return ExposureDetails.builder()
-        .startOfExposure(formatter.format(LocalDate.now().minusDays(5)))
-        .endOfExposure(formatter.format(LocalDate.now().minusDays(2)))
+        .startOfExposure(
+            LocalDate.now().minusDays(5).format(formatter).replaceFirst("^0+(?!$)", ""))
+        .endOfExposure(LocalDate.now().minusDays(2).format(formatter).replaceFirst("^0+(?!$)", ""))
         .exposureDescription(faker.medical().symptoms())
         .typeOfActivity(ActivityTypes.VISIT.toString())
         .exposureDetailsRole(Roles.VISITOR.toString())
@@ -38,7 +39,6 @@ public class ExposureDetailsService {
         .percutaneous(YesNoUnknownOptions.YES.toString())
         .contactToBodyFluids(YesNoUnknownOptions.YES.toString())
         .handlingSamples(YesNoUnknownOptions.YES.toString())
-        .contactToSourceCase("")
         .typeOfPlace("Home")
         .continent("Europe")
         .subcontinent("Central Europe")
@@ -48,14 +48,14 @@ public class ExposureDetailsService {
         .community("")
         .street(faker.address().streetAddress())
         .houseNumber(faker.address().buildingNumber())
-        .additionalInformation(faker.expression("additional information").toString())
+        .additionalInformation(faker.expression("additional information"))
         .postalCode(faker.address().zipCode())
         .city(faker.address().city())
         .areaType("Urban")
         .communityContactPerson(faker.name().toString())
-        .gpsLatitude("123")
-        .gpsLongitude("456")
-        .gpsAccuracy("789")
+        .gpsLatitude(String.valueOf(faker.number().numberBetween(-90, 90)))
+        .gpsLongitude(String.valueOf(faker.number().numberBetween(-180, 180)))
+        .gpsAccuracy(String.valueOf(faker.number().numberBetween(-180, 180)))
         .build();
   }
 }
