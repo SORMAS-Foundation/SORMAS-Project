@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.contacts.CreateNewVisitPage.*;
+import static org.sormas.e2etests.pages.application.contacts.FollowUpVisitsTabPage.*;
 
 import cucumber.api.java8.En;
 import java.time.format.DateTimeFormatter;
@@ -50,10 +51,12 @@ public class FollowUpVisitsTabSteps implements En {
         "^I am accessing the Follow-up visits tab using of created contact via api$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              NavBarPage.SAMPLE_BUTTON);
-          String caseLinkPath = "/sormas-ui/#!contacts/visits/";
+              NavBarPage.CONTACTS_BUTTON);
+          String visitLinkPath = "/sormas-ui/#!contacts/visits/";
           String uuid = apiState.getCreatedContact().getUuid();
-          webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
+          String URL = environmentUrl + visitLinkPath + uuid;
+          webDriverHelpers.accessWebSite(URL);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_VISIT_BUTTON);
         });
   }
 

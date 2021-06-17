@@ -35,11 +35,11 @@ public class FollowUpVisitService {
   public FollowUpVisit buildGeneratedFollowUpVisit() {
     long currentTimeMillis = System.currentTimeMillis();
     return FollowUpVisit.builder()
-        .personAvailableAndCooperative("Available and cooperative")
+        .personAvailableAndCooperative("AVAILABLE AND COOPERATIVE")
         .dateOfVisit(LocalDate.now())
-        .timeOfVisit(LocalTime.of(11, 30))
-        .visitRemarks("Automated - visit remark" + String.valueOf(System.currentTimeMillis()))
-        .currentBodyTemperature("35.5 °C")
+        .timeOfVisit("10:15")
+        .visitRemarks("Automated - visit remark" + currentTimeMillis)
+        .currentBodyTemperature("35.0 °C")
         .sourceOfBodyTemperature("oral")
         .chillsOrSweats("YES")
         .feelingIll("YES")

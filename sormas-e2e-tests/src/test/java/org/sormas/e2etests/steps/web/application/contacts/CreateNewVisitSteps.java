@@ -53,7 +53,7 @@ public class CreateNewVisitSteps implements En {
               followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit(),
               followUpVisitService.buildGeneratedFollowUpVisit().getTimeOfVisit());
           fillVisitRemark(followUpVisit.getVisitRemarks());
-          selectBodyTemperature(followUpVisit.getCurrentBodyTemperature());
+          // selectBodyTemperature(followUpVisit.getCurrentBodyTemperature());
           selectSourceOfBodyTemperature(followUpVisit.getSourceOfBodyTemperature());
           selectChillsOrSweats(followUpVisit.getChillsOrSweats());
           selectFeelingIll(followUpVisit.getFeelingIll());
@@ -225,9 +225,9 @@ public class CreateNewVisitSteps implements En {
     webDriverHelpers.fillInWebElement(COMMENTS_INPUT, symptomsComments);
   }
 
-  public void fillDateAndTimeVisit(LocalDate dateOfSymptomOnset, LocalTime timeOfVisit) {
+  public void fillDateAndTimeVisit(LocalDate dateOfSymptomOnset, String timeOfVisit) {
     webDriverHelpers.fillInWebElement(
-        DATE_OF_SYMPTOM_ONSET_INPUT, DATE_FORMATTER.format(dateOfSymptomOnset));
-    webDriverHelpers.fillInWebElement(TIME_OF_VISIT_INPUT, TIME_FORMATTER.format(timeOfVisit));
+        DATE_AND_TIME_OF_VISIT_INPUT, DATE_FORMATTER.format(dateOfSymptomOnset));
+    webDriverHelpers.selectFromCombobox(TIME_OF_VISIT_INPUT, timeOfVisit);
   }
 }

@@ -19,7 +19,6 @@
 package org.sormas.e2etests.pojo.web;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import lombok.*;
 
 @Value
@@ -29,7 +28,7 @@ import lombok.*;
 public class FollowUpVisit {
   String personAvailableAndCooperative;
   LocalDate dateOfVisit;
-  LocalTime timeOfVisit;
+  String timeOfVisit;
   String visitRemarks;
   String currentBodyTemperature;
   String sourceOfBodyTemperature;

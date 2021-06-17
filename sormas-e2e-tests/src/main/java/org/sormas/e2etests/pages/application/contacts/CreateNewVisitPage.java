@@ -21,9 +21,10 @@ package org.sormas.e2etests.pages.application.contacts;
 import org.openqa.selenium.By;
 
 public class CreateNewVisitPage {
-  public static final By PERSON_AVAILABLE_AND_COOPERATIVE = By.id("contactNewContact");
+  public static final By PERSON_AVAILABLE_AND_COOPERATIVE =
+      By.cssSelector("#visitStatus > span > label");
   public static final By DATE_AND_TIME_OF_VISIT_INPUT = By.cssSelector("#visitDateTime_date input");
-  public static final By TIME_OF_VISIT_INPUT = By.cssSelector("#visitDateTime_time input");
+  public static final By TIME_OF_VISIT_INPUT = By.cssSelector("#visitDateTime_time div");
   public static final By VISIT_REMARKS_INPUT = By.id("visitRemarks");
   public static final By CURRENT_BODY_TEMPERATURE_COMBOBOX = By.cssSelector("#temperature div");
   public static final By SOURCE_BODY_TEMPERATURE_COMBOBOX =

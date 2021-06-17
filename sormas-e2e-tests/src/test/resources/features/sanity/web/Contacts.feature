@@ -32,6 +32,7 @@ Feature: Contacts end to end tests
   @FollowUpVisit
   Scenario: Edit all fields from Follow-up visits  tab
     Given I log in with the user
+    When API: I create a new person
     When API: I create a new contact
     When I am accessing the Follow-up visits tab using of created contact via api
     And I create a new Follow-up visit
