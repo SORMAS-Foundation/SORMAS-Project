@@ -1017,6 +1017,7 @@ public interface Captions {
 	String EventAction_actionTitle = "EventAction.actionTitle";
 	String EventAction_eventEvolutionComment = "EventAction.eventEvolutionComment";
 	String EventAction_eventEvolutionDate = "EventAction.eventEvolutionDate";
+	String EventAction_eventIdentificationSource = "EventAction.eventIdentificationSource";
 	String EventAction_eventInvestigationStatus = "EventAction.eventInvestigationStatus";
 	String EventAction_eventReportingUser = "EventAction.eventReportingUser";
 	String EventAction_eventResponsibleUser = "EventAction.eventResponsibleUser";
