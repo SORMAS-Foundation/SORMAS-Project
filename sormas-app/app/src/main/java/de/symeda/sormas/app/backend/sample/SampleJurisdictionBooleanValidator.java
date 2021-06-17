@@ -23,8 +23,11 @@ import java.util.List;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.caze.CaseJurisdictionBooleanValidator;
+import de.symeda.sormas.app.backend.caze.CaseJurisdictionDto;
 import de.symeda.sormas.app.backend.contact.ContactJurisdictionBooleanValidator;
+import de.symeda.sormas.app.backend.contact.ContactJurisdictionDto;
 import de.symeda.sormas.app.backend.event.EventParticipantJurisdictionBooleanValidator;
+import de.symeda.sormas.app.backend.event.EventParticipantJurisdictionDto;
 import de.symeda.sormas.app.util.BooleanJurisdictionValidator;
 import de.symeda.sormas.app.util.UserJurisdiction;
 
@@ -37,10 +40,19 @@ public class SampleJurisdictionBooleanValidator extends BooleanJurisdictionValid
 
         final List<BooleanJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
 
-        associatedJurisdictionValidators.add(CaseJurisdictionBooleanValidator.of(sampleJurisdictionDto.getCaseJurisdiction(), userJurisdiction));
-        associatedJurisdictionValidators.add(ContactJurisdictionBooleanValidator.of(sampleJurisdictionDto.getContactJurisdiction(), userJurisdiction));
-        associatedJurisdictionValidators
-                .add(EventParticipantJurisdictionBooleanValidator.of(sampleJurisdictionDto.getEventParticipantJurisdiction(), userJurisdiction));
+        final CaseJurisdictionDto caseJurisdiction = sampleJurisdictionDto.getCaseJurisdiction();
+        if (caseJurisdiction != null) {
+            associatedJurisdictionValidators.add(CaseJurisdictionBooleanValidator.of(caseJurisdiction, userJurisdiction));
+        }
+        final ContactJurisdictionDto contactJurisdiction = sampleJurisdictionDto.getContactJurisdiction();
+        if (contactJurisdiction != null) {
+            associatedJurisdictionValidators.add(ContactJurisdictionBooleanValidator.of(contactJurisdiction, userJurisdiction));
+        }
+        final EventParticipantJurisdictionDto eventParticipantJurisdiction = sampleJurisdictionDto.getEventParticipantJurisdiction();
+        if (eventParticipantJurisdiction != null) {
+            associatedJurisdictionValidators
+                    .add(EventParticipantJurisdictionBooleanValidator.of(eventParticipantJurisdiction, userJurisdiction));
+        }
 
         return new SampleJurisdictionBooleanValidator(sampleJurisdictionDto, userJurisdiction, associatedJurisdictionValidators);
     }

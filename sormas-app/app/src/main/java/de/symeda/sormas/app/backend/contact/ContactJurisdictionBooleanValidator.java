@@ -35,7 +35,7 @@ public class ContactJurisdictionBooleanValidator extends BooleanJurisdictionVali
     }
 
     private ContactJurisdictionBooleanValidator(ContactJurisdictionDto contactJurisdictionDto, UserJurisdiction userJurisdiction) {
-        super(Collections.singletonList(CaseJurisdictionBooleanValidator.of(contactJurisdictionDto.getCaseJurisdiction(), userJurisdiction)));
+        super(Collections.singletonList(contactJurisdictionDto.getCaseJurisdiction() != null ? CaseJurisdictionBooleanValidator.of(contactJurisdictionDto.getCaseJurisdiction(), userJurisdiction): null));
         this.contactJurisdictionDto = contactJurisdictionDto;
         this.userJurisdiction = userJurisdiction;
     }

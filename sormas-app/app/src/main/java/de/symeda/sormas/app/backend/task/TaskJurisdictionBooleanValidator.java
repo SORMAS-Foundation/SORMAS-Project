@@ -22,8 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.caze.CaseJurisdictionBooleanValidator;
+import de.symeda.sormas.app.backend.caze.CaseJurisdictionDto;
 import de.symeda.sormas.app.backend.contact.ContactJurisdictionBooleanValidator;
+import de.symeda.sormas.app.backend.contact.ContactJurisdictionDto;
 import de.symeda.sormas.app.backend.event.EventJurisdictionBooleanValidator;
+import de.symeda.sormas.app.backend.event.EventJurisdictionDto;
 import de.symeda.sormas.app.util.BooleanJurisdictionValidator;
 import de.symeda.sormas.app.util.UserJurisdiction;
 
@@ -36,9 +39,18 @@ public class TaskJurisdictionBooleanValidator extends BooleanJurisdictionValidat
 
         final List<BooleanJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
 
-        associatedJurisdictionValidators.add(CaseJurisdictionBooleanValidator.of(taskJurisdictionDto.getCaseJurisdiction(), userJurisdiction));
-        associatedJurisdictionValidators.add(ContactJurisdictionBooleanValidator.of(taskJurisdictionDto.getContactJurisdiction(), userJurisdiction));
-        associatedJurisdictionValidators.add(EventJurisdictionBooleanValidator.of(taskJurisdictionDto.getEventJurisdiction(), userJurisdiction));
+        final CaseJurisdictionDto caseJurisdiction = taskJurisdictionDto.getCaseJurisdiction();
+        if (caseJurisdiction != null) {
+            associatedJurisdictionValidators.add(CaseJurisdictionBooleanValidator.of(caseJurisdiction, userJurisdiction));
+        }
+        final ContactJurisdictionDto contactJurisdiction = taskJurisdictionDto.getContactJurisdiction();
+        if (contactJurisdiction != null) {
+            associatedJurisdictionValidators.add(ContactJurisdictionBooleanValidator.of(contactJurisdiction, userJurisdiction));
+        }
+        final EventJurisdictionDto eventJurisdiction = taskJurisdictionDto.getEventJurisdiction();
+        if (eventJurisdiction != null) {
+            associatedJurisdictionValidators.add(EventJurisdictionBooleanValidator.of(eventJurisdiction, userJurisdiction));
+        }
 
         return new TaskJurisdictionBooleanValidator(taskJurisdictionDto, userJurisdiction, associatedJurisdictionValidators);
     }
