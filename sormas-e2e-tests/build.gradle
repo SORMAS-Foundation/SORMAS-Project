@@ -116,7 +116,7 @@ task createAllureReport(type: Exec) {
 	workingDir System.getProperty("user.dir")
 	def workingDirectory = System.getProperty("user.dir")
 	def isWindows = System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')
-	print("[GRADLE-FILE-INFO]: Is windows value: " + isWindows.toString())
+	print("[GRADLE-FILE-INFO]: Is windows value: " + isWindows.booleanValue())
 	if (isWindows) {
 		commandLine 'cmd', '/c', 'allure.bat', 'generate', "${workingDirectory}/build/allure-results", '-c', '-o', "${workingDirectory}/allureReports"
 	} else {
