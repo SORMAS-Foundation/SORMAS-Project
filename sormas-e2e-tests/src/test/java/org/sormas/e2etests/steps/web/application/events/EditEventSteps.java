@@ -34,7 +34,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Event;
 import org.sormas.e2etests.pojo.web.EventGroup;
@@ -200,12 +199,15 @@ public class EditEventSteps implements En {
                   + "/sormas-ui/#!events/eventactions/"
                   + apiState.getCreatedEvent().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_ACTIONS_URL);
+          webDriverHelpers.waitForPageLoaded();
         });
 
     Then(
         "I click on New Action from Event Actions tab",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("div#actionCreate"));
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CREATE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
         });
 
     Then(
