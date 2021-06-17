@@ -97,6 +97,8 @@ public class ChooseSourceCaseSteps implements En {
               .assertThat(apiState.getCreatedCase().getCaseClassification())
               .isEqualToIgnoringCase(caseClassification);
           softly
+          // this substring method will return the first 6 characters from the UUID.
+          // those characters are used in UI as the Case ID.
               .assertThat(apiState.getCreatedCase().getUuid().substring(0, 6))
               .isEqualToIgnoringCase(caseId);
           softly.assertAll();
