@@ -107,7 +107,6 @@ import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
-import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -1337,19 +1336,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, ContactJoins<?> joins) {
-
 		final User currentUser = userService.getCurrentUser();
-
-		final Predicate reportedByCurrentUser =
-			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
-
-		final Predicate jurisdictionPredicate =
-			ContactJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
-
-		return cb.or(
-			reportedByCurrentUser,
-			jurisdictionPredicate,
-			cb.and(cb.isNull(joins.getRoot().get(Contact.REGION)), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+		return ContactJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdictionOrOwned();
 	}
 
 	public boolean isContactEditAllowed(Contact contact) {

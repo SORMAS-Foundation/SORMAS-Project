@@ -41,8 +41,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
-import de.symeda.sormas.api.task.TaskIndexDto;
-import de.symeda.sormas.api.task.TaskJurisdictionDto;
+import de.symeda.sormas.api.task.TaskJurisdictionFlagsDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -50,7 +49,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
@@ -62,6 +60,7 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -460,10 +459,10 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		em.createQuery(cu).executeUpdate();
 	}
 
-	public TaskJurisdictionDto inJurisdictionOrOwned(Task task) {
+	public TaskJurisdictionFlagsDto inJurisdictionOrOwned(Task task) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TaskJurisdictionDto> cq = cb.createQuery(TaskJurisdictionDto.class);
+		CriteriaQuery<TaskJurisdictionFlagsDto> cq = cb.createQuery(TaskJurisdictionFlagsDto.class);
 		Root<Task> root = cq.from(Task.class);
 
 		TaskJoins joins = new TaskJoins(root);
@@ -494,22 +493,6 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, TaskJoins joins) {
 		final User currentUser = userService.getCurrentUser();
-
-		final Predicate createdByCurrentUser =
-			cb.and(cb.isNotNull(joins.getCreator()), cb.equal(joins.getCreator().get(User.UUID), currentUser.getUuid()));
-
-		final Predicate assignedToCurrentUser =
-			cb.and(cb.isNotNull(joins.getAssignee()), cb.equal(joins.getAssignee().get(User.UUID), currentUser.getUuid()));
-
-		final Predicate caseJurisdiction =
-			cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())));
-
-		final Predicate contactJurisdiction =
-			cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(cb, new ContactJoins<>(joins.getContact())));
-
-		final Predicate eventJurisdiction =
-			cb.and(cb.isNotNull(joins.getEvent()), eventService.inJurisdictionOrOwned(cb, new EventJoins<>(joins.getEvent())));
-
-		return cb.or(createdByCurrentUser, assignedToCurrentUser, caseJurisdiction, contactJurisdiction, eventJurisdiction);
+		return TaskJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdictionOrOwned();
 	}
 }

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -857,22 +856,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	public Predicate inJurisdiction(CriteriaBuilder cb, EventJoins<?> joins) {
 		final User currentUser = userService.getCurrentUser();
-
-		return EventJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
+		return EventJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction();
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, EventJoins<?> joins) {
 		final User currentUser = userService.getCurrentUser();
-
-		final Predicate reportedByCurrentUser =
-			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
-
-		final Predicate currentUserResponsible =
-			cb.and(cb.isNotNull(joins.getResponsibleUser()), cb.equal(joins.getResponsibleUser().get(User.UUID), currentUser.getUuid()));
-
-		final Predicate jurisdictionPredicate = inJurisdiction(cb, joins);
-
-		return cb.or(reportedByCurrentUser, currentUserResponsible, jurisdictionPredicate);
+		return EventJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdictionOrOwned();
 	}
 
 	@Transactional(rollbackOn = Exception.class)

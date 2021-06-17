@@ -90,7 +90,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	private UserReferenceDto assigneeUser;
 	private String assigneeReply;
 
-	private TaskJurisdictionDto taskJurisdictionDto;
+	private TaskJurisdictionFlagsDto taskJurisdictionFlagsDto;
 
 	//@formatter:off
 	public TaskIndexDto(String uuid, TaskContext taskContext, String caseUuid, String caseFirstName, String caseLastName,
@@ -134,7 +134,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.district = district;
 		this.region = region;
 
-		this.taskJurisdictionDto =  new TaskJurisdictionDto(isInJurisdiction, isCaseInJurisdiction, isContactInJurisdiction, isContactCaseInJurisdiction, isEventInJurisdiction);
+		this.taskJurisdictionFlagsDto =  new TaskJurisdictionFlagsDto(isInJurisdiction, isCaseInJurisdiction, isContactInJurisdiction, isContactCaseInJurisdiction, isEventInJurisdiction);
 	}
 
 	public TaskContext getTaskContext() {
@@ -288,7 +288,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.community = community;
 	}
 
-	public TaskJurisdictionDto getTaskJurisdictionDto() {
-		return taskJurisdictionDto;
+	public TaskJurisdictionFlagsDto getTaskJurisdictionFlagsDto() {
+		return taskJurisdictionFlagsDto;
 	}
 }

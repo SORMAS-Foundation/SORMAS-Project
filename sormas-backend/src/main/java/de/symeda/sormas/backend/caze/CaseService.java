@@ -1257,16 +1257,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CaseJoins<?> joins) {
-
 		final User currentUser = userService.getCurrentUser();
-
-		final Predicate reportedByCurrentUser =
-				cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
-
-		final Predicate jurisdictionPredicate =
-				CaseJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
-
-		return cb.or(reportedByCurrentUser, jurisdictionPredicate);
+		return CaseJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdictionOrOwned();
 	}
 
 	public Collection<Case> getByPersonUuids(List<String> personUuids) {

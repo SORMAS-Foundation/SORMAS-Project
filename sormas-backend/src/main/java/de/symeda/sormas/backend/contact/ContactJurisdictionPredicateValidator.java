@@ -16,30 +16,46 @@
 
 package de.symeda.sormas.backend.contact;
 
+import java.util.Collections;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
+import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
+import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.utils.CaseJoins;
 
-public class ContactJurisdictionPredicateValidator extends JurisdictionValidator<Predicate> {
+public class ContactJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final CriteriaBuilder cb;
 	private final ContactJoins<?> joins;
 	private final User currentUser;
 
 	private ContactJurisdictionPredicateValidator(CriteriaBuilder cb, ContactJoins<?> joins, User currentUser) {
-		this.cb = cb;
+		super(cb, Collections.singletonList(CaseJurisdictionPredicateValidator.of(cb, new CaseJoins<>(joins.getCaze()), currentUser)));
 		this.joins = joins;
 		this.currentUser = currentUser;
 	}
 
 	public static ContactJurisdictionPredicateValidator of(CriteriaBuilder cb, ContactJoins<?> joins, User currentUser) {
 		return new ContactJurisdictionPredicateValidator(cb, joins, currentUser);
+	}
+
+	@Override
+	protected Predicate isInJurisdictionOrOwned() {
+		final Predicate reportedByCurrentUser =
+			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
+
+		return cb.or(reportedByCurrentUser, inJurisdiction());
+	}
+
+	@Override
+	protected Predicate isInJurisdiction() {
+		return isInJurisdictionByJurisdictionLevel(currentUser.getJurisdictionLevel());
 	}
 
 	@Override

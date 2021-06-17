@@ -14,7 +14,7 @@
  *
  */
 
-package de.symeda.sormas.backend.sample;
+package de.symeda.sormas.backend.person;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,38 +27,35 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.event.EventParticipantJurisdictionPredicateValidator;
-import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.utils.CaseJoins;
 import de.symeda.sormas.utils.EventParticipantJoins;
 
-public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
+public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-    private final SampleJoins<?> joins;
+    private final PersonJoins joins;
     private final User currentUser;
 
-    private SampleJurisdictionPredicateValidator(CriteriaBuilder cb, SampleJoins<?> joins, User currentUser, List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
+    private PersonJurisdictionPredicateValidator(CriteriaBuilder cb, PersonJoins joins, User currentUser, List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
         super(cb, associatedJurisdictionValidators);
         this.joins = joins;
         this.currentUser = currentUser;
     }
 
-	public static SampleJurisdictionPredicateValidator of(CriteriaBuilder cb, SampleJoins<?> joins, User currentUser) {
+	public static PersonJurisdictionPredicateValidator of(CriteriaBuilder cb, PersonJoins joins, User currentUser) {
 		final List<PredicateJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
 
 		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(cb, new CaseJoins<>(joins.getCaze()), currentUser));
 		associatedJurisdictionValidators.add(ContactJurisdictionPredicateValidator.of(cb, new ContactJoins<>(joins.getContact()), currentUser));
 		associatedJurisdictionValidators
-			.add(EventParticipantJurisdictionPredicateValidator.of(cb, new EventParticipantJoins(joins.getEventParticipant()), currentUser));
+			.add(EventParticipantJurisdictionPredicateValidator.of(cb, new EventParticipantJoins<>(joins.getEventParticipant()), currentUser));
 
-		return new SampleJurisdictionPredicateValidator(cb, joins, currentUser, associatedJurisdictionValidators);
+		return new PersonJurisdictionPredicateValidator(cb, joins, currentUser, associatedJurisdictionValidators);
 	}
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
-		final Predicate reportedByCurrentUser =
-			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
-		return cb.or(reportedByCurrentUser, isInJurisdiction());
+		return isInJurisdiction();
 	}
 
     @Override
@@ -103,6 +100,6 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 
     @Override
     protected Predicate whenLaboratoryLevel() {
-        return cb.equal(joins.getLab().get(Facility.ID), currentUser.getLaboratory().getId());
+        return cb.disjunction();
     }
 }

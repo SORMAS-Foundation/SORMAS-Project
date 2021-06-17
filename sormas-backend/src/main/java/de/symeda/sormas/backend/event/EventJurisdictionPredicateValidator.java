@@ -18,16 +18,15 @@ package de.symeda.sormas.backend.event;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
+import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.utils.EventJoins;
 
-public class EventJurisdictionPredicateValidator extends JurisdictionValidator<Predicate> {
+public class EventJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final CriteriaBuilder cb;
 	private final EventJoins<?> joins;
 	private final User currentUser;
 
@@ -36,9 +35,25 @@ public class EventJurisdictionPredicateValidator extends JurisdictionValidator<P
 	}
 
 	private EventJurisdictionPredicateValidator(CriteriaBuilder cb, EventJoins<?> joins, User currentUser) {
-		this.cb = cb;
+		super(cb, null);
 		this.joins = joins;
 		this.currentUser = currentUser;
+	}
+
+	@Override
+	protected Predicate isInJurisdiction() {
+		return isInJurisdictionByJurisdictionLevel(currentUser.getJurisdictionLevel());
+	}
+
+	@Override
+	protected Predicate isInJurisdictionOrOwned() {
+		final Predicate reportedByCurrentUser =
+				cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
+
+		final Predicate currentUserResponsible =
+				cb.and(cb.isNotNull(joins.getResponsibleUser()), cb.equal(joins.getResponsibleUser().get(User.UUID), currentUser.getUuid()));
+
+		return cb.or(reportedByCurrentUser, currentUserResponsible,  isInJurisdiction());
 	}
 
 	@Override

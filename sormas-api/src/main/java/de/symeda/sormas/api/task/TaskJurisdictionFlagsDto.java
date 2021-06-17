@@ -16,7 +16,7 @@
 
 package de.symeda.sormas.api.task;
 
-public class TaskJurisdictionDto {
+public class TaskJurisdictionFlagsDto {
 
     private Boolean isInJurisdiction;
     private Boolean isCaseInJurisdiction;
@@ -24,7 +24,7 @@ public class TaskJurisdictionDto {
     private Boolean isContactCaseInJurisdiction;
 	private Boolean isEvenInJurisdiction;
 
-	public TaskJurisdictionDto(
+	public TaskJurisdictionFlagsDto(
 		boolean isInJurisdiction,
 		boolean isCaseInJurisdiction,
 		boolean isContactInJurisdiction,

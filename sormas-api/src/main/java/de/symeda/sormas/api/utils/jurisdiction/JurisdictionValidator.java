@@ -15,11 +15,50 @@
 
 package de.symeda.sormas.api.utils.jurisdiction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.api.user.JurisdictionLevel;
 
 public abstract class JurisdictionValidator<T> {
 
-	public T isInJurisdiction(JurisdictionLevel jurisdictionLevel) {
+	public List<? extends JurisdictionValidator<T>> associatedJurisdictionValidators;
+
+	public JurisdictionValidator(List<? extends JurisdictionValidator<T>> associatedJurisdictionValidators) {
+		this.associatedJurisdictionValidators = associatedJurisdictionValidators;
+	}
+
+	public T inJurisdictionOrOwned() {
+		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
+			final List<T> jurisdictionTypes = new ArrayList<>();
+			jurisdictionTypes.add(isInJurisdictionOrOwned());
+			for (JurisdictionValidator<T> jurisdictionValidator : associatedJurisdictionValidators) {
+				jurisdictionTypes.add(jurisdictionValidator.isInJurisdictionOrOwned());
+			}
+			return or(jurisdictionTypes);
+		} else {
+			return isInJurisdictionOrOwned();
+		}
+	}
+
+	public T inJurisdiction() {
+		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
+			final List<T> jurisdictionTypes = new ArrayList<>();
+			jurisdictionTypes.add(isInJurisdiction());
+			for (JurisdictionValidator<T> jurisdictionValidator : associatedJurisdictionValidators) {
+				jurisdictionTypes.add(jurisdictionValidator.isInJurisdiction());
+			}
+			return or(jurisdictionTypes);
+		} else {
+			return isInJurisdiction();
+		}
+	}
+
+	protected abstract T isInJurisdiction();
+
+	protected abstract T isInJurisdictionOrOwned();
+
+	protected T isInJurisdictionByJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
 
 		switch (jurisdictionLevel) {
 
@@ -45,6 +84,8 @@ public abstract class JurisdictionValidator<T> {
 			return whenNotAllowed();
 		}
 	}
+
+	protected abstract T or(List<T> jurisdictionTypes);
 
 	protected abstract T whenNotAllowed();
 

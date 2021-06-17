@@ -21,7 +21,6 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -64,7 +63,6 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -77,8 +75,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless
 @LocalBean
@@ -378,16 +374,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, SampleJoins<?> joins) {
 		final User currentUser = userService.getCurrentUser();
-
-		final Predicate reportedByCurrentUser =
-				cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
-
-		final Predicate jurisdictionPredicate = cb.or(
-				SampleJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel()),
-				caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())),
-				contactService.inJurisdictionOrOwned(cb, new ContactJoins(joins.getContact())),
-				eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(joins.getEventParticipant())));
-		return cb.or(reportedByCurrentUser, jurisdictionPredicate);
+		return SampleJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdictionOrOwned();
 	}
 
 	public Predicate buildCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {

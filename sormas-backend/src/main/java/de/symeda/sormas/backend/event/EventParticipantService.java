@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -425,24 +424,11 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 	public Predicate inJurisdiction(CriteriaBuilder cb, EventParticipantJoins joins) {
 		final User currentUser = this.getCurrentUser();
-
-		Predicate jurisdictionPredicate =
-			EventParticipantJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
-
-		return jurisdictionPredicate;
+		return EventParticipantJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdiction();
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, EventParticipantJoins joins) {
-
 		final User currentUser = this.getCurrentUser();
-
-		final Predicate reportedByCurrentUser = cb.and(
-			cb.isNotNull(joins.getEventParticipantReportingUser()),
-			cb.equal(joins.getEventParticipantReportingUser().get(User.UUID), currentUser.getUuid()));
-
-		final Predicate jurisdictionPredicate = inJurisdiction(cb, joins);
-
-		return cb.or(reportedByCurrentUser, jurisdictionPredicate);
+		return EventParticipantJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdictionOrOwned();
 	}
-
 }
