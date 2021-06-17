@@ -217,6 +217,7 @@ import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.event.EventSummaryDetails;
 import de.symeda.sormas.backend.exposure.Exposure;
+import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.Facility;
@@ -380,6 +381,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private TreatmentService treatmentService;
 	@EJB
 	private ClinicalVisitService clinicalVisitService;
+	@EJB
+	private ExposureService exposureService;
 	@EJB
 	private OutbreakService outbreakService;
 	@EJB
@@ -2005,8 +2008,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public int updateCompleteness() {
 		List<String> getCompletenessCheckCaseList = getCompletenessCheckNeededCaseList();
 
-			IterableHelper
-				.executeBatched(getCompletenessCheckCaseList, 10, caseCompletionBatch -> caseService.updateCompleteness(caseCompletionBatch));
+		IterableHelper.executeBatched(getCompletenessCheckCaseList, 10, caseCompletionBatch -> caseService.updateCompleteness(caseCompletionBatch));
 
 		return getCompletenessCheckCaseList.size();
 	}
@@ -3191,6 +3193,17 @@ public class CaseFacadeEjb implements CaseFacade {
 			document.setRelatedEntityUuid(leadCaseData.getUuid());
 
 			documentService.ensurePersisted(document);
+		}
+
+		// 7 Exposures - Make sure there are no two probable infection environments
+		// if there are more than 2 exposures marked as probable infection environment, find the one that originates from the otherCase and set it to false
+		// the one originating from the otherCase should always be found at the higher index
+		List<Exposure> probableExposuresList =
+			leadCase.getEpiData().getExposures().stream().filter(Exposure::isProbableInfectionEnvironment).collect(Collectors.toList());
+		while (probableExposuresList.size() >= 2) { // should never be > 2, but still make sure to set all but one exposures to false
+			probableExposuresList.get(probableExposuresList.size() - 1).setProbableInfectionEnvironment(false);
+			exposureService.ensurePersisted(probableExposuresList.get(probableExposuresList.size() - 1));
+			probableExposuresList.remove(probableExposuresList.size() - 1);
 		}
 	}
 
