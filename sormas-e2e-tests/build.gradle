@@ -120,7 +120,7 @@ task createAllureReport(type: Exec) {
 	if (isWindows) {
 		commandLine 'cmd', '/c', 'allure.bat', 'generate', "${workingDirectory}/build/allure-results", '-c', '-o', "${workingDirectory}/allureReports"
 	} else {
-		commandLine "allure", 'generate', "${workingDirectory}/build/allure-results", '-c', '-o', "${workingDirectory}/allureReports"
+		commandLine 'bash', '-c', 'allure', 'generate', "${workingDirectory}/build/allure-results", '-c', '-o', "${workingDirectory}/allureReports"
 	}
 }
 
