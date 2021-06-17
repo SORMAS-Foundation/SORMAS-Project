@@ -502,34 +502,45 @@ public class EventsView extends AbstractView {
 				EventGrid eventGrid = (EventGrid) grid;
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, selectedItem -> {
-						ControllerProvider.getEventController().showBulkEventDataEditComponent(eventGrid.asMultiSelect().getSelectedItems());
-					}),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-						ControllerProvider.getEventController()
-							.deleteAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria));
-					}),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
-						ControllerProvider.getEventController()
-							.archiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria));
-					}, EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
-						ControllerProvider.getEventController()
-							.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria));
-					}, EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionGroupEvent), VaadinIcons.FILE_TREE, selectedItem -> {
-						ControllerProvider.getEventGroupController()
-							.linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria));
-					}),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.bulkEdit),
+						VaadinIcons.ELLIPSIS_H,
+						mi -> grid.bulkActionHandler(items -> ControllerProvider.getEventController().showBulkEventDataEditComponent(items))),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.bulkDelete),
+						VaadinIcons.TRASH,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, () -> navigateTo(eventCriteria)),
+							true)),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.actionArchive),
+						VaadinIcons.ARCHIVE,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, () -> navigateTo(eventCriteria)),
+							true),
+						EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.actionDearchive),
+						VaadinIcons.ARCHIVE,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventController()
+								.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria)),
+							true),
+						EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.actionGroupEvent),
+						VaadinIcons.FILE_TREE,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventGroupController()
+								.linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria)))),
 					new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
 						VaadinIcons.SHARE,
-						selectedItem -> {
-							ControllerProvider.getEventController()
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventController()
 								.sendAllSelectedToExternalSurveillanceTool(
 									eventGrid.asMultiSelect().getSelectedItems(),
-									() -> navigateTo(eventCriteria));
-						}));
+									() -> navigateTo(eventCriteria)))));
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				bulkOperationsDropdown.setCaption("");
@@ -564,6 +575,7 @@ public class EventsView extends AbstractView {
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return statusFilterLayout;
+
 	}
 
 	@Override
