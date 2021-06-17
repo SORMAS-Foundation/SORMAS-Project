@@ -23,7 +23,6 @@ import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
