@@ -3199,9 +3199,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		// the one originating from the otherCase should always be found at the higher index
 		List<Exposure> probableExposuresList =
 			leadCase.getEpiData().getExposures().stream().filter(Exposure::isProbableInfectionEnvironment).collect(Collectors.toList());
-		if (probableExposuresList.size() >= 2) { // should never be > 2, but still make sure
+		while (probableExposuresList.size() >= 2) { // should never be > 2, but still make sure to set all but one exposures to false
 			probableExposuresList.get(probableExposuresList.size() - 1).setProbableInfectionEnvironment(false);
 			exposureService.ensurePersisted(probableExposuresList.get(probableExposuresList.size() - 1));
+			probableExposuresList.remove(probableExposuresList.size() - 1);
 		}
 	}
 
