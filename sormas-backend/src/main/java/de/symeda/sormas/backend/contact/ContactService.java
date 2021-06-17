@@ -813,7 +813,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				if (contact.getFollowUpStatus() != FollowUpStatus.COMPLETED && contact.getContactStatus() == ContactStatus.CONVERTED) {
 					// Cancel follow-up if the contact was converted to a case
 					contact.setFollowUpStatus(FollowUpStatus.CANCELED);
-					contact.setFollowUpComment(I18nProperties.getString(Strings.messageSystemFollowUpCanceled));
+					String followUpComment = contact.getFollowUpComment();
+					followUpComment = followUpComment == null | "".equals(followUpComment)
+						? I18nProperties.getString(Strings.messageSystemFollowUpCanceled)
+						: followUpComment + "\n" + I18nProperties.getString(Strings.messageSystemFollowUpCanceled);
+					contact.setFollowUpComment(followUpComment);
 				}
 				statusChangedBySystem = true;
 			}
@@ -832,7 +836,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	public void cancelFollowUp(Contact contact, String comment) {
 		contact.setFollowUpStatus(FollowUpStatus.CANCELED);
-		contact.setFollowUpComment(comment);
+		String followUpComment = contact.getFollowUpComment();
+		followUpComment = followUpComment == null | "".equals(followUpComment) ? comment : followUpComment + "\n" + comment;
+		contact.setFollowUpComment(followUpComment);
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		ensurePersisted(contact);
 	}
@@ -1393,7 +1399,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException{
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
 	}
 
