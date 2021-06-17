@@ -1157,6 +1157,7 @@ public interface Strings {
 	String promptUserSearch = "promptUserSearch";
 	String promtSampleDataType = "promtSampleDataType";
 	String pseudonymizedCasesSelectedWarning = "pseudonymizedCasesSelectedWarning";
+	String pseudonymizedEntitiesSelectedWarning = "pseudonymizedEntitiesSelectedWarning";
 	String quarantineEnd = "quarantineEnd";
 	String quarterShort = "quarterShort";
 	String reportedBy = "reportedBy";
