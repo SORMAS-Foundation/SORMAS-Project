@@ -92,10 +92,10 @@ Feature: Create events
   Scenario: Add a New action from Event Actions tab and verify the fields.
     Given API: I create a new event
     Given I log in with the user
-    And I click on the Events button from navbar
-    Then I open last created Event Actions tab
-    Then I create New Action from event tab
-    And I click on Event Actions tab
+    Then I navigate to Event Action tab for created Event
+    And I click on New Action from Event Actions tab
+    And I create New Action from event tab
+    Then I navigate to Event Action tab for created Event
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
 

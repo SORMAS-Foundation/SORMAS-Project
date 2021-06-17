@@ -34,6 +34,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Event;
 import org.sormas.e2etests.pojo.web.EventGroup;
@@ -191,15 +192,24 @@ public class EditEventSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ACTION_POPUP);
         });
 
-      When(
-              "I click on Event Action tab from Event details",
-              () -> {
-                  String LAST_CREATED_EVENT_ACTIONS_URL = environmentUrl + "/sormas-ui/#!events/eventactions/" + apiState.getCreatedEvent().getUuid();
-                  webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_ACTIONS_URL);
-              });
+    When(
+        "I navigate to Event Action tab for created Event",
+        () -> {
+          String LAST_CREATED_EVENT_ACTIONS_URL =
+              environmentUrl
+                  + "/sormas-ui/#!events/eventactions/"
+                  + apiState.getCreatedEvent().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_ACTIONS_URL);
+        });
 
     Then(
-        "I open last created Event Actions tab",
+        "I click on New Action from Event Actions tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("div#actionCreate"));
+        });
+
+    Then(
+        "I click on Event Actions tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EVENT_ACTIONS_TAB);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CREATE_BUTTON);

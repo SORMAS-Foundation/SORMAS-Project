@@ -56,7 +56,7 @@ public class CreateNewActionSteps implements En {
           fillDescription("Dummy description for automated test");
           selectActionStatus(action.getActionStatus());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+          //webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
         });
   }
 
