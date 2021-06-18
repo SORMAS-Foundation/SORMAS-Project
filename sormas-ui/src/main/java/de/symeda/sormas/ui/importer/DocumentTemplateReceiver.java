@@ -13,6 +13,7 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 
+import com.vaadin.ui.Upload;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.i18n.Captions;
@@ -24,7 +25,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-public class DocumentTemplateReceiver implements com.vaadin.v7.ui.Upload.Receiver, com.vaadin.v7.ui.Upload.SucceededListener {
+public class DocumentTemplateReceiver implements com.vaadin.ui.Upload.Receiver, Upload.SucceededListener {
 
 	private File file;
 	private String fName;
@@ -70,7 +71,7 @@ public class DocumentTemplateReceiver implements com.vaadin.v7.ui.Upload.Receive
 	}
 
 	@Override
-	public void uploadSucceeded(com.vaadin.v7.ui.Upload.SucceededEvent succeededEvent) {
+	public void uploadSucceeded(com.vaadin.ui.Upload.SucceededEvent succeededEvent) {
 		if (file == null) {
 			return;
 		}

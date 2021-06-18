@@ -19,7 +19,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.Upload;
+import com.vaadin.ui.Upload;
 import com.vaadin.v7.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;

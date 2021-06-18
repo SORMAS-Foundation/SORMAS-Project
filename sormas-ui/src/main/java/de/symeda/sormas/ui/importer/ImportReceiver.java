@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.v7.ui.Upload.Receiver;
-import com.vaadin.v7.ui.Upload.SucceededEvent;
-import com.vaadin.v7.ui.Upload.SucceededListener;
+import com.vaadin.ui.Upload.Receiver;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Upload.SucceededListener;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
