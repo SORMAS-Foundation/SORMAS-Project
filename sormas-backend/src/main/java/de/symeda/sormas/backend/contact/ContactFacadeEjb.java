@@ -1362,11 +1362,20 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (existingContactDto != null) {
 			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdictionOrOwned(existingContact);
 			User currentUser = userService.getCurrentUser();
+
+			String followUpComment = null;
+			if (dto.isPseudonymized()) {
+				followUpComment = dto.getFollowUpComment();
+			}
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
 			pseudonymizer.restoreUser(existingContact.getReportingUser(), currentUser, dto, dto::setReportingUser);
 			pseudonymizer.restorePseudonymizedValues(ContactDto.class, dto, existingContactDto, isInJurisdiction);
 			pseudonymizer.restorePseudonymizedValues(EpiDataDto.class, dto.getEpiData(), existingContactDto.getEpiData(), isInJurisdiction);
+
+			if (followUpComment != null) {
+				dto.addToFollowUpComment(followUpComment);
+			}
 		}
 	}
 
