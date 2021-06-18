@@ -100,7 +100,7 @@ task copyGeneratedReport(type: Copy) {
 	into file("allureReports")
 	// print info
 	println("[GRADLE-INFO] : Moving files from allure-report to allureReports folder")
-	println file("allureReports").listFiles().toString()
+	println file("allureReports").listFiles()
 }
 
 task copyToGeneratedReport(type: Copy) {
@@ -113,7 +113,7 @@ task copyCategoriesJson(type: Copy) {
 	into file("$buildDir/allure-results")
 	// print info
 	println("[GRADLE-INFO] : Listing all files from allure-results folder after copying jsons from categories.json")
-	println file("$buildDir/allure-results").listFiles().toString()
+	println file("$buildDir/allure-results").listFiles()
 }
 task copyEnvironmentProperties(type: Copy) {
 	dependsOn 'copyCategoriesJson'
@@ -122,7 +122,7 @@ task copyEnvironmentProperties(type: Copy) {
 	into file("$buildDir/allure-results")
 	// print info
 	println("[GRADLE-INFO] : Listing all files from allure-results folder after copying jsons from environment.properties ")
-	println file("$buildDir/allure-results").listFiles().toString()
+	println file("$buildDir/allure-results").listFiles()
 }
 
 task createAllureReport(type: Exec) {
@@ -135,15 +135,15 @@ task createAllureReport(type: Exec) {
 	} else {
 		println("[GRADLE-INFO] : Running command to generate allure reports")
 
-		def filesFromAllureResultsBeforeGeneration = file("${workingDirectory}/build/allure-results").listFiles().toString()
+		def filesFromAllureResultsBeforeGeneration = file("${workingDirectory}/build/allure-results").listFiles()
 		println ("[GRADLE-INFO] : " + filesFromAllureResultsBeforeGeneration + " files in allure-results folder")
 
-		def filesFromAllureReportsBeforeGeneration = file("${workingDirectory}/allureReports").listFiles().toString()
+		def filesFromAllureReportsBeforeGeneration = file("${workingDirectory}/allureReports").listFiles()
 		println ("[GRADLE-INFO] : " + filesFromAllureReportsBeforeGeneration + " files in allureReports folder")
 
 		commandLine "allure", 'generate', "${workingDirectory}/build/allure-results", '-c', '-o', "${workingDirectory}/allureReports"
 
-		def filesFromAllureReportsAfterGeneration = file("${workingDirectory}/allureReports").listFiles().toString()
+		def filesFromAllureReportsAfterGeneration = file("${workingDirectory}/allureReports").listFiles()
 		println ("[GRADLE-INFO] : " + filesFromAllureReportsAfterGeneration + " files in allureReports folder")
 	}
 }
