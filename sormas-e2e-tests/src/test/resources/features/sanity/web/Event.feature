@@ -88,7 +88,7 @@ Feature: Create events
     And I click on Event Actions tab
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
-    
+
   Scenario: Add a New action from Event Actions tab and verify the fields.
     Given I log in with the user
     Given API: I create a new event
