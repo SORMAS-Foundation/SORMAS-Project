@@ -654,7 +654,8 @@ public class ContactController {
 				confirmed -> {
 					if (confirmed) {
 						for (ContactIndexDto contact : selectedRows) {
-							if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())) {
+							if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
+								&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
 								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 								contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
 								contactDto.addToFollowUpComment(
