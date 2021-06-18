@@ -59,7 +59,6 @@ import org.apache.commons.lang.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
@@ -69,6 +68,8 @@ import de.symeda.sormas.api.event.EventGroupsIndexDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -98,7 +99,9 @@ import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEvent;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -178,20 +181,9 @@ public class EventFacadeEjb implements EventFacade {
 		return eventService.getDeletedUuidsSince(since);
 	}
 
-	@Override
-	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
-
-		return eventService.getNewEventsForDashboard(eventCriteria);
-	}
-
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
 
 		return eventService.getEventCountByDisease(eventCriteria);
-	}
-
-	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
-
-		return eventService.getEventCountByStatus(eventCriteria);
 	}
 
 	@Override
@@ -221,6 +213,10 @@ public class EventFacadeEjb implements EventFacade {
 		EventDto existingDto = toDto(existingEvent);
 
 		restorePseudonymizedDto(dto, existingEvent, existingDto, pseudonymizer);
+
+		if (dto.getReportDateTime() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
+		}
 
 		Event event = fromDto(dto, checkChangeDate);
 		eventService.ensurePersisted(event);
@@ -286,9 +282,11 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Event, User> responsibleUser = event.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
 
 		cq.multiselect(
+			event.get(Event.ID),
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EXTERNAL_TOKEN),
+			event.get(Event.INTERNAL_TOKEN),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
@@ -347,6 +345,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.UUID:
 				case EventIndexDto.EXTERNAL_ID:
 				case EventIndexDto.EXTERNAL_TOKEN:
+				case EventIndexDto.INTERNAL_TOKEN:
 				case EventIndexDto.EVENT_STATUS:
 				case EventIndexDto.RISK_LEVEL:
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:
@@ -427,6 +426,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		if (CollectionUtils.isNotEmpty(indexList)) {
 			List<String> eventUuids = indexList.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
+			List<Long> eventIds = indexList.stream().map(EventIndexDto::getId).collect(Collectors.toList());
 			List<Object[]> objectQueryList = null;
 
 			// Participant, Case and Death Count
@@ -519,7 +519,7 @@ public class EventFacadeEjb implements EventFacade {
 			}
 
 			if (externalSurveillanceToolFacade.isFeatureEnabled()) {
-				survToolShareCountAndDates = externalShareInfoService.getEventShareCountAndLatestDate(eventUuids)
+				survToolShareCountAndDates = externalShareInfoService.getEventShareCountAndLatestDate(eventIds)
 					.stream()
 					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
 			}
@@ -568,6 +568,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EXTERNAL_TOKEN),
+			event.get(Event.INTERNAL_TOKEN),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
@@ -840,7 +841,8 @@ public class EventFacadeEjb implements EventFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Event> eventRoot = cq.from(Event.class);
-		Join<Event, SormasToSormasShareInfo> sormasToSormasJoin = eventRoot.join(Event.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT);
+		Join<ShareInfoEvent, SormasToSormasShareInfo> sormasToSormasJoin =
+			eventRoot.join(Event.SHARE_INFO_EVENTS, JoinType.LEFT).join(ShareInfoEvent.SHARE_INFO, JoinType.LEFT);
 
 		cq.select(eventRoot.get(Event.UUID));
 		cq.where(cb.and(eventRoot.get(Event.UUID).in(eventUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
@@ -979,10 +981,10 @@ public class EventFacadeEjb implements EventFacade {
 		target.setLaboratoryDiagnosticEvidence(source.getLaboratoryDiagnosticEvidence());
 		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
 
-		target.setInternalId(source.getInternalId());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
+		target.setOwnershipHandedOver(source.getShareInfoEvents().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		return target;
 	}
@@ -1081,7 +1083,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setLaboratoryDiagnosticEvidence(source.getLaboratoryDiagnosticEvidence());
 		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
 
-		target.setInternalId(source.getInternalId());
+		target.setInternalToken(source.getInternalToken());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
@@ -1137,8 +1139,11 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String eventUuid) {
 		return eventService.exists(
-			(cb, eventRoot) -> CriteriaBuilderHelper
-				.and(cb, cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken), cb.notEqual(eventRoot.get(Event.UUID), eventUuid)));
+			(cb, eventRoot) -> CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken),
+				cb.notEqual(eventRoot.get(Event.UUID), eventUuid),
+				cb.notEqual(eventRoot.get(Event.DELETED), Boolean.TRUE)));
 	}
 
 	@Override
@@ -1162,6 +1167,11 @@ public class EventFacadeEjb implements EventFacade {
 			em.createQuery(cq).getResultList().stream().map(RegionReferenceDto::new).forEach(regionReferenceDtos::add);
 		});
 		return regionReferenceDtos;
+	}
+
+	@Override
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+		eventService.updateExternalData(externalData);
 	}
 
 	@LocalBean

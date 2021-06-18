@@ -26,6 +26,7 @@ import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,16 +48,20 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.transaction.Transactional;
 
-import de.symeda.sormas.api.person.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -77,7 +82,11 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.ExternalDataUtil;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless
 @LocalBean
@@ -388,14 +397,10 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Subquery<Long> eventParticipantJurisdictionSubQuery = cq.subquery(Long.class);
 		final Root<EventParticipant> eventParticipantRoot = eventParticipantJurisdictionSubQuery.from(EventParticipant.class);
 		eventParticipantJurisdictionSubQuery.select(eventParticipantRoot.get(EventParticipant.ID));
-
-//		final Predicate reportedByCurrentUser = cb.and(
-//			cb.isNotNull(eventParticipantRoot.get(EventParticipant.REPORTING_USER)),
-//			cb.equal(eventParticipantRoot.get(EventParticipant.REPORTING_USER), getCurrentUser()));
-//		eventParticipantJurisdictionSubQuery
-//			.where(cb.and(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON).get(Person.ID), personId), reportedByCurrentUser));
-		eventParticipantJurisdictionSubQuery.where(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON).get(Person.ID), personId));
-
+		eventParticipantJurisdictionSubQuery.where(
+			cb.and(
+				cb.equal(eventParticipantRoot.get(EventParticipant.PERSON).get(Person.ID), personId),
+				eventParticipantService.isInJurisdictionOrOwned(cb, cq, eventParticipantRoot, new EventParticipantJoins<>(eventParticipantRoot))));
 		final Predicate isEventParticipantInJurisdiction = cb.exists(eventParticipantJurisdictionSubQuery);
 
 		return cb.or(isCaseInJurisdiction, isContactInJurisdiction, isEventParticipantInJurisdiction);
@@ -404,6 +409,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	public List<PersonNameDto> getMatchingNameDtos(PersonSimilarityCriteria criteria, Integer limit) {
 
 		setSimilarityThresholdQuery();
+		boolean activeEntriesOnly = configFacade.isDuplicateChecksExcludePersonsOfArchivedEntries();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		Predicate caseContactEventParticipantLinkPredicate;
@@ -418,17 +424,18 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		// Persons of active cases
 		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
-		Predicate activeCasesFilter = caseService.createActiveCasesFilter(cb, personCaseJoin);
+		Predicate activeCasesFilter = activeEntriesOnly ? caseService.createActiveCasesFilter(cb, personCaseJoin) : null;
 		Predicate caseUserFilter = caseService.createUserFilter(cb, personQuery, personCaseJoin);
 		Predicate personCasePredicate = and(cb, personCaseJoin.get(Case.ID).isNotNull(), activeCasesFilter, caseUserFilter);
 
 		// Persons of active contacts
-		Predicate activeContactsFilter = contactService.createActiveContactsFilter(cb, personContactJoin);
+		Predicate activeContactsFilter = activeEntriesOnly ? contactService.createActiveContactsFilter(cb, personContactJoin) : null;
 		Predicate contactUserFilter = contactService.createUserFilter(cb, personQuery, personContactJoin);
 		Predicate personContactPredicate = and(cb, personContactJoin.get(Contact.ID).isNotNull(), contactUserFilter, activeContactsFilter);
 
 		// Persons of event participants in active events
-		Predicate activeEventParticipantsFilter = eventParticipantService.createActiveEventParticipantsFilter(cb, personEventParticipantJoin);
+		Predicate activeEventParticipantsFilter =
+			activeEntriesOnly ? eventParticipantService.createActiveEventParticipantsFilter(cb, personEventParticipantJoin) : null;
 		Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, personQuery, personEventParticipantJoin);
 		Predicate personEventParticipantPredicate =
 			and(cb, personEventParticipantJoin.get(EventParticipant.ID).isNotNull(), activeEventParticipantsFilter, eventParticipantUserFilter);
@@ -564,6 +571,18 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(personFrom.get(Person.PASSPORT_NUMBER), criteria.getPassportNumber()));
 		}
 
+		String uuidExternalIdExternalTokenLike = criteria.getUuidExternalIdExternalTokenLike();
+		if (!StringUtils.isBlank(uuidExternalIdExternalTokenLike)) {
+			Predicate uuidExternalIdExternalTokenFilter = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
+				cb,
+				uuidExternalIdExternalTokenLike,
+				(searchTerm) -> cb.or(
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.UUID), searchTerm),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_ID), searchTerm),
+					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.EXTERNAL_TOKEN), searchTerm)));
+			filter = CriteriaBuilderHelper.or(cb, filter, uuidExternalIdExternalTokenFilter);
+		}
+
 		return filter;
 	}
 
@@ -606,5 +625,37 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			}
 		}
 		return geoLocationUpdated;
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
+	}
+
+	public List<Person> getByExternalIdsBatched(List<String> externalIds) {
+		if (CollectionUtils.isEmpty(externalIds)) {
+			// Avoid empty IN clause
+			return Collections.emptyList();
+		} else if (externalIds.size() > ModelConstants.PARAMETER_LIMIT) {
+			List<Person> persons = new LinkedList<>();
+			IterableHelper
+				.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> persons.addAll(getByExternalIds(externalIds)));
+			return persons;
+		} else {
+			return getByExternalIds(externalIds);
+		}
+	}
+
+	private List<Person> getByExternalIds(List<String> externalIds) {
+		if (externalIds == null || externalIds.isEmpty()) {
+			return null;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Person> cq = cb.createQuery(getElementClass());
+		Root<Person> from = cq.from(getElementClass());
+		cq.where(from.get(Person.EXTERNAL_ID).in(externalIds));
+
+		return em.createQuery(cq).getResultList();
 	}
 }

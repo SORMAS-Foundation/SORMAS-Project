@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.vaadin.navigator.View;
@@ -34,7 +35,9 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 
 	@Override
 	protected Stream<String> getColumnList() {
-		return Stream.concat(super.getColumnList(), Stream.of(ContactIndexDetailedDto.CAZE, ContactIndexDetailedDto.REPORTING_USER));
+		List<String> columnList = super.getColumnList().collect(Collectors.toList());
+		columnList.add(columnList.indexOf(ContactIndexDetailedDto.CONTACT_PROXIMITY) + 1, ContactIndexDetailedDto.RELATION_TO_CASE);
+		return Stream.concat(columnList.stream(), Stream.of(ContactIndexDetailedDto.CAZE, ContactIndexDetailedDto.REPORTING_USER));
 	}
 
 	@Override

@@ -114,17 +114,13 @@ info:
     firstName\" : \"Maria\",<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;,\"\
     lastName\" : \"Muster\",<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\"\
     gender\" : \"female\"<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\"\
-    birthday\" : null<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;},<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>&emsp;&emsp;&emsp;&emsp;}<br>&emsp;&emsp;]<br>}<br>Currently\
-    \ SORMAS allows the use of one contact detail for several persons when they are\
-    \ assumed to be in the same family.<br>Persons are assumed to live in the same\
-    \ family when their lastNames are identical. So currently SORMAS allows to continue\
-    \ with the registration of a new person only when all the persons of the response\
-    \ share the same lastName with it (or if the response does not contain any matches,\
-    \ which needs to show in <tt>PatientDiaryQueryResponse.count == 0</tt>).<br>This\
-    \ is going to change soon, as persons of the same family don't always share the\
-    \ same lastName. Instead, SORMAS will check if all firstNames are unique. That\
-    \ is necessary to avoid confusion of person related data.<br><br>When there are\
-    \ no validation errors in the process described above, SORMAS fetches an authentication\
+    birthday\" : null<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;},<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;}<br>&emsp;&emsp;&emsp;&emsp;}<br>&emsp;&emsp;]<br>}<br>SORMAS\
+    \ allows to continue with the registration of a new person only when the person\
+    \ has a unique first name, so when all persons of the response have a different\
+    \ one (or if the response does not contain any matches, which needs to show in\
+    \ PatientDiaryQueryResponse.count == 0). This validation is necessary to avoid\
+    \ confusion of person related data in some external journals.<br><br>When there\
+    \ are no validation errors in the process described above, SORMAS fetches an authentication\
     \ token as described in 1. and then uses it to request the external journal to\
     \ register the person:<br><tt>POST [interface.patientdiary.probandsurl]/external-data/[personUUID]</tt><br>The\
     \ [personUUID] is replaced with the UUID of the person, which is later used to\
@@ -137,14 +133,21 @@ info:
     \ API endpoint described below.<br><br><li><b>Synchronization of person data changed\
     \ in SORMAS</b></li><br>It may happen that person data (like a contact detail)\
     \ gets changed after a person is registered in an external journal. SORMAS notifies\
-    \ externl journals about such a change whith first fetching an authentication\
+    \ external journals about such a change whith first fetching an authentication\
     \ token as descriced in 1., and the using this token for this request:<br><tt>PUT\
     \ [interface.patientdiary.probandsurl]/external-data/[personUUID]</tt><br>The\
-    \ external journal is the expected to refetch the person data via the ``/visits-external/person/{personUuid}``\
-    \ API endpoint described below and save the changes.</li><br><br><li><b>Upload\
-    \ of symptom journal data to SORMAS</b></li><br>For this, the ``/visits-external``\
-    \ API endpoint is to be used. This is described below.<br><br><li><b>Upload of\
-    \ a symptom journal status to SORMAS</b></li><br>For this, the ``/visits-external/person/{personUuid}/status``\
+    \ external journal is expected to refetch the person data via the ``/visits-external/person/{personUuid}``\
+    \ API endpoint described below and save the changes.</li><br>After refetching\
+    \ the person data, the symptom journal does its own internal validation and responds\
+    \ to SORMAS with the synchronization result, containing eventual validation errors.The\
+    \ expected reponse body:<br>{<br>&emsp;\"success\" : [boolean]<br>&emsp;\"message\"\
+    \ : [messageString]<br>&emsp;\"errors\" : [<br>&emsp;&emsp;{[errorKey]:[errorString]}<br>&emsp;]<br>}<br>If\
+    \ the changes were done manually by a user from the person edit form, the synchronization\
+    \ result is shown to the user in a popup window, so that the user can fix eventual\
+    \ errors and resynchronize the person data.<br><li><b>Upload of symptom journal\
+    \ data to SORMAS</b></li><br>For this, the ``/visits-external`` API endpoint is\
+    \ to be used. This is described below.<br><br><li><b>Upload of a symptom journal\
+    \ status to SORMAS</b></li><br>For this, the ``/visits-external/person/{personUuid}/status``\
     \ API endpoint is to be used. This is described below.<br><br><li><b>Opening a\
     \ person in the external journal from within SORMAS</b></li><br>Once the symptom\
     \ journal status of a person is set to REGISTERED or ACCEPTED, the external journal\
@@ -214,20 +217,27 @@ paths:
       responses:
         default:
           description: "A selection of personal data, including first and last name,\
-            \ e-mail, phone number(s) and birth date if availablefor that person.\
-            \ Note that Null value fields may not be returned. If you get an unexpected\
-            \ result, it might help to verifyif the personUuid is existing in your\
-            \ system via the isValid controller."
+            \ e-mail, phone number and birth date if available for that person.Regarding\
+            \ the e-mail and phone number: in SORMAS it is possible to store several\
+            \ e-mail addresses and phone numbers for a person. It is tried to provide\
+            \ one e-mail address and/or phone number via the external visits API in\
+            \ any feasible way.<br>if there is just one e-mail and/or phone number\
+            \ for a person, this is transmitted.<br>If there are several e-mail addresses\
+            \ and or phone numbers, SORMAS will transmit the ones marked as primary.<br>If\
+            \ there are several e-mail addresses or phone numbers without any marked\
+            \ as primary, SORMAS will request the user to mark one before registration.<br>Regarding\
+            \ the latestFollowUpEndDate: this is the latest follow up end date of\
+            \ any contact (or case, if the case follow up feature is enabled) related\
+            \ to the person. The contacts (and cases) considered are not filtered\
+            \ by disease.<br>Note that Null value fields may not be returned. If you\
+            \ get an unexpected result, it might help to verifyif the personUuid is\
+            \ existing in your system via the isValid controller.<br>If you get \"\
+            pseudonymized\": true, the user the request was authorized with probably\
+            \ lacks the user role REST_EXTERNAL_VISITS_USER."
           content:
-            application/json:
+            application/json; charset=UTF-8:
               schema:
-                type: string
-                example: "[  {    \"pseudonymized\": false,    \"firstName\": \"Tim\"\
-                  ,    \"lastName\": \"Tahler\",    \"emailAddress\": \"test@test.de\"\
-                  \    \"phone\": \"0123456789\",    \"birthdateDD\": 6,    \"birthdateMM\"\
-                  : 4,    \"birthdateYYYY\": 1974,    \"sex\": \"MALE\",    \"uuid\"\
-                  : \"UO2OCI-BPXSAO-7Q4RHO-RMXCKC4M\",    \"latestFollowUpEndDate\"\
-                  : 1601416800000,  }]"
+                $ref: '#/components/schemas/JournalPersonDto'
   /visits-external/version:
     get:
       summary: Get API version

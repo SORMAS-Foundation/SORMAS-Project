@@ -33,7 +33,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.disease.DiseaseVariant;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
@@ -57,6 +57,8 @@ public class CaseListCriteriaBuilder {
 	private EntityManager em;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
 
 	public CriteriaQuery<CaseIndexDto> buildIndexCriteria(CaseCriteria caseCriteria, List<SortProperty> sortProperties) {
 		return buildIndexCriteria(CaseIndexDto.class, this::getCaseIndexSelections, caseCriteria, this::getIndexOrders, sortProperties, false);
@@ -179,11 +181,11 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.EPID_NUMBER),
 			root.get(Case.EXTERNAL_ID),
 			root.get(Case.EXTERNAL_TOKEN),
+			root.get(Case.INTERNAL_TOKEN),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			root.get(Case.DISEASE),
-			joins.getDiseaseVariant().get(DiseaseVariant.UUID),
-			joins.getDiseaseVariant().get(DiseaseVariant.NAME),
+			root.get(Case.DISEASE_VARIANT),
 			root.get(Case.DISEASE_DETAILS),
 			root.get(Case.CASE_CLASSIFICATION),
 			root.get(Case.INVESTIGATION_STATUS),
@@ -230,6 +232,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.EPID_NUMBER:
 		case CaseIndexDto.EXTERNAL_ID:
 		case CaseIndexDto.EXTERNAL_TOKEN:
+		case CaseIndexDto.INTERNAL_TOKEN:
 		case CaseIndexDto.DISEASE:
 		case CaseIndexDto.DISEASE_DETAILS:
 		case CaseIndexDto.CASE_CLASSIFICATION:
@@ -243,6 +246,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.FOLLOW_UP_STATUS:
 		case CaseIndexDto.FOLLOW_UP_UNTIL:
 		case CaseIndexDto.VACCINATION:
+		case CaseIndexDto.DISEASE_VARIANT:
 			return Collections.singletonList(caze.get(sortProperty.propertyName));
 		case CaseIndexDto.PERSON_FIRST_NAME:
 			return Collections.singletonList(joins.getPerson().get(Person.FIRST_NAME));
@@ -268,8 +272,6 @@ public class CaseListCriteriaBuilder {
 			return Collections.singletonList(joins.getPointOfEntry().get(PointOfEntry.NAME));
 		case CaseIndexDto.SURVEILLANCE_OFFICER_UUID:
 			return Collections.singletonList(joins.getSurveillanceOfficer().get(User.UUID));
-		case CaseIndexDto.DISEASE_VARIANT:
-			return Collections.singletonList(joins.getDiseaseVariant().get(DiseaseVariant.NAME));
 		default:
 			throw new IllegalArgumentException(sortProperty.propertyName);
 		}
@@ -314,6 +316,12 @@ public class CaseListCriteriaBuilder {
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
 		case CaseIndexDetailedDto.SYMPTOM_ONSET_DATE:
 			return Collections.singletonList(joins.getSymptoms().get(Symptoms.ONSET_DATE));
+		case CaseIndexDetailedDto.RESPONSIBLE_REGION:
+			return Collections.singletonList(joins.getResponsibleRegion().get(Region.NAME));
+		case CaseIndexDetailedDto.RESPONSIBLE_DISTRICT:
+			return Collections.singletonList(joins.getResponsibleDistrict().get(District.NAME));
+		case CaseIndexDetailedDto.RESPONSIBLE_COMMUNITY:
+			return Collections.singletonList(joins.getResponsibleCommunity().get(Community.NAME));
 		default:
 			return getIndexOrders(sortProperty, caze, joins, cb);
 		}

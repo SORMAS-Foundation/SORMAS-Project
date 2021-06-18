@@ -61,7 +61,7 @@ You can check your Java version from the shell/command line using: ``java -versi
 ### Postgres Database
 
 * Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: <https://www.postgresql.org/download>)
-* Set **max_connections = 288** and **max_prepared_transactions = 256** (at least, sum of all connection pools) in ``postgresql.conf`` (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``) - make sure the property is uncommented
+* Set **max_connections = 288** and **max_prepared_transactions = 256** (at least, sum of all connection pools) in ``postgresql.conf`` (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``) - make sure the property is uncommented and restart the service to apply the changes.
 * Install the "temporal tables" extension for Postgres (<https://github.com/arkhipov/temporal_tables>)
   * **Windows**: Download the latest version for your Postgres version: <https://github.com/arkhipov/temporal_tables/releases/latest>, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.
   * **Linux** (see <https://github.com/arkhipov/temporal_tables#installation)>
@@ -83,9 +83,11 @@ Get the latest SORMAS build by downloading the ZIP archive from the latest relea
 
 ### Install on Linux
 
-Unzip the archive, copy/upload its contents to **/root/deploy/sormas/$(date +%F)** and make the setup script executable.
+Unzip the archive, copy/upload its contents to **/root/deploy/sormas/$(date +%F)** and make the setup script executable (as root user).
 
 ```bash
+sudo su
+mkdir /root/deploy/sormas
 cd /root/deploy/sormas
 SORMAS_VERSION=1.y.z
 wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
@@ -293,7 +295,7 @@ Activate output compression (very important!):
         AddOutputFilterByType DEFLATE application/xml application/xhtml+xml
         AddOutputFilterByType DEFLATE application/javascript application/x-javascript
         DeflateCompressionLevel 1
-</IfModule></code>
+</IfModule>
 ```
 
 Provide the android apk:

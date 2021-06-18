@@ -65,6 +65,7 @@ public class Task extends AbstractDomainObject {
 	public static final String TASK_TYPE = "taskType";
 	public static final String CLOSED_LAT = "closedLat";
 	public static final String CLOSED_LON = "closedLon";
+	public static final String ARCHIVED = "archived";
 
 	private TaskContext taskContext;
 	private Case caze;
@@ -87,6 +88,8 @@ public class Task extends AbstractDomainObject {
 	private Double closedLat;
 	private Double closedLon;
 	private Float closedLatLonAccuracy;
+
+	private boolean archived;
 
 	@Enumerated(EnumType.STRING)
 	public TaskContext getTaskContext() {
@@ -247,4 +250,12 @@ public class Task extends AbstractDomainObject {
 		this.closedLatLonAccuracy = closedLatLonAccuracy;
 	}
 
+	@Column
+	public boolean isArchived() {
+		return archived;
+	}
+
+	public void setArchived(boolean archived) {
+		this.archived = archived;
+	}
 }

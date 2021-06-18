@@ -70,6 +70,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.importer.EventImportLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
@@ -463,7 +464,7 @@ public class EventsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW_ARCHIVED)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
 				if (isGroupViewType()) {
 					groupRelevanceStatusFilter =
 						buildRelevanceStatus(Captions.eventActiveGroups, Captions.eventArchivedGroups, Captions.eventAllGroups);
@@ -501,34 +502,45 @@ public class EventsView extends AbstractView {
 				EventGrid eventGrid = (EventGrid) grid;
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, selectedItem -> {
-						ControllerProvider.getEventController().showBulkEventDataEditComponent(eventGrid.asMultiSelect().getSelectedItems());
-					}),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-						ControllerProvider.getEventController()
-							.deleteAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria));
-					}),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
-						ControllerProvider.getEventController()
-							.archiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria));
-					}, EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
-						ControllerProvider.getEventController()
-							.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria));
-					}, EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionGroupEvent), VaadinIcons.FILE_TREE, selectedItem -> {
-						ControllerProvider.getEventGroupController()
-							.linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria));
-					}),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.bulkEdit),
+						VaadinIcons.ELLIPSIS_H,
+						mi -> grid.bulkActionHandler(items -> ControllerProvider.getEventController().showBulkEventDataEditComponent(items))),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.bulkDelete),
+						VaadinIcons.TRASH,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, () -> navigateTo(eventCriteria)),
+							true)),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.actionArchive),
+						VaadinIcons.ARCHIVE,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, () -> navigateTo(eventCriteria)),
+							true),
+						EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.actionDearchive),
+						VaadinIcons.ARCHIVE,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventController()
+								.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria)),
+							true),
+						EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.actionGroupEvent),
+						VaadinIcons.FILE_TREE,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventGroupController()
+								.linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria)))),
 					new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
 						VaadinIcons.SHARE,
-						selectedItem -> {
-							ControllerProvider.getEventController()
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventController()
 								.sendAllSelectedToExternalSurveillanceTool(
 									eventGrid.asMultiSelect().getSelectedItems(),
-									() -> navigateTo(eventCriteria));
-						}));
+									() -> navigateTo(eventCriteria)))));
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				bulkOperationsDropdown.setCaption("");
@@ -537,7 +549,7 @@ public class EventsView extends AbstractView {
 
 			if (isDefaultViewType()) {
 				// Contact Count Method Dropdown
-				contactCountMethod = new ComboBox();
+				contactCountMethod = ComboBoxHelper.createComboBoxV7();
 				contactCountMethod.setCaption(I18nProperties.getCaption(Captions.Event_contactCountMethod));
 				contactCountMethod.addItem(EventContactCountMethod.ALL);
 				contactCountMethod.addItem(EventContactCountMethod.SOURCE_CASE_IN_EVENT);
@@ -563,6 +575,7 @@ public class EventsView extends AbstractView {
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return statusFilterLayout;
+
 	}
 
 	@Override
@@ -646,7 +659,7 @@ public class EventsView extends AbstractView {
 	}
 
 	private ComboBox buildRelevanceStatus(String eventActiveCaption, String eventArchivedCaption, String eventAllCaption) {
-		ComboBox relevanceStatusFilter = new ComboBox();
+		ComboBox relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 		relevanceStatusFilter.setId("relevanceStatusFilter");
 		relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
 		relevanceStatusFilter.setNullSelectionAllowed(false);

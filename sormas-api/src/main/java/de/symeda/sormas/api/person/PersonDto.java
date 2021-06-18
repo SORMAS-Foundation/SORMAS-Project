@@ -106,6 +106,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String COVID_CODE_DELIVERED = "covidCodeDelivered";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String BIRTH_COUNTRY = "birthCountry";
 	public static final String CITIZENSHIP = "citizenship";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
@@ -297,6 +298,7 @@ public class PersonDto extends PseudonymizableDto {
 	private String externalId;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private String externalToken;
+	private String internalToken;
 
 	@HideForCountriesExcept
 	@SensitiveData
@@ -466,6 +468,9 @@ public class PersonDto extends PseudonymizableDto {
 	private void setPersonContactInformation(String contactInfo, PersonContactDetailType personContactDetailType) {
 		for (PersonContactDetailDto contactDetailDto : getPersonContactDetails()) {
 			if (contactDetailDto.getPersonContactDetailType() == personContactDetailType && contactDetailDto.isPrimaryContact()) {
+				if (contactInfo.equals(contactDetailDto.getContactInformation())) {
+					return;
+				}
 				contactDetailDto.setPrimaryContact(false);
 			}
 		}
@@ -868,6 +873,14 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	public CountryReferenceDto getBirthCountry() {

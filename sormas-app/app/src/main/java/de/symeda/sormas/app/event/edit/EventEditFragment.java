@@ -195,6 +195,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.setIsMultiDayEvent(isMultiDayEvent);
 
 		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventEndDate);
+		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventReportDateTime);
 	}
 
 	@Override
@@ -213,6 +214,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.eventInfectionPathCertainty.initializeSpinner(infectionPathCertaintyList);
 
 		// Initialize ControlDateFields
+		contentBinding.eventReportDateTime.initializeDateField(getFragmentManager());
+
 		contentBinding.eventStartDate.initializeDateField(getFragmentManager());
 		String startDateCaption = Boolean.TRUE.equals(contentBinding.eventMultiDayEvent.getValue())
 			? I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.START_DATE)

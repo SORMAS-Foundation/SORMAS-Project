@@ -21,10 +21,10 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.backend.disease.DiseaseVariant;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
@@ -38,7 +38,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
@@ -75,7 +75,7 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 	private Join<Person, Country> personCitizenship;
 	private Join<Case, District> reportingDistrict;
 	private Join<Case, DiseaseVariant> diseaseVariant;
-	private Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo;
+	private Join<Case, SormasToSormasShareInfo> shareInfoCases;
 	private Join<Case, ExternalShareInfo> externalShareInfo;
 
 	public CaseJoins(From<T, Case> caze) {
@@ -306,20 +306,12 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 		this.reportingDistrict = reportingDistrict;
 	}
 
-	public Join<Case, DiseaseVariant> getDiseaseVariant() {
-		return getOrCreate(diseaseVariant, Case.DISEASE_VARIANT, JoinType.LEFT, this::setDiseaseVariant);
+	public Join<Case, SormasToSormasShareInfo> getShareInfoCases() {
+		return getOrCreate(shareInfoCases, Case.SHARE_INFO_CASES, JoinType.LEFT, this::setShareInfoCases);
 	}
 
-	private void setDiseaseVariant(Join<Case, DiseaseVariant> diseaseVariant) {
-		this.diseaseVariant = diseaseVariant;
-	}
-
-	public Join<Case, SormasToSormasShareInfo> getSormasToSormasShareInfo() {
-		return getOrCreate(sormasToSormasShareInfo, Case.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT, this::setSormasToSormasShareInfo);
-	}
-
-	private void setSormasToSormasShareInfo(Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo) {
-		this.sormasToSormasShareInfo = sormasToSormasShareInfo;
+	private void setShareInfoCases(Join<Case, SormasToSormasShareInfo> shareInfoCases) {
+		this.shareInfoCases = shareInfoCases;
 	}
 
 	public Join<Case, ExternalShareInfo> getExternalShareInfo() {

@@ -37,6 +37,10 @@ public class EventParticipantSelectionGrid extends Grid {
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 
+		setColumns();
+	}
+
+	protected void setColumns() {
 		setColumns(
 			SimilarEventParticipantDto.UUID,
 			SimilarEventParticipantDto.FIRST_NAME,

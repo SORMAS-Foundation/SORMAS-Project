@@ -21,8 +21,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.MergeableIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -34,7 +35,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class CaseIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
+public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIndexDto, Serializable, Cloneable {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -45,6 +46,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String DISEASE = "disease";
@@ -80,6 +82,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	private String epidNumber;
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 	@PersonalData
 	@SensitiveData
 	private String personFirstName;
@@ -87,7 +90,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	@SensitiveData
 	private String personLastName;
 	private Disease disease;
-	private DiseaseVariantReferenceDto diseaseVariant;
+	private DiseaseVariant diseaseVariant;
 	private String diseaseDetails;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
@@ -120,8 +123,8 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	private CaseJurisdictionDto jurisdiction;
 
 	//@formatter:off
-	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String personFirstName, String personLastName, Disease disease,
-						String diseaseVariantUuid, String diseaseVariantName, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
+	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken, String personFirstName, String personLastName, Disease disease,
+						DiseaseVariant diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 						PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate, String regionUuid,
 						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
@@ -129,8 +132,8 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Vaccination vaccination, Date changeDate, Long facilityId,
 						// responsible jurisdiction
 						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid) {
-		this(id, uuid, epidNumber, externalID, externalToken, personFirstName, personLastName, disease,
-				diseaseVariantUuid, diseaseVariantName, diseaseDetails, caseClassification, investigationStatus,
+		this(id, uuid, epidNumber, externalID, externalToken, internalToken, personFirstName, personLastName, disease,
+				diseaseVariant, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid,
 				districtUuid, districtName, communityUuid, healthFacilityUuid, healthFacilityName, healthFacilityDetails,
 				pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
@@ -143,8 +146,8 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 	//@formatter:on
 
 	//@formatter:off
-	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String personFirstName, String personLastName, Disease disease,
-						String diseaseVariantUuid, String diseaseVariantName, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
+	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken, String personFirstName, String personLastName, Disease disease,
+						DiseaseVariant diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 						PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate, String regionUuid,
 						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
@@ -163,10 +166,11 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.epidNumber = epidNumber;
 		this.externalID = externalID;
 		this.externalToken = externalToken;
+		this.internalToken = internalToken;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.disease = disease;
-		this.diseaseVariant = new DiseaseVariantReferenceDto(diseaseVariantUuid, diseaseVariantName);
+		this.diseaseVariant = diseaseVariant;
 		this.diseaseDetails = diseaseDetails;
 		this.caseClassification = caseClassification;
 		this.investigationStatus = investigationStatus;
@@ -238,11 +242,11 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.disease = disease;
 	}
 
-	public DiseaseVariantReferenceDto getDiseaseVariant() {
+	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}
 
-	public void setDiseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
 	}
 
@@ -410,6 +414,14 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements Serializabl
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	public Date getQuarantineTo() {

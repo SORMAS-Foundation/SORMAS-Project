@@ -58,8 +58,6 @@ import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb;
-import de.symeda.sormas.backend.disease.DiseaseVariantService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -87,8 +85,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private PathogenTestService pathogenTestService;
 	@EJB
 	private SampleService sampleService;
-	@EJB
-	private DiseaseVariantService diseaseVariantService;
 	@EJB
 	private FacilityService facilityService;
 	@EJB
@@ -151,6 +147,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		return sampleService.getByUuid(sampleRef.getUuid())
 			.getPathogenTests()
 			.stream()
+			.filter(p -> !p.isDeleted())
 			.map(p -> convertToDto(p, pseudonymizer))
 			.collect(Collectors.toList());
 	}
@@ -316,7 +313,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());
-		target.setTestedDiseaseVariant(DiseaseVariantFacadeEjb.toReferenceDto(source.getTestedDiseaseVariant()));
+		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
@@ -367,7 +364,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());
-		target.setTestedDiseaseVariant(diseaseVariantService.getByReferenceDto(source.getTestedDiseaseVariant()));
+		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());

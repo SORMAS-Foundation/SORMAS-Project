@@ -82,7 +82,7 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID));
 	}
 
-	private List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
+	public List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
 
 		ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
 
@@ -105,6 +105,7 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.CONTACT_PROXIMITY),
 			contact.get(Contact.CONTACT_CLASSIFICATION),
 			contact.get(Contact.CONTACT_STATUS),
+			contact.get(Contact.COMPLETENESS),
 			contact.get(Contact.FOLLOW_UP_STATUS),
 			contact.get(Contact.FOLLOW_UP_UNTIL),
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
@@ -126,7 +127,37 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID),
 			contact.get(Contact.CHANGE_DATE),
 			contact.get(Contact.EXTERNAL_ID),
-			contact.get(Contact.EXTERNAL_TOKEN));
+			contact.get(Contact.EXTERNAL_TOKEN),
+			contact.get(Contact.INTERNAL_TOKEN));
+	}
+
+	public List<Selection<?>> getMergeContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
+
+		ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
+
+		return Arrays.asList(
+			contact.get(Contact.ID),
+			contact.get(Contact.UUID),
+			joins.getPerson().get(Person.FIRST_NAME),
+			joins.getPerson().get(Person.LAST_NAME),
+			joins.getPerson().get(Person.APPROXIMATE_AGE),
+			joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
+			joins.getPerson().get(Person.BIRTHDATE_DD),
+			joins.getPerson().get(Person.BIRTHDATE_MM),
+			joins.getPerson().get(Person.BIRTHDATE_YYYY),
+			joins.getPerson().get(Person.SEX),
+			joins.getCaze().get(Case.UUID),
+			joins.getCasePerson().get(Person.FIRST_NAME),
+			joins.getCasePerson().get(Person.LAST_NAME),
+			contact.get(Contact.DISEASE),
+			contact.get(Contact.DISEASE_DETAILS),
+			joins.getRegion().get(Region.NAME),
+			joins.getDistrict().get(District.NAME),
+			contact.get(Contact.LAST_CONTACT_DATE),
+			contact.get(Contact.CREATION_DATE),
+			contact.get(Contact.CONTACT_CLASSIFICATION),
+			contact.get(Contact.COMPLETENESS),
+			contact.get(Contact.REPORT_DATE_TIME));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins<Contact> joins, CriteriaBuilder cb) {
@@ -146,6 +177,7 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDto.CASE_CLASSIFICATION:
 		case ContactIndexDto.EXTERNAL_ID:
 		case ContactIndexDto.EXTERNAL_TOKEN:
+		case ContactIndexDto.INTERNAL_TOKEN:
 			expressions.add(contact.get(sortProperty.propertyName));
 			break;
 		case ContactIndexDto.PERSON_FIRST_NAME:
@@ -188,7 +220,8 @@ public class ContactListCriteriaBuilder {
 			joins.getAddress().get(Location.POSTAL_CODE),
 			((Selection<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
 			joins.getReportingUser().get(User.FIRST_NAME),
-			joins.getReportingUser().get(User.LAST_NAME));
+			joins.getReportingUser().get(User.LAST_NAME),
+			contact.get(Contact.RELATION_TO_CASE));
 		indexSelection.addAll(selections);
 
 		return indexSelection;
@@ -215,6 +248,8 @@ public class ContactListCriteriaBuilder {
 			return Collections.singletonList(joins.getAddress().get(sortProperty.propertyName));
 		case ContactIndexDetailedDto.REPORTING_USER:
 			return Arrays.asList(joins.getReportingUser().get(User.FIRST_NAME), joins.getReportingUser().get(User.LAST_NAME));
+		case ContactIndexDetailedDto.RELATION_TO_CASE:
+			return Collections.singletonList(contact.get(Contact.RELATION_TO_CASE));
 		default:
 			return this.getIndexOrders(sortProperty, contact, joins, cb);
 		}

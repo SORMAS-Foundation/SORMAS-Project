@@ -32,11 +32,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.google.common.collect.Sets;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextField;
@@ -45,7 +48,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -70,6 +74,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -81,6 +86,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String FACILITY_TYPE_GROUP_LOC = "typeGroupLoc";
+	private static final String DONT_SHARE_WARNING_LOC = "dontShareWithReportingToolWarnLoc";
 
 	private ComboBox birthDateDay;
 	private NullableOptionGroup facilityOrHome;
@@ -101,6 +107,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			+ fluidRowLocs(FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE)
 			+ fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS)
 			+ fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
+			+ fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL)
+			+ fluidRowLocs(DONT_SHARE_WARNING_LOC)
 			+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
 			+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 			fluidRowLocs(PersonDto.SEX))
@@ -131,6 +139,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		if (!FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
 			TextField externalIdField = addField(CaseDataDto.EXTERNAL_ID, TextField.class);
 			style(externalIdField, ERROR_COLOR_PRIMARY);
+		} else {
+			CheckBox dontShareCheckbox = addField(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL, CheckBox.class);
+			CaseFormHelper.addDontShareWithReportingTool(getContent(), () -> dontShareCheckbox, DONT_SHARE_WARNING_LOC);
 		}
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
@@ -227,13 +238,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
-		facilityTypeGroup = new ComboBox();
+		facilityTypeGroup = ComboBoxHelper.createComboBoxV7();
 		facilityTypeGroup.setId("typeGroup");
 		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
 		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
-		facilityType = new ComboBox();
+		facilityType = ComboBoxHelper.createComboBoxV7();
 		facilityType.setId("type");
 		facilityType.setCaption(I18nProperties.getCaption(Captions.facilityType));
 		facilityType.setWidth(100, Unit.PERCENTAGE);
@@ -454,14 +465,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
-			List<DiseaseVariantReferenceDto> variants;
-			if (disease != null && disease.isVariantAllowed()) {
-				variants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
-			} else {
-				variants = Collections.emptyList();
-			}
-			FieldHelper.updateItems(diseaseVariantField, variants);
-			diseaseVariantField.setVisible(isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && !variants.isEmpty());
+			List<DiseaseVariant> diseaseVariants =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+			diseaseVariantField
+				.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 		});
 	}
 

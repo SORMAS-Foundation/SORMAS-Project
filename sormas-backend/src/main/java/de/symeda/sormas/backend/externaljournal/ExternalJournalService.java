@@ -11,7 +11,6 @@ import static de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryVali
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -30,6 +29,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -190,20 +191,20 @@ public class ExternalJournalService {
 	 * @return true if the person data change was considered relevant for external journals, false otherwise.
 	 *
 	 */
-	public boolean notifyExternalJournalPersonUpdate(JournalPersonDto existingJournalPerson) {
+	public DataHelper.Pair<Boolean, ExternalJournalSyncResponseDto> notifyExternalJournalPersonUpdate(JournalPersonDto existingJournalPerson) {
 		boolean shouldNotify = shouldNotify(existingJournalPerson);
 		if (shouldNotify) {
 			if (configFacade.getSymptomJournalConfig().isActive()) {
-				notifySymptomJournal(existingJournalPerson.getUuid());
+				return DataHelper.Pair.createPair(true, notifySymptomJournal(existingJournalPerson.getUuid()));
 			}
 			if (configFacade.getPatientDiaryConfig().isActive()) {
-				notifyPatientDiary(existingJournalPerson.getUuid());
+				return DataHelper.Pair.createPair(true, notifyPatientDiary(existingJournalPerson.getUuid()));
 			}
 		}
-		return shouldNotify;
+		return DataHelper.Pair.createPair(shouldNotify, null);
 	}
 
-	public void handleExternalJournalPersonUpdate(PersonReferenceDto person) {
+	public void handleExternalJournalPersonUpdateAsync(PersonReferenceDto person) {
 		if (!configFacade.isExternalJournalActive()) {
 			return;
 		}
@@ -216,6 +217,15 @@ public class ExternalJournalService {
 		 */
 		JournalPersonDto existingPerson = personFacade.getPersonForJournal(person.getUuid());
 		executorService.schedule((Runnable) () -> notifyExternalJournalPersonUpdate(existingPerson), 5, TimeUnit.SECONDS);
+	}
+
+	public ExternalJournalSyncResponseDto handleExternalJournalPersonUpdateSync(PersonDto existingPerson) {
+		if (!configFacade.isExternalJournalActive()) {
+			return null;
+		}
+
+		JournalPersonDto existingJournalPerson = personFacade.getPersonForJournal(existingPerson);
+		return notifyExternalJournalPersonUpdate(existingJournalPerson).getElement1();
 	}
 
 	/**
@@ -231,24 +241,29 @@ public class ExternalJournalService {
 		return false;
 	}
 
-	private void notifySymptomJournal(String personUuid) {
+	private ExternalJournalSyncResponseDto notifySymptomJournal(String personUuid) {
 		// agree with PIA how this should be done
+		return null;
 	}
 
-	private void notifyPatientDiary(String personUuid) {
+	private ExternalJournalSyncResponseDto notifyPatientDiary(String personUuid) {
 		try {
 			Invocation.Builder invocationBuilder = getExternalDataPersonInvocationBuilder(personUuid);
 			Response response = invocationBuilder.put(Entity.json(""));
 			String responseJson = response.readEntity(String.class);
 			ObjectMapper mapper = new ObjectMapper();
-			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
-			boolean success = node.get("success").booleanValue();
-			if (!success) {
-				String message = node.get("message").textValue();
-				logger.warn("Could not notify patient diary of person update: " + message);
+			ExternalJournalSyncResponseDto responseDto = mapper.readValue(responseJson, ExternalJournalSyncResponseDto.class);
+
+			if (!responseDto.isSuccess()) {
+				logger.warn("Could not notify patient diary of person update: {}", responseDto.getMessage());
 			} else {
-				logger.info("Successfully notified patient diary to update patient " + personUuid);
+				if (!responseDto.getErrors().isEmpty()) {
+					logger.warn("The changes were just partially synchronized: {}", responseDto.getErrors().values());
+				} else {
+					logger.info("Successfully notified patient diary to update patient {}", personUuid);
+				}
 			}
+			return responseDto;
 		} catch (IOException e) {
 			logger.error("Could not notify patient diary: {}", e.getMessage());
 			throw new RuntimeException(e);
@@ -443,16 +458,12 @@ public class ExternalJournalService {
 			.map(PatientDiaryIdatId::getIdat)
 			.map(PatientDiaryPersonDto::getPersonUUID)
 			.anyMatch(uuid -> person.getUuid().equals(uuid));
-		boolean sameFamily = response.getResults()
+		boolean differentFirstNames = response.getResults()
 			.stream()
 			.map(PatientDiaryPersonData::getIdatId)
 			.map(PatientDiaryIdatId::getIdat)
-			.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
-		return notUsed || samePerson || sameFamily;
-	}
-
-	private boolean inSameFamily(PersonDto person, PatientDiaryPersonDto patientDiaryPerson) {
-		return patientDiaryPerson.getLastName().equals(person.getLastName()) && !patientDiaryPerson.getFirstName().equals(person.getFirstName());
+			.noneMatch(patientDiaryPerson -> person.getFirstName().equals(patientDiaryPerson.getFirstName()));
+		return notUsed || samePerson || differentFirstNames;
 	}
 
 	private boolean isPhoneAvailable(PersonDto person, String phone) {
@@ -465,12 +476,12 @@ public class ExternalJournalService {
 			.map(PatientDiaryIdatId::getIdat)
 			.map(PatientDiaryPersonDto::getPersonUUID)
 			.anyMatch(uuid -> person.getUuid().equals(uuid));
-		boolean sameFamily = response.getResults()
+		boolean differentFirstNames = response.getResults()
 			.stream()
 			.map(PatientDiaryPersonData::getIdatId)
 			.map(PatientDiaryIdatId::getIdat)
-			.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
-		return notUsed || samePerson || sameFamily;
+			.noneMatch(patientDiaryPerson -> person.getFirstName().equals(patientDiaryPerson.getFirstName()));
+		return notUsed || samePerson || differentFirstNames;
 	}
 
 	/**

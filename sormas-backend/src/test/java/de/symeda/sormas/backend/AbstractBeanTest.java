@@ -39,8 +39,8 @@ import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
-import de.symeda.sormas.api.disease.DiseaseFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
@@ -76,6 +76,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -104,11 +105,10 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
-import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
-import de.symeda.sormas.backend.disease.DiseaseVariantService;
 import de.symeda.sormas.backend.docgeneration.DocumentTemplateFacadeEjb.DocumentTemplateFacadeEjbLocal;
 import de.symeda.sormas.backend.docgeneration.EventDocumentFacadeEjb;
 import de.symeda.sormas.backend.docgeneration.QuarantineOrderFacadeEjb;
@@ -158,11 +158,13 @@ import de.symeda.sormas.backend.share.ExternalShareInfoFacadeEjb.ExternalShareIn
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.labmessage.SormasToSormasLabMessageFacadeEjb.SormasToSormasLabMessageFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
+import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
@@ -218,6 +220,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.backend.H2Function.date\"");
 		nativeQuery.executeUpdate();
+		nativeQuery = em.createNativeQuery("CREATE TYPE \"JSONB\" AS other;");
+		nativeQuery.executeUpdate();
 		em.getTransaction().commit();
 	}
 
@@ -261,6 +265,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public ContactService getContactService() {
 		return getBean(ContactService.class);
+	}
+
+	public DashboardFacade getDashboardFacade() {
+		return getBean(DashboardFacadeEjb.DashboardFacadeEjbLocal.class);
 	}
 
 	public EventFacade getEventFacade() {
@@ -467,16 +475,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(DiseaseConfigurationService.class);
 	}
 
-	public DiseaseVariantService getDiseaseVariantService() {
-		return getBean(DiseaseVariantService.class);
-	}
-
 	public PopulationDataFacade getPopulationDataFacade() {
 		return getBean(PopulationDataFacadeEjbLocal.class);
-	}
-
-	public DiseaseFacade getDiseaseFacade() {
-		return getBean(DiseaseFacadeEjbLocal.class);
 	}
 
 	public FeatureConfigurationFacade getFeatureConfigurationFacade() {
@@ -616,5 +616,13 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public UserRightsFacade getUserRightsFacade() {
 		return getBean(UserRightsFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasShareRequestFacade getSormasToSormasShareRequestFacade() {
+		return getBean(SormasToSormasShareRequestFacadeEJBLocal.class);
+	}
+
+	public SormasToSormasShareRequestService getSormasToSormasShareRequestService() {
+		return getBean(SormasToSormasShareRequestService.class);
 	}
 }

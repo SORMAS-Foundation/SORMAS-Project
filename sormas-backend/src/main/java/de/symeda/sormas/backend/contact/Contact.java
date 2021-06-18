@@ -39,6 +39,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
+import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
@@ -66,7 +68,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
@@ -74,7 +76,7 @@ import de.symeda.sormas.backend.visit.Visit;
 
 @Entity
 @Audited
-public class Contact extends CoreAdo implements SormasToSormasEntity {
+public class Contact extends CoreAdo implements SormasToSormasEntity, HasExternalData {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -90,6 +92,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String CONTACT_STATUS = "contactStatus";
+	public static final String COMPLETENESS = "completeness";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
 	public static final String FOLLOW_UP_COMMENT = "followUpComment";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
@@ -108,6 +111,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -144,7 +148,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
-	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
+	public static final String SHARE_INFO_CONTACTS = "shareInfoContacts";
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String RETURNING_TRAVELER = "returningTraveler";
 	public static final String END_OF_QUARANTINE_REASON = "endOfQuarantineReason";
@@ -188,6 +192,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 	private String description;
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 
 	private Case resultingCase;
 	private User resultingCaseUser;
@@ -222,11 +227,12 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
 
+	private Float completeness;
 	private String additionalDetails;
 	private EpiData epiData;
 
 	private List<Task> tasks;
-	private Set<Sample> samples;
+	private Set<Sample> samples = new HashSet<>();
 	private Set<Visit> visits = new HashSet<>();
 	private HealthConditions healthConditions;
 	private YesNoUnknown returningTraveler;
@@ -244,7 +250,9 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 	private User followUpStatusChangeUser;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
+	private List<ShareInfoContact> shareInfoContacts = new ArrayList<>(0);
+
+	private Contact duplicateOf;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -560,6 +568,24 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 		this.externalID = externalID;
 	}
 
+	/**
+	 * Extra getter for externalID needed to comply with the HasExternalData interface
+	 *
+	 * @return the externalID
+	 */
+	@Transient
+	public String getExternalId() {
+		return externalID;
+	}
+
+	/**
+	 * Extra setter for externalID needed to comply with the HasExternalData interface
+	 * @param externalId the value to be set for externalID
+	 */
+	public void setExternalId(String externalId) {
+		this.externalID = externalId;
+	}
+
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getExternalToken() {
 		return externalToken;
@@ -567,6 +593,15 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	@Column(columnDefinition = "text")
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	@ManyToOne(cascade = {})
@@ -830,6 +865,14 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 	}
 
+	public Float getCompleteness() {
+		return completeness;
+	}
+
+	public void setCompleteness(Float completeness) {
+		this.completeness = completeness;
+	}
+
 	@Column(length = COLUMN_LENGTH_BIG)
 	public String getAdditionalDetails() {
 		return additionalDetails;
@@ -877,13 +920,13 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(mappedBy = SormasToSormasShareInfo.CONTACT, fetch = FetchType.LAZY)
-	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
-		return sormasToSormasShares;
+	@OneToMany(mappedBy = ShareInfoContact.CONTACT, fetch = FetchType.LAZY)
+	public List<ShareInfoContact> getShareInfoContacts() {
+		return shareInfoContacts;
 	}
 
-	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
-		this.sormasToSormasShares = sormasToSormasShares;
+	public void setShareInfoContacts(List<ShareInfoContact> shareInfoContacts) {
+		this.shareInfoContacts = shareInfoContacts;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -975,5 +1018,15 @@ public class Contact extends CoreAdo implements SormasToSormasEntity {
 
 	public void setFollowUpStatusChangeUser(User followUpStatusChangeUser) {
 		this.followUpStatusChangeUser = followUpStatusChangeUser;
+	}
+
+	@OneToOne(cascade = {}, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public Contact getDuplicateOf() {
+		return duplicateOf;
+	}
+
+	public void setDuplicateOf(Contact duplicateOf) {
+		this.duplicateOf = duplicateOf;
 	}
 }

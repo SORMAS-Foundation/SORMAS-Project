@@ -105,7 +105,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.disease.DiseaseVariant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
@@ -147,11 +146,12 @@ public class TestDataCreator {
 		String firstName,
 		String lastName,
 		UserRole... roles) {
-		UserDto user = UserDto.build();
-		user.setFirstName(firstName);
-		user.setLastName(lastName);
-		user.setUserName(firstName + lastName);
-		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
+		UserDto user1 = UserDto.build();
+		user1.setFirstName(firstName);
+		user1.setLastName(lastName);
+		user1.setUserName(firstName + lastName);
+		user1.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
+		UserDto user = user1;
 		user.setRegion(beanTest.getRegionFacade().getRegionReferenceByUuid(regionUuid));
 		user.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(districtUuid));
 		user.setCommunity(beanTest.getCommunityFacade().getCommunityReferenceByUuid(communityUuid));
@@ -159,6 +159,17 @@ public class TestDataCreator {
 		user = beanTest.getUserFacade().saveUser(user);
 
 		return user;
+	}
+
+	public UserReferenceDto createUserRef(
+		String regionUuid,
+		String districtUuid,
+		String communityUuid,
+		String facilityUuid,
+		String firstName,
+		String lastName,
+		UserRole... roles) {
+		return createUser(regionUuid, districtUuid, communityUuid, facilityUuid, firstName, lastName, roles).toReference();
 	}
 
 	public PersonDto createPerson() {
@@ -1366,7 +1377,7 @@ public class TestDataCreator {
 
 	public SystemEventDto createSystemEvent(SystemEventType type, Date startDate, SystemEventStatus status) {
 		return createSystemEvent(type, startDate, new Date(startDate.getTime() + 1000), status, "Generated for test purposes");
-	};
+	}
 
 	public SystemEventDto createSystemEvent(SystemEventType type, Date startDate, Date endDate, SystemEventStatus status, String additionalInfo) {
 		SystemEventDto systemEvent = SystemEventDto.build();
@@ -1390,17 +1401,17 @@ public class TestDataCreator {
 		return labMessage;
 	}
 
-	public DiseaseVariant createDiseaseVariant(String name, Disease disease) {
-
-		DiseaseVariant diseaseVariant = new DiseaseVariant();
-		diseaseVariant.setUuid(DataHelper.createUuid());
-		diseaseVariant.setName(name);
-		diseaseVariant.setDisease(disease);
-
-		beanTest.getDiseaseVariantService().persist(diseaseVariant);
-
-		return diseaseVariant;
-	}
+//	public DiseaseVariant createDiseaseVariant(String name, Disease disease) {
+//
+//		DiseaseVariant diseaseVariant = new DiseaseVariant();
+//		diseaseVariant.setUuid(DataHelper.createUuid());
+//		diseaseVariant.setName(name);
+//		diseaseVariant.setDisease(disease);
+//
+//		beanTest.getDiseaseVariantService().persist(diseaseVariant);
+//
+//		return diseaseVariant;
+//	}
 
 	public ExternalShareInfo createExternalShareInfo(
 		CaseReferenceDto caze,

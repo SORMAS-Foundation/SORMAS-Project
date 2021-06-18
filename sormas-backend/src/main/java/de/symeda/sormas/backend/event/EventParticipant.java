@@ -40,7 +40,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEventParticipant;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 
@@ -61,6 +61,8 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 	public static final String SAMPLES = "samples";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String SHARE_INFO_EVENT_PARTICIPANTS = "shareInfoEventParticipants";
+
 	private User reportingUser;
 	private Event event;
 	private Person person;
@@ -71,7 +73,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 	private District district;
 	private VaccinationInfo vaccinationInfo;
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
+	private List<ShareInfoEventParticipant> shareInfoEventParticipants = new ArrayList<>(0);
 
 	@ManyToOne(cascade = {})
 	public User getReportingUser() {
@@ -174,12 +176,12 @@ public class EventParticipant extends CoreAdo implements SormasToSormasEntity {
 		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
-	@OneToMany(mappedBy = SormasToSormasShareInfo.EVENT_PARTICIPANT, fetch = FetchType.LAZY)
-	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
-		return sormasToSormasShares;
+	@OneToMany(mappedBy = ShareInfoEventParticipant.EVENT_PARTICIPANT, fetch = FetchType.LAZY)
+	public List<ShareInfoEventParticipant> getShareInfoEventParticipants() {
+		return shareInfoEventParticipants;
 	}
 
-	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
-		this.sormasToSormasShares = sormasToSormasShares;
+	public void setShareInfoEventParticipants(List<ShareInfoEventParticipant> shareInfoEventParticipants) {
+		this.shareInfoEventParticipants = shareInfoEventParticipants;
 	}
 }

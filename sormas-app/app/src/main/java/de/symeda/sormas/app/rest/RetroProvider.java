@@ -15,12 +15,10 @@
 
 package de.symeda.sormas.app.rest;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
-
-import androidx.fragment.app.FragmentActivity;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,15 +27,19 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
+
+import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationEventClusterCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationExposureCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
@@ -111,7 +113,7 @@ public final class RetroProvider {
 	private AdditionalTestFacadeRetro additionalTestFacadeRetro;
 	private ClinicalVisitFacadeRetro clinicalVisitFacadeRetro;
 	private DiseaseConfigurationFacadeRetro diseaseConfigurationFacadeRetro;
-	private DiseaseVariantFacadeRetro diseaseVariantFacadeRetro;
+	private CustomizableEnumValueFacadeRetro customizableEnumValueFacadeRetro;
 	private InfrastructureFacadeRetro infrastructureFacadeRetro;
 	private CampaignFacadeRetro campaignFacadeRetro;
 	private CampaignFormMetaFacadeRetro campaignFormMetaFacadeRetro;
@@ -149,7 +151,10 @@ public final class RetroProvider {
 				.registerSubtype(ClassificationExposureCriteriaDto.class, "ClassificationExposureCriteriaDto")
 				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto.class, "ClassificationXOfSubCriteriaDto")
 				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto.class, "ClassificationOneOfCompactCriteriaDto")
-				.registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto");
+				.registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto")
+				.registerSubtype(ClassificationEventClusterCriteriaDto.class, "ClassificationEventClusterCriteriaDto")
+				.registerSubtype(ClassificationAllSymptomsCriteriaDto.class, "ClassificationAllSymptomsCriteriaDto");
+
 
 		Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
 			if (json.isJsonNull()) {
@@ -824,17 +829,17 @@ public final class RetroProvider {
 		return instance.diseaseConfigurationFacadeRetro;
 	}
 
-	public static DiseaseVariantFacadeRetro getDiseaseVariantFacade() throws NoConnectionException {
+	public static CustomizableEnumValueFacadeRetro getCustomizableEnumValueFacade() throws NoConnectionException {
 		if (instance == null)
 			throw new NoConnectionException();
-		if (instance.diseaseVariantFacadeRetro == null) {
+		if (instance.customizableEnumValueFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
-				if (instance.diseaseVariantFacadeRetro == null) {
-					instance.diseaseVariantFacadeRetro = instance.retrofit.create(DiseaseVariantFacadeRetro.class);
+				if (instance.customizableEnumValueFacadeRetro == null) {
+					instance.customizableEnumValueFacadeRetro = instance.retrofit.create(CustomizableEnumValueFacadeRetro.class);
 				}
 			}
 		}
-		return instance.diseaseVariantFacadeRetro;
+		return instance.customizableEnumValueFacadeRetro;
 	}
 
 	public static FeatureConfigurationFacadeRetro getFeatureConfigurationFacade() throws NoConnectionException {

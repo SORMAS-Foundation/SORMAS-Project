@@ -44,6 +44,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -79,6 +80,7 @@ import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.EndOfIsolationReason;
 import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -90,13 +92,16 @@ import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -120,6 +125,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -158,12 +164,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String CASE_CONFIRMATION_BASIS = "caseConfirmationBasis";
 	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
 	private static final String DIFFERENT_JURISDICTION = "differentJurisdiction";
+	private static final String DONT_SHARE_WARNING_LOC = "dontShareWarning";
+	private static final String CASE_CLASSIFICATION_CALCULATE_BTN_LOC = "caseClassificationCalculateBtnLoc";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
 			loc(CASE_DATA_HEADING_LOC) +
 					fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 5, CaseDataDto.REPORTING_USER) +
-					inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC, CASE_CONFIRMATION_BASIS) +
+					inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC, CASE_CONFIRMATION_BASIS, CASE_CLASSIFICATION_CALCULATE_BTN_LOC) +
 					fluidRowLocs(4, CaseDataDto.CLINICAL_CONFIRMATION, 4, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, 4, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION) +
 					fluidRowLocsCss(VSPACE_3, CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION,
 							CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN, CaseDataDto.NOT_A_CASE_REASON_OTHER) +
@@ -177,7 +185,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					loc(EPID_NUMBER_WARNING_LOC) +
 					fluidRowLocs(CaseDataDto.EXTERNAL_ID, CaseDataDto.EXTERNAL_TOKEN) +
 					fluidRowLocs("", EXTERNAL_TOKEN_WARNING_LOC) +
-					fluidRowLocs(6, CaseDataDto.CASE_ID_ISM, 6, null) +
+					fluidRowLocs(6, CaseDataDto.CASE_ID_ISM, 6, CaseDataDto.INTERNAL_TOKEN) +
 					fluidRow(
 							fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
 							fluidColumn(6, 0, locs(
@@ -199,6 +207,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS) +
 					fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
 					fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC) +
+					fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL) +
+					fluidRowLocs(DONT_SHARE_WARNING_LOC) +
 					fluidRowLocs(DIFFERENT_JURISDICTION) +
 					fluidRowLocs(CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_COMMUNITY) +
 					fluidRowLocs(CaseDataDto.NOSOCOMIAL_OUTBREAK, CaseDataDto.INFECTION_SETTING) +
@@ -345,10 +355,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		epidNumberWarningLabel.addStyleName(VSPACE_3);
 		addField(CaseDataDto.EXTERNAL_ID, TextField.class);
 
+		CheckBox dontShareCheckbox = addField(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL, CheckBox.class);
+		CaseFormHelper.addDontShareWithReportingTool(getContent(), () -> dontShareCheckbox, DONT_SHARE_WARNING_LOC);
+
 		TextField externalTokenField = addField(CaseDataDto.EXTERNAL_TOKEN, TextField.class);
 		Label externalTokenWarningLabel = new Label(I18nProperties.getString(Strings.messageCaseExternalTokenWarning));
 		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
+
+		addField(CaseDataDto.INTERNAL_TOKEN, TextField.class);
 
 		addField(CaseDataDto.INVESTIGATION_STATUS, NullableOptionGroup.class);
 		addField(CaseDataDto.OUTCOME, NullableOptionGroup.class);
@@ -402,6 +417,19 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			final ComboBox cbCaseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
 			cbCaseClassification.addValidator(
 				new GermanCaseClassificationValidator(caseUuid, I18nProperties.getValidationError(Validations.caseClassificationInvalid)));
+
+			if (diseaseClassificationExists()) {
+				Button caseClassificationCalculationButton = ButtonHelper.createButton(Captions.caseClassificationCalculationButton, e -> {
+					CaseClassification classification = FacadeProvider.getCaseClassificationFacade().getClassification(getValue());
+					((Field<CaseClassification>) getField(CaseDataDto.CASE_CLASSIFICATION)).setValue(classification);
+				}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
+
+				getContent().addComponent(caseClassificationCalculationButton, CASE_CLASSIFICATION_CALCULATE_BTN_LOC);
+
+				if (!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLASSIFY)) {
+					caseClassificationCalculationButton.setEnabled(false);
+				}
+			}
 
 			//if(cbCaseClassification.getCaption())
 			addField(CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CheckBox.class);
@@ -588,7 +616,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
 		getContent().addComponent(facilityOrHome, FACILITY_OR_HOME_LOC);
 
-		facilityTypeGroup = new ComboBox();
+		facilityTypeGroup = ComboBoxHelper.createComboBoxV7();
 		facilityTypeGroup.setId("typeGroup");
 		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
@@ -774,7 +802,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.PREGNANT, NullableOptionGroup.class);
 		addField(CaseDataDto.POSTPARTUM, NullableOptionGroup.class);
 		addField(CaseDataDto.TRIMESTER, NullableOptionGroup.class);
-		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
 
 		addField(CaseDataDto.VACCINATION);
 		Field vaccinationDoseField = addField(CaseDataDto.VACCINATION_DOSES);
@@ -945,7 +972,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Set conditional visibilities - ALWAYS call isVisibleAllowed before
 		// dynamically setting the visibility
 		if (isVisibleAllowed(CaseDataDto.PREGNANT)) {
-			setVisible(person.getSex() == Sex.FEMALE, CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM);
+			setVisibleClear(person.getSex() == Sex.FEMALE, CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM, CaseDataDto.TRIMESTER);
+			if (person.getSex() == Sex.FEMALE) {
+				FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT, Arrays.asList(YesNoUnknown.YES), true);
+			}
 		}
 		if (isVisibleAllowed(CaseDataDto.VACCINATION_DOSES)) {
 			FieldHelper
@@ -961,14 +991,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
-			List<DiseaseVariantReferenceDto> variants;
-			if (disease != null && disease.isVariantAllowed()) {
-				variants = FacadeProvider.getDiseaseVariantFacade().getAllByDisease(disease);
-			} else {
-				variants = Collections.emptyList();
-			}
-			FieldHelper.updateItems(diseaseVariantField, variants);
-			diseaseVariantField.setVisible(isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && !variants.isEmpty());
+			List<DiseaseVariant> diseaseVariants =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+			diseaseVariantField
+				.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 		});
 		if (isVisibleAllowed(CaseDataDto.DISEASE_DETAILS)) {
 			FieldHelper
@@ -1207,7 +1234,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		// Automatic case classification rules button - invisible for other diseases
 		DiseaseClassificationCriteriaDto diseaseClassificationCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
-		if (disease != Disease.OTHER && diseaseClassificationCriteria != null) {
+		if (diseaseClassificationExists()) {
 			Button classificationRulesButton = ButtonHelper.createIconButton(
 				Captions.info,
 				VaadinIcons.INFO_CIRCLE,
@@ -1312,9 +1339,18 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 			if (caseFollowUpEnabled) {
 				// Add follow-up until validator
-				Date minimumFollowUpUntilDate = DateHelper.addDays(
-					CaseLogic.getStartDate(symptoms.getOnsetDate(), reportDate.getValue()),
-					FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration((Disease) diseaseField.getValue()));
+				FollowUpPeriodDto followUpPeriod = CaseLogic.getFollowUpStartDate(
+					symptoms.getOnsetDate(),
+					reportDate.getValue(),
+					FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid)));
+				Date minimumFollowUpUntilDate = FollowUpLogic
+					.calculateFollowUpUntilDate(
+						followUpPeriod,
+						null,
+						FacadeProvider.getVisitFacade().getVisitsByCase(new CaseReferenceDto(caseUuid)),
+						FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration((Disease) diseaseField.getValue()))
+					.getFollowUpEndDate();
+
 				finalFollowUpUntil.addValidator(
 					new DateRangeValidator(
 						I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
@@ -1342,6 +1378,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					.setInputPrompt(I18nProperties.getString(Strings.promptExternalIdExternalSurveillanceTool));
 			}
 		});
+	}
+
+	private boolean diseaseClassificationExists() {
+		DiseaseClassificationCriteriaDto diseaseClassificationCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
+		return disease != Disease.OTHER && diseaseClassificationCriteria != null;
 	}
 
 	private void onFollowUpUntilChanged(
@@ -1557,15 +1598,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		if (caseFollowUpEnabled) {
-			tfExpectedFollowUpUntilDate.setValue(
-				DateHelper.formatLocalDate(
-					CaseLogic.calculateFollowUpUntilDate(
-						newFieldValue,
-						FacadeProvider.getVisitFacade().getVisitsByCase(newFieldValue.toReference()),
-						FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration(newFieldValue.getDisease()),
-						true),
-					I18nProperties.getUserLanguage()));
+			FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getCaseFacade().calculateFollowUpUntilDate(newFieldValue, true);
+			tfExpectedFollowUpUntilDate
+				.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
 			tfExpectedFollowUpUntilDate.setReadOnly(true);
+			tfExpectedFollowUpUntilDate.setDescription(
+				String.format(
+					I18nProperties.getString(Strings.infoExpectedFollowUpUntilDateCase),
+					followUpPeriodDto.getFollowUpStartDateType(),
+					DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
 		}
 
 		if (newFieldValue.getResponsibleRegion() != null

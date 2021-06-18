@@ -28,7 +28,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.facility.FacilityHelper;
@@ -119,7 +119,7 @@ public class CaseExportDto implements Serializable {
 	private String epidNumber;
 	private Disease disease;
 	private String diseaseDetails;
-	private DiseaseVariantReferenceDto diseaseVariant;
+	private DiseaseVariant diseaseVariant;
 	@PersonalData
 	@SensitiveData
 	private String firstName;
@@ -292,6 +292,7 @@ public class CaseExportDto implements Serializable {
 	private EventStatus latestEventStatus;
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 
 	@PersonalData
 	@SensitiveData
@@ -308,7 +309,7 @@ public class CaseExportDto implements Serializable {
 	//@formatter:off
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
-						 Disease disease, String diseaseVariantUuid, String diseaseVariantName, String diseaseDetails, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
+						 Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
 						 Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM,
 						 Integer birthdateYYYY, Date reportDate, String reportingUserUuid, String regionUuid, String region,
 						 String districtUuid, String district, String communityUuid, String community,
@@ -338,7 +339,7 @@ public class CaseExportDto implements Serializable {
 						 String vaccineInn, String vaccineBatchNumber, String vaccineUniiCode, String vaccineAtcCode,
 
 						 YesNoUnknown postpartum, Trimester trimester,
-						 long eventCount, String externalID, String externalToken,
+						 long eventCount, String externalID, String externalToken, String internalToken,
 						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 						 String reportingDistrict, CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType,
 						 // responsible jurisdiction
@@ -359,7 +360,7 @@ public class CaseExportDto implements Serializable {
 		this.armedForcesRelationType = ArmedForcesRelationType;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.diseaseVariant = new DiseaseVariantReferenceDto(diseaseVariantUuid, diseaseVariantName);
+		this.diseaseVariant = diseaseVariant;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.salutation = salutation;
@@ -455,6 +456,7 @@ public class CaseExportDto implements Serializable {
 		this.eventCount = eventCount;
 		this.externalID = externalID;
 		this.externalToken = externalToken;
+		this.internalToken = internalToken;
 		this.birthName = birthName;
 		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
 		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
@@ -570,6 +572,16 @@ public class CaseExportDto implements Serializable {
 
 	@Order(6)
 	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.INTERNAL_TOKEN)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	@Order(7)
+	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(CaseDataDto.DISEASE)
@@ -578,7 +590,7 @@ public class CaseExportDto implements Serializable {
 		return disease;
 	}
 
-	@Order(7)
+	@Order(8)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -588,13 +600,13 @@ public class CaseExportDto implements Serializable {
 		return diseaseDetails;
 	}
 
-	@Order(8)
+	@Order(9)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(CaseDataDto.DISEASE_VARIANT)
 	@ExportGroup(ExportGroupType.CORE)
-	public DiseaseVariantReferenceDto getDiseaseVariant() {
+	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
 	}
 
@@ -2120,7 +2132,7 @@ public class CaseExportDto implements Serializable {
 		this.epidNumber = epidNumber;
 	}
 
-	public void setDiseaseVariant(DiseaseVariantReferenceDto diseaseVariant) {
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
 		this.diseaseVariant = diseaseVariant;
 	}
 
@@ -2390,6 +2402,10 @@ public class CaseExportDto implements Serializable {
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	public void setCaseIdentificationSource(CaseIdentificationSource caseIdentificationSource) {
