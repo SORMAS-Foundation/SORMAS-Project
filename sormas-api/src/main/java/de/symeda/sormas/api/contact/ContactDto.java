@@ -522,7 +522,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	}
 
 	public void addToFollowUpComment(String comment) {
-		followUpComment = followUpComment == null | "".equals(followUpComment) ? comment : followUpComment + "\n" + comment;
+		followUpComment = followUpComment == null || "".equals(followUpComment) ? comment : followUpComment + "\n" + comment;
 	}
 
 	public Float getReportLatLonAccuracy() {

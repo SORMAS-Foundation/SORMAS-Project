@@ -837,7 +837,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	public void cancelFollowUp(Contact contact, String comment) {
 		contact.setFollowUpStatus(FollowUpStatus.CANCELED);
 		String followUpComment = contact.getFollowUpComment();
-		followUpComment = followUpComment == null | "".equals(followUpComment) ? comment : followUpComment + "\n" + comment;
+		followUpComment = followUpComment == null || "".equals(followUpComment) ? comment : followUpComment + "\n" + comment;
 		contact.setFollowUpComment(followUpComment);
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		ensurePersisted(contact);
