@@ -311,7 +311,11 @@ public class ImportExportTest extends AbstractBeanTest {
 			assertThat("Error during import: " + StringUtils.join(errorRows.get(1), ", "), errorRows, hasSize(0));
 		}
 
-		ContactDto importedContact = getContactFacade().getContactByUuid(importUuid);
+		List<ContactDto> importedContacts = getContactFacade().getByPersonUuids(Collections.singletonList(contactImporter.getPersonUuid()));
+
+		assertThat(importedContacts.size(), is(1));
+
+		ContactDto importedContact = importedContacts.get(0);
 
 		assertThat(importedContact.getExternalID(), is("text-ext-id"));
 		assertThat(importedContact.getExternalToken(), is("text-ext-token"));
