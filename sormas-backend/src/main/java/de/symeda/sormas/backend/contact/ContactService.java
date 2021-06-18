@@ -44,6 +44,11 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.task.TaskJurisdictionFlagsDto;
+import de.symeda.sormas.backend.task.TaskJoins;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.utils.EventJoins;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1330,9 +1335,24 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.lessThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), to)));
 	}
 
-	public boolean inJurisdictionOrOwned(Contact contact) {
-		return exists(
-				(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), contact.getId()), inJurisdictionOrOwned(cb, new ContactJoins<>(root))));
+	public ContactJurisdictionFlagsDto inJurisdictionOrOwned(Contact contact) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ContactJurisdictionFlagsDto> cq = cb.createQuery(ContactJurisdictionFlagsDto.class);
+		Root<Contact> root = cq.from(Contact.class);
+
+		ContactJoins joins = new ContactJoins(root);
+
+		cq.multiselect(
+				JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
+				JurisdictionHelper.jurisdictionSelector(
+						cb,
+						cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))));
+
+		cq.where(cb.equal(root.get(Task.UUID), contact.getUuid()));
+
+
+		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, ContactJoins<?> joins) {
@@ -1345,7 +1365,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return contact.getSormasToSormasOriginInfo().isOwnershipHandedOver();
 		}
 
-		return inJurisdictionOrOwned(contact) && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
+		return inJurisdictionOrOwned(contact).getInJurisdiction() && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
 	}
 
 	public List<Contact> getByPersonUuids(List<String> personUuids) {

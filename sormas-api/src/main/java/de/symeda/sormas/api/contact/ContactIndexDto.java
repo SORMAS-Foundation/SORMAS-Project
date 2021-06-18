@@ -91,6 +91,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private String caseDistrictName;
 
 	private boolean isInJurisdiction;
+	private boolean isCaseInJurisdiction;
 
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
@@ -101,7 +102,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 						   String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification, String caseRegionName, String caseDistrictName,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
-						   String externalID, String externalToken, String internalToken, boolean isInJurisdiction,
+						   String externalID, String externalToken, String internalToken, boolean isInJurisdiction, boolean isCaseInJurisdiction,
 						   int visitCount) {
 	//@formatter:on
 
@@ -138,6 +139,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.caseDistrictName = caseDistrictName;
 
 		this.isInJurisdiction = isInJurisdiction;
+		this.isCaseInJurisdiction = isCaseInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -366,6 +368,10 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 
 	public boolean getInJurisdiction() {
 		return isInJurisdiction;
+	}
+
+	public boolean getCaseInJurisdiction() {
+		return isCaseInJurisdiction;
 	}
 
 	@Override
