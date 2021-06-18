@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.events.eventparticipantimporter;
 
 import java.beans.IntrospectionException;
@@ -22,6 +22,7 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -208,16 +209,23 @@ public class EventParticipantImporter extends DataImporter {
 					}
 				}
 
+				if (ImportSimilarityResultOption.CREATE.equals(resultOption)) {
+					// resetting the UUID of the person and event participant when CREATE is chosen
+					// so in case of export/import the existing person and event participant are not just updated and new ones are created
+					newPerson.setUuid(DataHelper.createUuid());
+					newEventParticipant.setUuid(DataHelper.createUuid());
+				}
+
 				// Determine the import result and, if there was no duplicate, the user did not skip over the eventparticipant 
 				// or an existing person was picked, save the eventparticipant and person to the database
-				if (eventParticipantHasImportError) {
-					return ImportLineResult.ERROR;
-				} else if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
+				if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
 					return ImportLineResult.SKIPPED;
 				} else {
+					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
+					newPerson.setChangeDate(new Date());
 					PersonDto savedPerson = personFacade.savePerson(newPerson);
 					newEventParticipant.setPerson(savedPerson);
-
+					newEventParticipant.setChangeDate(new Date());
 					eventParticipantFacade.saveEventParticipant(newEventParticipant);
 
 					consumer.result = null;
