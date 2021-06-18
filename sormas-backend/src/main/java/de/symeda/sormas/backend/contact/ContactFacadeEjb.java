@@ -1052,11 +1052,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			(c, isInJurisdiction) -> {
 				pseudonymizer.pseudonymizeUser(userService.getByUuid(c.getReportingUser().getUuid()), currentUser, c::setReportingUser);
 				if (c.getCaze() != null) {
-					pseudonymizer.pseudonymizeDto(
-						CaseReferenceDto.class,
-						c.getCaze(),
-						caseService.inJurisdictionOrOwned(caseService.getByUuid(c.getCaze().getUuid())),
-						null);
+					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), c.getCaseInJurisdiction(), null);
 				}
 			});
 
