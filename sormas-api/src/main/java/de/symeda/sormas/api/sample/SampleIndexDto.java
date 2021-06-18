@@ -93,8 +93,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	private SamplingReason samplingReason;
 	private String samplingReasonDetails;
 
-	private Boolean isInJurisdiction;
-
+	private SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto;
 	//@formatter:off
 	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
 						  boolean shipped, Date shipmentDate, boolean received, Date receivedDate,
@@ -105,7 +104,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 						  String associatedContactUuid, String associatedContactFirstName, String associatedContactLastName,
 						  String associatedEventParticipantUuid, String associatedEventParticipantFirstName, String associatedEventParticipantLastName,
 						  Disease disease, String diseaseDetails, PathogenTestResultType pathogenTestResult, Boolean additionalTestingRequested, Boolean additionalTestPerformed,
-						  String districtName, String labUuid, boolean isInJurisdiction) {
+						  String districtName, String labUuid, boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
 	//@formatter:on
 
 		this.uuid = uuid;
@@ -144,7 +143,12 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 		this.samplingReason = samplingReason;
 		this.samplingReasonDetails = samplingReasonDetails;
 
-		this.isInJurisdiction = isInJurisdiction;
+		this.sampleJurisdictionFlagsDto = new SampleJurisdictionFlagsDto(
+				isInJurisdiction,
+				isCaseInJurisdiction,
+				isContactInJurisdiction,
+				isContactCaseInJurisdiction,
+				isEventParticipantInJurisdiction);
 	}
 
 	public String getUuid() {
@@ -341,8 +345,8 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 		this.samplingReasonDetails = samplingReasonDetails;
 	}
 
-	public Boolean getInJurisdiction() {
-		return isInJurisdiction;
+	public SampleJurisdictionFlagsDto getSampleJurisdictionFlagsDto() {
+		return sampleJurisdictionFlagsDto;
 	}
 
 	public String toString() {

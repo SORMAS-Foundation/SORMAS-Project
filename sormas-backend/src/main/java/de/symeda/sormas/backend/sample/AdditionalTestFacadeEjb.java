@@ -104,7 +104,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	public AdditionalTestDto convertToDto(AdditionalTest source, Pseudonymizer pseudonymizer) {
 		AdditionalTestDto dto = toDto(source);
 
-		pseudonymizer.pseudonymizeDto(AdditionalTestDto.class, dto, sampleService.inJurisdictionOrOwned(source.getSample()), null);
+		pseudonymizer.pseudonymizeDto(AdditionalTestDto.class, dto, sampleService.inJurisdictionOrOwned(source.getSample()).getInJurisdiction(), null);
 
 		return dto;
 	}

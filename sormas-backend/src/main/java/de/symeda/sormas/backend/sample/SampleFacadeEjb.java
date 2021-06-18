@@ -64,6 +64,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
@@ -85,6 +86,7 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -113,6 +115,8 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
@@ -375,7 +379,9 @@ public class SampleFacadeEjb implements SampleFacade {
 							.otherwise(eventDistrict.get(District.NAME))));
 
 		cq.distinct(true);
-
+		
+		ContactJoins<Sample> contactJoins = new ContactJoins<>(joins.getContact());
+		
 		cq.multiselect(sample.get(Sample.UUID),
 				caze.get(Case.EPID_NUMBER),
 				sample.get(Sample.LAB_SAMPLE_ID),
@@ -407,7 +413,23 @@ public class SampleFacadeEjb implements SampleFacade {
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
 				districtSelect,
 				joins.getLab().get(Facility.UUID),
-				JurisdictionHelper.jurisdictionSelector(cb, sampleService.inJurisdictionOrOwned(cb, joins)));
+			JurisdictionHelper.jurisdictionSelector(cb, sampleService.inJurisdictionOrOwned(cb, joins)),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))),
+			JurisdictionHelper
+				.jurisdictionSelector(cb, cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(cb, contactJoins))),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				cb.and(
+					cb.isNotNull(joins.getContact()),
+					cb.isNotNull(contactJoins.getCaze()),
+					caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(contactJoins.getCaze())))),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				cb.and(
+					cb.isNotNull(joins.getEventParticipant()),
+					eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(joins.getEventParticipant())))));
 
 		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
 
@@ -484,7 +506,40 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(SampleIndexDto.class, samples, s -> s.getInJurisdiction(), null);
+		Pseudonymizer emptyValuePseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		pseudonymizer
+			.pseudonymizeDtoCollection(SampleIndexDto.class, samples, s -> s.getSampleJurisdictionFlagsDto().getInJurisdiction(), (s, ignored) -> {
+				final SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto = s.getSampleJurisdictionFlagsDto();
+				if (s.getAssociatedCase() != null) {
+					emptyValuePseudonymizer
+						.pseudonymizeDto(CaseReferenceDto.class, s.getAssociatedCase(), sampleJurisdictionFlagsDto.getCaseInJurisdiction(), null);
+				}
+
+				ContactReferenceDto associatedContact = s.getAssociatedContact();
+				if (associatedContact != null) {
+					emptyValuePseudonymizer.pseudonymizeDto(
+						ContactReferenceDto.PersonName.class,
+						associatedContact.getContactName(),
+						sampleJurisdictionFlagsDto.getContactInJurisdiction(),
+						null);
+
+					if (associatedContact.getCaseName() != null) {
+						pseudonymizer.pseudonymizeDto(
+							ContactReferenceDto.PersonName.class,
+							associatedContact.getCaseName(),
+							sampleJurisdictionFlagsDto.getContactCaseInJurisdiction(),
+							null);
+					}
+				}
+
+				if (s.getAssociatedEventParticipant() != null) {
+					emptyValuePseudonymizer.pseudonymizeDto(
+						EventParticipantReferenceDto.class,
+						s.getAssociatedEventParticipant(),
+						sampleJurisdictionFlagsDto.getEvenParticipantInJurisdiction(),
+						null);
+				}
+			}, true);
 
 		return samples;
 	}
@@ -881,24 +936,24 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	private void pseudonymizeDto(Sample source, SampleDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
-			boolean isInJurisdiction = sampleService.inJurisdictionOrOwned(source);
+			final SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto = sampleService.inJurisdictionOrOwned(source);
 			User currentUser = userService.getCurrentUser();
 
-			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
+			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, sampleJurisdictionFlagsDto.getInJurisdiction(), s -> {
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser);
 				pseudonymizeAssociatedObjects(
 					s.getAssociatedCase(),
 					s.getAssociatedContact(),
 					s.getAssociatedEventParticipant(),
 					pseudonymizer,
-					isInJurisdiction);
+					sampleJurisdictionFlagsDto);
 			});
 		}
 	}
 
 	private void restorePseudonymizedDto(SampleDto dto, Sample existingSample, SampleDto existingSampleDto) {
 		if (existingSampleDto != null) {
-			boolean inJurisdiction = sampleService.inJurisdictionOrOwned(existingSample);
+			boolean inJurisdiction = sampleService.inJurisdictionOrOwned(existingSample).getInJurisdiction();
 			User currentUser = userService.getCurrentUser();
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
@@ -913,22 +968,34 @@ public class SampleFacadeEjb implements SampleFacade {
 		ContactReferenceDto sampleContact,
 		EventParticipantReferenceDto sampleEventParticipant,
 		Pseudonymizer pseudonymizer,
-		boolean isInJurisdiction) {
+		SampleJurisdictionFlagsDto jurisdictionFlagsDto) {
 
 		if (sampleCase != null) {
-			pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, sampleCase, isInJurisdiction, null);
+			pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, sampleCase, jurisdictionFlagsDto.getCaseInJurisdiction(), null);
 		}
 
 		if (sampleContact != null) {
-			pseudonymizer.pseudonymizeDto(ContactReferenceDto.PersonName.class, sampleContact.getContactName(), isInJurisdiction, null);
+			pseudonymizer.pseudonymizeDto(
+				ContactReferenceDto.PersonName.class,
+				sampleContact.getContactName(),
+				jurisdictionFlagsDto.getContactInJurisdiction(),
+				null);
 
 			if (sampleContact.getCaseName() != null) {
-				pseudonymizer.pseudonymizeDto(ContactReferenceDto.PersonName.class, sampleContact.getCaseName(), isInJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(
+					ContactReferenceDto.PersonName.class,
+					sampleContact.getCaseName(),
+					jurisdictionFlagsDto.getContactCaseInJurisdiction(),
+					null);
 			}
 		}
 
 		if (sampleEventParticipant != null) {
-			pseudonymizer.pseudonymizeDto(EventParticipantReferenceDto.class, sampleEventParticipant, isInJurisdiction, null);
+			pseudonymizer.pseudonymizeDto(
+				EventParticipantReferenceDto.class,
+				sampleEventParticipant,
+				jurisdictionFlagsDto.getEvenParticipantInJurisdiction(),
+				null);
 		}
 	}
 
@@ -1070,6 +1137,6 @@ public class SampleFacadeEjb implements SampleFacade {
 			return sample.getSormasToSormasOriginInfo().isOwnershipHandedOver();
 		}
 
-		return sampleService.inJurisdictionOrOwned(sample) && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);
+		return sampleService.inJurisdictionOrOwned(sample).getInJurisdiction() && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);
 	}
 }

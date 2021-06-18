@@ -132,7 +132,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		loginWith(user2);
 		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
 		loginWith(labUser);
-		SampleDto sample = createCaseSample(caze, labUser, rdcf2.facility);
+		SampleDto sample = createCaseSample(caze, labUser, rdcf1.facility);
 		assertNotPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()), labUser.getUuid());
 	}
 

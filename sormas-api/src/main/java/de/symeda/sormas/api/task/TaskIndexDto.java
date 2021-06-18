@@ -134,7 +134,12 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 		this.district = district;
 		this.region = region;
 
-		this.taskJurisdictionFlagsDto =  new TaskJurisdictionFlagsDto(isInJurisdiction, isCaseInJurisdiction, isContactInJurisdiction, isContactCaseInJurisdiction, isEventInJurisdiction);
+		this.taskJurisdictionFlagsDto = new TaskJurisdictionFlagsDto(
+			isInJurisdiction,
+			isCaseInJurisdiction,
+			isContactInJurisdiction,
+			isContactCaseInJurisdiction,
+			isEventInJurisdiction);
 	}
 
 	public TaskContext getTaskContext() {

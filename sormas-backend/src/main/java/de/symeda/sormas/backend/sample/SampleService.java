@@ -45,6 +45,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -63,6 +64,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -71,10 +73,14 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless
 @LocalBean
@@ -367,9 +373,36 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return filter;
 	}
 
-	public boolean inJurisdictionOrOwned(Sample sample) {
-		return exists(
-			(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), sample.getId()), inJurisdictionOrOwned(cb, new SampleJoins<>(root))));
+	public SampleJurisdictionFlagsDto inJurisdictionOrOwned(Sample sample) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SampleJurisdictionFlagsDto> cq = cb.createQuery(SampleJurisdictionFlagsDto.class);
+		Root<Sample> root = cq.from(Sample.class);
+
+		SampleJoins joins = new SampleJoins(root);
+
+		ContactJoins<Task> contactJoins = new ContactJoins<>(joins.getContact());
+		cq.multiselect(
+			JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))),
+			JurisdictionHelper
+				.jurisdictionSelector(cb, cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(cb, contactJoins))),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				cb.and(
+					cb.isNotNull(joins.getContact()),
+					cb.isNotNull(contactJoins.getCaze()),
+					caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(contactJoins.getCaze())))),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				cb.and(
+					cb.isNotNull(joins.getEventParticipant()),
+					eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(joins.getEventParticipant())))));
+
+		cq.where(cb.equal(root.get(Task.UUID), sample.getUuid()));
+
+		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, SampleJoins<?> joins) {
