@@ -16,7 +16,9 @@
 
 package de.symeda.sormas.api.task;
 
-public class TaskJurisdictionFlagsDto {
+import java.io.Serializable;
+
+public class TaskJurisdictionFlagsDto implements Serializable {
 
     private Boolean isInJurisdiction;
     private Boolean isCaseInJurisdiction;
