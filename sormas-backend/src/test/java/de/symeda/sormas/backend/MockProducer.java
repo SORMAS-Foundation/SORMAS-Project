@@ -37,6 +37,7 @@ import javax.jms.Topic;
 import javax.mail.Session;
 import javax.transaction.UserTransaction;
 
+import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
@@ -162,7 +163,8 @@ public class MockProducer {
 		@Produces
 		public SormasToSormasRestClient sormasToSormasClient(
 			ServerAccessDataService serverAccessDataService,
-			SormasToSormasEncryptionService encryptionService) {
+			SormasToSormasEncryptionService encryptionService,
+			SormasToSormasConfig sormasToSormasConfig) {
 			return SORMAS_TO_SORMAS_REST_CLIENT;
 		}
 	}

@@ -17,12 +17,15 @@ package de.symeda.sormas.backend.sormastosormas;
 
 import javax.enterprise.inject.Produces;
 
+import de.symeda.sormas.api.SormasToSormasConfig;
+
 public class SormasToSormasRestClientProducer {
 
 	@Produces
 	public SormasToSormasRestClient sormasToSormasClient(
 		ServerAccessDataService serverAccessDataService,
-		SormasToSormasEncryptionService encryptionService) {
-		return new SormasToSormasRestClient(serverAccessDataService, encryptionService);
+		SormasToSormasEncryptionService encryptionService,
+		SormasToSormasConfig sormasToSormasConfig) {
+		return new SormasToSormasRestClient(serverAccessDataService, encryptionService, sormasToSormasConfig);
 	}
 }

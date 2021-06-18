@@ -17,6 +17,10 @@ public class SormasToSormasConfig implements Serializable, Cloneable {
 	private String truststoreName;
 	private String truststorePass;
 	private boolean retainCaseExternalToken;
+	private String oidcServer;
+	private String oidcRealm;
+	private String oidcClientId;
+	private String oidcClientSecret;
 
 	public String getPath() {
 		return path;
@@ -100,5 +104,73 @@ public class SormasToSormasConfig implements Serializable, Cloneable {
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException("Clone failed", e);
 		}
+	}
+
+	public String getOidcServer() {
+		return oidcServer;
+	}
+
+	public void setOidcServer(String oidcServer) {
+		this.oidcServer = oidcServer;
+	}
+
+	public String getOidcRealm() {
+		return oidcRealm;
+	}
+
+	public void setOidcRealm(String oidcRealm) {
+		this.oidcRealm = oidcRealm;
+	}
+
+	/**
+	 * Computed property to get access to our realm URL.
+	 *
+	 * @return The complete URL to our S2S realm
+	 */
+	public String getOidcRealmUrl() {
+		return getOidcServer() + "/auth/realms/" + getOidcRealm();
+	}
+
+	/**
+	 * Computed property to get access to our realm's token URL.
+	 *
+	 * @return The complete URL to our S2S realm's token URL.
+	 */
+	public String getOidcRealmTokenEndoint() {
+		return getOidcRealmUrl() + "/protocol/openid-connect/token";
+	}
+
+	public String getOidcClientId() {
+		return oidcClientId;
+	}
+
+	public void setOidcClientId(String oidcClientId) {
+		this.oidcClientId = oidcClientId;
+	}
+
+	public String getOidcClientSecret() {
+		return oidcClientSecret;
+	}
+
+	public void setOidcClientSecret(String oidcClientSecret) {
+		this.oidcClientSecret = oidcClientSecret;
+	}
+
+	/**
+	 * Computed property to get access to our realm's certificate URL.
+	 *
+	 * @return The complete URL to our S2S realm's certificate URL.
+	 */
+	public String getOidcRealmCertEndoint() {
+		return getOidcRealmUrl() + "/protocol/openid-connect/certs";
+	}
+
+	/**
+	 * Computed property to get access to the name of our own client scope.
+	 *
+	 * @return The complete URL to our S2S realm's certificate URL.
+	 */
+	public String getClientScope() {
+		return "s2s-" + getOidcClientId();
 	}
 }
