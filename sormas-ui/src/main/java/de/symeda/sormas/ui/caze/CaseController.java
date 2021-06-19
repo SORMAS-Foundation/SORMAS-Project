@@ -1167,14 +1167,10 @@ public class CaseController {
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
 			epiDataForm.getFieldGroup());
 
-		editView.addCommitListener(new CommitListener() {
-
-			@Override
-			public void onCommit() {
-				CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-				cazeDto.setEpiData(epiDataForm.getValue());
-				saveCase(cazeDto);
-			}
+		editView.addCommitListener(() -> {
+			CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+			cazeDto.setEpiData(epiDataForm.getValue());
+			saveCase(cazeDto);
 		});
 
 		return editView;
@@ -1626,9 +1622,8 @@ public class CaseController {
 		String notSharableUuid = FacadeProvider.getCaseFacade().getFirstUuidNotShareableWithExternalReportingTools(selectedUuids);
 		if (notSharableUuid != null) {
 			Notification.show(
-				String.format(
-					I18nProperties.getString(Strings.errorExternalSurveillanceToolCaseNotSharable),
-					DataHelper.getShortUuid(notSharableUuid)),
+				String
+					.format(I18nProperties.getString(Strings.errorExternalSurveillanceToolCaseNotSharable), DataHelper.getShortUuid(notSharableUuid)),
 				"",
 				Type.ERROR_MESSAGE);
 			return;
