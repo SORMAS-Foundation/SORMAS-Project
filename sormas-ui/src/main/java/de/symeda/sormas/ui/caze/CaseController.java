@@ -331,7 +331,10 @@ public class CaseController {
 		convertToCaseSelectComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 
 		convertToCaseSelectComponent.addCommitListener(() -> {
-			setResultingCase(caze, convertToCaseSelectionField.getSelectedContacts(), convertToCaseSelectionField.getSelectedEventParticipants());
+			List<SimilarContactDto> selectedContacts = convertToCaseSelectionField.getSelectedContacts();
+			caze.getEpiData().setContactWithSourceCaseKnown(selectedContacts.isEmpty() ? YesNoUnknown.NO : YesNoUnknown.YES);
+			saveCase(caze);
+			setResultingCase(caze, selectedContacts, convertToCaseSelectionField.getSelectedEventParticipants());
 		});
 
 		VaadinUiUtil.showModalPopupWindow(convertToCaseSelectComponent, I18nProperties.getString(Strings.headingCaseConversion));
