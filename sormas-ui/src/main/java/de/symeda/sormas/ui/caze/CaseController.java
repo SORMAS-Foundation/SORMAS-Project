@@ -298,6 +298,8 @@ public class CaseController {
 			convertToCaseConfirmComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionNo));
 
 			convertToCaseConfirmComponent.addCommitListener(() -> {
+				caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+				saveCase(caze);
 				setResultingCase(caze, matchingContacts, matchingEventParticipants);
 			});
 
