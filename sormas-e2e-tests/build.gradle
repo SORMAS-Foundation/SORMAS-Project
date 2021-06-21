@@ -142,8 +142,12 @@ task createAllureReport(type: Exec) {
 
 		println ("[GRADLE-INFO] : listing folders from project")
 		println commandLine 'ls' "${workingDirectory}"
+		println file("${workingDirectory}").list()
 		println ("[GRADLE-INFO] : listing folders from allure reports folder")
 		println commandLine 'ls' "${workingDirectory}/allureReports"
+		println file("${workingDirectory}/allureReports").list()
+
+
 	}
 }
 
