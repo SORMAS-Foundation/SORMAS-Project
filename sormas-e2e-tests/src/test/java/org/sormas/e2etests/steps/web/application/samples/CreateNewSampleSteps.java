@@ -87,7 +87,7 @@ public class CreateNewSampleSteps implements En {
           Truth.assertThat(sample).isEqualTo(actualSample);
         });
 
-    When(
+    Then(
         "^I check the created Test result is correctly displayed on Edit Sample page, Test creation tab",
         () -> {
           final Sample actualSampleTestResult = collectTestResultsData();
