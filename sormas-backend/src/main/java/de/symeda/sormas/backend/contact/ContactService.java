@@ -813,11 +813,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				if (contact.getFollowUpStatus() != FollowUpStatus.COMPLETED && contact.getContactStatus() == ContactStatus.CONVERTED) {
 					// Cancel follow-up if the contact was converted to a case
 					contact.setFollowUpStatus(FollowUpStatus.CANCELED);
-					String followUpComment = contact.getFollowUpComment();
-					followUpComment = followUpComment == null | "".equals(followUpComment)
-						? I18nProperties.getString(Strings.messageSystemFollowUpCanceled)
-						: followUpComment + "\n" + I18nProperties.getString(Strings.messageSystemFollowUpCanceled);
-					contact.setFollowUpComment(followUpComment);
+					addToFollowUpStatusComment(contact, I18nProperties.getString(Strings.messageSystemFollowUpCanceled));
 				}
 				statusChangedBySystem = true;
 			}
@@ -836,11 +832,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	public void cancelFollowUp(Contact contact, String comment) {
 		contact.setFollowUpStatus(FollowUpStatus.CANCELED);
-		String followUpComment = contact.getFollowUpComment();
-		followUpComment = followUpComment == null || "".equals(followUpComment) ? comment : followUpComment + "\n" + comment;
-		contact.setFollowUpComment(followUpComment);
+		addToFollowUpStatusComment(contact, comment);
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		ensurePersisted(contact);
+	}
+
+	private void addToFollowUpStatusComment(Contact contact, String comment) {
+		String followUpComment = DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment);
+		contact.setFollowUpComment(followUpComment);
 	}
 
 	// Used only for testing; directly retrieve the contacts from the visit instead
