@@ -85,7 +85,7 @@ public class CreateNewTaskSteps implements En {
     selectTaskStatus(task.getTaskStatus());
   }
 
-    public void selectTaskType(String taskType) {
+  public void selectTaskType(String taskType) {
     webDriverHelpers.selectFromCombobox(TASK_TYPE_COMBOBOX, taskType);
   }
 

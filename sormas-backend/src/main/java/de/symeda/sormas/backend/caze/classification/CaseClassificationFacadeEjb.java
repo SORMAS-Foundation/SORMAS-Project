@@ -450,7 +450,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 			symptom(SymptomsDto.RESPIRATORY_DISEASE_VENTILATION),
 			symptom(SymptomsDto.ACUTE_RESPIRATORY_DISTRESS_SYNDROME),
 			symptom(SymptomsDto.LOSS_OF_TASTE),
-			symptom(SymptomsDto.LOSS_OF_SMELL));
+			symptom(SymptomsDto.LOSS_OF_SMELL),
+			symptom(SymptomsDto.SORE_THROAT));
 
 		probable = allOf(suspect, xOf(1, caseData(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, YesNoUnknown.YES), partOfEventCluster()));
 
@@ -611,7 +612,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 	}
 
 	private ClassificationAllSymptomsCriteriaDto allOfSymptoms(SymptomState symptomState, Disease disease) {
-		return new ClassificationAllSymptomsCriteriaDto(symptomState, disease);
+		return new ClassificationAllSymptomsCriteriaDto(symptomState, disease, configFacade.getCountryLocale());
 	}
 
 	private ClassificationEventClusterCriteriaDto partOfEventCluster() {

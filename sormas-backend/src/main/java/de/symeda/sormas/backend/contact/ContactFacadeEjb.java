@@ -58,8 +58,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.externaldata.ExternalDataDto;
-import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,10 +84,13 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -112,6 +113,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -133,6 +135,8 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.document.Document;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -244,6 +248,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private SampleFacadeEjbLocal sampleFacade;
+	@EJB
+	private DocumentService documentService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -1726,7 +1732,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		// 1 Merge Dtos
 		// 1.1 Contact
-		DtoHelper.copyDtoValues(leadContactDto, otherContactDto, false);
+		copyDtoValues(leadContactDto, otherContactDto);
 		saveContact(leadContactDto);
 
 		// 1.2 Person
@@ -1762,6 +1768,24 @@ public class ContactFacadeEjb implements ContactFacade {
 			otherVisit.setDisease(leadContactDto.getDisease());
 			visitFacade.saveVisit(otherVisit);
 		}
+
+		// 4 Documents
+		List<Document> documents = documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, otherContact.getUuid());
+		for (Document document : documents) {
+			document.setRelatedEntityUuid(leadContact.getUuid());
+
+			documentService.ensurePersisted(document);
+		}
+	}
+
+	private void copyDtoValues(ContactDto leadContactDto, ContactDto otherContactDto) {
+		String leadAdditionalDetails = leadContactDto.getAdditionalDetails();
+		String leadFollowUpComment = leadContactDto.getFollowUpComment();
+
+		DtoHelper.copyDtoValues(leadContactDto, otherContactDto, false);
+
+		leadContactDto.setAdditionalDetails(DataHelper.joinStrings(" ", leadAdditionalDetails, otherContactDto.getAdditionalDetails()));
+		leadContactDto.setFollowUpComment(DataHelper.joinStrings(" ", leadFollowUpComment, otherContactDto.getFollowUpComment()));
 	}
 
 	@Override

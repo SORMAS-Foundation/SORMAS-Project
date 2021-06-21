@@ -362,6 +362,20 @@ public class WebDriverHelpers {
     }
   }
 
+  public void waitUntilAListOfElementsIsPresent(By selector, int number) {
+    waitForPageLoaded();
+    try {
+      assertHelpers.assertWithPoll(
+          () -> {
+            List<WebElement> webElements = baseSteps.getDriver().findElements(selector);
+            scrollToElement(webElements.get(0));
+            assertThat(webElements.size()).isAtLeast(number);
+          },
+          4);
+    } catch (Throwable ignored) {
+    }
+  }
+
   public WebElement getWebElementBySelectorAndText(final By selector, final String text) {
     return getWebElementByText(selector, webElement -> webElement.getText().contentEquals(text));
   }
@@ -496,5 +510,14 @@ public class WebDriverHelpers {
     } else {
       throw new Error("checked was found as NULL");
     }
+  }
+
+  // always needs the raw header value from the DOM, not the stylized one (the one displayed in UI)
+  public String getValueFromTableRowUsingTheHeader(String headerValue, int rowIndex) {
+    By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
+    scrollToElement(header);
+    String style = getAttributeFromWebElement(header, "style");
+    By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
+    return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
   }
 }

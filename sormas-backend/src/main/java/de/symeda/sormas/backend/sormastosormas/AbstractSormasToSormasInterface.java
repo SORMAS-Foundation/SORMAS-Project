@@ -203,7 +203,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
 
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
-		sormasToSormasRestClient.post(organizationId, requestRejectEndpoint, Collections.singletonList(uuid), null);
+		sormasToSormasRestClient.post(organizationId, requestRejectEndpoint, uuid, null);
 
 		shareRequest.setChangeDate(new Date());
 		shareRequest.setStatus(ShareRequestStatus.REJECTED);
@@ -213,8 +213,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	@Override
 	@Transactional
-	public void rejectShareRequest(String uuid) throws SormasToSormasException {
-		SormasToSormasShareInfo shareInfo = shareInfoService.getByRequestUuid(uuid);
+	public void rejectShareRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException {
+		String requestUuid = encryptionService.decryptAndVerify(encryptedRequestUuid, String.class);
+		SormasToSormasShareInfo shareInfo = shareInfoService.getByRequestUuid(requestUuid);
 		shareInfo.setRequestStatus(ShareRequestStatus.REJECTED);
 		shareInfo.setOwnershipHandedOver(false);
 		shareInfoService.ensurePersisted(shareInfo);
@@ -227,7 +228,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
 
 		SormasToSormasEncryptedDataDto encryptedData = sormasToSormasRestClient
-			.post(organizationId, requestAcceptEndpoint, Collections.singletonList(uuid), SormasToSormasEncryptedDataDto.class);
+			.post(organizationId, requestAcceptEndpoint, uuid, SormasToSormasEncryptedDataDto.class);
 
 		saveSharedEntities(encryptedData, shareRequest.getOriginInfo());
 
@@ -237,9 +238,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	}
 
 	@Override
-	public SormasToSormasEncryptedDataDto getDataForShareRequest(String uuid) throws SormasToSormasException {
+	public SormasToSormasEncryptedDataDto getDataForShareRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException {
 		User currentUser = userService.getCurrentUser();
-		SormasToSormasShareInfo shareInfo = shareInfoService.getByRequestUuid(uuid);
+		String requestUuid = encryptionService.decryptAndVerify(encryptedRequestUuid, String.class);
+		SormasToSormasShareInfo shareInfo = shareInfoService.getByRequestUuid(requestUuid);
 
 		List<ShareData<ADO, S>> shareData = getShareDataBuilder().buildShareData(shareInfo, currentUser);
 

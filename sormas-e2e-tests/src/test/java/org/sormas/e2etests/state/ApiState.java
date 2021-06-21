@@ -36,6 +36,7 @@ public class ApiState {
   Response response;
   Person editPerson;
   Case createdCase;
+  List<Case> createdCases;
   List<Sample> createdSamples;
   Contact createdContact;
   Event createdEvent;
