@@ -42,6 +42,7 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.region.Community;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.AuthProvider;
@@ -221,6 +222,20 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		Predicate filter = null;
 		boolean userEntityJoinUsed = false;
 
+		filter = getPredicate(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles, cb, root, rolesJoin, userRoot, filter, userEntityJoinUsed);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.distinct(true);
+		cq.orderBy(cb.asc(root.get(User.ID)));
+
+		List<UserReference> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
+
+	private Predicate getPredicate(List<String> regionUuids, List<String> districtUuids, boolean includeSupervisors, boolean filterByJurisdiction, boolean activeOnly, List<UserRole> userRoles, CriteriaBuilder cb, Root<UserReference> root, Join<UserReference, UserRole> rolesJoin, Root<User> userRoot, Predicate filter, boolean userEntityJoinUsed) {
 		if (CollectionUtils.isNotEmpty(regionUuids)) {
 			Join<User, Region> regionJoin = userRoot.join(User.REGION, JoinType.LEFT);
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(regionJoin.get(Region.UUID)).value(regionUuids));
@@ -252,6 +267,50 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		// WHERE outer AND
 		if (activeOnly) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, root));
+		}
+		return filter;
+	}
+
+	/**
+	 * Loads users filtered by combinable filter conditions.<br />
+	 * Condition combination if parameter is set:<br />
+	 * {@code ((regionUuids & districtUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly}
+	 *
+	 * @see #createJurisdictionFilter(CriteriaBuilder, From)
+	 * @param regionUuids
+	 * @param districtUuids
+	 * @param communityUuids
+	 * @param includeSupervisors
+	 *            If set to {@code true}, all supervisors are returned independent of other filters.
+	 * @param filterByJurisdiction
+	 * @param activeOnly
+	 * @param userRoles
+	 */
+	public List<UserReference> getReferenceList(
+			List<String> regionUuids,
+			List<String> districtUuids,
+			List<String> communityUuids,
+			boolean includeSupervisors,
+			boolean filterByJurisdiction,
+			boolean activeOnly,
+			List<UserRole> userRoles) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<UserReference> cq = cb.createQuery(UserReference.class);
+		Root<UserReference> root = cq.from(UserReference.class);
+		Join<UserReference, UserRole> rolesJoin = root.join(User.USER_ROLES, JoinType.LEFT);
+		Root<User> userRoot = cq.from(User.class);
+		cq.select(root);
+
+		// WHERE inner AND
+		Predicate filter = null;
+		boolean userEntityJoinUsed = false;
+
+		filter = getPredicate(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles, cb, root, rolesJoin, userRoot, filter, userEntityJoinUsed);
+
+		if (CollectionUtils.isNotEmpty(communityUuids)) {
+			Join<User, Community> communityJoin = userRoot.join(User.COMMUNITY, JoinType.LEFT);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(communityJoin.get(Community.UUID)).value(communityUuids));
 		}
 
 		if (filter != null) {
