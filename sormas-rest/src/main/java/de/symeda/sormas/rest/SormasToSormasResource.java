@@ -15,10 +15,17 @@
 
 package de.symeda.sormas.rest;
 
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -29,6 +36,7 @@ import javax.ws.rs.core.Response;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
@@ -158,6 +166,19 @@ public class SormasToSormasResource {
 	@Path(SormasToSormasApiConstants.REVOKE_REQUESTS_ENDPOINT)
 	public Response revokeShareRequests(List<String> requestUuids) {
 		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasFacade().revokeRequests(requestUuids));
+	}
+
+	@GET
+	@Path(SormasToSormasApiConstants.CERT_ENDPOINT)
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	public Response getCertificate() {
+		SormasToSormasEncryptionFacade encryptionFacade = FacadeProvider.getSormasToSormasEncryptionFacade();
+		try {
+			X509Certificate ownCert = encryptionFacade.getOwnCertificate();
+			return Response.ok(ownCert.getEncoded(), MediaType.APPLICATION_OCTET_STREAM).build();
+		} catch (CertificateException | KeyStoreException | IOException | NoSuchAlgorithmException | SormasToSormasException e) {
+			return Response.serverError().build();
+		}
 	}
 
 	private Response handleVoidRequest(VoidFacadeCall facadeCall) {

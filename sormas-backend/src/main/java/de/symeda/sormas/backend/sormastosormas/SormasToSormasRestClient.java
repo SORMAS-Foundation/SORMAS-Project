@@ -39,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
@@ -51,17 +51,17 @@ import de.symeda.sormas.backend.util.ClientHelper;
 
 public class SormasToSormasRestClient {
 
-	public static final String SORMAS_REST_URL_TEMPLATE = "https://%s" + SORMAS_REST_PATH + "%s";
+	public static final String SORMAS_REST_URL_TEMPLATE = "http://%s" + SORMAS_REST_PATH + "%s";
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasRestClient.class);
 	private final ServerAccessDataService serverAccessDataService;
 
-	private final SormasToSormasEncryptionService encryptionService;
+	private final SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb;
 
 	private final ObjectMapper mapper;
 
-	public SormasToSormasRestClient(ServerAccessDataService serverAccessDataService, SormasToSormasEncryptionService encryptionService) {
+	public SormasToSormasRestClient(ServerAccessDataService serverAccessDataService, SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb) {
 		this.serverAccessDataService = serverAccessDataService;
-		this.encryptionService = encryptionService;
+		this.sormasToSormasEncryptionEjb = sormasToSormasEncryptionEjb;
 
 		mapper = new ObjectMapper();
 		mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
@@ -75,6 +75,10 @@ public class SormasToSormasRestClient {
 
 	public <T> T put(String receiverId, String endpoint, Object body, Class<T> responseType) throws SormasToSormasException {
 		return sendRequest(receiverId, endpoint, body, responseType, HttpMethod.PUT);
+	}
+
+	public <T> T get(String receiverId, String endpoint, Class<T> responseType) throws SormasToSormasException {
+		return sendRequest(receiverId, endpoint, null, responseType, HttpMethod.GET);
 	}
 
 	private String buildAuthToken(OrganizationServerAccessData targetServerAccessData) {
@@ -98,8 +102,12 @@ public class SormasToSormasRestClient {
 
 	private <T> T sendRequest(String receiverId, String endpoint, Object body, Class<T> responseType, String method) throws SormasToSormasException {
 		try {
-			SormasToSormasEncryptedDataDto encryptedBody = encryptionService.signAndEncrypt(body, receiverId);
-			Entity<String> entity = Entity.entity(mapper.writeValueAsString(encryptedBody), MediaType.APPLICATION_JSON_TYPE);
+			Entity<String> entity = null;
+			if (body != null) {
+				SormasToSormasEncryptedDataDto encryptedBody = sormasToSormasEncryptionEjb.signAndEncrypt(body, receiverId);
+				entity = Entity.entity(mapper.writeValueAsString(encryptedBody), MediaType.APPLICATION_JSON_TYPE);
+			}
+
 			Invocation.Builder invocation = buildRestClient(receiverId, endpoint);
 
 			Response response;
@@ -109,6 +117,9 @@ public class SormasToSormasRestClient {
 				break;
 			case HttpMethod.PUT:
 				response = invocation.put(entity);
+				break;
+			case HttpMethod.GET:
+				response = invocation.get();
 				break;
 			default:
 				throw new SormasToSormasException("Invalid HTTP verb used");
@@ -139,7 +150,7 @@ public class SormasToSormasRestClient {
 
 			try {
 				SormasToSormasErrorResponse errorResponse = mapper.readValue(errorMessage, SormasToSormasErrorResponse.class);
-				errorMessage = I18nProperties.getString(Strings.errorSormasToSormasShare);
+				errorMessage = I18nProperties.getString(Strings.errorSormasToSormasSend);
 				errors = errorResponse.getErrors();
 			} catch (IOException e) {
 				// do nothing, keep the unparsed response as error message
@@ -147,7 +158,7 @@ public class SormasToSormasRestClient {
 
 			if (statusCode != HttpStatus.SC_BAD_REQUEST) {
 				// don't log validation errors, will be displayed on the UI
-				LOGGER.error("Share request failed: {}; {}", statusCode, errorMessage);
+				LOGGER.error("Sending request failed: {}; {}", statusCode, errorMessage);
 			}
 			throw new SormasToSormasException(errorMessage, errors);
 		}
