@@ -64,6 +64,7 @@ task format(type: GoogleJavaFormat) {
 	source 'src/main'
 	source 'src/test'
 	include '**/*.java'
+	println ("[GRADLE-INFO] : format task executed with success")
 }
 
 tasks.withType(Test) {
@@ -99,7 +100,7 @@ task copyGeneratedReport(type: Copy) {
 	from file("$buildDir/reports/allure-report")
 	into file("allureReports")
 	// print info
-	println("[GRADLE-INFO] : Moving files from allure-report to allureReports folder")
+	println("[GRADLE-INFO] : Last task copy generated report executed with success, moving files from allure-report to allureReports folder")
 	println file("allureReports").list()
 }
 
@@ -146,8 +147,7 @@ task createAllureReport(type: Exec) {
 		println ("[GRADLE-INFO] : listing folders from allure reports folder")
 		//println commandLine 'ls' "${workingDirectory}/allureReports"
 		println file("${workingDirectory}/allureReports").list()
-
-
+		println ("[GRADLE-INFO] : Create allure report task executed with success")
 	}
 }
 
@@ -162,10 +162,9 @@ test {
 }
 
 compileJava.dependsOn format
-println ("[GRADLE-INFO] : format task executed with success")
+
 startTests.finalizedBy copyToGeneratedReport
 copyToGeneratedReport.finalizedBy test
 test.finalizedBy copyEnvironmentProperties
 copyEnvironmentProperties.finalizedBy createAllureReport
 createAllureReport.finalizedBy copyGeneratedReport
-println ("[GRADLE-INFO] : Create allure report task executed with success")
