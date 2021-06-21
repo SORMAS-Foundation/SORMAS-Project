@@ -313,7 +313,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilter(CriteriaQuery cq, CriteriaBuilder cb, SampleJoins joins, SampleCriteria criteria) {
 
-		Predicate filter = createUserFilterWithoutCase(cb, joins);
+		Predicate filter = createUserFilterWithoutAssociations(cb, joins);
 
 		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
@@ -321,7 +321,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			return filter;
 		}
 
-		if (criteria != null) {
+		if (criteria != null && criteria.getSampleAssociationType() != null && criteria.getSampleAssociationType() != SampleAssociationType.ALL) {
 			final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 			if (sampleAssociationType == SampleAssociationType.CASE) {
 				filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(cb, cq, joins.getCaze(), null));
@@ -330,35 +330,57 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
 				filter = CriteriaBuilderHelper.or(cb, filter, eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
 			}
+		} else if (currentUser.getLimitedDisease() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CriteriaBuilderHelper.or(
+					cb,
+					caseService.createUserFilter(cb, cq, joins.getCaze(), null),
+					contactService.createUserFilterForJoin(cb, cq, joins.getContact()),
+					eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant())));
+		} else {
+			filter = CriteriaBuilderHelper.or(
+				cb,
+				filter,
+				caseService.createUserFilter(cb, cq, joins.getCaze(), null),
+				contactService.createUserFilterForJoin(cb, cq, joins.getContact()),
+				eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
 		}
 
 		return filter;
 	}
 
-	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, SampleJoins joins) {
+	/**
+	 * Creates a user filter that does not take sample associations into account, i.e. their associated cases, contacts, and event
+	 * participants. Instead, it filters for samples of the user's laboratory (if present) and removes samples with diseases
+	 * that the user can't access if they have a limited disease set. SHOULD GENERALLY NOT BE USED WITHOUT A PROPER USER FILTER!
+	 */
+	public Predicate createUserFilterWithoutAssociations(CriteriaBuilder cb, SampleJoins joins) {
 		Predicate filter = null;
-		// user that reported it is not able to access it. Otherwise they would also need to access the case
-		//filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
 
 		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		// lab users can see samples assigned to their laboratory
+		// Lab users can see samples assigned to their laboratory
 		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
 			if (currentUser.getLaboratory() != null) {
 				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(joins.getLab(), currentUser.getLaboratory()));
 			}
 		}
 
-		// only show samples of a specific disease if a limited disease is set
-		if (filter != null && currentUser.getLimitedDisease() != null) {
+		// Only show samples of a specific disease if a limited disease is set
+		if (currentUser.getLimitedDisease() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.equal(
-					cb.selectCase()
-						.when(cb.isNotNull(joins.getCaze()), joins.getCaze().get(Case.DISEASE))
-						.otherwise(joins.getContact().get(Contact.DISEASE)),
-					currentUser.getLimitedDisease()));
+				cb.or(
+					cb.and(cb.isNotNull(joins.getEvent()), cb.isNull(joins.getEvent().get(Event.DISEASE))),
+					cb.equal(
+						cb.selectCase()
+							.when(cb.isNotNull(joins.getCaze()), joins.getCaze().get(Case.DISEASE))
+							.when(cb.isNotNull(joins.getContact()), joins.getContact().get(Contact.DISEASE))
+							.otherwise(joins.getEvent().get(Event.DISEASE)),
+						currentUser.getLimitedDisease())));
 		}
 
 		return filter;
@@ -614,23 +636,32 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	}
 
 	/**
-	 * Creates a filter that excludes all samples that are {@link CoreAdo#deleted} or associated with
-	 * cases that are {@link Case#archived}, contacts that are {@link Contact#deleted}. or event participants that are
-	 * {@link EventParticipant#deleted}
+	 * Creates a filter that excludes all samples that are deleted or associated with archived or deleted entities
 	 */
-	public Predicate createActiveSamplesFilter(CriteriaBuilder cb, Root<Sample> root) {
+	public Predicate createActiveSamplesFilter(CriteriaBuilder cb, From<?, Sample> root) {
 
 		Join<Sample, Case> caze = root.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 		Join<Sample, Contact> contact = root.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
-		Join<Sample, EventParticipant> event = root.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
-		Predicate pred =
-			cb.or(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(contact.get(Contact.DELETED)), cb.isFalse(event.get(EventParticipant.DELETED)));
+		Join<Contact, Case> contactCase = contact.join(Contact.CAZE, JoinType.LEFT);
+		Join<Sample, EventParticipant> eventParticipant = root.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
+		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
+		Predicate pred = cb.or(
+			cb.and(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(caze.get(Case.DELETED))),
+			cb.and(
+				cb.or(
+					cb.isNull(contact.get(Contact.CAZE)),
+					cb.and(cb.isFalse(contactCase.get(Case.ARCHIVED)), cb.isFalse(contactCase.get(Case.DELETED)))),
+				cb.isFalse(contact.get(Contact.DELETED))),
+			cb.and(
+				cb.isFalse(event.get(Event.ARCHIVED)),
+				cb.isFalse(event.get(Event.DELETED)),
+				cb.isFalse(eventParticipant.get(EventParticipant.DELETED))));
 		return cb.and(pred, cb.isFalse(root.get(Sample.DELETED)));
 	}
 
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link SampleCriteria}.
-	 * This essentially removes {@link CoreAdo#deleted} samples from the queries.
+	 * This essentially removes {@link CoreAdo#isDeleted()} samples from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Sample> root) {
 		return cb.isFalse(root.get(Sample.DELETED));
