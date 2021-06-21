@@ -166,7 +166,7 @@ public class SormasToSormasResource {
 
 	@POST
 	@Path(SormasToSormasApiConstants.REVOKE_REQUESTS_ENDPOINT)
-	public Response revokeShareRequests(List<String> requestUuids) {
+	public Response revokeShareRequests(SormasToSormasEncryptedDataDto requestUuids) {
 		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasFacade().revokeRequests(requestUuids));
 	}
 
