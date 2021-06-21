@@ -141,9 +141,9 @@ task createAllureReport(type: Exec) {
 		println ("[GRADLE-INFO] : " + filesFromAllureReportsAfterGeneration + " files in allureReports folder")
 
 		println ("[GRADLE-INFO] : listing folders from project")
-		commandLine 'ls' , "${workingDirectory}"
+		println commandLine 'ls "${workingDirectory}"'
 		println ("[GRADLE-INFO] : listing folders from allure reports folder")
-		commandLine 'ls' , "${workingDirectory}/allureReports"
+		println commandLine 'ls "${workingDirectory}/allureReports"'
 	}
 }
 
