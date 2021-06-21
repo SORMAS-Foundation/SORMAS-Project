@@ -1366,7 +1366,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
 			String followUpComment = null;
-			if (dto.isPseudonymized() || !pseudonymizer.isAccessible(ContactDto.class, "followUpComment", isInJurisdiction)) {
+			if (dto.isPseudonymized() || !pseudonymizer.isAccessible(ContactDto.class, ContactDto.FOLLOW_UP_COMMENT, isInJurisdiction)) {
 				/**
 				 * Usually, pseudonymized values are not edited, so the pseudonymizer can just overwrite them in the dto when restoring.
 				 * One exception is the followUpComment, which can be pseudonymized, but still be edited by automatic system messages,

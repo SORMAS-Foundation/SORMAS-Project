@@ -119,5 +119,4 @@ public class Pseudonymizer extends DtoPseudonymizer {
 
 		return FieldAccessCheckers.withCheckers(personalFieldAccessChecker, sensitiveFieldAccessChecker);
 	}
-
 }
