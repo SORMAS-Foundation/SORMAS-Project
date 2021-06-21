@@ -235,12 +235,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 	public Predicate createActiveTestsFilter(CriteriaBuilder cb, Root<PathogenTest> root) {
 
 		Join<PathogenTest, Sample> sample = root.join(PathogenTest.SAMPLE, JoinType.LEFT);
-		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		Join<Sample, Contact> contact = sample.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
-		Join<Sample, EventParticipant> event = sample.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
-		Predicate pred =
-			cb.or(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(contact.get(Contact.DELETED)), cb.isFalse(event.get(EventParticipant.DELETED)));
-		return cb.and(pred, cb.isFalse(sample.get(Sample.DELETED)));
+		return sampleService.createActiveSamplesFilter(cb, sample);
 	}
 
 	/**
