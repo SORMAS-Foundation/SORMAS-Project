@@ -231,11 +231,12 @@ public class UserFacadeEjb implements UserFacade {
 		switch (superordinateJurisdiction) {
 		case NATION:
 			superiorUsersList =
-				userService.getReferenceList(null, null, false, false, true, UserRole.getWithJurisdictionLevels(superordinateJurisdiction));
+				userService.getReferenceList(null, null, null, false, false, true, UserRole.getWithJurisdictionLevels(superordinateJurisdiction));
 			break;
 		case REGION:
 			superiorUsersList = userService.getReferenceList(
 				Arrays.asList(user.getRegion().getUuid()),
+				null,
 				null,
 				false,
 				false,
@@ -256,13 +257,13 @@ public class UserFacadeEjb implements UserFacade {
 				superordinateRoles.addAll(UserRole.getWithJurisdictionLevels(JurisdictionLevel.COMMUNITY));
 			}
 
-				if(district == null) {
-					superiorUsersList = new ArrayList<>();
-				} else if (community==null){
-					superiorUsersList = userService.getReferenceList(null, Arrays.asList(district.getUuid()),false, false, true, superordinateRoles);
-				} else {
-					superiorUsersList = userService.getReferenceList(null, Arrays.asList(district.getUuid()), Arrays.asList(community.getUuid()), false, false, true, superordinateRoles);
-				}
+			if(district == null) {
+				superiorUsersList = new ArrayList<>();
+			} else if (community == null){
+				superiorUsersList = userService.getReferenceList(null, Arrays.asList(district.getUuid()), null,false, false, true, superordinateRoles);
+			} else {
+				superiorUsersList = userService.getReferenceList(null, Arrays.asList(district.getUuid()), Arrays.asList(community.getUuid()), false, false, true, superordinateRoles);
+			}
 
 			break;
 		default:
