@@ -29,15 +29,19 @@ caseClass = paste0("{", "Classification.", c(
   "NOT_CLASSIFIED",
   "SUSPECT",
   "PROBABLE",
-  "CONFIRMED"), "}")
+  "CONFIRMED",
+  "CONFIRMED_NO_SYMPTOMS",
+  "CONFIRMED_UNKNOWN_SYMPTOMS"), "}")
 
 # see CountElementStyle.POSITIVE and styles.css count-element
 caseClassColor = c(
-  "#32CD32", # positive
+  "#32CD32", # positive (==healthy)
   "#808080", # minor
   "#c8aa00", # relevant
   "#be6900", # important
-  "#c80000") # critical
+  "#c80000", # critical
+  "#c80000",
+  "#c80000")
 
 hierarchical = "T" == substr(HIERARCHICAL, 1, 1)
 defaultFont = "font-family:'Open Sans', sans-serif, 'Source Sans Pro'"
@@ -149,12 +153,13 @@ nodesS$group = nodesS$Classification
 #nodesS$shadow = F, 
 
 # defining legend
+# for the confirmed classification types only one legend entry is enough, as all share the same colour
 addNodesS <- data.frame(
-  label = c("{legend}", caseClass, "1 = {highRisk}", "2 = {lowRisk}"),
+  label = c("{legend}", head(caseClass, 5), "1 = {highRisk}", "2 = {lowRisk}"),
   shape = "icon",
-  icon.code = c("f0c0", rep("f007", times = length(caseClass)), "f178", "f178"),
-  icon.size = c(0.1, rep(25, times = length(caseClass)), 25, 25),
-  icon.color = c("#0d0c0c", caseClassColor, "#0d0c0c", "#0d0c0c"))
+  icon.code = c("f0c0", rep("f007", times = length(head(caseClass, 5))), "f178", "f178"),
+  icon.size = c(0.1, rep(25, times = length(head(caseClass, 5))), 25, 25),
+  icon.color = c("#0d0c0c", head(caseClassColor, 5), "#0d0c0c", "#0d0c0c"))
 
 #plotting
 
