@@ -139,11 +139,11 @@ task createAllureReport(type: Exec) {
 
 		def filesFromAllureReportsAfterGeneration = file("${workingDirectory}/allureReports").listFiles().length
 		println ("[GRADLE-INFO] : " + filesFromAllureReportsAfterGeneration + " files in allureReports folder")
-		
+
 		println ("[GRADLE-INFO] : listing folders from project")
-		println(commandLine 'ls' , "${workingDirectory}")
+		commandLine 'ls' , "${workingDirectory}"
 		println ("[GRADLE-INFO] : listing folders from allure reports folder")
-		println(commandLine 'ls' , "${workingDirectory}/allureReports")
+		commandLine 'ls' , "${workingDirectory}/allureReports"
 	}
 }
 
