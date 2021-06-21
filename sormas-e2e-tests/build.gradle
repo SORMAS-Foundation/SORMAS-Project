@@ -135,12 +135,6 @@ task createAllureReport(type: Exec) {
 	} else {
 		println("[GRADLE-INFO] : Running command to generate allure reports")
 
-		def filesFromAllureResultsBeforeGeneration = file("${workingDirectory}/build/allure-results").listFiles().length
-		println ("[GRADLE-INFO] : " + filesFromAllureResultsBeforeGeneration + " files in allure-results folder")
-
-		def filesFromAllureReportsBeforeGeneration = file("${workingDirectory}/allureReports").listFiles().length
-		println ("[GRADLE-INFO] : " + filesFromAllureReportsBeforeGeneration + " files in allureReports folder")
-
 		commandLine "allure", 'generate', "${workingDirectory}/build/allure-results", '-c', '-o', "${workingDirectory}/allureReports"
 
 		def filesFromAllureReportsAfterGeneration = file("${workingDirectory}/allureReports").listFiles().length
