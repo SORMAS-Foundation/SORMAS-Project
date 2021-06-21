@@ -130,6 +130,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
 	private static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
 	private static final String SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN = "sormas2sormas.retainCaseExternalToken";
+	private static final String SORMAS2SORMAS_OIDC_SERVER = "sormas2sormas.oidc.server";
+	private static final String SORMAS2SORMAS_OIDC_REALM = "sormas2sormas.oidc.realm";
+	private static final String SORMAS2SORMAS_OIDC_CLIENT_ID = "sormas2sormas.oidc.clientId";
+	private static final String SORMAS2SORMAS_OIDC_CLIENT_SECRET = "sormas2sormas.oidc.clientSecret";
 
 	private static final String SORMAS_TO_SORMAS_USER_PASSWORD = "sormasToSormasUserPassword";
 
@@ -484,6 +488,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setTruststoreName(getProperty(SORMAS2SORMAS_TRUSTSTORE_NAME, null));
 		config.setTruststorePass(getProperty(SORMAS2SORMAS_TRUSTSTORE_PASS, null));
 		config.setRetainCaseExternalToken(getBoolean(SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN, true));
+		config.setOidcServer(getProperty(SORMAS2SORMAS_OIDC_SERVER, null));
+		config.setOidcRealm(getProperty(SORMAS2SORMAS_OIDC_REALM, null));
+		config.setOidcClientId(getProperty(SORMAS2SORMAS_OIDC_CLIENT_ID, null));
+		config.setOidcClientSecret(getProperty(SORMAS2SORMAS_OIDC_CLIENT_SECRET, null));
 		return config;
 	}
 
@@ -505,7 +513,19 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getSymptomJournalConfig().getAuthUrl(),
 			getPatientDiaryConfig().getUrl(),
 			getPatientDiaryConfig().getProbandsUrl(),
-			getPatientDiaryConfig().getAuthUrl());
+			getPatientDiaryConfig().getAuthUrl(),
+
+			getSormasToSormasConfig().getOidcRealmCertEndoint(),
+			getSormasToSormasConfig().getOidcRealmTokenEndoint(),
+			getSormasToSormasConfig().getOidcRealmUrl(),
+			getSormasToSormasConfig().getOidcServer());
+
+		// Must be a valid URL
+		UrlValidator urlValidator = new UrlValidator(
+			new String[] {
+				"http",
+				"https" },
+			UrlValidator.ALLOW_LOCAL_URLS);
 
 		UrlValidator urlValidator = new UrlValidator(
 			new String[] {
