@@ -1017,7 +1017,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			case LABORATORY:
 				Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
 				Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
-				sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, new SampleJoins(sampleRoot)));
+				sampleCaseSubquery.where(sampleService.createUserFilterWithoutAssociations(cb, new SampleJoins(sampleRoot)));
 				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
 				filter = CriteriaBuilderHelper.or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
 				break;
