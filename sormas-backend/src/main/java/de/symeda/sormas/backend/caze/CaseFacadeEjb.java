@@ -3222,7 +3222,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			probableExposuresList.remove(probableExposuresList.size() - 1);
 		}
 
-		// 8 Reports
+		// 9 Reports
 		List<SurveillanceReport> surveillanceReports = surveillanceReportService.getByCaseUuids(Collections.singletonList(otherCase.getUuid()));
 		surveillanceReports.forEach(surveillanceReport -> {
 			SurveillanceReportDto surveillanceReportDto = SurveillanceReportFacadeEjb.toDto(surveillanceReport);
