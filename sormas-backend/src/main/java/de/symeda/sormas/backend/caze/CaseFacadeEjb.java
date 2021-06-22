@@ -105,6 +105,7 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
@@ -186,6 +187,9 @@ import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb.PortHealthInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
@@ -413,6 +417,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	private ExternalShareInfoService externalShareInfoService;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private SurveillanceReportService surveillanceReportService;
+	@EJB
+	private SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -3205,6 +3213,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			exposureService.ensurePersisted(probableExposuresList.get(probableExposuresList.size() - 1));
 			probableExposuresList.remove(probableExposuresList.size() - 1);
 		}
+
+		// 8 Reports
+		List<SurveillanceReport> surveillanceReports = surveillanceReportService.getByCaseUuids(Collections.singletonList(otherCase.getUuid()));
+		surveillanceReports.forEach(surveillanceReport -> {
+			SurveillanceReportDto surveillanceReportDto = SurveillanceReportFacadeEjb.toDto(surveillanceReport);
+			surveillanceReportDto.setCaze(leadCase.toReference());
+			surveillanceReportFacade.saveSurveillanceReport(surveillanceReportDto);
+		});
 	}
 
 	private void copyDtoValues(CaseDataDto leadCaseData, CaseDataDto otherCaseData, boolean cloning) {
