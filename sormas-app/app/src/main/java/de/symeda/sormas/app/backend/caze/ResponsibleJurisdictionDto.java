@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.app.backend.caze;
 
 import java.io.Serializable;
 
@@ -34,21 +34,6 @@ public class ResponsibleJurisdictionDto implements Serializable {
 		this.regionUuid = regionUuid;
 		this.districtUuid = districtUuid;
 		this.communityUuid = communityUuid;
-	}
-
-	public ResponsibleJurisdictionDto(CaseDataDto caze) {
-
-		if (caze.getResponsibleRegion() != null) {
-			this.regionUuid = caze.getResponsibleRegion().getUuid();
-		}
-
-		if (caze.getResponsibleDistrict() != null) {
-			this.districtUuid = caze.getResponsibleDistrict().getUuid();
-		}
-
-		if (caze.getResponsibleCommunity() != null) {
-			this.communityUuid = caze.getResponsibleCommunity().getUuid();
-		}
 	}
 
 	public static ResponsibleJurisdictionDto of(String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid) {

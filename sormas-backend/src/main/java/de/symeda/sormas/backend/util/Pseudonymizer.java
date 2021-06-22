@@ -106,6 +106,10 @@ public class Pseudonymizer extends DtoPseudonymizer {
 			return DataHelper.isSame(currentUser.getDistrict(), user.getDistrict());
 		}
 
+		if (currentUser.getLaboratory() != null) {
+			return DataHelper.isSame(currentUser.getLaboratory(), user.getLaboratory());
+		}
+
 		return true;
 	}
 

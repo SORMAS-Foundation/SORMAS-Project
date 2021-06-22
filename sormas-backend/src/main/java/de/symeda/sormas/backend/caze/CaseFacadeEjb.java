@@ -43,7 +43,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -64,7 +63,6 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -400,8 +398,6 @@ public class CaseFacadeEjb implements CaseFacade {
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
-	private CaseJurisdictionChecker caseJurisdictionChecker;
-	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 	@EJB
 	private ManualMessageLogService manualMessageLogService;
@@ -455,7 +451,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	public Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
 		List<CaseIndexDto> caseIndexList = getIndexList(caseCriteria, offset, size, sortProperties);
 		long totalElementCount = count(caseCriteria);
-		return new Page<CaseIndexDto>(caseIndexList, offset, size, totalElementCount);
+		return new Page<>(caseIndexList, offset, size, totalElementCount);
 	}
 
 	@Override
@@ -534,7 +530,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 			}
 
-			Boolean isInJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(caze.getJurisdiction());
+			Boolean isInJurisdiction = caze.getInJurisdiction();
 			pseudonymizer.pseudonymizeDto(CaseIndexDto.class, caze, isInJurisdiction, (c) -> {
 				pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null);
 			});
@@ -592,7 +588,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					});
 			}
 
-			Boolean isInJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(caze.getJurisdiction());
+			Boolean isInJurisdiction = caze.getInJurisdiction();
 			pseudonymizer.pseudonymizeDto(CaseIndexDetailedDto.class, caze, isInJurisdiction, (c) -> {
 				pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null);
 				pseudonymizer
@@ -716,13 +712,10 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.CASE_IDENTIFICATION_SOURCE),
 				caseRoot.get(Case.SCREENING_TYPE),
 				// responsible jurisdiction
-				joins.getResponsibleRegion().get(Region.UUID),
 				joins.getResponsibleRegion().get(Region.NAME),
-				joins.getResponsibleDistrict().get(District.UUID),
 				joins.getResponsibleDistrict().get(District.NAME),
-				joins.getResponsibleCommunity().get(Community.UUID),
-				joins.getResponsibleCommunity().get(Community.NAME)
-				);
+				joins.getResponsibleCommunity().get(Community.NAME),
+				JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, joins)));
 		//@formatter:on
 
 		cq.distinct(true);
@@ -914,7 +907,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 			for (CaseExportDto exportDto : resultList) {
-				final boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(exportDto.getJurisdiction());
+				final boolean inJurisdiction = exportDto.getInJurisdiction();
 
 				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.COUNTRY)) {
 					exportDto.setCountry(configFacade.getEpidPrefix());
@@ -1108,7 +1101,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			MapCaseDto.class,
 			cases,
-			c -> caseJurisdictionChecker.isInJurisdictionOrOwned(c.getJurisdiction()),
+			c -> c.getInJurisdiction(),
 			(c, isInJurisdiction) -> {
 				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), isInJurisdiction, null);
 			});
@@ -1165,7 +1158,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, Region> region = root.join(Case.REGION, JoinType.LEFT);
 
-		selectIndexDtoFields(cq, root);
+		selectIndexDtoFields(new CaseQueryContext(cb, cq, root));
 
 		Predicate userFilter = caseService.createUserFilter(cb, cq, root);
 
@@ -1313,7 +1306,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (!foundIds.isEmpty()) {
 			CriteriaQuery<CaseIndexDto> indexCasesCq = cb.createQuery(CaseIndexDto.class);
 			Root<Case> indexRoot = indexCasesCq.from(Case.class);
-			selectIndexDtoFields(indexCasesCq, indexRoot);
+			selectIndexDtoFields(new CaseQueryContext(cb, indexCasesCq, indexRoot));
 			indexCasesCq.where(
 				indexRoot.get(Case.ID).in(foundIds.stream().map(a -> Arrays.copyOf(a, 2)).flatMap(Arrays::stream).collect(Collectors.toSet())));
 			Map<Long, CaseIndexDto> indexCases =
@@ -1351,8 +1344,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		caseService.updateCompleteness(caseUuid);
 	}
 
-	private void selectIndexDtoFields(CriteriaQuery<CaseIndexDto> cq, Root<Case> root) {
-		cq.multiselect(listQueryBuilder.getCaseIndexSelections(root, new CaseJoins<>(root)));
+	private void selectIndexDtoFields(CaseQueryContext caseQueryContext) {
+		CriteriaQuery cq = caseQueryContext.getQuery();
+		cq.multiselect(listQueryBuilder.getCaseIndexSelections((Root<Case>) caseQueryContext.getRoot(), caseQueryContext));
 	}
 
 	@Override
@@ -2204,7 +2198,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void pseudonymizeDto(Case source, CaseDataDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
-			boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(JurisdictionHelper.createCaseJurisdictionDto(source));
+			boolean inJurisdiction = caseService.inJurisdictionOrOwned(source);
 
 			pseudonymizer.pseudonymizeDto(CaseDataDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
@@ -2233,7 +2227,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void restorePseudonymizedDto(CaseDataDto dto, Case caze, CaseDataDto existingCaseDto) {
 		if (existingCaseDto != null) {
-			boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(JurisdictionHelper.createCaseJurisdictionDto(caze));
+			boolean inJurisdiction = caseService.inJurisdictionOrOwned(caze);
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			User currentUser = userService.getCurrentUser();
 
@@ -2290,7 +2284,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseReferenceDto dto = toReferenceDto(source);
 
 		if (dto != null) {
-			boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(JurisdictionHelper.createCaseJurisdictionDto(source));
+			boolean inJurisdiction = caseService.inJurisdictionOrOwned(source);
 			Pseudonymizer.getDefault(userService::hasRight).pseudonymizeDto(CaseReferenceDto.class, dto, inJurisdiction, null);
 		}
 
@@ -3335,16 +3329,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
-		final Stream<Selection<?>> select = Stream.of(
-			caze.get(Case.UUID),
-			joins.getPerson().get(Person.FIRST_NAME),
-			joins.getPerson().get(Person.LAST_NAME),
-			caze.get(Case.REPORT_DATE),
-			joins.getSymptoms().get(Symptoms.ONSET_DATE),
-			caze.get(Case.FOLLOW_UP_UNTIL),
-			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
-			caze.get(Case.DISEASE));
-		cq.multiselect(Stream.concat(select, listQueryBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
+		cq.multiselect(
+				caze.get(Case.UUID),
+				joins.getPerson().get(Person.FIRST_NAME),
+				joins.getPerson().get(Person.LAST_NAME),
+				caze.get(Case.REPORT_DATE),
+				joins.getSymptoms().get(Symptoms.ONSET_DATE),
+				caze.get(Case.FOLLOW_UP_UNTIL),
+				joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+				caze.get(Case.DISEASE),
+				JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, joins)));
 
 		Predicate filter = CriteriaBuilderHelper
 			.and(cb, caseService.createUserFilter(cb, cq, caze), caseService.createCriteriaFilter(caseCriteria, caseQueryContext));
@@ -3420,8 +3414,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			resultMap.values().stream().forEach(caseFollowUpDto -> {
 				caseFollowUpDto.initVisitSize(interval + 1);
 
-				boolean isInJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(caseFollowUpDto.getJurisdiction());
-				pseudonymizer.pseudonymizeDto(CaseFollowUpDto.class, caseFollowUpDto, isInJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(CaseFollowUpDto.class, caseFollowUpDto, caseFollowUpDto.getInJurisdiction(), null);
 			});
 
 			visits.stream().forEach(v -> {

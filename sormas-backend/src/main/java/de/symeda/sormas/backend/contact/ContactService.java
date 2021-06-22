@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -41,13 +41,11 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.externaldata.ExternalDataDto;
-import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
-import de.symeda.sormas.backend.util.ExternalDataUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -63,6 +61,8 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -93,6 +93,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
@@ -100,7 +101,10 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
@@ -127,8 +131,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
-	private ContactJurisdictionChecker contactJurisdictionChecker;
-	@EJB
 	private ExposureService exposureService;
 	@EJB
 	private VaccinationInfoService vaccinationInfoService;
@@ -138,6 +140,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
 	@EJB
 	private ExternalJournalService externalJournalService;
+	@EJB
+	private UserService userService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -882,19 +886,23 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter;
 		if (userFilter != null) {
-			filter = cb.or(createUserFilterWithoutCase(cb, (From<?, Contact>) contactPath, contactCriteria), userFilter);
+			filter = cb.or(createUserFilterWithoutCase(contactQueryContext, contactCriteria), userFilter);
 		} else {
-			filter = createUserFilterWithoutCase(cb, (From<?, Contact>) contactPath, contactCriteria);
+			filter = createUserFilterWithoutCase(contactQueryContext, contactCriteria);
 		}
 		return filter;
 	}
 
-	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, From<?, Contact> contactPath) {
-		return createUserFilterWithoutCase(cb, contactPath, null);
+	public Predicate createUserFilterWithoutCase(ContactQueryContext qc) {
+		return createUserFilterWithoutCase(qc, null);
 	}
 
-	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, From<?, Contact> contactPath, ContactCriteria contactCriteria) {
+	public Predicate createUserFilterWithoutCase(ContactQueryContext qc, ContactCriteria contactCriteria) {
 
+
+		CriteriaBuilder cb = qc.getCriteriaBuilder();
+		CriteriaQuery cq = qc.getQuery();
+		From contactPath = qc.getRoot();
 		// National users can access all contacts in the system
 		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
@@ -933,6 +941,15 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			if (community != null) {
 				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(contactPath.get(Contact.COMMUNITY), currentUser.getCommunity()));
 			}
+			break;
+		case LABORATORY:
+			final Subquery<Long> sampleContactSubquery = cq.subquery(Long.class);
+			final Root<Sample> sampleRoot = sampleContactSubquery.from(Sample.class);
+			final SampleJoins joins = new SampleJoins(sampleRoot);
+			final Join contactJoin = joins.getContact();
+			sampleContactSubquery.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutAssociations(cb, joins), cb.isNotNull(contactJoin)));
+			sampleContactSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CONTACT).get(Contact.ID));
+			filter = CriteriaBuilderHelper.or(cb, filter, cb.in(contactPath.get(Contact.ID)).value(sampleContactSubquery));
 			break;
 		default:
 		}
@@ -1317,44 +1334,32 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.lessThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), to)));
 	}
 
-	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<Contact> contactRoot, ContactJoins joins) {
-		final User currentUser = this.getCurrentUser();
+	public ContactJurisdictionFlagsDto inJurisdictionOrOwned(Contact contact) {
 
-		final Subquery<Long> contactCaseJurisdictionSubQuery = cq.subquery(Long.class);
-		final Root<Case> contactCaseRoot = contactCaseJurisdictionSubQuery.from(Case.class);
-		contactCaseJurisdictionSubQuery.select(contactCaseRoot.get(Contact.ID));
-		contactCaseJurisdictionSubQuery.where(
-			cb.and(
-				cb.equal(contactCaseRoot, joins.getRoot().get(Contact.CAZE)),
-				caseService.isInJurisdictionOrOwned(cb, new CaseJoins<>(contactCaseRoot))));
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ContactJurisdictionFlagsDto> cq = cb.createQuery(ContactJurisdictionFlagsDto.class);
+		Root<Contact> root = cq.from(Contact.class);
 
-		final Predicate contactCaseInJurisdiction = cb.exists(contactCaseJurisdictionSubQuery);
+		ContactJoins joins = new ContactJoins(root);
 
-		final Predicate reportedByCurrentUser =
-			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
+		cq.multiselect(getJurisdictionSelections(cb, joins));
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		final Predicate jurisdictionPredicate;
-		switch (jurisdictionLevel) {
-		case NATION:
-			jurisdictionPredicate = cb.conjunction();
-			break;
-		case REGION:
-			jurisdictionPredicate = cb.equal(joins.getRegion().get(Region.ID), currentUser.getRegion().getId());
-			break;
-		case DISTRICT:
-			jurisdictionPredicate = cb.equal(joins.getDistrict().get(District.ID), currentUser.getDistrict().getId());
-			break;
-		case LABORATORY:
-		case EXTERNAL_LABORATORY:
-		case NONE:
-		case COMMUNITY:
-		case HEALTH_FACILITY:
-		case POINT_OF_ENTRY:
-		default:
-			jurisdictionPredicate = cb.disjunction();
-		}
-		return cb.or(reportedByCurrentUser, jurisdictionPredicate, cb.and(cb.isNull(contactRoot.get(Contact.REGION)), contactCaseInJurisdiction));
+		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
+
+
+		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+	}
+
+	protected List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, ContactJoins joins) {
+		return Arrays.asList(JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
+				JurisdictionHelper.jurisdictionSelector(
+						cb,
+						cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))));
+	}
+
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, ContactJoins<?> joins) {
+		final User currentUser = userService.getCurrentUser();
+		return ContactJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdictionOrOwned();
 	}
 
 	public boolean isContactEditAllowed(Contact contact) {
@@ -1362,7 +1367,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return contact.getSormasToSormasOriginInfo().isOwnershipHandedOver();
 		}
 
-		return contactJurisdictionChecker.isInJurisdictionOrOwned(contact) && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
+		return inJurisdictionOrOwned(contact).getInJurisdiction() && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
 	}
 
 	public List<Contact> getByPersonUuids(List<String> personUuids) {

@@ -41,6 +41,16 @@ public class SurveillanceReport extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -2599492274783441938L;
 
+	public static final String REPORTING_TYPE = "reportingType";
+	public static final String CREATING_USER = "creatingUser";
+	public static final String REPORT_DATE = "reportDate";
+	public static final String DATE_OF_DIAGNOSIS = "dateOfDiagnosis";
+	public static final String FACILITY_REGION = "facilityRegion";
+	public static final String FACILITY_DISTRICT = "facilityDistrict";
+	public static final String FACILITY_TYPE = "facilityType";
+	public static final String FACILITY = "facility";
+	public static final String FACILITY_DETAILS = "facilityDetails";
+	public static final String NOTIFICATION_DETAILS = "notificationDetails";
 	public static final String CAZE = "caze";
 
 	private ReportingType reportingType;
