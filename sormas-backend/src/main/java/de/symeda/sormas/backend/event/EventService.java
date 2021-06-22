@@ -372,7 +372,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			final Root<Sample> sampleRoot = sampleEventSubquery.from(Sample.class);
 			final SampleJoins joins = new SampleJoins(sampleRoot);
 			final Join eventJoin = joins.getEvent();
-			sampleEventSubquery.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutCase(cb, joins), cb.isNotNull(eventJoin)));
+			sampleEventSubquery.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutAssociations(cb, joins), cb.isNotNull(eventJoin)));
 			sampleEventSubquery.select(eventJoin.get(Event.ID));
 			filter = CriteriaBuilderHelper.or(cb, filter, cb.in(eventPath.get(Event.ID)).value(sampleEventSubquery));
 			break;

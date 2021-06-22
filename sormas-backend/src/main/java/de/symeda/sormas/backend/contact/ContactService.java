@@ -948,7 +948,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			final Root<Sample> sampleRoot = sampleContactSubquery.from(Sample.class);
 			final SampleJoins joins = new SampleJoins(sampleRoot);
 			final Join contactJoin = joins.getContact();
-			sampleContactSubquery.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutCase(cb, joins), cb.isNotNull(contactJoin)));
+			sampleContactSubquery.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutAssociations(cb, joins), cb.isNotNull(contactJoin)));
 			sampleContactSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CONTACT).get(Contact.ID));
 			filter = CriteriaBuilderHelper.or(cb, filter, cb.in(contactPath.get(Contact.ID)).value(sampleContactSubquery));
 			break;
