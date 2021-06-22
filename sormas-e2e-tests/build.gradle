@@ -72,7 +72,7 @@ tasks.withType(Test) {
 	systemProperties = System.getProperties()
 	systemProperties.remove("java.endorsed.dirs") // needs to be removed from Java 9
 	println("[GRADLE-INFO] : Provided System properties")
-	println(systemProperties.list())
+	//println(systemProperties.list())
 	println("[GRADLE-INFO] : Tests execution has started")
 
 }
