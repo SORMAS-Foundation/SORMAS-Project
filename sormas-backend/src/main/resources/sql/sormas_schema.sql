@@ -7437,5 +7437,5 @@ INSERT INTO schema_version (version_number, comment) VALUES (377, 'Add a checkbo
 -- 2021-06-22 Set contact with source case known for all existing cases #5841
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND exists (SELECT 1 FROM contact WHERE contact.resultingcase_id = cases.id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (388, 'Set contact with source case known for all existing cases #5841');
+INSERT INTO schema_version (version_number, comment) VALUES (378, 'Set contact with source case known for all existing cases #5841');
 -- *** Insert new sql commands BEFORE this line ***
