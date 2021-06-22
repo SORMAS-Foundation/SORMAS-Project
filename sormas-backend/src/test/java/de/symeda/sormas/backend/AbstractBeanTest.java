@@ -25,6 +25,9 @@ import javax.persistence.Query;
 
 import de.symeda.sormas.backend.user.CurrentUser;
 import de.symeda.sormas.backend.user.CurrentUserService;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -287,6 +290,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public EventParticipantService getEventParticipantService() {
 		return getBean(EventParticipantService.class);
+	}
+
+	public SurveillanceReportFacade getSurveillanceReportFacade() {
+		return getBean(SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal.class);
+	}
+
+	public SurveillanceReportService getSurveillanceReportService() {
+		return getBean(SurveillanceReportService.class);
 	}
 
 	public ActionFacade getActionFacade() {

@@ -46,6 +46,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -1228,6 +1230,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		otherCaseEventParticipant.setResultingCase(otherCaseReference);
 		getEventParticipantFacade().saveEventParticipant(otherCaseEventParticipant);
 
+		creator.createSurveillanceReport(otherUserReference, otherCaseReference);
+
 		DocumentDto document = creator.createDocument(
 			leadUserReference,
 			"document.pdf",
@@ -1329,6 +1333,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// 4.8 Linked Events
 		assertEquals(1, getEventFacade().count(new EventCriteria().caze(mergedCase.toReference())));
+
+		// 4.8 Linked Surveillance Reports
+		List<SurveillanceReportDto> surveillanceReportList =
+			getSurveillanceReportFacade().getByCaseUuids(Collections.singletonList(mergedCase.getUuid()));
+		MatcherAssert.assertThat(surveillanceReportList, hasSize(1));
 
 		// 5 Documents
 		List<DocumentDto> mergedDocuments = getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.CASE, leadCase.getUuid());
