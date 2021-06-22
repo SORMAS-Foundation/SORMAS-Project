@@ -43,3 +43,30 @@ Feature: Contacts end to end tests
     Then I check the linked case information is correctly displayed
     When I open the Case Contacts tab of the created case via api
     Then I check the linked contact information is correctly displayed
+
+  Scenario: Change the source case contact and then delete
+    Given I log in with the user
+    Given API: I create a new person
+    Given API: I create a new case
+    When API: I create a new person
+    And API: I create a new contact
+    And I navigate to the last created contact via the url
+    And I click on the CHOOSE SOURCE CASE button
+    And I click yes on the DISCARD UNSAVED CHANGES popup
+    And I search for the last case uuid in the CHOOSE SOURCE window
+    And I open the first found result in the CHOOSE SOURCE window
+    Then I check the linked case information is correctly displayed
+    When I open the Case Contacts tab of the created case via api
+    Then I check the linked contact information is correctly displayed
+    Given API: I create a new person
+    Given API: I create a new case
+    When I navigate to the last created contact via the url
+    And I click on the CHANGE CASE button
+    And I click yes on the DISCARD UNSAVED CHANGES popup
+    And I search for the last case uuid in the CHOOSE SOURCE window
+    And I open the first found result in the CHOOSE SOURCE window
+    Then I check the linked case information is correctly displayed
+    When I click on the Remove Case CTA
+    And I click yes on the CONFIRM REMOVAL popup
+    Then I check the CHOOSE SOURCE CASE BUTTON is displayed
+
