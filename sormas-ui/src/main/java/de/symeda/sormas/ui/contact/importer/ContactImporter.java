@@ -293,7 +293,7 @@ public class ContactImporter extends DataImporter {
 						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade()
 							.getByName(
 								entry,
-								ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), null, contact, person, currentElement),
+								ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), contact, person, currentElement),
 								false);
 						if (district.isEmpty()) {
 							throw new ImportErrorException(

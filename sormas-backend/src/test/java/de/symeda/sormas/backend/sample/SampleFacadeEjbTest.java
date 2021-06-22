@@ -272,8 +272,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		creator.createAdditionalTest(sample.toReference());
 
 		CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact);
-		caseDataDto.setRegion(new RegionReferenceDto(rdcf.region.getUuid(), null, null));
-		caseDataDto.setDistrict(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
+		caseDataDto.setResponsibleRegion(new RegionReferenceDto(rdcf.region.getUuid(), null, null));
+		caseDataDto.setResponsibleDistrict(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		caseDataDto.setFacilityType(rdcf.facility.getType());
 		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid(), null, null));
 		caseDataDto.setReportingUser(user.toReference());

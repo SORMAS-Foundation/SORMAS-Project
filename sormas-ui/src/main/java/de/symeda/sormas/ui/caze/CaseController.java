@@ -720,9 +720,7 @@ public class CaseController {
 	}
 
 	public void selectOrCreateCase(CaseDataDto caseDto, PersonDto person, Consumer<String> selectedCaseUuidConsumer) {
-		CaseCriteria caseCriteria = new CaseCriteria().disease(caseDto.getDisease()).region(caseDto.getRegion());
-		CaseSimilarityCriteria criteria =
-			new CaseSimilarityCriteria().personUuid(person.getUuid()).caseCriteria(caseCriteria).reportDate(caseDto.getReportDate());
+		CaseSimilarityCriteria criteria = CaseSimilarityCriteria.forCase(caseDto, person.getUuid());
 
 		// Check for similar cases for the **given person**.
 		// This is a case similarity check for a fixed person and will not return cases where persons are similar.

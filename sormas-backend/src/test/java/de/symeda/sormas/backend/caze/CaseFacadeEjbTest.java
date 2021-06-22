@@ -1457,10 +1457,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(survOff2, creator.createPerson().toReference(), rdcf);
 		assertThat(caze.getSurveillanceOfficer(), is(survOff2));
 
-		// Surveillance officer is removed if the district changes
-		caze.setRegion(new RegionReferenceDto(rdcf3.region.getUuid(), null, null));
-		caze.setDistrict(new DistrictReferenceDto(rdcf3.district.getUuid(), null, null));
-		caze.setCommunity(new CommunityReferenceDto(rdcf3.community.getUuid(), null, null));
+		// Surveillance officer is removed if the responsible district changes
+		caze.setResponsibleRegion(new RegionReferenceDto(rdcf3.region.getUuid(), null, null));
+		caze.setResponsibleDistrict(new DistrictReferenceDto(rdcf3.district.getUuid(), null, null));
+		caze.setResponsibleCommunity(new CommunityReferenceDto(rdcf3.community.getUuid(), null, null));
 		caze.setHealthFacility(new FacilityReferenceDto(rdcf3.facility.getUuid(), null, null));
 		caze = getCaseFacade().saveCase(caze);
 		assertNull(caze.getSurveillanceOfficer());
@@ -1553,7 +1553,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CasePersonDto casePerson = new CasePersonDto();
 		PersonDto duplicatePerson = PersonDto.build();
 		CaseDataDto duplicateCaze = CaseDataDto.build(duplicatePerson.toReference(), Disease.CORONAVIRUS);
-		duplicateCaze.setDistrict(rdcf.district);
+		duplicateCaze.setResponsibleDistrict(rdcf.district);
 		duplicateCaze.setReportDate(new Date());
 
 		casePerson.setCaze(duplicateCaze);
@@ -1628,8 +1628,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.setInvestigationStatus(InvestigationStatus.PENDING);
 		caze.setDisease(Disease.CORONAVIRUS);
 		caze.setPerson(creator.createPerson().toReference());
-		caze.setRegion(rdcf.region);
-		caze.setDistrict(rdcf.district);
+		caze.setResponsibleRegion(rdcf.region);
+		caze.setResponsibleDistrict(rdcf.district);
 		caze.setFacilityType(FacilityType.HOSPITAL);
 		caze.setHealthFacility(rdcf.facility);
 
@@ -1681,7 +1681,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CasePersonDto casePerson = new CasePersonDto();
 		PersonDto duplicatePerson = PersonDto.build();
 		CaseDataDto duplicateCaze = CaseDataDto.build(duplicatePerson.toReference(), Disease.CORONAVIRUS);
-		duplicateCaze.setDistrict(rdcf.district);
+		duplicateCaze.setResponsibleDistrict(rdcf.district);
 		duplicateCaze.setReportDate(new Date());
 
 		casePerson.setCaze(duplicateCaze);

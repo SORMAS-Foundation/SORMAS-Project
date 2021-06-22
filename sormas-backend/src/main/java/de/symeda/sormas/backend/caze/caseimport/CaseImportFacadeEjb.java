@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseDtoHelper;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
@@ -510,7 +511,9 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 							pd.getWriteMethod().invoke(currentElement, facilities.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(PointOfEntryReferenceDto.class)) {
-						List<PointOfEntryReferenceDto> pointOfEntry = pointOfEntryFacade.getByName(entry, caze.getDistrict(), false);
+						DistrictReferenceDto pointOfEntryDistrict = CaseDtoHelper.getDistrictWithFallback(caze);
+						List<PointOfEntryReferenceDto> pointOfEntry = pointOfEntryFacade.getByName(entry, pointOfEntryDistrict, false);
+
 						if (pointOfEntry.isEmpty()) {
 							throw new ImportErrorException(
 								I18nProperties.getValidationError(

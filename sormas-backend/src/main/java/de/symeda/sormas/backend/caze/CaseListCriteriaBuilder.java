@@ -195,7 +195,7 @@ public class CaseListCriteriaBuilder {
 			root.get(AbstractDomainObject.CREATION_DATE),
 			joins.getRegion().get(Region.UUID),
 			joins.getDistrict().get(District.UUID),
-			joins.getDistrict().get(District.NAME),
+			joins.getResponsibleDistrict().get(District.NAME),
 			joins.getCommunity().get(Community.UUID),
 			joins.getFacility().get(Facility.UUID),
 			joins.getFacility().get(Facility.NAME),
@@ -263,7 +263,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.DISTRICT_UUID:
 			return Collections.singletonList(joins.getDistrict().get(District.UUID));
 		case CaseIndexDto.DISTRICT_NAME:
-			return Collections.singletonList(joins.getDistrict().get(District.NAME));
+			return Collections.singletonList(joins.getResponsibleDistrict().get(District.NAME));
 		case CaseIndexDto.HEALTH_FACILITY_UUID:
 			return Collections.singletonList(joins.getFacility().get(Facility.UUID));
 		case CaseIndexDto.HEALTH_FACILITY_NAME:

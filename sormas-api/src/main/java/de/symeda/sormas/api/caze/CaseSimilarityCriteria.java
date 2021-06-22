@@ -52,4 +52,11 @@ public class CaseSimilarityCriteria extends BaseCriteria implements Cloneable {
 		this.caseCriteria = caseCriteria;
 		return this;
 	}
+
+	public static CaseSimilarityCriteria forCase(CaseDataDto caze, String personUuid) {
+		CaseCriteria caseCriteria =
+			new CaseCriteria().disease(caze.getDisease()).responsibleRegion(caze.getResponsibleRegion()).region(caze.getRegion());
+
+		return new CaseSimilarityCriteria().personUuid(personUuid).caseCriteria(caseCriteria).reportDate(caze.getReportDate());
+	}
 }

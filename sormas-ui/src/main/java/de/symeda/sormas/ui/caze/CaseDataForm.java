@@ -40,9 +40,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -163,7 +160,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC = "expectedFollowUpUntilDateLoc";
 	private static final String CASE_CONFIRMATION_BASIS = "caseConfirmationBasis";
 	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
-	private static final String DIFFERENT_JURISDICTION = "differentJurisdiction";
+	private static final String DIFFERENT_PLACE_OF_STAY_JURISDICTION = "differentPlaceOfStayJurisdiction";
 	private static final String DONT_SHARE_WARNING_LOC = "dontShareWarning";
 	private static final String CASE_CLASSIFICATION_CALCULATE_BTN_LOC = "caseClassificationCalculateBtnLoc";
 
@@ -200,17 +197,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.REPORTING_DISTRICT, "") +
 					fluidRowLocs(CaseDataDto.CASE_IDENTIFICATION_SOURCE, CaseDataDto.SCREENING_TYPE) +
 					fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
+					fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC) +
+					fluidRowLocs(CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_COMMUNITY) +
+					fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL) +
+					fluidRowLocs(DONT_SHARE_WARNING_LOC) +
+					fluidRowLocs(DIFFERENT_PLACE_OF_STAY_JURISDICTION) +
 					fluidRowLocs(PLACE_OF_STAY_HEADING_LOC) +
 					fluidRowLocs(FACILITY_OR_HOME_LOC) +
 					fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY) +
 					fluidRowLocs(TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE) +
 					fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS) +
 					fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
-					fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC) +
-					fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL) +
-					fluidRowLocs(DONT_SHARE_WARNING_LOC) +
-					fluidRowLocs(DIFFERENT_JURISDICTION) +
-					fluidRowLocs(CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_COMMUNITY) +
 					fluidRowLocs(CaseDataDto.NOSOCOMIAL_OUTBREAK, CaseDataDto.INFECTION_SETTING) +
 					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
 					fluidRowLocs(4, CaseDataDto.PROHIBITION_TO_WORK, 4, CaseDataDto.PROHIBITION_TO_WORK_FROM, 4, CaseDataDto.PROHIBITION_TO_WORK_UNTIL) +
@@ -274,7 +271,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private CheckBox quarantineReduced;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
-	private CheckBox differentJurisdiction;
+	private CheckBox differentPlaceOfStayJurisdiction;
 	private OptionGroup facilityOrHome;
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
@@ -600,11 +597,24 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		ComboBox surveillanceOfficerField = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		surveillanceOfficerField.setNullSelectionAllowed(true);
+
+		differentPlaceOfStayJurisdiction = addCustomField(DIFFERENT_PLACE_OF_STAY_JURISDICTION, Boolean.class, CheckBox.class);
+		differentPlaceOfStayJurisdiction.addStyleName(VSPACE_3);
+
 		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
 		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
 		community.addStyleName(SOFT_REQUIRED);
+
+		FieldHelper.setVisibleWhen(
+			differentPlaceOfStayJurisdiction,
+			Arrays.asList(region, district, community),
+			Collections.singletonList(Boolean.TRUE),
+			true);
+
+		FieldHelper
+			.setRequiredWhen(differentPlaceOfStayJurisdiction, Arrays.asList(region, district), Collections.singletonList(Boolean.TRUE), false, null);
 
 		Label placeOfStayHeadingLabel = new Label(I18nProperties.getCaption(Captions.casePlaceOfStay));
 		placeOfStayHeadingLabel.addStyleName(H3);
@@ -890,25 +900,55 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		differentJurisdiction = addCustomField(DIFFERENT_JURISDICTION, Boolean.class, CheckBox.class);
-		differentJurisdiction.addStyleName(VSPACE_3);
 		ComboBox responsibleRegion = addField(CaseDataDto.RESPONSIBLE_REGION);
+		responsibleRegion.setRequired(true);
 		ComboBox responsibleDistrict = addField(CaseDataDto.RESPONSIBLE_DISTRICT);
+		responsibleDistrict.setRequired(true);
 		ComboBox responsibleCommunity = addField(CaseDataDto.RESPONSIBLE_COMMUNITY);
-
-		FieldHelper.setEnabledWhen(
-			differentJurisdiction,
-			Collections.singletonList(Boolean.TRUE),
-			Arrays.asList(responsibleRegion, responsibleDistrict, responsibleCommunity),
-			true);
-		FieldHelper.setRequiredWhen(
-			differentJurisdiction,
-			Arrays.asList(responsibleRegion, responsibleDistrict),
-			Collections.singletonList(Boolean.TRUE),
-			false,
-			null);
+		responsibleCommunity.setNullSelectionAllowed(true);
+		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
+
+		responsibleDistrict.addValueChangeListener(e -> {
+			Boolean differentPlaceOfStay = differentPlaceOfStayJurisdiction.getValue();
+			if (differentPlaceOfStay == null || Boolean.FALSE.equals(differentPlaceOfStay)) {
+				updateFacility(
+					(DistrictReferenceDto) responsibleDistrict.getValue(),
+					(CommunityReferenceDto) responsibleCommunity.getValue(),
+					(FacilityType) facilityType.getValue(),
+					facility);
+			}
+		});
+		responsibleCommunity.addValueChangeListener((e) -> {
+			Boolean differentPlaceOfStay = differentPlaceOfStayJurisdiction.getValue();
+			if (differentPlaceOfStay == null || Boolean.FALSE.equals(differentPlaceOfStay)) {
+				updateFacility(
+					(DistrictReferenceDto) responsibleDistrict.getValue(),
+					(CommunityReferenceDto) responsibleCommunity.getValue(),
+					(FacilityType) facilityType.getValue(),
+					facility);
+			}
+		});
+
+		differentPlaceOfStayJurisdiction.addValueChangeListener(e -> {
+			Boolean differentPlaceOfStay = (Boolean) e.getProperty().getValue();
+			if (differentPlaceOfStay) {
+				updateFacility(
+					(DistrictReferenceDto) district.getValue(),
+					(CommunityReferenceDto) community.getValue(),
+					(FacilityType) facilityType.getValue(),
+					facility);
+
+			} else {
+				updateFacility(
+					(DistrictReferenceDto) responsibleDistrict.getValue(),
+					(CommunityReferenceDto) responsibleCommunity.getValue(),
+					(FacilityType) facilityType.getValue(),
+					facility);
+
+			}
+		});
 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
@@ -921,9 +961,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.CASE_CLASSIFICATION,
 			CaseDataDto.INVESTIGATION_STATUS,
 			CaseDataDto.OUTCOME,
-			CaseDataDto.DISEASE,
-			CaseDataDto.REGION,
-			CaseDataDto.DISTRICT);
+			CaseDataDto.DISEASE);
 		setSoftRequired(true, CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.PLAGUE_TYPE, CaseDataDto.SURVEILLANCE_OFFICER);
 		if (isEditableAllowed(CaseDataDto.INVESTIGATED_DATE)) {
 			FieldHelper.setReadOnlyWhen(
@@ -956,6 +994,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.OUTCOME_DATE);
 		setReadOnly(
 			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER),
+			CaseDataDto.RESPONSIBLE_REGION,
+			CaseDataDto.RESPONSIBLE_DISTRICT,
+			CaseDataDto.RESPONSIBLE_COMMUNITY,
 			CaseDataDto.REGION,
 			CaseDataDto.DISTRICT,
 			CaseDataDto.COMMUNITY,
@@ -967,6 +1008,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		if (!isEditableAllowed(CaseDataDto.COMMUNITY)) {
 			setEnabled(false, CaseDataDto.REGION, CaseDataDto.DISTRICT);
+		}
+
+		if (!isEditableAllowed(CaseDataDto.RESPONSIBLE_COMMUNITY)) {
+			setEnabled(false, CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT);
 		}
 
 		// Set conditional visibilities - ALWAYS call isVisibleAllowed before
@@ -1248,12 +1293,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addValueChangeListener(e -> {
 			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));
 
-			List<DistrictReferenceDto> officerDistricts =
-				Stream.of(getValue().getResponsibleDistrict(), getValue().getDistrict()).filter(Objects::nonNull).collect(Collectors.toList());
-			if (officerDistricts.size() > 0) {
-				surveillanceOfficerField
-					.addItems(FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, false, UserRole.SURVEILLANCE_OFFICER));
-			}
+			FieldHelper.updateOfficersField(surveillanceOfficerField, getValue(), UserRole.SURVEILLANCE_OFFICER);
 
 			// Replace classification user if case has been automatically classified
 			if (getValue().getClassificationDate() != null && getValue().getClassificationUser() == null) {
@@ -1315,6 +1355,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				if (getValue().getHealthFacility() == null) {
 					setVisible(
 						false,
+						DIFFERENT_PLACE_OF_STAY_JURISDICTION,
 						CaseDataDto.COMMUNITY,
 						FACILITY_OR_HOME_LOC,
 						TYPE_GROUP_LOC,
@@ -1609,10 +1650,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
 		}
 
-		if (newFieldValue.getResponsibleRegion() != null
-			|| newFieldValue.getResponsibleDistrict() != null
-			|| newFieldValue.getResponsibleCommunity() != null) {
-			differentJurisdiction.setValue(Boolean.TRUE);
+		if (newFieldValue.getRegion() != null || newFieldValue.getDistrict() != null || newFieldValue.getCommunity() != null) {
+			differentPlaceOfStayJurisdiction.setValue(Boolean.TRUE);
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.

@@ -568,13 +568,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
 		}
 		if (caseCriteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createRegionFilter(cb, joins, caseCriteria.getRegion()));
 		}
 		if (caseCriteria.getDistrict() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(district.get(District.UUID), caseCriteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createDistrictFilter(cb, joins, caseCriteria.getDistrict()));
 		}
 		if (caseCriteria.getCommunity() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(community.get(Community.UUID), caseCriteria.getCommunity().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createCommunityFilter(cb, joins, caseCriteria.getCommunity()));
 		}
 		if (caseCriteria.getFollowUpStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.FOLLOW_UP_STATUS), caseCriteria.getFollowUpStatus()));
@@ -722,11 +722,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Case.HEALTH_FACILITY_DETAILS), textFilter),
 					phoneNumberPredicate(
-					cb,
-					(Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-					textFilter),
+						cb,
+						(Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
+						textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
-				CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
@@ -795,12 +795,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			sharesSubQuery.where(cb.equal(sharesRoot.get(ShareInfoCase.CAZE), from));
 			sharesSubQuery.select(sharesRoot.get(ShareInfoCase.ID));
 
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.or(
-					cb.exists(sharesSubQuery),
-					cb.isNotNull(from.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO))));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.or(cb.exists(sharesSubQuery), cb.isNotNull(from.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO))));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithReinfection())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.RE_INFECTION), YesNoUnknown.YES));
@@ -1321,7 +1317,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		casesForUpdate.forEach(this::updateCompleteness);
 	}
 
-	public void updateCompleteness(Case caze){
+	public void updateCompleteness(Case caze) {
 		caze.setCompleteness(calculateCompleteness(caze));
 		ensurePersisted(caze);
 	}

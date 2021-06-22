@@ -86,6 +86,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
 	private PresentCondition presentCondition;
+	private RegionReferenceDto responsibleRegion;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
@@ -196,6 +197,20 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public DiseaseVariant getDiseaseVariant() {
 		return diseaseVariant;
+	}
+
+	public RegionReferenceDto getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	public CaseCriteria responsibleRegion(RegionReferenceDto responsibleRegion) {
+		setResponsibleRegion(responsibleRegion);
+
+		return this;
+	}
+
+	public void setResponsibleRegion(RegionReferenceDto responsibleRegion) {
+		this.responsibleRegion = responsibleRegion;
 	}
 
 	public void setRegion(RegionReferenceDto region) {

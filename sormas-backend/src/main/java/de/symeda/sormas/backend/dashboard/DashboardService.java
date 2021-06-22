@@ -78,10 +78,6 @@ public class DashboardService {
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
-		if (filter != null) {
-			cq.where(filter);
-		}
-
 		List<DashboardCaseDto> result;
 		if (filter != null) {
 			cq.where(filter);
@@ -163,7 +159,7 @@ public class DashboardService {
 		Root<Case> caze = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
-		Join<Case, District> district = joins.getDistrict();
+		Join<Case, District> district = joins.getResponsibleDistrict();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
@@ -194,7 +190,7 @@ public class DashboardService {
 		Root<Case> caze = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
-		Join<Case, District> districtJoin = joins.getDistrict();
+		Join<Case, District> districtJoin = joins.getResponsibleDistrict();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
@@ -377,8 +373,8 @@ public class DashboardService {
 		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
 		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
-		Join<Case, Region> region = joins.getRegion();
-		Join<Case, District> district = joins.getDistrict();
+		Join<Case, Region> region = joins.getResponsibleRegion();
+		Join<Case, District> district = joins.getResponsibleDistrict();
 
 		Predicate filter = null;
 		if (dashboardCriteria.getDisease() != null) {

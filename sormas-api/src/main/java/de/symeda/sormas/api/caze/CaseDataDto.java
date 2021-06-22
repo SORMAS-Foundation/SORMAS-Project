@@ -280,6 +280,9 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	private RegionReferenceDto responsibleRegion;
 	private DistrictReferenceDto responsibleDistrict;
+	@Outbreaks
+	@PersonalData
+	@SensitiveData
 	private CommunityReferenceDto responsibleCommunity;
 
 	@Outbreaks

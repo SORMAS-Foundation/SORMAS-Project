@@ -304,9 +304,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 
 		assertThat(savedCase, is(notNullValue()));
-		assertThat(savedCase.getRegion(), is(rdcf.localRdcf.region));
-		assertThat(savedCase.getDistrict(), is(rdcf.localRdcf.district));
-		assertThat(savedCase.getCommunity(), is(rdcf.localRdcf.community));
+		assertThat(savedCase.getResponsibleRegion(), is(rdcf.localRdcf.region));
+		assertThat(savedCase.getResponsibleDistrict(), is(rdcf.localRdcf.district));
+		assertThat(savedCase.getResponsibleCommunity(), is(rdcf.localRdcf.community));
 		assertThat(savedCase.getHealthFacility(), is(rdcf.localRdcf.facility));
 		assertThat(savedCase.getHospitalization().getAdmittedToHealthFacility(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getSymptoms().getAgitation(), is(SymptomState.YES));
@@ -352,9 +352,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 
 		assertThat(savedCase, is(notNullValue()));
-		assertThat(savedCase.getRegion(), is(rdcf.localRdcf.region));
-		assertThat(savedCase.getDistrict(), is(rdcf.localRdcf.district));
-		assertThat(savedCase.getCommunity(), is(rdcf.localRdcf.community));
+		assertThat(savedCase.getResponsibleRegion(), is(rdcf.localRdcf.region));
+		assertThat(savedCase.getResponsibleDistrict(), is(rdcf.localRdcf.district));
+		assertThat(savedCase.getResponsibleCommunity(), is(rdcf.localRdcf.community));
 		assertThat(savedCase.getHealthFacility(), is(rdcf.localRdcf.facility));
 		assertThat(savedCase.getHospitalization().getAdmittedToHealthFacility(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getSymptoms().getAgitation(), is(SymptomState.YES));
@@ -383,9 +383,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		CaseDataDto caze = CaseDataDto.build(person.toReference(), Disease.CORONAVIRUS);
 		caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
-		caze.setRegion(rdcf.remoteRdcf.region);
-		caze.setDistrict(rdcf.remoteRdcf.district);
-		caze.setCommunity(rdcf.remoteRdcf.community);
+		caze.setResponsibleRegion(rdcf.remoteRdcf.region);
+		caze.setResponsibleDistrict(rdcf.remoteRdcf.district);
+		caze.setResponsibleCommunity(rdcf.remoteRdcf.community);
 		caze.setPointOfEntry(rdcf.remoteRdcf.pointOfEntry);
 		PortHealthInfoDto portHealthInfo = PortHealthInfoDto.build();
 		portHealthInfo.setAirlineName("Test Airline");
@@ -397,9 +397,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 
-		assertThat(savedCase.getRegion(), is(rdcf.localRdcf.region));
-		assertThat(savedCase.getDistrict(), is(rdcf.localRdcf.district));
-		assertThat(savedCase.getCommunity(), is(rdcf.localRdcf.community));
+		assertThat(savedCase.getResponsibleRegion(), is(rdcf.localRdcf.region));
+		assertThat(savedCase.getResponsibleDistrict(), is(rdcf.localRdcf.district));
+		assertThat(savedCase.getResponsibleCommunity(), is(rdcf.localRdcf.community));
 		assertThat(savedCase.getPointOfEntry(), is(rdcf.localRdcf.pointOfEntry));
 		assertThat(savedCase.getPortHealthInfo().getAirlineName(), is("Test Airline"));
 	}
@@ -413,9 +413,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		CaseDataDto caze = CaseDataDto.build(person.toReference(), Disease.CORONAVIRUS);
 		caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
-		caze.setRegion(rdcf.remoteRdcf.region);
-		caze.setDistrict(rdcf.remoteRdcf.district);
-		caze.setCommunity(rdcf.remoteRdcf.community);
+		caze.setResponsibleRegion(rdcf.remoteRdcf.region);
+		caze.setResponsibleDistrict(rdcf.remoteRdcf.district);
+		caze.setResponsibleCommunity(rdcf.remoteRdcf.community);
 		caze.setPointOfEntry(rdcf.remoteRdcf.pointOfEntry);
 		PortHealthInfoDto portHealthInfo = PortHealthInfoDto.build();
 		portHealthInfo.setAirlineName("Test Airline");
@@ -427,9 +427,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 
-		assertThat(savedCase.getRegion(), is(rdcf.localRdcf.region));
-		assertThat(savedCase.getDistrict(), is(rdcf.localRdcf.district));
-		assertThat(savedCase.getCommunity(), is(rdcf.localRdcf.community));
+		assertThat(savedCase.getResponsibleRegion(), is(rdcf.localRdcf.region));
+		assertThat(savedCase.getResponsibleDistrict(), is(rdcf.localRdcf.district));
+		assertThat(savedCase.getResponsibleCommunity(), is(rdcf.localRdcf.community));
 		assertThat(savedCase.getPointOfEntry(), is(rdcf.localRdcf.pointOfEntry));
 		assertThat(savedCase.getPortHealthInfo().getAirlineName(), is("Test Airline"));
 	}
@@ -761,9 +761,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		CaseDataDto caze = CaseDataDto.build(person.toReference(), Disease.CORONAVIRUS);
 		caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
-		caze.setRegion(rdcf.remoteRdcf.region);
-		caze.setDistrict(rdcf.remoteRdcf.district);
-		caze.setCommunity(rdcf.remoteRdcf.community);
+		caze.setResponsibleRegion(rdcf.remoteRdcf.region);
+		caze.setResponsibleDistrict(rdcf.remoteRdcf.district);
+		caze.setResponsibleCommunity(rdcf.remoteRdcf.community);
 		caze.setPointOfEntry(new PointOfEntryReferenceDto("unknown", "Unknown POE", PointOfEntryType.AIRPORT, null));
 		PortHealthInfoDto portHealthInfo = PortHealthInfoDto.build();
 		portHealthInfo.setAirlineName("Test Airline");
@@ -942,9 +942,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 	private CaseDataDto createRemoteCaseDto(TestDataCreator.RDCF remoteRdcf, PersonDto person) {
 		CaseDataDto caze = CaseDataDto.build(person.toReference(), Disease.CORONAVIRUS);
-		caze.setRegion(remoteRdcf.region);
-		caze.setDistrict(remoteRdcf.district);
-		caze.setCommunity(remoteRdcf.community);
+		caze.setResponsibleRegion(remoteRdcf.region);
+		caze.setResponsibleDistrict(remoteRdcf.district);
+		caze.setResponsibleCommunity(remoteRdcf.community);
 		caze.setHealthFacility(remoteRdcf.facility);
 		caze.setFacilityType(FacilityType.HOSPITAL);
 		return caze;

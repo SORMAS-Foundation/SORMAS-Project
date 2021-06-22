@@ -36,7 +36,7 @@ public class ImportHelper {
 		Object currentElement) {
 
 		if (currentElement instanceof CaseDataDto) {
-			return caze.getRegion();
+			return getCaseRegion(propertyName, caze);
 		} else if (currentElement instanceof ContactDto) {
 			return contact.getRegion();
 		} else {
@@ -46,7 +46,7 @@ public class ImportHelper {
 
 	public static DistrictReferenceDto getDistrictBasedOnCommunity(String propertyName, CaseDataDto caze, PersonDto person, Object currentElement) {
 		if (currentElement instanceof CaseDataDto) {
-			return caze.getDistrict();
+			return getCaseDistrict(propertyName, caze);
 		} else {
 			return getPersonDistrict(propertyName, person);
 		}
@@ -59,16 +59,13 @@ public class ImportHelper {
 		Object currentElement) {
 
 		if (currentElement instanceof CaseDataDto) {
-			return DataHelper.Pair.createPair(caze.getDistrict(), caze.getCommunity());
+			return DataHelper.Pair.createPair(getCaseDistrict(propertyName, caze), getCaseCommunity(propertyName, caze));
 		} else {
 			return getPersonDistrictAndCommunity(propertyName, person);
 		}
 	}
 
-	public static RegionReferenceDto getRegionBasedOnDistrict(
-		String propertyName,
-		EventDto event,
-		Object currentElement) {
+	public static RegionReferenceDto getRegionBasedOnDistrict(String propertyName, EventDto event, Object currentElement) {
 		if (!(currentElement instanceof LocationDto)) {
 			throw new IllegalArgumentException("currentElement is not a LocationDto: " + currentElement.getClass());
 		}
@@ -85,6 +82,17 @@ public class ImportHelper {
 			return eventParticipant.getRegion();
 		} else {
 			return getPersonRegion(propertyName, person);
+		}
+	}
+
+	public static RegionReferenceDto getCaseRegion(String propertyName, CaseDataDto caze) {
+		switch (propertyName) {
+		case CaseDataDto.RESPONSIBLE_DISTRICT:
+			return caze.getResponsibleRegion();
+		case LocationDto.DISTRICT:
+			return caze.getRegion();
+		default:
+			throw new IllegalArgumentException(propertyName);
 		}
 	}
 
@@ -106,11 +114,37 @@ public class ImportHelper {
 		return event.getEventLocation().getDistrict();
 	}
 
-	public static DistrictReferenceDto getDistrictBasedOnCommunity(String propertyName, EventParticipantDto eventParticipant, PersonDto person, Object currentElement) {
+	public static DistrictReferenceDto getDistrictBasedOnCommunity(
+		String propertyName,
+		EventParticipantDto eventParticipant,
+		PersonDto person,
+		Object currentElement) {
 		if (currentElement instanceof EventParticipantDto) {
 			return eventParticipant.getDistrict();
 		} else {
 			return getPersonDistrict(propertyName, person);
+		}
+	}
+
+	public static DistrictReferenceDto getCaseDistrict(String propertyName, CaseDataDto caze) {
+		switch (propertyName) {
+		case CaseDataDto.RESPONSIBLE_COMMUNITY:
+			return caze.getResponsibleDistrict();
+		case LocationDto.COMMUNITY:
+			return caze.getDistrict();
+		default:
+			throw new IllegalArgumentException(propertyName);
+		}
+	}
+
+	public static CommunityReferenceDto getCaseCommunity(String propertyName, CaseDataDto caze) {
+		switch (propertyName) {
+		case CaseDataDto.RESPONSIBLE_COMMUNITY:
+			return caze.getResponsibleCommunity();
+		case LocationDto.COMMUNITY:
+			return caze.getCommunity();
+		default:
+			throw new IllegalArgumentException(propertyName);
 		}
 	}
 

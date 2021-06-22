@@ -32,7 +32,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -162,11 +161,8 @@ public class CaseImporter extends DataImporter {
 				final CaseImportLock caseSelectLock = new CaseImportLock();
 				synchronized (caseSelectLock) {
 					// Retrieve all similar cases from the database
-					CaseCriteria caseCriteria = new CaseCriteria().disease(importCase.getDisease()).region(importCase.getRegion());
 					CaseSimilarityCriteria criteria =
-						new CaseSimilarityCriteria().personUuid(selectedPersonUuid != null ? selectedPersonUuid : importPerson.getUuid())
-							.caseCriteria(caseCriteria)
-							.reportDate(importCase.getReportDate());
+						CaseSimilarityCriteria.forCase(importCase, selectedPersonUuid != null ? selectedPersonUuid : importPerson.getUuid());
 
 					List<CaseIndexDto> similarCases = caseFacade.getSimilarCases(criteria);
 

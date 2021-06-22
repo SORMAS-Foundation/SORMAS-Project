@@ -265,7 +265,7 @@ public interface Captions {
 	String CaseData_contactTracingFirstContactDate = "CaseData.contactTracingFirstContactDate";
 	String CaseData_contactTracingFirstContactType = "CaseData.contactTracingFirstContactType";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
-	String CaseData_differentJurisdiction = "CaseData.differentJurisdiction";
+	String CaseData_differentPlaceOfStayJurisdiction = "CaseData.differentPlaceOfStayJurisdiction";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
 	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";

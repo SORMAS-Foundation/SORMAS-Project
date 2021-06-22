@@ -285,10 +285,11 @@ public class JurisdictionHelper {
 
 	public static List<Region> getCaseRegions(Case caze) {
 		List<Region> regions = new ArrayList<>();
-		if (caze.getResponsibleRegion() != null) {
-			regions.add(caze.getResponsibleRegion());
+		regions.add(caze.getResponsibleRegion());
+
+		if (caze.getRegion() != null) {
+			regions.add(caze.getRegion());
 		}
-		regions.add(caze.getRegion());
 
 		return regions;
 	}

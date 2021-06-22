@@ -266,7 +266,7 @@ public class EventParticipantImporter extends DataImporter {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade()
-							.getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), null, null, person, currentElement), false);
+							.getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), null, person, currentElement), false);
 						if (district.isEmpty()) {
 							throw new ImportErrorException(
 								I18nProperties

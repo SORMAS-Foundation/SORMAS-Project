@@ -758,13 +758,43 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.RESPONSIBLE_REGION)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	@Order(23)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.RESPONSIBLE_DISTRICT)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getResponsibleDistrict() {
+		return responsibleDistrict;
+	}
+
+	@Order(24)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.RESPONSIBLE_COMMUNITY)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getResponsibleCommunity() {
+		return responsibleCommunity;
+	}
+
+	@Order(25)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(CaseDataDto.REGION)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getRegion() {
 		return region;
 	}
 
-	@Order(23)
+	@Order(26)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -774,7 +804,7 @@ public class CaseExportDto implements Serializable {
 		return district;
 	}
 
-	@Order(24)
+	@Order(27)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -784,7 +814,7 @@ public class CaseExportDto implements Serializable {
 		return community;
 	}
 
-	@Order(25)
+	@Order(28)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -794,7 +824,7 @@ public class CaseExportDto implements Serializable {
 		return facilityType;
 	}
 
-	@Order(26)
+	@Order(29)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -804,7 +834,7 @@ public class CaseExportDto implements Serializable {
 		return healthFacility;
 	}
 
-	@Order(27)
+	@Order(30)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -814,7 +844,7 @@ public class CaseExportDto implements Serializable {
 		return healthFacilityDetails;
 	}
 
-	@Order(28)
+	@Order(31)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -824,7 +854,7 @@ public class CaseExportDto implements Serializable {
 		return pointOfEntry;
 	}
 
-	@Order(29)
+	@Order(32)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -834,7 +864,7 @@ public class CaseExportDto implements Serializable {
 		return pointOfEntryDetails;
 	}
 
-	@Order(35)
+	@Order(33)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -2056,36 +2086,6 @@ public class CaseExportDto implements Serializable {
 	@HideForCountriesExcept
 	public ScreeningType getScreeningType() {
 		return screeningType;
-	}
-
-	@Order(171)
-	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE,
-		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(CaseDataDto.RESPONSIBLE_REGION)
-	@ExportGroup(ExportGroupType.CORE)
-	public String getResponsibleRegion() {
-		return responsibleRegion;
-	}
-
-	@Order(172)
-	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE,
-		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(CaseDataDto.RESPONSIBLE_DISTRICT)
-	@ExportGroup(ExportGroupType.CORE)
-	public String getResponsibleDistrict() {
-		return responsibleDistrict;
-	}
-
-	@Order(173)
-	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE,
-		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(CaseDataDto.RESPONSIBLE_COMMUNITY)
-	@ExportGroup(ExportGroupType.CORE)
-	public String getResponsibleCommunity() {
-		return responsibleCommunity;
 	}
 
 	public void setCountry(String country) {

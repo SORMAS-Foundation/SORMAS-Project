@@ -20,6 +20,7 @@ package de.symeda.sormas.api.hospitalization;
 import java.util.Date;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseDtoHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -89,9 +90,9 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 			previousHospitalization.setDischargeDate(new Date());
 		}
 
-		previousHospitalization.setRegion(caze.getRegion());
-		previousHospitalization.setDistrict(caze.getDistrict());
-		previousHospitalization.setCommunity(caze.getCommunity());
+		previousHospitalization.setRegion(CaseDtoHelper.getRegionWithFallback(caze));
+		previousHospitalization.setDistrict(CaseDtoHelper.getDistrictWithFallback(caze));
+		previousHospitalization.setCommunity(CaseDtoHelper.getCommunityWithFallback(caze));
 		previousHospitalization.setHealthFacility(caze.getHealthFacility());
 		previousHospitalization.setHealthFacilityDetails(caze.getHealthFacilityDetails());
 		previousHospitalization.setIsolated(hospitalization.getIsolated());
