@@ -90,8 +90,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private String caseRegionName;
 	private String caseDistrictName;
 
-	private boolean isInJurisdiction;
-	private boolean isCaseInJurisdiction;
+	private ContactJurisdictionFlagsDto contactJurisdictionFlagsDto;
 
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
@@ -138,8 +137,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.caseRegionName = caseRegionName;
 		this.caseDistrictName = caseDistrictName;
 
-		this.isInJurisdiction = isInJurisdiction;
-		this.isCaseInJurisdiction = isCaseInJurisdiction;
+		this.contactJurisdictionFlagsDto = new ContactJurisdictionFlagsDto(isInJurisdiction, isCaseInJurisdiction);
 	}
 
 	public String getUuid() {
@@ -367,11 +365,11 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	}
 
 	public boolean getInJurisdiction() {
-		return isInJurisdiction;
+		return contactJurisdictionFlagsDto.getInJurisdiction();
 	}
 
 	public boolean getCaseInJurisdiction() {
-		return isCaseInJurisdiction;
+		return contactJurisdictionFlagsDto.getCaseInJurisdiction();
 	}
 
 	@Override

@@ -36,8 +36,7 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements Serial
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
-	private Boolean isInJurisdiction;
-	private Boolean isCaseInJurisdiction;
+	private ContactJurisdictionFlagsDto contactJurisdictionFlagsDto;
 
 	//@formatter:off
 	public SimilarContactDto(String firstName, String lastName, String uuid,
@@ -59,8 +58,7 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements Serial
 		this.contactClassification = contactClassification;
 		this.contactStatus = contactStatus;
 		this.followUpStatus = followUpStatus;
-		this.isInJurisdiction = isInJurisdiction;
-		this.isCaseInJurisdiction = isCaseInJurisdiction;
+		this.contactJurisdictionFlagsDto = new ContactJurisdictionFlagsDto(isInJurisdiction, isCaseInJurisdiction);
 	}
 
 	public CaseReferenceDto getCaze() {
@@ -144,10 +142,10 @@ public class SimilarContactDto extends PseudonymizableIndexDto implements Serial
 	}
 
 	public Boolean getInJurisdiction() {
-		return isInJurisdiction;
+		return contactJurisdictionFlagsDto.getInJurisdiction();
 	}
 
 	public Boolean getCaseInJurisdiction() {
-		return isCaseInJurisdiction;
+		return contactJurisdictionFlagsDto.getCaseInJurisdiction();
 	}
 }

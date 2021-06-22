@@ -54,6 +54,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -1587,7 +1588,8 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		ContactJoins<Contact> joins = new ContactJoins<>(contactRoot);
 
-		cq.multiselect(
+		List<Selection<?>> selections = new ArrayList<>(
+				Arrays.asList(
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			contactRoot.get(Contact.UUID),
@@ -1599,9 +1601,10 @@ public class ContactFacadeEjb implements ContactFacade {
 			contactRoot.get(Contact.CONTACT_PROXIMITY),
 			contactRoot.get(Contact.CONTACT_CLASSIFICATION),
 			contactRoot.get(Contact.CONTACT_STATUS),
-			contactRoot.get(Contact.FOLLOW_UP_STATUS), 
-			jurisdictionSelector(cb, joins),
-			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			contactRoot.get(Contact.FOLLOW_UP_STATUS)));
+
+		selections.addAll(contactService.getJurisdictionSelections(cb, joins));
+		cq.multiselect(selections);
 
 		final Predicate defaultFilter = contactService.createDefaultFilter(cb, contactRoot);
 		final Predicate userFilter = contactService.createUserFilter(cb, cq, contactRoot);

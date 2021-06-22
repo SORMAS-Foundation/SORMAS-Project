@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -40,15 +41,11 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.task.TaskJurisdictionFlagsDto;
-import de.symeda.sormas.backend.task.TaskJoins;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventJoins;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -107,11 +104,13 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -1343,16 +1342,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		ContactJoins joins = new ContactJoins(root);
 
-		cq.multiselect(
-				JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
-				JurisdictionHelper.jurisdictionSelector(
-						cb,
-						cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))));
+		cq.multiselect(getJurisdictionSelections(cb, joins));
 
 		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
 
 
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+	}
+
+	protected List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, ContactJoins joins) {
+		return Arrays.asList(JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
+				JurisdictionHelper.jurisdictionSelector(
+						cb,
+						cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))));
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, ContactJoins<?> joins) {
