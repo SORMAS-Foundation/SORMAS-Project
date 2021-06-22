@@ -61,9 +61,9 @@ public class EditSampleSteps implements En {
     When(
         "I click on the new pathogen test from the Edit Sample page",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(PATHOGEN_NEW_TEST_RESULT_BTN);
-          webDriverHelpers.scrollToElement(PATHOGEN_NEW_TEST_RESULT_BTN);
-          webDriverHelpers.clickOnWebElementBySelector(PATHOGEN_NEW_TEST_RESULT_BTN);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(PATHOGEN_NEW_TEST_RESULT_BUTTON);
+          webDriverHelpers.scrollToElement(PATHOGEN_NEW_TEST_RESULT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(PATHOGEN_NEW_TEST_RESULT_BUTTON);
         });
   }
 }

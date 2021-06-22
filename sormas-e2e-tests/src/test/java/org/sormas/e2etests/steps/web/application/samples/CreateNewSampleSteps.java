@@ -67,7 +67,7 @@ public class CreateNewSampleSteps implements En {
         "^I create a new Test result with specific data$",
         () -> {
           sampleTestResult = sampleService.buildGeneratedSampleTestResult();
-          selectSampleTestResultButton(sampleTestResult.getSampleTestResults());
+          selectSampleTestResultButton();
           fillReportDate(sampleTestResult.getReportDate());
           selectTypeOfTest(sampleTestResult.getTypeOfTest());
           selectTestedDisease(sampleTestResult.getTestedDisease());
@@ -90,7 +90,7 @@ public class CreateNewSampleSteps implements En {
     When(
         "^I check the created Test result is correctly displayed on Edit Sample page, Test creation tab",
         () -> {
-          final Sample actualSampleTestResult = collectTestResultsData();
+          final Sample actualSampleTestResult = collectPathogenTestResultsData();
           Truth.assertThat(sampleTestResult).isEqualTo(actualSampleTestResult);
         });
 
@@ -227,8 +227,8 @@ public class CreateNewSampleSteps implements En {
     webDriverHelpers.clearAndFillInWebElement(COMMENT_AREA_INPUT, commentsOnSample);
   }
 
-  public void selectSampleTestResultButton(String received) {
-    webDriverHelpers.clickWebElementByText(SAMPLE_TEST_RESULT_BUTTON, received);
+  public void selectSampleTestResultButton() {
+    webDriverHelpers.clickOnWebElementBySelector(SAMPLE_TEST_RESULT_BUTTON);
   }
 
   public void fillReportDate(LocalDate dateOfCollection) {
@@ -277,19 +277,6 @@ public class CreateNewSampleSteps implements En {
         .receivedDate(getReceivedDate())
         .specimenCondition(getSpecimenCondition())
         .commentsOnSample(getCommentsOnSample())
-        .build();
-  }
-
-  public Sample collectTestResultsData() {
-    return Sample.builder()
-        .sampleTestResults(sampleTestResult.getSampleTestResults())
-        .reportDate(getReportDate())
-        .typeOfTest(getTypeOfTest())
-        .testedDisease(getTestedDisease())
-        .dateOfResult(getDateOfResult())
-        .timeOfResult(getTimeOfResult())
-        .resultVerifiedByLabSupervisor(getResultVerifiedByLabSupervisor())
-        .testResultsComment(getTestResultComment())
         .build();
   }
 
