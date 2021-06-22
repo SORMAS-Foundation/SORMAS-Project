@@ -335,6 +335,7 @@ public class EventsView extends AbstractView {
 		});
 		eventGroupsFilterForm.addResetHandler(e -> {
 			ViewModelProviders.of(EventsView.class).remove(EventGroupCriteria.class);
+			ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
 			navigateTo(null);
 		});
 		eventGroupsFilterForm.addApplyHandler(e -> {
@@ -348,6 +349,7 @@ public class EventsView extends AbstractView {
 			}
 		});
 		eventsFilterForm.addResetHandler(e -> {
+			ViewModelProviders.of(EventsView.class).remove(EventGroupCriteria.class);
 			ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
 			navigateTo(null);
 		});
