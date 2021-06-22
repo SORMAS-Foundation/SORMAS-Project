@@ -113,7 +113,7 @@ public class SampleExportDto implements Serializable {
 	private final ContactClassification contactClassification;
 	private final ContactStatus contactStatus;
 
-	private Boolean isInJurisdiction;
+	private SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto;
 
 	//@formatter:off
 	public SampleExportDto(long id, String uuid, String labSampleId, Date sampleReportDate,String epidNumber, String casePersonFirstName, String casePersonLastName, String contactPersonFirstName, String contactPersonLastName,String eventParticipantFirstName, String eventParticipantLastName,
@@ -134,7 +134,7 @@ public class SampleExportDto implements Serializable {
 						   String eventAddressRegion, String eventAddressDistrict, String eventAddressCommunity, String eventAddressCity, String eventAddressStreet, String eventAddressHouseNumber, String eventAddressAdditionalInformation,
 						   Date caseReportDate, CaseClassification caseClassification, CaseOutcome caseOutcome, String caseRegion, String caseDistrict,
 						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails, String contactRegion, String contactDistrict, String contactCommunity,
-						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus, String labUuid, String caseHealthFacilityUuid, boolean isInJurisdiction) {
+						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus, String labUuid, String caseHealthFacilityUuid, boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
 	//@formatter:on
 
 		this.id = id;
@@ -247,7 +247,12 @@ public class SampleExportDto implements Serializable {
 		this.contactClassification = contactClassification;
 		this.contactStatus = contactStatus;
 
-		this.isInJurisdiction = isInJurisdiction;
+		this.sampleJurisdictionFlagsDto = new SampleJurisdictionFlagsDto(
+				isInJurisdiction,
+				isCaseInJurisdiction,
+				isContactInJurisdiction,
+				isContactCaseInJurisdiction,
+				isEventParticipantInJurisdiction);
 	}
 
 	@Order(0)
@@ -811,8 +816,8 @@ public class SampleExportDto implements Serializable {
 		return otherPathogenTests;
 	}
 
-	public Boolean getInJurisdiction() {
-		return isInJurisdiction;
+	public SampleJurisdictionFlagsDto getSampleJurisdictionFlagsDto() {
+		return sampleJurisdictionFlagsDto;
 	}
 
 	public static class SampleExportMaterial implements Serializable {

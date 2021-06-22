@@ -155,13 +155,14 @@ public class JurisdictionHelper {
 			jurisdiction.setReportingUserUuid(eventParticipant.getReportingUser().getUuid());
 		}
 
-//		if (eventParticipant.getRegion() != null) {
-//			jurisdiction.setRegionUuid(eventParticipant.getRegion().getUuid());
-//		}
-//
-//		if (eventParticipant.getDistrict() != null) {
-//			jurisdiction.setDistrictUuid(eventParticipant.getDistrict().getUuid());
-//		}
+		// todo https://github.com/hzi-braunschweig/SORMAS-Project/issues/5903
+		// if (eventParticipant.getRegion() != null) {
+		// 	jurisdiction.setRegionUuid(eventParticipant.getRegion().getUuid());
+		// }
+		//
+		// if (eventParticipant.getDistrict() != null) {
+		// 	jurisdiction.setDistrictUuid(eventParticipant.getDistrict().getUuid());
+		// }
 
 		Event event = eventParticipant.getEvent();
 		if (event != null) {

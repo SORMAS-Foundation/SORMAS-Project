@@ -1349,7 +1349,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 						cb,
 						cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))));
 
-		cq.where(cb.equal(root.get(Task.UUID), contact.getUuid()));
+		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
 
 
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);

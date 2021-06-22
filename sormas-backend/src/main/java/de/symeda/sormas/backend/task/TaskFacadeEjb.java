@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.task;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -43,6 +44,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -376,8 +378,8 @@ public class TaskFacadeEjb implements TaskFacade {
 					.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.NAME))
 					.otherwise(joins.getEventCommunity().get(Community.NAME)));
 
-		ContactJoins<Task> contactJoins = new ContactJoins<>(joins.getContact());
-		cq.multiselect(
+		List<Selection<?>> selections = new ArrayList<>(
+				Arrays.asList(
 			task.get(Task.UUID),
 			task.get(Task.TASK_CONTEXT),
 			joins.getCaze().get(Case.UUID),
@@ -410,22 +412,10 @@ public class TaskFacadeEjb implements TaskFacade {
 			task.get(Task.ASSIGNEE_REPLY),
 			region,
 			district,
-			community,
-			JurisdictionHelper.jurisdictionSelector(cb, taskService.inJurisdictionOrOwned(cb, joins)),
-			JurisdictionHelper.jurisdictionSelector(
-				cb,
-				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))),
-			JurisdictionHelper
-				.jurisdictionSelector(cb, cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(cb, contactJoins))),
-			JurisdictionHelper.jurisdictionSelector(
-				cb,
-				cb.and(
-					cb.isNotNull(joins.getContact()),
-					cb.isNotNull(contactJoins.getCaze()),
-					caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(contactJoins.getCaze())))),
-			JurisdictionHelper.jurisdictionSelector(
-				cb,
-				cb.and(cb.isNotNull(joins.getEvent()), eventService.inJurisdictionOrOwned(cb, new EventJoins<>(joins.getEvent())))));
+			community));
+
+		selections.addAll(taskService.getJurisdictionSelections(cb, joins));
+		cq.multiselect(selections);
 
 		Predicate filter = null;
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {

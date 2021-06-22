@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.task;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -37,6 +38,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.task.TaskContext;
@@ -60,7 +62,6 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -467,28 +468,32 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		TaskJoins joins = new TaskJoins(root);
 
-		ContactJoins<Task> contactJoins = new ContactJoins<>(joins.getContact());
-		cq.multiselect(
-				JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
-				JurisdictionHelper.jurisdictionSelector(
-						cb,
-						cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))),
-				JurisdictionHelper
-						.jurisdictionSelector(cb, cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(cb, contactJoins))),
-				JurisdictionHelper.jurisdictionSelector(
-						cb,
-						cb.and(
-								cb.isNotNull(joins.getContact()),
-								cb.isNotNull(contactJoins.getCaze()),
-								caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(contactJoins.getCaze())))),
-				JurisdictionHelper.jurisdictionSelector(
-						cb,
-						cb.and(cb.isNotNull(joins.getEvent()), eventService.inJurisdictionOrOwned(cb, new EventJoins<>(joins.getEvent())))));
+		cq.multiselect(getJurisdictionSelections(cb, joins));
 
 		cq.where(cb.equal(root.get(Task.UUID), task.getUuid()));
 
 
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+	}
+
+	protected List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, TaskJoins joins) {
+		ContactJoins<Task> contactJoins = new ContactJoins<>(joins.getContact());
+		return Arrays.asList(
+			JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))),
+			JurisdictionHelper
+				.jurisdictionSelector(cb, cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(cb, contactJoins))),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				cb.and(
+					cb.isNotNull(joins.getContact()),
+					cb.isNotNull(contactJoins.getCaze()),
+					caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(contactJoins.getCaze())))),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				cb.and(cb.isNotNull(joins.getEvent()), eventService.inJurisdictionOrOwned(cb, new EventJoins<>(joins.getEvent())))));
 	}
 
 	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, TaskJoins joins) {

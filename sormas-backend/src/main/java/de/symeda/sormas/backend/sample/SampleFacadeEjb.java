@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.sample;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -38,6 +39,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -380,9 +382,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		cq.distinct(true);
 		
-		ContactJoins<Sample> contactJoins = new ContactJoins<>(joins.getContact());
-		
-		cq.multiselect(sample.get(Sample.UUID),
+		List<Selection<?>> selections = new ArrayList<>(
+				Arrays.asList(sample.get(Sample.UUID),
 				caze.get(Case.EPID_NUMBER),
 				sample.get(Sample.LAB_SAMPLE_ID),
 				sample.get(Sample.SAMPLE_DATE_TIME),
@@ -412,24 +413,10 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
 				districtSelect,
-				joins.getLab().get(Facility.UUID),
-			JurisdictionHelper.jurisdictionSelector(cb, sampleService.inJurisdictionOrOwned(cb, joins)),
-			JurisdictionHelper.jurisdictionSelector(
-				cb,
-				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))),
-			JurisdictionHelper
-				.jurisdictionSelector(cb, cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(cb, contactJoins))),
-			JurisdictionHelper.jurisdictionSelector(
-				cb,
-				cb.and(
-					cb.isNotNull(joins.getContact()),
-					cb.isNotNull(contactJoins.getCaze()),
-					caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(contactJoins.getCaze())))),
-			JurisdictionHelper.jurisdictionSelector(
-				cb,
-				cb.and(
-					cb.isNotNull(joins.getEventParticipant()),
-					eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(joins.getEventParticipant())))));
+				joins.getLab().get(Facility.UUID)));
+
+		selections.addAll(sampleService.getJurisdictionSelections(cb, joins));
+		cq.multiselect(selections);
 
 		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
 
@@ -624,7 +611,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		cq.distinct(true);
 
-		cq.multiselect(
+		List<Selection<?>> selections = new ArrayList<>(Arrays.asList(
 			sampleRoot.get(Sample.ID),
 			sampleRoot.get(Sample.UUID),
 			sampleRoot.get(Sample.LAB_SAMPLE_ID),
@@ -716,8 +703,11 @@ public class SampleFacadeEjb implements SampleFacade {
 			joins.getContact().get(Contact.CONTACT_CLASSIFICATION),
 			joins.getContact().get(Contact.CONTACT_STATUS),
 			joins.getLab().get(Facility.UUID),
-			joins.getCaseFacility().get(Facility.UUID),
-			JurisdictionHelper.jurisdictionSelector(cb, sampleService.inJurisdictionOrOwned(cb, joins)));
+			joins.getCaseFacility().get(Facility.UUID)));
+
+		selections.addAll(sampleService.getJurisdictionSelections(cb, joins));
+
+		cq.multiselect(selections);
 
 		Predicate filter = sampleService.createUserFilter(cb, cq, sampleRoot);
 
@@ -739,7 +729,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		cq.orderBy(cb.desc(sampleRoot.get(Sample.REPORT_DATE_TIME)), cb.desc(sampleRoot.get(Sample.ID)));
 
 		List<SampleExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 		for (SampleExportDto exportDto : resultList) {
 			Sample sampleFromExportDto = sampleService.getById(exportDto.getId());
@@ -789,7 +778,8 @@ public class SampleFacadeEjb implements SampleFacade {
 				exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.no));
 			}
 
-			boolean isInJurisdiction = exportDto.getInJurisdiction();
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+			boolean isInJurisdiction = exportDto.getSampleJurisdictionFlagsDto().getInJurisdiction();
 			pseudonymizer.pseudonymizeDto(
 				SampleExportDto.class,
 				exportDto,

@@ -3,13 +3,13 @@ package de.symeda.sormas.backend.event;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 import de.symeda.sormas.utils.EventParticipantJoins;
 
 public class EventParticipantJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
@@ -29,9 +29,7 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
-		final Predicate reportedByCurrentUser = cb.and(
-			cb.isNotNull(joins.getEventParticipantReportingUser()),
-			cb.equal(joins.getEventParticipantReportingUser().get(User.UUID), currentUser.getUuid()));
+		final Predicate reportedByCurrentUser = cb.equal(joins.getEventParticipantReportingUser().get(User.UUID), currentUser.getUuid());
 
 		return cb.or(reportedByCurrentUser, isInJurisdiction());
 	}

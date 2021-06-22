@@ -71,13 +71,14 @@ public class EventParticipantJurisdictionBooleanValidator extends BooleanJurisdi
 
     @Override
     protected Boolean whenCommunityLevel() {
-        return false; // todo community of address
-//        return DataHelper.equal(eventParticipantJurisdictionDto.getCommunityUuid(), userJurisdiction.getCommunityUuid());
+        return false;
+        // todo community of address https://github.com/hzi-braunschweig/SORMAS-Project/issues/5903
+        // return DataHelper.equal(eventParticipantJurisdictionDto.getCommunityUuid(), userJurisdiction.getCommunityUuid());
     }
 
     @Override
     protected Boolean whenFacilityLevel() {
-        return false; // todo  address facility
+        return false; // todo  address facility https://github.com/hzi-braunschweig/SORMAS-Project/issues/5903
     }
 
     @Override
