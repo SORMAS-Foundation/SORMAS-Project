@@ -476,7 +476,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
 
-	protected List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, TaskJoins joins) {
+	public List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, TaskJoins joins) {
 		ContactJoins<Task> contactJoins = new ContactJoins<>(joins.getContact());
 		return Arrays.asList(
 			JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),

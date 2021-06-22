@@ -1350,7 +1350,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
 
-	protected List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, ContactJoins joins) {
+	public List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, ContactJoins joins) {
 		return Arrays.asList(JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
 				JurisdictionHelper.jurisdictionSelector(
 						cb,

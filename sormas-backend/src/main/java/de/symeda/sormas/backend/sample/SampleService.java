@@ -22,7 +22,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -411,7 +410,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
 
-	protected List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, SampleJoins joins) {
+	public List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, SampleJoins joins) {
 		ContactJoins<Sample> contactJoins = new ContactJoins<>(joins.getContact());
 		return Arrays.asList(JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
 				JurisdictionHelper.jurisdictionSelector(
