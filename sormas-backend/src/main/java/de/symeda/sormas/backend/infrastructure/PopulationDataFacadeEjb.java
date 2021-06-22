@@ -122,8 +122,10 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
 		Root<PopulationData> root = cq.from(PopulationData.class);
 
-		PopulationDataCriteria criteria =
-			new PopulationDataCriteria().ageGroupIsNull(true).sexIsNull(true).district(new DistrictReferenceDto(districtUuid, null, null));
+		PopulationDataCriteria criteria = new PopulationDataCriteria().ageGroupIsNull(true)
+			.sexIsNull(true)
+			.communityIsNull(true)
+			.district(new DistrictReferenceDto(districtUuid, null, null));
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
 		cq.select(root.get(PopulationData.POPULATION));

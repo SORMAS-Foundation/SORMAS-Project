@@ -1011,7 +1011,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				final Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
 				final SampleJoins joins = new SampleJoins(sampleRoot);
 				final Join cazeJoin = joins.getCaze();
-				sampleCaseSubquery.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutCase(cb, joins), cb.isNotNull(cazeJoin)));
+				sampleCaseSubquery.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutAssociations(cb, joins), cb.isNotNull(cazeJoin)));
 				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
 				filter = CriteriaBuilderHelper.or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
 				break;
