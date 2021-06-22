@@ -73,7 +73,6 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 	private Join<Case, Sample> samples;
 	private Join<Person, Country> personBirthCountry;
 	private Join<Person, Country> personCitizenship;
-	private Join<Case, District> reportingDistrict;
 	private Join<Case, DiseaseVariant> diseaseVariant;
 	private Join<Case, SormasToSormasShareInfo> shareInfoCases;
 	private Join<Case, ExternalShareInfo> externalShareInfo;
@@ -296,14 +295,6 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 
 	public void setPersonCitizenship(Join<Person, Country> personCitizenship) {
 		this.personCitizenship = personCitizenship;
-	}
-
-	public Join<Case, District> getReportingDistrict() {
-		return getOrCreate(reportingDistrict, Case.REPORTING_DISTRICT, JoinType.LEFT, this::setReportingDistrict);
-	}
-
-	private void setReportingDistrict(Join<Case, District> reportingDistrict) {
-		this.reportingDistrict = reportingDistrict;
 	}
 
 	public Join<Case, SormasToSormasShareInfo> getShareInfoCases() {

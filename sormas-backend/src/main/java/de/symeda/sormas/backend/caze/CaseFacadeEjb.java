@@ -704,7 +704,6 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
 				joins.getPersonCitizenship().get(Country.ISO_CODE),
 				joins.getPersonCitizenship().get(Country.DEFAULT_NAME),
-				joins.getReportingDistrict().get(District.NAME),
 				caseRoot.get(Case.CASE_IDENTIFICATION_SOURCE),
 				caseRoot.get(Case.SCREENING_TYPE),
 				// responsible jurisdiction
@@ -1794,7 +1793,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		District survOffDistrict = newCase.getSurveillanceOfficer() != null ? newCase.getSurveillanceOfficer().getDistrict() : null;
-		if (survOffDistrict == null || (!survOffDistrict.equals(newCase.getReportingDistrict()) && !survOffDistrict.equals(newCase.getDistrict()))) {
+		if (survOffDistrict == null
+			|| (!survOffDistrict.equals(newCase.getResponsibleDistrict()) && !survOffDistrict.equals(newCase.getDistrict()))) {
 			setResponsibleSurveillanceOfficer(newCase);
 		}
 
@@ -2491,7 +2491,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
 
-		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
 		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());
@@ -2675,7 +2674,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
 
-		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
 		target.setNotACaseReasonNegativeTest(source.isNotACaseReasonNegativeTest());

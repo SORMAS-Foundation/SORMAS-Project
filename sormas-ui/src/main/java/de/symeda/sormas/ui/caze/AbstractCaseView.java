@@ -111,7 +111,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 		// Handle outbreaks for the disease and district of the case
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)
-			&& (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getReportingDistrict(), caze.getDisease())
+			&& (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getResponsibleDistrict(), caze.getDisease())
 				|| FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease()))
 			&& caze.getDisease().usesSimpleViewForOutbreaks()) {
 			hasOutbreak = true;
