@@ -50,10 +50,12 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -66,6 +68,22 @@ public class VisitService extends BaseAdoService<Visit> {
 
 	public VisitService() {
 		super(Visit.class);
+	}
+
+	protected boolean inJurisdiction(Visit visit) {
+		return exists(
+			(cb, root) -> cb.and(
+				cb.equal(root.get(AbstractDomainObject.ID), visit.getId()),
+				inJurisdiction(cb, root.join(Visit.CAZE, JoinType.LEFT), root.join(Visit.CONTACTS, JoinType.LEFT))));
+	}
+
+	private Predicate inJurisdiction(
+		CriteriaBuilder cb,
+		Join<Visit, Case> caseJoin,
+		Join<Visit, Contact> contactJoin) {
+		return cb.or(
+			caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(caseJoin)),
+			contactService.inJurisdictionOrOwned(cb, new ContactJoins(contactJoin)));
 	}
 
 	public List<String> getAllActiveUuids(User user) {

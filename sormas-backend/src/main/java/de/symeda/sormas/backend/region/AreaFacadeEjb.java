@@ -25,7 +25,6 @@ import de.symeda.sormas.api.region.AreaCriteria;
 import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.AreaFacade;
 import de.symeda.sormas.api.region.AreaReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;

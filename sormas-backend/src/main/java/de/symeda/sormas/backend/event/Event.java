@@ -40,7 +40,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.sormas.api.externaldata.HasExternalData;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
@@ -63,6 +62,7 @@ import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
+import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.location.Location;

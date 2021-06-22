@@ -22,7 +22,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
-import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -49,7 +48,7 @@ public class DashboardEventDto implements Serializable {
 	private Double locationLon;
 	private DistrictReferenceDto district;
 
-	private EventJurisdictionDto jurisdiction;
+	private boolean isInJurisdiction;
 
 	public DashboardEventDto(
 		String uuid,
@@ -67,7 +66,8 @@ public class DashboardEventDto implements Serializable {
 		String regionUuid,
 		String districtName,
 		String districtUuid,
-		String communityUuid) {
+		String communityUuid,
+		boolean isInJurisdiction) {
 
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
@@ -81,7 +81,7 @@ public class DashboardEventDto implements Serializable {
 		this.locationLon = locationLon;
 		this.district = new DistrictReferenceDto(districtUuid, districtName, null);
 
-		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -173,7 +173,7 @@ public class DashboardEventDto implements Serializable {
 		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventInvestigationStatus(), getEventDate());
 	}
 
-	public EventJurisdictionDto getJurisdiction() {
-		return jurisdiction;
+	public boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 }

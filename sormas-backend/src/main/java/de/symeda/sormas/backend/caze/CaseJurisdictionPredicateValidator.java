@@ -15,10 +15,12 @@
 
 package de.symeda.sormas.backend.caze;
 
+import java.util.List;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
+import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -28,20 +30,35 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.utils.CaseJoins;
 
-public class CaseJurisdictionPredicateValidator extends JurisdictionValidator<Predicate> {
+public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final CriteriaBuilder cb;
 	private final CaseJoins<?> joins;
 	private final User currentUser;
 
-	public static CaseJurisdictionPredicateValidator of(CriteriaBuilder cb, CaseJoins<?> joins, User currentUser) {
-		return new CaseJurisdictionPredicateValidator(cb, joins, currentUser);
-	}
-
-	private CaseJurisdictionPredicateValidator(CriteriaBuilder cb, CaseJoins<?> joins, User currentUser) {
-		this.cb = cb;
+	private CaseJurisdictionPredicateValidator(
+		CriteriaBuilder cb,
+		CaseJoins<?> joins,
+		User currentUser,
+		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
+		super(cb, associatedJurisdictionValidators);
 		this.joins = joins;
 		this.currentUser = currentUser;
+	}
+
+	public static CaseJurisdictionPredicateValidator of(CriteriaBuilder cb, CaseJoins<?> joins, User currentUser) {
+		return new CaseJurisdictionPredicateValidator(cb, joins, currentUser, null);
+	}
+
+	@Override
+	protected Predicate isInJurisdictionOrOwned() {
+		final Predicate reportedByCurrentUser =
+			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
+		return cb.or(reportedByCurrentUser, isInJurisdiction());
+	}
+
+	@Override
+	protected Predicate isInJurisdiction() {
+		return isInJurisdictionByJurisdictionLevel(currentUser.getJurisdictionLevel());
 	}
 
 	@Override
@@ -86,5 +103,10 @@ public class CaseJurisdictionPredicateValidator extends JurisdictionValidator<Pr
 	@Override
 	protected Predicate whenPointOfEntryLevel() {
 		return cb.equal(joins.getPointOfEntry().get(PointOfEntry.ID), currentUser.getPointOfEntry().getId());
+	}
+
+	@Override
+	protected Predicate whenLaboratoryLevel() {
+		return cb.equal(joins.getSampleLabs().get(Facility.ID), currentUser.getLaboratory().getId());
 	}
 }

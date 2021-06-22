@@ -34,8 +34,6 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	private SampleService sampleService;
 	@EJB
 	private UserService userService;
-	@EJB
-	private SampleJurisdictionChecker sampleJurisdictionChecker;
 
 	@Override
 	public AdditionalTestDto getByUuid(String uuid) {
@@ -106,7 +104,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	public AdditionalTestDto convertToDto(AdditionalTest source, Pseudonymizer pseudonymizer) {
 		AdditionalTestDto dto = toDto(source);
 
-		pseudonymizer.pseudonymizeDto(AdditionalTestDto.class, dto, sampleJurisdictionChecker.isInJurisdictionOrOwned(source.getSample()), null);
+		pseudonymizer.pseudonymizeDto(AdditionalTestDto.class, dto, sampleService.inJurisdictionOrOwned(source.getSample()).getInJurisdiction(), null);
 
 		return dto;
 	}

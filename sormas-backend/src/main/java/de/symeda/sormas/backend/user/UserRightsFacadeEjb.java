@@ -15,7 +15,7 @@
 
 package de.symeda.sormas.backend.user;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;

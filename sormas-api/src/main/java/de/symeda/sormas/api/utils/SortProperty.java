@@ -17,10 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.io.Serializable;
 
 public class SortProperty implements Serializable {
 

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -9,15 +9,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
-package de.symeda.sormas.api.caze;
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+package de.symeda.sormas.app.backend.caze;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class CaseJurisdictionDto implements Serializable {
 
@@ -32,6 +33,7 @@ public class CaseJurisdictionDto implements Serializable {
 	private String communityUuid;
 	private String healthFacilityUuid;
 	private String pointOfEntryUuid;
+	private List<String> sampleLabUuids;
 
 	public CaseJurisdictionDto() {
 	}
@@ -51,32 +53,6 @@ public class CaseJurisdictionDto implements Serializable {
 		this.communityUuid = communityUuid;
 		this.healthFacilityUuid = healthFacilityUuid;
 		this.pointOfEntryUuid = pointOfEntryUuid;
-	}
-
-	public CaseJurisdictionDto(CaseDataDto caseDto) {
-		if (caseDto.getReportingUser() != null) {
-			reportingUserUuid = caseDto.getReportingUser().getUuid();
-		}
-
-		if (caseDto.hasResponsibleJurisdiction()) {
-			responsibleJurisdiction = new ResponsibleJurisdictionDto(caseDto);
-		}
-
-		if (caseDto.getRegion() != null) {
-			regionUuid = caseDto.getRegion().getUuid();
-		}
-		if (caseDto.getDistrict() != null) {
-			districtUuid = caseDto.getDistrict().getUuid();
-		}
-		if (caseDto.getCommunity() != null) {
-			communityUuid = caseDto.getCommunity().getUuid();
-		}
-		if (caseDto.getHealthFacility() != null) {
-			healthFacilityUuid = caseDto.getHealthFacility().getUuid();
-		}
-		if (caseDto.getPointOfEntry() != null) {
-			pointOfEntryUuid = caseDto.getPointOfEntry().getUuid();
-		}
 	}
 
 	public String getReportingUserUuid() {
@@ -133,5 +109,13 @@ public class CaseJurisdictionDto implements Serializable {
 
 	public void setPointOfEntryUuid(String pointOfEntryUuid) {
 		this.pointOfEntryUuid = pointOfEntryUuid;
+	}
+
+	public List<String> getSampleLabUuids() {
+		return sampleLabUuids;
+	}
+
+	public void setSampleLabUuids(List<String> sampleLabUuids) {
+		this.sampleLabUuids = sampleLabUuids;
 	}
 }

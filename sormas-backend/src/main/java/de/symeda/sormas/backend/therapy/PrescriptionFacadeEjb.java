@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -16,7 +15,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -31,21 +29,17 @@ import de.symeda.sormas.api.therapy.PrescriptionIndexDto;
 import de.symeda.sormas.api.therapy.PrescriptionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "PrescriptionFacade")
 public class PrescriptionFacadeEjb implements PrescriptionFacade {
@@ -61,8 +55,6 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	private TherapyService therapyService;
 	@EJB
 	private CaseService caseService;
-	@EJB
-	private CaseJurisdictionChecker caseJurisdictionChecker;
 
 	@Override
 	public List<PrescriptionIndexDto> getIndexList(PrescriptionCriteria criteria) {
@@ -72,23 +64,19 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		PrescriptionJoins joins = new PrescriptionJoins(prescription);
 
 		cq.multiselect(
-			Stream
-				.concat(
-					Stream.of(
-						prescription.get(Prescription.UUID),
-						prescription.get(Prescription.PRESCRIPTION_TYPE),
-						prescription.get(Prescription.PRESCRIPTION_DETAILS),
-						prescription.get(Prescription.TYPE_OF_DRUG),
-						prescription.get(Prescription.PRESCRIPTION_DATE),
-						prescription.get(Prescription.PRESCRIPTION_START),
-						prescription.get(Prescription.PRESCRIPTION_END),
-						prescription.get(Prescription.FREQUENCY),
-						prescription.get(Prescription.DOSE),
-						prescription.get(Prescription.ROUTE),
-						prescription.get(Prescription.ROUTE_DETAILS),
-						prescription.get(Prescription.PRESCRIBING_CLINICIAN)),
-					getCaseJurisdictionSelections(joins))
-				.collect(Collectors.toList()));
+			prescription.get(Prescription.UUID),
+			prescription.get(Prescription.PRESCRIPTION_TYPE),
+			prescription.get(Prescription.PRESCRIPTION_DETAILS),
+			prescription.get(Prescription.TYPE_OF_DRUG),
+			prescription.get(Prescription.PRESCRIPTION_DATE),
+			prescription.get(Prescription.PRESCRIPTION_START),
+			prescription.get(Prescription.PRESCRIPTION_END),
+			prescription.get(Prescription.FREQUENCY),
+			prescription.get(Prescription.DOSE),
+			prescription.get(Prescription.ROUTE),
+			prescription.get(Prescription.ROUTE_DETAILS),
+			prescription.get(Prescription.PRESCRIBING_CLINICIAN),
+			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
 
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, prescription));
@@ -102,7 +90,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			PrescriptionIndexDto.class,
 			indexList,
-			p -> caseJurisdictionChecker.isInJurisdictionOrOwned(p.getCaseJurisdiction()),
+			p -> p.getInJurisdiction(),
 			(p, inJurisdiction) -> {
 				pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.PrescriptionIndexType.class, p.getPrescriptionIndexType(), inJurisdiction, null);
 				pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.PrescriptionIndexRoute.class, p.getPrescriptionIndexRoute(), inJurisdiction, null);
@@ -183,26 +171,22 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		PrescriptionJoins joins = new PrescriptionJoins(prescription);
 
 		cq.multiselect(
-			Stream
-				.concat(
-					Stream.of(
-						joins.getCaze().get(Case.UUID),
-						joins.getCasePerson().get(Person.FIRST_NAME),
-						joins.getCasePerson().get(Person.LAST_NAME),
-						prescription.get(Prescription.PRESCRIPTION_DATE),
-						prescription.get(Prescription.PRESCRIPTION_START),
-						prescription.get(Prescription.PRESCRIPTION_END),
-						prescription.get(Prescription.PRESCRIBING_CLINICIAN),
-						prescription.get(Prescription.PRESCRIPTION_TYPE),
-						prescription.get(Prescription.PRESCRIPTION_DETAILS),
-						prescription.get(Prescription.TYPE_OF_DRUG),
-						prescription.get(Prescription.FREQUENCY),
-						prescription.get(Prescription.DOSE),
-						prescription.get(Prescription.ROUTE),
-						prescription.get(Prescription.ROUTE_DETAILS),
-						prescription.get(Prescription.ADDITIONAL_NOTES)),
-					getCaseJurisdictionSelections(joins))
-				.collect(Collectors.toList()));
+			joins.getCaze().get(Case.UUID),
+			joins.getCasePerson().get(Person.FIRST_NAME),
+			joins.getCasePerson().get(Person.LAST_NAME),
+			prescription.get(Prescription.PRESCRIPTION_DATE),
+			prescription.get(Prescription.PRESCRIPTION_START),
+			prescription.get(Prescription.PRESCRIPTION_END),
+			prescription.get(Prescription.PRESCRIBING_CLINICIAN),
+			prescription.get(Prescription.PRESCRIPTION_TYPE),
+			prescription.get(Prescription.PRESCRIPTION_DETAILS),
+			prescription.get(Prescription.TYPE_OF_DRUG),
+			prescription.get(Prescription.FREQUENCY),
+			prescription.get(Prescription.DOSE),
+			prescription.get(Prescription.ROUTE),
+			prescription.get(Prescription.ROUTE_DETAILS),
+			prescription.get(Prescription.ADDITIONAL_NOTES),
+			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
 
 		Predicate filter = service.createUserFilter(cb, cq, prescription);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, new CaseQueryContext(cb, cq, joins.getCaze()));
@@ -214,11 +198,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		List<PrescriptionExportDto> exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			PrescriptionExportDto.class,
-			exportList,
-			p -> caseJurisdictionChecker.isInJurisdictionOrOwned(p.getCaseJurisdiction()),
-			null);
+		pseudonymizer.pseudonymizeDtoCollection(PrescriptionExportDto.class, exportList, p -> p.getInJurisdiction(), null);
 
 		return exportList;
 	}
@@ -234,7 +214,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	private void pseudonymizeDto(Prescription source, PrescriptionDto dto, Pseudonymizer pseudonymizer) {
 		if (source != null && dto != null) {
 			pseudonymizer
-				.pseudonymizeDto(PrescriptionDto.class, dto, caseJurisdictionChecker.isInJurisdictionOrOwned(source.getTherapy().getCaze()), null);
+				.pseudonymizeDto(PrescriptionDto.class, dto, caseService.inJurisdictionOrOwned(source.getTherapy().getCaze()), null);
 		}
 	}
 
@@ -245,22 +225,8 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 				PrescriptionDto.class,
 				prescription,
 				existingPrescriptionDto,
-				caseJurisdictionChecker.isInJurisdictionOrOwned(existingPrescription.getTherapy().getCaze()));
+				caseService.inJurisdictionOrOwned(existingPrescription.getTherapy().getCaze()));
 		}
-	}
-
-	private Stream<Selection<?>> getCaseJurisdictionSelections(PrescriptionJoins joins) {
-
-		return Stream.of(
-			joins.getCaseReportingUser().get(User.UUID),
-			joins.getCaseResponsibleRegion().get(Region.UUID),
-			joins.getCaseResponsibleDistrict().get(District.UUID),
-			joins.getCaseResponsibleCommunity().get(Community.UUID),
-			joins.getCaseRegion().get(Region.UUID),
-			joins.getCaseDistrict().get(District.UUID),
-			joins.getCaseCommunity().get(Community.UUID),
-			joins.getCaseFacility().get(Facility.UUID),
-			joins.getCasePointOfEntry().get(PointOfEntry.UUID));
 	}
 
 	public static PrescriptionDto toDto(Prescription source) {

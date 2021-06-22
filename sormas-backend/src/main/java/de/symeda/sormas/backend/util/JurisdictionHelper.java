@@ -17,251 +17,18 @@ package de.symeda.sormas.backend.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
-import de.symeda.sormas.api.event.EventJurisdictionDto;
-import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
-import de.symeda.sormas.api.sample.SampleJurisdictionDto;
-import de.symeda.sormas.api.task.TaskJurisdictionDto;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.task.Task;
-import de.symeda.sormas.backend.user.User;
 
 public class JurisdictionHelper {
 
-	public static UserJurisdiction createUserJurisdiction(User user) {
-
-		UserJurisdiction jurisdiction = new UserJurisdiction();
-		jurisdiction.setUuid(user.getUuid());
-
-		if (user.getRegion() != null) {
-			jurisdiction.setRegionUuid(user.getRegion().getUuid());
-		}
-		if (user.getDistrict() != null) {
-			jurisdiction.setDistrictUuid(user.getDistrict().getUuid());
-		}
-		if (user.getCommunity() != null) {
-			jurisdiction.setCommunityUuid(user.getCommunity().getUuid());
-		}
-		if (user.getHealthFacility() != null) {
-			jurisdiction.setHealthFacilityUuid(user.getHealthFacility().getUuid());
-		}
-		if (user.getPointOfEntry() != null) {
-			jurisdiction.setPointOfEntryUuid(user.getPointOfEntry().getUuid());
-		}
-
-		if (user.getLaboratory() != null) {
-			jurisdiction.setLabUuid(user.getLaboratory().getUuid());
-		}
-
-		return jurisdiction;
-	}
-
-	public static CaseJurisdictionDto createCaseJurisdictionDto(Case caze) {
-
-		if (caze == null) {
-			return null;
-		}
-
-		CaseJurisdictionDto dto = new CaseJurisdictionDto();
-
-		if (caze.getReportingUser() != null) {
-			dto.setReportingUserUuid(caze.getReportingUser().getUuid());
-		}
-
-		dto.setResponsibleJurisdiction(
-			ResponsibleJurisdictionDto.of(caze.getResponsibleRegion(), caze.getResponsibleDistrict(), caze.getResponsibleCommunity()));
-
-		if (caze.getRegion() != null) {
-			dto.setRegionUuid(caze.getRegion().getUuid());
-		}
-		if (caze.getDistrict() != null) {
-			dto.setDistrictUuid(caze.getDistrict().getUuid());
-		}
-		if (caze.getCommunity() != null) {
-			dto.setCommunityUuid(caze.getCommunity().getUuid());
-		}
-		if (caze.getHealthFacility() != null) {
-			dto.setHealthFacilityUuid(caze.getHealthFacility().getUuid());
-		}
-		if (caze.getPointOfEntry() != null) {
-			dto.setPointOfEntryUuid(caze.getPointOfEntry().getUuid());
-		}
-
-		return dto;
-	}
-
-	public static ContactJurisdictionDto createContactJurisdictionDto(Contact contact) {
-
-		if (contact == null) {
-			return null;
-		}
-
-		ContactJurisdictionDto jurisdiction = new ContactJurisdictionDto();
-
-		if (contact.getReportingUser() != null) {
-			jurisdiction.setReportingUserUuid(contact.getReportingUser().getUuid());
-		}
-
-		if (contact.getRegion() != null) {
-			jurisdiction.setRegionUuid(contact.getRegion().getUuid());
-		}
-
-		if (contact.getDistrict() != null) {
-			jurisdiction.setDistrictUuid(contact.getDistrict().getUuid());
-		}
-
-		Case caze = contact.getCaze();
-		if (caze != null) {
-			jurisdiction.setCaseJurisdiction(createCaseJurisdictionDto(caze));
-		}
-
-		return jurisdiction;
-	}
-
-	public static EventJurisdictionDto createEventJurisdictionDto(Event event) {
-		if (event == null) {
-			return null;
-		}
-
-		Location eventLocation = event.getEventLocation();
-		if (eventLocation == null) {
-			return null;
-		}
-
-		EventJurisdictionDto eventJurisdiction = new EventJurisdictionDto();
-
-		if (event.getReportingUser() != null) {
-			eventJurisdiction.setReportingUserUuid(event.getReportingUser().getUuid());
-		}
-
-		if (event.getResponsibleUser() != null) {
-			eventJurisdiction.setResponsibleUserUuid(event.getResponsibleUser().getUuid());
-		}
-
-		if (eventLocation.getRegion() != null) {
-			eventJurisdiction.setRegionUuid(eventLocation.getRegion().getUuid());
-		}
-
-		if (eventLocation.getDistrict() != null) {
-			eventJurisdiction.setDistrictUuid(eventLocation.getDistrict().getUuid());
-		}
-
-		if (eventLocation.getCommunity() != null) {
-			eventJurisdiction.setCommunityUuid(eventLocation.getCommunity().getUuid());
-
-		}
-
-		return eventJurisdiction;
-	}
-
-	public static TaskJurisdictionDto createTaskJurisdictionDto(Task task) {
-
-		if (task == null) {
-			return null;
-		}
-
-		TaskJurisdictionDto jurisdiction = new TaskJurisdictionDto();
-
-		if (task.getCreatorUser() != null) {
-			jurisdiction.setCreatorUserUuid(task.getCreatorUser().getUuid());
-		}
-
-		if (task.getAssigneeUser() != null) {
-			jurisdiction.setAssigneeUserUuid(task.getAssigneeUser().getUuid());
-		}
-
-		Case caze = task.getCaze();
-		if (caze != null) {
-			jurisdiction.setCaseJurisdiction(createCaseJurisdictionDto(caze));
-		}
-
-		Contact contact = task.getContact();
-		if (contact != null) {
-			jurisdiction.setContactJurisdiction(createContactJurisdictionDto(contact));
-		}
-
-		Event event = task.getEvent();
-		if (event != null) {
-			jurisdiction.setEventJurisdiction(createEventJurisdictionDto(event));
-		}
-
-		return jurisdiction;
-	}
-
-	public static SampleJurisdictionDto createSampleJurisdictionDto(Sample sample) {
-
-		if (sample == null) {
-			return null;
-		}
-
-		SampleJurisdictionDto jurisdiction = new SampleJurisdictionDto();
-
-		if (sample.getReportingUser() != null) {
-			jurisdiction.setReportingUserUuid(sample.getReportingUser().getUuid());
-		}
-
-		Case caze = sample.getAssociatedCase();
-		if (caze != null) {
-			jurisdiction.setCaseJurisdiction(createCaseJurisdictionDto(caze));
-		}
-
-		Contact contact = sample.getAssociatedContact();
-		if (contact != null) {
-			jurisdiction.setContactJurisdiction(createContactJurisdictionDto(contact));
-		}
-
-		EventParticipant eventParticipant = sample.getAssociatedEventParticipant();
-		if (eventParticipant != null) {
-//			jurisdiction.setEventJurisdiction(createEventJurisdictionDto(eventParticipant.getEvent()));
-			jurisdiction.setEventParticipantJurisdiction(createEventParticipantJurisdictionDto(eventParticipant));
-		}
-
-		Facility labFacility = sample.getLab();
-		if (labFacility != null) {
-			jurisdiction.setLabUuid(sample.getLab().getUuid());
-		}
-
-		return jurisdiction;
-	}
-
-	public static EventParticipantJurisdictionDto createEventParticipantJurisdictionDto(EventParticipant eventParticipant) {
-
-		if (eventParticipant == null) {
-			return null;
-		}
-
-		EventParticipantJurisdictionDto eventParticipantJurisdiction = new EventParticipantJurisdictionDto();
-
-		eventParticipantJurisdiction.setEventParticipantUuid(eventParticipant.getUuid());
-
-		if (eventParticipant.getReportingUser() != null) {
-			eventParticipantJurisdiction.setReportingUserUuid(eventParticipant.getReportingUser().getUuid());
-		}
-
-		if (eventParticipant.getRegion() != null) {
-			eventParticipantJurisdiction.setRegionUuid(eventParticipant.getRegion().getUuid());
-		}
-
-		if (eventParticipant.getDistrict() != null) {
-			eventParticipantJurisdiction.setDistrictUuid(eventParticipant.getDistrict().getUuid());
-		}
-
-		if (eventParticipant.getEvent() != null) {
-			eventParticipantJurisdiction.setEventUuid(eventParticipant.getEvent().getUuid());
-		}
-
-		return eventParticipantJurisdiction;
+	private JurisdictionHelper() {
 	}
 
 	public static JurisdictionLevel getSuperordinateJurisdiction(JurisdictionLevel jurisdition) {
@@ -304,5 +71,9 @@ public class JurisdictionHelper {
 		}
 
 		return regions;
+	}
+
+	public static Expression<Object> jurisdictionSelector(CriteriaBuilder cb, Predicate jurisdictionPredicate) {
+		return cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false));
 	}
 }

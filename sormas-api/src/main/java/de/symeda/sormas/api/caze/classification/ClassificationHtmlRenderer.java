@@ -20,10 +20,10 @@ package de.symeda.sormas.api.caze.classification;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.CountryHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.safety.Whitelist;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
