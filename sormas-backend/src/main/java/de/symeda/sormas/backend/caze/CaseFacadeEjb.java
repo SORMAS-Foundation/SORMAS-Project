@@ -3203,7 +3203,15 @@ public class CaseFacadeEjb implements CaseFacade {
 			documentService.ensurePersisted(document);
 		}
 
-		// 7 Exposures - Make sure there are no two probable infection environments
+		// 7 Persist Event links through eventparticipants
+		Set<EventParticipant> eventParticipants = otherCase.getEventParticipants();
+		for (EventParticipant eventParticipant : eventParticipants) {
+			eventParticipant.setResultingCase(leadCase);
+			eventParticipantService.ensurePersisted(eventParticipant);
+		}
+		otherCase.getEventParticipants().clear();
+
+		// 8 Exposures - Make sure there are no two probable infection environments
 		// if there are more than 2 exposures marked as probable infection environment, find the one that originates from the otherCase and set it to false
 		// the one originating from the otherCase should always be found at the higher index
 		List<Exposure> probableExposuresList =
