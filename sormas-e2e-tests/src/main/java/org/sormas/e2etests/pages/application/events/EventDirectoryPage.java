@@ -27,6 +27,11 @@ public class EventDirectoryPage {
   public static final By APPLY_FILTER = By.id("actionApplyFilters");
   public static final By EVENT_STATUS_FILTER_BUTTONS =
       By.xpath("//*[@id='status-Signal']/span/../../..//span[@class='v-button-wrap']/span/../..");
+  public static final By EVENT_ACTIONS_RADIOBUTTON = By.cssSelector("div#eventsViewSwitcher span:nth-child(2) > label");
+  public static final By EVENT_ACTIONS_COLUMN_HEADERS =
+          By.cssSelector("thead .v-grid-column-default-header-content");
+  public static final By TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static final By TABLE_DATA = By.tagName("td");
 
   public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title='" + eventUuid + "']");
