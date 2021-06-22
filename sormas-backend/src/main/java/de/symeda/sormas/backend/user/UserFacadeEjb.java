@@ -252,13 +252,14 @@ public class UserFacadeEjb implements UserFacade {
 			if (user.getDistrict() != null) {
 				district = districtService.getByReferenceDto(user.getDistrict());
 			} else if (user.getHealthFacility() != null) {
-				district = facilityService.getByReferenceDto(user.getHealthFacility()).getDistrict();
-				community = facilityService.getByReferenceDto(user.getHealthFacility()).getCommunity();
+				Facility facility = facilityService.getByReferenceDto(user.getHealthFacility());
+				district = facility.getDistrict();
+				community = facility.getCommunity();
 				superordinateRoles.addAll(UserRole.getWithJurisdictionLevels(JurisdictionLevel.COMMUNITY));
 			}
 
 			if(district == null) {
-				superiorUsersList = new ArrayList<>();
+				superiorUsersList = null;
 			} else if (community == null){
 				superiorUsersList = userService.getReferenceList(null, Arrays.asList(district.getUuid()), null,false, false, true, superordinateRoles);
 			} else {
@@ -271,7 +272,7 @@ public class UserFacadeEjb implements UserFacade {
 			break;
 		}
 
-		return superiorUsersList == null ? new ArrayList<>() : superiorUsersList.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return superiorUsersList == null ? Collections.emptyList() : superiorUsersList.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
