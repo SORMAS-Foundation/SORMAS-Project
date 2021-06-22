@@ -143,8 +143,8 @@ task createAllureReport(type: Exec) {
 		println("[GRADLE-INFO] : Current working directory is: " + commandLine('pwd'))
 		commandLine "allure", 'generate', "${workingDirectory}/build/allure-results", '-c', '-o', "${workingDirectory}/allureReports"
 
-		def filesFromAllureReportsAfterGeneration = file("${workingDirectory}/allureReports").listFiles().length
-		println ("[GRADLE-INFO] : " + filesFromAllureReportsAfterGeneration + " files in allureReports folder")
+		//def filesFromAllureReportsAfterGeneration = file("${workingDirectory}/allureReports").listFiles().length
+		//println ("[GRADLE-INFO] : " + filesFromAllureReportsAfterGeneration + " files in allureReports folder")
 
 		println ("[GRADLE-INFO] : listing folders from project")
 		//println commandLine 'ls' "${workingDirectory}"
