@@ -3195,7 +3195,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			documentService.ensurePersisted(document);
 		}
 
-		// 7 Eventparticipants
+		// 7 Persist Event links through eventparticipants
 		Set<EventParticipant> eventParticipants = otherCase.getEventParticipants();
 		for (EventParticipant eventParticipant : eventParticipants) {
 			eventParticipant.setResultingCase(leadCase);

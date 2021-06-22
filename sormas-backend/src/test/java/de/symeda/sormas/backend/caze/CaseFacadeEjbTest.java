@@ -79,6 +79,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -1220,6 +1221,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		VisitDto otherVisit = creator.createVisit(otherCase.getDisease(), otherCase.getPerson(), otherCase.getReportDate());
 		otherVisit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(otherVisit);
+		EventDto event = creator.createEvent(otherUserReference);
+		event.setDisease(otherCase.getDisease());
+		getEventFacade().saveEvent(event);
+		EventParticipantDto otherCaseEventParticipant = creator.createEventParticipant(event.toReference(), otherPerson, otherUserReference);
+		otherCaseEventParticipant.setResultingCase(otherCaseReference);
+		getEventParticipantFacade().saveEventParticipant(otherCaseEventParticipant);
 
 		DocumentDto document = creator.createDocument(
 			leadUserReference,
@@ -1319,6 +1326,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(SymptomState.YES, mergedCase.getSymptoms().getAbdominalPain());
 		assertEquals(SymptomState.YES, mergedCase.getSymptoms().getAnorexiaAppetiteLoss());
 		assertTrue(mergedCase.getSymptoms().getSymptomatic());
+
+		// 4.8 Linked Events
+		assertEquals(1, getEventFacade().count(new EventCriteria().caze(mergedCase.toReference())));
 
 		// 5 Documents
 		List<DocumentDto> mergedDocuments = getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.CASE, leadCase.getUuid());
@@ -1937,4 +1947,3 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(changedCasesAfterUpdateCompleteness, is(0));
 	}
 }
-
