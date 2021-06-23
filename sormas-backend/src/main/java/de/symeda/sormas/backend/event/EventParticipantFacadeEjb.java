@@ -929,6 +929,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<Object, Object> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.LEFT);
 		Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
 
+		Expression<Object> jurisdictionSelector = JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(eventParticipantRoot)));
 		cq.multiselect(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),
@@ -938,7 +939,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventJoin.get(Event.EVENT_STATUS),
 			eventJoin.get(Event.EVENT_TITLE),
 			eventJoin.get(Event.START_DATE),
-			JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(eventParticipantRoot))));
+				jurisdictionSelector);
 		cq.groupBy(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),
@@ -947,7 +948,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventJoin.get(Event.UUID),
 			eventJoin.get(Event.EVENT_STATUS),
 			eventJoin.get(Event.EVENT_TITLE),
-			eventJoin.get(Event.START_DATE));
+			eventJoin.get(Event.START_DATE),
+			jurisdictionSelector);
 
 		final Predicate defaultFilter = eventParticipantService.createDefaultFilter(cb, eventParticipantRoot);
 		final Predicate userFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantRoot);
