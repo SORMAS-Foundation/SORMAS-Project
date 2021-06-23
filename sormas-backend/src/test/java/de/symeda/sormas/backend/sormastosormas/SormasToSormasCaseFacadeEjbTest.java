@@ -120,22 +120,14 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_CN));
 		options.setComment("Test comment");
 
-		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any(), Matchers.any()))
 			.thenAnswer(invocation -> {
-				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_REST_URL));
+				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ACCESS_CN));
 				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/cases"));
 
-				String authToken = invocation.getArgument(2, String.class);
-				assertThat(authToken, startsWith("Basic "));
-				String credentials = new String(Base64.getDecoder().decode(authToken.replace("Basic ", "")), StandardCharsets.UTF_8);
-				// uses password from server-list.csv from `serveraccessdefault` package
-				assertThat(credentials, is(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + SECOND_SERVER_REST_PASSWORD));
-
-				SormasToSormasEncryptedDataDto encryptedData = invocation.getArgument(3, SormasToSormasEncryptedDataDto.class);
-				assertThat(encryptedData.getOrganizationId(), is(DEFAULT_SERVER_ACCESS_CN));
-
-				SormasToSormasCaseDto[] sharedCases = decryptSharesData(encryptedData.getData(), SormasToSormasCaseDto[].class);
-				SormasToSormasCaseDto sharedCase = sharedCases[0];
+				List<SormasToSormasCaseDto> postBody = invocation.getArgument(2, List.class);
+				assertThat(postBody.size(), is(1));
+				SormasToSormasCaseDto sharedCase = postBody.get(0);
 
 				assertThat(sharedCase.getPerson().getFirstName(), is(person.getFirstName()));
 				assertThat(sharedCase.getPerson().getLastName(), is(person.getLastName()));
