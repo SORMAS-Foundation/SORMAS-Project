@@ -358,6 +358,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					.or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), currentUser.getDistrict()));
 			}
 			break;
+		case COMMUNITY:
+			if (currentUser.getCommunity() != null) {
+				filter = CriteriaBuilderHelper
+						.or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.COMMUNITY), currentUser.getCommunity()));
+			}
+			break;
 		case HEALTH_FACILITY:
 			if (currentUser.getHealthFacility() != null && currentUser.getHealthFacility().getDistrict() != null) {
 				filter = CriteriaBuilderHelper.or(
