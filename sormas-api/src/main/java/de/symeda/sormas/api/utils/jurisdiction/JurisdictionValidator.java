@@ -48,7 +48,9 @@ public abstract class JurisdictionValidator<T> {
 			final List<T> jurisdictionTypes = new ArrayList<>();
 			jurisdictionTypes.add(isInJurisdiction());
 			for (JurisdictionValidator<T> jurisdictionValidator : associatedJurisdictionValidators) {
-				jurisdictionTypes.add(jurisdictionValidator.isInJurisdiction());
+				if (jurisdictionValidator != null) {
+					jurisdictionTypes.add(jurisdictionValidator.isInJurisdiction());
+				}
 			}
 			return or(jurisdictionTypes);
 		} else {
