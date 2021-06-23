@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -59,12 +60,13 @@ public class ChromeDriverFactory implements DriverFactory {
       log.info("Trying to start ChromeDriver with 90 <<<<<<<<<<<< CHROME INFO");
       WebDriverManager.chromedriver().driverVersion("90").setup();
     } finally {
-      WebDriverManager.chromedriver().setup();
+      WebDriverManager.iedriver().setup();
+     /* WebDriverManager.chromedriver().setup();
       log.info(
-          "Starting ChromeDriver with webdrivermanager provided version  <<<<<<<<<<<<<<<<<<<<<<<<<<<< CHROME INFO");
+          "Starting ChromeDriver with webdrivermanager provided version  <<<<<<<<<<<<<<<<<<<<<<<<<<<< CHROME INFO");*/
     }
 
-    System.setProperty("webdriver.chrome.silentOutput", "true");
+    /*System.setProperty("webdriver.chrome.silentOutput", "true");
     System.setProperty("javascript.enabled", "true");
     final HashMap<String, Object> chromePreferences = new HashMap<>();
     chromePreferences.put("profile.password_manager_enabled", Boolean.FALSE);
@@ -77,6 +79,7 @@ public class ChromeDriverFactory implements DriverFactory {
     options.setExperimentalOption("prefs", chromePreferences);
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
     options.setCapability(SUPPORTS_ALERTS, false);
-    return new ChromeDriver(options);
+    return new ChromeDriver(options);*/
+    return new InternetExplorerDriver();
   }
 }
