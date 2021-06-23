@@ -168,7 +168,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 303;
+	public static final int DATABASE_VERSION = 304;
 
 	private static DatabaseHelper instance = null;
 
@@ -2588,6 +2588,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN internalToken text;");
 					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN internalToken text;");
 					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN internalToken text;");
+
+				case 303:
+					currentVersion = 303;
+					getDao(Case.class).executeRaw("UPDATE cases" +
+							" SET responsibleRegion_id = region_id," +
+							" responsibleDistrict_id = district_id," +
+							" responsibleCommunity_id = community_id," +
+							" region_id = null," +
+							" district_id = null," +
+							" community_id = null," +
+							" reportingDistrict_id = null"+
+							" WHERE responsibleRegion_id IS NULL AND (reportingDistrict_id IS NULL OR reportingDistrict_id = district_id)");
+
+					getDao(Case.class).executeRaw("UPDATE cases" +
+							" SET responsibleregion_id = (SELECT region_id from district where id = cases.reportingDistrict_id)," +
+							" responsibleDistrict_id = reportingDistrict_id," +
+							" reportingDistrict_id = null"+
+							" WHERE responsibleRegion_id IS NULL AND reportingDistrict_id IS NOT NULL");
 
 				// ATTENTION: break should only be done after last version
 				break;
