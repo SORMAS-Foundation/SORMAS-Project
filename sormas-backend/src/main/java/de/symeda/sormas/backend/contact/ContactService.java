@@ -1351,8 +1351,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, ContactJoins joins) {
-		return Arrays.asList(JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
-				JurisdictionHelper.jurisdictionSelector(
+		return Arrays.asList(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(cb, joins)),
+				JurisdictionHelper.booleanSelector(
 						cb,
 						cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))));
 	}

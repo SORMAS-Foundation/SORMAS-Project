@@ -300,7 +300,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				caze.get(Case.REPORT_LON),
 				joins.getPersonAddress().get(Location.LATITUDE),
 				joins.getPersonAddress().get(Location.LONGITUDE),
-				JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)));
+				JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(cb, joins)));
 
 			result = em.createQuery(cq).getResultList();
 		} else {

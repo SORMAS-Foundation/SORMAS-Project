@@ -49,7 +49,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 
 	private Vaccination vaccination;
 
-	private boolean isInJurisdiction;
+	private boolean isInJurisdictionOrOwned;
 
 	public EventParticipantIndexDto(
 		String uuid,
@@ -66,7 +66,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		Date sampleDateTime,
 		Vaccination vaccination,
 		String reportingUserUuid,
-		boolean isInJurisdiction) {
+		boolean isInJurisdictionOrOwned) {
 
 		this.uuid = uuid;
 		this.personUuid = personUuid;
@@ -80,7 +80,7 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		this.pathogenTestResult = pathogenTestResult;
 		this.sampleDateTime = sampleDateTime;
 		this.vaccination = vaccination;
-		this.isInJurisdiction = isInJurisdiction;
+		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
 	}
 
 	public String getUuid() {
@@ -187,8 +187,8 @@ public class EventParticipantIndexDto extends PseudonymizableIndexDto implements
 		this.vaccination = vaccination;
 	}
 
-	public boolean getInJurisdiction() {
-		return isInJurisdiction;
+	public boolean getInJurisdictionOrOwned() {
+		return isInJurisdictionOrOwned;
 	}
 
 	public EventParticipantReferenceDto toReference() {
