@@ -95,6 +95,8 @@ task createReportFolderIfNotExist() {
 tasks.register('startTests') {
 	doLast {
 		println 'Starting the test cases'
+		println("Printing existent applications to check which browser is installed on CentOS")
+		println (commandLine "rpm -qa" )
 	}
 }
 
