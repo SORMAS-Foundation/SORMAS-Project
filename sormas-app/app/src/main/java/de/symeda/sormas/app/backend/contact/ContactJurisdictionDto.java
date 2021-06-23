@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -9,17 +9,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
-package de.symeda.sormas.api.contact;
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+package de.symeda.sormas.app.backend.contact;
 
 import java.io.Serializable;
+import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.app.backend.caze.CaseJurisdictionDto;
+
 
 public class ContactJurisdictionDto implements Serializable {
 
@@ -38,6 +40,8 @@ public class ContactJurisdictionDto implements Serializable {
 	private String districtUuid;
 
 	private String communityUuid;
+
+	private List<String> sampleLabUuids;
 
 	private CaseJurisdictionDto caseJurisdiction;
 
@@ -97,5 +101,13 @@ public class ContactJurisdictionDto implements Serializable {
 
 	public void setCaseJurisdiction(CaseJurisdictionDto caseJurisdiction) {
 		this.caseJurisdiction = caseJurisdiction;
+	}
+
+	public List<String> getSampleLabUuids() {
+		return sampleLabUuids;
+	}
+
+	public void setSampleLabUuids(List<String> sampleLabUuids) {
+		this.sampleLabUuids = sampleLabUuids;
 	}
 }

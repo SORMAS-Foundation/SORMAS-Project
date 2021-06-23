@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import de.symeda.sormas.api.AgeGroup;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

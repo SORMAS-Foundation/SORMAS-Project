@@ -78,24 +78,24 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	public CaseIndexDetailedDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken, String personFirstName, String personLastName,
 								Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 								PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate,
-								String regionUuid, String districtUuid, String districtName, String communityUuid,
+								String regionUuid, String districtUuid, String districtName,
 								String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 								String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
 								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Vaccination vaccination, Date changeDate, Long facilityId,
 								// responsible jurisdiction
-								String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid,
+								String responsibleRegionUuid, String responsibleDistrictUuid, boolean isInJurisdiction,
 								YesNoUnknown reInfection, String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
 								String responsibleRegion, String responsibleDistrict, String responsibleCommunity,
 								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
 
 		super(id, uuid, epidNumber, externalID, externalToken, internalToken, personFirstName, personLastName, disease, diseaseVariant, diseaseDetails, caseClassification, investigationStatus,
-				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid, districtUuid, districtName, communityUuid,
+				presentCondition, reportDate, creationDate, regionUuid, districtUuid, districtName,
 				healthFacilityUuid, healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,
 				quarantineTo, completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccination, changeDate, facilityId,
-				responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid,
+				responsibleRegionUuid, responsibleDistrictUuid, isInJurisdiction,
 				visitCount);
 		//@formatter:on
 

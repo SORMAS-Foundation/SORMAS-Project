@@ -3,8 +3,6 @@ package de.symeda.sormas.api.clinicalcourse;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -35,7 +33,7 @@ public class ClinicalVisitIndexDto implements Serializable {
 	private Integer signsAndSymptomsCount;
 	private Long symptomsId;
 
-	private CaseJurisdictionDto caseJurisdiction;
+	private Boolean isInJurisdiction;
 
 	public ClinicalVisitIndexDto(
 		String uuid,
@@ -48,15 +46,7 @@ public class ClinicalVisitIndexDto implements Serializable {
 		Integer bloodPressureDiastolic,
 		Integer heartRate,
 		Long symptomsId,
-		String caseReportingUserUuid,
-		String caseResponsibleRegionUuid,
-		String caseResponsibleDistrictUid,
-		String caseResponsibleCommunityUid,
-		String caseRegionUuid,
-		String caseDistrictUuid,
-		String caseCommunityUuid,
-		String caseHealthFacilityUuid,
-		String casePointOfEntryUuid) {
+		boolean isInJurisdiction) {
 
 		this.uuid = uuid;
 		this.visitDateTime = visitDateTime;
@@ -66,15 +56,7 @@ public class ClinicalVisitIndexDto implements Serializable {
 		this.bloodPressure = SymptomsHelper.getBloodPressureString(bloodPressureSystolic, bloodPressureDiastolic);
 		this.heartRate = heartRate != null ? SymptomsHelper.getHeartRateString(heartRate) : "";
 		this.symptomsId = symptomsId;
-
-		this.caseJurisdiction = new CaseJurisdictionDto(
-			caseReportingUserUuid,
-			ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
-			caseRegionUuid,
-			caseDistrictUuid,
-			caseCommunityUuid,
-			caseHealthFacilityUuid,
-			casePointOfEntryUuid);
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -149,7 +131,7 @@ public class ClinicalVisitIndexDto implements Serializable {
 		this.symptomsId = symptomsId;
 	}
 
-	public CaseJurisdictionDto getCaseJurisdiction() {
-		return caseJurisdiction;
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 }

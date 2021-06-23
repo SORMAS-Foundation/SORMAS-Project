@@ -19,11 +19,7 @@ import java.util.function.Function;
 
 import com.vaadin.ui.StyleGenerator;
 
-import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizable;
 
 public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
@@ -69,43 +65,5 @@ public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
 		}
 
 		return "";
-	}
-
-	public static <J> boolean callJurisdictionChecker(JurisdictionChecker<J> jurisdictionChecker, UserDto currentUser, J jurisdictionDto) {
-		return jurisdictionChecker
-			.isInJurisdiction(UserRole.getJurisdictionLevel(currentUser.getUserRoles()), createUserJurisdiction(currentUser), jurisdictionDto);
-	}
-
-	private static UserJurisdiction createUserJurisdiction(UserDto user) {
-
-		UserJurisdiction jurisdiction = new UserJurisdiction();
-		jurisdiction.setUuid(user.getUuid());
-
-		if (user.getRegion() != null) {
-			jurisdiction.setRegionUuid(user.getRegion().getUuid());
-		}
-		if (user.getDistrict() != null) {
-			jurisdiction.setDistrictUuid(user.getDistrict().getUuid());
-		}
-		if (user.getCommunity() != null) {
-			jurisdiction.setCommunityUuid(user.getCommunity().getUuid());
-		}
-		if (user.getHealthFacility() != null) {
-			jurisdiction.setHealthFacilityUuid(user.getHealthFacility().getUuid());
-		}
-		if (user.getPointOfEntry() != null) {
-			jurisdiction.setPointOfEntryUuid(user.getPointOfEntry().getUuid());
-		}
-
-		if (user.getLaboratory() != null) {
-			jurisdiction.setLabUuid(user.getLaboratory().getUuid());
-		}
-
-		return jurisdiction;
-	}
-
-	public interface JurisdictionChecker<J> {
-
-		boolean isInJurisdiction(JurisdictionLevel jurisdictionLevel, UserJurisdiction userJurisdiction, J jurisdiction);
 	}
 }

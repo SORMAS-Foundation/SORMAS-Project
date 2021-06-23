@@ -1,10 +1,9 @@
 package de.symeda.sormas.api.systemevents;
 
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.utils.DataHelper;
-
 import java.util.Date;
+
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class SystemEventDto extends EntityDto {
 
