@@ -90,6 +90,20 @@ task createReportFolderIfNotExist() {
 		println("[GRADLE-INFO] : allureReports folder was created !")
 		println file("allureReports").isDirectory()
 	}
+
+	println("Printing existent applications to check which browser is installed on CentOS")
+	doLast {
+		new ByteArrayOutputStream().withStream { os ->
+			def result = exec {
+				executable = 'rpm -qa | less'
+				standardOutput = os
+			}
+			println(os.toString())
+		}
+	}
+
+
+
 }
 
 tasks.register('startTests') {
@@ -138,10 +152,6 @@ task createAllureReport(type: Exec) {
 	if (isWindows) {
 		commandLine 'cmd', '/c', 'allure.bat', 'generate', "${workingDirectory}/build/allure-results", '-c', '-o', "${workingDirectory}/allureReports"
 	} else {
-
-		println("Printing existent applications to check which browser is installed on CentOS")
-		def printresults = commandLine "rpm" , "-qa"
-		println ( printresults)
 
 		println("[GRADLE-INFO] : Running command to generate allure reports")
 
