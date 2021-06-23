@@ -99,6 +99,18 @@ Feature: Create events
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
 
+    @#5720
+  Scenario: Add a New action for an Event and verify the Action in EventActions table
+      Given I log in with the user
+      Given API: I create a new event
+      Then I navigate to Event Action tab for created Event
+      And I click on New Action from Event Actions tab
+      And I create New Action from event tab
+      Then I click on the Events button from navbar
+      And I click on the Actions button from Events view switcher
+      When I search last created Event by API using EVENT UUID and wait for 1 entries in the table
+
+
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
     Given I log in with the user
