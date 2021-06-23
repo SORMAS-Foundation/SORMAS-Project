@@ -298,8 +298,6 @@ public class CaseExportDto implements Serializable {
 	private String birthCountry;
 	private String citizenship;
 
-	private String reportingDistrict;
-
 	private String responsibleRegion;
 	private String responsibleDistrict;
 	private String responsibleCommunity;
@@ -311,8 +309,8 @@ public class CaseExportDto implements Serializable {
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
 						 Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
 						 Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM,
-						 Integer birthdateYYYY, Date reportDate, String reportingUserUuid, String regionUuid, String region,
-						 String districtUuid, String district, String communityUuid, String community,
+						 Integer birthdateYYYY, Date reportDate,
+						 String region, String district, String community,
 						 FacilityType facilityType, String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
 						 String pointOfEntryUuid, String pointOfEntryDetails, CaseClassification caseClassification,
 						 YesNoUnknown clinicalConfirmation, YesNoUnknown epidemiologicalConfirmation, YesNoUnknown laboratoryDiagnosticConfirmation,
@@ -341,7 +339,7 @@ public class CaseExportDto implements Serializable {
 						 YesNoUnknown postpartum, Trimester trimester,
 						 long eventCount, String externalID, String externalToken, String internalToken,
 						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
-						 String reportingDistrict, CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType,
+						 CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType,
 						 // responsible jurisdiction
 						 String responsibleRegion, String responsibleDistrict, String responsibleCommunity,  boolean isInJurisdiction
 						 ) {
@@ -460,7 +458,6 @@ public class CaseExportDto implements Serializable {
 		this.birthName = birthName;
 		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
 		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
-		this.reportingDistrict = reportingDistrict;
 		this.caseIdentificationSource = caseIdentificationSource;
 		this.screeningType = screeningType;
 
@@ -1975,17 +1972,6 @@ public class CaseExportDto implements Serializable {
 	@HideForCountriesExcept
 	public String getCitizenship() {
 		return citizenship;
-	}
-
-	@Order(163)
-	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE,
-		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(CaseDataDto.REPORTING_DISTRICT)
-	@ExportGroup(ExportGroupType.ADDITIONAL)
-	@HideForCountriesExcept
-	public String getReportingDistrict() {
-		return reportingDistrict;
 	}
 
 	@Order(164)
