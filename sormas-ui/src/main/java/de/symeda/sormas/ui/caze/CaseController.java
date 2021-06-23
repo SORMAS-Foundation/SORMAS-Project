@@ -1522,8 +1522,8 @@ public class CaseController {
 			CaseDataDto newCase = CaseDataDto.build(PersonDto.build().toReference(), caseLineDto.getDisease());
 
 			newCase.setDiseaseDetails(caseLineDto.getDiseaseDetails());
-			newCase.setRegion(caseLineDto.getRegion());
-			newCase.setDistrict(caseLineDto.getDistrict());
+			newCase.setResponsibleRegion(caseLineDto.getRegion());
+			newCase.setResponsibleDistrict(caseLineDto.getDistrict());
 			newCase.setReportDate(DateHelper8.toDate(caseLineDto.getDateOfReport()));
 			newCase.setEpidNumber(caseLineDto.getEpidNumber());
 			newCase.setCommunity(caseLineDto.getCommunity());
