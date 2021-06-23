@@ -38,6 +38,7 @@ import de.aleri.labcertificategenerator.Generator;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.labcertificate.LabCertificateDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.AdvancedFileDownloader;
 import org.apache.commons.lang3.StringUtils;
@@ -102,14 +103,14 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			loc(TaskDto.TASK_CONTEXT),
 			locs(TaskDto.CAZE, TaskDto.EVENT, TaskDto.CONTACT)) +
 			fluidRowLocs(TaskDto.TASK_TYPE) +
-			fluidRowLocs(TaskDto.PAYER_NUMBER, TaskDto.OPERATING_FACILITY_NUMBER, TaskDto.DOCTOR_NUMBER, TaskDto.SPECIAL_AGREEMENT_CODE, TaskDto.LAB_NUMBER) +
-			fluidRowLocs(TaskDto.TEST_V, TaskDto.SELF_PAYING, TaskDto.SPECIAL_AGREEMENT) +
-			fluidRowLocs(TaskDto.FIRST_TEST, TaskDto.NEXT_TEST, "empty") +
-			fluidRowLocs(TaskDto.CONTACT_PERSON, TaskDto.OUTBREAK, TaskDto.OUTBREAK_PREVENTION) +
-			fluidRowLocs(TaskDto.CORONA_APP) +
-			fluidRowLocs(TaskDto.LIVING_IN_FACILITY, TaskDto.MEDICAL_FACILITY, TaskDto.CARE_FACILITY) +
-			fluidRowLocs(TaskDto.WORKING_IN_FACILITY, TaskDto.COM_FACILITY, TaskDto.OTHER_FACILITY) +
-			fluidRowLocs(TaskDto.AGREED_TO_GDPR) +
+			fluidRowLocs(LabCertificateDto.PAYER_NUMBER, LabCertificateDto.OPERATING_FACILITY_NUMBER, LabCertificateDto.DOCTOR_NUMBER, LabCertificateDto.SPECIAL_AGREEMENT_CODE, LabCertificateDto.LAB_NUMBER) +
+			fluidRowLocs(LabCertificateDto.TEST_V, LabCertificateDto.SELF_PAYING, LabCertificateDto.SPECIAL_AGREEMENT) +
+			fluidRowLocs(LabCertificateDto.FIRST_TEST, LabCertificateDto.NEXT_TEST, "empty") +
+			fluidRowLocs(LabCertificateDto.CONTACT_PERSON, LabCertificateDto.OUTBREAK, LabCertificateDto.OUTBREAK_PREVENTION) +
+			fluidRowLocs(LabCertificateDto.CORONA_APP) +
+			fluidRowLocs(LabCertificateDto.LIVING_IN_FACILITY, LabCertificateDto.MEDICAL_FACILITY, LabCertificateDto.CARE_FACILITY) +
+			fluidRowLocs(LabCertificateDto.WORKING_IN_FACILITY, LabCertificateDto.COM_FACILITY, LabCertificateDto.OTHER_FACILITY) +
+			fluidRowLocs(LabCertificateDto.AGREED_TO_GDPR) +
 			fluidRowLocs(HEALTH_DEPARTMENTS, GENERATE_BTN) +
 			fluidRowLocs(TaskDto.SUGGESTED_START, TaskDto.DUE_DATE) +
 			fluidRowLocs(TaskDto.ASSIGNEE_USER, TaskDto.PRIORITY) +
@@ -117,7 +118,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			fluidRowLocs(TaskDto.CREATOR_COMMENT) +
 			fluidRowLocs(TaskDto.ASSIGNEE_REPLY) +
 			fluidRowLocs(TaskDto.TASK_STATUS) +
-			fluidRowLocs(TaskDto.LABCERTIFICATEGUID) +
+			fluidRowLocs(LabCertificateDto.LABCERTIFICATEGUID) +
 			fluidRowLocs(SAVE_INFO);
 	//@formatter:on
 
@@ -169,12 +170,12 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			this.updateOnTaskTypeChange(taskType);
 		});
 
-		labornachweisField = addField(TaskDto.LABCERTIFICATEGUID, TextField.class);
+		labornachweisField = addField(LabCertificateDto.LABCERTIFICATEGUID, TextField.class);
 
 		labornachweisField.setCaption("Labornachweis GUID");
 		labornachweisField.setWidth(100, Unit.PERCENTAGE);
 
-		setVisible(false, TaskDto.LABCERTIFICATEGUID);
+		setVisible(false, LabCertificateDto.LABCERTIFICATEGUID);
 
 		generateLayout = new HorizontalLayout();
 		getContent().addComponent(generateLayout, GENERATE_BTN);
@@ -197,7 +198,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		this.healthDepartments.addValueChangeListener(e -> {
 			if(getValue() != null) {
 				FacilityReferenceDto facilityReferenceDto = (FacilityReferenceDto) e.getProperty().getValue();
-				getValue().setHealthDepartment(facilityReferenceDto);
+				getValue().getLabCertificateDto().setHealthDepartment(facilityReferenceDto);
 			}
 		});
 
@@ -374,86 +375,86 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	}
 
 	private void createLabDocFields(){
-		TextField payerNumber = createAndBindField(TaskDto.PAYER_NUMBER, TextField.class, I18nProperties.getCaption(Captions.Task_payerId));
+		TextField payerNumber = createAndBindField(LabCertificateDto.PAYER_NUMBER, TextField.class, I18nProperties.getCaption(Captions.Task_payerId));
 
-		TextField betriebsstaettenNumber = createAndBindField(TaskDto.OPERATING_FACILITY_NUMBER, TextField.class, I18nProperties.getCaption(Captions.Task_establishmentId));
+		TextField betriebsstaettenNumber = createAndBindField(LabCertificateDto.OPERATING_FACILITY_NUMBER, TextField.class, I18nProperties.getCaption(Captions.Task_establishmentId));
 
-		TextField doctorNumber = createAndBindField(TaskDto.DOCTOR_NUMBER, TextField.class, I18nProperties.getCaption(Captions.Task_drId));
+		TextField doctorNumber = createAndBindField(LabCertificateDto.DOCTOR_NUMBER, TextField.class, I18nProperties.getCaption(Captions.Task_drId));
 
-		TextField specialAgreementCode = createAndBindField(TaskDto.SPECIAL_AGREEMENT_CODE, TextField.class, I18nProperties.getCaption(Captions.Task_kvSpecialNumber));
+		TextField specialAgreementCode = createAndBindField(LabCertificateDto.SPECIAL_AGREEMENT_CODE, TextField.class, I18nProperties.getCaption(Captions.Task_kvSpecialNumber));
 
-		TextField labNr = createAndBindField(TaskDto.LAB_NUMBER, TextField.class, I18nProperties.getCaption(Captions.Task_labId));
+		TextField labNr = createAndBindField(LabCertificateDto.LAB_NUMBER, TextField.class, I18nProperties.getCaption(Captions.Task_labId));
 
-		testV = createAndBindField(TaskDto.TEST_V, CheckBox.class, I18nProperties.getCaption(Captions.Task_testV));
+		testV = createAndBindField(LabCertificateDto.TEST_V, CheckBox.class, I18nProperties.getCaption(Captions.Task_testV));
 
-		CheckBox selfPaying = addField(TaskDto.SELF_PAYING, CheckBox.class);
+		CheckBox selfPaying = addField(LabCertificateDto.SELF_PAYING, CheckBox.class);
 		selfPaying.setCaption(I18nProperties.getCaption(Captions.Task_selfPaying));
 
-		CheckBox specialAgreement = addField(TaskDto.SPECIAL_AGREEMENT, CheckBox.class);
+		CheckBox specialAgreement = addField(LabCertificateDto.SPECIAL_AGREEMENT, CheckBox.class);
 		specialAgreement.setCaption(I18nProperties.getCaption(Captions.Task_specialAgreement));
 
-		CheckBox firstTest = addField(TaskDto.FIRST_TEST, CheckBox.class);
+		CheckBox firstTest = addField(LabCertificateDto.FIRST_TEST, CheckBox.class);
 		firstTest.setCaption(I18nProperties.getCaption(Captions.Task_firstTest));
 
-		CheckBox nextTest = addField(TaskDto.NEXT_TEST, CheckBox.class);
+		CheckBox nextTest = addField(LabCertificateDto.NEXT_TEST, CheckBox.class);
 		nextTest.setCaption(I18nProperties.getCaption(Captions.Task_nextTest));
 
-		CheckBox contactPerson = addField(TaskDto.CONTACT_PERSON, CheckBox.class);
+		CheckBox contactPerson = addField(LabCertificateDto.CONTACT_PERSON, CheckBox.class);
 		contactPerson.setCaption(I18nProperties.getCaption(Captions.Task_contactPerson));
 
-		CheckBox outbreak = addField(TaskDto.OUTBREAK, CheckBox.class);
+		CheckBox outbreak = addField(LabCertificateDto.OUTBREAK, CheckBox.class);
 		outbreak.setCaption(I18nProperties.getCaption(Captions.Task_outbreak));
 
-		CheckBox outbreakPrevention = addField(TaskDto.OUTBREAK_PREVENTION, CheckBox.class);
+		CheckBox outbreakPrevention = addField(LabCertificateDto.OUTBREAK_PREVENTION, CheckBox.class);
 		outbreakPrevention.setCaption(I18nProperties.getCaption(Captions.Task_outbreakPrevention));
 
-		CheckBox coronaApp = addField(TaskDto.CORONA_APP, CheckBox.class);
+		CheckBox coronaApp = addField(LabCertificateDto.CORONA_APP, CheckBox.class);
 		coronaApp.setCaption(I18nProperties.getCaption(Captions.Task_coronaApp));
 
-		CheckBox livingInFacility = addField(TaskDto.LIVING_IN_FACILITY, CheckBox.class);
+		CheckBox livingInFacility = addField(LabCertificateDto.LIVING_IN_FACILITY, CheckBox.class);
 		livingInFacility.setCaption(I18nProperties.getCaption(Captions.Task_livingInFacility));
 
-		CheckBox workingInFacility = addField(TaskDto.WORKING_IN_FACILITY, CheckBox.class);
+		CheckBox workingInFacility = addField(LabCertificateDto.WORKING_IN_FACILITY, CheckBox.class);
 		workingInFacility.setCaption(I18nProperties.getCaption(Captions.Task_workingInFacility));
 
-		CheckBox medicalFacility = addField(TaskDto.MEDICAL_FACILITY, CheckBox.class);
+		CheckBox medicalFacility = addField(LabCertificateDto.MEDICAL_FACILITY, CheckBox.class);
 		medicalFacility.setCaption(I18nProperties.getCaption(Captions.Task_medicalFacility));
 
-		CheckBox comFacility = addField(TaskDto.COM_FACILITY, CheckBox.class);
+		CheckBox comFacility = addField(LabCertificateDto.COM_FACILITY, CheckBox.class);
 		comFacility.setCaption(I18nProperties.getCaption(Captions.Task_comFacility));
 
-		CheckBox careFacility = addField(TaskDto.CARE_FACILITY, CheckBox.class);
+		CheckBox careFacility = addField(LabCertificateDto.CARE_FACILITY, CheckBox.class);
 		careFacility.setCaption(I18nProperties.getCaption(Captions.Task_careFacility));
 
-		CheckBox otherFacility = addField(TaskDto.OTHER_FACILITY, CheckBox.class);
+		CheckBox otherFacility = addField(LabCertificateDto.OTHER_FACILITY, CheckBox.class);
 		otherFacility.setCaption(I18nProperties.getCaption(Captions.Task_otherFacility));
 
-		CheckBox agreedToGdpr = addField(TaskDto.AGREED_TO_GDPR, CheckBox.class);
+		CheckBox agreedToGdpr = addField(LabCertificateDto.AGREED_TO_GDPR, CheckBox.class);
 		agreedToGdpr.setCaption(I18nProperties.getCaption(Captions.Task_agreedToGdpr));
 
 		payerNumber.addValueChangeListener(e -> {
-			getValue().setPayerNumber(payerNumber.getValue());
+			getValue().getLabCertificateDto().setPayerNumber(payerNumber.getValue());
 		});
 
 		betriebsstaettenNumber.addValueChangeListener(e -> {
-			getValue().setOperatingFacilityNumber(betriebsstaettenNumber.getValue());
+			getValue().getLabCertificateDto().setOperatingFacilityNumber(betriebsstaettenNumber.getValue());
 		});
 
 
 		doctorNumber.addValueChangeListener(e -> {
-			getValue().setDoctorNumber(doctorNumber.getValue());
+			getValue().getLabCertificateDto().setDoctorNumber(doctorNumber.getValue());
 		});
 
 		specialAgreementCode.addValueChangeListener(e -> {
-			getValue().setSpecialAgreementCode(specialAgreementCode.getValue());
+			getValue().getLabCertificateDto().setSpecialAgreementCode(specialAgreementCode.getValue());
 		});
 
 		labNr.addValueChangeListener(e -> {
-			getValue().setLabNumber(labNr.getValue());
+			getValue().getLabCertificateDto().setLabNumber(labNr.getValue());
 		});
 
 		testV.addValueChangeListener(e -> {
-			getValue().setTestV(testV.getValue());
+			getValue().getLabCertificateDto().setTestV(testV.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 				selfPaying.setValue(false);
@@ -462,7 +463,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		selfPaying.addValueChangeListener(e -> {
-			getValue().setSelfPaying(selfPaying.getValue());
+			getValue().getLabCertificateDto().setSelfPaying(selfPaying.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 				testV.setValue(false);
@@ -471,7 +472,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		specialAgreement.addValueChangeListener(e -> {
-			getValue().setSpecialAgreement(specialAgreement.getValue());
+			getValue().getLabCertificateDto().setSpecialAgreement(specialAgreement.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 				selfPaying.setValue(false);
@@ -486,7 +487,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		firstTest.addValueChangeListener(e -> {
-			getValue().setFirstTest(firstTest.getValue());
+			getValue().getLabCertificateDto().setFirstTest(firstTest.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 				nextTest.setValue(false);
@@ -494,7 +495,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		nextTest.addValueChangeListener(e -> {
-			getValue().setNextTest(nextTest.getValue());
+			getValue().getLabCertificateDto().setNextTest(nextTest.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 				firstTest.setValue(false);
@@ -502,7 +503,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		contactPerson.addValueChangeListener(e -> {
-			getValue().setContactPerson(contactPerson.getValue());
+			getValue().getLabCertificateDto().setContactPerson(contactPerson.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 				outbreak.setValue(false);
@@ -512,7 +513,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		outbreak.addValueChangeListener(e -> {
-			getValue().setOutbreak(outbreak.getValue());
+			getValue().getLabCertificateDto().setOutbreak(outbreak.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 				contactPerson.setValue(false);
@@ -522,7 +523,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		outbreakPrevention.addValueChangeListener(e -> {
-			getValue().setOutbreakPrevention(outbreakPrevention.getValue());
+			getValue().getLabCertificateDto().setOutbreakPrevention(outbreakPrevention.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 				outbreak.setValue(false);
@@ -532,7 +533,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		coronaApp.addValueChangeListener(e -> {
-			getValue().setCoronaApp(coronaApp.getValue());
+			getValue().getLabCertificateDto().setCoronaApp(coronaApp.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 				outbreak.setValue(false);
@@ -542,7 +543,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		livingInFacility.addValueChangeListener(e -> {
-			getValue().setLivingInFacility(livingInFacility.getValue());
+			getValue().getLabCertificateDto().setLivingInFacility(livingInFacility.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 				workingInFacility.setValue(false);
@@ -550,14 +551,14 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		workingInFacility.addValueChangeListener(e -> {
-			getValue().setWorkingInFacility(workingInFacility.getValue());
+			getValue().getLabCertificateDto().setWorkingInFacility(workingInFacility.getValue());
 			if((boolean) e.getProperty().getValue()){
 				livingInFacility.setValue(false);
 			}
 		});
 
 		medicalFacility.addValueChangeListener(e -> {
-			getValue().setMedicalFacility(medicalFacility.getValue());
+			getValue().getLabCertificateDto().setMedicalFacility(medicalFacility.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 			 	comFacility.setValue(false);
@@ -567,7 +568,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		comFacility.addValueChangeListener(e -> {
-			getValue().setCommunityFacility(comFacility.getValue());
+			getValue().getLabCertificateDto().setCommunityFacility(comFacility.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 				medicalFacility.setValue(false);
@@ -577,7 +578,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		careFacility.addValueChangeListener(e -> {
-			getValue().setCareFacility(careFacility.getValue());
+			getValue().getLabCertificateDto().setCareFacility(careFacility.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 				comFacility.setValue(false);
@@ -587,7 +588,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		otherFacility.addValueChangeListener(e -> {
-			getValue().setOtherFacility(otherFacility.getValue());
+			getValue().getLabCertificateDto().setOtherFacility(otherFacility.getValue());
 
 			if((boolean) e.getProperty().getValue()){
 				comFacility.setValue(false);
@@ -597,15 +598,15 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		});
 
 		agreedToGdpr.addValueChangeListener(e -> {
-			getValue().setAgreedToGdpr(agreedToGdpr.getValue());
+			getValue().getLabCertificateDto().setAgreedToGdpr(agreedToGdpr.getValue());
 		});
 
-		setVisible(false, TaskDto.LABCERTIFICATEGUID,
-				TaskDto.AGREED_TO_GDPR, TaskDto.OPERATING_FACILITY_NUMBER, TaskDto.CARE_FACILITY, TaskDto.COM_FACILITY,
-				TaskDto.CONTACT_PERSON, TaskDto.CORONA_APP, TaskDto.DOCTOR_NUMBER, TaskDto.FIRST_TEST, TaskDto.LAB_NUMBER,
-				TaskDto.LIVING_IN_FACILITY, TaskDto.MEDICAL_FACILITY, TaskDto.NEXT_TEST, TaskDto.OTHER_FACILITY,
-				TaskDto.OUTBREAK, TaskDto.OUTBREAK_PREVENTION, TaskDto.PAYER_NUMBER, TaskDto.SELF_PAYING, TaskDto.SPECIAL_AGREEMENT,
-				TaskDto.SPECIAL_AGREEMENT_CODE, TaskDto.TEST_V, TaskDto.WORKING_IN_FACILITY);
+		setVisible(false, LabCertificateDto.LABCERTIFICATEGUID,
+				LabCertificateDto.AGREED_TO_GDPR, LabCertificateDto.OPERATING_FACILITY_NUMBER, LabCertificateDto.CARE_FACILITY, LabCertificateDto.COM_FACILITY,
+				LabCertificateDto.CONTACT_PERSON, LabCertificateDto.CORONA_APP, LabCertificateDto.DOCTOR_NUMBER, LabCertificateDto.FIRST_TEST, LabCertificateDto.LAB_NUMBER,
+				LabCertificateDto.LIVING_IN_FACILITY, LabCertificateDto.MEDICAL_FACILITY, LabCertificateDto.NEXT_TEST, LabCertificateDto.OTHER_FACILITY,
+				LabCertificateDto.OUTBREAK, LabCertificateDto.OUTBREAK_PREVENTION, LabCertificateDto.PAYER_NUMBER, LabCertificateDto.SELF_PAYING, LabCertificateDto.SPECIAL_AGREEMENT,
+				LabCertificateDto.SPECIAL_AGREEMENT_CODE, LabCertificateDto.TEST_V, LabCertificateDto.WORKING_IN_FACILITY);
 
 	}
 
@@ -646,27 +647,27 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 	private void updateOnTaskTypeChange(TaskType taskType){
 		if(taskType == TaskType.SAMPLE_COLLECTION) {
-			if(getValue().getLabCertificateGuid() == null) {
+			if(getValue().getLabCertificateDto().getLabCertificateGuid() == null) {
 				String guid = Generator.generateGuid();
-				getValue().setLabCertificateGuid(guid);
+				getValue().getLabCertificateDto().setLabCertificateGuid(guid);
 				labornachweisField.setValue(guid);
 			}
 
-			if(getValue().getHealthDepartment() != null){
-				this.healthDepartments.setValue(getValue().getHealthDepartment());
+			if(getValue().getLabCertificateDto().getHealthDepartment() != null){
+				this.healthDepartments.setValue(getValue().getLabCertificateDto().getHealthDepartment());
 			}
 		}
-		setVisible(taskType == TaskType.SAMPLE_COLLECTION, TaskDto.LABCERTIFICATEGUID,
-				TaskDto.AGREED_TO_GDPR, TaskDto.OPERATING_FACILITY_NUMBER, TaskDto.CARE_FACILITY, TaskDto.COM_FACILITY,
-				TaskDto.CONTACT_PERSON, TaskDto.CORONA_APP, TaskDto.DOCTOR_NUMBER, TaskDto.FIRST_TEST, TaskDto.LAB_NUMBER,
-				TaskDto.LIVING_IN_FACILITY, TaskDto.MEDICAL_FACILITY, TaskDto.NEXT_TEST, TaskDto.OTHER_FACILITY,
-				TaskDto.OUTBREAK, TaskDto.OUTBREAK_PREVENTION, TaskDto.PAYER_NUMBER, TaskDto.SELF_PAYING, TaskDto.SPECIAL_AGREEMENT,
-				TaskDto.SPECIAL_AGREEMENT_CODE, TaskDto.TEST_V, TaskDto.WORKING_IN_FACILITY, HEALTH_DEPARTMENTS);
+		setVisible(taskType == TaskType.SAMPLE_COLLECTION, LabCertificateDto.LABCERTIFICATEGUID,
+				LabCertificateDto.AGREED_TO_GDPR, LabCertificateDto.OPERATING_FACILITY_NUMBER, LabCertificateDto.CARE_FACILITY, LabCertificateDto.COM_FACILITY,
+				LabCertificateDto.CONTACT_PERSON, LabCertificateDto.CORONA_APP, LabCertificateDto.DOCTOR_NUMBER, LabCertificateDto.FIRST_TEST, LabCertificateDto.LAB_NUMBER,
+				LabCertificateDto.LIVING_IN_FACILITY, LabCertificateDto.MEDICAL_FACILITY, LabCertificateDto.NEXT_TEST, LabCertificateDto.OTHER_FACILITY,
+				LabCertificateDto.OUTBREAK, LabCertificateDto.OUTBREAK_PREVENTION, LabCertificateDto.PAYER_NUMBER, LabCertificateDto.SELF_PAYING, LabCertificateDto.SPECIAL_AGREEMENT,
+				LabCertificateDto.SPECIAL_AGREEMENT_CODE, LabCertificateDto.TEST_V, LabCertificateDto.WORKING_IN_FACILITY, HEALTH_DEPARTMENTS);
 		generateLayout.setVisible(taskType == TaskType.SAMPLE_COLLECTION);
 
 		setRequired(taskType == TaskType.SAMPLE_COLLECTION, HEALTH_DEPARTMENTS);
 
-		setEnabled(getValue().isSpecialAgreement(), TaskDto.SPECIAL_AGREEMENT_CODE);
+		setEnabled(getValue().getLabCertificateDto().isSpecialAgreement(), LabCertificateDto.SPECIAL_AGREEMENT_CODE);
 	}
 
 	private void updateByCreatingAndAssignee() {

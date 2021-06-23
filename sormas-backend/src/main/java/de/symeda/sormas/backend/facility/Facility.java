@@ -32,6 +32,7 @@ import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
+import de.symeda.sormas.backend.labcertificate.LabCertificate;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -323,7 +324,7 @@ public class Facility extends InfrastructureAdo {
 		this.faxNo = faxNo;
 	}
 
-	@OneToMany(mappedBy = Task.HEALTH_DEPARTMENT, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = LabCertificate.HEALTH_DEPARTMENT, fetch = FetchType.LAZY)
 	public List<Task> getTasks() {
 		return tasks;
 	}
