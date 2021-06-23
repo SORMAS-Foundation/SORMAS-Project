@@ -52,13 +52,9 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -331,31 +327,6 @@ public class TestDataCreator {
 		sample = FacadeProvider.getSampleFacade().saveSample(sample);
 
 		return sample;
-	}
-
-	public PathogenTestDto createPathogenTest(
-		SampleReferenceDto sample,
-		PathogenTestType testType,
-		Date testDateTime,
-		FacilityReferenceDto lab,
-		UserReferenceDto labUser,
-		PathogenTestResultType testResult,
-		String testResultText,
-		boolean verified,
-		Disease disease) {
-
-		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
-		sampleTest.setTestType(testType);
-		sampleTest.setTestDateTime(testDateTime);
-		sampleTest.setLab(lab);
-		sampleTest.setTestResult(testResult);
-		sampleTest.setTestResultText(testResultText);
-		sampleTest.setTestResultVerified(verified);
-		sampleTest.setTestedDisease(disease);
-
-		sampleTest = FacadeProvider.getPathogenTestFacade().savePathogenTest(sampleTest);
-
-		return sampleTest;
 	}
 
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {

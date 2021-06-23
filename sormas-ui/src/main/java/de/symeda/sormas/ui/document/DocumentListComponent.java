@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,8 +16,10 @@ package de.symeda.sormas.ui.document;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -53,13 +55,15 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class DocumentListComponent extends VerticalLayout {
+
 	private final DocumentRelatedEntityType relatedEntityType;
 	private final ReferenceDto entityRef;
 	private final UserRight editRight;
+	private final boolean pseudonymized;
 
 	private final VerticalLayout listLayout;
 
-	public DocumentListComponent(DocumentRelatedEntityType relatedEntityType, ReferenceDto entityRef, UserRight editRight) {
+	public DocumentListComponent(DocumentRelatedEntityType relatedEntityType, ReferenceDto entityRef, UserRight editRight, boolean pseudonymized) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -67,6 +71,7 @@ public class DocumentListComponent extends VerticalLayout {
 		this.relatedEntityType = relatedEntityType;
 		this.entityRef = entityRef;
 		this.editRight = editRight;
+		this.pseudonymized = pseudonymized;
 
 		HorizontalLayout componentHeader = new HorizontalLayout();
 		componentHeader.setMargin(false);
@@ -100,11 +105,13 @@ public class DocumentListComponent extends VerticalLayout {
 		PopupButton mainButton =
 			ButtonHelper.createIconPopupButton(Captions.documentUploadDocument, VaadinIcons.PLUS_CIRCLE, uploadLayout, ValoTheme.BUTTON_PRIMARY);
 
+		boolean multipleUpload = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS_MULTI_UPLOAD);
+
 		UploadStateWindow uploadStateWindow = new UploadStateWindow();
 		MultiFileUpload multiFileUpload = new DocumentMultiFileUpload(() -> {
 			mainButton.setButtonClickTogglesPopupVisibility(false);
 			mainButton.setClosePopupOnOutsideClick(false);
-		}, new DocumentUploadFinishedHandler(relatedEntityType, entityRef.getUuid(), this::reload), uploadStateWindow);
+		}, new DocumentUploadFinishedHandler(relatedEntityType, entityRef.getUuid(), this::reload), uploadStateWindow, multipleUpload);
 		multiFileUpload
 			.setUploadButtonCaptions(I18nProperties.getCaption(Captions.importImportData), I18nProperties.getCaption(Captions.importImportData));
 		multiFileUpload.setAllUploadFinishedHandler(() -> {
@@ -119,7 +126,10 @@ public class DocumentListComponent extends VerticalLayout {
 	}
 
 	private void reload() {
-		List<DocumentDto> docs = FacadeProvider.getDocumentFacade().getDocumentsRelatedToEntity(relatedEntityType, entityRef.getUuid());
+		List<DocumentDto> docs = Collections.emptyList();
+		if (!pseudonymized) {
+			docs = FacadeProvider.getDocumentFacade().getDocumentsRelatedToEntity(relatedEntityType, entityRef.getUuid());
+		}
 		listLayout.removeAllComponents();
 		if (docs.isEmpty()) {
 			Label noActionsLabel = new Label(String.format(I18nProperties.getCaption(Captions.documentNoDocuments), relatedEntityType.toString()));
@@ -156,7 +166,7 @@ public class DocumentListComponent extends VerticalLayout {
 	}
 
 	private Button buildDownloadButton(DocumentDto document) {
-		Button viewButton = new Button(VaadinIcons.DOWNLOAD);
+		Button viewButton = ButtonHelper.createIconButton(VaadinIcons.DOWNLOAD);
 
 		StreamResource streamResource = new StreamResource((StreamResource.StreamSource) () -> {
 			DocumentFacade documentFacade = FacadeProvider.getDocumentFacade();

@@ -12,14 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.location.LocationReferenceDto;
@@ -116,7 +113,7 @@ public class SampleExportDto implements Serializable {
 	private final ContactClassification contactClassification;
 	private final ContactStatus contactStatus;
 
-	private SampleJurisdictionDto jurisdiction;
+	private SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto;
 
 	//@formatter:off
 	public SampleExportDto(long id, String uuid, String labSampleId, Date sampleReportDate,String epidNumber, String casePersonFirstName, String casePersonLastName, String contactPersonFirstName, String contactPersonLastName,String eventParticipantFirstName, String eventParticipantLastName,
@@ -137,13 +134,7 @@ public class SampleExportDto implements Serializable {
 						   String eventAddressRegion, String eventAddressDistrict, String eventAddressCommunity, String eventAddressCity, String eventAddressStreet, String eventAddressHouseNumber, String eventAddressAdditionalInformation,
 						   Date caseReportDate, CaseClassification caseClassification, CaseOutcome caseOutcome, String caseRegion, String caseDistrict,
 						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails, String contactRegion, String contactDistrict, String contactCommunity,
-						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus,
-						   String reportingUserUuid, String labUuid,
-						   String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
-						   String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
-						   String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid,
-						   String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, String eventDistrictUuid, String eventCommunityUuid
-	) {
+						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus, String labUuid, String caseHealthFacilityUuid, boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
 	//@formatter:on
 
 		this.id = id;
@@ -256,54 +247,12 @@ public class SampleExportDto implements Serializable {
 		this.contactClassification = contactClassification;
 		this.contactStatus = contactStatus;
 
-		CaseJurisdictionDto associatedCaseJurisdiction = null;
-		if (caseUuid != null) {
-			associatedCaseJurisdiction = new CaseJurisdictionDto(
-				caseReportingUserUuid,
-				caseRegionUuid,
-				caseDistrictUuid,
-				caseCommunityUuid,
-				caseHealthFacilityUuid,
-				casePointOfEntryUuid);
-		}
-
-		ContactJurisdictionDto associatedContactJurisdiction = null;
-		if (contactUuid != null) {
-			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null
-				? null
-				: new CaseJurisdictionDto(
-					contactCaseReportingUserUuid,
-					contactCaseRegionUuid,
-					contactCaseDistrictUuid,
-					contactCaseCommunityUuid,
-					contactCaseHealthFacilityUuid,
-					contactCasePointOfEntryUuid);
-			associatedContactJurisdiction = new ContactJurisdictionDto(
-				contactReportingUserUuid,
-				contactRegionUuid,
-				contactDistrictUuid,
-				contactCommunityUuid,
-				contactCaseJurisdiction);
-			this.contactRegion = contactRegion;
-			this.contactDistrict = contactDistrict;
-		}
-
-		EventParticipantJurisdictionDto associatedEventParticipantJurisdiction = null;
-		if (eventParticipantUuid != null) {
-			associatedEventParticipantJurisdiction = new EventParticipantJurisdictionDto(
-				associatedEventParticipant.getUuid(),
-				eventReportingUserUuid,
-				eventRegionUuid,
-				eventDistrictUuid,
-				eventCommunityUuid);
-		}
-
-		jurisdiction = new SampleJurisdictionDto(
-			reportingUserUuid,
-			associatedCaseJurisdiction,
-			associatedContactJurisdiction,
-			associatedEventParticipantJurisdiction,
-			labUuid);
+		this.sampleJurisdictionFlagsDto = new SampleJurisdictionFlagsDto(
+				isInJurisdiction,
+				isCaseInJurisdiction,
+				isContactInJurisdiction,
+				isContactCaseInJurisdiction,
+				isEventParticipantInJurisdiction);
 	}
 
 	@Order(0)
@@ -867,8 +816,8 @@ public class SampleExportDto implements Serializable {
 		return otherPathogenTests;
 	}
 
-	public SampleJurisdictionDto getJurisdiction() {
-		return jurisdiction;
+	public SampleJurisdictionFlagsDto getSampleJurisdictionFlagsDto() {
+		return sampleJurisdictionFlagsDto;
 	}
 
 	public static class SampleExportMaterial implements Serializable {

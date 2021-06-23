@@ -57,7 +57,8 @@ public class RegionDto extends EntityDto {
 		String externalID,
 		String countryUuid,
 		String countryName,
-		String countryIsoCode) {
+		String countryIsoCode,
+		String areaUuid) {
 
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
@@ -68,6 +69,10 @@ public class RegionDto extends EntityDto {
 
 		if (countryUuid != null) {
 			this.country = new CountryReferenceDto(countryUuid, I18nProperties.getCountryName(countryIsoCode, countryName), countryIsoCode);
+		}
+
+		if (areaUuid != null) {
+			this.area = new AreaReferenceDto(areaUuid);
 		}
 	}
 

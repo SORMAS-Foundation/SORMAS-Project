@@ -39,10 +39,10 @@ import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.data.util.PropertyValueGenerator;
 import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
+
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.i18n.Validations;
 
 public final class VaadinUiUtil {
 
@@ -61,14 +61,23 @@ public final class VaadinUiUtil {
 	}
 
 	public static Window showSimplePopupWindow(String caption, String contentText) {
-		return showSimplePopupWindow(caption, contentText, ContentMode.TEXT);
+		return showSimplePopupWindow(caption, contentText, ContentMode.TEXT, null);
 	}
 
 	public static Window showSimplePopupWindow(String caption, String contentText, ContentMode contentMode) {
+		return showSimplePopupWindow(caption, contentText, contentMode, null);
+	}
+
+	public static Window showSimplePopupWindow(String caption, String contentText, ContentMode contentMode, Integer width) {
 		Window window = new Window(null);
 		window.setModal(true);
 		window.setSizeUndefined();
 		window.setResizable(false);
+
+		if (width != null) {
+			window.setWidth(width, Unit.PIXELS);
+		}
+
 		window.center();
 
 		VerticalLayout popupLayout = new VerticalLayout();
@@ -330,22 +339,26 @@ public final class VaadinUiUtil {
 	}
 
 	public static HorizontalLayout createInfoComponent(String htmlContent) {
-		return createIconComponent(htmlContent, "img/info-icon.png");
+		return createIconComponent(htmlContent, "img/info-icon.png", 35);
 
 	}
 
 	public static HorizontalLayout createWarningComponent(String htmlContent) {
-		return createIconComponent(htmlContent, "img/warning-icon.png");
+		return createWarningComponent(htmlContent, 35);
+	}
+
+	public static HorizontalLayout createWarningComponent(String htmlContent, int iconSize) {
+		return createIconComponent(htmlContent, "img/warning-icon.png", iconSize);
 
 	}
 
-	public static HorizontalLayout createIconComponent(String htmlContent, String iconName) {
+	public static HorizontalLayout createIconComponent(String htmlContent, String iconName, int iconSize) {
 		HorizontalLayout infoLayout = new HorizontalLayout();
 		infoLayout.setWidth(100, Unit.PERCENTAGE);
 		infoLayout.setSpacing(true);
 		Image icon = new Image(null, new ThemeResource(iconName));
-		icon.setHeight(35, Unit.PIXELS);
-		icon.setWidth(35, Unit.PIXELS);
+		icon.setHeight(iconSize, Unit.PIXELS);
+		icon.setWidth(iconSize, Unit.PIXELS);
 		infoLayout.addComponent(icon);
 		infoLayout.setComponentAlignment(icon, Alignment.MIDDLE_LEFT);
 		Label infoLabel = new Label(htmlContent, ContentMode.HTML);

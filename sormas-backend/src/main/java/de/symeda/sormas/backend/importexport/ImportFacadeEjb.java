@@ -86,6 +86,7 @@ import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -123,6 +124,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
@@ -150,10 +152,6 @@ public class ImportFacadeEjb implements ImportFacade {
 		PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE,
 		PersonDto.PLACE_OF_BIRTH_REGION,
 		PersonDto.GESTATION_AGE_AT_BIRTH,
-		PersonDto.BIRTH_DATE,
-		PersonDto.BIRTH_DATE_MM,
-		PersonDto.BIRTH_DATE_DD,
-		PersonDto.BIRTH_DATE_YYYY,
 		PersonDto.BIRTH_WEIGHT,
 		PersonDto.PRESENT_CONDITION,
 		PersonDto.DEATH_DATE,
@@ -186,26 +184,27 @@ public class ImportFacadeEjb implements ImportFacade {
 	@EJB
 	private RegionFacadeEjbLocal regionFacade;
 
-	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
-	private static final String EVENT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_event_template.csv";
-	private static final String EVENT_PARTICIPANT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_eventparticipant_template.csv";
-	private static final String CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_contact_template.csv";
-	private static final String CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_line_listing_template.csv";
-	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_point_of_entry_template.csv";
-	private static final String POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_population_data_template.csv";
-	private static final String CONTINENT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_continent_template.csv";
-	private static final String SUBCONTINENT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_subcontinent_template.csv";
-	private static final String AREA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_area_template.csv";
-	private static final String COUNTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_country_template.csv";
-	private static final String ALL_COUNTRIES_IMPORT_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_all_countries.csv";
-	private static final String ALL_SUBCONTINENTS_IMPORT_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_all_subcontinents.csv";
-	private static final String ALL_CONTINENTS_IMPORT_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_all_continents.csv";
-	private static final String REGION_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_region_template.csv";
-	private static final String DISTRICT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_district_template.csv";
-	private static final String COMMUNITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_community_template.csv";
-	private static final String FACILITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_facility_template.csv";
-	private static final String CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_contact_template.csv";
-	private static final String CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_campaign_form_data_template.csv";
+	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = "import_case_template.csv";
+	private static final String EVENT_IMPORT_TEMPLATE_FILE_NAME = "import_event_template.csv";
+	private static final String EVENT_PARTICIPANT_IMPORT_TEMPLATE_FILE_NAME = "import_eventparticipant_template.csv";
+	private static final String CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME = "import_case_contact_template.csv";
+	private static final String CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME = "import_line_listing_template.csv";
+	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = "import_point_of_entry_template.csv";
+	private static final String POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME = "import_population_data_template.csv";
+	private static final String CONTINENT_IMPORT_TEMPLATE_FILE_NAME = "import_continent_template.csv";
+	private static final String SUBCONTINENT_IMPORT_TEMPLATE_FILE_NAME = "import_subcontinent_template.csv";
+	private static final String AREA_IMPORT_TEMPLATE_FILE_NAME = "import_area_template.csv";
+	private static final String COUNTRY_IMPORT_TEMPLATE_FILE_NAME = "import_country_template.csv";
+	private static final String REGION_IMPORT_TEMPLATE_FILE_NAME = "import_region_template.csv";
+	private static final String DISTRICT_IMPORT_TEMPLATE_FILE_NAME = "import_district_template.csv";
+	private static final String COMMUNITY_IMPORT_TEMPLATE_FILE_NAME = "import_community_template.csv";
+	private static final String FACILITY_IMPORT_TEMPLATE_FILE_NAME = "import_facility_template.csv";
+	private static final String CONTACT_IMPORT_TEMPLATE_FILE_NAME = "import_contact_template.csv";
+	private static final String CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME = "import_campaign_form_data_template.csv";
+
+	private static final String ALL_COUNTRIES_IMPORT_FILE_NAME = "sormas_import_all_countries.csv";
+	private static final String ALL_SUBCONTINENTS_IMPORT_FILE_NAME = "sormas_import_all_subcontinents.csv";
+	private static final String ALL_CONTINENTS_IMPORT_FILE_NAME = "sormas_import_all_continents.csv";
 
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {
@@ -222,6 +221,11 @@ public class ImportFacadeEjb implements ImportFacade {
 		writeTemplate(Paths.get(getCaseImportTemplateFilePath()), importColumns, true);
 	}
 
+	private void addPrimaryPhoneAndEmail(char separator, List<ImportColumn> importColumns) {
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.PHONE, String.class, separator));
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.EMAIL_ADDRESS, String.class, separator));
+	}
+
 	@Override
 	public void generateEventImportTemplateFile() throws IOException {
 
@@ -229,11 +233,17 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		char separator = configFacade.getCsvSeparator();
 
-		List<String> columnsToRemove = Arrays.asList(EventDto.SORMAS_TO_SORMAS_ORIGIN_INFO, EventDto.OWNERSHIP_HANDED_OVER);
+		ArrayList<String> columnsToRemove = new ArrayList<>(Arrays.asList(EventDto.SORMAS_TO_SORMAS_ORIGIN_INFO, EventDto.OWNERSHIP_HANDED_OVER));
+		if (featureConfigurationFacade.isFeatureDisabled(FeatureType.EVENT_HIERARCHIES)) {
+			columnsToRemove.add(EventDto.SUPERORDINATE_EVENT);
+		}
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		appendListOfFields(importColumns, EventDto.class, "", separator);
 		importColumns = importColumns.stream().filter(column -> keepColumn(column, "", columnsToRemove)).collect(Collectors.toList());
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EVENT_GROUPS)) {
+			importColumns.add(ImportColumn.from(EventGroupReferenceDto.class, EventDto.EVENT_GROUP, String.class, separator));
+		}
 
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.INVOLVEMENT_DESCRIPTION, String.class, separator));
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.REGION, String.class, separator));
@@ -259,6 +269,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.DISTRICT, String.class, separator));
 
 		appendListOfFields(importColumns, PersonDto.class, "person.", separator);
+		addPrimaryPhoneAndEmail(separator, importColumns);
 
 		importColumns =
 			importColumns.stream().filter(column -> keepColumn(column, PERSON_PREFIX, PERSON_COLUMNS_TO_REMOVE)).collect(Collectors.toList());
@@ -457,98 +468,178 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
-	public String getCaseImportTemplateFilePath() {
+	public String getCaseImportTemplateFileName() {
+		return getImportTemplateFileName(CASE_IMPORT_TEMPLATE_FILE_NAME);
+	}
 
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(CASE_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
+	@Override
+	public String getCaseImportTemplateFilePath() {
+		return getImportTemplateFilePath(CASE_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getEventImportTemplateFileName() {
+		return getImportTemplateFileName(EVENT_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	@Override
 	public String getEventImportTemplateFilePath() {
+		return getImportTemplateFilePath(EVENT_IMPORT_TEMPLATE_FILE_NAME);
+	}
 
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(EVENT_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
+	@Override
+	public String getEventParticipantImportTemplateFileName() {
+		return getImportTemplateFileName(EVENT_PARTICIPANT_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	@Override
 	public String getEventParticipantImportTemplateFilePath() {
-
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(EVENT_PARTICIPANT_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
+		return getImportTemplateFilePath(EVENT_PARTICIPANT_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	@Override
 	public String getCampaignFormImportTemplateFilePath() {
+		return getImportTemplateFilePath(CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME);
+	}
 
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
+	@Override
+	public String getCaseContactImportTemplateFileName() {
+		return getImportTemplateFileName(CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	@Override
 	public String getCaseContactImportTemplateFilePath() {
+		return getImportTemplateFilePath(CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME);
+	}
 
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
+	@Override
+	public String getCaseLineListingImportTemplateFileName() {
+		return getImportTemplateFileName(CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	@Override
 	public String getCaseLineListingImportTemplateFilePath() {
+		return getImportTemplateFilePath(CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME);
+	}
 
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
+	@Override
+	public String getContactImportTemplateFileName() {
+		return getImportTemplateFileName(CONTACT_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getContactImportTemplateFilePath() {
+		return getImportTemplateFilePath(CONTACT_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getPointOfEntryImportTemplateFileName() {
+		return getImportTemplateFileName(POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	@Override
 	public String getPointOfEntryImportTemplateFilePath() {
+		return getImportTemplateFilePath(POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME);
+	}
 
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
+	@Override
+	public String getPopulationDataImportTemplateFileName() {
+		return getImportTemplateFileName(POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	@Override
 	public String getPopulationDataImportTemplateFilePath() {
+		return getImportTemplateFilePath(POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME);
+	}
 
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
+	@Override
+	public String getAreaImportTemplateFileName() {
+		return getImportTemplateFileName(AREA_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	@Override
 	public String getAreaImportTemplateFilePath() {
+		return getImportTemplateFilePath(AREA_IMPORT_TEMPLATE_FILE_NAME);
+	}
 
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(AREA_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
+	@Override
+	public String getContinentImportTemplateFileName() {
+		return getImportTemplateFileName(CONTINENT_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	@Override
 	public String getContinentImportTemplateFilePath() {
+		return getImportTemplateFilePath(CONTINENT_IMPORT_TEMPLATE_FILE_NAME);
+	}
 
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(CONTINENT_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
+	@Override
+	public String getSubcontinentImportTemplateFileName() {
+		return getImportTemplateFileName(SUBCONTINENT_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	@Override
 	public String getSubcontinentImportTemplateFilePath() {
+		return getImportTemplateFilePath(SUBCONTINENT_IMPORT_TEMPLATE_FILE_NAME);
+	}
 
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(SUBCONTINENT_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
+	@Override
+	public String getCountryImportTemplateFileName() {
+		return getImportTemplateFileName(COUNTRY_IMPORT_TEMPLATE_FILE_NAME);
 	}
 
 	@Override
 	public String getCountryImportTemplateFilePath() {
+		return getImportTemplateFilePath(COUNTRY_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getRegionImportTemplateFileName() {
+		return getImportTemplateFileName(REGION_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getRegionImportTemplateFilePath() {
+		return getImportTemplateFilePath(REGION_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getDistrictImportTemplateFileName() {
+		return getImportTemplateFileName(DISTRICT_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getDistrictImportTemplateFilePath() {
+		return getImportTemplateFilePath(DISTRICT_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getCommunityImportTemplateFileName() {
+		return getImportTemplateFileName(COMMUNITY_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getCommunityImportTemplateFilePath() {
+		return getImportTemplateFilePath(COMMUNITY_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getFacilityImportTemplateFileName() {
+		return getImportTemplateFileName(FACILITY_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	@Override
+	public String getFacilityImportTemplateFilePath() {
+		return getImportTemplateFilePath(FACILITY_IMPORT_TEMPLATE_FILE_NAME);
+	}
+
+	private String getImportTemplateFileName(String baseFilename) {
+		String instanceName = DataHelper.cleanStringForFileName(configFacade.getSormasInstanceName().toLowerCase());
+		return instanceName + "_" + baseFilename;
+	}
+
+	private String getImportTemplateFilePath(String baseFilename) {
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(COUNTRY_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
+		return exportDirectory.resolve(getImportTemplateFileName(baseFilename)).toString();
 	}
 
 	@Override
@@ -579,46 +670,6 @@ public class ImportFacadeEjb implements ImportFacade {
 			logger.warn("Cannot get continents import file path: ", e);
 			throw new RuntimeException(e);
 		}
-	}
-
-	@Override
-	public String getRegionImportTemplateFilePath() {
-
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(REGION_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
-	}
-
-	@Override
-	public String getDistrictImportTemplateFilePath() {
-
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(DISTRICT_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
-	}
-
-	@Override
-	public String getCommunityImportTemplateFilePath() {
-
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(COMMUNITY_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
-	}
-
-	@Override
-	public String getFacilityImportTemplateFilePath() {
-
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(FACILITY_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
-	}
-
-	@Override
-	public String getContactImportTemplateFilePath() {
-
-		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(CONTACT_IMPORT_TEMPLATE_FILE_NAME);
-		return filePath.toString();
 	}
 
 	/**
@@ -688,6 +739,7 @@ public class ImportFacadeEjb implements ImportFacade {
 					PersonDto.class,
 					StringUtils.isEmpty(prefix) ? field.getName() + "." : prefix + field.getName() + ".",
 					separator);
+				addPrimaryPhoneAndEmail(separator, importColumns);
 			} else {
 				importColumns.add(ImportColumn.from(clazz, prefix + field.getName(), field.getType(), separator));
 			}
@@ -805,7 +857,10 @@ public class ImportFacadeEjb implements ImportFacade {
 			// If the string is smaller than the length of the expected date format, throw an exception
 			if (entry.length() < 10) {
 				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
+					I18nProperties.getValidationError(
+						Validations.importInvalidDate,
+						buildEntityProperty(entryHeaderPath),
+						DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
 			} else {
 				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));
 				return true;

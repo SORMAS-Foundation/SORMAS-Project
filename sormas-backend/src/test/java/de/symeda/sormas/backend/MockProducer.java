@@ -39,6 +39,8 @@ import javax.transaction.UserTransaction;
 
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClientProducer;
 
@@ -58,7 +60,7 @@ public class MockProducer {
 	private static final UserTransaction userTransaction = mock(UserTransaction.class);
 	private static final SormasToSormasRestClient SORMAS_TO_SORMAS_REST_CLIENT = mock(SormasToSormasRestClient.class);
 	private static final ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
-	private static final String TMP_PATH = "tmp";
+	private static final String TMP_PATH = "target/tmp";
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -158,7 +160,9 @@ public class MockProducer {
 
 		@Override
 		@Produces
-		public SormasToSormasRestClient sormasToSormasClient() {
+		public SormasToSormasRestClient sormasToSormasClient(
+			ServerAccessDataService serverAccessDataService,
+			SormasToSormasEncryptionService encryptionService) {
 			return SORMAS_TO_SORMAS_REST_CLIENT;
 		}
 	}
@@ -166,5 +170,9 @@ public class MockProducer {
 	@Produces
 	public static ManagedScheduledExecutorService getManagedScheduledExecutorService() {
 		return managedScheduledExecutorService;
+	}
+
+	public static void mockProperty(String property, String value) {
+		properties.setProperty(property, value);
 	}
 }

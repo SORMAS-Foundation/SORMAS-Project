@@ -9,13 +9,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.Type;
+import de.symeda.sormas.backend.sample.PathogenTest;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -34,6 +38,7 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
 	public static final String LAB_SAMPLE_ID = "labSampleId";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
+	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String TEST_LAB_NAME = "testLabName";
 	public static final String TEST_LAB_EXTERNAL_ID = "testLabExternalId";
 	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
@@ -57,14 +62,16 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String PERSON_PHONE = "personPhone";
 	public static final String PERSON_EMAIL = "personEmail";
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
-	public static final String PROCESSED = "processed";
+	public static final String STATUS = "status";
 	public static final String TEST_RESULT_TEXT = "testResultText";
+	public static final String PATHOGEN_TEST = "pathogenTest";
 
 	private Date messageDateTime;
 	private Date sampleDateTime;
 	private Date sampleReceivedDate;
 	private String labSampleId;
 	private SampleMaterial sampleMaterial;
+	private String sampleMaterialText;
 	private String testLabName;
 	private String testLabExternalId;
 	private String testLabPostalCode;
@@ -90,8 +97,10 @@ public class LabMessage extends AbstractDomainObject {
 
 	private String labMessageDetails;
 
-	private boolean processed;
+	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
+
 	private String testResultText;
+	private PathogenTest pathogenTest;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getMessageDateTime() {
@@ -136,6 +145,16 @@ public class LabMessage extends AbstractDomainObject {
 
 	public void setSampleMaterial(SampleMaterial sampleMaterial) {
 		this.sampleMaterial = sampleMaterial;
+	}
+
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getSampleMaterialText() {
+		return sampleMaterialText;
+	}
+
+	public void setSampleMaterialText(String sampleMaterialText) {
+		this.sampleMaterialText = sampleMaterialText;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -346,13 +365,14 @@ public class LabMessage extends AbstractDomainObject {
 		this.labMessageDetails = labMessageDetails;
 	}
 
-	@Column
-	public boolean isProcessed() {
-		return processed;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	public LabMessageStatus getStatus() {
+		return status;
 	}
 
-	public void setProcessed(boolean processed) {
-		this.processed = processed;
+	public void setStatus(LabMessageStatus status) {
+		this.status = status;
 	}
 
 	@Column(length = COLUMN_LENGTH_BIG)
@@ -362,5 +382,15 @@ public class LabMessage extends AbstractDomainObject {
 
 	public void setTestResultText(String testResultText) {
 		this.testResultText = testResultText;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn
+	public PathogenTest getPathogenTest() {
+		return pathogenTest;
+	}
+
+	public void setPathogenTest(PathogenTest pathogenTest) {
+		this.pathogenTest = pathogenTest;
 	}
 }

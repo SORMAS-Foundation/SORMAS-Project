@@ -67,6 +67,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -92,8 +93,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-	@EJB
-	private SampleJurisdictionChecker sampleJurisdictionChecker;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -146,6 +145,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		return sampleService.getByUuid(sampleRef.getUuid())
 			.getPathogenTests()
 			.stream()
+			.filter(p -> !p.isDeleted())
 			.map(p -> convertToDto(p, pseudonymizer))
 			.collect(Collectors.toList());
 	}
@@ -158,7 +158,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			return Collections.emptyList();
 		}
 
-		return pathogenTestService.getDeletedUuidsSince(user, since);
+		return pathogenTestService.getDeletedUuidsSince(since);
 	}
 
 	@Override
@@ -301,20 +301,26 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			.collect(Collectors.toList());
 	}
 
-	public PathogenTest fromDto(@NotNull PathogenTestDto source, boolean checkChangeDate) {
-		PathogenTest target =
-			DtoHelper.fillOrBuildEntity(source, pathogenTestService.getByUuid(source.getUuid()), PathogenTest::new, checkChangeDate);
+	public static PathogenTestDto toDto(PathogenTest source) {
+		if (source == null) {
+			return null;
+		}
 
-		target.setSample(sampleService.getByReferenceDto(source.getSample()));
+		PathogenTestDto target = new PathogenTestDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());
+		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
+		target.setPcrTestSpecification(source.getPcrTestSpecification());
 		target.setTestTypeText(source.getTestTypeText());
 		target.setTestDateTime(source.getTestDateTime());
-		target.setLab(facilityService.getByReferenceDto(source.getLab()));
+		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
 		target.setLabDetails(source.getLabDetails());
-		target.setLabUser(userService.getByReferenceDto(source.getLabUser()));
+		target.setLabUser(UserFacadeEjb.toReferenceDto(source.getLabUser()));
 		target.setTestResult(source.getTestResult());
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.getTestResultVerified());
@@ -337,37 +343,35 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	private void pseudonymizeDto(PathogenTest source, PathogenTestDto target, Pseudonymizer pseudonymizer) {
 		if (source != null && target != null) {
-			pseudonymizer.pseudonymizeDto(PathogenTestDto.class, target, sampleJurisdictionChecker.isInJurisdictionOrOwned(source.getSample()), null);
+			pseudonymizer.pseudonymizeDto(PathogenTestDto.class, target, sampleService.inJurisdictionOrOwned(source.getSample()).getInJurisdiction(), null);
 		}
 	}
 
 	private void restorePseudonymizedDto(PathogenTestDto dto, PathogenTest existingSampleTest, PathogenTestDto existingSampleTestDto) {
 		if (existingSampleTestDto != null) {
-			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(existingSampleTest.getSample());
+			boolean isInJurisdiction = sampleService.inJurisdictionOrOwned(existingSampleTest.getSample()).getInJurisdiction();
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
 			pseudonymizer.restorePseudonymizedValues(PathogenTestDto.class, dto, existingSampleTestDto, isInJurisdiction);
 		}
 	}
 
-	public static PathogenTestDto toDto(PathogenTest source) {
-		if (source == null) {
-			return null;
-		}
+	public PathogenTest fromDto(@NotNull PathogenTestDto source, boolean checkChangeDate) {
+		PathogenTest target =
+			DtoHelper.fillOrBuildEntity(source, pathogenTestService.getByUuid(source.getUuid()), PathogenTest::new, checkChangeDate);
 
-		PathogenTestDto target = new PathogenTestDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
+		target.setSample(sampleService.getByReferenceDto(source.getSample()));
 		target.setTestedDisease(source.getTestedDisease());
+		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
 		target.setTypingId(source.getTypingId());
 		target.setTestType(source.getTestType());
+		target.setPcrTestSpecification(source.getPcrTestSpecification());
 		target.setTestTypeText(source.getTestTypeText());
 		target.setTestDateTime(source.getTestDateTime());
-		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
+		target.setLab(facilityService.getByReferenceDto(source.getLab()));
 		target.setLabDetails(source.getLabDetails());
-		target.setLabUser(UserFacadeEjb.toReferenceDto(source.getLabUser()));
+		target.setLabUser(userService.getByReferenceDto(source.getLabUser()));
 		target.setTestResult(source.getTestResult());
 		target.setTestResultText(source.getTestResultText());
 		target.setTestResultVerified(source.getTestResultVerified());
@@ -392,17 +396,23 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		Disease disease = null;
 
 		if (caze != null) {
-			final Region region = caze.getRegion();
 			disease = caze.getDisease();
-			messageRecipients.addAll(userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR));
+			messageRecipients.addAll(
+				userService.getAllByRegionsAndUserRoles(
+					JurisdictionHelper.getCaseRegions(caze),
+					UserRole.SURVEILLANCE_SUPERVISOR,
+					UserRole.CASE_SUPERVISOR));
 
 		}
 
 		if (contact != null) {
-			final Region region = contact.getRegion() != null ? contact.getRegion() : contact.getCaze().getRegion();
 			disease = contact.getDisease() != null ? contact.getDisease() : contact.getCaze().getDisease();
 			messageRecipients.addAll(
-				userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR)
+				userService
+					.getAllByRegionsAndUserRoles(
+						JurisdictionHelper.getContactRegions(contact),
+						UserRole.SURVEILLANCE_SUPERVISOR,
+						UserRole.CONTACT_SUPERVISOR)
 					.stream()
 					.filter(user -> !messageRecipients.contains(user))
 					.collect(Collectors.toList()));

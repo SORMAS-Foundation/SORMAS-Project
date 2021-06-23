@@ -75,10 +75,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/event_reportDateTime"
                     style="@style/ControlFirstOfTwoColumnsStyle"
-                    app:value="@{data.reportDateTime}" />
+                    app:required="true"
+                    app:allowedDaysInFuture="0"
+                    app:value="@={data.reportDateTime}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_reportingUser"
@@ -253,14 +255,14 @@
 
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/contact_externalToken"
+                    android:id="@+id/event_externalToken"
                     app:value="@={data.externalToken}"
                     style="@style/ControlSecondOfTwoColumnsStyle"/>
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/contact_internalId"
-                app:value="@={data.internalId}"
+                android:id="@+id/event_internalToken"
+                app:value="@={data.internalToken}"
                 style="@style/ControlSingleColumnStyle"/>
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>

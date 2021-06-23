@@ -198,12 +198,29 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		birthDateYear.addItems(DateHelper.getYearsToNow());
 		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		birthDateYear.setInputPrompt(I18nProperties.getString(Strings.year));
+		birthDateDay.addValidator(
+			e -> ControllerProvider.getPersonController()
+				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) birthDateMonth.getValue(), (Integer) e));
+		birthDateMonth.addValidator(
+			e -> ControllerProvider.getPersonController()
+				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) e, (Integer) birthDateDay.getValue()));
+		birthDateYear.addValidator(
+			e -> ControllerProvider.getPersonController()
+				.validateBirthDate((Integer) e, (Integer) birthDateMonth.getValue(), (Integer) birthDateDay.getValue()));
 		// Update the list of days according to the selected month and year
 		birthDateYear.addValueChangeListener(e -> {
 			updateListOfDays((Integer) e.getProperty().getValue(), (Integer) birthDateMonth.getValue());
+			birthDateMonth.markAsDirty();
+			birthDateDay.markAsDirty();
 		});
 		birthDateMonth.addValueChangeListener(e -> {
 			updateListOfDays((Integer) birthDateYear.getValue(), (Integer) e.getProperty().getValue());
+			birthDateYear.markAsDirty();
+			birthDateDay.markAsDirty();
+		});
+		birthDateDay.addValueChangeListener(e -> {
+			birthDateYear.markAsDirty();
+			birthDateMonth.markAsDirty();
 		});
 
 		ComboBox sex = addCustomField(PersonDto.SEX, Sex.class, ComboBox.class);
@@ -520,14 +537,14 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			startDate,
 			endDate,
 			true,
-			true,
+			false,
 			I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), endDate.getCaption()));
 
 		DateComparisonValidator endDateValidator = new DateComparisonValidator(
 			endDate,
 			startDate,
 			false,
-			true,
+			false,
 			I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption()));
 
 		startDate.addValueChangeListener(event -> endDate.setRequired(event.getProperty().getValue() != null));

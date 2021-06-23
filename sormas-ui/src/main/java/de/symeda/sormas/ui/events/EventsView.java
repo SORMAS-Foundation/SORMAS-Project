@@ -51,13 +51,16 @@ import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventExportDto;
+import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ExportPropertyMetaInfo;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
@@ -67,9 +70,11 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.importer.EventImportLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.EventDownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
@@ -83,7 +88,8 @@ public class EventsView extends AbstractView {
 
 	public static final String VIEW_NAME = "events";
 
-	private EventCriteria criteria;
+	private EventCriteria eventCriteria;
+	private EventGroupCriteria eventGroupCriteria;
 	private EventsViewConfiguration viewConfiguration;
 
 	private FilteredGrid<?, ?> grid;
@@ -92,9 +98,11 @@ public class EventsView extends AbstractView {
 	private Button activeStatusButton;
 
 	// Filter
-	private EventsFilterForm filterForm;
+	private EventsFilterForm eventsFilterForm;
+	private EventGroupsFilterForm eventGroupsFilterForm;
 	private Label relevanceStatusInfoLabel;
-	private ComboBox relevanceStatusFilter;
+	private ComboBox eventRelevanceStatusFilter;
+	private ComboBox groupRelevanceStatusFilter;
 
 	private ComboBox contactCountMethod;
 
@@ -118,19 +126,27 @@ public class EventsView extends AbstractView {
 			viewConfiguration.setViewType(EventsViewType.DEFAULT);
 		}
 
-		criteria = ViewModelProviders.of(EventsView.class).get(EventCriteria.class);
-		if (criteria.getRelevanceStatus() == null) {
-			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		eventGroupCriteria = ViewModelProviders.of(EventsView.class).get(EventGroupCriteria.class);
+		if (eventGroupCriteria.getRelevanceStatus() == null) {
+			eventGroupCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		}
+
+		eventCriteria = ViewModelProviders.of(EventsView.class).get(EventCriteria.class);
+		if (eventCriteria.getRelevanceStatus() == null) {
+			eventCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
 
 		if (isDefaultViewType()) {
-			grid = new EventGrid(criteria, getClass());
+			grid = new EventGrid(eventCriteria, getClass());
 			((EventGrid) grid).setDataProviderListener(e -> updateStatusButtons());
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
-		} else {
-			grid = new EventActionsGrid(criteria, getClass());
+		} else if (isActionViewType()) {
+			grid = new EventActionsGrid(eventCriteria, getClass());
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 			getViewTitleLabel().setValue(I18nProperties.getCaption(Captions.View_actions));
+		} else {
+			grid = new EventGroupsGrid(eventGroupCriteria, getClass());
+			getViewTitleLabel().setValue(I18nProperties.getCaption(Captions.View_groups));
 		}
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -152,6 +168,12 @@ public class EventsView extends AbstractView {
 
 		eventsViewSwitcher.addItem(EventsViewType.ACTIONS);
 		eventsViewSwitcher.setItemCaption(EventsViewType.ACTIONS, I18nProperties.getCaption(Captions.eventActionsView));
+
+		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
+		if (eventGroupsFeatureEnabled) {
+			eventsViewSwitcher.addItem(EventsViewType.GROUPS);
+			eventsViewSwitcher.setItemCaption(EventsViewType.GROUPS, I18nProperties.getCaption(Captions.eventGroupsView));
+		}
 
 		eventsViewSwitcher.setValue(viewConfiguration.getViewType());
 		eventsViewSwitcher.addValueChangeListener(e -> {
@@ -196,25 +218,9 @@ public class EventsView extends AbstractView {
 
 			{
 				if (isDefaultViewType()) {
-					StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
-						EventExportDto.class,
-						null,
-						(Integer start, Integer max) -> FacadeProvider.getEventFacade()
-							.getExportList((EventCriteria) grid.getCriteria(), this.getSelectedRows(), start, max),
-						(propertyId, type) -> {
-							String caption = I18nProperties.findPrefixCaption(
-								propertyId,
-								EventExportDto.I18N_PREFIX,
-								EventIndexDto.I18N_PREFIX,
-								EventDto.I18N_PREFIX,
-								LocationDto.I18N_PREFIX);
-							if (Date.class.isAssignableFrom(type)) {
-								caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-							}
-							return caption;
-						},
-						ExportEntityName.EVENTS,
-						null);
+					StreamResource exportStreamResource = EventDownloadUtil
+						.createEventExportResource((EventCriteria) grid.getCriteria(), this::getSelectedRows, buildDetailedExportConfiguration());
+
 					addExportButton(
 						exportStreamResource,
 						exportPopupButton,
@@ -222,7 +228,7 @@ public class EventsView extends AbstractView {
 						VaadinIcons.FILE_TEXT,
 						Captions.exportDetailed,
 						Strings.infoDetailedExport);
-				} else {
+				} else if (isActionViewType()) {
 					StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
 						EventActionExportDto.class,
 						null,
@@ -249,6 +255,8 @@ public class EventsView extends AbstractView {
 						VaadinIcons.FILE_TEXT,
 						Captions.exportDetailed,
 						Strings.infoDetailedExport);
+				} else {
+					// NOOP: No detailed export for the groups view
 				}
 			}
 		}
@@ -277,7 +285,7 @@ public class EventsView extends AbstractView {
 				ViewModelProviders.of(EventsView.class).get(EventsViewConfiguration.class).setInEagerMode(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
-				navigateTo(criteria);
+				navigateTo(eventCriteria);
 			});
 		}
 
@@ -305,30 +313,59 @@ public class EventsView extends AbstractView {
 		return viewConfiguration.getViewType() == EventsViewType.DEFAULT;
 	}
 
+	private boolean isActionViewType() {
+		return viewConfiguration.getViewType() == EventsViewType.ACTIONS;
+	}
+
+	private boolean isGroupViewType() {
+		return viewConfiguration.getViewType() == EventsViewType.GROUPS;
+	}
+
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setSpacing(true);
 		filterLayout.setMargin(false);
 		filterLayout.setSizeUndefined();
 
-		filterForm = new EventsFilterForm(isDefaultViewType(), isDefaultViewType());
-		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter()) {
+		eventGroupsFilterForm = new EventGroupsFilterForm();
+		eventGroupsFilterForm.addValueChangeListener(e -> {
+			if (!eventGroupsFilterForm.hasFilter()) {
 				navigateTo(null);
 			}
 		});
-		filterForm.addResetHandler(e -> {
+		eventGroupsFilterForm.addResetHandler(e -> {
+			ViewModelProviders.of(EventsView.class).remove(EventGroupCriteria.class);
 			ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
 			navigateTo(null);
 		});
-		filterForm.addApplyHandler(e -> {
+		eventGroupsFilterForm.addApplyHandler(e -> {
+			((EventGroupsGrid) grid).reload();
+		});
+
+		eventsFilterForm = new EventsFilterForm(isDefaultViewType(), isDefaultViewType());
+		eventsFilterForm.addValueChangeListener(e -> {
+			if (!eventsFilterForm.hasFilter()) {
+				navigateTo(null);
+			}
+		});
+		eventsFilterForm.addResetHandler(e -> {
+			ViewModelProviders.of(EventsView.class).remove(EventGroupCriteria.class);
+			ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
+			navigateTo(null);
+		});
+		eventsFilterForm.addApplyHandler(e -> {
 			if (isDefaultViewType()) {
 				((EventGrid) grid).reload();
 			} else {
 				((EventActionsGrid) grid).reload();
 			}
 		});
-		filterLayout.addComponent(filterForm);
+
+		if (isGroupViewType()) {
+			filterLayout.addComponent(eventGroupsFilterForm);
+		} else {
+			filterLayout.addComponent(eventsFilterForm);
+		}
 
 		return filterLayout;
 	}
@@ -377,8 +414,8 @@ public class EventsView extends AbstractView {
 
 		if (isDefaultViewType()) {
 			Button statusAll = ButtonHelper.createButton(Captions.all, e -> {
-				criteria.setEventStatus(null);
-				navigateTo(criteria);
+				eventCriteria.setEventStatus(null);
+				navigateTo(eventCriteria);
 			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 			statusAll.setCaptionAsHtml(true);
 
@@ -388,9 +425,9 @@ public class EventsView extends AbstractView {
 			activeStatusButton = statusAll;
 
 			for (EventStatus status : EventStatus.values()) {
-				Button statusButton = ButtonHelper.createButtonWithCaption("status-" + status, status.toString(), e -> {
-					criteria.setEventStatus(status);
-					navigateTo(criteria);
+				Button statusButton = ButtonHelper.createButton("status-" + status, status.toString(), e -> {
+					eventCriteria.setEventStatus(status);
+					navigateTo(eventCriteria);
 				}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 				statusButton.setCaptionAsHtml(true);
 				statusButton.setData(status);
@@ -399,10 +436,10 @@ public class EventsView extends AbstractView {
 
 				statusButtons.put(statusButton, status.toString());
 			}
-		} else {
+		} else if (isActionViewType()) {
 			Button statusAll = ButtonHelper.createButton(Captions.all, e -> {
-				criteria.setActionStatus(null);
-				navigateTo(criteria);
+				eventCriteria.setActionStatus(null);
+				navigateTo(eventCriteria);
 			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 			statusAll.setCaptionAsHtml(true);
 
@@ -412,9 +449,9 @@ public class EventsView extends AbstractView {
 			activeStatusButton = statusAll;
 
 			for (ActionStatus status : ActionStatus.values()) {
-				Button statusButton = ButtonHelper.createButtonWithCaption("status-" + status, status.toString(), e -> {
-					criteria.actionStatus(status);
-					navigateTo(criteria);
+				Button statusButton = ButtonHelper.createButton("status-" + status, status.toString(), e -> {
+					eventCriteria.actionStatus(status);
+					navigateTo(eventCriteria);
 				}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 				statusButton.setCaptionAsHtml(true);
 				statusButton.setData(status);
@@ -429,34 +466,37 @@ public class EventsView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW_ARCHIVED)) {
-				int daysAfterEventGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterEventGetsArchived();
-				if (daysAfterEventGetsArchived > 0) {
-					relevanceStatusInfoLabel = new Label(
-						VaadinIcons.INFO_CIRCLE.getHtml() + " "
-							+ String.format(I18nProperties.getString(Strings.infoArchivedEvents), daysAfterEventGetsArchived),
-						ContentMode.HTML);
-					relevanceStatusInfoLabel.setVisible(false);
-					relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
-					actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
-					actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+				if (isGroupViewType()) {
+					groupRelevanceStatusFilter =
+						buildRelevanceStatus(Captions.eventActiveGroups, Captions.eventArchivedGroups, Captions.eventAllGroups);
+					groupRelevanceStatusFilter.addValueChangeListener(e -> {
+						eventGroupCriteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
+						navigateTo(eventGroupCriteria);
+					});
+					actionButtonsLayout.addComponent(groupRelevanceStatusFilter);
+				} else {
+					int daysAfterEventGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterEventGetsArchived();
+					if (daysAfterEventGetsArchived > 0) {
+						relevanceStatusInfoLabel = new Label(
+							VaadinIcons.INFO_CIRCLE.getHtml() + " "
+								+ String.format(I18nProperties.getString(Strings.infoArchivedEvents), daysAfterEventGetsArchived),
+							ContentMode.HTML);
+						relevanceStatusInfoLabel.setVisible(false);
+						relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+						actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
+						actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+					}
+
+					eventRelevanceStatusFilter =
+						buildRelevanceStatus(Captions.eventActiveEvents, Captions.eventArchivedEvents, Captions.eventAllEvents);
+					eventRelevanceStatusFilter.addValueChangeListener(e -> {
+						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+						eventCriteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
+						navigateTo(eventCriteria);
+					});
+					actionButtonsLayout.addComponent(eventRelevanceStatusFilter);
 				}
-				relevanceStatusFilter = new ComboBox();
-				relevanceStatusFilter.setId("relevanceStatusFilter");
-				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
-				relevanceStatusFilter.setNullSelectionAllowed(false);
-				relevanceStatusFilter.setTextInputAllowed(false);
-				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.eventActiveEvents));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.eventArchivedEvents));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.eventAllEvents));
-				relevanceStatusFilter.addValueChangeListener(e -> {
-					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
-					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
-					navigateTo(criteria);
-				});
-				relevanceStatusFilter.setCaption("");
-				actionButtonsLayout.addComponent(relevanceStatusFilter);
 			}
 
 			// Bulk operation dropdown
@@ -464,28 +504,45 @@ public class EventsView extends AbstractView {
 				EventGrid eventGrid = (EventGrid) grid;
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, selectedItem -> {
-						ControllerProvider.getEventController().showBulkEventDataEditComponent(eventGrid.asMultiSelect().getSelectedItems());
-					}),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-						ControllerProvider.getEventController()
-							.deleteAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-					}),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
-						ControllerProvider.getEventController()
-							.archiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-					}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
-						ControllerProvider.getEventController()
-							.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-					}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.bulkEdit),
+						VaadinIcons.ELLIPSIS_H,
+						mi -> grid.bulkActionHandler(items -> ControllerProvider.getEventController().showBulkEventDataEditComponent(items))),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.bulkDelete),
+						VaadinIcons.TRASH,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, () -> navigateTo(eventCriteria)),
+							true)),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.actionArchive),
+						VaadinIcons.ARCHIVE,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, () -> navigateTo(eventCriteria)),
+							true),
+						EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.actionDearchive),
+						VaadinIcons.ARCHIVE,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventController()
+								.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria)),
+							true),
+						EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())),
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.actionGroupEvent),
+						VaadinIcons.FILE_TREE,
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventGroupController()
+								.linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria)))),
 					new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
 						VaadinIcons.SHARE,
-						selectedItem -> {
-							ControllerProvider.getEventController()
-								.sendAllSelectedToExternalSurveillanceTool(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-						}));
+						mi -> grid.bulkActionHandler(
+							items -> ControllerProvider.getEventController()
+								.sendAllSelectedToExternalSurveillanceTool(
+									eventGrid.asMultiSelect().getSelectedItems(),
+									() -> navigateTo(eventCriteria)))));
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				bulkOperationsDropdown.setCaption("");
@@ -494,7 +551,7 @@ public class EventsView extends AbstractView {
 
 			if (isDefaultViewType()) {
 				// Contact Count Method Dropdown
-				contactCountMethod = new ComboBox();
+				contactCountMethod = ComboBoxHelper.createComboBoxV7();
 				contactCountMethod.setCaption(I18nProperties.getCaption(Captions.Event_contactCountMethod));
 				contactCountMethod.addItem(EventContactCountMethod.ALL);
 				contactCountMethod.addItem(EventContactCountMethod.SOURCE_CASE_IN_EVENT);
@@ -520,14 +577,24 @@ public class EventsView extends AbstractView {
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return statusFilterLayout;
+
 	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		if (isGroupViewType()) {
+			eventCriteria = ViewModelProviders.of(EventsView.class).get(EventCriteria.class);
+		} else {
+			eventGroupCriteria = ViewModelProviders.of(EventsView.class).get(EventGroupCriteria.class);
+		}
 		String params = event.getParameters().trim();
 		if (params.startsWith("?")) {
 			params = params.substring(1);
-			criteria.fromUrlParams(params);
+			if (isGroupViewType()) {
+				eventGroupCriteria.fromUrlParams(params);
+			} else {
+				eventCriteria.fromUrlParams(params);
+			}
 		}
 
 		if (viewConfiguration.isInEagerMode() && isDefaultViewType()) {
@@ -537,8 +604,10 @@ public class EventsView extends AbstractView {
 		updateFilterComponents();
 		if (isDefaultViewType()) {
 			((EventGrid) grid).reload();
-		} else {
+		} else if (isActionViewType()) {
 			((EventActionsGrid) grid).reload();
+		} else {
+			((EventGroupsGrid) grid).reload();
 		}
 	}
 
@@ -548,11 +617,15 @@ public class EventsView extends AbstractView {
 		applyingCriteria = true;
 
 		updateStatusButtons();
-		if (relevanceStatusFilter != null) {
-			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+		if (eventRelevanceStatusFilter != null) {
+			eventRelevanceStatusFilter.setValue(eventCriteria.getRelevanceStatus());
+		}
+		if (groupRelevanceStatusFilter != null) {
+			groupRelevanceStatusFilter.setValue(eventGroupCriteria.getRelevanceStatus());
 		}
 
-		filterForm.setValue(criteria);
+		eventsFilterForm.setValue(eventCriteria);
+		eventGroupsFilterForm.setValue(eventGroupCriteria);
 
 		applyingCriteria = false;
 	}
@@ -562,14 +635,42 @@ public class EventsView extends AbstractView {
 		statusButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
-			if (b.getData() == (isDefaultViewType() ? criteria.getEventStatus() : criteria.getActionStatus())) {
+			if (b.getData() == (isDefaultViewType() ? eventCriteria.getEventStatus() : eventCriteria.getActionStatus())) {
 				activeStatusButton = b;
 			}
 		});
-		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
+
 		if (activeStatusButton != null) {
-			activeStatusButton
-				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+			CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
+			if (activeStatusButton != null) {
+				activeStatusButton
+					.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+			}
 		}
+	}
+
+	private ExportConfigurationDto buildDetailedExportConfiguration() {
+		ExportConfigurationDto config = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference(), null);
+		boolean eventGroupFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
+		config.setProperties(
+			ImportExportUtils.getEventExportProperties(EventDownloadUtil::getPropertyCaption, eventGroupFeatureEnabled)
+				.stream()
+				.map(ExportPropertyMetaInfo::getPropertyId)
+				.collect(Collectors.toSet()));
+		return config;
+	}
+
+	private ComboBox buildRelevanceStatus(String eventActiveCaption, String eventArchivedCaption, String eventAllCaption) {
+		ComboBox relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
+		relevanceStatusFilter.setId("relevanceStatusFilter");
+		relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
+		relevanceStatusFilter.setNullSelectionAllowed(false);
+		relevanceStatusFilter.setTextInputAllowed(false);
+		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(eventActiveCaption));
+		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(eventArchivedCaption));
+		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(eventAllCaption));
+		relevanceStatusFilter.setCaption("");
+		return relevanceStatusFilter;
 	}
 }

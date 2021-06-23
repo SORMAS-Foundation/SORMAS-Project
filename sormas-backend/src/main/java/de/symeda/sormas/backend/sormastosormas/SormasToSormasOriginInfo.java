@@ -18,15 +18,35 @@ package de.symeda.sormas.backend.sormastosormas;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
+import de.symeda.auditlog.api.AuditedIgnore;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequest;
 
 @Entity(name = "sormastosormasorigininfo")
 public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -842917698322793413L;
+
+	public static final String ORGANIZATION_ID = "organizationId";
+	public static final String SENDER_NAME = "senderName";
+	public static final String SENDER_EMAIL = "senderEmail";
+	public static final String SENDER_PHONE_NUMBER = "senderPhoneNumber";
+	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
+	public static final String COMMENT = "comment";
+	public static final String CASES = "cases";
+	public static final String CONTACTS = "contacts";
+	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 
 	private String organizationId;
 
@@ -39,6 +59,14 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	private boolean ownershipHandedOver;
 
 	private String comment;
+
+	private SormasToSormasShareRequest request;
+
+	private List<Case> cases;
+
+	private List<Contact> contacts;
+
+	private List<EventParticipant> eventParticipants;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
 	public String getOrganizationId() {
@@ -85,6 +113,15 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
+	@OneToOne(mappedBy = "originInfo")
+	public SormasToSormasShareRequest getRequest() {
+		return request;
+	}
+
+	public void setRequest(SormasToSormasShareRequest request) {
+		this.request = request;
+	}
+
 	@Column(length = COLUMN_LENGTH_BIG)
 	public String getComment() {
 		return comment;
@@ -92,5 +129,35 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@AuditedIgnore
+	public List<Case> getCases() {
+		return cases;
+	}
+
+	public void setCases(List<Case> cases) {
+		this.cases = cases;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@AuditedIgnore
+	public List<Contact> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(List<Contact> contacts) {
+		this.contacts = contacts;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@AuditedIgnore
+	public List<EventParticipant> getEventParticipants() {
+		return eventParticipants;
+	}
+
+	public void setEventParticipants(List<EventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
 	}
 }

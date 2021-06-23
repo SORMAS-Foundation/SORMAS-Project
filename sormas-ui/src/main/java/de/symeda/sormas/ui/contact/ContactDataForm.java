@@ -60,11 +60,14 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
+import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -122,7 +125,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.DISEASE_DETAILS) +
 					fluidRowLocs(ContactDto.UUID) +
 					fluidRowLocs(ContactDto.EXTERNAL_ID, ContactDto.EXTERNAL_TOKEN) +
-					fluidRowLocs("", EXTERNAL_TOKEN_WARNING_LOC) +
+					fluidRowLocs(ContactDto.INTERNAL_TOKEN, EXTERNAL_TOKEN_WARNING_LOC) +
 					fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME, ContactDto.REPORTING_DISTRICT) +
                     fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT, ContactDto.COMMUNITY) +
 					fluidRowLocs(ContactDto.RETURNING_TRAVELER, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
@@ -175,7 +178,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private ComboBox cbDisease;
 	private NullableOptionGroup contactCategory;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
-	private TextField expectedUntilDate;
+	private TextField tfExpectedFollowUpUntilDate;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
@@ -215,6 +218,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		externalTokenWarningLabel.addStyleNames(VSPACE_3, LABEL_WHITE_SPACE_NORMAL);
 		getContent().addComponent(externalTokenWarningLabel, EXTERNAL_TOKEN_WARNING_LOC);
 
+		addField(ContactDto.INTERNAL_TOKEN, TextField.class);
 		addField(ContactDto.REPORTING_USER, ComboBox.class);
 		CheckBox multiDayContact = addField(ContactDto.MULTI_DAY_CONTACT, CheckBox.class);
 		DateField firstContactDate = addDateField(ContactDto.FIRST_CONTACT_DATE, DateField.class, 0);
@@ -252,6 +256,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				.setVisibleWhen(getFieldGroup(), ContactDto.TRACING_APP_DETAILS, ContactDto.TRACING_APP, Arrays.asList(TracingApp.OTHER), true);
 		}
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, NullableOptionGroup.class);
+		contactProximity.setCaption(I18nProperties.getCaption(Captions.Contact_contactProximityLongForm));
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
@@ -415,7 +420,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(3);
 		DateField dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 		dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended, quarantineReduced));
-		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, dfFollowUpUntil));
+		CheckBox cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
+		cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
+			if (!(Boolean) e.getProperty().getValue()) {
+				dfFollowUpUntil.discard();
+			}
+		});
+		quarantineTo
+			.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, dfFollowUpUntil, cbOverwriteFollowUpUntil));
 		addValueChangeListener(e -> {
 			ValidationUtils.initComponentErrorValidator(
 				externalTokenField,
@@ -458,10 +470,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		CheckBox cbHighPriority = addField(ContactDto.HIGH_PRIORITY, CheckBox.class);
-		expectedUntilDate = new TextField();
-		expectedUntilDate.setCaption(I18nProperties.getCaption(Captions.Contact_expectedFollowUpUntil));
-		getContent().addComponent(expectedUntilDate, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
-		addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
+		tfExpectedFollowUpUntilDate = new TextField();
+		tfExpectedFollowUpUntilDate.setCaption(I18nProperties.getCaption(Captions.Contact_expectedFollowUpUntil));
+		getContent().addComponent(tfExpectedFollowUpUntilDate, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
+
 		NullableOptionGroup ogImmunosuppressiveTherapyBasicDisease =
 			addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, NullableOptionGroup.class);
 		addField(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS, TextField.class);
@@ -605,9 +617,19 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				}
 
 				// Add follow-up until validator
-				Date minimumFollowUpUntilDate = DateHelper.addDays(
-					ContactLogic.getStartDate(lastContactDate.getValue(), reportDate.getValue()),
-					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) cbDisease.getValue()));
+				FollowUpPeriodDto followUpPeriod = ContactLogic.getFollowUpStartDate(
+					lastContactDate.getValue(),
+					reportDate.getValue(),
+					FacadeProvider.getSampleFacade().getByContactUuids(Collections.singletonList(getValue().getUuid())));
+				Date minimumFollowUpUntilDate =
+					FollowUpLogic
+						.calculateFollowUpUntilDate(
+							followUpPeriod,
+							null,
+							FacadeProvider.getVisitFacade().getVisitsByContact(new ContactReferenceDto(getValue().getUuid())),
+							FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(getSelectedDisease()))
+						.getFollowUpEndDate();
+
 				dfFollowUpUntil.addValidator(
 					new DateRangeValidator(
 						I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
@@ -822,7 +844,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		Property.ValueChangeEvent valueChangeEvent,
 		CheckBox quarantineExtendedCheckBox,
 		CheckBox quarantineReducedCheckBox,
-		DateField followUpUntilField) {
+		DateField followUpUntilField,
+		CheckBox overwriteFollowUpUntilCheckbox) {
 		if (quarantineChangedByFollowUpUntilChange) {
 			quarantineChangedByFollowUpUntilChange = false;
 		} else {
@@ -839,7 +862,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 							quarantineEndField,
 							originalContact,
 							oldQuarantineEnd,
-							followUpUntilField);
+							followUpUntilField,
+							overwriteFollowUpUntilCheckbox);
 					} else if (newQuarantineEnd.before(oldQuarantineEnd)) {
 						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, oldQuarantineEnd);
 					}
@@ -858,7 +882,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		Property<Date> quarantineEndField,
 		ContactDto originalContact,
 		Date oldQuarantineEnd,
-		DateField followUpUntil) {
+		DateField followUpUntil,
+		CheckBox overwriteFollowUpUntil) {
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingExtendQuarantine),
 			new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
@@ -872,7 +897,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					setVisible(true, ContactDto.QUARANTINE_EXTENDED);
 					setVisible(false, ContactDto.QUARANTINE_REDUCED);
 					if (originalContact.getFollowUpUntil() != null) {
-						confirmExtendFollowUpPeriod(originalContact, quarantineEndField.getValue(), followUpUntil);
+						confirmExtendFollowUpPeriod(originalContact, quarantineEndField.getValue(), followUpUntil, overwriteFollowUpUntil);
 					}
 				} else {
 					quarantineEndField.setValue(oldQuarantineEnd);
@@ -880,7 +905,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			});
 	}
 
-	private void confirmExtendFollowUpPeriod(ContactDto originalContact, Date quarantineEnd, DateField followUpUntil) {
+	private void confirmExtendFollowUpPeriod(
+		ContactDto originalContact,
+		Date quarantineEnd,
+		DateField followUpUntil,
+		CheckBox overwriteFollowUpUntil) {
 		if (quarantineEnd.after(originalContact.getFollowUpUntil())) {
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingExtendFollowUp),
@@ -890,13 +919,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				640,
 				confirmed -> {
 					if (confirmed) {
-						if (followUpUntil.isReadOnly()) {
-							followUpUntil.setReadOnly(false);
-							followUpUntil.setValue(quarantineEnd);
-							followUpUntil.setReadOnly(true);
-						} else {
-							followUpUntil.setValue(quarantineEnd);
-						}
+						overwriteFollowUpUntil.setValue(true);
+						followUpUntil.setValue(quarantineEnd);
 					}
 				});
 		}
@@ -959,14 +983,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			startDate,
 			endDate,
 			true,
-			true,
+			false,
 			I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), endDate.getCaption()));
 
 		DateComparisonValidator endDateValidator = new DateComparisonValidator(
 			endDate,
 			startDate,
 			false,
-			true,
+			false,
 			I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption()));
 
 		startDate.addValueChangeListener(event -> endDate.setRequired(event.getProperty().getValue() != null));
@@ -986,14 +1010,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	public void setValue(ContactDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
-		expectedUntilDate.setValue(
-			DateHelper.formatLocalDate(
-				ContactLogic.getFollowUpUntilDate(
-					newFieldValue,
-					FacadeProvider.getVisitFacade().getVisitsByContact(newFieldValue.toReference()),
-					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(newFieldValue.getDisease())),
-				I18nProperties.getUserLanguage()));
-		expectedUntilDate.setReadOnly(true);
+		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().calculateFollowUpUntilDate(newFieldValue, true);
+		tfExpectedFollowUpUntilDate.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
+		tfExpectedFollowUpUntilDate.setReadOnly(true);
+		tfExpectedFollowUpUntilDate.setDescription(
+			String.format(
+				I18nProperties.getString(Strings.infoExpectedFollowUpUntilDateContact),
+				followUpPeriodDto.getFollowUpStartDateType(),
+				DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value

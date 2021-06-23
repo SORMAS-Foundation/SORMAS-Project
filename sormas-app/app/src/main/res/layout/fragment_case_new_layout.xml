@@ -102,6 +102,12 @@
                 app:value="@={data.diseaseVariant}"
                 style="@style/ControlSingleColumnStyle" />
 
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/facilityOrHome"
+                style="@style/ControlSingleColumnStyle"
+                app:caption="@string/caption_facility_or_home"
+                app:required="true"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -121,25 +127,11 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/facility_or_home_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/caseData_community"
-                    style="@style/ControlFirstOfTwoColumnsStyle"
-                    app:softRequired="true"
-                    app:value="@={data.community}" />
-
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/facilityOrHome"
-                    style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:caption="@string/caption_facility_or_home"
-                    app:required="true"/>
-
-            </LinearLayout>
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/caseData_community"
+                style="@style/ControlSingleColumnStyle"
+                app:softRequired="true"
+                app:value="@={data.community}" />
 
             <LinearLayout
                 android:id="@+id/facility_type_fields_layout"

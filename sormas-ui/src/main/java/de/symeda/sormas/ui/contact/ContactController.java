@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -61,12 +63,14 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.caze.CaseSelectionField;
+import de.symeda.sormas.ui.contact.components.linelisting.layout.LineListingLayout;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -84,11 +88,72 @@ public class ContactController {
 	}
 
 	public void registerViews(Navigator navigator) {
+		UserProvider userProvider = UserProvider.getCurrent();
+
 		navigator.addView(ContactsView.VIEW_NAME, ContactsView.class);
+		if (userProvider.hasUserRight(UserRight.CASE_MERGE)) {
+			navigator.addView(MergeContactsView.VIEW_NAME, MergeContactsView.class);
+		}
 		navigator.addView(ContactDataView.VIEW_NAME, ContactDataView.class);
 		navigator.addView(ContactPersonView.VIEW_NAME, ContactPersonView.class);
 		navigator.addView(ContactVisitsView.VIEW_NAME, ContactVisitsView.class);
 		navigator.addView(ContactEpiDataView.VIEW_NAME, ContactEpiDataView.class);
+	}
+
+	public void openLineListingWindow() {
+		openLineListingWindow(null);
+	}
+
+	public void openLineListingWindow(CaseDataDto caseDataDto) {
+		Window window = new Window(I18nProperties.getString(Strings.headingLineListing));
+
+		LineListingLayout lineListingForm = new LineListingLayout(window, caseDataDto);
+		lineListingForm.setSaveCallback(contacts -> saveContactsFromLineListing(lineListingForm, contacts));
+
+		lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
+
+		window.setContent(lineListingForm);
+		window.setModal(true);
+		window.setPositionX((int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - lineListingForm.getWidth())) / 2);
+		window.setPositionY(70);
+		window.setResizable(false);
+
+		UI.getCurrent().addWindow(window);
+	}
+
+	private void saveContactsFromLineListing(LineListingLayout lineListingForm, List<LineListingLayout.ContactLineDto> contacts) {
+		try {
+			lineListingForm.validate();
+		} catch (ValidationRuntimeException e) {
+			Notification.show(I18nProperties.getString(Strings.errorFieldValidationFailed), "", Type.ERROR_MESSAGE);
+			return;
+		}
+
+		for (LineListingLayout.ContactLineDto contactLineDto : contacts) {
+			ContactDto newContact = contactLineDto.getContact();
+			if (UserProvider.getCurrent() != null) {
+				newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
+			}
+
+			PersonDto newPerson = contactLineDto.getPerson();
+
+			ControllerProvider.getPersonController()
+				.selectOrCreatePerson(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
+					if (selectedPerson != null) {
+						newContact.setPerson(selectedPerson);
+
+						selectOrCreateContact(newContact, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+							if (uuid == null) {
+								FacadeProvider.getContactFacade().saveContact(newContact);
+								Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.ASSISTIVE_NOTIFICATION);
+							}
+						});
+					}
+				}, true);
+		}
+
+		lineListingForm.closeWindow();
+		ControllerProvider.getContactController().navigateToIndex();
 	}
 
 	public void create() {
@@ -149,6 +214,16 @@ public class ContactController {
 	public void navigateTo(ContactCriteria contactCriteria) {
 		ViewModelProviders.of(ContactsView.class).remove(ContactCriteria.class);
 		String navigationState = AbstractView.buildNavigationState(ContactsView.VIEW_NAME, contactCriteria);
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void navigateToIndex() {
+		String navigationState = ContactsView.VIEW_NAME;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void navigateToMergeContactsView() {
+		String navigationState = MergeContactsView.VIEW_NAME;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
@@ -249,7 +324,7 @@ public class ContactController {
 			if (!createForm.getFieldGroup().isModified()) {
 				final ContactDto dto = createForm.getValue();
 				if (asSourceContact && alternativeCallback != null && casePerson != null) {
-					selectOrCreateContact(dto, casePerson, I18nProperties.getString(Strings.infoSelectOrCreateContact), selectedContactUuid -> {
+					selectOrCreateContact(dto, casePerson, selectedContactUuid -> {
 						if (selectedContactUuid != null) {
 							ContactDto selectedContact = FacadeProvider.getContactFacade().getContactByUuid(selectedContactUuid);
 							selectedContact.setResultingCase(caze.toReference());
@@ -300,15 +375,11 @@ public class ContactController {
 									FacadeProvider.getPersonFacade().savePerson(personDto);
 								}
 
-								selectOrCreateContact(
-									dto,
-									person,
-									I18nProperties.getString(Strings.infoSelectOrCreateContact),
-									selectedContactUuid -> {
-										if (selectedContactUuid != null) {
-											editData(selectedContactUuid);
-										}
-									});
+								selectOrCreateContact(dto, person, selectedContactUuid -> {
+									if (selectedContactUuid != null) {
+										editData(selectedContactUuid);
+									}
+								});
 							}
 						}, true);
 				}
@@ -373,7 +444,7 @@ public class ContactController {
 					FacadeProvider.getPersonFacade().savePerson(personDto);
 				}
 
-				selectOrCreateContact(dto, personDto, I18nProperties.getString(Strings.infoSelectOrCreateContact), selectedContactUuid -> {
+				selectOrCreateContact(dto, personDto, selectedContactUuid -> {
 					if (selectedContactUuid != null) {
 						editData(selectedContactUuid);
 					}
@@ -385,8 +456,12 @@ public class ContactController {
 		return createComponent;
 	}
 
-	public void selectOrCreateContact(final ContactDto contact, final PersonDto personDto, String infoText, Consumer<String> resultConsumer) {
-		ContactSelectionField contactSelect = new ContactSelectionField(contact, infoText, personDto.getFirstName(), personDto.getLastName());
+	public void selectOrCreateContact(final ContactDto contact, final PersonDto personDto, Consumer<String> resultConsumer) {
+		ContactSelectionField contactSelect = new ContactSelectionField(
+			contact,
+			I18nProperties.getString(Strings.infoSelectOrCreateContact),
+			personDto.getFirstName(),
+			personDto.getLastName());
 		contactSelect.setWidth(1024, Unit.PIXELS);
 
 		if (contactSelect.hasMatches()) {
@@ -484,9 +559,10 @@ public class ContactController {
 		// Check if cases with multiple districts have been selected
 		String districtUuid = null;
 		for (ContactIndexDto selectedContact : selectedContacts) {
+			String selectedDistrictUuid = selectedContact.getDistrictUuid();
 			if (districtUuid == null) {
-				districtUuid = selectedContact.getDistrictUuid();
-			} else if (!districtUuid.equals(selectedContact.getDistrictUuid())) {
+				districtUuid = selectedDistrictUuid;
+			} else if (!districtUuid.equals(selectedDistrictUuid)) {
 				districtUuid = null;
 				break;
 			}
@@ -689,9 +765,16 @@ public class ContactController {
 		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
 		titleLayout.setSpacing(false);
 
+		HorizontalLayout diseaseLayout = new HorizontalLayout();
 		Label diseaseLabel = new Label(DiseaseHelper.toString(contact.getDisease(), contact.getDiseaseDetails()));
 		CssStyles.style(diseaseLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);
-		titleLayout.addComponents(diseaseLabel);
+
+		Label diseaseVariantLabel = new Label(DiseaseHelper.variantInBrackets(contact.getDiseaseVariant()));
+		CssStyles.style(diseaseVariantLabel, CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
+
+		diseaseLayout.addComponent(diseaseLabel);
+		diseaseLayout.addComponent(diseaseVariantLabel);
+		titleLayout.addComponents(diseaseLayout);
 
 		Label classificationLabel = new Label(contact.getContactClassification().toString());
 		classificationLabel.addStyleNames(CssStyles.H3, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE);

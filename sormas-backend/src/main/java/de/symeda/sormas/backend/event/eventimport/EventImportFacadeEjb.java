@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.eventimport.EventImportEntities;
@@ -52,8 +53,10 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventGroupFacadeEjb.EventGroupFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportCellData;
@@ -81,6 +84,8 @@ public class EventImportFacadeEjb implements EventImportFacade {
 	private EventFacadeEjbLocal eventFacade;
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
+	@EJB
+	private EventGroupFacadeEjbLocal eventGroupFacade;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
 	@EJB
@@ -135,9 +140,10 @@ public class EventImportFacadeEjb implements EventImportFacade {
 
 		EventDto event = entities.getEvent();
 		List<EventParticipantDto> eventParticipants = entities.getEventParticipants();
+		List<EventGroupReferenceDto> eventGroupReferences = entities.getEventGroupReferences();
 
 		try {
-			eventFacade.saveEvent(event);
+			event = eventFacade.saveEvent(event);
 
 			for (EventParticipantDto eventParticipant : eventParticipants) {
 				PersonDto existingPerson = personFacade.getPersonByUuid(eventParticipant.getPerson().getUuid());
@@ -149,6 +155,8 @@ public class EventImportFacadeEjb implements EventImportFacade {
 				}
 				eventParticipantFacade.saveEventParticipant(eventParticipant);
 			}
+
+			eventGroupFacade.linkEventToGroups(event.toReference(), eventGroupReferences);
 
 			return ImportLineResultDto.successResult();
 		} catch (ValidationRuntimeException e) {
@@ -180,6 +188,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		final UserReferenceDto currentUserRef = userService.getCurrentUser().toReference();
 
 		final List<EventParticipantDto> eventParticipants = entities.getEventParticipants();
+		final List<EventGroupReferenceDto> eventGroupReferences = entities.getEventGroupReferences();
 
 		final MutableBoolean currentEventParticipantHasEntries = new MutableBoolean(false);
 		final Mutable<String> firstEventParticipantColumnName = new MutableObject<>(null);
@@ -221,6 +230,8 @@ public class EventImportFacadeEjb implements EventImportFacade {
 								cellData.getEntityPropertyPath());
 						}
 
+					} else if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(EventGroupReferenceDto.class))) {
+						eventGroupReferences.add(new EventGroupReferenceDto(cellData.getValue()));
 					} else if (!StringUtils.isEmpty(cellData.getValue())) {
 						// If the cell entry is not empty, try to insert it into the current event
 						insertColumnEntryIntoData(event, cellData.getValue(), cellData.getEntityPropertyPath());
@@ -400,7 +411,10 @@ public class EventImportFacadeEjb implements EventImportFacade {
 				throw new ImportErrorException(entry, importFacade.buildEntityProperty(entryHeaderPath));
 			} catch (ParseException e) {
 				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importInvalidDate, importFacade.buildEntityProperty(entryHeaderPath)));
+					I18nProperties.getValidationError(
+						Validations.importInvalidDate,
+						importFacade.buildEntityProperty(entryHeaderPath),
+						DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {
@@ -523,7 +537,10 @@ public class EventImportFacadeEjb implements EventImportFacade {
 				throw new ImportErrorException(entry, importFacade.buildEntityProperty(entryHeaderPath));
 			} catch (ParseException e) {
 				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importInvalidDate, importFacade.buildEntityProperty(entryHeaderPath)));
+					I18nProperties.getValidationError(
+						Validations.importInvalidDate,
+						importFacade.buildEntityProperty(entryHeaderPath),
+						DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {

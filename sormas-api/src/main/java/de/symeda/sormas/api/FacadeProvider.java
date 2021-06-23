@@ -34,15 +34,16 @@ import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
+import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
-import de.symeda.sormas.api.disease.DiseaseFacade;
-import de.symeda.sormas.api.disease.DiseaseVariantFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventGroupFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
@@ -54,6 +55,7 @@ import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.i18n.I18nFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.info.InfoFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
@@ -80,6 +82,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -134,6 +137,10 @@ public class FacadeProvider {
 
 	public static EventFacade getEventFacade() {
 		return get().lookupEjbRemote(EventFacade.class);
+	}
+
+	public static EventGroupFacade getEventGroupFacade() {
+		return get().lookupEjbRemote(EventGroupFacade.class);
 	}
 
 	public static EventImportFacade getEventImportFacade() {
@@ -268,16 +275,12 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(ClinicalVisitFacade.class);
 	}
 
-	public static DiseaseFacade getDiseaseFacade() {
-		return get().lookupEjbRemote(DiseaseFacade.class);
+	public static DashboardFacade getDashboardFacade() {
+		return get().lookupEjbRemote(DashboardFacade.class);
 	}
 
 	public static DiseaseConfigurationFacade getDiseaseConfigurationFacade() {
 		return get().lookupEjbRemote(DiseaseConfigurationFacade.class);
-	}
-
-	public static DiseaseVariantFacade getDiseaseVariantFacade() {
-		return get().lookupEjbRemote(DiseaseVariantFacade.class);
 	}
 
 	public static MaternalHistoryFacade getMaternalHistoryFacade() {
@@ -393,16 +396,13 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(LabMessageFacade.class);
 	}
 
-	public static ExternalLabResultsFacade getExternalLabResultsFacade() {
-		try {
-			String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
-			if (jndiName == null) {
-				throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
-			} else {
-				return (ExternalLabResultsFacade) get().ic.lookup(jndiName);
-			}
-		} catch (NamingException e) {
-			throw new RuntimeException(e.getMessage(), e);
+	public static ExternalLabResultsFacade getExternalLabResultsFacade() throws NamingException {
+
+		String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
+		if (jndiName == null) {
+			throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
+		} else {
+			return (ExternalLabResultsFacade) get().ic.lookup(jndiName);
 		}
 	}
 
@@ -420,6 +420,18 @@ public class FacadeProvider {
 
 	public static UserRightsFacade getUserRightsFacade() {
 		return get().lookupEjbRemote(UserRightsFacade.class);
+	}
+
+	public static SormasToSormasShareRequestFacade getSormasToSormasShareRequestFacade() {
+		return get().lookupEjbRemote(SormasToSormasShareRequestFacade.class);
+	}
+
+	public static CustomizableEnumFacade getCustomizableEnumFacade() {
+		return get().lookupEjbRemote(CustomizableEnumFacade.class);
+	}
+
+	public static InfoFacade getInfoFacae() {
+		return get().lookupEjbRemote(InfoFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

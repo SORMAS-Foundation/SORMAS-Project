@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -16,7 +15,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -30,19 +28,14 @@ import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.utils.CaseJoins;
@@ -63,8 +56,6 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	private PrescriptionService prescriptionService;
 	@EJB
 	private CaseService caseService;
-	@EJB
-	private CaseJurisdictionChecker caseJurisdictionChecker;
 
 	@Override
 	public List<TreatmentIndexDto> getIndexList(TreatmentCriteria criteria) {
@@ -76,20 +67,16 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		TreatmentJoins joins = new TreatmentJoins(treatment);
 
 		cq.multiselect(
-			Stream
-				.concat(
-					Stream.of(
-						treatment.get(Treatment.UUID),
-						treatment.get(Treatment.TREATMENT_TYPE),
-						treatment.get(Treatment.TREATMENT_DETAILS),
-						treatment.get(Treatment.TYPE_OF_DRUG),
-						treatment.get(Treatment.TREATMENT_DATE_TIME),
-						treatment.get(Treatment.DOSE),
-						treatment.get(Treatment.ROUTE),
-						treatment.get(Treatment.ROUTE_DETAILS),
-						treatment.get(Treatment.EXECUTING_CLINICIAN)),
-					getCaseJurisdictionSelections(joins))
-				.collect(Collectors.toList()));
+			treatment.get(Treatment.UUID),
+			treatment.get(Treatment.TREATMENT_TYPE),
+			treatment.get(Treatment.TREATMENT_DETAILS),
+			treatment.get(Treatment.TYPE_OF_DRUG),
+			treatment.get(Treatment.TREATMENT_DATE_TIME),
+			treatment.get(Treatment.DOSE),
+			treatment.get(Treatment.ROUTE),
+			treatment.get(Treatment.ROUTE_DETAILS),
+			treatment.get(Treatment.EXECUTING_CLINICIAN),
+			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
 
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, treatment));
@@ -100,14 +87,10 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		List<TreatmentIndexDto> indexList = em.createQuery(cq).getResultList();
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			TreatmentIndexDto.class,
-			indexList,
-			t -> caseJurisdictionChecker.isInJurisdictionOrOwned(t.getCaseJurisdiction()),
-			(t, inJurisdiction) -> {
-				pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexType.class, t.getTreatmentIndexType(), inJurisdiction, null);
-				pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexRoute.class, t.getTreatmentIndexRoute(), inJurisdiction, null);
-			});
+		pseudonymizer.pseudonymizeDtoCollection(TreatmentIndexDto.class, indexList, t -> t.getInJurisdiction(), (t, inJurisdiction) -> {
+			pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexType.class, t.getTreatmentIndexType(), inJurisdiction, null);
+			pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexRoute.class, t.getTreatmentIndexRoute(), inJurisdiction, null);
+		});
 
 		return indexList;
 	}
@@ -178,23 +161,19 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		TreatmentJoins joins = new TreatmentJoins(treatment);
 
 		cq.multiselect(
-			Stream
-				.concat(
-					Stream.of(
-						joins.getCaze().get(Case.UUID),
-						joins.getCasePerson().get(Person.FIRST_NAME),
-						joins.getCasePerson().get(Person.LAST_NAME),
-						treatment.get(Treatment.TREATMENT_DATE_TIME),
-						treatment.get(Treatment.EXECUTING_CLINICIAN),
-						treatment.get(Treatment.TREATMENT_TYPE),
-						treatment.get(Treatment.TREATMENT_DETAILS),
-						treatment.get(Treatment.TYPE_OF_DRUG),
-						treatment.get(Treatment.DOSE),
-						treatment.get(Treatment.ROUTE),
-						treatment.get(Treatment.ROUTE_DETAILS),
-						treatment.get(Treatment.ADDITIONAL_NOTES)),
-					getCaseJurisdictionSelections(joins))
-				.collect(Collectors.toList()));
+			joins.getCaze().get(Case.UUID),
+			joins.getCasePerson().get(Person.FIRST_NAME),
+			joins.getCasePerson().get(Person.LAST_NAME),
+			treatment.get(Treatment.TREATMENT_DATE_TIME),
+			treatment.get(Treatment.EXECUTING_CLINICIAN),
+			treatment.get(Treatment.TREATMENT_TYPE),
+			treatment.get(Treatment.TREATMENT_DETAILS),
+			treatment.get(Treatment.TYPE_OF_DRUG),
+			treatment.get(Treatment.DOSE),
+			treatment.get(Treatment.ROUTE),
+			treatment.get(Treatment.ROUTE_DETAILS),
+			treatment.get(Treatment.ADDITIONAL_NOTES),
+			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
 
 		Predicate filter = service.createUserFilter(cb, cq, treatment);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, new CaseQueryContext(cb, cq, joins.getCaze()));
@@ -206,11 +185,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		List<TreatmentExportDto> exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			TreatmentExportDto.class,
-			exportList,
-			t -> caseJurisdictionChecker.isInJurisdictionOrOwned(t.getCaseJurisdiction()),
-			null);
+		pseudonymizer.pseudonymizeDtoCollection(TreatmentExportDto.class, exportList, t -> t.getInJurisdiction(), null);
 
 		return exportList;
 	}
@@ -226,7 +201,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	private void pseudonymizeDto(Treatment source, TreatmentDto dto, Pseudonymizer pseudonymizer) {
 		if (source != null && dto != null) {
 			pseudonymizer
-				.pseudonymizeDto(TreatmentDto.class, dto, caseJurisdictionChecker.isInJurisdictionOrOwned(source.getTherapy().getCaze()), null);
+				.pseudonymizeDto(TreatmentDto.class, dto, caseService.inJurisdictionOrOwned(source.getTherapy().getCaze()), null);
 		}
 	}
 
@@ -237,19 +212,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 				TreatmentDto.class,
 				source,
 				existingDto,
-				caseJurisdictionChecker.isInJurisdictionOrOwned(existingTreatment.getTherapy().getCaze()));
+					caseService.inJurisdictionOrOwned(existingTreatment.getTherapy().getCaze()));
 		}
-	}
-
-	private Stream<Selection<?>> getCaseJurisdictionSelections(TreatmentJoins joins) {
-
-		return Stream.of(
-			joins.getCaseReportingUser().get(User.UUID),
-			joins.getCaseRegion().get(Region.UUID),
-			joins.getCaseDistrict().get(District.UUID),
-			joins.getCaseCommunity().get(Community.UUID),
-			joins.getCaseFacility().get(Facility.UUID),
-			joins.getCasePointOfEntry().get(PointOfEntry.UUID));
 	}
 
 	public static TreatmentDto toDto(Treatment source) {

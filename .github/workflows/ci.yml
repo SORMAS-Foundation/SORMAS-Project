@@ -4,7 +4,8 @@
 name: Java CI with Maven
 
 env:
-  java: 11
+  JAVA: 11
+  PRIVILEGED_RUN: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event.pull_request.head.repo.full_name == github.repository }}
 
 on:
   push:
@@ -18,23 +19,57 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (with token)
+        # Check if PR results from the repository: if yes, we have access to the secrets.
+        # The token is only needed for privileged actions from within the repo, so no need
+        # to make it available on 3rd party PRs
+        if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.SORMAS_VITAGROUP_TOKEN }}
+
+      - name: Checkout repository (without token)
+        # Check if PR results from a fork: if yes, we cannot access the token.
+        # The token is only needed for privileged actions from within the repo, so no need
+        # to make it available on 3rd party PRs
+        if: ${{ !fromJSON(env.PRIVILEGED_RUN) }}
         uses: actions/checkout@v2
 
-      - name: Set up JDK ${{ env.java }}
+      - name: Set up JDK ${{ env.JAVA }}
         uses: actions/setup-java@v1
         with:
-          java-version: ${{ env.java }}
+          java-version: ${{ env.JAVA }}
 
       - name: Cache Maven packages
+        # Check if PR results from the repository: if yes, it is safe to cache dependencies.
+        # This is to keep us safe from cache poisoning through 3rd party PRs.
+        if: ${{ fromJSON(env.PRIVILEGED_RUN) }}
         # FIXME(@JonasCir) #3733 remove '**/*.pom' once serverlib pom is renamed
         uses: actions/cache@v2
         with:
           path: ~/.m2
-          key: ${{ runner.os }}-java-${{ env.java }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
-          restore-keys: ${{ runner.os }}-java-${{ env.java }}-m2
+          key: ${{ runner.os }}-java-${{ env.JAVA }}-m2-${{ hashFiles('**/pom.xml', '**/*.pom') }}
+          restore-keys: ${{ runner.os }}-java-${{ env.JAVA }}-m2
 
       - name: Run mvn verify
         # FIXME(@JonasCir) see https://github.com/hzi-braunschweig/SORMAS-Project/issues/3730#issuecomment-745165678
         working-directory: ./sormas-base
         run: mvn verify -B -ntp
+
+      - name: Commit external visits API spec to development
+        # Privileged action needing a secret token. Since this only runs on development in our own repo
+        # the token will be available through a privileged checkout.
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development' && hashFiles('sormas-rest/target/external_visits_API.yaml') != hashFiles('openapi/external_visits_API.yaml')
+        # https://stackoverflow.com/questions/59604922/authorize-bash-to-access-github-protected-branch
+        run: |
+            git config --global user.name "sormas-vitagroup"
+            git config --global user.email "support.sormas@helpdesk.symeda.de"
+
+            rm -rf openapi
+            mkdir openapi/
+            cp sormas-rest/target/external_visits_API.* openapi
+
+            git add openapi
+            git commit -m "[GitHub Actions] Update external visits API spec files"
+            git pull --rebase
+            git push

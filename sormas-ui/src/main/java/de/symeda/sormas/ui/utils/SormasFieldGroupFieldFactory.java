@@ -64,10 +64,9 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			} else {
 				if (Disease.class.isAssignableFrom(type)) {
 					fieldType = (Class<T>) ComboBox.class;
-					ComboBox field = new ComboBox();
+					ComboBox field = ComboBoxHelper.createComboBoxV7();
 					field.setImmediate(true);
 					field.setNullSelectionAllowed(true);
-					field.setFilteringMode(FilteringMode.CONTAINS);
 					populateWithDiseaseData(field);
 					return (T) field;
 				} else {
@@ -136,7 +135,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 				field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 				return (T) field;
 			} else if (ReferenceDto.class.isAssignableFrom(type)) {
-				return (T) new ComboBox();
+				return (T) ComboBoxHelper.createComboBoxV7();
 			}
 		}
 		return super.createField(type, fieldType);
@@ -196,6 +195,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void populateWithEnumData(AbstractSelect select, Class<? extends Enum> enumClass) {
+
 		select.removeAllItems();
 		for (Object p : select.getContainerPropertyIds()) {
 			select.removeContainerProperty(p);
@@ -214,4 +214,5 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			}
 		}
 	}
+
 }

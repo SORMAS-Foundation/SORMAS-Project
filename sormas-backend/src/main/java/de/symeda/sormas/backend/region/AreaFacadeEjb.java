@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -150,6 +151,24 @@ public class AreaFacadeEjb implements AreaFacade {
 	@Override
 	public List<AreaReferenceDto> getByName(String name, boolean includeArchivedAreas) {
 		return service.getByName(name, includeArchivedAreas).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<AreaDto> getAllAfter(Date date) {
+		return service.getAll((cb, root) -> service.createChangeDateFilter(cb, root, date))
+				.stream()
+				.map(this::toDto)
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<AreaDto> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getAllUuids() {
+		return service.getAllUuids();
 	}
 
 	public Area fromDto(@NotNull AreaDto source, Area target, boolean checkChangeDate) {

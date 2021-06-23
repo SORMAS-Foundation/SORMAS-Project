@@ -15,6 +15,7 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramTranslations;
 import de.symeda.sormas.api.campaign.diagram.DiagramType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity
 @Audited
@@ -60,8 +61,8 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 	}
 
 	@AuditedIgnore
-	@Type(type = "json")
-	@Column(columnDefinition = "json")
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
 	public List<CampaignDiagramSeries> getCampaignDiagramSeries() {
 		return campaignDiagramSeries;
 	}
@@ -71,8 +72,8 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 	}
 
 	@AuditedIgnore
-	@Type(type = "json")
-	@Column(columnDefinition = "json")
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
 	public List<CampaignDiagramSeries> getCampaignSeriesTotal() {
 		return campaignSeriesTotal;
 	}
@@ -91,8 +92,8 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 	}
 
 	@AuditedIgnore
-	@Type(type = "json")
-	@Column(columnDefinition = "json")
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
 	public List<CampaignDiagramTranslations> getCampaignDiagramTranslations() {
 		return campaignDiagramTranslations;
 	}

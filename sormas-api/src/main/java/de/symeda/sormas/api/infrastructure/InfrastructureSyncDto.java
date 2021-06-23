@@ -9,6 +9,7 @@ import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
+import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.ContinentDto;
 import de.symeda.sormas.api.region.CountryDto;
@@ -26,6 +27,7 @@ public class InfrastructureSyncDto implements Serializable {
 	private List<ContinentDto> continents;
 	private List<SubcontinentDto> subcontinents;
 	private List<CountryDto> countries;
+	private List<AreaDto> areas;
 	private List<RegionDto> regions;
 	private List<DistrictDto> districts;
 	private List<CommunityDto> communities;
@@ -71,6 +73,14 @@ public class InfrastructureSyncDto implements Serializable {
 
 	public void setCountries(List<CountryDto> countries) {
 		this.countries = countries;
+	}
+
+	public List<AreaDto> getAreas() {
+		return areas;
+	}
+
+	public void setAreas(List<AreaDto> areas) {
+		this.areas = areas;
 	}
 
 	public List<RegionDto> getRegions() {

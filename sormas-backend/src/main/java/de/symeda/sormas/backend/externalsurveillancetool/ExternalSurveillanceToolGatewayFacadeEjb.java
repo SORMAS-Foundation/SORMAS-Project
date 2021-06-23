@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -79,6 +79,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 		Response response = ClientBuilder.newBuilder()
 			.connectTimeout(30, TimeUnit.SECONDS)
+			.readTimeout(60, TimeUnit.SECONDS)
 			.build()
 			.target(serviceUrl)
 			.path("export")

@@ -14,6 +14,7 @@
 		<class>de.symeda.sormas.backend.epidata.EpiData</class>
 		<class>de.symeda.sormas.backend.event.Event</class>
 		<class>de.symeda.sormas.backend.event.EventParticipant</class>
+		<class>de.symeda.sormas.backend.event.EventGroup</class>
 		<class>de.symeda.sormas.backend.facility.Facility</class>
 		<class>de.symeda.sormas.backend.hospitalization.Hospitalization</class>
 		<class>de.symeda.sormas.backend.hospitalization.PreviousHospitalization</class>
@@ -31,6 +32,7 @@
 		<class>de.symeda.sormas.backend.symptoms.Symptoms</class>
 		<class>de.symeda.sormas.backend.task.Task</class>
 		<class>de.symeda.sormas.backend.user.User</class>
+		<class>de.symeda.sormas.backend.user.UserReference</class>
 		<class>de.symeda.sormas.backend.user.UserRoleConfig</class>
 		<class>de.symeda.sormas.backend.visit.Visit</class>
 		<class>de.symeda.sormas.backend.therapy.Therapy</class>
@@ -41,7 +43,6 @@
 		<class>de.symeda.sormas.backend.clinicalcourse.HealthConditions</class>
 		<class>de.symeda.sormas.backend.sample.AdditionalTest</class>
 		<class>de.symeda.sormas.backend.disease.DiseaseConfiguration</class>
-		<class>de.symeda.sormas.backend.disease.DiseaseVariant</class>
 		<class>de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory</class>
 		<class>de.symeda.sormas.backend.infrastructure.PointOfEntry</class>
 		<class>de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo</class>
@@ -55,7 +56,12 @@
 		<class>de.symeda.sormas.backend.campaign.data.CampaignFormData</class>
 		<class>de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition</class>
 		<class>de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo</class>
-		<class>de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo</class>
+		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo</class>
+		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase</class>
+		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact</class>
+		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoSample</class>
+		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEvent</class>
+		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEventParticipant</class>
 		<class>de.symeda.sormas.backend.document.Document</class>
 		<class>de.symeda.sormas.backend.exposure.Exposure</class>
 		<class>de.symeda.sormas.backend.common.messaging.ManualMessageLog</class>
@@ -68,6 +74,8 @@
 		<class>de.symeda.sormas.backend.person.PersonContactDetail</class>
 		<class>de.symeda.sormas.backend.region.Continent</class>
 		<class>de.symeda.sormas.backend.region.Subcontinent</class>
+		<class>de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequest</class>
+		<class>de.symeda.sormas.backend.customizableenum.CustomizableEnumValue</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

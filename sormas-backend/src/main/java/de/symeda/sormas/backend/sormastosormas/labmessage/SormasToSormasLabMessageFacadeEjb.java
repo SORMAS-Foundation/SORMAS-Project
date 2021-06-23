@@ -35,6 +35,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
@@ -45,7 +46,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.labmessage.LabMessage;
 import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.labmessage.LabMessageService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeHelper;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClient;
 
 @Stateless(name = "SormasToSormasLabMessageFacade")
@@ -54,31 +55,30 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 	public static final String SAVE_SHARED_LAB_MESSAGE_ENDPOINT = RESOURCE_PATH + LAB_MESSAGE_ENDPOINT;
 
 	@EJB
-	private SormasToSormasFacadeHelper sormasToSormasFacadeHelper;
-	@EJB
 	private LabMessageService labMessageService;
 	@EJB
 	private LabMessageFacadeEjbLocal labMessageFacade;
 	@Inject
 	private SormasToSormasRestClient sormasToSormasRestClient;
 
+	@EJB
+	private SormasToSormasEncryptionService encryptionService;
+
 	@Override
 	public void sendLabMessages(List<String> uuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		List<LabMessage> labMessages = labMessageService.getByUuids(uuids);
-
 		List<LabMessageDto> dtos = labMessages.stream().map(labMessageFacade::toDto).collect(Collectors.toList());
+		sormasToSormasRestClient.post(options.getOrganization().getUuid(), SAVE_SHARED_LAB_MESSAGE_ENDPOINT, dtos, null);
 
-		sormasToSormasFacadeHelper.sendEntitiesToSormas(
-			dtos,
-			options,
-			(host, authToken, encryptedData) -> sormasToSormasRestClient.post(host, SAVE_SHARED_LAB_MESSAGE_ENDPOINT, authToken, encryptedData));
-
-		labMessages.forEach(labMessage -> labMessageService.delete(labMessage));
+		labMessages.forEach(labMessage -> {
+			labMessage.setStatus(LabMessageStatus.FORWARDED);
+			labMessageService.ensurePersisted(labMessage);
+		});
 	}
 
 	@Override
 	public void saveLabMessages(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
-		LabMessageDto[] sharedLabMessages = sormasToSormasFacadeHelper.decryptSharedData(encryptedData, LabMessageDto[].class);
+		LabMessageDto[] sharedLabMessages = encryptionService.decryptAndVerify(encryptedData, LabMessageDto[].class);
 
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
 		List<LabMessageDto> labMessagesToSave = new ArrayList<>(sharedLabMessages.length);

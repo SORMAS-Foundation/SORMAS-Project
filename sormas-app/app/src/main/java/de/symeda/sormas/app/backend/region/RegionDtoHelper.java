@@ -58,6 +58,7 @@ public class RegionDtoHelper extends AdoDtoHelper<Region, RegionDto> {
 		ado.setName(dto.getName());
 		ado.setEpidCode(dto.getEpidCode());
 		ado.setCountry(DatabaseHelper.getCountryDao().getByReferenceDto(dto.getCountry()));
+		ado.setArea(DatabaseHelper.getAreaDao().getByReferenceDto(dto.getArea()));
 		ado.setArchived(dto.isArchived());
 	}
 

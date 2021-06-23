@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.vaadin.navigator.View;
@@ -13,13 +14,14 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetailedDto> {
 
 	private static final long serialVersionUID = 3063406225342415037L;
 
-	public <V extends View> ContactGridDetailed(ContactCriteria criteria, Class<V> viewClass) {
-		super(ContactIndexDetailedDto.class, criteria, viewClass);
+	public ContactGridDetailed(ContactCriteria criteria, Class<? extends View> viewClass, Class<? extends ViewConfiguration> viewConfigurationClass) {
+		super(ContactIndexDetailedDto.class, criteria, viewClass, viewConfigurationClass);
 	}
 
 	protected List<ContactIndexDetailedDto> getGridData(
@@ -33,7 +35,9 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 
 	@Override
 	protected Stream<String> getColumnList() {
-		return Stream.concat(super.getColumnList(), Stream.of(ContactIndexDetailedDto.CAZE, ContactIndexDetailedDto.REPORTING_USER));
+		List<String> columnList = super.getColumnList().collect(Collectors.toList());
+		columnList.add(columnList.indexOf(ContactIndexDetailedDto.CONTACT_PROXIMITY) + 1, ContactIndexDetailedDto.RELATION_TO_CASE);
+		return Stream.concat(columnList.stream(), Stream.of(ContactIndexDetailedDto.CAZE, ContactIndexDetailedDto.REPORTING_USER));
 	}
 
 	@Override

@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.common;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -58,6 +59,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String COUNTRY_EPID_PREFIX = "country.epidprefix";
 	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
 	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
+	private static final String MAP_USE_COUNTRY_CENTER = "map.usecountrycenter";
 	private static final String MAP_ZOOM = "map.zoom";
 
 	public static final String VERSION_PLACEHOLER = "%version";
@@ -88,7 +90,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String SMS_AUTH_KEY = "sms.auth.key";
 	public static final String SMS_AUTH_SECRET = "sms.auth.secret";
 
+	public static final String DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES = "duplicatechecks.excludepersonsonlylinkedtoarchivedentries";
 	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
+
 	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
 
 	public static final String INTERFACE_SYMPTOM_JOURNAL_URL = "interface.symptomjournal.url";
@@ -117,6 +121,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
 	private static final String GEOCODING_LONGITUDE_JSON_PATH = "geocodingLongitudeJsonPath";
 	private static final String GEOCODING_LATITUDE_JSON_PATH = "geocodingLatitudeJsonPath";
+	private static final String GEOCODING_EPSG4326_WKT = "geocodingEPSG4326_WKT";
 
 	private static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
 	private static final String SORMAS2SORMAS_SERVER_ACCESS_DATA_FILE_NAME = "sormas2sormas.serverAccessDataFileName";
@@ -136,8 +141,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String CREATE_DEFAULT_ENTITIES = "createDefaultEntities";
 	private static final String SKIP_DEFAULT_PASSWORD_CHECK = "skipDefaultPasswordCheck";
 
-
 	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
+
+	private static final String UI_URL = "ui.url";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -191,7 +197,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		if (countryName.isEmpty()) {
 			logger.info("No country name is specified in sormas.properties.");
 		}
-		return countryName;
+		return new String(countryName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 	}
 
 	/**
@@ -245,6 +251,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public GeoLatLon getCountryCenter() {
 		return new GeoLatLon(getDouble(COUNTRY_CENTER_LAT, 0), getDouble(COUNTRY_CENTER_LON, 0));
+	}
+
+	@Override
+	public boolean isMapUseCountryCenter() {
+		return getBoolean(MAP_USE_COUNTRY_CENTER, false);
 	}
 
 	@Override
@@ -303,6 +314,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public String getUiUrl() {
+		return getProperty(UI_URL, null);
+	}
+
+	@Override
 	public String getDocumentFilesPath() {
 		return getProperty(DOCUMENT_FILES_PATH, "/opt/sormas/documents/");
 	}
@@ -358,6 +374,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public boolean isDuplicateChecksExcludePersonsOfArchivedEntries() {
+		return getBoolean(DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES, false);
+	}
+
+	@Override
 	public double getNameSimilarityThreshold() {
 		return getDouble(NAME_SIMILARITY_THRESHOLD, PersonHelper.DEFAULT_NAME_SIMILARITY_THRESHOLD);
 	}
@@ -405,6 +426,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getGeocodingLatitudeJsonPath() {
 		return getProperty(GEOCODING_LATITUDE_JSON_PATH, null);
+	}
+
+	@Override
+	public String getGeocodingEPSG4326_WKT() {
+		return getProperty(
+			GEOCODING_EPSG4326_WKT,
+			"GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Long\",EAST],AXIS[\"Lat\",NORTH],AUTHORITY[\"EPSG\",\"4326\"]]");
 	}
 
 	@Override
@@ -479,15 +507,18 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getPatientDiaryConfig().getProbandsUrl(),
 			getPatientDiaryConfig().getAuthUrl());
 
+		UrlValidator urlValidator = new UrlValidator(
+			new String[] {
+				"http",
+				"https" },
+			UrlValidator.ALLOW_LOCAL_URLS);
+
 		urls.forEach(url -> {
 			if (StringUtils.isBlank(url)) {
 				return;
 			}
-			// Must be a valid URL
-			if (!new UrlValidator(
-				new String[] {
-					"http",
-					"https" }).isValid(url)) {
+
+			if (!urlValidator.isValid(url)) {
 				throw new IllegalArgumentException("'" + url + "' is not a valid URL");
 			}
 		});
@@ -575,12 +606,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getInt(STEP_SIZE_FOR_CSV_EXPORT, 5000);
 	}
 
-	@LocalBean
-	@Stateless
-	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
-
-	}
-
 	@Override
 	public boolean isSmsServiceSetUp() {
 		return !StringUtils.isAnyBlank(getProperty(SMS_AUTH_KEY, null), getProperty(SMS_AUTH_SECRET, null));
@@ -591,4 +616,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(INTERFACE_DEMIS_JNDINAME, null);
 	}
 
+	@LocalBean
+	@Stateless
+	public static class ConfigFacadeEjbLocal extends ConfigFacadeEjb {
+
+	}
 }

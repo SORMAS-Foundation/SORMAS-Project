@@ -17,14 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -125,10 +130,27 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
 	}
 
-	public List<PathogenTest> getAllByCase(Case caze) {
+	public List<PathogenTest> getAllByCase(String caseUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PathogenTest> cq = cb.createQuery(getElementClass());
+		Root<PathogenTest> from = cq.from(getElementClass());
+
+		Predicate filter = createDefaultFilter(cb, from);
+
+		Join<Object, Object> sampleJoin = from.join(PathogenTest.SAMPLE);
+		filter = cb.and(filter, cb.equal(sampleJoin.join(Sample.ASSOCIATED_CASE, JoinType.LEFT).get(Case.UUID), caseUuid));
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(PathogenTest.TEST_DATE_TIME)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public Long countByCase(Case caze) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<PathogenTest> from = cq.from(getElementClass());
 
 		Predicate filter = createDefaultFilter(cb, from);
@@ -137,11 +159,11 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 			Join<Object, Object> sampleJoin = from.join(PathogenTest.SAMPLE);
 			filter = cb.and(filter, cb.equal(sampleJoin.get(Sample.ASSOCIATED_CASE), caze));
 		}
-
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(PathogenTest.TEST_DATE_TIME)));
 
-		return em.createQuery(cq).getResultList();
+		cq.select(cb.count(from.get(PathogenTest.ID)));
+
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public List<PathogenTest> getBySampleUuids(List<String> sampleUuids, boolean ordered) {
@@ -162,7 +184,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<String> getDeletedUuidsSince(User user, Date since) {
+	public List<String> getDeletedUuidsSince(Date since) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -230,12 +252,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 	public Predicate createActiveTestsFilter(CriteriaBuilder cb, Root<PathogenTest> root) {
 
 		Join<PathogenTest, Sample> sample = root.join(PathogenTest.SAMPLE, JoinType.LEFT);
-		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		Join<Sample, Contact> contact = sample.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
-		Join<Sample, EventParticipant> event = sample.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
-		Predicate pred =
-			cb.or(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(contact.get(Contact.DELETED)), cb.isFalse(event.get(EventParticipant.DELETED)));
-		return cb.and(pred, cb.isFalse(sample.get(Sample.DELETED)));
+		return sampleService.createActiveSamplesFilter(cb, sample);
 	}
 
 	/**
@@ -244,5 +261,24 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<PathogenTest> root) {
 		return cb.isFalse(root.get(PathogenTest.DELETED));
+	}
+
+	/**
+	 * @param pathogenTestUuids
+	 *            {@link PathogenTest}s identified by {@code uuid} to be deleted.
+	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void delete(List<String> pathogenTestUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<PathogenTest> cu = cb.createCriteriaUpdate(PathogenTest.class);
+		Root<PathogenTest> root = cu.from(PathogenTest.class);
+
+		cu.set(PathogenTest.CHANGE_DATE, Timestamp.from(Instant.now()));
+		cu.set(root.get(PathogenTest.DELETED), true);
+
+		cu.where(root.get(PathogenTest.UUID).in(pathogenTestUuids));
+
+		em.createQuery(cu).executeUpdate();
 	}
 }

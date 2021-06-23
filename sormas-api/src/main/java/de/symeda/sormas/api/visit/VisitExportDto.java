@@ -47,6 +47,8 @@ public class VisitExportDto implements Serializable {
 
 	private VisitOrigin origin;
 
+	private boolean isInJurisdiction;
+
 	public VisitExportDto(
 		Long id,
 		String uuid,
@@ -62,7 +64,8 @@ public class VisitExportDto implements Serializable {
 		Double reportLat,
 		Double reportLon,
 		VisitOrigin origin,
-		String personUuid) {
+		String personUuid,
+		boolean isInJurisdiction) {
 
 		this.id = id;
 		this.uuid = uuid;
@@ -79,6 +82,7 @@ public class VisitExportDto implements Serializable {
 		this.reportLon = reportLon;
 		this.personUuid = personUuid;
 		this.origin = origin;
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public Long getId() {
@@ -95,6 +99,10 @@ public class VisitExportDto implements Serializable {
 
 	public Long getPersonId() {
 		return personId;
+	}
+
+	public boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 
 	@Order(0)

@@ -50,10 +50,12 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -66,6 +68,22 @@ public class VisitService extends BaseAdoService<Visit> {
 
 	public VisitService() {
 		super(Visit.class);
+	}
+
+	protected boolean inJurisdiction(Visit visit) {
+		return exists(
+			(cb, root) -> cb.and(
+				cb.equal(root.get(AbstractDomainObject.ID), visit.getId()),
+				inJurisdiction(cb, root.join(Visit.CAZE, JoinType.LEFT), root.join(Visit.CONTACTS, JoinType.LEFT))));
+	}
+
+	private Predicate inJurisdiction(
+		CriteriaBuilder cb,
+		Join<Visit, Case> caseJoin,
+		Join<Visit, Contact> contactJoin) {
+		return cb.or(
+			caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(caseJoin)),
+			contactService.inJurisdictionOrOwned(cb, new ContactJoins(contactJoin)));
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -82,8 +100,8 @@ public class VisitService extends BaseAdoService<Visit> {
 		Root<Contact> contactRoot = visitsQuery.from(Contact.class);
 		Join<Contact, Visit> visitJoin = contactRoot.join(Contact.VISITS, JoinType.LEFT);
 
-		visitsQuery.where(CriteriaBuilderHelper.
-			and(
+		visitsQuery.where(
+			CriteriaBuilderHelper.and(
 				cb,
 				contactService.createUserFilter(cb, visitsQuery, contactRoot),
 				contactService.createActiveContactsFilter(cb, contactRoot),
@@ -135,8 +153,8 @@ public class VisitService extends BaseAdoService<Visit> {
 		Fetch<Visit, Person> personFetch = visitJoin.fetch(Visit.PERSON);
 		personFetch.fetch(Person.ADDRESS);
 
-		Predicate filter =
-				CriteriaBuilderHelper.and(cb, contactService.createUserFilter(cb, visitsQuery, contactRoot), contactService.createActiveContactsFilter(cb, contactRoot));
+		Predicate filter = CriteriaBuilderHelper
+			.and(cb, contactService.createUserFilter(cb, visitsQuery, contactRoot), contactService.createActiveContactsFilter(cb, contactRoot));
 
 		if (date != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, visitJoin, DateHelper.toTimestampUpper(date)));
@@ -160,7 +178,8 @@ public class VisitService extends BaseAdoService<Visit> {
 		Fetch<Visit, Person> personFetch = visitJoin.fetch(Visit.PERSON);
 		personFetch.fetch(Person.ADDRESS);
 
-		Predicate filter = CriteriaBuilderHelper.and(cb, caseService.createUserFilter(cb, visitsQuery, caseRoot), caseService.createActiveCasesFilter(cb, caseRoot));
+		Predicate filter =
+			CriteriaBuilderHelper.and(cb, caseService.createUserFilter(cb, visitsQuery, caseRoot), caseService.createActiveCasesFilter(cb, caseRoot));
 
 		if (date != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, visitJoin, DateHelper.toTimestampUpper(date)));

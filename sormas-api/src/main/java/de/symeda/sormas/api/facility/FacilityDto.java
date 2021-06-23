@@ -49,6 +49,10 @@ public class FacilityDto extends EntityDto {
 	public static final String HOUSE_NUMBER = "houseNumber";
 	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 	public static final String AREA_TYPE = "areaType";
+	public static final String CONTACT_PERSON_FIRST_NAME = "contactPersonFirstName";
+	public static final String CONTACT_PERSON_LAST_NAME = "contactPersonLastName";
+	public static final String CONTACT_PERSON_PHONE = "contactPersonPhone";
+	public static final String CONTACT_PERSON_EMAIL = "contactPersonEmail";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String TYPE_GROUP = "typeGroup";
@@ -72,6 +76,10 @@ public class FacilityDto extends EntityDto {
 	private String houseNumber;
 	private String additionalInformation;
 	private AreaType areaType;
+	private String contactPersonFirstName;
+	private String contactPersonLastName;
+	private String contactPersonPhone;
+	private String contactPersonEmail;
 	private Double latitude;
 	private Double longitude;
 	private FacilityType type;
@@ -107,6 +115,10 @@ public class FacilityDto extends EntityDto {
 		String houseNumber,
 		String additionalInformation,
 		AreaType areaType,
+		String contactPersonFirstName,
+		String contactPersonLastName,
+		String contactPersonPhone,
+		String contactPersonEmail,
 		Double latitude,
 		Double longitude,
 		FacilityType type,
@@ -131,6 +143,10 @@ public class FacilityDto extends EntityDto {
 		this.houseNumber = houseNumber;
 		this.additionalInformation = additionalInformation;
 		this.areaType = areaType;
+		this.contactPersonFirstName = contactPersonFirstName;
+		this.contactPersonLastName = contactPersonLastName;
+		this.contactPersonPhone = contactPersonPhone;
+		this.contactPersonEmail = contactPersonEmail;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.type = type;
@@ -236,6 +252,38 @@ public class FacilityDto extends EntityDto {
 
 	public void setAreaType(AreaType areaType) {
 		this.areaType = areaType;
+	}
+
+	public String getContactPersonFirstName() {
+		return contactPersonFirstName;
+	}
+
+	public void setContactPersonFirstName(String contactPersonFirstName) {
+		this.contactPersonFirstName = contactPersonFirstName;
+	}
+
+	public String getContactPersonLastName() {
+		return contactPersonLastName;
+	}
+
+	public void setContactPersonLastName(String contactPersonLastName) {
+		this.contactPersonLastName = contactPersonLastName;
+	}
+
+	public String getContactPersonPhone() {
+		return contactPersonPhone;
+	}
+
+	public void setContactPersonPhone(String contactPersonPhone) {
+		this.contactPersonPhone = contactPersonPhone;
+	}
+
+	public String getContactPersonEmail() {
+		return contactPersonEmail;
+	}
+
+	public void setContactPersonEmail(String contactPersonEmail) {
+		this.contactPersonEmail = contactPersonEmail;
 	}
 
 	public FacilityType getType() {

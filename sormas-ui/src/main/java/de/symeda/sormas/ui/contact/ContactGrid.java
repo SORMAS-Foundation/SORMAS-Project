@@ -25,12 +25,13 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class ContactGrid extends AbstractContactGrid<ContactIndexDto> {
 
-	public <V extends View> ContactGrid(ContactCriteria criteria, Class<V> viewClass) {
-		super(ContactIndexDto.class, criteria, viewClass);
+	public ContactGrid(ContactCriteria criteria, Class<? extends View> viewClass, Class<? extends ViewConfiguration> viewConfigurationClass) {
+		super(ContactIndexDto.class, criteria, viewClass, viewConfigurationClass);
 	}
 
 	protected List<ContactIndexDto> getGridData(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {

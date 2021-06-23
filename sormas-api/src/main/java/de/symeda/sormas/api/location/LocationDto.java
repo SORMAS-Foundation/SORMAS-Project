@@ -17,17 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.api.location;
 
-import de.symeda.sormas.api.region.ContinentReferenceDto;
-import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.ContinentReferenceDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -64,6 +64,10 @@ public class LocationDto extends PseudonymizableDto {
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String FACILITY = "facility";
 	public static final String FACILITY_DETAILS = "facilityDetails";
+	public static final String CONTACT_PERSON_FIRST_NAME = "contactPersonFirstName";
+	public static final String CONTACT_PERSON_LAST_NAME = "contactPersonLastName";
+	public static final String CONTACT_PERSON_PHONE = "contactPersonPhone";
+	public static final String CONTACT_PERSON_EMAIL = "contactPersonEmail";
 
 	private ContinentReferenceDto continent;
 	private SubcontinentReferenceDto subcontinent;
@@ -114,6 +118,10 @@ public class LocationDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	private String facilityDetails;
+	private String contactPersonFirstName;
+	private String contactPersonLastName;
+	private String contactPersonPhone;
+	private String contactPersonEmail;
 
 	public String getDetails() {
 		return details;
@@ -281,6 +289,38 @@ public class LocationDto extends PseudonymizableDto {
 
 	public void setFacilityDetails(String facilityDetails) {
 		this.facilityDetails = facilityDetails;
+	}
+
+	public String getContactPersonFirstName() {
+		return contactPersonFirstName;
+	}
+
+	public void setContactPersonFirstName(String contactPersonFirstName) {
+		this.contactPersonFirstName = contactPersonFirstName;
+	}
+
+	public String getContactPersonLastName() {
+		return contactPersonLastName;
+	}
+
+	public void setContactPersonLastName(String contactPersonLastName) {
+		this.contactPersonLastName = contactPersonLastName;
+	}
+
+	public String getContactPersonPhone() {
+		return contactPersonPhone;
+	}
+
+	public void setContactPersonPhone(String contactPersonPhone) {
+		this.contactPersonPhone = contactPersonPhone;
+	}
+
+	public String getContactPersonEmail() {
+		return contactPersonEmail;
+	}
+
+	public void setContactPersonEmail(String contactPersonEmail) {
+		this.contactPersonEmail = contactPersonEmail;
 	}
 
 	@Override

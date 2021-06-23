@@ -27,6 +27,7 @@
         <import type="de.symeda.sormas.api.i18n.Captions" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.exposure.Exposure" />
+        <variable name="index" type="java.lang.Integer" />
 
         <variable name="callback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>

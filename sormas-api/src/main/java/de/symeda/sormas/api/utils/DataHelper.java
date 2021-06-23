@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +32,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.base.CharMatcher;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.HasUuid;
@@ -388,13 +395,13 @@ public final class DataHelper {
 			return PersonHelper.getAgeAndBirthdateString(
 				ageAndBirthDate.getAge(),
 				ageAndBirthDate.getAgeType(),
-				ageAndBirthDate.getBirthdateDD(),
-				ageAndBirthDate.getBirthdateMM(),
-				ageAndBirthDate.getBirthdateYYYY(),
+				ageAndBirthDate.getDateOfBirthDD(),
+				ageAndBirthDate.getDateOfBirthMM(),
+				ageAndBirthDate.getDateOfBirthYYYY(),
 				userLanguage);
 		} else if (value instanceof BirthDateDto) {
 			BirthDateDto birthDate = (BirthDateDto) value;
-			return PersonHelper.formatBirthdate(birthDate.getBirthdateDD(), birthDate.getBirthdateMM(), birthDate.getBirthdateYYYY(), userLanguage);
+			return PersonHelper.formatBirthdate(birthDate.getDateOfBirthDD(), birthDate.getDateOfBirthMM(), birthDate.getDateOfBirthYYYY(), userLanguage);
 		} else {
 			return value.toString();
 		}
@@ -402,5 +409,29 @@ public final class DataHelper {
 
 	public static String sanitizeFileName(String fileName) {
 		return fileName.replaceAll("[^a-zA-Z0-9._-]", "");
+	}
+
+	public static String cleanStringForFileName(String name) {
+		String nameWithoutSpecialCharacters = CharMatcher.javaLetter().or(CharMatcher.is(' ')).retainFrom(name);
+		return nameWithoutSpecialCharacters.replace(' ', '_').toLowerCase();
+	}
+
+	public static <T> List<T> asListNullable(@Nullable T object) {
+		if (object == null) {
+			return null;
+		}
+
+		return Collections.singletonList(object);
+	}
+
+	public static String joinStrings(String separator, String... strings) {
+		List<String> notEmptyValues = new ArrayList<>();
+		for (String string : strings) {
+			if (!StringUtils.isBlank(string)) {
+				notEmptyValues.add(string);
+			}
+		}
+
+		return StringUtils.join(notEmptyValues, separator);
 	}
 }

@@ -434,6 +434,11 @@
 
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/person_internalToken"
+                app:value="@{data.internalToken}"
+                style="@style/ControlSingleColumnStyle"/>
+
             <LinearLayout
                 android:id="@+id/personContactDetails_layout"
                 android:layout_width="match_parent"
@@ -478,6 +483,23 @@
                     app:bindCallback="@{personContactDetailBindCallback}" />
 
             </LinearLayout>
+
+            <ImageView style="@style/FullHorizontalDividerStyle"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/heading_additional_details"
+                style="@style/SubHeadingStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/person_additionalDetails"
+                app:value="@{data.additionalDetails}"
+                app:showCaption="false"
+                app:singleLine="false"
+                app:maxLines="4000"
+                app:textArea="true"
+                style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
 

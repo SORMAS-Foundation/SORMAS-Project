@@ -18,6 +18,8 @@ public class ExtendedPostgreSQL94Dialect extends PostgreSQL94Dialect {
 	public final static String CONCAT_FUNCTION = "concat_function";
 	public final static String UNACCENT = "unaccent";
 	public final static String ILIKE = "ilike";
+	public final static String WINDOW_FIRST_VALUE_DESC = "window_first_value_desc";
+	public final static String WINDOW_COUNT = "window_count";
 
 	public ExtendedPostgreSQL94Dialect() {
 		super();
@@ -30,5 +32,15 @@ public class ExtendedPostgreSQL94Dialect extends PostgreSQL94Dialect {
 		registerFunction(SIMILARITY_OPERATOR, new SQLFunctionTemplate(StandardBasicTypes.BOOLEAN, "?1 % ?2"));
 		registerFunction(UNACCENT, new SQLFunctionTemplate(StandardBasicTypes.STRING, "unaccent(?1)"));
 		registerFunction(ILIKE, new SQLFunctionTemplate(StandardBasicTypes.BOOLEAN, "?1 ILIKE ?2"));
+		registerFunction(
+			WINDOW_FIRST_VALUE_DESC,
+			new SQLFunctionTemplate(
+				StandardBasicTypes.STRING,
+				"FIRST_VALUE(?1) OVER (PARTITION BY ?2 ORDER BY ?3 DESC RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)"));
+		registerFunction(
+			WINDOW_COUNT,
+			new SQLFunctionTemplate(
+				StandardBasicTypes.LONG,
+				"COUNT(?1) OVER (PARTITION BY ?2 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)"));
 	}
 }

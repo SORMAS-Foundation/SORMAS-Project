@@ -48,15 +48,19 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextArea;
 
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.PersonEditForm;
+
+import static java.util.Objects.nonNull;
 
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
@@ -188,6 +192,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		if (fieldGroups != null) {
 			Stream.of(fieldGroups).forEach(fg -> fg.getFields().forEach(f -> f.addValueChangeListener(ev -> {
 				final Object source = ((Field.ValueChangeEvent) ev).getSource();
+				// Note by @MateStrysewske: It seems like the duplicate code here is necessary; for some reason,
+				// moving it to a separate method breaks the logic at least on my dev system
 				if (source instanceof PersonEditForm) {
 					final PersonEditForm personEditForm = (PersonEditForm) source;
 					final LocationEditForm locationEditForm = personEditForm.getField(PersonDto.ADDRESS);
@@ -203,6 +209,27 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						.anyMatch(Buffered::isModified)) {
 						dirty = true;
 					} else if (personEditForm.getFieldGroup()
+						.getFields()
+						.stream()
+						.filter(lf -> !(lf instanceof AccessibleTextField))
+						.anyMatch(Buffered::isModified)) {
+						dirty = true;
+					}
+				} else if (source instanceof EventDataForm) {
+					final EventDataForm eventDataForm = (EventDataForm) source;
+					final LocationEditForm locationEditForm = eventDataForm.getField(EventDto.EVENT_LOCATION);
+					if (atLeastOneFieldModified(
+						locationEditForm.getField(LocationDto.LATITUDE),
+						locationEditForm.getField(LocationDto.LONGITUDE),
+						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
+						dirty = true;
+					} else if (locationEditForm.getFieldGroup()
+						.getFields()
+						.stream()
+						.filter(lf -> !(lf instanceof AccessibleTextField))
+						.anyMatch(Buffered::isModified)) {
+						dirty = true;
+					} else if (eventDataForm.getFieldGroup()
 						.getFields()
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
@@ -307,7 +334,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	 */
 	public Button getCommitButton() {
 		if (commitButton == null) {
-			commitButton = ButtonHelper.createButtonWithCaption("commit", I18nProperties.getCaption(Captions.actionSave), new ClickListener() {
+			commitButton = ButtonHelper.createButton("commit", I18nProperties.getCaption(Captions.actionSave), new ClickListener() {
 
 				private static final long serialVersionUID = 1L;
 
@@ -329,7 +356,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	 */
 	public Button getDiscardButton() {
 		if (discardButton == null) {
-			discardButton = ButtonHelper.createButtonWithCaption("discard", I18nProperties.getCaption(Captions.actionDiscard), new ClickListener() {
+			discardButton = ButtonHelper.createButton("discard", I18nProperties.getCaption(Captions.actionDiscard), new ClickListener() {
 
 				private static final long serialVersionUID = 1L;
 
@@ -346,7 +373,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public Button getDeleteButton(String entityName) {
 		if (deleteButton == null) {
-			deleteButton = ButtonHelper.createButtonWithCaption("delete", I18nProperties.getCaption(Captions.actionDelete), new ClickListener() {
+			deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete), new ClickListener() {
 
 				private static final long serialVersionUID = 1L;
 
@@ -438,6 +465,16 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return null;
 	}
 
+	private String findHtmlMessageDetails(InvalidValueException exception) {
+		for (InvalidValueException cause : exception.getCauses()) {
+			String message = findHtmlMessage(cause);
+			if (message != null)
+				return message;
+		}
+
+		return null;
+	}
+
 	public void commitAndHandle() {
 		try {
 			commit();
@@ -474,6 +511,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						htmlMsg.append("</ul>");
 					} else if (firstCause != null) {
 						htmlMsg.append(findHtmlMessage(firstCause));
+						String additionalInfo = findHtmlMessageDetails(firstCause);
+						if (nonNull(additionalInfo) && !additionalInfo.isEmpty()) {
+							htmlMsg.append(" : ");
+							htmlMsg.append(findHtmlMessageDetails(firstCause));
+						}
 					}
 
 				}

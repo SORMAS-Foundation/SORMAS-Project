@@ -35,6 +35,8 @@ public interface ConfigFacade {
 
 	String getAppUrl();
 
+	String getUiUrl();
+
 	boolean isFeatureAutomaticCaseClassification();
 
 	String getEmailSenderAddress();
@@ -77,6 +79,8 @@ public interface ConfigFacade {
 
 	String getSormasInstanceName();
 
+	boolean isDuplicateChecksExcludePersonsOfArchivedEntries();
+
 	double getNameSimilarityThreshold();
 
 	int getInfrastructureSyncThreshold();
@@ -89,6 +93,8 @@ public interface ConfigFacade {
 
 	GeoLatLon getCountryCenter();
 
+	boolean isMapUseCountryCenter();
+
 	int getMapZoom();
 
 	String getGeocodingServiceUrlTemplate();
@@ -96,6 +102,8 @@ public interface ConfigFacade {
 	String getGeocodingLongitudeJsonPath();
 
 	String getGeocodingLatitudeJsonPath();
+
+	String getGeocodingEPSG4326_WKT();
 
 	SymptomJournalConfig getSymptomJournalConfig();
 
