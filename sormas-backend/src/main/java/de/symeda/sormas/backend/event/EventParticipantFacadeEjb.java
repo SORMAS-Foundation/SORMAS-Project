@@ -360,6 +360,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<EventParticipant, VaccinationInfo> vaccinationInfoJoin = joins.getVaccinationInfo();
 		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
 
+		Expression<Object> jurisdictionSelector =
+			JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, joins));
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.UUID),
@@ -377,7 +379,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			cb.max(samples.get(Sample.SAMPLE_DATE_TIME)),
 			vaccinationInfoJoin.get(VaccinationInfo.VACCINATION),
 			joins.getEventParticipantReportingUser().get(User.UUID),
-			JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, joins)));
+			jurisdictionSelector);
 		cq.groupBy(
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.UUID),
@@ -390,7 +392,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
 			vaccinationInfoJoin.get(VaccinationInfo.VACCINATION),
-			joins.getEventParticipantReportingUser().get(User.UUID));
+			joins.getEventParticipantReportingUser().get(User.UUID),
+			jurisdictionSelector);
 
 		Subquery<Date> dateSubquery = cq.subquery(Date.class);
 		Root<Sample> subRoot = dateSubquery.from(Sample.class);
