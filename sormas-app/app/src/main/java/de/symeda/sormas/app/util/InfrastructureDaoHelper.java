@@ -773,7 +773,7 @@ public final class InfrastructureDaoHelper {
 				if (skipListeners != null && skipListeners.get()) {
 					return;
 				}
-				
+
 				FacilityType selectedType = (FacilityType) field.getValue();
 				if (selectedType != null) {
 					facilityField

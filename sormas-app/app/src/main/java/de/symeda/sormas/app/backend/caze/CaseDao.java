@@ -76,6 +76,9 @@ import de.symeda.sormas.app.backend.event.EventCriteria;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
@@ -265,21 +268,21 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		}
 
 		if (UserRole.isPortHealthUser(currentUser.getUserRoles())) {
-			caze.setRegion(currentUser.getRegion());
-			caze.setDistrict(currentUser.getDistrict());
+			caze.setResponsibleRegion(currentUser.getRegion());
+			caze.setResponsibleDistrict(currentUser.getDistrict());
 			caze.setDisease(Disease.UNDEFINED);
 			caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
 			caze.setPointOfEntry(ConfigProvider.getUser().getPointOfEntry());
 		} else if (currentUser.getHealthFacility() != null) {
-			caze.setRegion(currentUser.getHealthFacility().getRegion());
-			caze.setDistrict(currentUser.getHealthFacility().getDistrict());
-			caze.setCommunity(currentUser.getHealthFacility().getCommunity());
+			caze.setResponsibleRegion(currentUser.getHealthFacility().getRegion());
+			caze.setResponsibleDistrict(currentUser.getHealthFacility().getDistrict());
+			caze.setResponsibleCommunity(currentUser.getHealthFacility().getCommunity());
 			caze.setHealthFacility(currentUser.getHealthFacility());
 			caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 		} else {
-			caze.setRegion(currentUser.getRegion());
-			caze.setDistrict(currentUser.getDistrict());
-			caze.setCommunity(currentUser.getCommunity());
+			caze.setResponsibleRegion(currentUser.getRegion());
+			caze.setResponsibleDistrict(currentUser.getDistrict());
+			caze.setResponsibleCommunity(currentUser.getCommunity());
 			caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 		}
 
@@ -668,8 +671,18 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
 
 			Where<Case, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
-			where.and().eq(Case.DISEASE, criteria.getCaseCriteria().getDisease());
-			where.and().eq(Case.REGION + "_id", criteria.getCaseCriteria().getRegion());
+			CaseCriteria caseCriteria = criteria.getCaseCriteria();
+			where.and().eq(Case.DISEASE, caseCriteria.getDisease());
+			Where<Case, Long> regionFilter = where.and()
+				.eq(Case.RESPONSIBLE_REGION + "_id", caseCriteria.getResponsibleRegion())
+				.or()
+				.eq(Case.REGION + "_id", caseCriteria.getResponsibleRegion());
+			if (caseCriteria.getRegion() != null) {
+				regionFilter.or()
+					.eq(Case.RESPONSIBLE_REGION + "_id", caseCriteria.getRegion())
+					.or()
+					.eq(Case.REGION + "_id", caseCriteria.getRegion());
+			}
 			where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
 			where.and()
 				.between(Case.REPORT_DATE, DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30));
@@ -752,5 +765,29 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		}
 		queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
 		return queryBuilder;
+	}
+
+	public static Region getRegionWithFallback(Case caze) {
+		if (caze.getRegion() == null) {
+			return caze.getResponsibleRegion();
+		}
+
+		return caze.getRegion();
+	}
+
+	public static District getDistrictWithFallback(Case caze) {
+		if (caze.getDistrict() == null) {
+			return caze.getResponsibleDistrict();
+		}
+
+		return caze.getDistrict();
+	}
+
+	public static Community getCommunityWithFallback(Case caze) {
+		if (caze.getRegion() == null) {
+			return caze.getResponsibleCommunity();
+		}
+
+		return caze.getCommunity();
 	}
 }
