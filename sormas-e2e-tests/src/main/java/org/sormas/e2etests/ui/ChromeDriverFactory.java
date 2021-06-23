@@ -51,7 +51,7 @@ public class ChromeDriverFactory implements DriverFactory {
   @Override
   public RemoteWebDriver getRemoteWebDriver() {
     try {
-      WebDriverManager.chromedriver().driverVersion("90.0.4430.212").setup();
+      WebDriverManager.chromedriver().driverVersion("91").setup();
       log.info(
           "90.0.4430.212 version was set to ChromeDriver  <<<<<<<<<<<<<<<<<<<<<<<<<<<< CHROME INFO");
     } catch (Exception e) {
