@@ -114,6 +114,14 @@ public class BirthDateField extends CustomField<BirthDateDto> {
 		return binder.getBean();
 	}
 
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		dateOfBirthYear.setEnabled(enabled);
+		dateOfBirthMonth.setEnabled(enabled);
+		dateOfBirthDay.setEnabled(enabled);
+	}
+
 	private void setItemCaptionsForMonths(ComboBox<Integer> comboBox) {
 		comboBox.setItemCaptionGenerator(item -> I18nProperties.getEnumCaption(Month.of(item)));
 	}

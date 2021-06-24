@@ -181,6 +181,7 @@ public interface Captions {
 	String bulkDisease = "bulkDisease";
 	String bulkEdit = "bulkEdit";
 	String bulkEventInvestigationStatus = "bulkEventInvestigationStatus";
+	String bulkEventParticipantsToContacts = "bulkEventParticipantsToContacts";
 	String bulkEventStatus = "bulkEventStatus";
 	String bulkEventType = "bulkEventType";
 	String bulkFacility = "bulkFacility";

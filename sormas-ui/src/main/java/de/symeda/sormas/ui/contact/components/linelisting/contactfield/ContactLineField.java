@@ -107,4 +107,8 @@ public class ContactLineField extends CustomField<ContactLineFieldDto> {
 		relationToCase.removeStyleName(CssStyles.CAPTION_HIDDEN);
 		person.showCaptions();
 	}
+
+	public void enablePersonField(boolean shouldEnable) {
+		person.setEnabled(shouldEnable);
+	}
 }
