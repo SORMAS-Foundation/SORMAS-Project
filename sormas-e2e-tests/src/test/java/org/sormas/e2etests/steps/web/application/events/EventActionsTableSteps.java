@@ -19,7 +19,6 @@
 package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
-import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.*;
 
 import cucumber.api.java8.En;
 import java.time.LocalDateTime;
@@ -89,7 +88,7 @@ public class EventActionsTableSteps implements En {
 
           softly
               .assertThat(eventActionTableEntry.getActionLastModifiedBy())
-              .containsIgnoringCase("NatUser");
+              .containsIgnoringCase("National USER");
           softly.assertAll();
         });
 
