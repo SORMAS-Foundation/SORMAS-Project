@@ -654,10 +654,11 @@ public class ContactController {
 				confirmed -> {
 					if (confirmed) {
 						for (ContactIndexDto contact : selectedRows) {
-							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
+							if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
+								&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
 								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 								contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
-								contactDto.setFollowUpComment(
+								contactDto.addToFollowUpComment(
 									String.format(I18nProperties.getString(Strings.infoCanceledBy), UserProvider.getCurrent().getUserName()));
 								FacadeProvider.getContactFacade().saveContact(contactDto);
 							}
@@ -693,7 +694,7 @@ public class ContactController {
 							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 								contactDto.setFollowUpStatus(FollowUpStatus.LOST);
-								contactDto.setFollowUpComment(
+								contactDto.addToFollowUpComment(
 									String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), UserProvider.getCurrent().getUserName()));
 								FacadeProvider.getContactFacade().saveContact(contactDto);
 							}
