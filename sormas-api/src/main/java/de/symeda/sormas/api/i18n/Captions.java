@@ -1298,6 +1298,7 @@ public interface Captions {
 	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
 	String lastName = "lastName";
+	String latestPathogenTest = "latestPathogenTest";
 	String lineListingAddLine = "lineListingAddLine";
 	String lineListingDisableAll = "lineListingDisableAll";
 	String lineListingDisableAllShort = "lineListingDisableAllShort";

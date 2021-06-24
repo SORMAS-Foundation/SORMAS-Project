@@ -109,14 +109,18 @@ public class PathogenTestListEntry extends HorizontalLayout {
 			bottomLabelLayout.setWidth(100, Unit.PERCENTAGE);
 			labelLayout.addComponent(bottomLabelLayout);
 
-			Label labelBottomLeft = new Label(pathogenTest.getTestedDiseaseVariant().toString());
-			bottomLabelLayout.addComponent(labelBottomLeft);
+			if (pathogenTest.getTestedDiseaseVariant() != null) {
+				Label labelBottomLeft = new Label(pathogenTest.getTestedDiseaseVariant().toString());
+				bottomLabelLayout.addComponent(labelBottomLeft);
+			}
 
-			Label labelButtonRight =
-				new Label(I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.CQ_VALUE) + ": " + pathogenTest.getCqValue());
-			labelButtonRight.addStyleName(CssStyles.ALIGN_RIGHT);
-			bottomLabelLayout.addComponent(labelButtonRight);
-			bottomLabelLayout.setComponentAlignment(labelButtonRight, Alignment.TOP_RIGHT);
+			if (pathogenTest.getCqValue() != null) {
+				Label labelBottomRight = new Label(
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.CQ_VALUE) + ": " + pathogenTest.getCqValue());
+				labelBottomRight.addStyleName(CssStyles.ALIGN_RIGHT);
+				bottomLabelLayout.addComponent(labelBottomRight);
+				bottomLabelLayout.setComponentAlignment(labelBottomRight, Alignment.TOP_RIGHT);
+			}
 		}
 
 		Label labelResult = new Label(DataHelper.toStringNullable(pathogenTest.getTestResult()));
