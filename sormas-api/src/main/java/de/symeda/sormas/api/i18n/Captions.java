@@ -365,6 +365,7 @@ public interface Captions {
 	String CaseData_reportLon = "CaseData.reportLon";
 	String CaseData_responsibleCommunity = "CaseData.responsibleCommunity";
 	String CaseData_responsibleDistrict = "CaseData.responsibleDistrict";
+	String CaseData_responsibleDistrictName = "CaseData.responsibleDistrictName";
 	String CaseData_responsibleRegion = "CaseData.responsibleRegion";
 	String CaseData_screeningType = "CaseData.screeningType";
 	String CaseData_sequelae = "CaseData.sequelae";
