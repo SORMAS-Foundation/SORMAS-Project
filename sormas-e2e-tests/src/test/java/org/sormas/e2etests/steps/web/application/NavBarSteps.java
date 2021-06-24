@@ -40,9 +40,12 @@ public class NavBarSteps implements En {
     When(
         "^I click on the Events button from navbar$",
         () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON));
-      When(
-              "^I click on the Actions button from Events view switcher$",
-              () -> webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_ACTIONS_RADIOBUTTON));
+    When(
+        "^I click on the Actions button from Events view switcher$",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                EventDirectoryPage.EVENT_ACTIONS_RADIOBUTTON));
+    webDriverHelpers.waitForPageLoaded();
 
     When(
         "^I click on the Tasks button from navbar$",

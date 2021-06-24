@@ -106,9 +106,11 @@ Feature: Create events
       Then I navigate to Event Action tab for created Event
       And I click on New Action from Event Actions tab
       And I create New Action from event tab
-      Then I click on the Events button from navbar
+      And I click on the Events button from navbar
       And I click on the Actions button from Events view switcher
-      When I search last created Event by API using EVENT UUID and wait for 1 entries in the table
+      And I search last created Event by API using EVENT UUID and wait for 1 entries in the table
+      And I collect the event actions from table view
+      And I am checking if all the fields are correctly displayed in the Event directory Actions table
 
 
   Scenario: Add a Task from event and verify the fields

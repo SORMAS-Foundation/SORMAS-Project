@@ -482,6 +482,15 @@ public class WebDriverHelpers {
                 .isAtMost(given));
   }
 
+  public void waitUntilNumberOfElementsIsExactly(By selector, int given) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
+    assertHelpers.assertWithPoll15Second(
+        () ->
+            assertWithMessage("Number of identified element should be %s", given)
+                .that(getNumberOfElements(selector))
+                .isEqualTo(given));
+  }
+
   public String getCheckedOptionFromHorizontalOptionGroup(By options) {
     waitUntilIdentifiedElementIsPresent(options);
     scrollToElement(options);

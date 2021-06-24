@@ -1,6 +1,5 @@
 package org.sormas.e2etests.steps.web.application.events;
 
-
 public enum EventActionsTableColumnsHeaders {
   EVENT_ID("EVENT ID"),
   EVENT_TITLE("EVENT TITLE"),

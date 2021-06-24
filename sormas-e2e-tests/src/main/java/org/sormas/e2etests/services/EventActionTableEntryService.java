@@ -20,10 +20,9 @@ package org.sormas.e2etests.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
+import java.time.LocalDate;
 import org.sormas.e2etests.pojo.web.Action;
 import org.sormas.e2etests.pojo.web.Event;
-
-import java.time.LocalDate;
 
 public class EventActionTableEntryService {
   private final Faker faker;

@@ -18,11 +18,8 @@
 
 package org.sormas.e2etests.pojo.web;
 
-import lombok.*;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import lombok.*;
 
 @Value
 @AllArgsConstructor
@@ -30,15 +27,6 @@ import java.time.LocalTime;
 @Builder(toBuilder = true, builderClassName = "builder")
 public class EventActionTableEntry {
   String eventId;
-  String eventTitle;
-  LocalDateTime dateOfEvent;
-  LocalDateTime evolutionDateOfEvent;
-  String eventStatus;
-  String eventRiskLevel;
-  String eventInvestigationStatus;
-  String eventManagementStatus;
-  String eventReportingUser;
-  String eventResponsibleUser;
   String actionTitle;
   LocalDateTime actionCreationDate;
   LocalDateTime actionChangeDate;
