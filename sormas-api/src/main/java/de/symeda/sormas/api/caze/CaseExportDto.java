@@ -113,7 +113,6 @@ public class CaseExportDto implements Serializable {
 	private long epiDataId;
 	private long symptomsId;
 	private long hospitalizationId;
-	private long districtId;
 	private long healthConditionsId;
 	private String uuid;
 	private String epidNumber;
@@ -306,11 +305,11 @@ public class CaseExportDto implements Serializable {
 
 	//@formatter:off
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
-						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
+						 long hospitalizationId, long healthConditionsId, String uuid, String epidNumber,
 						 Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
 						 Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM,
-						 Integer birthdateYYYY, Date reportDate,
-						 String region, String district, String community,
+						 Integer birthdateYYYY, Date reportDate, String reportingUserUuid, String regionUuid, String region,
+						 String districtUuid, String district, String communityUuid, String community,
 						 FacilityType facilityType, String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
 						 String pointOfEntryUuid, String pointOfEntryDetails, CaseClassification caseClassification,
 						 YesNoUnknown clinicalConfirmation, YesNoUnknown epidemiologicalConfirmation, YesNoUnknown laboratoryDiagnosticConfirmation,
@@ -342,7 +341,7 @@ public class CaseExportDto implements Serializable {
 						 CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType,
 						 // responsible jurisdiction
 						 String responsibleRegion, String responsibleDistrict, String responsibleCommunity,  boolean isInJurisdiction
-						 ) {
+	) {
 		//@formatter:on
 
 		this.id = id;
@@ -351,7 +350,6 @@ public class CaseExportDto implements Serializable {
 		this.epiDataId = epiDataId;
 		this.symptomsId = symptomsId;
 		this.hospitalizationId = hospitalizationId;
-		this.districtId = districtId;
 		this.healthConditionsId = healthConditionsId;
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
@@ -516,10 +514,6 @@ public class CaseExportDto implements Serializable {
 		return hospitalizationId;
 	}
 
-	public long getDistrictId() {
-		return districtId;
-	}
-
 	public long getHealthConditionsId() {
 		return healthConditionsId;
 	}
@@ -566,8 +560,8 @@ public class CaseExportDto implements Serializable {
 
 	@Order(6)
 	@ExportTarget(caseExportTypes = {
-			CaseExportType.CASE_SURVEILLANCE,
-			CaseExportType.CASE_MANAGEMENT })
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(CaseDataDto.INTERNAL_TOKEN)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getInternalToken() {
@@ -752,13 +746,43 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.RESPONSIBLE_REGION)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	@Order(23)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.RESPONSIBLE_DISTRICT)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getResponsibleDistrict() {
+		return responsibleDistrict;
+	}
+
+	@Order(24)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.RESPONSIBLE_COMMUNITY)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getResponsibleCommunity() {
+		return responsibleCommunity;
+	}
+
+	@Order(25)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(CaseDataDto.REGION)
 	@ExportGroup(ExportGroupType.CORE)
 	public String getRegion() {
 		return region;
 	}
 
-	@Order(23)
+	@Order(26)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -768,7 +792,7 @@ public class CaseExportDto implements Serializable {
 		return district;
 	}
 
-	@Order(24)
+	@Order(27)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -778,7 +802,7 @@ public class CaseExportDto implements Serializable {
 		return community;
 	}
 
-	@Order(25)
+	@Order(28)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -788,7 +812,7 @@ public class CaseExportDto implements Serializable {
 		return facilityType;
 	}
 
-	@Order(26)
+	@Order(29)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -798,7 +822,7 @@ public class CaseExportDto implements Serializable {
 		return healthFacility;
 	}
 
-	@Order(27)
+	@Order(30)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -808,7 +832,7 @@ public class CaseExportDto implements Serializable {
 		return healthFacilityDetails;
 	}
 
-	@Order(28)
+	@Order(31)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -818,7 +842,7 @@ public class CaseExportDto implements Serializable {
 		return pointOfEntry;
 	}
 
-	@Order(29)
+	@Order(32)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -828,7 +852,7 @@ public class CaseExportDto implements Serializable {
 		return pointOfEntryDetails;
 	}
 
-	@Order(35)
+	@Order(33)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -2041,36 +2065,6 @@ public class CaseExportDto implements Serializable {
 		return screeningType;
 	}
 
-	@Order(171)
-	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE,
-		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(CaseDataDto.RESPONSIBLE_REGION)
-	@ExportGroup(ExportGroupType.CORE)
-	public String getResponsibleRegion() {
-		return responsibleRegion;
-	}
-
-	@Order(172)
-	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE,
-		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(CaseDataDto.RESPONSIBLE_DISTRICT)
-	@ExportGroup(ExportGroupType.CORE)
-	public String getResponsibleDistrict() {
-		return responsibleDistrict;
-	}
-
-	@Order(173)
-	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE,
-		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(CaseDataDto.RESPONSIBLE_COMMUNITY)
-	@ExportGroup(ExportGroupType.CORE)
-	public String getResponsibleCommunity() {
-		return responsibleCommunity;
-	}
-
 	public void setCountry(String country) {
 		this.country = country;
 	}
@@ -2097,10 +2091,6 @@ public class CaseExportDto implements Serializable {
 
 	public void setHospitalizationId(long hospitalizationId) {
 		this.hospitalizationId = hospitalizationId;
-	}
-
-	public void setDistrictId(long districtId) {
-		this.districtId = districtId;
 	}
 
 	public void setHealthConditionsId(long healthConditionsId) {

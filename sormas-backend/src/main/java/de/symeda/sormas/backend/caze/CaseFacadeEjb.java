@@ -638,16 +638,17 @@ public class CaseFacadeEjb implements CaseFacade {
 		//@formatter:off
 		cq.multiselect(caseRoot.get(Case.ID), joins.getPerson().get(Person.ID), joins.getPersonAddress().get(Location.ID),
 				joins.getEpiData().get(EpiData.ID), joins.getSymptoms().get(Symptoms.ID), joins.getHospitalization().get(Hospitalization.ID),
-				joins.getDistrict().get(District.ID), joins.getHealthConditions().get(HealthConditions.ID), caseRoot.get(Case.UUID),
+				joins.getHealthConditions().get(HealthConditions.ID), caseRoot.get(Case.UUID),
 				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_VARIANT), caseRoot.get(Case.DISEASE_DETAILS),
 				joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME),
 				joins.getPerson().get(Person.SALUTATION), joins.getPerson().get(Person.OTHER_SALUTATION), joins.getPerson().get(Person.SEX),
 				caseRoot.get(Case.PREGNANT), joins.getPerson().get(Person.APPROXIMATE_AGE),
 				joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE), joins.getPerson().get(Person.BIRTHDATE_DD),
 				joins.getPerson().get(Person.BIRTHDATE_MM), joins.getPerson().get(Person.BIRTHDATE_YYYY),
-				caseRoot.get(Case.REPORT_DATE), joins.getRegion().get(Region.NAME),
-				joins.getDistrict().get(District.NAME),
-				joins.getCommunity().get(Community.NAME),
+				caseRoot.get(Case.REPORT_DATE), joins.getReportingUser().get(User.UUID),
+				joins.getRegion().get(Region.UUID), joins.getRegion().get(Region.NAME),
+				joins.getDistrict().get(District.UUID), joins.getDistrict().get(District.NAME),
+				joins.getCommunity().get(Community.UUID), joins.getCommunity().get(Community.NAME),
 				caseRoot.get(Case.FACILITY_TYPE),
 				joins.getFacility().get(Facility.NAME), joins.getFacility().get(Facility.UUID), caseRoot.get(Case.HEALTH_FACILITY_DETAILS),
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
@@ -1096,13 +1097,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<MapCaseDto> cases = caseService.getCasesForMap(region, district, disease, from, to, dateType);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		pseudonymizer.pseudonymizeDtoCollection(
-			MapCaseDto.class,
-			cases,
-			c -> c.getInJurisdiction(),
-			(c, isInJurisdiction) -> {
-				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), isInJurisdiction, null);
-			});
+		pseudonymizer.pseudonymizeDtoCollection(MapCaseDto.class, cases, c -> c.getInJurisdiction(), (c, isInJurisdiction) -> {
+			pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), isInJurisdiction, null);
+		});
 
 		return cases;
 	}
@@ -2001,7 +1998,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	/**
 	 * Reassigns tasks related to `caze`. With `forceReassignment` beeing false, the function will only reassign
 	 * the tasks if the assignees lack jurisdiction on the case. When forced, all tasks will be reassigned.
-	 * 
+	 *
 	 * @param caze
 	 *            the case which related tasks are reassigned.
 	 * @param forceReassignment
@@ -3380,15 +3377,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
 		cq.multiselect(
-				caze.get(Case.UUID),
-				joins.getPerson().get(Person.FIRST_NAME),
-				joins.getPerson().get(Person.LAST_NAME),
-				caze.get(Case.REPORT_DATE),
-				joins.getSymptoms().get(Symptoms.ONSET_DATE),
-				caze.get(Case.FOLLOW_UP_UNTIL),
-				joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
-				caze.get(Case.DISEASE),
-				JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, joins)));
+			caze.get(Case.UUID),
+			joins.getPerson().get(Person.FIRST_NAME),
+			joins.getPerson().get(Person.LAST_NAME),
+			caze.get(Case.REPORT_DATE),
+			joins.getSymptoms().get(Symptoms.ONSET_DATE),
+			caze.get(Case.FOLLOW_UP_UNTIL),
+			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+			caze.get(Case.DISEASE),
+			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, joins)));
 
 		Predicate filter = CriteriaBuilderHelper
 			.and(cb, caseService.createUserFilter(cb, cq, caze), caseService.createCriteriaFilter(caseCriteria, caseQueryContext));

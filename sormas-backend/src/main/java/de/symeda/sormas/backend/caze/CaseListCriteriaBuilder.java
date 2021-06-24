@@ -189,7 +189,6 @@ public class CaseListCriteriaBuilder {
 			root.get(AbstractDomainObject.CREATION_DATE),
 			joins.getRegion().get(Region.UUID),
 			joins.getDistrict().get(District.UUID),
-			joins.getDistrict().get(District.NAME),
 			joins.getFacility().get(Facility.UUID),
 			joins.getFacility().get(Facility.NAME),
 			root.get(Case.HEALTH_FACILITY_DETAILS),
@@ -214,6 +213,7 @@ public class CaseListCriteriaBuilder {
 			joins.getFacility().get(Facility.ID),
 			joins.getResponsibleRegion().get(Region.UUID),
 			joins.getResponsibleDistrict().get(District.UUID),
+			joins.getResponsibleDistrict().get(District.NAME),
 			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, joins)));
 	}
 
@@ -255,7 +255,7 @@ public class CaseListCriteriaBuilder {
 			return Collections.singletonList(joins.getRegion().get(Region.UUID));
 		case CaseIndexDto.DISTRICT_UUID:
 			return Collections.singletonList(joins.getDistrict().get(District.UUID));
-		case CaseIndexDto.DISTRICT_NAME:
+		case CaseIndexDto.RESPONSIBLE_DISTRICT_NAME:
 			return Collections.singletonList(joins.getResponsibleDistrict().get(District.NAME));
 		case CaseIndexDto.HEALTH_FACILITY_UUID:
 			return Collections.singletonList(joins.getFacility().get(Facility.UUID));
@@ -284,11 +284,11 @@ public class CaseListCriteriaBuilder {
 				joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getAddress().get(Location.POSTAL_CODE),
 				((Expression<String>) caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
+				joins.getReportingUser().get(User.UUID),
 				joins.getReportingUser().get(User.FIRST_NAME),
 				joins.getReportingUser().get(User.LAST_NAME),
 				joins.getSymptoms().get(Symptoms.ONSET_DATE),
 				joins.getResponsibleRegion().get(Region.NAME),
-				joins.getResponsibleDistrict().get(District.NAME),
 				joins.getResponsibleCommunity().get(Community.NAME)));
 
 		return selections;
@@ -311,8 +311,6 @@ public class CaseListCriteriaBuilder {
 			return Collections.singletonList(joins.getSymptoms().get(Symptoms.ONSET_DATE));
 		case CaseIndexDetailedDto.RESPONSIBLE_REGION:
 			return Collections.singletonList(joins.getResponsibleRegion().get(Region.NAME));
-		case CaseIndexDetailedDto.RESPONSIBLE_DISTRICT:
-			return Collections.singletonList(joins.getResponsibleDistrict().get(District.NAME));
 		case CaseIndexDetailedDto.RESPONSIBLE_COMMUNITY:
 			return Collections.singletonList(joins.getResponsibleCommunity().get(Community.NAME));
 		default:

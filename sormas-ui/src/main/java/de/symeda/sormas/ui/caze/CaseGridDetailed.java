@@ -46,7 +46,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 	protected Stream<String> getJurisdictionColumns() {
 		return Stream.of(
 			CaseIndexDetailedDto.RESPONSIBLE_REGION,
-			CaseIndexDetailedDto.RESPONSIBLE_DISTRICT,
+			CaseIndexDto.RESPONSIBLE_DISTRICT_NAME,
 			CaseIndexDetailedDto.RESPONSIBLE_COMMUNITY,
 			CaseIndexDto.HEALTH_FACILITY_NAME,
 			CaseIndexDto.POINT_OF_ENTRY_NAME);
