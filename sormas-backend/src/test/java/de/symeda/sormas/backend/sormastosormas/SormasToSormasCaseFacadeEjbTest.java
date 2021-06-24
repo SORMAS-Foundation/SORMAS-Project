@@ -242,13 +242,13 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 
 				assertThat(sharedCase.getSamples().size(), is(2));
 				SormasToSormasSampleDto sharedCaseSample = sharedCase.getSamples().get(0);
-				//assertThat(sharedCaseSample.getSample().getSampleDateTime(), is(sampleDateTime)); // FIXME: this fails because for some reason getSampleDateTime() returns a timestamp instead of date?
+				assertThat(sharedCaseSample.getSample().getSampleDateTime().compareTo(sampleDateTime), is(0)); // use compareTo because getSampleDateTime() returns Timestamp object due to Sample.java using TemporalType.Timestamp
 				assertThat(sharedCaseSample.getSample().getComment(), is("Test case sample"));
 				assertThat(sharedCaseSample.getPathogenTests(), hasSize(1));
 				assertThat(sharedCaseSample.getAdditionalTests(), hasSize(1));
 
 				SormasToSormasSampleDto sharedContactSample = sharedCase.getSamples().get(1);
-				//assertThat(sharedContactSample.getSample().getSampleDateTime(), is(sampleDateTime)); // FIXME: this fails because for some reason getSampleDateTime() returns a timestamp instead of date?
+				assertThat(sharedContactSample.getSample().getSampleDateTime().compareTo(sampleDateTime), is(0));
 				assertThat(sharedContactSample.getSample().getComment(), is("Test contact sample"));
 				assertThat(sharedContactSample.getPathogenTests(), hasSize(1));
 				assertThat(sharedContactSample.getAdditionalTests(), hasSize(1));
