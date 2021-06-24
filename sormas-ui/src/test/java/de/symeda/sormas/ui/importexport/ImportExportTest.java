@@ -180,9 +180,9 @@ public class ImportExportTest extends AbstractBeanTest {
 		assertNull(importedCase.getPregnant());
 		assertNull(importedCase.getTrimester());
 		assertNull(importedCase.getPostpartum());
-		assertThat(importedCase.getRegion(), is(rdcf.region));
-		assertThat(importedCase.getDistrict(), is(rdcf.district));
-		assertThat(importedCase.getCommunity(), is(rdcf.community));
+		assertThat(importedCase.getResponsibleRegion(), is(rdcf.region));
+		assertThat(importedCase.getResponsibleDistrict(), is(rdcf.district));
+		assertThat(importedCase.getResponsibleCommunity(), is(rdcf.community));
 		assertThat(importedCase.getHealthFacility(), is(rdcf.facility));
 		assertThat(importedCase.getHealthFacilityDetails(), is("test HF details"));
 		assertThat(importedCase.getQuarantine(), is(QuarantineType.INSTITUTIONELL));
