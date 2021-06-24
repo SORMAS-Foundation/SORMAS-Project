@@ -20,13 +20,37 @@ import java.util.Map;
 
 public class SormasToSormasErrorResponse implements Serializable {
 
+	private static final long serialVersionUID = -469412330276433776L;
+
+	private String message;
+
+	private String property;
+
 	private Map<String, ValidationErrors> errors;
 
 	public SormasToSormasErrorResponse() {
 	}
 
-	public SormasToSormasErrorResponse(Map<String, ValidationErrors> errors) {
+	public SormasToSormasErrorResponse(String message, String property, Map<String, ValidationErrors> errors) {
+		this.message = message;
+		this.property = property;
 		this.errors = errors;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getProperty() {
+		return property;
+	}
+
+	public void setProperty(String property) {
+		this.property = property;
 	}
 
 	public Map<String, ValidationErrors> getErrors() {

@@ -138,7 +138,7 @@ public class SormasToSormasContactFacadeEjb
 		}
 
 		if (validationErrors.size() > 0) {
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasShare), validationErrors);
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasShare, validationErrors);
 		}
 	}
 

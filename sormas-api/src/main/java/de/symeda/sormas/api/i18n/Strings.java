@@ -230,6 +230,7 @@ public interface Strings {
 	String entityUser = "entityUser";
 	String entityUserRoles = "entityUserRoles";
 	String epiWeek = "epiWeek";
+	String erorrSormasToSormasMissingCertificate = "erorrSormasToSormasMissingCertificate";
 	String errorAccessDenied = "errorAccessDenied";
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
@@ -271,6 +272,7 @@ public interface Strings {
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
 	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
+	String errorSormasToSormasInvalidRequestMethod = "errorSormasToSormasInvalidRequestMethod";
 	String errorSormasToSormasNotEditable = "errorSormasToSormasNotEditable";
 	String errorSormasToSormasOwnershipAlreadyHandedOver = "errorSormasToSormasOwnershipAlreadyHandedOver";
 	String errorSormasToSormasPersonEnrolled = "errorSormasToSormasPersonEnrolled";

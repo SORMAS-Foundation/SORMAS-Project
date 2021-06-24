@@ -42,7 +42,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 import de.symeda.sormas.api.SormasToSormasConfig;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
@@ -104,7 +103,7 @@ public class SormasToSormasEncryptionService {
 		X509Certificate otherCert = (X509Certificate) truststore.getCertificate(otherId);
 
 		if (otherCert == null) {
-			throw new SormasToSormasException(String.format("No certificate for id %s could be found", otherId));
+			throw SormasToSormasException.fromStringProperty(Strings.erorrSormasToSormasMissingCertificate, otherId);
 		}
 
 		switch (mode) {
@@ -120,13 +119,13 @@ public class SormasToSormasEncryptionService {
 	public SormasToSormasEncryptedDataDto signAndEncrypt(Object entities, String recipientId) throws SormasToSormasException {
 		try {
 			OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerAccessData()
-				.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
+				.orElseThrow(() -> SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasServerAccess));
 
 			byte[] encryptedData = cipher(Mode.ENCRYPTION, objectMapper.writeValueAsBytes(entities), recipientId);
 			return new SormasToSormasEncryptedDataDto(serverAccessData.getId(), encryptedData);
 		} catch (Exception e) {
 			LOGGER.error("Could not sign and encrypt data", e);
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasEncrypt));
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasEncrypt);
 		}
 	}
 
@@ -136,13 +135,13 @@ public class SormasToSormasEncryptionService {
 			return objectMapper.readValue(decryptedData, dataType);
 		} catch (Exception e) {
 			LOGGER.error("Could not decrypt and verify data", e);
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDecrypt));
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasDecrypt);
 		}
 	}
 
 	private String getOrganizationId() throws SormasToSormasException {
 		return serverAccessDataService.getServerAccessData()
-			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasCertNotGenerated)))
+			.orElseThrow(() -> SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasCertNotGenerated))
 			.getId();
 	}
 }

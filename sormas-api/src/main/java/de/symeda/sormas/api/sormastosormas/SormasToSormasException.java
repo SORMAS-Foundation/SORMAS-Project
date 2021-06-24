@@ -15,18 +15,27 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.util.Map;
 
 public class SormasToSormasException extends Exception {
 
+	private static final long serialVersionUID = 952700907523341584L;
+
+	private final String property;
+
 	private Map<String, ValidationErrors> errors;
 
-	public SormasToSormasException(String message) {
+	public SormasToSormasException(String message, String languageKey) {
 		super(message);
+		this.property = languageKey;
 	}
 
-	public SormasToSormasException(String message, Map<String, ValidationErrors> errors) {
+	public SormasToSormasException(String message, String languageKey, Map<String, ValidationErrors> errors) {
 		super(message);
+		this.property = languageKey;
 		this.errors = errors;
 	}
 
@@ -37,4 +46,29 @@ public class SormasToSormasException extends Exception {
 	public void setErrors(Map<String, ValidationErrors> errors) {
 		this.errors = errors;
 	}
+
+	public String getProperty() {
+		return property;
+	}
+
+	public static SormasToSormasException fromStringProperty(String property, Object... args) {
+		return fromStringProperty(property, null, args);
+	}
+
+	public static SormasToSormasException fromStringProperty(String property, Map<String, ValidationErrors> errors, Object ... args) {
+
+		String message;
+		if (ArrayUtils.isNotEmpty(args)) {
+			message = String.format(I18nProperties.getString(property), args);
+		} else {
+			message = I18nProperties.getString(property);
+		}
+
+		if (errors == null) {
+			return new SormasToSormasException(message, property);
+		} else {
+			return new SormasToSormasException(message, property, errors);
+		}
+	}
+
 }

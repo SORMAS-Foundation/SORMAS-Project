@@ -162,9 +162,9 @@ public class SormasToSormasResource {
 		try {
 			facadeCall.call();
 		} catch (SormasToSormasValidationException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
+			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(null, null, e.getErrors())).build();
 		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new SormasToSormasErrorResponse(e.getMessage(), e.getProperty(), e.getErrors())).build();
 		}
 
 		return Response.noContent().build();
@@ -175,9 +175,9 @@ public class SormasToSormasResource {
 		try {
 			response = facadeCall.call();
 		} catch (SormasToSormasValidationException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
+			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(null, null, e.getErrors())).build();
 		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new SormasToSormasErrorResponse(e.getMessage(), e.getProperty(), e.getErrors())).build();
 		}
 
 		return Response.ok().entity(response).build();

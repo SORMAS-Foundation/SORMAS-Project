@@ -136,7 +136,7 @@ public class ShareDataBuilderHelper {
 
 	private OrganizationServerAccessData getServerAccessData() throws SormasToSormasException {
 		return serverAccessDataService.getServerAccessData()
-			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasCertNotGenerated)));
+			.orElseThrow(() -> SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasCertNotGenerated));
 	}
 
 	public SormasToSormasPersonPreview getPersonPreview(Person person) {

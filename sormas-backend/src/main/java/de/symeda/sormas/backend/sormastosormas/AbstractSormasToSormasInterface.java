@@ -516,7 +516,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 							I18nProperties.getCaption(entityCaptionTag),
 							I18nProperties.getString(Strings.errorSormasToSormasOwnershipAlreadyHandedOver))));
 
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasShare), errors);
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasShare, errors);
 		}
 	}
 
