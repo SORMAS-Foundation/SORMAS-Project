@@ -69,7 +69,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 				return entry.getCaseUuid();
 			}
 
-			boolean isInJurisdiction = entry.getInJurisdictionOrOwned();
+			boolean isInJurisdiction = entry.getInJurisdiction();
 			if (!isInJurisdiction) {
 				return NO_CASE_CREATE;
 			}
@@ -120,7 +120,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {
 			if (e.getCaseUuid() != null) {
 				ControllerProvider.getCaseController().navigateToCase(e.getCaseUuid());
-			} else if (e.getInJurisdictionOrOwned()) {
+			} else if (e.getInJurisdiction()) {
 				EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getUuid());
 				ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
 			}
