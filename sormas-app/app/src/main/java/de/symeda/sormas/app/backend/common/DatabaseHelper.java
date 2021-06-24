@@ -2602,7 +2602,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							" WHERE responsibleRegion_id IS NULL AND (reportingDistrict_id IS NULL OR reportingDistrict_id = district_id)");
 
 					getDao(Case.class).executeRaw("UPDATE cases" +
-							" SET responsibleregion_id = (SELECT region_id from district where id = cases.reportingDistrict_id)," +
+							" SET responsibleRegion_id = (SELECT region_id from district where id = cases.reportingDistrict_id)," +
 							" responsibleDistrict_id = reportingDistrict_id," +
 							" reportingDistrict_id = null"+
 							" WHERE responsibleRegion_id IS NULL AND reportingDistrict_id IS NOT NULL");

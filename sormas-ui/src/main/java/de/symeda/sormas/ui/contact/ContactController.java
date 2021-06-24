@@ -42,8 +42,8 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseDtoHelper;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -791,9 +791,9 @@ public class ContactController {
 			PersonDto person = personSupplier.get();
 			if (person.getAddress().checkIsEmptyLocation()) {
 				CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
-				person.getAddress().setRegion(CaseDtoHelper.getRegionWithFallback(caze));
-				person.getAddress().setDistrict(CaseDtoHelper.getDistrictWithFallback(caze));
-				person.getAddress().setCommunity(CaseDtoHelper.getCommunityWithFallback(caze));
+				person.getAddress().setRegion(CaseLogic.getRegionWithFallback(caze));
+				person.getAddress().setDistrict(CaseLogic.getDistrictWithFallback(caze));
+				person.getAddress().setCommunity(CaseLogic.getCommunityWithFallback(caze));
 			}
 			FacadeProvider.getPersonFacade().savePerson(person);
 		}

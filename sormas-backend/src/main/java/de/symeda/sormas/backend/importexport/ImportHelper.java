@@ -16,7 +16,7 @@
 package de.symeda.sormas.backend.importexport;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseDtoHelper;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -134,7 +134,7 @@ public class ImportHelper {
 		case LocationDto.COMMUNITY:
 			return caze.getDistrict();
 		case CaseDataDto.HEALTH_FACILITY:
-			return CaseDtoHelper.getDistrictWithFallback(caze);
+			return CaseLogic.getDistrictWithFallback(caze);
 		default:
 			throw new IllegalArgumentException(propertyName);
 		}
@@ -147,7 +147,7 @@ public class ImportHelper {
 		case LocationDto.COMMUNITY:
 			return caze.getCommunity();
 		case CaseDataDto.HEALTH_FACILITY:
-			return CaseDtoHelper.getCommunityWithFallback(caze);
+			return CaseLogic.getCommunityWithFallback(caze);
 		default:
 			throw new IllegalArgumentException(propertyName);
 		}

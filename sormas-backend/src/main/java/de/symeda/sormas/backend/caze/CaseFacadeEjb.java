@@ -1166,14 +1166,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		Predicate diseaseFilter = caseCriteria.getDisease() != null ? cb.equal(root.get(Case.DISEASE), caseCriteria.getDisease()) : null;
 
 		Predicate regionFilter = null;
-		RegionReferenceDto criteriaResponsibleRegion = caseCriteria.getResponsibleRegion();
-		if (criteriaResponsibleRegion != null) {
-			regionFilter = CriteriaBuilderHelper.or(cb, regionFilter, CaseCriteriaHelper.createRegionFilter(cb, joins, criteriaResponsibleRegion));
-		}
-
 		RegionReferenceDto criteriaRegion = caseCriteria.getRegion();
 		if (criteriaRegion != null) {
-			regionFilter = CriteriaBuilderHelper.or(cb, regionFilter, CaseCriteriaHelper.createRegionFilter(cb, joins, criteriaRegion));
+			regionFilter = CriteriaBuilderHelper.or(cb, regionFilter, CaseCriteriaHelper.createRegionFilterWithFallback(cb, joins, criteriaRegion));
 		}
 
 		Predicate reportDateFilter = criteria.getReportDate() != null
@@ -1207,6 +1202,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> root2 = cq.from(Case.class);
 		Join<Case, Person> person = joins.getPerson();
 		Join<Case, Person> person2 = root2.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, Region> responsibleRegion = joins.getResponsibleRegion();
+		Join<Case, Region> responsibleRegion2 = root2.join(Case.RESPONSIBLE_REGION, JoinType.LEFT);
 		Join<Case, Region> region = joins.getRegion();
 		Join<Case, Region> region2 = root2.join(Case.REGION, JoinType.LEFT);
 		Join<Case, Symptoms> symptoms = joins.getSymptoms();
@@ -1233,7 +1230,12 @@ public class CaseFacadeEjb implements CaseFacade {
 		Predicate nameSimilarityFilter =
 			cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), configFacade.getNameSimilarityThreshold());
 		Predicate diseaseFilter = cb.equal(root.get(Case.DISEASE), root2.get(Case.DISEASE));
-		Predicate regionFilter = cb.equal(region.get(Region.ID), region2.get(Region.ID));
+		Predicate responsibleRegionFilter = cb.or(
+			cb.equal(responsibleRegion.get(Region.ID), responsibleRegion2.get(Region.ID)),
+			cb.equal(responsibleRegion.get(Region.ID), region2.get(Region.ID)));
+		Predicate regionFilter = cb.or(
+			cb.equal(region.get(Region.ID), region2.get(Region.ID)),
+			cb.and(cb.isNull(region2), cb.equal(region.get(Region.ID), responsibleRegion2.get(Region.ID))));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 			cb.abs(
 				cb.diff(
@@ -1293,7 +1295,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		filter = cb.and(filter, diseaseFilter);
 
 		if (!ignoreRegion) {
-			filter = cb.and(filter, regionFilter);
+			filter = cb.and(filter, cb.or(responsibleRegionFilter, regionFilter));
 		}
 
 		filter = cb.and(filter, reportDateFilter);

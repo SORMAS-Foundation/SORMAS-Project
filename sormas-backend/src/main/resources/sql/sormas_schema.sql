@@ -7464,7 +7464,6 @@ DO $$
 $$ LANGUAGE plpgsql;
 
 ALTER TABLE cases DROP COLUMN reportingdistrict_id;
-ALTER TABLE cases_history DROP COLUMN reportingdistrict_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (378, 'Refine the split of jurisdiction and place of stay #5852');
 -- *** Insert new sql commands BEFORE this line ***

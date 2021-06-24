@@ -54,8 +54,7 @@ public class CaseSimilarityCriteria extends BaseCriteria implements Cloneable {
 	}
 
 	public static CaseSimilarityCriteria forCase(CaseDataDto caze, String personUuid) {
-		CaseCriteria caseCriteria =
-			new CaseCriteria().disease(caze.getDisease()).responsibleRegion(caze.getResponsibleRegion()).region(caze.getRegion());
+		CaseCriteria caseCriteria = new CaseCriteria().disease(caze.getDisease()).region(CaseLogic.getRegionWithFallback(caze));
 
 		return new CaseSimilarityCriteria().personUuid(personUuid).caseCriteria(caseCriteria).reportDate(caze.getReportDate());
 	}
