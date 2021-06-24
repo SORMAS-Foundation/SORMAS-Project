@@ -57,7 +57,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		caze2.setSharedToCountry(true);
 		getCaseFacade().saveCase(caze2);
 
-		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(caze.getRegion())
+		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(caze.getResponsibleRegion())
 			.district(caze.getDistrict())
 			.disease(caze.getDisease())
 			.newCaseDateType(NewCaseDateType.MOST_RELEVANT)

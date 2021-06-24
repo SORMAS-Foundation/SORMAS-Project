@@ -1230,12 +1230,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		Predicate nameSimilarityFilter =
 			cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), configFacade.getNameSimilarityThreshold());
 		Predicate diseaseFilter = cb.equal(root.get(Case.DISEASE), root2.get(Case.DISEASE));
-		Predicate responsibleRegionFilter = cb.or(
+		Predicate regionFilter = cb.and(
 			cb.equal(responsibleRegion.get(Region.ID), responsibleRegion2.get(Region.ID)),
-			cb.equal(responsibleRegion.get(Region.ID), region2.get(Region.ID)));
-		Predicate regionFilter = cb.or(
-			cb.equal(region.get(Region.ID), region2.get(Region.ID)),
-			cb.and(cb.isNull(region2), cb.equal(region.get(Region.ID), responsibleRegion2.get(Region.ID))));
+			cb.or(cb.and(cb.isNull(region)), cb.equal(region.get(Region.ID), region2.get(Region.ID))));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 			cb.abs(
 				cb.diff(
@@ -1295,7 +1292,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		filter = cb.and(filter, diseaseFilter);
 
 		if (!ignoreRegion) {
-			filter = cb.and(filter, cb.or(responsibleRegionFilter, regionFilter));
+			filter = cb.and(filter, regionFilter);
 		}
 
 		filter = cb.and(filter, reportDateFilter);
