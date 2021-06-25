@@ -228,10 +228,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return cb.and(cb.isFalse(event.get(Event.ARCHIVED)), cb.isFalse(event.get(Event.DELETED)));
 	}
 
-	public Predicate createActiveEventParticipantsFilter(CriteriaBuilder cb, Join<?, EventParticipant> eventParticipantJoin) {
-
+	public Predicate createActiveEventsForEventParticipantsFilter(CriteriaBuilder cb, Join<?, EventParticipant> eventParticipantJoin) {
 		Join<EventParticipant, Event> event = eventParticipantJoin.join(EventParticipant.EVENT, JoinType.LEFT);
 		return cb.and(cb.isFalse(event.get(Event.ARCHIVED)), cb.isFalse(event.get(Event.DELETED)));
+	}
+
+	public Predicate createActiveEventParticipantsFilter(CriteriaBuilder cb, Join<?, EventParticipant> eventParticipantJoin) {
+		return cb.and(cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
 	}
 
 	/**
