@@ -1162,7 +1162,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			phoneSubQuery.alias(PersonIndexDto.PHONE),
 			emailSubQuery.alias(PersonIndexDto.EMAIL_ADDRESS),
 			person.get(Person.CHANGE_DATE),
-			JurisdictionHelper.jurisdictionSelector(cb, personService.inJurisdictionOrOwned(cb, (PersonJoins) personQueryContext.getJoins())));
+			JurisdictionHelper.booleanSelector(cb, personService.inJurisdictionOrOwned(cb, (PersonJoins) personQueryContext.getJoins())));
 
 		Predicate filter = personService.createUserFilter(cb, cq, person);
 		if (criteria != null) {
