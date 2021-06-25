@@ -99,7 +99,7 @@ Feature: Create events
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
 
-    @#5720
+
   Scenario: Add a New action for an Event and verify the Action in EventActions table
       Given I log in with the user
       Given API: I create a new event
