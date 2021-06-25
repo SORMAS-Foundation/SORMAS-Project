@@ -376,6 +376,10 @@ public class WebDriverHelpers {
     }
   }
 
+  public void fillValueOfListElement(By selector, int index, String text) {
+    baseSteps.getDriver().findElements(selector).get(index).sendKeys(text);
+  }
+
   public WebElement getWebElementBySelectorAndText(final By selector, final String text) {
     return getWebElementByText(selector, webElement -> webElement.getText().contentEquals(text));
   }

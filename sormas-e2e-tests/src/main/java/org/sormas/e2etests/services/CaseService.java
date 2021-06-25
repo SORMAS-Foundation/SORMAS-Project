@@ -22,6 +22,7 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.util.UUID;
+import org.sormas.e2etests.enums.Disease;
 import org.sormas.e2etests.pojo.web.Case;
 
 public class CaseService {
@@ -96,6 +97,24 @@ public class CaseService {
         .dateReceivedAtNationalLevel(LocalDate.now().minusDays(3))
         .generalComment(faker.book().title())
         .placeDescription(faker.business().creditCardExpiry())
+        .build();
+  }
+
+  public Case buildCaseForLineListingFeature() {
+    return Case.builder()
+        .disease(Disease.getRandomDiseaseValue())
+        .region("Voreingestellte")
+        .district("Voreingestellter Landkreis")
+        .facilityCategory("Accommodation")
+        .facilityType("Other Accommodation")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .community("Voreingestellte Gemeinde")
+        .placeDescription(faker.address().streetAddressNumber()) // used for Facility Name
+        .firstName(faker.name().firstName())
+        .lastName(faker.name().lastName())
+        .dateOfBirth(LocalDate.of(1902, 3, 7))
+        .sex("Male")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
         .build();
   }
 }
