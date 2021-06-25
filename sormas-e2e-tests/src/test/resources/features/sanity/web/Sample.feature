@@ -25,6 +25,17 @@ Feature: Sample Functionalities
     When I click on edit Sample
     Then I check the created Sample is correctly displayed on Edit Sample page
 
+  Scenario: Add a Pathogen test from Samples and verify the fields
+    Given API: I create a new person
+    And API: I create a new case
+    And API: I create a new sample
+    When I log in with the user
+    And I click on the Sample button from navbar
+    And I am accessing the created sample via api
+    And I click on the new pathogen test from the Edit Sample page
+    And I complete all fields from Pathogen test result popup and save
+    Then I check that the created Pathogen is correctly displayed
+
   Scenario: Delete created sample
     Given I log in with the user
     Given API: I create a new case

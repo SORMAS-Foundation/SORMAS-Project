@@ -67,7 +67,7 @@ public class CreateNewSampleSteps implements En {
         "^I create a new Test result with specific data$",
         () -> {
           sampleTestResult = sampleService.buildGeneratedSampleTestResult();
-          selectSampleTestResultButton(sampleTestResult.getSampleTestResults());
+          selectSampleTestResultButton();
           fillReportDate(sampleTestResult.getReportDate());
           selectTypeOfTest(sampleTestResult.getTypeOfTest());
           selectTestedDisease(sampleTestResult.getTestedDisease());
@@ -90,7 +90,7 @@ public class CreateNewSampleSteps implements En {
     Then(
         "^I check the created Test result is correctly displayed on Edit Sample page, Test creation tab",
         () -> {
-          final Sample actualSampleTestResult = collectTestResultsData();
+          final Sample actualSampleTestResult = collectPathogenTestResultsData();
           Truth.assertThat(sampleTestResult).isEqualTo(actualSampleTestResult);
         });
 
@@ -130,8 +130,34 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "^I complete all fields from Pathogen test result popup and save$",
+        () -> {
+          sampleTestResult = sampleService.buildPathogenTestResult();
+          fillReportDate(sampleTestResult.getReportDate());
+          selectTypeOfTest(sampleTestResult.getTypeOfTest());
+          selectTestedDisease(sampleTestResult.getTestedDisease());
+          selectPathogenLaboratory(sampleTestResult.getLaboratory());
+          selectTestResult(sampleTestResult.getSampleTestResults());
+          fillDateOfResult(sampleTestResult.getDateOfResult());
+          fillTimeOfResult(sampleTestResult.getTimeOfResult());
+          selectResultVerifiedByLabSupervisor(
+              sampleTestResult.getResultVerifiedByLabSupervisor(),
+              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          fillTestResultsComment(sampleTestResult.getTestResultsComment());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
         "I collect the sample UUID displayed on create new sample page",
         () -> sampleId = collectSampleUuid());
+
+    When(
+        "^I check that the created Pathogen is correctly displayed",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_TEST_RESULTS_BUTTON);
+          final Sample actualSampleTestResult = collectPathogenTestResultsData();
+          Truth.assertThat(sampleTestResult).isEqualTo(actualSampleTestResult);
+        });
   }
 
   public void selectPurposeOfSample(String samplePurpose, By element) {
@@ -168,6 +194,14 @@ public class CreateNewSampleSteps implements En {
     webDriverHelpers.selectFromCombobox(LABORATORY_COMBOBOX, laboratory);
   }
 
+  public void selectPathogenLaboratory(String laboratory) {
+    webDriverHelpers.selectFromCombobox(PATHOGEN_LABORATORY_COMBOBOX, laboratory);
+  }
+
+  public void selectTestResult(String testResult) {
+    webDriverHelpers.selectFromCombobox(PATHOGEN_TEST_RESULT_COMBOBOX, testResult);
+  }
+
   public void selectSpecimenCondition(String specimenCondition) {
     webDriverHelpers.selectFromCombobox(SPECIMEN_CONDITION_COMBOBOX, specimenCondition);
   }
@@ -193,8 +227,8 @@ public class CreateNewSampleSteps implements En {
     webDriverHelpers.clearAndFillInWebElement(COMMENT_AREA_INPUT, commentsOnSample);
   }
 
-  public void selectSampleTestResultButton(String received) {
-    webDriverHelpers.clickWebElementByText(SAMPLE_TEST_RESULT_BUTTON, received);
+  public void selectSampleTestResultButton() {
+    webDriverHelpers.clickOnWebElementBySelector(SAMPLE_TEST_RESULT_BUTTON);
   }
 
   public void fillReportDate(LocalDate dateOfCollection) {
@@ -246,19 +280,6 @@ public class CreateNewSampleSteps implements En {
         .build();
   }
 
-  public Sample collectTestResultsData() {
-    return Sample.builder()
-        .sampleTestResults(sampleTestResult.getSampleTestResults())
-        .reportDate(getReportDate())
-        .typeOfTest(getTypeOfTest())
-        .testedDisease(getTestedDisease())
-        .dateOfResult(getDateOfResult())
-        .timeOfResult(getTimeOfResult())
-        .resultVerifiedByLabSupervisor(getResultVerifiedByLabSupervisor())
-        .testResultsComment(getTestResultComment())
-        .build();
-  }
-
   public String getPurposeOfSample() {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SAMPLE_EDIT_PURPOSE_OPTIONS);
   }
@@ -287,6 +308,14 @@ public class CreateNewSampleSteps implements En {
 
   public String getLaboratory() {
     return webDriverHelpers.getValueFromWebElement(LABORATORY_INPUT);
+  }
+
+  public String getPathogenPopupLaboratory() {
+    return webDriverHelpers.getValueFromWebElement(PATHOGEN_LABORATORY_INPUT);
+  }
+
+  public String getPathogenPopupTestResult() {
+    return webDriverHelpers.getValueFromWebElement(PATHOGEN_TEST_RESULT_INPUT);
   }
 
   public String getLaboratoryName() {
@@ -347,5 +376,19 @@ public class CreateNewSampleSteps implements En {
   public String getResultVerifiedByLabSupervisor() {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
         RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS);
+  }
+
+  public Sample collectPathogenTestResultsData() {
+    return Sample.builder()
+        .sampleTestResults(getPathogenPopupTestResult())
+        .reportDate(getReportDate())
+        .typeOfTest(getTypeOfTest())
+        .testedDisease(getTestedDisease())
+        .dateOfResult(getDateOfResult())
+        .timeOfResult(getTimeOfResult())
+        .laboratory(getPathogenPopupLaboratory())
+        .resultVerifiedByLabSupervisor(getResultVerifiedByLabSupervisor())
+        .testResultsComment(getTestResultComment())
+        .build();
   }
 }

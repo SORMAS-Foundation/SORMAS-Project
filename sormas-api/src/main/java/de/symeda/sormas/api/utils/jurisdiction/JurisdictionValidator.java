@@ -33,7 +33,9 @@ public abstract class JurisdictionValidator<T> {
 			final List<T> jurisdictionTypes = new ArrayList<>();
 			jurisdictionTypes.add(isInJurisdictionOrOwned());
 			for (JurisdictionValidator<T> jurisdictionValidator : associatedJurisdictionValidators) {
-				jurisdictionTypes.add(jurisdictionValidator.isInJurisdictionOrOwned());
+				if (jurisdictionValidator != null) {
+					jurisdictionTypes.add(jurisdictionValidator.isInJurisdictionOrOwned());
+				}
 			}
 			return or(jurisdictionTypes);
 		} else {
@@ -46,7 +48,9 @@ public abstract class JurisdictionValidator<T> {
 			final List<T> jurisdictionTypes = new ArrayList<>();
 			jurisdictionTypes.add(isInJurisdiction());
 			for (JurisdictionValidator<T> jurisdictionValidator : associatedJurisdictionValidators) {
-				jurisdictionTypes.add(jurisdictionValidator.isInJurisdiction());
+				if (jurisdictionValidator != null) {
+					jurisdictionTypes.add(jurisdictionValidator.isInJurisdiction());
+				}
 			}
 			return or(jurisdictionTypes);
 		} else {

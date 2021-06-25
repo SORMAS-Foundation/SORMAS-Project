@@ -196,6 +196,7 @@
                         app:dependencyParentField="@{caseDataOutcome}"
                         app:dependencyParentValue="@{CaseOutcome.DECEASED}"
                         app:dependencyParentValue2="@{CaseOutcome.RECOVERED}"
+                        app:dependencyParentValue3="@{CaseOutcome.UNKNOWN}"
                         app:dependencyParentVisibility="@{true}"
                         app:userEditRight="@{UserRight.CASE_CLASSIFY}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
