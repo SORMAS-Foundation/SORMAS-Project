@@ -76,6 +76,7 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
@@ -190,13 +191,7 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles) {
 
-		return userService.getReferenceList(
-			toUuidList(regionRef),
-			null,
-			false,
-			true,
-			true,
-			assignableRoles)
+		return userService.getReferenceList(toUuidList(regionRef), null, false, true, true, assignableRoles)
 			.stream()
 			.map(f -> toReferenceDto(f))
 			.collect(Collectors.toList());
@@ -205,13 +200,14 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs, UserRole... assignableRoles) {
 
-		return userService.getReferenceList(
-			regionRefs.stream().map(RegionReferenceDto::getUuid).collect(Collectors.toList()),
-			null,
-			false,
-			true,
-			true,
-			assignableRoles)
+		return userService
+			.getReferenceList(
+				regionRefs.stream().map(RegionReferenceDto::getUuid).collect(Collectors.toList()),
+				null,
+				false,
+				true,
+				true,
+				assignableRoles)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -226,15 +222,16 @@ public class UserFacadeEjb implements UserFacade {
 		JurisdictionLevel superordinateJurisdiction =
 			JurisdictionHelper.getSuperordinateJurisdiction(UserRole.getJurisdictionLevel(user.getUserRoles()));
 
-		final List<UserReference> superiorUsersList;
+		List<UserReference> superiorUsersList = Collections.emptyList();
 		switch (superordinateJurisdiction) {
 		case NATION:
 			superiorUsersList =
-				userService.getReferenceList(null, null, false, false, true, UserRole.getWithJurisdictionLevels(superordinateJurisdiction));
+				userService.getReferenceList(null, null, null, false, false, true, UserRole.getWithJurisdictionLevels(superordinateJurisdiction));
 			break;
 		case REGION:
 			superiorUsersList = userService.getReferenceList(
 				Arrays.asList(user.getRegion().getUuid()),
+				null,
 				null,
 				false,
 				false,
@@ -245,37 +242,41 @@ public class UserFacadeEjb implements UserFacade {
 			// if user is assigned to a facility, but that facility is not assigned to a district, show no superordinate users. Else, show users of the district (and community) in which the facility is located
 
 			District district = null;
+			Community community = null;
 			List<UserRole> superordinateRoles = UserRole.getWithJurisdictionLevels(superordinateJurisdiction);
 			if (user.getDistrict() != null) {
 				district = districtService.getByReferenceDto(user.getDistrict());
 			} else if (user.getHealthFacility() != null) {
-				district = facilityService.getByReferenceDto(user.getHealthFacility()).getDistrict();
+				Facility facility = facilityService.getByReferenceDto(user.getHealthFacility());
+				district = facility.getDistrict();
+				community = facility.getCommunity();
 				superordinateRoles.addAll(UserRole.getWithJurisdictionLevels(JurisdictionLevel.COMMUNITY));
 			}
 
-			superiorUsersList =
-				(district == null)
-					? null
-					: userService.getReferenceList(null, Arrays.asList(district.getUuid()), false, false, true, superordinateRoles);
-			break;
-		default:
-			superiorUsersList = null;
+			if (community == null) {
+				superiorUsersList =
+					userService.getReferenceList(null, Arrays.asList(district.getUuid()), null, false, false, true, superordinateRoles);
+			} else if (district != null) {
+				superiorUsersList = userService.getReferenceList(
+					null,
+					Arrays.asList(district.getUuid()),
+					Arrays.asList(community.getUuid()),
+					false,
+					false,
+					true,
+					superordinateRoles);
+			}
+
 			break;
 		}
 
-		return superiorUsersList == null ? null : superiorUsersList.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return superiorUsersList.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, boolean includeSupervisors, UserRole... userRoles) {
 
-		return userService.getReferenceList(
-			null,
-			toUuidList(districtRef),
-			includeSupervisors,
-			true,
-			true,
-			userRoles)
+		return userService.getReferenceList(null, toUuidList(districtRef), includeSupervisors, true, true, userRoles)
 			.stream()
 			.map(f -> toReferenceDto(f))
 			.collect(Collectors.toList());
@@ -284,13 +285,14 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, boolean includeSupervisors, UserRole... userRoles) {
 
-		return userService.getReferenceList(
-			null,
-			districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()),
-			includeSupervisors,
-			true,
-			true,
-			userRoles)
+		return userService
+			.getReferenceList(
+				null,
+				districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()),
+				includeSupervisors,
+				true,
+				true,
+				userRoles)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());

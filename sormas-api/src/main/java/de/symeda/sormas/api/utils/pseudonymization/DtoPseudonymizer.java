@@ -98,6 +98,16 @@ public class DtoPseudonymizer {
 		pseudonymizeDto(dto, declaredFields, embeddedFields, isInJurisdiction, null, customPseudonymization, false);
 	}
 
+	public <DTO> boolean isAccessible(Class<DTO> type, String fieldName, boolean isInJurisdiction) {
+		List<Field> pseudonymizableFields = getPseudonymizableFields(type, isInJurisdiction);
+		for (Field field : pseudonymizableFields) {
+			if (fieldName.equals(field.getName())) {
+				return getFieldAccessCheckers(isInJurisdiction).isAccessible(field, pseudonymizeMandatoryFields);
+			}
+		}
+		throw new RuntimeException("Could not find field: " + fieldName);
+	}
+
 	public <DTO extends Pseudonymizable> void restorePseudonymizedValues(Class<DTO> type, DTO dto, DTO originalDto, boolean isInJurisdiction) {
 		if (originalDto == null) {
 			return;
@@ -323,4 +333,5 @@ public class DtoPseudonymizer {
 
 		boolean apply(Field field);
 	}
+
 }
