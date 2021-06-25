@@ -34,7 +34,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.backend.action.Action;
 import org.hibernate.Session;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
@@ -42,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.importexport.DatabaseTable;
+import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
@@ -62,6 +62,7 @@ import de.symeda.sormas.backend.outbreak.Outbreak;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonContactDetail;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.PathogenTest;
@@ -114,7 +115,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.PERSONS, new DatabaseExportConfiguration(Person.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.PERSON_CONTACT_DETAILS, new DatabaseExportConfiguration(PersonContactDetail.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.LOCATIONS, new DatabaseExportConfiguration(Location.TABLE_NAME));
-		EXPORT_CONFIGS.put(DatabaseTable.COUNTRIES, new DatabaseExportConfiguration(Location.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.COUNTRIES, new DatabaseExportConfiguration(Country.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.REGIONS, new DatabaseExportConfiguration(Region.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.DISTRICTS, new DatabaseExportConfiguration(District.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.COMMUNITIES, new DatabaseExportConfiguration(Community.TABLE_NAME));

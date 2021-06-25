@@ -80,6 +80,15 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return currentUser.get().getUser();
 	}
 
+	/**
+	 * Should only be used for testing scenarios of user rights & jurisdiction!
+	 * @param user
+	 */
+	@Deprecated
+	public void setCurrentUser(User user) {
+		currentUser.get().setUser(user);
+	}
+
 	protected Class<ADO> getElementClass() {
 		return elementClass;
 	}

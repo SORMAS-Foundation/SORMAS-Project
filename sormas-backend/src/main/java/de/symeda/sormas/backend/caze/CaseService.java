@@ -126,6 +126,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
@@ -160,8 +161,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@EJB
 	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
 
-	@EJB
-	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
@@ -301,14 +300,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				caze.get(Case.REPORT_LON),
 				joins.getPersonAddress().get(Location.LATITUDE),
 				joins.getPersonAddress().get(Location.LONGITUDE),
-				joins.getReportingUser().get(User.UUID),
-				joins.getResponsibleRegion().get(Region.UUID),
-				joins.getResponsibleDistrict().get(District.UUID),
-				joins.getResponsibleCommunity().get(Community.UUID),
-				joins.getRegion().get(Region.UUID),
-				joins.getDistrict().get(District.UUID),
-				joins.getCommunity().get(Community.UUID),
-				joins.getPointOfEntry().get(PointOfEntry.UUID));
+				JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)));
 
 			result = em.createQuery(cq).getResultList();
 		} else {
@@ -1015,9 +1007,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				}
 				break;
 			case LABORATORY:
-				Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
-				Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
-				sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, new SampleJoins(sampleRoot)));
+				final Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
+				final Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
+				final SampleJoins joins = new SampleJoins(sampleRoot);
+				final Join cazeJoin = joins.getCaze();
+				sampleCaseSubquery.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutAssociations(cb, joins), cb.isNotNull(cazeJoin)));
 				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
 				filter = CriteriaBuilderHelper.or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
 				break;
@@ -1030,7 +1024,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
 				Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
 				Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
-				contactCaseSubquery.where(contactService.createUserFilterWithoutCase(cb, contactRoot));
+				contactCaseSubquery.where(contactService.createUserFilterWithoutCase(new ContactQueryContext(cb, cq, contactRoot)));
 				contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
 				filter = CriteriaBuilderHelper.or(cb, filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
 			}
@@ -1104,19 +1098,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		return newCaseFilter;
-	}
-
-	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CaseJoins<Case> joins) {
-
-		final User currentUser = userService.getCurrentUser();
-
-		final Predicate reportedByCurrentUser =
-			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
-
-		final Predicate jurisdictionPredicate =
-			CaseJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
-
-		return cb.or(reportedByCurrentUser, jurisdictionPredicate);
 	}
 
 	public Case getRelevantCaseForFollowUp(Person person, Disease disease, Date referenceDate) {
@@ -1267,7 +1248,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			return caze.getSormasToSormasOriginInfo().isOwnershipHandedOver();
 		}
 
-		return caseJurisdictionChecker.isInJurisdictionOrOwned(caze) && !sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze);
+		return inJurisdictionOrOwned(caze) && !sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze);
+	}
+
+	public boolean inJurisdictionOrOwned(Case caze) {
+		return exists(
+			(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), caze.getId()), inJurisdictionOrOwned(cb, new CaseJoins<>(root))));
+	}
+
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CaseJoins<?> joins) {
+		final User currentUser = userService.getCurrentUser();
+		return CaseJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdictionOrOwned();
 	}
 
 	public Collection<Case> getByPersonUuids(List<String> personUuids) {

@@ -19,7 +19,6 @@
 package org.sormas.e2etests.steps.web.application.actions;
 
 import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.*;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -56,7 +55,6 @@ public class CreateNewActionSteps implements En {
           fillDescription("Dummy description for automated test");
           selectActionStatus(action.getActionStatus());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
         });
   }
 

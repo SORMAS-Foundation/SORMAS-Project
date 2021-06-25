@@ -1136,7 +1136,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				getFieldGroup(),
 				CaseDataDto.OUTCOME_DATE,
 				CaseDataDto.OUTCOME,
-				Arrays.asList(CaseOutcome.DECEASED, CaseOutcome.RECOVERED),
+				Arrays.asList(CaseOutcome.DECEASED, CaseOutcome.RECOVERED, CaseOutcome.UNKNOWN),
 				true);
 		}
 		if (isVisibleAllowed(CaseDataDto.SEQUELAE)) {

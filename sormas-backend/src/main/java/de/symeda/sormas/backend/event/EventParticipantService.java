@@ -71,8 +71,6 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	@EJB
 	private VaccinationInfoService vaccinationInfoService;
 	@EJB
-	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
-	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	public EventParticipantService() {
@@ -377,13 +375,12 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 	}
 
-	public boolean isEventParticiapntEditAllowed(EventParticipant eventParticipant) {
+	public boolean isEventParticipantEditAllowed(EventParticipant eventParticipant) {
 		if (eventParticipant.getSormasToSormasOriginInfo() != null) {
 			return eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver();
 		}
 
-		return eventParticipantJurisdictionChecker.isInJurisdiction(eventParticipant)
-			&& !sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant);
+		return inJurisdictionOrOwned(eventParticipant) && !sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant);
 	}
 
 	public Collection<EventParticipant> getByPersonUuids(List<String> personUuids) {
@@ -413,22 +410,25 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return em.createQuery(cq).getResultList();
 	}
 
-	public Predicate isInJurisdictionOrOwned(
-		CriteriaBuilder cb,
-		CriteriaQuery<?> cq,
-		Root<EventParticipant> eventParticipantRoot,
-		EventParticipantJoins joins) {
-
-		final User currentUser = this.getCurrentUser();
-
-		final Predicate reportedByCurrentUser = cb.and(
-			cb.isNotNull(joins.getEventParticipantReportingUser()),
-			cb.equal(joins.getEventParticipantReportingUser().get(User.UUID), currentUser.getUuid()));
-
-		final Predicate jurisdictionPredicate =
-			EventParticipantJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction(currentUser.getJurisdictionLevel());
-
-		return cb.or(reportedByCurrentUser, jurisdictionPredicate);
+	public boolean inJurisdictionOrOwned(EventParticipant eventParticipant) {
+		return exists(
+			(cb, root) -> cb.and(
+				cb.equal(root.get(AbstractDomainObject.ID), eventParticipant.getId()),
+				inJurisdictionOrOwned(cb, new EventParticipantJoins(root))));
 	}
 
+	public boolean inJurisdiction(EventParticipant eventParticipant) {
+		return exists(
+				(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), eventParticipant.getId()), inJurisdiction(cb, new EventParticipantJoins(root))));
+	}
+
+	public Predicate inJurisdiction(CriteriaBuilder cb, EventParticipantJoins joins) {
+		final User currentUser = this.getCurrentUser();
+		return EventParticipantJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdiction();
+	}
+
+	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, EventParticipantJoins joins) {
+		final User currentUser = this.getCurrentUser();
+		return EventParticipantJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdictionOrOwned();
+	}
 }

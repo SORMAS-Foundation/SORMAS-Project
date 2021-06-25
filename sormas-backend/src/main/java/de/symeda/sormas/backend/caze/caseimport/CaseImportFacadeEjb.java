@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import javax.ejb.EJB;
@@ -29,6 +30,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
+import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -510,22 +513,32 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 							pd.getWriteMethod().invoke(currentElement, facilities.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(PointOfEntryReferenceDto.class)) {
-						List<PointOfEntryReferenceDto> pointOfEntry = pointOfEntryFacade.getByName(entry, caze.getDistrict(), false);
-						if (pointOfEntry.isEmpty()) {
+						PointOfEntryReferenceDto pointOfEntryReference;
+						List<PointOfEntryReferenceDto> customPointsOfEntry = pointOfEntryFacade.getByName(entry, caze.getDistrict(), false);
+						if (customPointsOfEntry.isEmpty()) {
+							final String poeName = entry;
+							List<PointOfEntryDto> defaultPointOfEntries = pointOfEntryFacade.getByUuids(PointOfEntryDto.CONSTANT_POE_UUIDS);
+							Optional<PointOfEntryDto> defaultPointOfEntry = defaultPointOfEntries.stream().filter(defaultPoe -> InfrastructureHelper.buildPointOfEntryString(defaultPoe.getUuid(), defaultPoe.getName()).equals(poeName)).findFirst();
+							if (!defaultPointOfEntry.isPresent()) {
+								throw new ImportErrorException(
+										I18nProperties.getValidationError(
+												Validations.importEntryDoesNotExistDbOrDistrict,
+												entry,
+												buildEntityProperty(entryHeaderPath)));
+							}
+							pointOfEntryReference = defaultPointOfEntry.get().toReference();
+						} else if (customPointsOfEntry.size() > 1) {
 							throw new ImportErrorException(
-								I18nProperties.getValidationError(
-									Validations.importEntryDoesNotExistDbOrDistrict,
-									entry,
-									buildEntityProperty(entryHeaderPath)));
-						} else if (pointOfEntry.size() > 1) {
-							throw new ImportErrorException(
-								I18nProperties.getValidationError(
-									Validations.importPointOfEntryNotUniqueInDistrict,
-									entry,
-									buildEntityProperty(entryHeaderPath)));
+									I18nProperties.getValidationError(
+											Validations.importPointOfEntryNotUniqueInDistrict,
+											entry,
+											buildEntityProperty(entryHeaderPath)));
+
 						} else {
-							pd.getWriteMethod().invoke(currentElement, pointOfEntry.get(0));
+							pointOfEntryReference = customPointsOfEntry.get(0);
 						}
+
+						pd.getWriteMethod().invoke(currentElement, pointOfEntryReference);
 					} else {
 						throw new UnsupportedOperationException(
 							I18nProperties.getValidationError(Validations.importCasesPropertyTypeNotAllowed, propertyType.getName()));

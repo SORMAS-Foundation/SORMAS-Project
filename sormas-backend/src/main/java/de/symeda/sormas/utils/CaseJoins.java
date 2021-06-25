@@ -21,7 +21,6 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
@@ -71,10 +70,10 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 	private Join<Case, EventParticipant> eventParticipants;
 	private Join<Person, List<Location>> personAddresses;
 	private Join<Case, Sample> samples;
+	private Join<Sample, Facility> sampleLabs;
 	private Join<Person, Country> personBirthCountry;
 	private Join<Person, Country> personCitizenship;
 	private Join<Case, District> reportingDistrict;
-	private Join<Case, DiseaseVariant> diseaseVariant;
 	private Join<Case, SormasToSormasShareInfo> shareInfoCases;
 	private Join<Case, ExternalShareInfo> externalShareInfo;
 
@@ -280,6 +279,14 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 
 	private void setSamples(Join<Case, Sample> samples) {
 		this.samples = samples;
+	}
+
+	public Join<Sample, Facility> getSampleLabs() {
+		return getOrCreate(sampleLabs, Sample.LAB, JoinType.LEFT, getSamples(), this::setSampleLabs);
+	}
+
+	private void setSampleLabs(Join<Sample, Facility> sampleLabs) {
+		this.sampleLabs = sampleLabs;
 	}
 
 	public Join<Person, Country> getPersonBirthCountry() {

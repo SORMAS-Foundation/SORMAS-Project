@@ -157,6 +157,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	public static final String VACCINATION_INFO = "vaccinationInfo";
 	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
 	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
+	public static final String SAMPLES = "samples";
 
 	private Date reportDateTime;
 	private User reportingUser;

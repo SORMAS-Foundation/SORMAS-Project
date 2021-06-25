@@ -50,9 +50,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.externaldata.ExternalDataDto;
-import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -62,12 +59,15 @@ import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -128,6 +128,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -261,7 +262,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return Optional.of(uuid)
 			.map(u -> personService.getByUuid(u))
-			.map(p -> convertToDto(p, pseudonymizer, isPersonInJurisdiction(p)))
+			.map(p -> convertToDto(p, pseudonymizer, personService.inJurisdictionOrOwned(p)))
 			.orElse(null);
 	}
 
@@ -380,7 +381,10 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		onPersonChanged(existingPerson, person);
 
-		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || isPersonInJurisdiction(person));
+		return convertToDto(
+			person,
+			Pseudonymizer.getDefault(userService::hasRight),
+			existingPerson == null || personService.inJurisdictionOrOwned(person));
 	}
 
 	/**
@@ -1089,7 +1093,6 @@ public class PersonFacadeEjb implements PersonFacade {
 				cb.equal(emailRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.EMAIL)));
 		emailSubQuery.select(emailRoot.get(PersonContactDetail.CONTACT_INFORMATION));
 
-		final Predicate jurisdictionPredicate = personService.getJurisdictionPredicate(cb, cq, person);
 
 		// make sure to check the sorting by the multi-select order if you extend the selections here
 		cq.multiselect(
@@ -1110,7 +1113,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			phoneSubQuery.alias(PersonIndexDto.PHONE),
 			emailSubQuery.alias(PersonIndexDto.EMAIL_ADDRESS),
 			person.get(Person.CHANGE_DATE),
-			cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false)));
+			JurisdictionHelper.jurisdictionSelector(cb, personService.inJurisdictionOrOwned(cb, (PersonJoins) personQueryContext.getJoins())));
 
 		Predicate filter = personService.createUserFilter(cb, cq, person);
 		if (criteria != null) {
@@ -1211,7 +1214,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	private void restorePseudonymizedDto(PersonDto source, Person person, PersonDto existingPerson) {
 		if (person != null && existingPerson != null) {
-			boolean isInJurisdiction = isPersonInJurisdiction(person);
+			boolean isInJurisdiction = personService.inJurisdictionOrOwned(person);
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			pseudonymizer.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
 			pseudonymizer.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
@@ -1232,9 +1235,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 	}
 
-	private boolean isPersonInJurisdiction(Person person) {
-		return !personService.getInJurisdictionIDs(Collections.singletonList(person)).isEmpty();
-	}
+
 
 	public static PersonReferenceDto toReferenceDto(Person entity) {
 
