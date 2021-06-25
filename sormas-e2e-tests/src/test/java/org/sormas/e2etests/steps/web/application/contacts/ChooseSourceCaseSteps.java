@@ -51,17 +51,17 @@ public class ChooseSourceCaseSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              SUCCESSFUL_CASE_CHANGE_POPUP);
+              CASE_CHANGE_POPUP_SUCCESS_MESSAGE);
         });
 
     When(
-        "I click on the CHOOSE SOURCE CASE button",
+        "I click on the CHOOSE SOURCE CASE button from CONTACT page",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 CHOOSE_SOURCE_CASE_BUTTON, POPUP_YES_BUTTON));
 
     When(
-        "I click yes on the DISCARD UNSAVED CHANGES popup",
+        "I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 POPUP_YES_BUTTON, SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON));
@@ -126,7 +126,7 @@ public class ChooseSourceCaseSteps implements En {
                 .isTrue());
 
     When(
-        "I click yes on the CONFIRM REMOVAL popup",
+        "I click yes on the CONFIRM REMOVAL popup from CONTACT page",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 POPUP_YES_BUTTON, CHOOSE_SOURCE_CASE_BUTTON));

@@ -114,6 +114,6 @@ public class EditContactPage {
       By.xpath(
           "//span[contains(text(), 'Case classification')]/ancestor::div[@class='v-caption']/following-sibling::div");
   public static final By REMOVE_CASE_CTA_LINK = By.id("contactRemoveCase");
-  public static final By SUCCESSFUL_CASE_CHANGE_POPUP =
+  public static final By CASE_CHANGE_POPUP_SUCCESS_MESSAGE =
       By.xpath("//p[text()='The source case of the contact has been changed']");
 }

@@ -36,8 +36,8 @@ Feature: Contacts end to end tests
     When API: I create a new person
     And API: I create a new contact
     And I navigate to the last created contact via the url
-    And I click on the CHOOSE SOURCE CASE button
-    And I click yes on the DISCARD UNSAVED CHANGES popup
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
     And I search for the last case uuid in the CHOOSE SOURCE window
     And I open the first found result in the CHOOSE SOURCE window
     Then I check the linked case information is correctly displayed
@@ -51,8 +51,8 @@ Feature: Contacts end to end tests
     When API: I create a new person
     And API: I create a new contact
     And I navigate to the last created contact via the url
-    And I click on the CHOOSE SOURCE CASE button
-    And I click yes on the DISCARD UNSAVED CHANGES popup
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
     And I search for the last case uuid in the CHOOSE SOURCE window
     And I open the first found result in the CHOOSE SOURCE window
     Then I check the linked case information is correctly displayed
@@ -62,11 +62,11 @@ Feature: Contacts end to end tests
     Given API: I create a new case
     When I navigate to the last created contact via the url
     And I click on the CHANGE CASE button
-    And I click yes on the DISCARD UNSAVED CHANGES popup
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
     And I search for the last case uuid in the CHOOSE SOURCE window
     And I open the first found result in the CHOOSE SOURCE window
     Then I check the linked case information is correctly displayed
     When I click on the Remove Case CTA
-    And I click yes on the CONFIRM REMOVAL popup
+    And I click yes on the CONFIRM REMOVAL popup from CONTACT page
     Then I check the CHOOSE SOURCE CASE BUTTON is displayed
 
