@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import de.symeda.sormas.api.utils.DataHelper;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -101,12 +102,18 @@ public class ContactImporter extends DataImporter {
 		String[] entityProperties,
 		String[][] entityPropertyPaths,
 		boolean firstLine)
-		throws IOException, InvalidColumnException, InterruptedException {
+		throws IOException, InterruptedException {
 
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
 			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));
 			return ImportLineResult.ERROR;
+		}
+
+		// regenerate the UUID to prevent overwrite in case of export and import of the same entities
+		int uuidIndex = ArrayUtils.indexOf(entityProperties, ContactDto.UUID);
+		if (uuidIndex >= 0) {
+			values[uuidIndex] = DataHelper.createUuid();
 		}
 
 		final PersonDto newPersonTemp = PersonDto.build();
@@ -220,9 +227,6 @@ public class ContactImporter extends DataImporter {
 
 						if (ImportSimilarityResultOption.PICK.equals(resultOption)) {
 							newContact = FacadeProvider.getContactFacade().getContactByUuid(consumer.result.getMatchingContact().getUuid());
-						} else if (ImportSimilarityResultOption.CREATE.equals(resultOption)) {
-							// resetting the UUID of the contact when CREATE is chosen so in case of export/import the existing contact is not just updated and a new one is created
-							newContact.setUuid(DataHelper.createUuid());
 						}
 					}
 

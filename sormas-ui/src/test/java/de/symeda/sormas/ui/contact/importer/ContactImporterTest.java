@@ -202,8 +202,6 @@ public class ContactImporterTest extends AbstractBeanTest {
 		public StringBuilder stringBuilder = new StringBuilder("");
 		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
-		private String personUuid;
-
 		public ContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) {
 			super(inputFile, hasEntityClassRow, currentUser, caze);
 		}
@@ -219,23 +217,17 @@ public class ContactImporterTest extends AbstractBeanTest {
 			BiFunction<SimilarPersonDto, ImportSimilarityResultOption, T> createSimilarityResult,
 			String infoText,
 			UI currentUI) {
-			this.personUuid = newPerson.getUuid();
 			resultConsumer.accept((T) new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 		}
 
 		@Override
 		protected void handleContactSimilarity(ContactDto newContact, PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
-			this.personUuid = newPerson.getUuid();
 			resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 		}
 
 		@Override
 		protected Writer createErrorReportWriter() {
 			return writer;
-		}
-
-		public String getPersonUuid() {
-			return personUuid;
 		}
 	}
 }

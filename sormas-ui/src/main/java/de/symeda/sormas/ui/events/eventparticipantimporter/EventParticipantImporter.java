@@ -26,6 +26,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,12 +106,22 @@ public class EventParticipantImporter extends DataImporter {
 		String[] entityProperties,
 		String[][] entityPropertyPaths,
 		boolean firstLine)
-		throws IOException, InvalidColumnException, InterruptedException {
+		throws IOException, InterruptedException {
 
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
 			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));
 			return ImportLineResult.ERROR;
+		}
+
+		// regenerate the UUID to prevent overwrite in case of export and import of the same entities
+		int uuidIndex = ArrayUtils.indexOf(entityProperties, EventParticipantDto.UUID);
+		if (uuidIndex >= 0) {
+			values[uuidIndex] = DataHelper.createUuid();
+		}
+		int personUuidIndex = ArrayUtils.indexOf(entityProperties, String.join(".", EventParticipantDto.PERSON, PersonDto.UUID));
+		if (personUuidIndex >= 0) {
+			values[personUuidIndex] = DataHelper.createUuid();
 		}
 
 		final PersonDto newPersonTemp = PersonDto.build();
@@ -209,14 +221,7 @@ public class EventParticipantImporter extends DataImporter {
 					}
 				}
 
-				if (ImportSimilarityResultOption.CREATE.equals(resultOption)) {
-					// resetting the UUID of the person and event participant when CREATE is chosen
-					// so in case of export/import the existing person and event participant are not just updated and new ones are created
-					newPerson.setUuid(DataHelper.createUuid());
-					newEventParticipant.setUuid(DataHelper.createUuid());
-				}
-
-				// Determine the import result and, if there was no duplicate, the user did not skip over the eventparticipant 
+				// Determine the import result and, if there was no duplicate, the user did not skip over the eventparticipant
 				// or an existing person was picked, save the eventparticipant and person to the database
 				if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
 					return ImportLineResult.SKIPPED;
