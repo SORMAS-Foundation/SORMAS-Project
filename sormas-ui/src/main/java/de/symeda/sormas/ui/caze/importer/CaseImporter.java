@@ -108,6 +108,12 @@ public class CaseImporter extends DataImporter {
 		boolean firstLine)
 		throws IOException, InvalidColumnException, InterruptedException {
 
+		// regenerate the UUID to prevent overwrite in case of export and import of the same entities
+		int uuidIndex = ArrayUtils.indexOf(entityProperties, CaseDataDto.UUID);
+		if (uuidIndex >= 0) {
+			values[uuidIndex] = DataHelper.createUuid();
+		}
+
 		ImportLineResultDto<CaseImportEntities> importResult =
 			caseImportFacade.importCaseData(values, entityClasses, entityProperties, entityPropertyPaths, !firstLine);
 
@@ -201,17 +207,6 @@ public class CaseImporter extends DataImporter {
 							selectedCaseUuid = consumer.result.getMatchingCase().getUuid();
 						}
 					}
-				}
-			}
-
-			if (ImportSimilarityResultOption.CREATE.equals(resultOption)) {
-				// resetting the UUID of the case when CREATE is chosen so in case of export/import the existing case is not just updated and a new one is created
-				String caseUuid = DataHelper.createUuid();
-				importCase.setUuid(caseUuid);
-				// has to be done in the CSV values as well because in updateCaseWithImportData the CSV values are overwriting the entities
-				int uuidIndex = ArrayUtils.indexOf(entityProperties, CaseDataDto.UUID);
-				if (uuidIndex >= 0) {
-					values[uuidIndex] =caseUuid;
 				}
 			}
 
