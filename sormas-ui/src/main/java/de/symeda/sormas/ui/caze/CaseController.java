@@ -332,7 +332,9 @@ public class CaseController {
 
 		convertToCaseSelectComponent.addCommitListener(() -> {
 			List<SimilarContactDto> selectedContacts = convertToCaseSelectionField.getSelectedContacts();
-			caze.getEpiData().setContactWithSourceCaseKnown(selectedContacts.isEmpty() ? YesNoUnknown.NO : YesNoUnknown.YES);
+			if (!selectedContacts.isEmpty()) {
+				caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+			}
 			saveCase(caze);
 			setResultingCase(caze, selectedContacts, convertToCaseSelectionField.getSelectedEventParticipants());
 		});
