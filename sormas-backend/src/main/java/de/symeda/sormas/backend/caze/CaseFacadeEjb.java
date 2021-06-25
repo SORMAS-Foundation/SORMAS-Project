@@ -474,7 +474,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		if (caseCriteria != null) {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);
-			filter = filter == null ? criteriaFilter : CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 		if (filter != null) {
 			cq.where(filter);
