@@ -55,7 +55,7 @@ public class SormasToSormasException extends Exception implements SormasToSormas
 	}
 
 	@Override
-	public String toString() {
+	public String getHumanErrorMessage() {
 		if (StringUtils.isNotBlank(i18nProperty) && ArrayUtils.isNotEmpty(args)) {
 			return String.format(I18nProperties.getString(i18nProperty), args);
 		} else if (StringUtils.isNotBlank(i18nProperty)){

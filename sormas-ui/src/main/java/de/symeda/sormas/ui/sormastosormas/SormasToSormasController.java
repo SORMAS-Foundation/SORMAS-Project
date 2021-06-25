@@ -240,7 +240,7 @@ public class SormasToSormasController {
 		try {
 			request.run();
 		} catch (SormasToSormasException ex) {
-			Component messageComponent = buildShareErrorMessage(ex.toString(), ex.getErrors());
+			Component messageComponent = buildShareErrorMessage(ex.getHumanErrorMessage(), ex.getErrors());
 			messageComponent.setWidth(100, Sizeable.Unit.PERCENTAGE);
 			VaadinUiUtil.showPopupWindow(new VerticalLayout(messageComponent), I18nProperties.getCaption(Captions.sormasToSormasErrorDialogTitle));
 		} catch (SormasToSormasValidationException ex) {
@@ -328,7 +328,12 @@ public class SormasToSormasController {
 		return errors.getErrors().entrySet().stream().map(e -> {
 			Label groupLabel = new Label(e.getKey() + ":");
 			groupLabel.addStyleName(CssStyles.LABEL_BOLD);
-			HorizontalLayout layout = new HorizontalLayout(groupLabel, new Label(String.join(", ", e.getValue().toString())));
+			HorizontalLayout layout = new HorizontalLayout(
+				groupLabel,
+				new Label(
+					String.join(
+						", ",
+						e.getValue().stream().map(ValidationErrors.ValidationError::getHumanErrorMessage).collect(Collectors.toList()).toString())));
 			layout.setMargin(false);
 
 			return layout;

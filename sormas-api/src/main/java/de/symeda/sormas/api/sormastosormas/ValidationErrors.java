@@ -99,6 +99,15 @@ public class ValidationErrors implements Serializable {
 		}
 
 		@Override
+		public String getHumanErrorMessage() {
+			if (ArrayUtils.isNotEmpty(args)) {
+				return String.format(I18nProperties.getValidationError(i18nProperty), args);
+			} else {
+				return I18nProperties.getValidationError(i18nProperty);
+			}
+		}
+
+		@Override
 		public boolean equals(Object o) {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
@@ -113,13 +122,5 @@ public class ValidationErrors implements Serializable {
 			return result;
 		}
 
-		@Override
-		public String toString() {
-			if (ArrayUtils.isNotEmpty(args)) {
-				return String.format(I18nProperties.getValidationError(i18nProperty), args);
-			} else {
-				return I18nProperties.getValidationError(i18nProperty);
-			}
-		}
 	}
 }

@@ -28,4 +28,6 @@ public interface SormasToSormasErrorMessage {
 
     Object[] getArgs();
 
+    String getHumanErrorMessage();
+
 }
