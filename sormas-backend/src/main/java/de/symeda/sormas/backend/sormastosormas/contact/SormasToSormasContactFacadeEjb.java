@@ -176,12 +176,12 @@ public class SormasToSormasContactFacadeEjb
 		ValidationErrors errors = new ValidationErrors();
 
 		if (contactFacade.exists(uuid)) {
-			errors.add(I18nProperties.getCaption(Captions.Contact), I18nProperties.getValidationError(Validations.sormasToSormasContactExists));
+			errors.add(I18nProperties.getCaption(Captions.Contact), Validations.sormasToSormasContactExists);
 		}
 
 		if (caze != null && !caseFacade.exists(caze.getUuid())) {
 			errors
-				.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasContactCaseNotExists));
+				.add(I18nProperties.getCaption(Captions.CaseData), Validations.sormasToSormasContactCaseNotExists);
 		}
 
 		return errors;

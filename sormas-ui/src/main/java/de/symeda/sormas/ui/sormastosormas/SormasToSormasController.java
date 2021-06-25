@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -240,7 +240,7 @@ public class SormasToSormasController {
 		try {
 			request.run();
 		} catch (SormasToSormasException ex) {
-			Component messageComponent = buildShareErrorMessage(ex.getMessage(), ex.getErrors());
+			Component messageComponent = buildShareErrorMessage(ex.toString(), ex.getErrors());
 			messageComponent.setWidth(100, Sizeable.Unit.PERCENTAGE);
 			VaadinUiUtil.showPopupWindow(new VerticalLayout(messageComponent), I18nProperties.getCaption(Captions.sormasToSormasErrorDialogTitle));
 		} catch (SormasToSormasValidationException ex) {
@@ -328,7 +328,7 @@ public class SormasToSormasController {
 		return errors.getErrors().entrySet().stream().map(e -> {
 			Label groupLabel = new Label(e.getKey() + ":");
 			groupLabel.addStyleName(CssStyles.LABEL_BOLD);
-			HorizontalLayout layout = new HorizontalLayout(groupLabel, new Label(String.join(", ", e.getValue())));
+			HorizontalLayout layout = new HorizontalLayout(groupLabel, new Label(String.join(", ", e.getValue().toString())));
 			layout.setMargin(false);
 
 			return layout;

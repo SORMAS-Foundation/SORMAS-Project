@@ -105,7 +105,7 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 		ValidationErrors errors = new ValidationErrors();
 
 		if (labMessageFacade.exists(labMessage.getUuid())) {
-			errors.add(I18nProperties.getCaption(Captions.LabMessage), I18nProperties.getValidationError(Validations.sormasToSormasLabMessageExists));
+			errors.add(I18nProperties.getCaption(Captions.LabMessage), Validations.sormasToSormasLabMessageExists);
 		}
 
 		return errors;

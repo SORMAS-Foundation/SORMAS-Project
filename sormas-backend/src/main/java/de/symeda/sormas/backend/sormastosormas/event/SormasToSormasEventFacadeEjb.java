@@ -165,7 +165,7 @@ public class SormasToSormasEventFacadeEjb
 		ValidationErrors errors = new ValidationErrors();
 
 		if (eventFacade.exists(uuid)) {
-			errors.add(I18nProperties.getCaption(Captions.Event), I18nProperties.getValidationError(Validations.sormasToSormasEventExists));
+			errors.add(I18nProperties.getCaption(Captions.Event), Validations.sormasToSormasEventExists);
 		}
 
 		return errors;

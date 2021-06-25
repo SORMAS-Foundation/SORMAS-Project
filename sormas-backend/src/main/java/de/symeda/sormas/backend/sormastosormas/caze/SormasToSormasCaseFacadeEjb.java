@@ -170,7 +170,7 @@ public class SormasToSormasCaseFacadeEjb
 	private ValidationErrors validateSharedUuid(String uuid) {
 		ValidationErrors errors = new ValidationErrors();
 		if (caseFacade.exists(uuid)) {
-			errors.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasCaseExists));
+			errors.add(I18nProperties.getCaption(Captions.CaseData), Validations.sormasToSormasCaseExists);
 		}
 
 		return errors;

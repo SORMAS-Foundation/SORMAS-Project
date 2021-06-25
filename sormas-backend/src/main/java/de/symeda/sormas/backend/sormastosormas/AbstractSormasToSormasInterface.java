@@ -438,7 +438,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		if (existingEntities.stream().noneMatch(e -> e.getUuid().equals(entity.getUuid()))) {
 			errors
-				.add(I18nProperties.getCaption(entityCaptionTag), I18nProperties.getValidationError(Validations.sormasToSormasReturnEntityNotExists));
+				.add(I18nProperties.getCaption(entityCaptionTag), Validations.sormasToSormasReturnEntityNotExists);
 
 		}
 
@@ -514,7 +514,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 						this::buildEntityValidationGroupName,
 						(uuid) -> ValidationErrors.create(
 							I18nProperties.getCaption(entityCaptionTag),
-							I18nProperties.getString(Strings.errorSormasToSormasOwnershipAlreadyHandedOver))));
+							Strings.errorSormasToSormasOwnershipAlreadyHandedOver)));
 
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasShare, errors);
 		}

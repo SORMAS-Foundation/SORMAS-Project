@@ -109,13 +109,13 @@ public class ReceivedDataProcessorHelper {
 		if (originInfo.getOrganizationId() == null) {
 			validationErrors.add(
 				I18nProperties.getCaption(Captions.CaseData_sormasToSormasOriginInfo),
-				I18nProperties.getValidationError(Validations.sormasToSormasOrganizationIdMissing));
+				Validations.sormasToSormasOrganizationIdMissing);
 		}
 
 		if (DataHelper.isNullOrEmpty(originInfo.getSenderName())) {
 			validationErrors.add(
 				I18nProperties.getCaption(Captions.CaseData_sormasToSormasOriginInfo),
-				I18nProperties.getValidationError(Validations.sormasToSormasSenderNameMissing));
+				Validations.sormasToSormasSenderNameMissing);
 		}
 
 		originInfo.setUuid(DataHelper.createUuid());
@@ -153,7 +153,7 @@ public class ReceivedDataProcessorHelper {
 	private CountryReferenceDto processCountry(CountryReferenceDto country, String errorCaption, ValidationErrors validationErrors) {
 		CountryReferenceDto localCountry = loadLocalCountry(country);
 		if (country != null && localCountry == null) {
-			validationErrors.add(errorCaption, String.format(I18nProperties.getString(Strings.errorSormasToSormasCountry), country.getCaption()));
+			validationErrors.add(errorCaption, Strings.errorSormasToSormasCountry, country.getCaption());
 		}
 		return localCountry;
 	}
@@ -266,7 +266,7 @@ public class ReceivedDataProcessorHelper {
 		if (errors.size() > 0) {
 			validationErrors.add(
 				I18nProperties.getCaption(groupNameTag),
-				String.format(I18nProperties.getString(Strings.errorSormasToSormasInfrastructure), String.join(",", errors)));
+				Strings.errorSormasToSormasInfrastructure, String.join(",", errors));
 
 		} else {
 			onNoErrors.accept(infrastructureAndErrors.getElement0());
