@@ -28,7 +28,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
@@ -48,6 +50,7 @@ import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -107,7 +110,11 @@ public class ShareDataBuilderHelper {
 		return contactDto;
 	}
 
-	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, boolean isOwnershipHandedOver, String comment)
+	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, SormasToSormasShareInfo shareInfo) throws SormasToSormasException {
+		return createSormasToSormasOriginInfo(user, createOptionsFormShareInfo(shareInfo));
+	}
+
+	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, SormasToSormasOptionsDto options)
 		throws SormasToSormasException {
 		OrganizationServerAccessData serverAccessData = getServerAccessData();
 
@@ -116,8 +123,11 @@ public class ShareDataBuilderHelper {
 		sormasToSormasOriginInfo.setSenderName(String.format("%s %s", user.getFirstName(), user.getLastName()));
 		sormasToSormasOriginInfo.setSenderEmail(user.getUserEmail());
 		sormasToSormasOriginInfo.setSenderPhoneNumber(user.getPhone());
-		sormasToSormasOriginInfo.setOwnershipHandedOver(isOwnershipHandedOver);
-		sormasToSormasOriginInfo.setComment(comment);
+		sormasToSormasOriginInfo.setOwnershipHandedOver(options.isHandOverOwnership());
+		sormasToSormasOriginInfo.setWithAssociatedContacts(options.isWithAssociatedContacts());
+		sormasToSormasOriginInfo.setWithSamples(options.isWithSamples());
+		sormasToSormasOriginInfo.setWithEventParticipants(options.isWithEventParticipants());
+		sormasToSormasOriginInfo.setComment(options.getComment());
 
 		return sormasToSormasOriginInfo;
 	}
@@ -174,5 +184,21 @@ public class ShareDataBuilderHelper {
 		contactPreview.setCaze(CaseFacadeEjb.toReferenceDto(contact.getCaze()));
 
 		return contactPreview;
+	}
+
+	private SormasToSormasOptionsDto createOptionsFormShareInfo(SormasToSormasShareInfo shareInfo) {
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+
+		options.setOrganization(new ServerAccessDataReferenceDto(shareInfo.getOrganizationId()));
+		options.setHandOverOwnership(shareInfo.isOwnershipHandedOver());
+		options.setWithAssociatedContacts(shareInfo.isWithAssociatedContacts());
+		options.setWithSamples(shareInfo.isWithSamples());
+		options.setWithEventParticipants(shareInfo.isWithEventParticipants());
+		options.setComment(shareInfo.getComment());
+		options.setPseudonymizePersonalData(shareInfo.isPseudonymizedPersonalData());
+		options.setPseudonymizeSensitiveData(shareInfo.isPseudonymizedSensitiveData());
+
+		return options;
+
 	}
 }

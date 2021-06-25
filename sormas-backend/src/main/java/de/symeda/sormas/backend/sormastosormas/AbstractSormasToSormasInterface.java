@@ -152,7 +152,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		}
 
 		SormasToSormasOriginInfoDto originInfo =
-			dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options.isHandOverOwnership(), options.getComment());
+			dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options);
 		String requestUuid = DataHelper.createUuid();
 
 		sormasToSormasRestClient

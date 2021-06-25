@@ -66,8 +66,7 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 	@Override
 	public ShareData<Event, SormasToSormasEventDto> buildShareData(Event event, User user, SormasToSormasOptionsDto options)
 		throws SormasToSormasException {
-		SormasToSormasOriginInfoDto originInfo =
-			dataBuilderHelper.createSormasToSormasOriginInfo(user, options.isHandOverOwnership(), options.getComment());
+		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, options);
 
 		List<EventParticipant> eventParticipants = Collections.emptyList();
 		if (options.isWithEventParticipants()) {
@@ -103,8 +102,7 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 	@Override
 	public List<ShareData<Event, SormasToSormasEventDto>> buildShareData(SormasToSormasShareInfo shareInfo, User user)
 		throws SormasToSormasException {
-		SormasToSormasOriginInfoDto originInfo =
-			dataBuilderHelper.createSormasToSormasOriginInfo(user, shareInfo.isOwnershipHandedOver(), shareInfo.getComment());
+		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, shareInfo);
 
 		return shareInfo.getEvents().stream().map(shareInfoEvent -> {
 			Event event = shareInfoEvent.getEvent();

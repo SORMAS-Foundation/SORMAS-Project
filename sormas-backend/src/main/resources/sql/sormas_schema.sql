@@ -7438,4 +7438,12 @@ INSERT INTO schema_version (version_number, comment) VALUES (377, 'Add a checkbo
 UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND exists (SELECT 1 FROM contact WHERE contact.resultingcase_id = cases.id);
 
 INSERT INTO schema_version (version_number, comment) VALUES (378, 'Set contact with source case known for all existing cases #5841');
+
+-- 2021-06-25 [Sormas2Sormas] Returning cases without contacts or samples leaves contacts and samples disabled in both instances #5562
+ALTER TABLE sormastosormasorigininfo
+    ADD COLUMN withassociatedcontacts boolean,
+    ADD COLUMN withsamples boolean,
+    ADD COLUMN witheventparticipants boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (379, '[Sormas2Sormas] Returning cases without contacts or samples leaves contacts and samples disabled in both instances #5562');
 -- *** Insert new sql commands BEFORE this line ***

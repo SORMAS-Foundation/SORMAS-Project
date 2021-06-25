@@ -255,10 +255,13 @@ public class SormasToSormasController {
 		SormasToSormasOptionsForm optionsForm,
 		SormasToSormasOriginInfoDto originInfo) {
 		SormasToSormasOptionsDto defaultOptions = new SormasToSormasOptionsDto();
-		defaultOptions.setHandOverOwnership(true);
 		defaultOptions.setOrganization(new ServerAccessDataReferenceDto(originInfo.getOrganizationId()));
+		defaultOptions.setHandOverOwnership(true);
+		defaultOptions.setWithAssociatedContacts(originInfo.isWithAssociatedContacts());
+		defaultOptions.setWithSamples(originInfo.isWithSamples());
+		defaultOptions.setWithEventParticipants(originInfo.isWithEventParticipants());
 
-		optionsForm.disableOrganizationAndOwnership();
+		optionsForm.disableAllOptions();
 
 		handleShareWithOptions(options -> {
 			handleShareWithOptions.handle(options);
