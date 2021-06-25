@@ -219,4 +219,6 @@ public interface CaseFacade {
 	List<CaseDataDto> getByExternalId(String externalId);
 
 	void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
+
+	int updateCompleteness();
 }

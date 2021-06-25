@@ -43,6 +43,8 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -103,6 +105,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -693,6 +696,23 @@ public class TestDataCreator {
 
 		eventParticipant = beanTest.getEventParticipantFacade().saveEventParticipant(eventParticipant);
 		return eventParticipant;
+	}
+
+	public SurveillanceReportDto createSurveillanceReport(UserReferenceDto reportingUser, CaseReferenceDto caseReference) {
+		return createSurveillanceReport(reportingUser, ReportingType.DOCTOR, caseReference);
+	}
+
+	public SurveillanceReportDto createSurveillanceReport(
+		UserReferenceDto reportingUser,
+		ReportingType reportingType,
+		CaseReferenceDto caseReference) {
+		SurveillanceReportDto surveillanceReport = SurveillanceReportDto.build(caseReference, reportingUser);
+		surveillanceReport.setReportingType(reportingType);
+		surveillanceReport.setReportDate(new Date());
+
+		surveillanceReport = beanTest.getSurveillanceReportFacade().saveSurveillanceReport(surveillanceReport);
+
+		return surveillanceReport;
 	}
 
 	public ActionDto createAction(EventReferenceDto event) {

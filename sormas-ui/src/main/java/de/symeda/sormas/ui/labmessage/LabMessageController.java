@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
+ *******************************************************************************/
 
 package de.symeda.sormas.ui.labmessage;
 
@@ -45,6 +45,7 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -399,7 +400,7 @@ public class LabMessageController {
 		LabMessageDto labMessageDto,
 		EventParticipantDto eventParticipant,
 		Window window) {
-		EventParticipantEditForm createForm = new EventParticipantEditForm(eventDto, false);
+		EventParticipantEditForm createForm = new EventParticipantEditForm(eventDto, false, eventParticipant.getPerson().isPseudonymized());
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,
@@ -682,7 +683,10 @@ public class LabMessageController {
 			.setValue(labMessageDto.isTestResultVerified());
 		((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
 			.setValue(labMessageDto.getTestDateTime());
-		((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE)).setValue(labMessageDto.getMessageDateTime());
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE))
+				.setValue(labMessageDto.getMessageDateTime());
+		}
 
 		sampleCreateComponent.addCommitListener(() -> {
 			window.close();
@@ -936,18 +940,18 @@ public class LabMessageController {
 				return Optional.of(result.getValue());
 			} else {
 				new Notification(
-						I18nProperties.getString(Strings.headingLabMessageDownload),
-						result.getError(),
-						Notification.Type.ERROR_MESSAGE,
-						false).show(Page.getCurrent());
+					I18nProperties.getString(Strings.headingLabMessageDownload),
+					result.getError(),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
 			}
 
 		} catch (NamingException e) {
 			new Notification(
-					I18nProperties.getString(Strings.headingLabMessageDownload),
-					I18nProperties.getString(Strings.messageExternalLabResultsAdapterNotFound),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
+				I18nProperties.getString(Strings.headingLabMessageDownload),
+				I18nProperties.getString(Strings.messageExternalLabResultsAdapterNotFound),
+				Notification.Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
 			logger.error(e.getMessage());
 		}
 		return Optional.empty();

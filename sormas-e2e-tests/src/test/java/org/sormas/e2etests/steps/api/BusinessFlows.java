@@ -24,9 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
-import org.sormas.e2etests.enums.LabUuid;
-import org.sormas.e2etests.enums.PathogenTestResults;
-import org.sormas.e2etests.enums.SpecimenConditions;
+import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.helpers.api.CaseHelper;
 import org.sormas.e2etests.helpers.api.PersonsHelper;
 import org.sormas.e2etests.helpers.api.SampleHelper;
@@ -53,6 +51,35 @@ public class BusinessFlows implements En {
       PersonsHelper personsHelper,
       Faker faker) {
     number = 10;
+
+    When(
+        "API: I create several new cases",
+        () -> {
+          List<Case> caseList = new ArrayList<>();
+          String uuid = UUID.randomUUID().toString();
+          Person person = personApiService.buildGeneratedPerson();
+          person = person.toBuilder().firstName(person.getFirstName() + uuid).build();
+          for (int i = 0; i < number; i++) {
+            person =
+                person.toBuilder()
+                    .uuid(UUID.randomUUID().toString())
+                    .lastName(faker.name().lastName())
+                    .build();
+            apiState.setEditPerson(person);
+            personsHelper.createNewPerson(person);
+
+            Case caze = caseApiService.buildGeneratedCase(apiState.getEditPerson());
+            caze =
+                caze.toBuilder()
+                    .outcome(CaseOutcome.getRandomOutcome())
+                    .disease(Disease.getRandomDisease())
+                    .caseClassification(CaseClasification.getRandomClassification())
+                    .build();
+            caseHelper.createCase(caze);
+            caseList.add(caze);
+          }
+          apiState.setCreatedCases(caseList);
+        });
 
     When(
         "API: I create several new cases with a new sample foreach of them",
@@ -84,7 +111,6 @@ public class BusinessFlows implements En {
                     .specimenCondition(SpecimenConditions.getRandomCondition())
                     .lab(Lab.builder().uuid(LabUuid.getRandomUuid()).build())
                     .build();
-
             sampleHelper.createSample(sample);
             sampleList.add(sample);
           }

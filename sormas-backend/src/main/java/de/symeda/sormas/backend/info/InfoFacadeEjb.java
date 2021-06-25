@@ -33,8 +33,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.Strings;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -65,7 +63,9 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.info.InfoFacade;
 import de.symeda.sormas.api.location.LocationDto;
@@ -186,7 +186,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		// Create
 		XSSFTable table = sheet.createTable();
-		String safeTableName = safeName.replaceAll("\\s", "_");
+		String safeTableName = getSafeTableName(safeName);
 		table.setName(safeTableName);
 		table.setDisplayName(safeTableName);
 
@@ -354,7 +354,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		// Create
 		XSSFTable table = sheet.createTable();
-		String safeTableName = (sheet.getSheetName() + getSimpleDtoName(FacilityReferenceDto.class)).replaceAll("\\s", "_");
+		String safeTableName = getSafeTableName(sheet.getSheetName() + getSimpleDtoName(FacilityReferenceDto.class));
 		table.setName(safeTableName);
 		table.setDisplayName(safeTableName);
 		XssfHelper.styleTable(table, 2);
@@ -422,7 +422,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		// Create
 		XSSFTable table = sheet.createTable();
-		String safeTableName = (sheet.getSheetName() + enumType.getSimpleName()).replaceAll("\\s", "_");
+		String safeTableName = getSafeTableName(sheet.getSheetName() + enumType.getSimpleName());
 		table.setName(safeTableName);
 		table.setDisplayName(safeTableName);
 		XssfHelper.styleTable(table, 2);
@@ -476,6 +476,10 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	private <T> String getSimpleDtoName(Class<T> dto) {
 		return dto.getSimpleName().replaceAll("Dto", "");
+	}
+
+	private String getSafeTableName(String name) {
+		return name.replaceAll("\\s|\\p{Punct}", "_");
 	}
 
 	@LocalBean

@@ -48,8 +48,10 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.utils.EventJoins;
 
 @Stateless
 @LocalBean
@@ -309,8 +311,9 @@ public class DashboardService {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
 		Root<Event> event = cq.from(Event.class);
-		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
-		Join<Location, District> eventDistrict = eventLocation.join(Location.DISTRICT, JoinType.LEFT);
+		EventJoins<Event> eventJoins = new EventJoins<>(event);
+		Join<Event, Location> eventLocation = eventJoins.getLocation();
+		Join<Location, District> eventDistrict = eventJoins.getDistrict();
 
 		Predicate filter = eventService.createDefaultFilter(cb, event);
 		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, new EventQueryContext(cb, cq, event)));
@@ -331,12 +334,13 @@ public class DashboardService {
 				event.get(Event.REPORT_LON),
 				eventLocation.get(Location.LATITUDE),
 				eventLocation.get(Location.LONGITUDE),
-				event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
-				event.join(Event.RESPONSIBLE_USER, JoinType.LEFT).get(User.UUID),
-				eventLocation.join(Location.REGION, JoinType.LEFT).get(Region.UUID),
+				eventJoins.getReportingUser().get(User.UUID),
+				eventJoins.getResponsibleUser().get(User.UUID),
+				eventJoins.getRegion().get(Region.UUID),
 				eventDistrict.get(District.NAME),
 				eventDistrict.get(District.UUID),
-				eventLocation.join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID));
+				eventJoins.getCommunity().get(Community.UUID),
+				JurisdictionHelper.jurisdictionSelector(cb, eventService.inJurisdictionOrOwned(cb, eventJoins)));
 
 			result = em.createQuery(cq).getResultList();
 

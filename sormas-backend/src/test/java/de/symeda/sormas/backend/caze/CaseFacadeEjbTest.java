@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -30,6 +31,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,6 +46,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -73,7 +78,10 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.document.DocumentDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -1184,7 +1192,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testMergeCase() {
+	public void testMergeCase() throws IOException {
 
 		useNationalUserLogin();
 		// 1. Create
@@ -1202,7 +1210,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			CaseClassification.SUSPECT,
 			InvestigationStatus.PENDING,
 			new Date(),
-			leadRdcf);
+			leadRdcf,
+			(c) -> {
+				c.setAdditionalDetails("Test additional details");
+				c.setFollowUpComment("Test followup comment");
+			});
 		leadCase.setClinicianEmail("mail");
 		getCaseFacade().saveCase(leadCase);
 		VisitDto leadVisit = creator.createVisit(leadCase.getDisease(), leadCase.getPerson(), leadCase.getReportDate());
@@ -1224,7 +1236,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			CaseClassification.SUSPECT,
 			InvestigationStatus.PENDING,
 			new Date(),
-			otherRdcf);
+			otherRdcf,
+			(c) -> {
+				c.setAdditionalDetails("Test other additional details");
+				c.setFollowUpComment("Test other followup comment");
+			});
 		otherCase.setClinicianName("name");
 		CaseReferenceDto otherCaseReference = getCaseFacade().getReferenceByUuid(otherCase.getUuid());
 		ContactDto contact =
@@ -1251,6 +1267,31 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		VisitDto otherVisit = creator.createVisit(otherCase.getDisease(), otherCase.getPerson(), otherCase.getReportDate());
 		otherVisit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(otherVisit);
+		EventDto event = creator.createEvent(otherUserReference);
+		event.setDisease(otherCase.getDisease());
+		getEventFacade().saveEvent(event);
+		EventParticipantDto otherCaseEventParticipant = creator.createEventParticipant(event.toReference(), otherPerson, otherUserReference);
+		otherCaseEventParticipant.setResultingCase(otherCaseReference);
+		getEventParticipantFacade().saveEventParticipant(otherCaseEventParticipant);
+
+		creator.createSurveillanceReport(otherUserReference, otherCaseReference);
+
+		DocumentDto document = creator.createDocument(
+			leadUserReference,
+			"document.pdf",
+			"application/pdf",
+			42L,
+			DocumentRelatedEntityType.CASE,
+			leadCase.getUuid(),
+			"content".getBytes(StandardCharsets.UTF_8));
+		DocumentDto otherDocument = creator.createDocument(
+			leadUserReference,
+			"other_document.pdf",
+			"application/pdf",
+			42L,
+			DocumentRelatedEntityType.CASE,
+			otherCase.getUuid(),
+			"other content".getBytes(StandardCharsets.UTF_8));
 
 		// 2. Merge
 
@@ -1285,6 +1326,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// Check 'lead has no value, other has'
 		assertEquals(otherPerson.getBirthWeight(), mergedPerson.getBirthWeight());
+
+		// Check merge comments
+		assertEquals(mergedCase.getAdditionalDetails(), "Test additional details Test other additional details");
+		assertEquals(mergedCase.getFollowUpComment(), "Test followup comment Test other followup comment");
 
 		// 4. Test Reference Changes
 		// 4.1 Contacts
@@ -1329,6 +1374,22 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(SymptomState.YES, mergedCase.getSymptoms().getAbdominalPain());
 		assertEquals(SymptomState.YES, mergedCase.getSymptoms().getAnorexiaAppetiteLoss());
 		assertTrue(mergedCase.getSymptoms().getSymptomatic());
+
+		// 4.8 Linked Events
+		assertEquals(1, getEventFacade().count(new EventCriteria().caze(mergedCase.toReference())));
+
+		// 4.8 Linked Surveillance Reports
+		List<SurveillanceReportDto> surveillanceReportList =
+			getSurveillanceReportFacade().getByCaseUuids(Collections.singletonList(mergedCase.getUuid()));
+		MatcherAssert.assertThat(surveillanceReportList, hasSize(1));
+
+		// 5 Documents
+		List<DocumentDto> mergedDocuments = getDocumentFacade().getDocumentsRelatedToEntity(DocumentRelatedEntityType.CASE, leadCase.getUuid());
+
+		assertEquals(mergedDocuments.size(), 2);
+		List<String> documentUuids = mergedDocuments.stream().map(DocumentDto::getUuid).collect(Collectors.toList());
+		assertTrue(documentUuids.contains(document.getUuid()));
+		assertTrue(documentUuids.contains(otherDocument.getUuid()));
 	}
 
 	@Test
@@ -1888,5 +1949,54 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		indexList = getCaseFacade().getIndexList(caseCriteriaForShared, 0, 100, null);
 		MatcherAssert.assertThat(indexList, hasSize(0));
 
+	}
+
+	@Test
+	public void testCaseCompletenessWhenCaseFound() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+
+		int casesWithNoCompletenessFound = getCaseFacade().updateCompleteness();
+		MatcherAssert.assertThat(casesWithNoCompletenessFound, is(0));
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		CaseDataDto caseNoCompleteness = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		PersonDto cazePerson2 = creator.createPerson("Case2", "Person2", Sex.MALE, 1981, 1, 1);
+		CaseDataDto caseWithCompleteness = creator.createCase(
+			user.toReference(),
+			cazePerson2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateUtils.addMinutes(new Date(), -3),
+			rdcf);
+
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query2 = em.createQuery("select c from cases c where c.uuid=:uuid");
+		query2.setParameter("uuid", caseWithCompleteness.getUuid());
+		Case caseWithCompletenessSingleResult = (Case) query2.getSingleResult();
+		caseWithCompletenessSingleResult.setCompleteness(0.7f);
+		em.save(caseWithCompletenessSingleResult);
+
+		int changedCases = getCaseFacade().updateCompleteness();
+
+		Case completenessUpdateResult = getCaseService().getByUuid(caseNoCompleteness.getUuid());
+		Case completenessUpdateResult2 = getCaseService().getByUuid(caseWithCompleteness.getUuid());
+
+		MatcherAssert.assertThat(completenessUpdateResult.getCompleteness(), notNullValue());
+		MatcherAssert.assertThat(completenessUpdateResult2.getCompleteness(), is(0.7f));
+		MatcherAssert.assertThat(changedCases, is(1));
+
+		int changedCasesAfterUpdateCompleteness = getCaseFacade().updateCompleteness();
+
+		MatcherAssert.assertThat(changedCasesAfterUpdateCompleteness, is(0));
 	}
 }

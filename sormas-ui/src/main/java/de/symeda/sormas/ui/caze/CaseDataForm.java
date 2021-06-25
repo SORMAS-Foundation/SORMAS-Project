@@ -184,8 +184,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(6, CaseDataDto.EPID_NUMBER, 3, ASSIGN_NEW_EPID_NUMBER_LOC) +
 					loc(EPID_NUMBER_WARNING_LOC) +
 					fluidRowLocs(CaseDataDto.EXTERNAL_ID, CaseDataDto.EXTERNAL_TOKEN) +
-					fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL) +
-					fluidRowLocs(DONT_SHARE_WARNING_LOC) +
 					fluidRowLocs("", EXTERNAL_TOKEN_WARNING_LOC) +
 					fluidRowLocs(6, CaseDataDto.CASE_ID_ISM, 6, CaseDataDto.INTERNAL_TOKEN) +
 					fluidRow(
@@ -209,6 +207,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS) +
 					fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
 					fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC) +
+					fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL) +
+					fluidRowLocs(DONT_SHARE_WARNING_LOC) +
 					fluidRowLocs(DIFFERENT_JURISDICTION) +
 					fluidRowLocs(CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_COMMUNITY) +
 					fluidRowLocs(CaseDataDto.NOSOCOMIAL_OUTBREAK, CaseDataDto.INFECTION_SETTING) +
@@ -1136,7 +1136,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				getFieldGroup(),
 				CaseDataDto.OUTCOME_DATE,
 				CaseDataDto.OUTCOME,
-				Arrays.asList(CaseOutcome.DECEASED, CaseOutcome.RECOVERED),
+				Arrays.asList(CaseOutcome.DECEASED, CaseOutcome.RECOVERED, CaseOutcome.UNKNOWN),
 				true);
 		}
 		if (isVisibleAllowed(CaseDataDto.SEQUELAE)) {

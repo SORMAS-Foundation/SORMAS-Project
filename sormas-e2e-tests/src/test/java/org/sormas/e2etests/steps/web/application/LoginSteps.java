@@ -62,6 +62,7 @@ public class LoginSteps implements En {
           webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, "NatUser");
           webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, "NatUser38118");
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
         });
 
     Given(

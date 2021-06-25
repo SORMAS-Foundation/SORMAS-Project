@@ -45,6 +45,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,10 +109,12 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb.VaccinationInfoFacadeEjbLocal;
+import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless(name = "EventParticipantFacade")
 public class EventParticipantFacadeEjb implements EventParticipantFacade {
@@ -132,8 +135,6 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@EJB
 	private UserService userService;
 	@EJB
-	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
-	@EJB
 	private ContactService contactService;
 	@EJB
 	private RegionService regionService;
@@ -141,8 +142,6 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private DistrictService districtService;
 	@EJB
 	private MessagingService messagingService;
-	@EJB
-	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
 	private VaccinationInfoFacadeEjbLocal vaccinationInfoFacade;
 	@EJB
@@ -231,7 +230,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		EventReferenceDto eventReferenceDto = dto.getEvent();
 		Event event = eventService.getByUuid(eventReferenceDto.getUuid());
 
-		if (!eventJurisdictionChecker.isInJurisdiction(event) && (dto.getRegion() == null || dto.getDistrict() == null)) {
+		if (!eventService.inJurisdiction(event) && (dto.getRegion() == null || dto.getDistrict() == null)) {
 			Region region = user.getRegion();
 			dto.setRegion(region != null ? new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()) : null);
 			District district = user.getDistrict();
@@ -261,45 +260,54 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-		Map<String, User> responsibleUserByEventUuid = eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
-			eventParticipant.getPerson().getUuid(), event.getUuid(), event.getDisease(), fromDate);
-		for (Map.Entry<String, User> entry : responsibleUserByEventUuid.entrySet()) {
-			try {
-				messagingService.sendMessage(
-					entry.getValue(),
-					MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
-					String.format(
-						I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
-						DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
-						DataHelper.getShortUuid(eventParticipant.getUuid()),
-						DataHelper.getShortUuid(event.getUuid()),
-						User.buildCaptionForNotification(event.getResponsibleUser()),
-						User.buildCaptionForNotification(userService.getCurrentUser()),
-						buildEventListContentForNotification(responsibleUserByEventUuid)),
-					MessageType.EMAIL,
-					MessageType.SMS);
-			} catch (NotificationDeliveryFailedException e) {
-				logger.error(
-					String.format(
-						"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventPartipant related to other events. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-						entry.getValue().getUuid()));
-			}
+		Map<String, Optional<User>> responsibleUserByEventUuid = eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
+			eventParticipant.getPerson().getUuid(), event.getDisease(), fromDate);
+		if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
+			// it means the event participant is only appearing into the current event
+			return;
+		}
+
+		for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
+			entry.getValue()
+				.filter(user -> StringUtils.isNotEmpty(user.getUserEmail()))
+				.ifPresent(user -> {
+					try {
+						messagingService.sendMessage(
+							user,
+							MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+							String.format(
+								I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
+								DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
+								DataHelper.getShortUuid(eventParticipant.getUuid()),
+								DataHelper.getShortUuid(event.getUuid()),
+								User.buildCaptionForNotification(event.getResponsibleUser()),
+								User.buildCaptionForNotification(userService.getCurrentUser()),
+								buildEventListContentForNotification(responsibleUserByEventUuid)),
+							MessageType.EMAIL,
+							MessageType.SMS);
+					} catch (NotificationDeliveryFailedException e) {
+						logger.error(
+							String.format(
+								"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventPartipant related to other events. "
+									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+								user.getUuid()));
+					}
+				});
 		}
 	}
 
-	private String buildEventListContentForNotification(Map<String, User> responsibleUserByEventUuid) {
+	private String buildEventListContentForNotification(Map<String, Optional<User>> responsibleUserByEventUuid) {
 		return responsibleUserByEventUuid.entrySet()
 			.stream()
 			.map(entry -> buildEventListContentForNotification(entry.getKey(), entry.getValue()))
 			.collect(Collectors.joining("\n* ", "* ", ""));
 	}
 
-	private String buildEventListContentForNotification(String eventUuid, User responsibleUser) {
+	private String buildEventListContentForNotification(String eventUuid, Optional<User> responsibleUser) {
 		return String.format(
 			I18nProperties.getString(Strings.notificationEventWithResponsibleUserLine),
 			DataHelper.getShortUuid(eventUuid),
-			User.buildCaptionForNotification(responsibleUser));
+			User.buildCaptionForNotification(responsibleUser.orElse(null)));
 	}
 
 	@Override
@@ -344,14 +352,16 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		final CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
 		final Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		final EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
+		EventParticipantJoins<EventParticipant> joins = new EventParticipantJoins<>(eventParticipant);
 
-		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
-		Join<EventParticipant, Case> resultingCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
-		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
-		Join<EventParticipant, VaccinationInfo> vaccinationInfoJoin = eventParticipant.join(EventParticipant.VACCINATION_INFO, JoinType.LEFT);
-		Join<Object, Object> reportingUser = eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT);
+		Join<EventParticipant, Person> person = joins.getPerson();
+		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
+		Join<EventParticipant, Event> event = joins.getEvent();
+		Join<EventParticipant, VaccinationInfo> vaccinationInfoJoin = joins.getVaccinationInfo();
 		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
 
+		Expression<Object> jurisdictionSelector =
+			JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, joins));
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.UUID),
@@ -368,7 +378,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			// all samples have the same date, but have to be aggregated
 			cb.max(samples.get(Sample.SAMPLE_DATE_TIME)),
 			vaccinationInfoJoin.get(VaccinationInfo.VACCINATION),
-			reportingUser.get(User.UUID));
+			joins.getEventParticipantReportingUser().get(User.UUID),
+			jurisdictionSelector);
 		cq.groupBy(
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.UUID),
@@ -381,7 +392,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
 			vaccinationInfoJoin.get(VaccinationInfo.VACCINATION),
-			reportingUser.get(User.UUID));
+			joins.getEventParticipantReportingUser().get(User.UUID),
+			jurisdictionSelector);
 
 		Subquery<Date> dateSubquery = cq.subquery(Date.class);
 		Root<Sample> subRoot = dateSubquery.from(Sample.class);
@@ -461,11 +473,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			EventParticipantIndexDto.class,
-			indexList,
-			p -> eventParticipantJurisdictionChecker.isPseudonymized(p.getUuid()),
-			null);
+		pseudonymizer.pseudonymizeDtoCollection(EventParticipantIndexDto.class, indexList, p -> p.getInJurisdiction(), null);
 
 		return indexList;
 	}
@@ -484,7 +492,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			event.get(Event.UUID),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.DISEASE),
-			event.get(Event.EVENT_TITLE));
+			event.get(Event.EVENT_TITLE),
+			JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(eventParticipant))));
 
 		Predicate filter = CriteriaBuilderHelper.and(
 			cb,
@@ -502,11 +511,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			EventParticipantListEntryDto.class,
-			result,
-			p -> eventParticipantJurisdictionChecker.isPseudonymized(p.getUuid()),
-			null);
+		pseudonymizer.pseudonymizeDtoCollection(EventParticipantListEntryDto.class, result, p -> p.getInJurisdiction(), null);
 
 		return result;
 	}
@@ -523,20 +528,21 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		CriteriaQuery<EventParticipantExportDto> cq = cb.createQuery(EventParticipantExportDto.class);
 		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
+		EventParticipantJoins<EventParticipant> joins = new EventParticipantJoins<>(eventParticipant);
 
-		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
+		Join<EventParticipant, Person> person = joins.getPerson();
 
 		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
 
-		Join<Person, Location> address = person.join(Person.ADDRESS);
+		Join<Person, Location> address = joins.getAddress();
 		Join<Person, Country> birthCountry = person.join(Person.BIRTH_COUNTRY, JoinType.LEFT);
 		Join<Person, Country> citizenship = person.join(Person.CITIZENSHIP, JoinType.LEFT);
 
-		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
-		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		Join<EventParticipant, Event> event = joins.getEvent();
+		Join<Event, Location> eventLocation = joins.getEventAddress();
 
-		Join<EventParticipant, Case> resultingCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
-		Join<EventParticipant, VaccinationInfo> vaccinationInfo = eventParticipant.join(EventParticipant.VACCINATION_INFO, JoinType.LEFT);
+		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
+		Join<EventParticipant, VaccinationInfo> vaccinationInfo = joins.getVaccinationInfo();
 
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.ID),
@@ -545,7 +551,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.NATIONAL_HEALTH_ID),
 			person.get(Location.ID),
-			eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT).get(User.UUID),
+			JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, joins)),
 
 			event.get(Event.UUID),
 
@@ -581,9 +587,9 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.BURIAL_CONDUCTOR),
 			person.get(Person.BURIAL_PLACE_DESCRIPTION),
 
-			address.join(Location.REGION, JoinType.LEFT).get(Region.NAME),
-			address.join(Location.DISTRICT, JoinType.LEFT).get(District.NAME),
-			address.join(Location.COMMUNITY, JoinType.LEFT).get(Community.NAME),
+			joins.getAddressRegion().get(Region.NAME),
+			joins.getAddressDistrict().get(District.NAME),
+			joins.getAddressCommunity().get(Community.NAME),
 			address.get(Location.CITY),
 			address.get(Location.STREET),
 			address.get(Location.HOUSE_NUMBER),
@@ -649,8 +655,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			for (EventParticipantExportDto exportDto : eventParticipantResultList) {
-//				final boolean inJurisdiction = eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(exportDto.getJurisdiction());
-				final boolean inJurisdiction = eventParticipantJurisdictionChecker.isPseudonymized(exportDto.getEventParticipantUuid());
+				final boolean inJurisdiction = exportDto.getInJurisdiction();
 
 				if (personAddresses != null) {
 					Optional.ofNullable(personAddresses.get(exportDto.getPersonAddressId()))
@@ -767,7 +772,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	public boolean isEventParticipantEditAllowed(String uuid) {
 		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
 
-		return eventParticipantService.isEventParticiapntEditAllowed(eventParticipant);
+		return eventParticipantService.isEventParticipantEditAllowed(eventParticipant);
 	}
 
 	@Override
@@ -827,7 +832,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		if (source != null) {
 			validate(dto);
 
-			boolean inJurisdiction = eventParticipantJurisdictionChecker.isPseudonymized(source);
+			boolean inJurisdiction = eventParticipantService.inJurisdictionOrOwned(source);
 
 			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
 			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, inJurisdiction, null));
@@ -845,7 +850,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 				EventParticipantDto.class,
 				dto,
 				originalDto,
-				eventParticipantJurisdictionChecker.isPseudonymized(originalEventParticipant));
+				eventParticipantService.inJurisdictionOrOwned(originalEventParticipant));
 		}
 	}
 
@@ -924,6 +929,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<Object, Object> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.LEFT);
 		Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
 
+		Expression<Object> jurisdictionSelector = JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(eventParticipantRoot)));
 		cq.multiselect(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),
@@ -932,7 +938,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventJoin.get(Event.UUID),
 			eventJoin.get(Event.EVENT_STATUS),
 			eventJoin.get(Event.EVENT_TITLE),
-			eventJoin.get(Event.START_DATE));
+			eventJoin.get(Event.START_DATE),
+				jurisdictionSelector);
 		cq.groupBy(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),
@@ -941,7 +948,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventJoin.get(Event.UUID),
 			eventJoin.get(Event.EVENT_STATUS),
 			eventJoin.get(Event.EVENT_TITLE),
-			eventJoin.get(Event.START_DATE));
+			eventJoin.get(Event.START_DATE),
+			jurisdictionSelector);
 
 		final Predicate defaultFilter = eventParticipantService.createDefaultFilter(cb, eventParticipantRoot);
 		final Predicate userFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantRoot);
@@ -967,11 +975,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		List<SimilarEventParticipantDto> participants = em.createQuery(cq).getResultList();
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		pseudonymizer.pseudonymizeDtoCollection(
-			SimilarEventParticipantDto.class,
-			participants,
-			p -> eventParticipantJurisdictionChecker.isPseudonymized(p.getUuid()),
-			null);
+		pseudonymizer.pseudonymizeDtoCollection(SimilarEventParticipantDto.class, participants, p -> p.getInJurisdiction(), null);
 
 		if (Boolean.TRUE.equals(criteria.getExcludePseudonymized())) {
 			participants = participants.stream().filter(e -> !e.isPseudonymized()).collect(Collectors.toList());

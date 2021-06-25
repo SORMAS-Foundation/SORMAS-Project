@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +37,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
@@ -78,6 +80,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private SormasToSormasContactFacadeEjbLocal sormasToSormasContactFacade;
 	@EJB
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
+	@EJB
+	private SormasToSormasEncryptionService encryptionService;
 
 	@Override
 	public List<ServerAccessDataReferenceDto> getAvailableOrganizations() {
@@ -134,10 +138,11 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	@Override
-	public void revokeRequests(List<String> requestUuids) {
-		requestUuids.forEach(requestUuid -> {
-			SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(requestUuid);
+	public void revokeRequests(SormasToSormasEncryptedDataDto encryptedRequestUuids) throws SormasToSormasException {
+		String[] requestUuids = encryptionService.decryptAndVerify(encryptedRequestUuids, String[].class);
+		List<SormasToSormasShareRequestDto> shareRequests = shareRequestFacade.getShareRequestsByUuids(Arrays.asList(requestUuids));
 
+		shareRequests.forEach(shareRequest -> {
 			shareRequest.setChangeDate(new Date());
 			shareRequest.setStatus(ShareRequestStatus.REVOKED);
 			shareRequestFacade.saveShareRequest(shareRequest);

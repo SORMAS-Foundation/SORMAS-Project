@@ -15,22 +15,6 @@
 
 package de.symeda.sormas.app.backend.caze;
 
-import static android.content.Context.NOTIFICATION_SERVICE;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -39,16 +23,29 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.text.Html;
 import android.util.Log;
+
 import androidx.core.app.NotificationCompat;
+
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -56,8 +53,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
-import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
@@ -73,6 +68,7 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventCriteria;
+import de.symeda.sormas.app.backend.event.EventEditAuthorization;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.backend.person.Person;
@@ -87,8 +83,9 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
-import de.symeda.sormas.app.util.JurisdictionHelper;
 import de.symeda.sormas.app.util.LocationService;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class CaseDao extends AbstractAdoDao<Case> {
 
@@ -641,17 +638,14 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		}
 
 		//Remove events outside jurisdiction which were pulled in due to linking with an accessible case
-		User user = ConfigProvider.getUser();
-		UserJurisdiction userJurisdiction = JurisdictionHelper.createUserJurisdiction(user);
 		EventCriteria eventCriteria = new EventCriteria();
 		eventCriteria.caze(caze);
 		List<Event> eventList = DatabaseHelper.getEventDao().queryByCriteria(eventCriteria, 0, 0);
 		for (Event event : eventList) {
 			List<EventParticipant> eventParticipantByEventList = DatabaseHelper.getEventParticipantDao().getByEvent(event);
 			if (eventParticipantByEventList.isEmpty()) {
-				EventJurisdictionDto eventJurisdictionDto = JurisdictionHelper.createEventJurisdictionDto(event);
 				Boolean isEventInJurisdiction =
-					EventJurisdictionHelper.isInJurisdictionOrOwned(JurisdictionLevel.REGION, userJurisdiction, eventJurisdictionDto);
+					EventEditAuthorization.isEventEditAllowed(event);
 				if (!isEventInJurisdiction) {
 					DatabaseHelper.getEventDao().delete(event);
 				}

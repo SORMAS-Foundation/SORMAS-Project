@@ -31,6 +31,7 @@ public class CaseApiService {
   public Case buildGeneratedCase(Person person) {
     return Case.builder()
         .disease("CORONAVIRUS")
+        .diseaseDetails("Test Disease")
         .pseudonymized(false)
         .uuid(UUID.randomUUID().toString())
         .reportDate(new Date())
