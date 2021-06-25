@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -353,6 +354,12 @@ public class VisitFacadeEjb implements VisitFacade {
 		}
 
 		return indexList;
+	}
+
+	public Page<VisitIndexDto> getIndexPage(VisitCriteria visitCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<VisitIndexDto> visitIndexList = getIndexList(visitCriteria, offset, size, sortProperties);
+		long totalElementCount = count(visitCriteria);
+		return new Page<>(visitIndexList, offset, size, totalElementCount);
 	}
 
 	@Override
