@@ -68,7 +68,8 @@ public class ContactsLineListingSteps implements En {
         () -> {
           secondContactsLineListing = contactsLineListingService.buildGeneratedSecondLine();
           webDriverHelpers.clickOnWebElementBySelector(ADD_LINE);
-          Thread.sleep(1000);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              LINE_LISTING_SECOND_DATE_REPORT_INPUT);
           fillSecondDateOfReport(contactsLineListing.getDateOfReport());
           fillSecondDateOfLastContact(contactsLineListing.getDateOfLastContact());
 
@@ -90,7 +91,7 @@ public class ContactsLineListingSteps implements En {
     When(
         "I am checking all data created from Line Listing option is saved and displayed",
         () -> {
-          Thread.sleep(1000);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COLUMNS);
           softly
               .assertThat(secondContactsLineListing.getDisease())
               .isEqualTo(getDiseaseDirectoryPage());
