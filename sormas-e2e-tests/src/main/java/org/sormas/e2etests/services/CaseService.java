@@ -102,7 +102,7 @@ public class CaseService {
 
   public Case buildCaseForLineListingFeature() {
     return Case.builder()
-        .disease(Disease.getRandomDiseaseValue())
+        .disease(Disease.MONKEYPOX.getDisease())
         .region("Voreingestellte")
         .district("Voreingestellter Landkreis")
         .facilityCategory("Accommodation")
@@ -111,7 +111,7 @@ public class CaseService {
         .community("Voreingestellte Gemeinde")
         .placeDescription(faker.address().streetAddressNumber()) // used for Facility Name
         .firstName(faker.name().firstName())
-        .lastName(faker.name().lastName())
+        .lastName(faker.name().lastName() + LocalDate.now())
         .dateOfBirth(LocalDate.of(1902, 3, 7))
         .sex("Male")
         .dateOfSymptomOnset(LocalDate.now().minusDays(1))

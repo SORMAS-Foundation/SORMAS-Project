@@ -46,7 +46,7 @@ public class CaseDirectorySteps implements En {
                 NEW_CASE_BUTTON, DATE_OF_REPORT_INPUT));
 
     When(
-        "^I click on Line Listing button$",
+        "^I click on Case Line Listing button$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_BUTTON));
 
     When(

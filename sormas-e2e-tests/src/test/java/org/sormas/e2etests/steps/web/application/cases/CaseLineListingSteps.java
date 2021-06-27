@@ -1,5 +1,6 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.LineListingPopup.*;
 
 import cucumber.api.java8.En;
@@ -8,17 +9,20 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
+import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.services.CaseService;
 
-public class LineListingSteps implements En {
+public class CaseLineListingSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   protected static Case caze;
+  protected static Case secondCaze;
 
   @Inject
-  public LineListingSteps(WebDriverHelpers webDriverHelpers, CaseService caseService) {
+  public CaseLineListingSteps(
+      WebDriverHelpers webDriverHelpers, CaseService caseService, final SoftAssertions softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -34,7 +38,6 @@ public class LineListingSteps implements En {
           selectCommunity(caze.getCommunity());
           selectFacility();
           fillFacilityName(caze.getPlaceDescription());
-
           fillFirstName(caze.getFirstName());
           fillLastName(caze.getLastName());
           fillDateOfBirth(caze.getDateOfBirth());
@@ -49,18 +52,34 @@ public class LineListingSteps implements En {
     When(
         "^I create the second case using listing feature in new line$",
         () -> {
-          Thread.sleep(3000);
-          caze = caseService.buildCaseForLineListingFeature();
-          fillSecondFirstName(caze.getFirstName(), 1);
-          fillSecondLastName(caze.getLastName(), 1);
-          fillSecondDateOfBirth(caze.getDateOfBirth());
-          selectSecondSex(caze.getSex());
-          fillSecondDateOfSymptom(caze.getDateOfSymptomOnset());
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SECOND_DATE_OF_SYMPTOM_INPUT);
+          secondCaze = caseService.buildCaseForLineListingFeature();
+          fillSecondFirstName(secondCaze.getFirstName(), 1);
+          fillSecondLastName(secondCaze.getLastName(), 1);
+          fillSecondDateOfBirth(secondCaze.getDateOfBirth());
+          selectSecondSex(secondCaze.getSex());
+          fillSecondDateOfSymptom(secondCaze.getDateOfSymptomOnset());
         });
 
     When(
         "^I save the new case using line listing feature$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_SAVE_BUTTON));
+
+    When(
+        "I am checking all data created from Case Line Listing option is saved and displayed",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          softly
+              .assertThat(getCaseDiseaseFromGridResults())
+              .isEqualToIgnoringCase(caze.getDisease());
+          softly.assertThat(getCaseFirstNameFromGridResults()).isEqualTo(secondCaze.getFirstName());
+          softly.assertThat(getCaseLastNameFromGridResults()).isEqualTo(secondCaze.getLastName());
+          softly.assertThat(getCaseDistrictFromGridResults()).isEqualTo(caze.getDistrict());
+          softly
+              .assertThat(getCaseHealthFacilityFromGridResults())
+              .isEqualToIgnoringCase("Other Facility - " + caze.getPlaceDescription());
+          softly.assertAll();
+        });
   }
 
   public void selectDisease(String disease) {
@@ -152,5 +171,25 @@ public class LineListingSteps implements En {
   public void fillSecondDateOfSymptom(LocalDate date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(SECOND_DATE_OF_SYMPTOM_INPUT, formatter.format(date));
+  }
+
+  public String getCaseDiseaseFromGridResults() {
+    return webDriverHelpers.getTextFromListElement(GRID_RESULTS_DISEASE, 0);
+  }
+
+  public String getCaseFirstNameFromGridResults() {
+    return webDriverHelpers.getTextFromListElement(GRID_RESULTS_FIRST_NAME, 0);
+  }
+
+  public String getCaseLastNameFromGridResults() {
+    return webDriverHelpers.getTextFromListElement(GRID_RESULTS_LAST_NAME, 0);
+  }
+
+  public String getCaseDistrictFromGridResults() {
+    return webDriverHelpers.getTextFromListElement(GRID_RESULTS_DISTRICT, 0);
+  }
+
+  public String getCaseHealthFacilityFromGridResults() {
+    return webDriverHelpers.getTextFromListElement(GRID_RESULTS_HEALTH_FACILITY, 0);
   }
 }
