@@ -185,7 +185,6 @@ import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
-import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "ContactFacade")
 public class ContactFacadeEjb implements ContactFacade {
@@ -977,7 +976,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	private Expression<Object> jurisdictionSelector(CriteriaBuilder cb, ContactJoins<Contact> joins) {
-		return JurisdictionHelper.jurisdictionSelector(cb, contactService.inJurisdictionOrOwned(cb, joins));
+		return JurisdictionHelper.booleanSelector(cb, contactService.inJurisdictionOrOwned(cb, joins));
 	}
 
 	@Override

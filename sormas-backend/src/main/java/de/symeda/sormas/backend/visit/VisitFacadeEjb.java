@@ -454,7 +454,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	private Expression<Object> jurisdictionSelector(CriteriaBuilder cb, Join<Visit, Case> caseJoin, Join<Visit, Contact> contactJoin) {
-		return JurisdictionHelper.jurisdictionSelector(
+		return JurisdictionHelper.booleanSelector(
 			cb,
 			cb.or(
 				caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(caseJoin)),
