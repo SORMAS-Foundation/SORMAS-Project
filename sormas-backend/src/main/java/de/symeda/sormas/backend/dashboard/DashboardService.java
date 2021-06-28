@@ -337,7 +337,7 @@ public class DashboardService {
 				eventDistrict.get(District.NAME),
 				eventDistrict.get(District.UUID),
 				eventJoins.getCommunity().get(Community.UUID),
-				JurisdictionHelper.jurisdictionSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)));
+				JurisdictionHelper.booleanSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)));
 
 			result = em.createQuery(cq).getResultList();
 

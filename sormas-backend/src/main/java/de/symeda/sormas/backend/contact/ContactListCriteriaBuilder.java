@@ -100,8 +100,8 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.EXTERNAL_ID),
 			contact.get(Contact.EXTERNAL_TOKEN),
 			contact.get(Contact.INTERNAL_TOKEN),
-			JurisdictionHelper.jurisdictionSelector(cb, contactService.inJurisdictionOrOwned(contactQueryContext)),
-			JurisdictionHelper.jurisdictionSelector(
+			JurisdictionHelper.booleanSelector(cb, contactService.inJurisdictionOrOwned(contactQueryContext)),
+			JurisdictionHelper.booleanSelector(
 				cb,
 				caseService.inJurisdictionOrOwned(
 					new CaseQueryContext<>(

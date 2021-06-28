@@ -93,6 +93,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -828,6 +829,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testOutcomePersonConditionUpdate() {
 
+		final Date today = new Date();
+
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
@@ -838,78 +841,117 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			Disease.EVD,
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
-			new Date(),
+			today,
 			rdcf);
 
-		// case deceased -> person has to set to dead
+		// case deceased -> person should be set to dead, causeofdeath(disease) filled in
 		firstCase.setOutcome(CaseOutcome.DECEASED);
 		firstCase = getCaseFacade().saveCase(firstCase);
-		assertNotNull(firstCase.getOutcomeDate());
 		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+
+		assertNull(firstCase.getOutcomeDate());
 		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
+		assertEquals(CauseOfDeath.EPIDEMIC_DISEASE, cazePerson.getCauseOfDeath());
 		assertEquals(firstCase.getDisease(), cazePerson.getCauseOfDeathDisease());
+
+		// update just the outcomeDate -> person should also get the deathdate set
+		firstCase.setOutcomeDate(today);
+		firstCase = getCaseFacade().saveCase(firstCase);
+		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+
+		assertTrue(DateHelper.isSameDay(firstCase.getOutcomeDate(), cazePerson.getDeathDate()));
 
 		// case has no outcome again -> person should be alive
 		firstCase.setOutcome(CaseOutcome.NO_OUTCOME);
 		firstCase = getCaseFacade().saveCase(firstCase);
-		assertNull(firstCase.getOutcomeDate());
 		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+		assertNull(firstCase.getOutcomeDate());
 		assertEquals(PresentCondition.ALIVE, cazePerson.getPresentCondition());
+		assertNull(cazePerson.getDeathDate());
 
-		// case deceased -> person has to set to dead
-		firstCase.setOutcome(CaseOutcome.DECEASED);
+		// additional, newer cases for the the person
+		firstCase.setReportDate(DateHelper.subtractDays(today, 17));
+		firstCase.getSymptoms().setOnsetDate(firstCase.getReportDate());
 		firstCase = getCaseFacade().saveCase(firstCase);
-		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
-		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
-
-		// person alive again -> case has to be reset to no outcome
-		cazePerson.setPresentCondition(PresentCondition.ALIVE);
-		cazePerson = getPersonFacade().savePerson(cazePerson);
-
-		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
-		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
-		assertNull(firstCase.getOutcomeDate());
-
-		// additional case for the the person. set to deceased -> person has to be dead
-		// and other no outcome cases have to be set to deceased
 		CaseDataDto secondCase = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
 			Disease.EVD,
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
-			new Date(),
+			DateHelper.subtractDays(today, 12),
 			rdcf);
 		secondCase.setOutcome(CaseOutcome.RECOVERED);
+		secondCase.setOutcomeDate(DateHelper.subtractDays(today, 10));
 		secondCase = getCaseFacade().saveCase(secondCase);
 		CaseDataDto thirdCase = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
-			Disease.EVD,
+			Disease.MEASLES,
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
-			new Date(),
+			DateHelper.subtractDays(today, 7),
 			rdcf);
 		thirdCase.setOutcome(CaseOutcome.DECEASED);
+		thirdCase.setOutcomeDate(DateHelper.subtractDays(today, 5));
 		thirdCase = getCaseFacade().saveCase(thirdCase);
 
+		// the newest case is set to deceased -> person should be dead
 		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
-		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
-		assertEquals(CaseOutcome.DECEASED, firstCase.getOutcome());
-		assertNotNull(firstCase.getOutcomeDate());
 		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
+		assertEquals(PresentCondition.DEAD, cazePerson.getPresentCondition());
+		assertEquals(CauseOfDeath.EPIDEMIC_DISEASE, cazePerson.getCauseOfDeath());
+		assertEquals(thirdCase.getDisease(), cazePerson.getCauseOfDeathDisease());
+		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
 		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
+		assertEquals(CaseOutcome.DECEASED, thirdCase.getOutcome());
+		assertTrue(DateHelper.isSameDay(cazePerson.getDeathDate(), thirdCase.getOutcomeDate()));
 
-		// person alive again -> deceased cases have to be set to no outcome
+		// person alive again -> deceased case has to be set to no outcome
 		cazePerson.setPresentCondition(PresentCondition.ALIVE);
 		cazePerson = getPersonFacade().savePerson(cazePerson);
 		firstCase = getCaseFacade().getCaseDataByUuid(firstCase.getUuid());
-		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
 		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
-		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
 		thirdCase = getCaseFacade().getCaseDataByUuid(thirdCase.getUuid());
+		assertEquals(CaseOutcome.NO_OUTCOME, firstCase.getOutcome());
+		assertEquals(CaseOutcome.RECOVERED, secondCase.getOutcome());
 		assertEquals(CaseOutcome.NO_OUTCOME, thirdCase.getOutcome());
+		assertNull(thirdCase.getOutcomeDate());
+
+		// move 1st and 3rd case to past, so that they should no longer be affected by anything
+		firstCase.setReportDate(DateHelper.subtractDays(today, 100));
+		firstCase.getSymptoms().setOnsetDate(firstCase.getReportDate());
+		thirdCase.setReportDate(DateHelper.subtractDays(today, 100));
+		thirdCase.getSymptoms().setOnsetDate(thirdCase.getReportDate());
+		firstCase = getCaseFacade().saveCase(firstCase);
+		thirdCase = getCaseFacade().saveCase(thirdCase);
+
+		// Set 2nd Case to deceased again
+		secondCase.setOutcome(CaseOutcome.DECEASED);
+		secondCase = getCaseFacade().saveCase(secondCase);
+		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+
+		// manually set the persons deathdate to 32 days in the past
+		cazePerson.setDeathDate(DateHelper.subtractDays(secondCase.getReportDate(), 32));
+		cazePerson = getPersonFacade().savePerson(cazePerson);
+
+		// Change Case to RECOVERD -> person should not change, because deathdate is over 30 days away from case reportdate
+		secondCase.setOutcome(CaseOutcome.RECOVERED);
+		secondCase = getCaseFacade().saveCase(secondCase);
+		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+
+		assertEquals(cazePerson.getPresentCondition(), PresentCondition.DEAD);
+
+		// update the present condition to dead -> case should still not be affected because of the date threshold
+		cazePerson.setPresentCondition(PresentCondition.DEAD);
+		cazePerson.setDeathDate(today);
+		cazePerson.setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
+		cazePerson.setCauseOfDeathDisease(secondCase.getDisease());
+		cazePerson = getPersonFacade().savePerson(cazePerson);
+		secondCase = getCaseFacade().getCaseDataByUuid(secondCase.getUuid());
+
+		assertEquals(secondCase.getOutcome(), CaseOutcome.RECOVERED);
 	}
 
 	@Test
@@ -931,9 +973,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// simulate short delay between transmissions
 		Thread.sleep(DtoHelper.CHANGE_DATE_TOLERANCE_MS + 1);
 
-		// case deceased -> person has to set to dead
-		firstCase.setOutcome(CaseOutcome.DECEASED);
+		// set person to dead so that case will be updated automatically
 		cazePerson.setPresentCondition(PresentCondition.DEAD);
+		cazePerson.setDeathDate(new Date());
+		cazePerson.setCauseOfDeath(CauseOfDeath.EPIDEMIC_DISEASE);
+		cazePerson.setCauseOfDeathDisease(firstCase.getDisease());
 		cazePerson = getPersonFacade().savePerson(cazePerson);
 
 		// this should throw an exception

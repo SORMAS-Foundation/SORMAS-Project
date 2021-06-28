@@ -2,6 +2,9 @@ package de.symeda.sormas.backend.event;
 
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import java.util.Collections;
+
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -16,6 +19,7 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
+import de.symeda.sormas.utils.EventJoins;
 import de.symeda.sormas.utils.EventParticipantJoins;
 
 public class EventParticipantJurisdictionPredicateValidator extends PredicateJurisdictionValidator {

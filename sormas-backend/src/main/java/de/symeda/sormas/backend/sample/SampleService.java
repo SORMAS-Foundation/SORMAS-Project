@@ -415,20 +415,20 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		CriteriaQuery cq = qc.getQuery();
 		ContactJoins<Sample> contactJoins = new ContactJoins(joins.getContact());
 		return Arrays.asList(
-			JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(qc)),
-			JurisdictionHelper.jurisdictionSelector(
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
+			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaze())))),
-			JurisdictionHelper.jurisdictionSelector(
+			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, joins.getContact())))),
-			JurisdictionHelper.jurisdictionSelector(
+			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getContact()),
 					cb.isNotNull(contactJoins.getCaze()),
 					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, contactJoins.getCaze())))),
-			JurisdictionHelper.jurisdictionSelector(
+			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getEventParticipant()),

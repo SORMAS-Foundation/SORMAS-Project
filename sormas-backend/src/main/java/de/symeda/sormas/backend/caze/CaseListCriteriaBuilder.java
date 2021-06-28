@@ -214,7 +214,7 @@ public class CaseListCriteriaBuilder {
 			joins.getResponsibleRegion().get(Region.UUID),
 			joins.getResponsibleDistrict().get(District.UUID),
 			joins.getResponsibleDistrict().get(District.NAME),
-			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {

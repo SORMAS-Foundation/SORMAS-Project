@@ -154,7 +154,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 
 		// whoever created the task or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(taskPath.join(Task.CREATOR_USER, JoinType.LEFT), currentUser);
+		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
 		filter = cb.or(filter, cb.equal(assigneeUser, currentUser));
 
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT));
@@ -488,19 +488,19 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		ContactJoins<Task> contactJoins = new ContactJoins<>(joins.getContact());
 		return Arrays.asList(
-			JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(qc)),
-			JurisdictionHelper.jurisdictionSelector(
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
+			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze())))),
 			JurisdictionHelper
-				.jurisdictionSelector(cb, cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(new ContactQueryContext<>(cb, qc.getQuery(), joins.getContact())))),
-			JurisdictionHelper.jurisdictionSelector(
+				.booleanSelector(cb, cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(new ContactQueryContext<>(cb, qc.getQuery(), joins.getContact())))),
+			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getContact()),
 					cb.isNotNull(contactJoins.getCaze()),
 					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), contactJoins.getCaze())))),
-			JurisdictionHelper.jurisdictionSelector(
+			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(cb.isNotNull(joins.getEvent()), eventService.inJurisdictionOrOwned(new EventQueryContext<>(cb, qc.getQuery(), joins.getEvent())))));
 	}

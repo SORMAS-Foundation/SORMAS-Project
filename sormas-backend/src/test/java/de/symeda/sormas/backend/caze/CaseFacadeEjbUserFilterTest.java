@@ -165,6 +165,18 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetCasesWithPlaceOfStayOnNationalLevel() {
+		loginWith(nationalUser);
+
+		createCase(rdcf1, districtUser1, rdcf2);
+		createCase(rdcf1, districtUser1, rdcf1);
+
+		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, null);
+		assertThat(indexList, hasSize(2));
+	}
+
+
+	@Test
 	public void testGetCasesOnLaboratoryLevel() {
 		loginWith(nationalUser);
 
@@ -215,16 +227,6 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 		assertThat(indexList, hasSize(0));
 	}
 
-	@Test
-	public void testGetCasesWithPlaceOfStayOnNationalLevel() {
-		loginWith(nationalUser);
-
-		createCase(rdcf1, districtUser1, rdcf2);
-		createCase(rdcf1, districtUser1, rdcf1);
-
-		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, null);
-		assertThat(indexList, hasSize(2));
-	}
 
 	@Test
 	public void testGetCasesWithPlaceOfStayOnRegionLevel() {

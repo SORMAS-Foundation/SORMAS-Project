@@ -22,36 +22,22 @@ import java.util.Random;
 import lombok.Getter;
 
 @Getter
-public enum Disease {
-  AFP("Acute Flaccid Paralysis"),
-  ANTHRAX("Anthrax"),
-  CORONAVIRUS("COVID-19"),
-  CHOLERA("Cholera"),
-  DENGUE("Dengue Fever"),
-  EVD("Ebola Virus Disease"),
-  GUINEA_WORM("Guinea Worm"),
-  RABIES("Human Rabies"),
-  NEW_INFLUENZA("Influenza (New subtype)"),
-  LASSA("Lassa"),
-  MEASLES("Measles"),
-  CSM("Meningitis (CSM)"),
-  MONKEYPOX("Monkeypox"),
-  UNSPECIFIED_VHF("Unspecified VHF"),
-  YELLOW_FEVER("Yellow Fever");
+public enum FacilityType {
+  CAMPSITE("Campsite"),
+  CRUISE_SHIP("Cruise ship"),
+  HOTEL_LODGE("Hotel, B&B, inn, lodge"),
+  MASS_ACCOMMODATION("Mass accommodation (e.g. guest and harvest workers)"),
+  OTHER_ACCOMMODATION("Other Accommodation)");
 
-  private final String disease;
+  private final String type;
 
-  Disease(String aDisease) {
-    disease = aDisease;
+  FacilityType(String aType) {
+
+    type = aType;
   }
 
-  public static String getRandomDisease() {
+  public static String getRandomFacilityType() {
     Random random = new Random();
-    return String.valueOf(Disease.values()[random.nextInt(values().length)]);
-  }
-
-  public static String getRandomDiseaseValue() {
-    Random random = new Random();
-    return String.valueOf(Disease.values()[random.nextInt(values().length)].disease);
+    return String.valueOf(FacilityType.values()[random.nextInt(values().length)].type);
   }
 }

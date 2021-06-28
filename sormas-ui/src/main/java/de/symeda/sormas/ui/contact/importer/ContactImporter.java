@@ -1,3 +1,20 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package de.symeda.sormas.ui.contact.importer;
 
 import java.beans.IntrospectionException;
@@ -5,9 +22,12 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.utils.DataHelper;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -82,12 +102,18 @@ public class ContactImporter extends DataImporter {
 		String[] entityProperties,
 		String[][] entityPropertyPaths,
 		boolean firstLine)
-		throws IOException, InvalidColumnException, InterruptedException {
+		throws IOException, InterruptedException {
 
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
 			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));
 			return ImportLineResult.ERROR;
+		}
+
+		// regenerate the UUID to prevent overwrite in case of export and import of the same entities
+		int uuidIndex = ArrayUtils.indexOf(entityProperties, ContactDto.UUID);
+		if (uuidIndex >= 0) {
+			values[uuidIndex] = DataHelper.createUuid();
 		}
 
 		final PersonDto newPersonTemp = PersonDto.build();
@@ -173,9 +199,7 @@ public class ContactImporter extends DataImporter {
 
 				// Determine the import result and, if there was no duplicate, the user did not skip over the contact 
 				// or an existing person was picked, save the contact and person to the database
-				if (contactHasImportError) {
-					return ImportLineResult.ERROR;
-				} else if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
+				if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
 					return ImportLineResult.SKIPPED;
 				} else {
 					final PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
@@ -206,6 +230,8 @@ public class ContactImporter extends DataImporter {
 						}
 					}
 
+					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
+					newContact.setChangeDate(new Date());
 					FacadeProvider.getContactFacade().saveContact(newContact, true, false);
 
 					consumer.result = null;
