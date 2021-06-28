@@ -15,29 +15,32 @@
 
 package de.symeda.sormas.backend.event;
 
-import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 import de.symeda.sormas.utils.EventJoins;
 
 public class EventJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
 	private final EventJoins<?> joins;
+	private final CriteriaQuery<?> cq;
 	private final User currentUser;
 
-	public static EventJurisdictionPredicateValidator of(CriteriaBuilder cb, EventJoins<?> joins, User currentUser) {
-		return new EventJurisdictionPredicateValidator(cb, joins, currentUser);
+
+	private EventJurisdictionPredicateValidator(EventQueryContext qc, User currentUser) {
+		super(qc.getCriteriaBuilder(), null);
+		this.joins = (EventJoins<?>) qc.getJoins();
+		this.currentUser = currentUser;
+		this.cq = qc.getQuery();
 	}
 
-	private EventJurisdictionPredicateValidator(CriteriaBuilder cb, EventJoins<?> joins, User currentUser) {
-		super(cb, null);
-		this.joins = joins;
-		this.currentUser = currentUser;
+	public static EventJurisdictionPredicateValidator of(EventQueryContext qc, User currentUser) {
+		return new EventJurisdictionPredicateValidator(qc, currentUser);
 	}
 
 	@Override
@@ -53,7 +56,7 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 		final Predicate currentUserResponsible =
 				cb.and(cb.isNotNull(joins.getResponsibleUser()), cb.equal(joins.getResponsibleUser().get(User.UUID), currentUser.getUuid()));
 
-		return cb.or(reportedByCurrentUser, currentUserResponsible,  isInJurisdiction());
+		return cb.or(reportedByCurrentUser, currentUserResponsible, isInJurisdiction());
 	}
 
 	@Override
@@ -93,6 +96,7 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 
 	@Override
 	protected Predicate whenLaboratoryLevel() {
-		return cb.disjunction();
+		return EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipants()), currentUser)
+			.whenLaboratoryLevel();
 	}
 }

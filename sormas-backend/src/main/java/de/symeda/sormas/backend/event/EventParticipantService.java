@@ -55,6 +55,7 @@ import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
@@ -414,24 +415,30 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	public boolean inJurisdictionOrOwned(EventParticipant eventParticipant) {
-		return exists(
-			(cb, root) -> cb.and(
-				cb.equal(root.get(AbstractDomainObject.ID), eventParticipant.getId()),
-				inJurisdictionOrOwned(cb, new EventParticipantJoins(root))));
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<EventParticipant> root = cq.from(EventParticipant.class);
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, root))));
+		cq.where(cb.equal(root.get(EventParticipant.UUID), eventParticipant.getUuid()));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public boolean inJurisdiction(EventParticipant eventParticipant) {
-		return exists(
-				(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), eventParticipant.getId()), inJurisdiction(cb, new EventParticipantJoins(root))));
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<EventParticipant> root = cq.from(EventParticipant.class);
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdiction(new EventParticipantQueryContext(cb, cq, root))));
+		cq.where(cb.equal(root.get(EventParticipant.UUID), eventParticipant.getUuid()));
+		return em.createQuery(cq).getSingleResult();
 	}
 
-	public Predicate inJurisdiction(CriteriaBuilder cb, EventParticipantJoins joins) {
+	public Predicate inJurisdiction(EventParticipantQueryContext qc) {
 		final User currentUser = this.getCurrentUser();
-		return EventParticipantJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdiction();
+		return EventParticipantJurisdictionPredicateValidator.of(qc, currentUser).inJurisdiction();
 	}
 
-	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, EventParticipantJoins joins) {
+	public Predicate inJurisdictionOrOwned(EventParticipantQueryContext qc) {
 		final User currentUser = this.getCurrentUser();
-		return EventParticipantJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdictionOrOwned();
+		return EventParticipantJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 	}
 }

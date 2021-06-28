@@ -77,6 +77,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
+import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
@@ -87,6 +88,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.EventJoins;
 
@@ -380,14 +382,18 @@ public class EventService extends AbstractCoreAdoService<Event> {
 						currentUser.getHealthFacility().getDistrict()));
 			}
 		case LABORATORY:
-			final Subquery<Long> sampleEventSubquery = cq.subquery(Long.class);
-			final Root<Sample> sampleRoot = sampleEventSubquery.from(Sample.class);
-			final SampleJoins joins = new SampleJoins(sampleRoot);
-			final Join eventJoin = joins.getEvent();
-			sampleEventSubquery
-				.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutAssociations(cb, joins), cb.isNotNull(eventJoin)));
-			sampleEventSubquery.select(eventJoin.get(Event.ID));
-			filter = CriteriaBuilderHelper.or(cb, filter, cb.in(eventPath.get(Event.ID)).value(sampleEventSubquery));
+
+			final EventJoins eventJoins = new EventJoins(eventPath);
+
+			final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
+			final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
+			final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
+			final Join eventParticipant = sampleJoins.getEventParticipant();
+			SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
+					SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
+			sampleSubQuery.where(cb.and(cb.equal(eventParticipant, eventJoins.getEventParticipants()), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
+			sampleSubQuery.select(sampleRoot.get(Sample.ID));
+			filter = CriteriaBuilderHelper.or(cb, cb.exists(sampleSubQuery));
 			break;
 		default:
 		}
@@ -858,22 +864,33 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	public boolean inJurisdiction(Event event) {
-		return exists((cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), event.getId()), inJurisdiction(cb, new EventJoins<>(root))));
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Event> root = cq.from(Event.class);
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdiction(new EventQueryContext(cb, cq, root))));
+		cq.where(cb.equal(root.get(Event.UUID), event.getUuid()));
+		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
 
 	public boolean inJurisdictionOrOwned(Event event) {
-		return exists(
-			(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), event.getId()), inJurisdictionOrOwned(cb, new EventJoins<>(root))));
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Event> root = cq.from(Event.class);
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new EventQueryContext(cb, cq, root))));
+		cq.where(cb.equal(root.get(Event.UUID), event.getUuid()));
+		return em.createQuery(cq).getSingleResult();
 	}
 
-	public Predicate inJurisdiction(CriteriaBuilder cb, EventJoins<?> joins) {
+	public Predicate inJurisdiction(EventQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
-		return EventJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdiction();
+		return EventJurisdictionPredicateValidator.of(qc, currentUser).inJurisdiction();
 	}
 
-	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, EventJoins<?> joins) {
+	public Predicate inJurisdictionOrOwned(EventQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
-		return EventJurisdictionPredicateValidator.of(cb, joins, currentUser).isInJurisdictionOrOwned();
+		return EventJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 	}
 
 	@Transactional(rollbackOn = Exception.class)

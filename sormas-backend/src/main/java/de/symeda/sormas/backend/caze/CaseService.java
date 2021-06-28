@@ -278,7 +278,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
 
-		CaseJoins<Case> joins = new CaseJoins<>(caze);
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
 		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
 
@@ -300,7 +301,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				caze.get(Case.REPORT_LON),
 				joins.getPersonAddress().get(Location.LATITUDE),
 				joins.getPersonAddress().get(Location.LONGITUDE),
-				JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(cb, joins)));
+				JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(caseQueryContext)));
 
 			result = em.createQuery(cq).getResultList();
 		} else {
@@ -1005,13 +1006,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				}
 				break;
 			case LABORATORY:
-				final Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
-				final Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
+				final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
+				final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
 				final SampleJoins joins = new SampleJoins(sampleRoot);
 				final Join cazeJoin = joins.getCaze();
-				sampleCaseSubquery.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutAssociations(cb, joins), cb.isNotNull(cazeJoin)));
-				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
+				sampleSubQuery.where(cb.and(cb.equal(cazeJoin, casePath), sampleService.createUserFilterWithoutAssociations(cb, joins)));
+				sampleSubQuery.select(sampleRoot.get(Sample.ID));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.exists(sampleSubQuery));
 				break;
 			default:
 			}
@@ -1250,13 +1251,18 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public boolean inJurisdictionOrOwned(Case caze) {
-		return exists(
-			(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), caze.getId()), inJurisdictionOrOwned(cb, new CaseJoins<>(root))));
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Case> root = cq.from(Case.class);
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new CaseQueryContext(cb, cq, root))));
+		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
+		return em.createQuery(cq).getSingleResult();
 	}
 
-	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CaseJoins<?> joins) {
+	public Predicate inJurisdictionOrOwned(CaseQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
-		return CaseJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdictionOrOwned();
+		return CaseJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 	}
 
 	public Collection<Case> getByPersonUuids(List<String> personUuids) {

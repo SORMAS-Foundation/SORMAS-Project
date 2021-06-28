@@ -351,7 +351,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		final Root<Sample> sample = cq.from(Sample.class);
 
-		SampleJoins<Sample> joins = new SampleJoins<>(sample);
+
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
+		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
 
 		final Join<Sample, Case> caze = joins.getCaze();
 		final Join<Case, District> caseDistrict = joins.getCaseDistrict();
@@ -415,7 +417,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				districtSelect,
 				joins.getLab().get(Facility.UUID)));
 
-		selections.addAll(sampleService.getJurisdictionSelections(cb, joins));
+		selections.addAll(sampleService.getJurisdictionSelections(sampleQueryContext));
 		cq.multiselect(selections);
 
 		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
@@ -607,7 +609,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
 		Root<Sample> sampleRoot = cq.from(Sample.class);
 
-		SampleJoins<Sample> joins = new SampleJoins<>(sampleRoot);
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sampleRoot);
+
+		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
 
 		cq.distinct(true);
 
@@ -705,7 +709,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			joins.getLab().get(Facility.UUID),
 			joins.getCaseFacility().get(Facility.UUID)));
 
-		selections.addAll(sampleService.getJurisdictionSelections(cb, joins));
+		selections.addAll(sampleService.getJurisdictionSelections(sampleQueryContext));
 
 		cq.multiselect(selections);
 

@@ -97,7 +97,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			joins.getSymptoms().get(Symptoms.BLOOD_PRESSURE_DIASTOLIC),
 			joins.getSymptoms().get(Symptoms.HEART_RATE),
 			joins.getSymptoms().get(Symptoms.ID),
-			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaze()))));
 
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, visit));
@@ -246,6 +246,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		Root<ClinicalVisit> clinicalVisit = cq.from(ClinicalVisit.class);
 		ClinicalVisitJoins joins = new ClinicalVisitJoins(clinicalVisit);
 
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, joins.getCaze());
 		cq.multiselect(
 			joins.getCaze().get(Case.UUID),
 			joins.getCasePerson().get(Person.FIRST_NAME),
@@ -255,11 +256,11 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			clinicalVisit.get(ClinicalVisit.VISIT_REMARKS),
 			clinicalVisit.get(ClinicalVisit.VISITING_PERSON),
 			joins.getSymptoms().get(Symptoms.ID),
-			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 
 		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit);
 
-		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, new CaseQueryContext(cb, cq, joins.getCaze()));
+		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(Case.UUID));
 		cq.where(filter);
