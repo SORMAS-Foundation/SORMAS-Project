@@ -265,6 +265,7 @@ public interface Strings {
 	String errorReadingDocument = "errorReadingDocument";
 	String errorReadingTemplate = "errorReadingTemplate";
 	String errorSetFeverRequired = "errorSetFeverRequired";
+	String errorSormasToSormasAccept = "errorSormasToSormasAccept";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
 	String errorSormasToSormasCountry = "errorSormasToSormasCountry";

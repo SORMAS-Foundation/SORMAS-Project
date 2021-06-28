@@ -35,6 +35,12 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
@@ -48,6 +54,9 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
@@ -59,6 +68,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "SormasToSormasFacade")
 public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasFacadeEjb.class);
 
 	private static final String REVOKE_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.REVOKE_REQUESTS_ENDPOINT;
 
@@ -82,6 +93,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
 	private SormasToSormasEncryptionService encryptionService;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 
 	@Override
 	public List<ServerAccessDataReferenceDto> getAvailableOrganizations() {
@@ -137,8 +150,16 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		shareInfoService.ensurePersisted(shareInfo);
 	}
 
+	/**
+	 * Called from the REST api when the sender revokes share requests
+	 * 
+	 * @param encryptedRequestUuids
+	 *            the uuids of requests
+	 * @throws SormasToSormasException
+	 *             in case of failure
+	 */
 	@Override
-	public void revokeRequests(SormasToSormasEncryptedDataDto encryptedRequestUuids) throws SormasToSormasException {
+	public void requestsRevoked(SormasToSormasEncryptedDataDto encryptedRequestUuids) throws SormasToSormasException {
 		String[] requestUuids = encryptionService.decryptAndVerify(encryptedRequestUuids, String[].class);
 		List<SormasToSormasShareRequestDto> shareRequests = shareRequestFacade.getShareRequestsByUuids(Arrays.asList(requestUuids));
 
@@ -147,6 +168,42 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			shareRequest.setStatus(ShareRequestStatus.REVOKED);
 			shareRequestFacade.saveShareRequest(shareRequest);
 		});
+	}
+
+	/**
+	 * Called from REST api when the receiver accepts a share request
+	 * 
+	 * @param encryptedRequestUuid
+	 *            the uuid of the request
+	 * @throws SormasToSormasException
+	 *             in case of failure
+	 */
+	@Override
+	public void requestAccepted(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException {
+		String requestUuid = encryptionService.decryptAndVerify(encryptedRequestUuid, String.class);
+
+		SormasToSormasShareInfo shareInfo = shareInfoService.getByRequestUuid(requestUuid);
+
+		shareInfo.setRequestStatus(ShareRequestStatus.ACCEPTED);
+		shareInfoService.ensurePersisted(shareInfo);
+
+		if (shareInfo.isOwnershipHandedOver()) {
+			try {
+				if (shareInfo.getCases().size() > 0) {
+					externalSurveillanceToolGatewayFacade
+						.deleteCases(shareInfo.getCases().stream().map(c -> CaseFacadeEjb.toDto(c.getCaze())).collect(Collectors.toList()));
+				}
+
+				if (shareInfo.getEvents().size() > 0) {
+					externalSurveillanceToolGatewayFacade
+						.deleteEvents(shareInfo.getEvents().stream().map(e -> EventFacadeEjb.toDto(e.getEvent())).collect(Collectors.toList()));
+				}
+			} catch (ExternalSurveillanceToolException e) {
+				LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
+
+				throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasAccept));
+			}
+		}
 	}
 
 	@Override
