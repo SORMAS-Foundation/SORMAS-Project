@@ -116,8 +116,13 @@ public interface Validations {
 	String noFacilityInCommunity = "noFacilityInCommunity";
 	String noFacilityInDistrict = "noFacilityInDistrict";
 	String noFacilityInRegion = "noFacilityInRegion";
+	String noFacilityInResponsibleCommunity = "noFacilityInResponsibleCommunity";
+	String noFacilityInResponsibleDistrict = "noFacilityInResponsibleDistrict";
+	String noFacilityInResponsibleRegion = "noFacilityInResponsibleRegion";
 	String noFacilityType = "noFacilityType";
 	String noPastDateAllowed = "noPastDateAllowed";
+	String noResponsibleCommunityInResponsibleDistrict = "noResponsibleCommunityInResponsibleDistrict";
+	String noResponsibleDistrictInResponsibleRegion = "noResponsibleDistrictInResponsibleRegion";
 	String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
 	String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
 	String onlyNumbersAllowed = "onlyNumbersAllowed";
@@ -169,6 +174,8 @@ public interface Validations {
 	String validRegion = "validRegion";
 	String validReportDateTime = "validReportDateTime";
 	String validReportingUser = "validReportingUser";
+	String validResponsibleDistrict = "validResponsibleDistrict";
+	String validResponsibleRegion = "validResponsibleRegion";
 	String validSample = "validSample";
 	String visitAfterFollowUp = "visitAfterFollowUp";
 	String visitBeforeCaseReport = "visitBeforeCaseReport";

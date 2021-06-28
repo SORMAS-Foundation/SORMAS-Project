@@ -216,9 +216,9 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		casePreview.setOutcome(caze.getOutcome());
 		casePreview.setInvestigationStatus(caze.getInvestigationStatus());
 		casePreview.setOnsetDate(caze.getSymptoms().getOnsetDate());
-		casePreview.setRegion(RegionFacadeEjb.toReferenceDto(caze.getRegion()));
-		casePreview.setDistrict(DistrictFacadeEjb.toReferenceDto(caze.getDistrict()));
-		casePreview.setCommunity(CommunityFacadeEjb.toReferenceDto(caze.getCommunity()));
+		casePreview.setRegion(RegionFacadeEjb.toReferenceDto(caze.getResponsibleRegion()));
+		casePreview.setDistrict(DistrictFacadeEjb.toReferenceDto(caze.getResponsibleDistrict()));
+		casePreview.setCommunity(CommunityFacadeEjb.toReferenceDto(caze.getResponsibleCommunity()));
 		casePreview.setFacilityType(caze.getFacilityType());
 		casePreview.setHealthFacility(FacilityFacadeEjb.toReferenceDto(caze.getHealthFacility()));
 		casePreview.setHealthFacilityDetails(caze.getHealthFacilityDetails());

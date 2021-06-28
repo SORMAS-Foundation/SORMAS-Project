@@ -47,6 +47,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.caze.CaseQueryContext;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -309,7 +311,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitUser.get(User.UUID),
 			visitUser.get(User.FIRST_NAME),
 			visitUser.get(User.LAST_NAME),
-			jurisdictionSelector(cb, caseJoin, contactJoin));
+			jurisdictionSelector(cq, cb, caseJoin, contactJoin));
 
 		cq.distinct(true);
 		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visit));
@@ -405,7 +407,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitRoot.get(Visit.REPORT_LON),
 			visitRoot.get(Visit.ORIGIN),
 			personJoin.get(Person.UUID),
-			jurisdictionSelector(cb, caseJoin, contactJoin));
+			jurisdictionSelector(cq, cb, caseJoin, contactJoin));
 
 		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot);
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, visitRoot.get(Visit.UUID));
@@ -453,12 +455,12 @@ public class VisitFacadeEjb implements VisitFacade {
 		return resultList;
 	}
 
-	private Expression<Object> jurisdictionSelector(CriteriaBuilder cb, Join<Visit, Case> caseJoin, Join<Visit, Contact> contactJoin) {
-		return JurisdictionHelper.jurisdictionSelector(
+	private Expression<Object> jurisdictionSelector(CriteriaQuery cq, CriteriaBuilder cb, Join<Visit, Case> caseJoin, Join<Visit, Contact> contactJoin) {
+		return JurisdictionHelper.booleanSelector(
 			cb,
 			cb.or(
-				caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(caseJoin)),
-				contactService.inJurisdictionOrOwned(cb, new ContactJoins(contactJoin))));
+				caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, caseJoin)),
+				contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, contactJoin))));
 	}
 
 	public Visit fromDto(@NotNull VisitDto source, boolean checkChangeDate) {
