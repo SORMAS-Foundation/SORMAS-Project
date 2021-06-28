@@ -7439,6 +7439,7 @@ UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epi
 
 INSERT INTO schema_version (version_number, comment) VALUES (378, 'Set contact with source case known for all existing cases #5841');
 
+
 -- 2021-06-22 Refine the split of jurisdiction and place of stay #5852
 DO $$
     DECLARE _case RECORD;
@@ -7471,4 +7472,50 @@ $$ LANGUAGE plpgsql;
 ALTER TABLE cases DROP COLUMN reportingdistrict_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (379, 'Refine the split of jurisdiction and place of stay #5852');
+
+-- 2021-02-16 - Added a new entity Labcertificate and extended the facility entity #5318
+CREATE TABLE labcertificate(
+   id bigint not null,
+   uuid varchar(36) not null unique,
+   changedate timestamp not null,
+   creationdate timestamp not null,
+   labcertificateguid varchar(255) not null,
+   payernumber varchar(255),
+   doctornumber varchar(255),
+   operatingfacilitynumber varchar(255),
+   labnumber varchar(255),
+   testv boolean,
+   selfpaying boolean,
+   specialagreement boolean,
+   firsttest boolean,
+   nexttest boolean,
+   contactperson boolean,
+   coronaapp boolean,
+   outbreak boolean,
+   outbreakprevention boolean,
+   workinginfacility boolean,
+   livinginfacility boolean,
+   medicalfacility boolean,
+   communityfacility boolean,
+   carefacility boolean,
+   otherfacility boolean,
+   agreedtogdpr boolean,
+   specialagreementcode varchar(255),
+   healthdepartment_id bigint,
+   task_id bigint,
+
+   primary key(id)
+);
+
+ALTER TABLE facility ADD COLUMN department varchar(255);
+ALTER TABLE facility ADD COLUMN sector varchar(255);
+ALTER TABLE facility ADD COLUMN drName varchar(255);
+ALTER TABLE facility ADD COLUMN street varchar(255);
+ALTER TABLE facility ADD COLUMN telNo varchar(255);
+ALTER TABLE facility ADD COLUMN faxNo varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (380, 'Added new entity for lab certificates and new fields for facility #5318');
+
+
+
 -- *** Insert new sql commands BEFORE this line ***

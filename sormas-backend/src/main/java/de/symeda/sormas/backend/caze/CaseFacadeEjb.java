@@ -2547,6 +2547,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		target.setDontShareWithReportingTool(source.isDontShareWithReportingTool());
 
+
+
 		return target;
 	}
 

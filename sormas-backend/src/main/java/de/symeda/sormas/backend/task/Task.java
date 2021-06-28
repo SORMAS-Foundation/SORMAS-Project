@@ -18,26 +18,37 @@
 package de.symeda.sormas.backend.task;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.labcertificate.LabCertificate;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
@@ -66,6 +77,9 @@ public class Task extends AbstractDomainObject {
 	public static final String CLOSED_LAT = "closedLat";
 	public static final String CLOSED_LON = "closedLon";
 	public static final String ARCHIVED = "archived";
+	public static final String LABCERTIFICATE = "labCertificate";
+
+
 
 	private TaskContext taskContext;
 	private Case caze;
@@ -88,6 +102,8 @@ public class Task extends AbstractDomainObject {
 	private Double closedLat;
 	private Double closedLon;
 	private Float closedLatLonAccuracy;
+
+	private LabCertificate labCertificate;
 
 	private boolean archived;
 
@@ -257,5 +273,16 @@ public class Task extends AbstractDomainObject {
 
 	public void setArchived(boolean archived) {
 		this.archived = archived;
+	}
+
+	@OneToOne(fetch = FetchType.LAZY,
+			cascade = CascadeType.ALL,
+			mappedBy = "task")
+	public LabCertificate getLabCertificate() {
+		return labCertificate;
+	}
+
+	public void setLabCertificate(LabCertificate labCertificate) {
+		this.labCertificate = labCertificate;
 	}
 }

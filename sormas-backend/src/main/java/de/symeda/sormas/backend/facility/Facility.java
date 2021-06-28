@@ -20,19 +20,28 @@ package de.symeda.sormas.backend.facility;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
+import de.symeda.sormas.backend.labcertificate.LabCertificate;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.task.Task;
+
+import java.util.List;
 
 @Entity
 public class Facility extends InfrastructureAdo {
@@ -61,6 +70,14 @@ public class Facility extends InfrastructureAdo {
 	public static final String PUBLIC_OWNERSHIP = "publicOwnership";
 	public static final String EXTERNAL_ID = "externalID";
 
+	public static final String DEPARTMENT = "department";
+	public static final String SECTOR = "sector";
+	public static final String DR_NAME = "drName";
+	public static final String HOUSE_NO = "houseNo";
+	public static final String TEL_NO = "telNo";
+	public static final String FAX_NO = "faxNo";
+	public static final String TASKS = "tasks";
+
 	private String name;
 	private Region region;
 	private District district;
@@ -80,6 +97,14 @@ public class Facility extends InfrastructureAdo {
 	private FacilityType type;
 	private boolean publicOwnership;
 	private String externalID;
+
+	private String department;
+	private String sector;
+	private String drName;
+	private String telNo;
+	private String faxNo;
+
+	private List<LabCertificate> labCertificates;
 
 	public String getName() {
 		return name;
@@ -123,24 +148,6 @@ public class Facility extends InfrastructureAdo {
 
 	public void setCity(String city) {
 		this.city = city;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getPostalCode() {
-		return postalCode;
-	}
-
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
-	}
-
-	@Column(length = COLUMN_LENGTH_BIG)
-	public String getStreet() {
-		return street;
-	}
-
-	public void setStreet(String street) {
-		this.street = street;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -246,6 +253,78 @@ public class Facility extends InfrastructureAdo {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getSector() {
+		return sector;
+	}
+
+	public void setSector(String sector) {
+		this.sector = sector;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getDrName() {
+		return drName;
+	}
+
+	public void setDrName(String drName) {
+		this.drName = drName;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getTelNo() {
+		return telNo;
+	}
+
+	public void setTelNo(String telNo) {
+		this.telNo = telNo;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getFaxNo() {
+		return faxNo;
+	}
+
+	public void setFaxNo(String faxNo) {
+		this.faxNo = faxNo;
+	}
+
+	@OneToMany(mappedBy = LabCertificate.HEALTH_DEPARTMENT, fetch = FetchType.LAZY)
+	public List<LabCertificate> getLabCertificates() {
+		return labCertificates;
+	}
+
+	public void setLabCertificates(List<LabCertificate> labCertificates) {
+		this.labCertificates = labCertificates;
 	}
 
 	@Override

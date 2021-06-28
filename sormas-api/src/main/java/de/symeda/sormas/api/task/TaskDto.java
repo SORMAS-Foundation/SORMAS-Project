@@ -18,16 +18,21 @@
 package de.symeda.sormas.api.task;
 
 import java.util.Date;
+import java.util.List;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.labcertificate.LabCertificateDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 
 public class TaskDto extends EntityDto {
@@ -54,6 +59,7 @@ public class TaskDto extends EntityDto {
 	public static final String CONTEXT_REFERENCE = "contextReference";
 	public static final String CLOSED_LAT = "closedLat";
 	public static final String CLOSED_LON = "closedLon";
+	public static final String LABCERTIFICATE = "labCertificate";
 
 	@Required
 	private TaskContext taskContext;
@@ -86,6 +92,9 @@ public class TaskDto extends EntityDto {
 	private Double closedLat;
 	private Double closedLon;
 	private Float closedLatLonAccuracy;
+
+	private LabCertificateDto labCertificate;
+
 
 	public static TaskDto build(TaskContext context, ReferenceDto entityRef) {
 
@@ -270,5 +279,13 @@ public class TaskDto extends EntityDto {
 
 	public void setClosedLatLonAccuracy(Float closedLatLonAccuracy) {
 		this.closedLatLonAccuracy = closedLatLonAccuracy;
+	}
+
+	public LabCertificateDto getLabCertificate() {
+		return labCertificate;
+	}
+
+	public void setLabCertificate(LabCertificateDto labCertificateDto) {
+		this.labCertificate = labCertificateDto;
 	}
 }

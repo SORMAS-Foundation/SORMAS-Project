@@ -47,6 +47,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 
+import de.symeda.sormas.backend.facility.FacilityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,11 +87,11 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
-import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.labcertificate.LabCertificateFacadeEjb;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
@@ -98,14 +99,13 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventJoins;
 
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
@@ -127,11 +127,18 @@ public class TaskFacadeEjb implements TaskFacade {
 	@EJB
 	private EventService eventService;
 	@EJB
+	private UserFacadeEjbLocal userFacade;
+	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private MessagingService messagingService;
 	@EJB
+	private FacilityService facilityService;
+	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+
+	@EJB
+	private LabCertificateFacadeEjb.LabCertificateFacadeEjbLocal labCertificateFacadeEjb;
 
 	public Task fromDto(TaskDto source, boolean checkChangeDate) {
 
@@ -194,6 +201,9 @@ public class TaskFacadeEjb implements TaskFacade {
 			target.setEvent(null);
 		}
 
+		target.setLabCertificate(labCertificateFacadeEjb.fromDto(source.getLabCertificate(), false));
+		target.getLabCertificate().setTask(target);
+
 		return target;
 	}
 
@@ -241,6 +251,11 @@ public class TaskFacadeEjb implements TaskFacade {
 				pseudonymizer.pseudonymizeDto(EventReferenceDto.class, target.getEvent(), taskJurisdictionFlagsDto.getEvenInJurisdiction(), null);
 			}
 		});
+
+		if(source.getLabCertificate() != null){
+			target.setLabCertificate(labCertificateFacadeEjb.toDto(source.getLabCertificate(), false));
+			target.getLabCertificate().setTask(target);
+		}
 
 		return target;
 	}
