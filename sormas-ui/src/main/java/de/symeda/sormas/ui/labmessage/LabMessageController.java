@@ -79,6 +79,7 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
+import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -178,6 +179,7 @@ public class LabMessageController {
 
 					EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 					eventParticipantCriteria.setPerson(selectedPerson);
+					eventParticipantCriteria.setDisease(labMessageDto.getTestedDisease());
 					List<SimilarEventParticipantDto> similarEventParticipants =
 						FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
 
@@ -644,12 +646,14 @@ public class LabMessageController {
 		sampleDto.setSampleMaterialText(labMessageDto.getSampleMaterialText());
 		sampleDto.setSpecimenCondition(SpecimenCondition.ADEQUATE);
 		sampleDto.setLab(getLabReference(labMessageDto));
-		sampleDto.setLabDetails(labMessageDto.getTestLabName());
+		sampleDto.setLabDetails(labMessageDto.getLabName());
 	}
 
 	private FacilityReferenceDto getLabReference(LabMessageDto labMessageDto) {
 		FacilityFacade facilityFacade = FacadeProvider.getFacilityFacade();
-		List<FacilityReferenceDto> labs = facilityFacade.getByExternalIdAndType(labMessageDto.getTestLabExternalId(), FacilityType.LABORATORY, false);
+		List<FacilityReferenceDto> labs = labMessageDto.getLabExternalId() != null
+			? facilityFacade.getByExternalIdAndType(labMessageDto.getLabExternalId(), FacilityType.LABORATORY, false)
+			: null;
 		if (labs != null && labs.size() == 1) {
 			return labs.get(0);
 		} else {
@@ -675,14 +679,15 @@ public class LabMessageController {
 			viaLimsCheckbox.setValue(Boolean.TRUE);
 			viaLimsCheckbox.setEnabled(false);
 		}
-
-		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(labMessageDto.getTestResult());
-		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(labMessageDto.getTestType());
+		// TODO currently just the first testReport is picked here. That must be temporary.
+		TestReportDto testReportDto = FacadeProvider.getTestReportFacade().getAllByLabMessage(labMessageDto.toReference()).get(0);
+		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(testReportDto.getTestResult());
+		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(testReportDto.getTestType());
 		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE)).setValue(labMessageDto.getTestedDisease());
 		((NullableOptionGroup) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT_VERIFIED))
-			.setValue(labMessageDto.isTestResultVerified());
+			.setValue(testReportDto.isTestResultVerified());
 		((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
-			.setValue(labMessageDto.getTestDateTime());
+			.setValue(testReportDto.getTestDateTime());
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE))
 				.setValue(labMessageDto.getMessageDateTime());
@@ -696,7 +701,9 @@ public class LabMessageController {
 	}
 
 	private void createPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
-		PathogenTestDto pathogenTestDto = buildPathogenTest(sampleDto, labMessageDto);
+		// TODO currently just the first testReport is picked here. That must be temporary.
+		TestReportDto testReportDto = FacadeProvider.getTestReportFacade().getAllByLabMessage(labMessageDto.toReference()).get(0);
+		PathogenTestDto pathogenTestDto = buildPathogenTest(sampleDto, labMessageDto, testReportDto);
 		Window window = VaadinUiUtil.createPopupWindow();
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
 			getPathogenTestCreateComponent(sampleDto, labMessageDto, pathogenTestDto, window);
@@ -712,14 +719,14 @@ public class LabMessageController {
 			false);
 	}
 
-	private PathogenTestDto buildPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
+	private PathogenTestDto buildPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto, TestReportDto testReportDto) {
 		PathogenTestDto pathogenTestDto = PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser());
-		pathogenTestDto.setTestResult(labMessageDto.getTestResult());
-		pathogenTestDto.setTestType(labMessageDto.getTestType());
+		pathogenTestDto.setTestResult(testReportDto.getTestResult());
+		pathogenTestDto.setTestType(testReportDto.getTestType());
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
-		pathogenTestDto.setTestResultVerified(labMessageDto.isTestResultVerified());
-		pathogenTestDto.setTestDateTime(labMessageDto.getTestDateTime());
-		pathogenTestDto.setTestResultText(labMessageDto.getTestResultText());
+		pathogenTestDto.setTestResultVerified(testReportDto.isTestResultVerified());
+		pathogenTestDto.setTestDateTime(testReportDto.getTestDateTime());
+		pathogenTestDto.setTestResultText(testReportDto.getTestResultText());
 		pathogenTestDto.setReportDate(labMessageDto.getMessageDateTime());
 		return pathogenTestDto;
 	}
@@ -774,7 +781,8 @@ public class LabMessageController {
 	}
 
 	private void finishProcessingLabMessage(LabMessageDto labMessageDto, PathogenTestDto pathogenTestDto) {
-		labMessageDto.setPathogenTest(pathogenTestDto.toReference());
+		// TODO currently just the first testReport is picked here. That must be temporary.
+		FacadeProvider.getTestReportFacade().getAllByLabMessage(labMessageDto.toReference()).get(0).setPathogenTest(pathogenTestDto.toReference());
 		labMessageDto.setStatus(LabMessageStatus.PROCESSED);
 		FacadeProvider.getLabMessageFacade().save(labMessageDto);
 		SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);

@@ -7433,4 +7433,74 @@ ALTER TABLE cases ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
 ALTER TABLE cases_history ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (377, 'Add a checkbox to avoid sending this case to SurvNet #5324');
+
+ALTER TABLE labmessage RENAME COLUMN testlabname TO labname;
+ALTER TABLE labmessage RENAME COLUMN testlabexternalid TO labexternalid;
+ALTER TABLE labmessage RENAME COLUMN testlabpostalcode TO labpostalcode;
+ALTER TABLE labmessage RENAME COLUMN testlabcity TO labcity;
+
+ALTER TABLE labmessage_history RENAME COLUMN testlabname TO labname;
+ALTER TABLE labmessage_history RENAME COLUMN testlabexternalid TO labexternalid;
+ALTER TABLE labmessage_history RENAME COLUMN testlabpostalcode TO labpostalcode;
+ALTER TABLE labmessage_history RENAME COLUMN testlabcity TO labcity;
+
+CREATE TABLE testreport (
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    deleted boolean DEFAULT false,
+    sys_period tstzrange not null,
+    labmessage_id bigint not null,
+    testlabname text,
+    testlabexternalid text,
+    testlabpostalcode text,
+    testlabcity text,
+    testtype varchar(255),
+    testdatetime timestamp,
+    testresult varchar(255),
+    testresultverified boolean,
+    testresulttext text,
+    pathogentest_id BIGINT,
+    PRIMARY KEY (id));
+
+CREATE TABLE testreport_history (LIKE testreport);
+
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON testreport
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'testreport_history', true);
+ALTER TABLE testreport OWNER TO sormas_user;
+ALTER TABLE testreport_history OWNER TO sormas_user;
+
+ALTER TABLE testreport ADD CONSTRAINT fk_testreport_labmessage_id FOREIGN KEY (labmessage_id) REFERENCES labmessage (id);
+
+
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+        FOR rec IN SELECT id, labname, labexternalid, labpostalcode, labcity, testtype, testdatetime, testresult, testresultverified, testresulttext FROM labmessage
+             LOOP
+                INSERT INTO testreport(id, uuid, changedate, creationdate, labmessage_id, testlabname, testlabexternalid, testlabpostalcode, testlabcity, testtype, testdatetime, testresult, testresultverified, testresulttext)
+                VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), rec.id, rec.labname, rec.labexternalid, rec.labpostalcode, rec.labcity, rec.testtype, rec.testdatetime, rec.testresult, rec.testresultverified, rec.testresulttext);
+            END LOOP;
+        END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE labmessage
+    DROP COLUMN testtype,
+    DROP COLUMN testdatetime,
+    DROP COLUMN testresult,
+    DROP COLUMN testresultverified,
+    DROP COLUMN testresulttext;
+
+ALTER TABLE labmessage_history
+    DROP COLUMN testtype,
+    DROP COLUMN testdatetime,
+    DROP COLUMN testresult,
+    DROP COLUMN testresultverified,
+    DROP COLUMN testresulttext;
+
+INSERT INTO schema_version (version_number, comment) VALUES (378, 'Introduce testreport entity #5539');
+
+
 -- *** Insert new sql commands BEFORE this line ***

@@ -77,6 +77,8 @@
 		<class>de.symeda.sormas.backend.region.Subcontinent</class>
 		<class>de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequest</class>
 		<class>de.symeda.sormas.backend.customizableenum.CustomizableEnumValue</class>
+		<class>de.symeda.sormas.backend.labmessage.TestReport</class>
+
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

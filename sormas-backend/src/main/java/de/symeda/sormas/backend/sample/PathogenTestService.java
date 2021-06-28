@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.sample;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -182,6 +184,12 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		}
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public List<PathogenTestDto> getBySampleUuid(String sampleUuid, boolean ordered) {
+		ArrayList uuidList = new ArrayList();
+		uuidList.add(sampleUuid);
+		return getBySampleUuids(uuidList, ordered);
 	}
 
 	public List<String> getDeletedUuidsSince(Date since) {

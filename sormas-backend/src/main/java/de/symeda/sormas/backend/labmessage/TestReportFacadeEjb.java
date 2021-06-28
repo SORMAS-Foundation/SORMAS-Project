@@ -1,0 +1,98 @@
+package de.symeda.sormas.backend.labmessage;
+
+import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
+import de.symeda.sormas.api.labmessage.TestReportDto;
+import de.symeda.sormas.api.labmessage.TestReportFacade;
+import de.symeda.sormas.backend.sample.PathogenTestService;
+import de.symeda.sormas.backend.util.DtoHelper;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Stateless(name = "TestReportFacade")
+public class TestReportFacadeEjb implements TestReportFacade {
+
+	@EJB
+	private LabMessageService labMessageService;
+
+	@EJB
+	private TestReportService testReportService;
+
+	@EJB
+	private PathogenTestService pathogenTestService;
+
+	@Override
+	public TestReportDto getByUuid(String Uuid) {
+		return null;
+	}
+
+	@Override
+	public TestReportDto saveTestReport(@Valid TestReportDto dto) {
+		return null;
+	}
+
+	@Override
+	public List<TestReportDto> getAllByLabMessage(LabMessageReferenceDto labMessageRef) {
+
+		if (labMessageRef == null) {
+			return Collections.emptyList();
+		}
+
+		return labMessageService.getByUuid(labMessageRef.getUuid()).getTestReports().stream().map(t -> toDto(t)).collect(Collectors.toList());
+	}
+
+	private static TestReportDto toDto(TestReport source) {
+		if (source == null) {
+			return null;
+		}
+
+		TestReportDto target = new TestReportDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setLabMessage(LabMessageFacadeEjb.toReferenceDto(source.getLabMessage()));
+		target.setTestLabName(source.getTestLabName());
+		target.setTestLabExternalId(source.getTestLabExternalId());
+		target.setTestLabPostalCode(source.getTestLabPostalCode());
+		target.setTestLabCity(source.getTestLabCity());
+		target.setTestType(source.getTestType());
+		target.setTestDateTime(source.getTestDateTime());
+		target.setTestResult(source.getTestResult());
+		target.setTestResultVerified(source.isTestResultVerified());
+		target.setTestResultText(source.getTestResultText());
+		if (source.getPathogenTest() != null) {
+			target.setPathogenTest(source.getPathogenTest().toReference());
+		}
+
+		return target;
+	}
+
+	private TestReport fromDto(@NotNull TestReportDto source, boolean checkChangeDate) {
+		TestReport target = DtoHelper.fillOrBuildEntity(source, testReportService.getByUuid(source.getUuid()), TestReport::new, checkChangeDate);
+
+		target.setLabMessage(labMessageService.getByReferenceDto(source.getLabMessage()));
+		target.setTestLabName(source.getTestLabName());
+		target.setTestLabExternalId(source.getTestLabExternalId());
+		target.setTestLabPostalCode(source.getTestLabPostalCode());
+		target.setTestLabCity(source.getTestLabCity());
+		target.setTestType(source.getTestType());
+		target.setTestDateTime(source.getTestDateTime());
+		target.setTestResult(source.getTestResult());
+		target.setTestResultVerified(source.isTestResultVerified());
+		target.setTestResultText(source.getTestResultText());
+		target.setPathogenTest(pathogenTestService.getByReferenceDto(source.getPathogenTest()));
+
+		return target;
+	}
+
+	@LocalBean
+	@Stateless
+	public static class TestReportFacadeEjbLocal extends TestReportFacadeEjb {
+
+	}
+}
