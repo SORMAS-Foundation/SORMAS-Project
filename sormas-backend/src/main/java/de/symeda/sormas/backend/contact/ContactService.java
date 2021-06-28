@@ -923,8 +923,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate filter = null;
 		// whoever created it or is assigned to it is allowed to access it
 		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
-			filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
-			filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
+			filter = cb.equal(contactPath.get(Contact.REPORTING_USER), currentUser);
+			filter = cb.or(filter, cb.equal(contactPath.get(Contact.CONTACT_OFFICER), currentUser));
 		}
 
 		switch (jurisdictionLevel) {

@@ -60,6 +60,10 @@ public class ContactDirectorySteps implements En {
                 NEW_CONTACT_BUTTON, FIRST_NAME_OF_CONTACT_PERSON_INPUT));
 
     When(
+        "^I click on Line Listing button$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING));
+
+    When(
         "I open the last created contact",
         () -> {
           searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
