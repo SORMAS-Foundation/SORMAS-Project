@@ -122,13 +122,13 @@ public class SormasToSormasCaseFacadeEjb
 				validationErrors.put(
 					buildCaseValidationGroupName(caze),
 					ValidationErrors
-						.create(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
+						.create(I18nProperties.getCaption(Captions.CaseData), Validations.sormasToSormasNotEditable));
 			}
 			if (handOverOwnership && caze.getPerson().isEnrolledInExternalJournal()) {
 				validationErrors.put(
 						buildCaseValidationGroupName(caze),
 						ValidationErrors
-								.create(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getString(Strings.errorSormasToSormasPersonEnrolled)));
+								.create(I18nProperties.getCaption(Captions.CaseData), Validations.sormasToSormasPersonEnrolled));
 			}
 		}
 

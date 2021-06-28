@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -74,8 +75,11 @@ public class ValidationHelper {
 			return saveOperation.get();
 		} catch (ValidationRuntimeException exception) {
 			Map<String, ValidationErrors> parentError = new HashMap<>(1);
-			parentError
-				.put(parentValidationGroup, ValidationErrors.create(I18nProperties.getCaption(validationGroupCaption), exception.getMessage()));
+
+			parentError.put(
+				parentValidationGroup,
+				ValidationErrors
+					.create(I18nProperties.getCaption(validationGroupCaption), Validations.sormasToSormasSaveException, exception.getMessage()));
 
 			throw new SormasToSormasValidationException(parentError, exception);
 		}

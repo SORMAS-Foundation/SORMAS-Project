@@ -230,7 +230,6 @@ public interface Strings {
 	String entityUser = "entityUser";
 	String entityUserRoles = "entityUserRoles";
 	String epiWeek = "epiWeek";
-	String erorrSormasToSormasMissingCertificate = "erorrSormasToSormasMissingCertificate";
 	String errorAccessDenied = "errorAccessDenied";
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
@@ -268,14 +267,11 @@ public interface Strings {
 	String errorSetFeverRequired = "errorSetFeverRequired";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
-	String errorSormasToSormasCountry = "errorSormasToSormasCountry";
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
-	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
 	String errorSormasToSormasInvalidRequestMethod = "errorSormasToSormasInvalidRequestMethod";
-	String errorSormasToSormasNotEditable = "errorSormasToSormasNotEditable";
+	String errorSormasToSormasMissingCertificate = "errorSormasToSormasMissingCertificate";
 	String errorSormasToSormasOwnershipAlreadyHandedOver = "errorSormasToSormasOwnershipAlreadyHandedOver";
-	String errorSormasToSormasPersonEnrolled = "errorSormasToSormasPersonEnrolled";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
 	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";

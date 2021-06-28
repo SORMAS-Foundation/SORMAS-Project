@@ -127,13 +127,13 @@ public class SormasToSormasContactFacadeEjb
 				validationErrors.put(
 					buildContactValidationGroupName(contact),
 					ValidationErrors
-						.create(I18nProperties.getCaption(Captions.Contact), I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
+						.create(I18nProperties.getCaption(Captions.Contact), Validations.sormasToSormasNotEditable));
 			}
 			if (handOverOwnership && contact.getPerson().isEnrolledInExternalJournal()) {
 				validationErrors.put(
 					buildContactValidationGroupName(contact),
 					ValidationErrors
-						.create(I18nProperties.getCaption(Captions.Contact), I18nProperties.getString(Strings.errorSormasToSormasPersonEnrolled)));
+						.create(I18nProperties.getCaption(Captions.Contact), Validations.sormasToSormasPersonEnrolled));
 			}
 		}
 

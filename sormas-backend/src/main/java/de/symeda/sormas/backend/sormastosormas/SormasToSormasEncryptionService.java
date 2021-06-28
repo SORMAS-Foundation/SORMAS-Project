@@ -103,7 +103,7 @@ public class SormasToSormasEncryptionService {
 		X509Certificate otherCert = (X509Certificate) truststore.getCertificate(otherId);
 
 		if (otherCert == null) {
-			throw SormasToSormasException.fromStringProperty(Strings.erorrSormasToSormasMissingCertificate, otherId);
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasMissingCertificate, otherId);
 		}
 
 		switch (mode) {

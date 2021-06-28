@@ -102,7 +102,7 @@ public class SormasToSormasEventFacadeEjb
 				validationErrors.put(
 					buildEventValidationGroupName(event),
 					ValidationErrors
-						.create(I18nProperties.getCaption(Captions.Event), I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
+						.create(I18nProperties.getCaption(Captions.Event), Validations.sormasToSormasNotEditable));
 			}
 		}
 

@@ -130,11 +130,16 @@ public interface Validations {
 	String sormasToSormasCaseExists = "sormasToSormasCaseExists";
 	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
 	String sormasToSormasContactExists = "sormasToSormasContactExists";
+	String sormasToSormasCountry = "sormasToSormasCountry";
 	String sormasToSormasEventExists = "sormasToSormasEventExists";
+	String sormasToSormasInfrastructure = "sormasToSormasInfrastructure";
 	String sormasToSormasLabMessageExists = "sormasToSormasLabMessageExists";
+	String sormasToSormasNotEditable = "sormasToSormasNotEditable";
 	String sormasToSormasOrganizationIdMissing = "sormasToSormasOrganizationIdMissing";
+	String sormasToSormasPersonEnrolled = "sormasToSormasPersonEnrolled";
 	String sormasToSormasReturnEntityNotExists = "sormasToSormasReturnEntityNotExists";
 	String sormasToSormasSampleExists = "sormasToSormasSampleExists";
+	String sormasToSormasSaveException = "sormasToSormasSaveException";
 	String sormasToSormasSenderNameMissing = "sormasToSormasSenderNameMissing";
 	String sormasToSormasShareInfoMissing = "sormasToSormasShareInfoMissing";
 	String specifyFirstName = "specifyFirstName";

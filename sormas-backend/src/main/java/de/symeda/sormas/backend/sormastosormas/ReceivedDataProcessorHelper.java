@@ -39,7 +39,6 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
@@ -101,7 +100,7 @@ public class ReceivedDataProcessorHelper {
 		if (originInfo == null) {
 			return ValidationErrors.create(
 				I18nProperties.getCaption(validationGroupCaption),
-				I18nProperties.getValidationError(Validations.sormasToSormasShareInfoMissing));
+				Validations.sormasToSormasShareInfoMissing);
 		}
 
 		ValidationErrors validationErrors = new ValidationErrors();
@@ -153,7 +152,7 @@ public class ReceivedDataProcessorHelper {
 	private CountryReferenceDto processCountry(CountryReferenceDto country, String errorCaption, ValidationErrors validationErrors) {
 		CountryReferenceDto localCountry = loadLocalCountry(country);
 		if (country != null && localCountry == null) {
-			validationErrors.add(errorCaption, Strings.errorSormasToSormasCountry, country.getCaption());
+			validationErrors.add(errorCaption, Validations.sormasToSormasCountry, country.getCaption());
 		}
 		return localCountry;
 	}
@@ -266,7 +265,7 @@ public class ReceivedDataProcessorHelper {
 		if (errors.size() > 0) {
 			validationErrors.add(
 				I18nProperties.getCaption(groupNameTag),
-				Strings.errorSormasToSormasInfrastructure, String.join(",", errors));
+				Validations.sormasToSormasInfrastructure, String.join(",", errors));
 
 		} else {
 			onNoErrors.accept(infrastructureAndErrors.getElement0());
