@@ -72,7 +72,7 @@ public class ContactShareDataBuilder implements ShareDataBuilder<Contact, Sormas
 	}
 
 	@Override
-	public List<ShareData<Contact, SormasToSormasContactDto>> buildShareData(SormasToSormasShareInfo shareInfo, User user)
+	public List<ShareData<Contact, SormasToSormasContactDto>> buildShareData(User user, SormasToSormasShareInfo shareInfo)
 		throws SormasToSormasException {
 		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, shareInfo);
 

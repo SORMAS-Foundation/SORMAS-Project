@@ -128,7 +128,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 	}
 
 	@Override
-	public List<ShareData<Case, SormasToSormasCaseDto>> buildShareData(SormasToSormasShareInfo shareInfo, User user) throws SormasToSormasException {
+	public List<ShareData<Case, SormasToSormasCaseDto>> buildShareData(User user, SormasToSormasShareInfo shareInfo) throws SormasToSormasException {
 		SormasToSormasOriginInfoDto originInfo =
 			dataBuilderHelper.createSormasToSormasOriginInfo(user, shareInfo);
 
