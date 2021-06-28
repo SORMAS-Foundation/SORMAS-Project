@@ -13,11 +13,12 @@ import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.enums.ContactOutcome;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 
-public class ConatctsDetailedTableViewSteps implements En {
+public class ContactsDetailedTableViewSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   private static BaseSteps baseSteps;
@@ -26,13 +27,14 @@ public class ConatctsDetailedTableViewSteps implements En {
   // ContactsDetailedTableEntry contactsDetailedTableEntry;
 
   @Inject
-  public ConatctsDetailedTableViewSteps(
+  public ContactsDetailedTableViewSteps(
       WebDriverHelpers webDriverHelpers,
       BaseSteps baseSteps,
       ApiState apiState,
       DataOperations dataOperations,
       SoftAssertions softly) {
     this.webDriverHelpers = webDriverHelpers;
+    this.baseSteps = baseSteps;
 
     Then(
         "^I am checking if all the fields are correctly displayed in the Contacts directory Detailed table$",
@@ -49,24 +51,22 @@ public class ConatctsDetailedTableViewSteps implements En {
           softly
               .assertThat(
                   detailedContactDTableRow.get(ContactsDetailedTableViewHeaders.DISEASE.toString()))
-              .containsIgnoringCase(apiState.getCreatedContact().getDisease());
+              .containsIgnoringCase(ContactOutcome.CORONAVIRUS.getOutcome());
           softly
               .assertThat(
                   detailedContactDTableRow.get(
                       ContactsDetailedTableViewHeaders.CONTACT_CLASSIFICATION.toString()))
-              .containsIgnoringCase(apiState.getCreatedContact().getContactClassification());
+              .containsIgnoringCase(ContactOutcome.UNCONFIRMED.getOutcome());
           softly
               .assertThat(
                   detailedContactDTableRow.get(
                       ContactsDetailedTableViewHeaders.CONTACT_STATUS.toString()))
-              .containsIgnoringCase(apiState.getCreatedContact().getContactStatus());
-
+              .containsIgnoringCase("Active Contact");
           softly
               .assertThat(
                   detailedContactDTableRow.get(
                       ContactsDetailedTableViewHeaders.FIRST_NAME_OF_CONTACT_PERSON.toString()))
               .containsIgnoringCase(apiState.getCreatedContact().getPerson().getFirstName());
-
           softly
               .assertThat(
                   detailedContactDTableRow.get(
@@ -81,17 +81,12 @@ public class ConatctsDetailedTableViewSteps implements En {
               .assertThat(
                   detailedContactDTableRow.get(
                       ContactsDetailedTableViewHeaders.RELATIONSHIP_WITH_CASE.toString()))
-              .containsIgnoringCase(apiState.getCreatedContact().getRelationToCase());
+              .containsIgnoringCase(ContactOutcome.SAME_HOUSEHOLD.getOutcome());
           softly
               .assertThat(
                   detailedContactDTableRow.get(
                       ContactsDetailedTableViewHeaders.FOLLOW_UP_STATUS.toString()))
-              .containsIgnoringCase(apiState.getCreatedContact().getFollowUpStatus());
-          //                    softly
-          //
-          // .assertThat(detailedContactDTableRow.get(ContactsDetailedTableViewHeaders.FOLLOW_UP_UNTIL.toString()))
-          //
-          // .containsIgnoringCase(apiState.getCreatedContact().getFollowUpUntil());
+              .containsIgnoringCase(ContactOutcome.FOLLOW_UP.getOutcome());
           softly
               .assertThat(
                   detailedContactDTableRow.get(
