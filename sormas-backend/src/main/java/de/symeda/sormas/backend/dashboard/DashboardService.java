@@ -307,12 +307,13 @@ public class DashboardService {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
 		Root<Event> event = cq.from(Event.class);
-		EventJoins<Event> eventJoins = new EventJoins<>(event);
+		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
+		EventJoins<Event> eventJoins = (EventJoins<Event>) eventQueryContext.getJoins();
 		Join<Event, Location> eventLocation = eventJoins.getLocation();
 		Join<Location, District> eventDistrict = eventJoins.getDistrict();
 
 		Predicate filter = eventService.createDefaultFilter(cb, event);
-		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, new EventQueryContext(cb, cq, event)));
+		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
 		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(cb, cq, event));
 
 		List<DashboardEventDto> result;
@@ -336,7 +337,7 @@ public class DashboardService {
 				eventDistrict.get(District.NAME),
 				eventDistrict.get(District.UUID),
 				eventJoins.getCommunity().get(Community.UUID),
-				JurisdictionHelper.jurisdictionSelector(cb, eventService.inJurisdictionOrOwned(cb, eventJoins)));
+				JurisdictionHelper.jurisdictionSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)));
 
 			result = em.createQuery(cq).getResultList();
 

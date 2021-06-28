@@ -60,6 +60,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -67,9 +68,11 @@ import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantQueryContext;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
@@ -80,8 +83,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless
 @LocalBean
@@ -401,39 +402,42 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		CriteriaQuery<SampleJurisdictionFlagsDto> cq = cb.createQuery(SampleJurisdictionFlagsDto.class);
 		Root<Sample> root = cq.from(Sample.class);
 
-		SampleJoins joins = new SampleJoins(root);
-
-		cq.multiselect(getJurisdictionSelections(cb, joins));
+		cq.multiselect(getJurisdictionSelections(new SampleQueryContext(cb, cq, root)));
 
 		cq.where(cb.equal(root.get(Sample.UUID), sample.getUuid()));
 
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
 
-	public List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, SampleJoins joins) {
-		ContactJoins<Sample> contactJoins = new ContactJoins<>(joins.getContact());
-		return Arrays.asList(JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
-				JurisdictionHelper.jurisdictionSelector(
-						cb,
-						cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))),
-				JurisdictionHelper
-						.jurisdictionSelector(cb, cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(cb, contactJoins))),
-				JurisdictionHelper.jurisdictionSelector(
-						cb,
-						cb.and(
-								cb.isNotNull(joins.getContact()),
-								cb.isNotNull(contactJoins.getCaze()),
-								caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(contactJoins.getCaze())))),
-				JurisdictionHelper.jurisdictionSelector(
-						cb,
-						cb.and(
-								cb.isNotNull(joins.getEventParticipant()),
-								eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(joins.getEventParticipant())))));
+	public List<Selection<?>> getJurisdictionSelections(SampleQueryContext qc) {
+		CriteriaBuilder cb = qc.getCriteriaBuilder();
+		SampleJoins joins = (SampleJoins) qc.getJoins();
+		CriteriaQuery cq = qc.getQuery();
+		ContactJoins<Sample> contactJoins = new ContactJoins(joins.getContact());
+		return Arrays.asList(
+			JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(qc)),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaze())))),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, joins.getContact())))),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				cb.and(
+					cb.isNotNull(joins.getContact()),
+					cb.isNotNull(contactJoins.getCaze()),
+					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, contactJoins.getCaze())))),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				cb.and(
+					cb.isNotNull(joins.getEventParticipant()),
+					eventParticipantService.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, joins.getEventParticipant())))));
 	}
 
-	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, SampleJoins<?> joins) {
+	public Predicate inJurisdictionOrOwned(SampleQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
-		return SampleJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdictionOrOwned();
+		return SampleJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 	}
 
 	public Predicate buildCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {

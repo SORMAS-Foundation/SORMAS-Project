@@ -714,7 +714,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getResponsibleRegion().get(Region.NAME),
 				joins.getResponsibleDistrict().get(District.NAME),
 				joins.getResponsibleCommunity().get(Community.NAME),
-				JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, joins)));
+				JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 		//@formatter:on
 
 		cq.distinct(true);
@@ -3384,7 +3384,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.get(Case.FOLLOW_UP_UNTIL),
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
 			caze.get(Case.DISEASE),
-			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, joins)));
+			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 
 		Predicate filter = CriteriaBuilderHelper
 			.and(cb, caseService.createUserFilter(cb, cq, caze), caseService.createCriteriaFilter(caseCriteria, caseQueryContext));

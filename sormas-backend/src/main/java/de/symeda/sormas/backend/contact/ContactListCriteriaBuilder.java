@@ -36,7 +36,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
-import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -101,8 +100,14 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.EXTERNAL_ID),
 			contact.get(Contact.EXTERNAL_TOKEN),
 			contact.get(Contact.INTERNAL_TOKEN),
-			JurisdictionHelper.jurisdictionSelector(cb, contactService.inJurisdictionOrOwned(cb, joins)),
-			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			JurisdictionHelper.jurisdictionSelector(cb, contactService.inJurisdictionOrOwned(contactQueryContext)),
+			JurisdictionHelper.jurisdictionSelector(
+				cb,
+				caseService.inJurisdictionOrOwned(
+					new CaseQueryContext<>(
+						contactQueryContext.getCriteriaBuilder(),
+						contactQueryContext.getQuery(),
+						((ContactJoins) contactQueryContext.getJoins()).getCaze()))));
 	}
 
 	public List<Selection<?>> getMergeContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {

@@ -581,7 +581,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			joins.getRegion().get(Region.UUID),
 			joins.getDistrict().get(District.UUID),
 			joins.getCommunity().get(Community.UUID),
-			jurisdictionSelector(cb, joins));
+			jurisdictionSelector(contactQueryContext));
 
 		cq.distinct(true);
 
@@ -619,7 +619,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					visitContactJoins.getVisits().get(Visit.VISIT_DATE_TIME),
 					visitContactJoins.getVisits().get(Visit.VISIT_STATUS),
 					visitContactJoins.getVisitSymptoms(),
-					jurisdictionSelector(cb, visitContactJoins));
+					jurisdictionSelector(new ContactQueryContext(cb, cq, visitsCqRoot)));
 
 				visitSummaries = em.createQuery(visitsCq).getResultList();
 			}
@@ -772,7 +772,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				joins.getVisits().get(Visit.VISIT_DATE_TIME),
 				joins.getVisits().get(Visit.VISIT_STATUS),
 				joins.getVisitSymptoms(),
-				jurisdictionSelector(cb, joins));
+				jurisdictionSelector(new ContactQueryContext(cb, cq, visitsCqRoot)));
 			visitsCq.orderBy(cb.asc(joins.getVisits().get(Visit.VISIT_DATE_TIME)));
 
 			List<VisitSummaryExportDetails> visitSummaryDetails = em.createQuery(visitsCq).getResultList();
@@ -882,7 +882,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			contact.get(Contact.FOLLOW_UP_UNTIL),
 			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
 			contact.get(Contact.DISEASE),
-				jurisdictionSelector(cb, joins));
+			jurisdictionSelector(contactQueryContext));
 
 		// Only use user filter if no restricting case is specified
 		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext);
@@ -976,8 +976,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		return resultList;
 	}
 
-	private Expression<Object> jurisdictionSelector(CriteriaBuilder cb, ContactJoins<Contact> joins) {
-		return JurisdictionHelper.jurisdictionSelector(cb, contactService.inJurisdictionOrOwned(cb, joins));
+	private Expression<Object> jurisdictionSelector(ContactQueryContext qc) {
+		return JurisdictionHelper.jurisdictionSelector(qc.getCriteriaBuilder(), contactService.inJurisdictionOrOwned(qc));
 	}
 
 	@Override
@@ -1586,7 +1586,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CriteriaQuery<SimilarContactDto> cq = cb.createQuery(SimilarContactDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
 
-		ContactJoins<Contact> joins = new ContactJoins<>(contactRoot);
+
+		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contactRoot);
+		ContactJoins<Contact> joins = (ContactJoins<Contact>) contactQueryContext.getJoins();
 
 		List<Selection<?>> selections = new ArrayList<>(
 				Arrays.asList(
@@ -1603,7 +1605,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			contactRoot.get(Contact.CONTACT_STATUS),
 			contactRoot.get(Contact.FOLLOW_UP_STATUS)));
 
-		selections.addAll(contactService.getJurisdictionSelections(cb, joins));
+		selections.addAll(contactService.getJurisdictionSelections(contactQueryContext));
 		cq.multiselect(selections);
 
 		final Predicate defaultFilter = contactService.createDefaultFilter(cb, contactRoot);
