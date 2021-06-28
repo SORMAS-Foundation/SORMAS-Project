@@ -46,7 +46,8 @@ public class CreateNewVisitPage {
   public static final By ACUTE_RESPIRATORY_DISTRESS_SYNDROME_LABEL =
       By.cssSelector("#acuteRespiratoryDistressSyndrome > span label");
   public static final By COUGH_LABEL = By.cssSelector("#cough > span label");
-  public static final By DIFFICULTY_BREATHING_LABEL = By.cssSelector("#cough > span label");
+  public static final By DIFFICULTY_BREATHING_LABEL =
+      By.cssSelector("#difficultyBreathing > span label");
   public static final By SORE_THROAT_PHARYNGITIS_LABEL = By.cssSelector("#soreThroat > span label");
   public static final By FAST_HEART_RATE_LABEL = By.cssSelector("#fastHeartRate > span label");
   public static final By DIARRHEA_LABEL = By.cssSelector("#diarrhea > span label");

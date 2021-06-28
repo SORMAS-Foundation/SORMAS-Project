@@ -23,5 +23,6 @@ import org.openqa.selenium.By;
 public class FollowUpVisitsTabPage {
   public static final By NEW_CONTACT_BUTTON = By.id("contactNewContact");
   public static final By NEW_VISIT_BUTTON = By.id("visitNewVisit");
-  public static final By FIRST_VISITOR = By.cssSelector("tbody tr:nth-child(1) td:nth-child(1)");
+  public static final By FIRST_VISIT_BUTTON =
+      By.cssSelector(".v-grid-body tr:nth-child(1) .v-icon.v-icon-edit");
 }

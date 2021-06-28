@@ -31,6 +31,7 @@ public class CaseApiService {
   public Case buildGeneratedCase(Person person) {
     return Case.builder()
         .disease("CORONAVIRUS")
+        .diseaseDetails("Test Disease")
         .pseudonymized(false)
         .uuid(UUID.randomUUID().toString())
         .reportDate(new Date())
@@ -47,7 +48,7 @@ public class CaseApiService {
         .hospitalization(Hospitalization.builder().uuid(UUID.randomUUID().toString()).build())
         .symptoms(Symptoms.builder().uuid(UUID.randomUUID().toString()).build())
         .therapy(Therapy.builder().uuid(UUID.randomUUID().toString()).build())
-        .healthFacility(HealthFacility.builder().uuid("SORMAS-CONSTID-ISNONE-FACILITY").build())
+        .healthFacility(HealthFacility.builder().uuid("WYPOCQ-IWVWGQ-XU7YCF-OSQJSAD4").build())
         .maternalHistory(MaternalHistory.builder().uuid(UUID.randomUUID().toString()).build())
         .portHealthInfo(PortHealthInfo.builder().uuid(UUID.randomUUID().toString()).build())
         .clinicalCourse(
@@ -60,6 +61,7 @@ public class CaseApiService {
             SurveillanceOfficer.builder().uuid("Q2IYCN-TNYTOY-4OAYCA-DW662MTA").build())
         .healthFacilityDetails("Details")
         .caseOrigin("IN_COUNTRY")
+        .facilityType("HOSPITAL")
         .build();
   }
 }

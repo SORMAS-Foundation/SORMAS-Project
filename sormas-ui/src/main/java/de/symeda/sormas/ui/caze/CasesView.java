@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -101,6 +102,7 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -450,19 +452,12 @@ public class CasesView extends AbstractView {
 		moreLayout.addComponent(searchSpecificCaseButton);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
-			final Button lineListingButton = ButtonHelper.createIconButton(
-				Captions.caseLineListing,
-				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getCaseController().openLineListingWindow(),
-				ValoTheme.BUTTON_PRIMARY);
-
+			final ExpandableButton lineListingButton =
+				new ExpandableButton(Captions.lineListing).expand(e -> ControllerProvider.getCaseController().openLineListingWindow());
 			addHeaderComponent(lineListingButton);
 
-			final Button createButton = ButtonHelper.createIconButton(
-				Captions.caseNewCase,
-				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getCaseController().create(),
-				ValoTheme.BUTTON_PRIMARY);
+			final ExpandableButton createButton =
+				new ExpandableButton(Captions.caseNewCase).expand(e -> ControllerProvider.getCaseController().create());
 			addHeaderComponent(createButton);
 		}
 		addHeaderComponent(moreButton);
@@ -616,7 +611,8 @@ public class CasesView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW_ARCHIVED)) {
+			if (Objects.nonNull(UserProvider.getCurrent())
+					&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 				int daysAfterCaseGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterCaseGetsArchived();
 				if (daysAfterCaseGetsArchived > 0) {
 					relevanceStatusInfoLabel = new Label(
@@ -652,80 +648,74 @@ public class CasesView extends AbstractView {
 
 					final List<MenuBarHelper.MenuBarItem> menuBarItems = new ArrayList<>();
 
-					menuBarItems.add(
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.bulkEdit),
-							VaadinIcons.ELLIPSIS_H,
-							mi -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(caseGrid.asMultiSelect().getSelectedItems()),
-							hasBulkOperationsRight));
-					menuBarItems.add(
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.bulkDelete),
-							VaadinIcons.TRASH,
-							selectedItem -> ControllerProvider.getCaseController()
-								.deleteAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-							hasBulkOperationsRight));
+					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, mi -> {
+						grid.bulkActionHandler(items -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(items));
+					}, hasBulkOperationsRight));
+					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
+						grid.bulkActionHandler(
+							items -> ControllerProvider.getCaseController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
+							true);
+					}, hasBulkOperationsRight));
 					final boolean externalMessagesEnabled =
 						FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
 					final boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
 					if (isSmsServiceSetUp
 						&& externalMessagesEnabled
 						&& UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
-						menuBarItems.add(
-							new MenuBarHelper.MenuBarItem(
-								I18nProperties.getCaption(Captions.messagesSendSMS),
-								VaadinIcons.MOBILE_RETRO,
-								selectedItem -> ControllerProvider.getCaseController()
-									.sendSmsToAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-								hasBulkOperationsRight));
+						menuBarItems
+							.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.messagesSendSMS), VaadinIcons.MOBILE_RETRO, mi -> {
+								grid.bulkActionHandler(
+									items -> ControllerProvider.getCaseController().sendSmsToAllSelectedItems(items, () -> navigateTo(criteria)));
+							}, hasBulkOperationsRight));
 					}
-					menuBarItems.add(
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.actionArchive),
-							VaadinIcons.ARCHIVE,
-							mi -> ControllerProvider.getCaseController()
-								.archiveAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-							hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
-					menuBarItems.add(
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.actionDearchive),
-							VaadinIcons.ARCHIVE,
-							mi -> ControllerProvider.getCaseController()
-								.dearchiveAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-							hasBulkOperationsRight && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
-					menuBarItems.add(
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.sormasToSormasShare),
-							VaadinIcons.SHARE,
-							mi -> ControllerProvider.getSormasToSormasController()
-								.shareSelectedCases(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-							FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()));
+					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, mi -> {
+						grid.bulkActionHandler(
+							items -> ControllerProvider.getCaseController().archiveAllSelectedItems(items, () -> navigateTo(criteria)),
+							true);
+					}, hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
+					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, mi -> {
+						grid.bulkActionHandler(
+							items -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(items, () -> navigateTo(criteria)),
+							true);
+					}, hasBulkOperationsRight && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.sormasToSormasShare), VaadinIcons.SHARE, mi -> {
+						grid.bulkActionHandler(
+							items -> ControllerProvider.getSormasToSormasController().shareSelectedCases(items, () -> navigateTo(criteria)));
+					}, FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()));
 					menuBarItems.add(
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
 							VaadinIcons.SHARE,
-							mi -> ControllerProvider.getCaseController()
-								.sendCasesToExternalSurveillanceTool(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+							mi -> {
+								grid.bulkActionHandler(
+									items -> ControllerProvider.getCaseController()
+										.sendCasesToExternalSurveillanceTool(items, () -> navigateTo(criteria)));
+							},
 							FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
 
 					if (isDocGenerationAllowed()) {
 						menuBarItems.add(
 							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
-								List<ReferenceDto> references =
-									caseGrid.asMultiSelect().getSelectedItems().stream().map(CaseIndexDto::toReference).collect(Collectors.toList());
+								grid.bulkActionHandler(items -> {
+									List<ReferenceDto> references = caseGrid.asMultiSelect()
+										.getSelectedItems()
+										.stream()
+										.map(CaseIndexDto::toReference)
+										.collect(Collectors.toList());
 
-								if (references.size() == 0) {
-									new Notification(
-										I18nProperties.getString(Strings.headingNoCasesSelected),
-										I18nProperties.getString(Strings.messageNoCasesSelected),
-										Notification.Type.WARNING_MESSAGE,
-										false).show(Page.getCurrent());
+									if (references.size() == 0) {
+										new Notification(
+											I18nProperties.getString(Strings.headingNoCasesSelected),
+											I18nProperties.getString(Strings.messageNoCasesSelected),
+											Notification.Type.WARNING_MESSAGE,
+											false).show(Page.getCurrent());
 
-									return;
-								}
+										return;
+									}
 
-								ControllerProvider.getDocGenerationController()
-									.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CASE);
+									ControllerProvider.getDocGenerationController()
+										.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CASE);
+								});
 							}));
 					}
 

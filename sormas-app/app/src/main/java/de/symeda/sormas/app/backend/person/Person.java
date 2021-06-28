@@ -177,6 +177,9 @@ public class Person extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalToken;
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String internalToken;
+
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Country birthCountry;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
@@ -577,6 +580,14 @@ public class Person extends PseudonymizableAdo {
 
 	public void setExternalToken(String externalToken) {
 		this.externalToken = externalToken;
+	}
+
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	public Country getBirthCountry() {

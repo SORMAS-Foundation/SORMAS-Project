@@ -53,6 +53,7 @@ public class CaseBulkEditData extends EntityDto {
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String FACILITY_TYPE = "facilityType";
+	public static final String DONT_SHARE_WITH_REPORTING_TOOL = "dontShareWithReportingTool";
 
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
@@ -70,6 +71,7 @@ public class CaseBulkEditData extends EntityDto {
 	private FacilityType facilityType;
 	private FacilityReferenceDto healthFacility;
 	private String healthFacilityDetails;
+	private Boolean dontShareWithReportingTool;
 
 	public Disease getDisease() {
 		return disease;
@@ -197,5 +199,13 @@ public class CaseBulkEditData extends EntityDto {
 
 	public void setHealthFacilityDetails(String healthFacilityDetails) {
 		this.healthFacilityDetails = healthFacilityDetails;
+	}
+
+	public Boolean getDontShareWithReportingTool() {
+		return dontShareWithReportingTool;
+	}
+
+	public void setDontShareWithReportingTool(Boolean dontShareWithReportingTool) {
+		this.dontShareWithReportingTool = dontShareWithReportingTool;
 	}
 }

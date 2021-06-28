@@ -79,6 +79,8 @@ public interface ConfigFacade {
 
 	String getSormasInstanceName();
 
+	boolean isDuplicateChecksExcludePersonsOfArchivedEntries();
+
 	double getNameSimilarityThreshold();
 
 	int getInfrastructureSyncThreshold();
@@ -90,6 +92,8 @@ public interface ConfigFacade {
 	int getDaysAfterSystemEventGetsDeleted();
 
 	GeoLatLon getCountryCenter();
+
+	boolean isMapUseCountryCenter();
 
 	int getMapZoom();
 

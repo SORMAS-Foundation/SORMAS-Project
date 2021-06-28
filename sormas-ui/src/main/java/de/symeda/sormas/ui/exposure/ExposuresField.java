@@ -140,7 +140,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 					: (StringUtils.isNotEmpty(exposure.getHabitationDetails()) ? exposure.getHabitationDetails() : HabitationType.OTHER.toString()));
 			}
 
-			if (exposure.getExposureType() == ExposureType.ANIMAL_CONTACT) {
+			if (exposure.getExposureType() == ExposureType.ANIMAL_CONTACT && exposure.getTypeOfAnimal() != null) {
 				exposureString += " (" + (exposure.getTypeOfAnimal() != TypeOfAnimal.OTHER
 					? exposure.getTypeOfAnimal().toString()
 					: (exposure.getTypeOfAnimalDetails() != null ? exposure.getTypeOfAnimalDetails() : TypeOfAnimal.OTHER.toString())) + ")";

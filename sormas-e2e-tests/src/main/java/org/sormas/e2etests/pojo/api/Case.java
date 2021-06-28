@@ -40,6 +40,7 @@ public class Case {
   String investigationStatus;
   String caseOrigin;
   String disease;
+  String diseaseDetails;
   String healthFacilityDetails;
   Hospitalization hospitalization;
   Therapy therapy;
@@ -54,4 +55,5 @@ public class Case {
   Region region;
   HealthFacility healthFacility;
   MaternalHistory maternalHistory;
+  String facilityType;
 }

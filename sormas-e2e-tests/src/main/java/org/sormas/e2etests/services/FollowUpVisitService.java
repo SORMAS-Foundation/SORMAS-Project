@@ -26,6 +26,7 @@ import org.sormas.e2etests.pojo.web.FollowUpVisit;
 
 public class FollowUpVisitService {
   private final Faker faker;
+  private long currentTimeMillis = System.currentTimeMillis();
 
   @Inject
   public FollowUpVisitService(Faker faker) {
@@ -33,12 +34,11 @@ public class FollowUpVisitService {
   }
 
   public FollowUpVisit buildGeneratedFollowUpVisit() {
-    long currentTimeMillis = System.currentTimeMillis();
     return FollowUpVisit.builder()
         .personAvailableAndCooperative("AVAILABLE AND COOPERATIVE")
         .dateOfVisit(LocalDate.now())
         .timeOfVisit("10:15")
-        .visitRemarks("Automated - visit remark" + currentTimeMillis)
+        .visitRemarks("visit remark" + currentTimeMillis)
         .currentBodyTemperature("35.0 °C")
         .sourceOfBodyTemperature("oral")
         .chillsOrSweats("YES")
@@ -63,8 +63,17 @@ public class FollowUpVisitService {
         .newLossOfTaste("NO")
         .otherClinicalSymptoms("UNKNOWN")
         .comments("Automated -comment" + LocalTime.now())
-        .firstSymptom("Fever")
-        .dateOfSymptomOnset(LocalDate.now())
+        .firstSymptom("Diarrhea")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .build();
+  }
+
+  public FollowUpVisit buildEditFollowUpVisit() {
+    return FollowUpVisit.builder()
+        .personAvailableAndCooperative("UNAVAILABLE")
+        .dateOfVisit(LocalDate.now())
+        .timeOfVisit("10:15")
+        .visitRemarks("Automated - visit remark" + currentTimeMillis)
         .build();
   }
 }

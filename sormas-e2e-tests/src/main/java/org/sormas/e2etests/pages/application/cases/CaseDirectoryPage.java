@@ -25,7 +25,14 @@ public class CaseDirectoryPage {
   public static final By FIRST_CASE_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT =
       By.cssSelector("input#nameUuidEpidNumberLike");
-  public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
+  public static final By CASE_OUTCOME_FILTER_COMBOBOX =
+      By.cssSelector("[id='outcome'] [class='v-filterselect-button']");
+  public static final By CASE_CLASSIFICATION_FILTER_COMBOBOX =
+      By.cssSelector("[id='caseClassification'] [class='v-filterselect-button']");
+  public static final By CASE_DISEASE_FILTER_COMBOBOX =
+      By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By CASE_APPLY_FILTERS_BUTTON = By.cssSelector("[id='actionApplyFilters']");
+  public static final By CASE_RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
   public static final String CASE_RESULTS_UUID_LOCATOR = "[title = '%s']";
   public static final By CASE_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
 }

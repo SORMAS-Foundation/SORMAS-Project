@@ -130,10 +130,27 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
 	}
 
-	public List<PathogenTest> getAllByCase(Case caze) {
+	public List<PathogenTest> getAllByCase(String caseUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PathogenTest> cq = cb.createQuery(getElementClass());
+		Root<PathogenTest> from = cq.from(getElementClass());
+
+		Predicate filter = createDefaultFilter(cb, from);
+
+		Join<Object, Object> sampleJoin = from.join(PathogenTest.SAMPLE);
+		filter = cb.and(filter, cb.equal(sampleJoin.join(Sample.ASSOCIATED_CASE, JoinType.LEFT).get(Case.UUID), caseUuid));
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(PathogenTest.TEST_DATE_TIME)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public Long countByCase(Case caze) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<PathogenTest> from = cq.from(getElementClass());
 
 		Predicate filter = createDefaultFilter(cb, from);
@@ -142,11 +159,11 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 			Join<Object, Object> sampleJoin = from.join(PathogenTest.SAMPLE);
 			filter = cb.and(filter, cb.equal(sampleJoin.get(Sample.ASSOCIATED_CASE), caze));
 		}
-
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(PathogenTest.TEST_DATE_TIME)));
 
-		return em.createQuery(cq).getResultList();
+		cq.select(cb.count(from.get(PathogenTest.ID)));
+
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public List<PathogenTest> getBySampleUuids(List<String> sampleUuids, boolean ordered) {

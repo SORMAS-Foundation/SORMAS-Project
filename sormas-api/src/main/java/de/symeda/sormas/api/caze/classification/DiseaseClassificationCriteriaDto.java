@@ -30,6 +30,8 @@ public class DiseaseClassificationCriteriaDto extends EntityDto {
 	private ClassificationCriteriaDto suspectCriteria;
 	private ClassificationCriteriaDto probableCriteria;
 	private ClassificationCriteriaDto confirmedCriteria;
+	private ClassificationCriteriaDto confirmedNoSymptomsCriteria;
+	private ClassificationCriteriaDto confirmedUnknownSymptomsCriteria;
 	private ClassificationCriteriaDto notACaseCriteria;
 
 	public DiseaseClassificationCriteriaDto() {
@@ -42,6 +44,8 @@ public class DiseaseClassificationCriteriaDto extends EntityDto {
 		ClassificationCriteriaDto suspectCriteria,
 		ClassificationCriteriaDto probableCriteria,
 		ClassificationCriteriaDto confirmedCriteria,
+		ClassificationCriteriaDto confirmedNoSymptomsCriteria,
+		ClassificationCriteriaDto confirmedUnknownSymptomsCriteria,
 		ClassificationCriteriaDto notACaseCriteria) {
 
 		super(changeDate, changeDate, null);
@@ -49,6 +53,8 @@ public class DiseaseClassificationCriteriaDto extends EntityDto {
 		this.suspectCriteria = suspectCriteria;
 		this.probableCriteria = probableCriteria;
 		this.confirmedCriteria = confirmedCriteria;
+		this.confirmedNoSymptomsCriteria = confirmedNoSymptomsCriteria;
+		this.confirmedUnknownSymptomsCriteria = confirmedUnknownSymptomsCriteria;
 		this.notACaseCriteria = notACaseCriteria;
 	}
 
@@ -84,6 +90,22 @@ public class DiseaseClassificationCriteriaDto extends EntityDto {
 		this.confirmedCriteria = confirmedCriteria;
 	}
 
+	public ClassificationCriteriaDto getConfirmedNoSymptomsCriteria() {
+		return confirmedNoSymptomsCriteria;
+	}
+
+	public void setConfirmedNoSymptomsCriteria(ClassificationCriteriaDto confirmedNoSymptomsCriteria) {
+		this.confirmedNoSymptomsCriteria = confirmedNoSymptomsCriteria;
+	}
+
+	public ClassificationCriteriaDto getConfirmedUnknownSymptomsCriteria() {
+		return confirmedUnknownSymptomsCriteria;
+	}
+
+	public void setConfirmedUnknownSymptomsCriteria(ClassificationCriteriaDto confirmedUnknownSymptomsCriteria) {
+		this.confirmedUnknownSymptomsCriteria = confirmedUnknownSymptomsCriteria;
+	}
+
 	public ClassificationCriteriaDto getNotACaseCriteria() {
 		return notACaseCriteria;
 	}
@@ -93,6 +115,11 @@ public class DiseaseClassificationCriteriaDto extends EntityDto {
 	}
 
 	public boolean hasAnyCriteria() {
-		return suspectCriteria != null || probableCriteria != null || confirmedCriteria != null || notACaseCriteria != null;
+		return suspectCriteria != null
+			|| probableCriteria != null
+			|| confirmedCriteria != null
+			|| confirmedNoSymptomsCriteria != null
+			|| confirmedUnknownSymptomsCriteria != null
+			|| notACaseCriteria != null;
 	}
 }

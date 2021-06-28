@@ -18,9 +18,12 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.NEW_ACTION_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventActionsPage.CREATE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.*;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 
@@ -30,20 +33,31 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Event;
+import org.sormas.e2etests.pojo.web.EventGroup;
 import org.sormas.e2etests.pojo.web.Person;
+import org.sormas.e2etests.services.EventGroupService;
 import org.sormas.e2etests.services.EventService;
+import org.sormas.e2etests.state.ApiState;
 
 public class EditEventSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static Event event;
+  public static EventGroup groupEvent;
   public static Person person;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
-  public EditEventSteps(WebDriverHelpers webDriverHelpers, EventService eventService, Faker faker) {
+  public EditEventSteps(
+      WebDriverHelpers webDriverHelpers,
+      EventService eventService,
+      Faker faker,
+      EventGroupService eventGroupService,
+      @Named("ENVIRONMENT_URL") String environmentUrl,
+      ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -125,6 +139,63 @@ public class EditEventSteps implements En {
           selectResponsibleDistrict("District11");
           webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(PERSON_DATA_SAVED);
+        });
+
+    When(
+        "^I click on edit task icon of the first created task$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_FIRST_TASK));
+
+    When(
+        "^I click on link event group$",
+        () -> {
+          webDriverHelpers.scrollToElement(LINK_EVENT_GROUP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_GROUP_BUTTON);
+        });
+
+    When(
+        "^I create a new event group$",
+        () -> {
+          groupEvent = eventGroupService.buildGroupEvent();
+          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_GROUP_RADIOBUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
+          groupEvent =
+              groupEvent.toBuilder()
+                  .uuid(webDriverHelpers.getValueFromWebElement(GROUP_EVENT_UUID))
+                  .build();
+          fillGroupEventName(groupEvent.getName());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_GROUP_EVENT_CREATED_MESSAGE);
+        });
+
+    When(
+        "^I am checking event group name and id is correctly displayed$",
+        () -> {
+          final String eventGroupUuid = groupEvent.getUuid();
+          final String eventGroupName = groupEvent.getName();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventGroupUuid));
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getGroupEventName(eventGroupName));
+        });
+
+    When(
+        "I open the last created event via api",
+        () -> {
+          String LAST_CREATED_EVENT_URL =
+              environmentUrl + "/sormas-ui/#!events/data/" + apiState.getCreatedEvent().getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_URL);
+        });
+
+    When(
+        "I click on New Action button from Event tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_ACTION_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ACTION_POPUP);
+        });
+
+    Then(
+        "I click on Event Actions tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_ACTIONS_TAB);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CREATE_BUTTON);
         });
   }
 
@@ -210,5 +281,15 @@ public class EditEventSteps implements En {
 
   public void fillDateOfReport(LocalDate date) {
     webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
+  }
+
+  public void fillGroupEventName(String groupEventName) {
+    webDriverHelpers.fillInWebElement(GROUP_EVENT_NAME_POPUP_INPUT, groupEventName);
+  }
+
+  public EventGroup collectEventGroupUuid() {
+    return EventGroup.builder()
+        .uuid(webDriverHelpers.getValueFromWebElement(GROUP_EVENT_UUID))
+        .build();
   }
 }

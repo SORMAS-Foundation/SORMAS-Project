@@ -58,13 +58,18 @@ public class FollowUpVisitsTabSteps implements En {
           webDriverHelpers.accessWebSite(URL);
           webDriverHelpers.clickOnWebElementBySelector(NEW_VISIT_BUTTON);
         });
+
+    And(
+        "^I select created followUp$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_VISIT_BUTTON);
+        });
   }
 
   public FollowUpVisit collectFollowUpData() {
     return FollowUpVisit.builder()
         .personAvailableAndCooperative(
             webDriverHelpers.getValueFromWebElement(PERSON_AVAILABLE_AND_COOPERATIVE))
-        //  .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRST_SYMPTOM_COMBOBOX))
         .build();
   }
 }

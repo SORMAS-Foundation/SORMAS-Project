@@ -35,6 +35,8 @@ import java.util.TreeSet;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.base.CharMatcher;
 
 import de.symeda.sormas.api.AgeGroup;
@@ -393,13 +395,13 @@ public final class DataHelper {
 			return PersonHelper.getAgeAndBirthdateString(
 				ageAndBirthDate.getAge(),
 				ageAndBirthDate.getAgeType(),
-				ageAndBirthDate.getBirthdateDD(),
-				ageAndBirthDate.getBirthdateMM(),
-				ageAndBirthDate.getBirthdateYYYY(),
+				ageAndBirthDate.getDateOfBirthDD(),
+				ageAndBirthDate.getDateOfBirthMM(),
+				ageAndBirthDate.getDateOfBirthYYYY(),
 				userLanguage);
 		} else if (value instanceof BirthDateDto) {
 			BirthDateDto birthDate = (BirthDateDto) value;
-			return PersonHelper.formatBirthdate(birthDate.getBirthdateDD(), birthDate.getBirthdateMM(), birthDate.getBirthdateYYYY(), userLanguage);
+			return PersonHelper.formatBirthdate(birthDate.getDateOfBirthDD(), birthDate.getDateOfBirthMM(), birthDate.getDateOfBirthYYYY(), userLanguage);
 		} else {
 			return value.toString();
 		}
@@ -420,5 +422,16 @@ public final class DataHelper {
 		}
 
 		return Collections.singletonList(object);
+	}
+
+	public static String joinStrings(String separator, String... strings) {
+		List<String> notEmptyValues = new ArrayList<>();
+		for (String string : strings) {
+			if (!StringUtils.isBlank(string)) {
+				notEmptyValues.add(string);
+			}
+		}
+
+		return StringUtils.join(notEmptyValues, separator);
 	}
 }

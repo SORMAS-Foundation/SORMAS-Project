@@ -18,11 +18,10 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
-import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.*;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewVisitPage.*;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CREATED_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,7 +35,6 @@ public class CreateNewVisitSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static FollowUpVisit followUpVisit;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
-  public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
   @Inject
   public CreateNewVisitSteps(
@@ -47,13 +45,14 @@ public class CreateNewVisitSteps implements En {
         "^I create a new Follow-up visit",
         () -> {
           followUpVisit = followUpVisitService.buildGeneratedFollowUpVisit();
-
+          webDriverHelpers.waitForPageLoaded();
           selectPersonAvailableAndCooperative(followUpVisit.getPersonAvailableAndCooperative());
           fillDateAndTimeVisit(
               followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit(),
               followUpVisitService.buildGeneratedFollowUpVisit().getTimeOfVisit());
           fillVisitRemark(followUpVisit.getVisitRemarks());
           // selectBodyTemperature(followUpVisit.getCurrentBodyTemperature());
+
           selectSourceOfBodyTemperature(followUpVisit.getSourceOfBodyTemperature());
           selectChillsOrSweats(followUpVisit.getChillsOrSweats());
           selectFeelingIll(followUpVisit.getFeelingIll());
@@ -83,15 +82,88 @@ public class CreateNewVisitSteps implements En {
           fillDateOfFirstSymptom(followUpVisit.getDateOfSymptomOnset());
 
           webDriverHelpers.clickOnWebElementBySelector(SAVE_VISIT_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
+        });
+
+    Then(
+        "^I am checking all data is saved and displayed$",
+        () -> {
+          final FollowUpVisit actualFollowUpVisit = collectFollowUpData();
+          Truth.assertThat(followUpVisit).isEqualTo(actualFollowUpVisit);
+        });
+
+    And(
+        "^I change all Follow-up visit fields and save$",
+        () -> {
+          followUpVisit = followUpVisitService.buildEditFollowUpVisit();
+          webDriverHelpers.waitForPageLoaded();
+          selectPersonAvailableAndCooperative(followUpVisit.getPersonAvailableAndCooperative());
+          fillDateAndTimeVisit(
+              followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit(),
+              followUpVisitService.buildGeneratedFollowUpVisit().getTimeOfVisit());
+          fillVisitRemark(followUpVisit.getVisitRemarks());
+          // selectBodyTemperature(followUpVisit.getCurrentBodyTemperature());
+
         });
   }
 
   public FollowUpVisit collectFollowUpData() {
+    String dateOfVisit = webDriverHelpers.getValueFromWebElement(DATE_AND_TIME_OF_VISIT_INPUT);
+    LocalDate parsedDateOfVisit = LocalDate.parse(dateOfVisit, DATE_FORMATTER);
+    String dateOfSymptomOnset =
+        webDriverHelpers.getValueFromWebElement(DATE_OF_SYMPTOM_ONSET_INPUT);
+    LocalDate parsedDateOfSymptomOnset = LocalDate.parse(dateOfSymptomOnset, DATE_FORMATTER);
+
     return FollowUpVisit.builder()
         .personAvailableAndCooperative(
-            webDriverHelpers.getValueFromWebElement(PERSON_AVAILABLE_AND_COOPERATIVE))
-        .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRST_SYMPTOM_COMBOBOX))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                PERSON_AVAILABLE_AND_COOPERATIVE))
+        .dateOfVisit(parsedDateOfVisit)
+        .timeOfVisit(webDriverHelpers.getValueFromCombobox(TIME_OF_VISIT_INPUT))
+        .visitRemarks(webDriverHelpers.getValueFromWebElement(VISIT_REMARKS_INPUT))
+        .currentBodyTemperature(
+            webDriverHelpers.getValueFromCombobox(CURRENT_BODY_TEMPERATURE_COMBOBOX))
+        .sourceOfBodyTemperature(
+            webDriverHelpers.getValueFromCombobox(SOURCE_BODY_TEMPERATURE_COMBOBOX))
+        .chillsOrSweats(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CHILLS_OR_SWATS_LABEL))
+        .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL_LABEL))
+        .fever(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEVER_LABEL))
+        .headache(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HEADACHE_LABEL))
+        .musclePain(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MUSCLE_PAIN_LABEL))
+        .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING_LABEL))
+        .acuteRespiratoryDistressSyndrome(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                ACUTE_RESPIRATORY_DISTRESS_SYNDROME_LABEL))
+        .cough(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COUGH_LABEL))
+        .difficultyBreathing(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIFFICULTY_BREATHING_LABEL))
+        .oxygenSaturation94(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OXIGEN_SATURANTION_LABEL))
+        .pneumoniaClinicalRadiologic(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PNEUMONIA_LABEL))
+        .rapidBreathing(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RAPID_BREATHING_LABEL))
+        .respiratoryDiseaseRequiringVentilation(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                RESPIRATORY_DISEASE_REQUIRING_VENTILATION_LABEL))
+        .runnyNose(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RUNNY_NOSE_LABEL))
+        .soreThroatPharyngitis(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                SORE_THROAT_PHARYNGITIS_LABEL))
+        .fastHeartRate(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_RATE_LABEL))
+        .diarrhea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIARRHEA_LABEL))
+        .nausea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(NAUSEA_LABEL))
+        .newLossOfSmell(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_SMELL_LABEL))
+        .newLossOfTaste(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_TASTE_LABEL))
+        .otherClinicalSymptoms(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                OTHER_CLINICAL_SYMPTOMS_LABEL))
+        .comments(webDriverHelpers.getValueFromWebElement(COMMENTS_INPUT))
+        .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRSTSYMPTOM_COMBOBOX))
+        .dateOfSymptomOnset(parsedDateOfSymptomOnset)
         .build();
   }
 

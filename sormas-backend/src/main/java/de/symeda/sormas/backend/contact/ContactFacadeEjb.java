@@ -84,10 +84,13 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -110,6 +113,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -131,6 +135,8 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.document.Document;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -242,6 +248,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private SampleFacadeEjbLocal sampleFacade;
+	@EJB
+	private DocumentService documentService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -567,6 +575,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_ATC_CODE),
 					contact.get(Contact.EXTERNAL_ID),
 					contact.get(Contact.EXTERNAL_TOKEN),
+					contact.get(Contact.INTERNAL_TOKEN),
 					joins.getPerson().get(Person.BIRTH_NAME),
 					joins.getPersonBirthCountry().get(Country.ISO_CODE),
 					joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
@@ -1189,6 +1198,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -1434,6 +1444,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
@@ -1721,7 +1732,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		// 1 Merge Dtos
 		// 1.1 Contact
-		DtoHelper.copyDtoValues(leadContactDto, otherContactDto, false);
+		copyDtoValues(leadContactDto, otherContactDto);
 		saveContact(leadContactDto);
 
 		// 1.2 Person
@@ -1757,6 +1768,24 @@ public class ContactFacadeEjb implements ContactFacade {
 			otherVisit.setDisease(leadContactDto.getDisease());
 			visitFacade.saveVisit(otherVisit);
 		}
+
+		// 4 Documents
+		List<Document> documents = documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, otherContact.getUuid());
+		for (Document document : documents) {
+			document.setRelatedEntityUuid(leadContact.getUuid());
+
+			documentService.ensurePersisted(document);
+		}
+	}
+
+	private void copyDtoValues(ContactDto leadContactDto, ContactDto otherContactDto) {
+		String leadAdditionalDetails = leadContactDto.getAdditionalDetails();
+		String leadFollowUpComment = leadContactDto.getFollowUpComment();
+
+		DtoHelper.copyDtoValues(leadContactDto, otherContactDto, false);
+
+		leadContactDto.setAdditionalDetails(DataHelper.joinStrings(" ", leadAdditionalDetails, otherContactDto.getAdditionalDetails()));
+		leadContactDto.setFollowUpComment(DataHelper.joinStrings(" ", leadFollowUpComment, otherContactDto.getFollowUpComment()));
 	}
 
 	@Override
@@ -1934,6 +1963,11 @@ public class ContactFacadeEjb implements ContactFacade {
 		Contact contact = contactService.getByUuid(uuid);
 		contact.setCompleteness(calculateCompleteness(contact));
 		contactService.ensurePersisted(contact);
+	}
+
+	@Override
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+		contactService.updateExternalData(externalData);
 	}
 
 	private float calculateCompleteness(Contact contact) {

@@ -16,12 +16,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pages.application.samples;
+package org.sormas.e2etests.services;
 
-import org.openqa.selenium.By;
+import com.github.javafaker.Faker;
+import com.google.inject.Inject;
+import java.time.LocalDate;
+import org.sormas.e2etests.pojo.web.Action;
 
-public class SampleManagementPage {
-  public static final By SAMPLE_SEARCH_INPUT = By.cssSelector("[id='caseCodeIdLike']");
-  public static final By SEARCH_RESULT_SAMPLE = By.cssSelector("[role='gridcell'] a");
-  public static final By SAVE_EDIT_SAMPLE_BUTTON = By.cssSelector("[id='commit']");
+public class ActionService {
+  private final Faker faker;
+
+  @Inject
+  public ActionService(Faker faker) {
+    this.faker = faker;
+  }
+
+  public Action buildGeneratedAction() {
+    String timestamp = String.valueOf(System.currentTimeMillis());
+    return Action.builder()
+        .date(LocalDate.now())
+        .priority("Normal")
+        .measure("Closure of facility")
+        .title("Dummy Action " + timestamp)
+        .description("Dummy Action " + timestamp)
+        .actionStatus("PENDING")
+        .build();
+  }
 }

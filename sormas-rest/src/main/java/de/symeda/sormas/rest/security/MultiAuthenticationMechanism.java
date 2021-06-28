@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -43,11 +40,15 @@ import javax.servlet.http.HttpServletResponse;
  * <p/>
  * Supported at the moment: Sormas and Keycloak.
  * <p/>
- * Sormas provider uses the {@link BasicAuthenticationMechanism}. The {@link SormasIdentityStore} validated the credentials and obtains the user's roles.
+ * Sormas provider uses the {@link BasicAuthenticationMechanism}. The {@link SormasIdentityStore} validated the credentials and obtains the
+ * user's roles.
  * <p/>
- * Keycloak provider uses {@link KeycloakHttpAuthenticationMechanism} and accepts Bearer and if enabled also Basic authentication. Configuration provided by {@link KeycloakConfigResolver}.<br/>
- * The token validation is done trough {@link KeycloakFilter} and then the user is authenticated and it's roles are obtained by {@link KeycloakIdentityStore}.<br/>
- * <b>Note:</b> As a precondition the Keycloak user needs a valid role which the {@link KeycloakFilter} will use to pre-validate the request.
+ * Keycloak provider uses {@link KeycloakHttpAuthenticationMechanism} and accepts Bearer and if enabled also Basic authentication.
+ * Configuration provided by {@link KeycloakConfigResolver}.<br/>
+ * The token validation is done trough {@link KeycloakFilter} and then the user is authenticated and it's roles are obtained by
+ * {@link KeycloakIdentityStore}.<br/>
+ * <b>Note:</b> As a precondition the Keycloak user needs a valid role which the {@link KeycloakFilter} will use to pre-validate the
+ * request.
  *
  * @author Alex Vidrean
  * @see ConfigFacade#getAuthenticationProvider()
@@ -58,19 +59,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 @OpenAPIDefinition(security = {
 	@SecurityRequirement(name = "basicAuth"),
-	@SecurityRequirement(name = "bearerAuth")
-})
-@SecurityScheme(
-	name = "basicAuth",
-	type = SecuritySchemeType.HTTP,
-	scheme = "basic"
-)
-@SecurityScheme(
-	name = "bearerAuth",
-	type = SecuritySchemeType.HTTP,
-	scheme = "bearer",
-	bearerFormat = "JWT"
-)
+	@SecurityRequirement(name = "bearerAuth") })
+@SecurityScheme(name = "basicAuth", type = SecuritySchemeType.HTTP, scheme = "basic")
+@SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 @ApplicationScoped
 public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism {
 
