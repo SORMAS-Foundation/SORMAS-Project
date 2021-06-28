@@ -42,8 +42,6 @@ public class ContactLineField extends CustomField<ContactLineFieldDto> {
 
 	@Override
 	protected Component initContent() {
-		setValue(new ContactLineFieldDto());
-
 		HorizontalLayout layout = new HorizontalLayout();
 
 		layout.setMargin(false);

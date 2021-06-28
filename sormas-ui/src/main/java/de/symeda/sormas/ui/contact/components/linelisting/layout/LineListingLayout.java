@@ -106,7 +106,8 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	public void validate() throws ValidationRuntimeException {
-		boolean validationFailed = false;
+		boolean validationFailed = sharedInfoField.hasErrors();
+		// XXX: process each line unconditionally, as it will actually validate and display errors
 		for (ContactLineLayout line : lines) {
 			if (line.hasErrors()) {
 				validationFailed = true;
@@ -123,10 +124,10 @@ public class LineListingLayout extends VerticalLayout {
 			ContactLineDto result = new ContactLineDto();
 
 			final ContactDto contact = ContactDto.build();
-			contact.setCaze(layoutBean.getSharedInfoField().getCaze());
-			contact.setDisease(layoutBean.getSharedInfoField().getDisease());
-			contact.setRegion(layoutBean.getSharedInfoField().getRegion());
-			contact.setDistrict(layoutBean.getSharedInfoField().getDistrict());
+			contact.setCaze(sharedInfoField.getValue().getCaze());
+			contact.setDisease(sharedInfoField.getValue().getDisease());
+			contact.setRegion(sharedInfoField.getValue().getRegion());
+			contact.setDistrict(sharedInfoField.getValue().getDistrict());
 			contact.setReportDateTime(DateHelper8.toDate(layoutBean.getLineField().getDateOfReport()));
 			contact.setMultiDayContact(layoutBean.getLineField().getMultiDaySelector().isMultiDay());
 			contact.setFirstContactDate(DateHelper8.toDate(layoutBean.getLineField().getMultiDaySelector().getStartDate()));
@@ -160,7 +161,6 @@ public class LineListingLayout extends VerticalLayout {
 
 		if (!lines.isEmpty()) {
 			ContactLineLayoutDto lastLineDto = lines.get(lines.size() - 1).getBean();
-			newLineDto.setSharedInfoField(lastLineDto.getSharedInfoField());
 			newLineDto.setLineField(lastLineDto.getLineField());
 		} else {
 			newLine.enableDelete(false);
@@ -188,8 +188,6 @@ public class LineListingLayout extends VerticalLayout {
 
 			addStyleName(CssStyles.SPACING_SMALL);
 			setMargin(false);
-
-			binder.forField(sharedInfoField).bind(ContactLineLayoutDto.SHARED_INFO_FIELD);
 
 			contactLineField = new ContactLineField();
 			contactLineField.setId("lineListingContactLineField_" + lineIndex);
@@ -226,19 +224,9 @@ public class LineListingLayout extends VerticalLayout {
 
 	public static class ContactLineLayoutDto implements Serializable {
 
-		public static final String SHARED_INFO_FIELD = "sharedInfoField";
 		public static final String LINE_FIELD = "lineField";
 
-		private SharedInfoFieldDto sharedInfoField;
 		private ContactLineFieldDto lineField;
-
-		public SharedInfoFieldDto getSharedInfoField() {
-			return sharedInfoField;
-		}
-
-		public void setSharedInfoField(SharedInfoFieldDto sharedInfoField) {
-			this.sharedInfoField = sharedInfoField;
-		}
 
 		public ContactLineFieldDto getLineField() {
 			return lineField;
