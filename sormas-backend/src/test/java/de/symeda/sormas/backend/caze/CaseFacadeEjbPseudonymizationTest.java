@@ -281,6 +281,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			new Date(),
 			rdcf,
 			(c) -> {
+				c.setRegion(rdcf.region);
+				c.setDistrict(rdcf.district);
+				c.setCommunity(rdcf.community);
 				c.setReportingUser(reportingUser.toReference());
 				c.setClassificationUser(reportingUser.toReference());
 				c.setSurveillanceOfficer(reportingUser.toReference());
@@ -320,6 +323,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private void assertNotPseudonymized(CaseDataDto caze) {
 		assertThat(caze.isPseudonymized(), is(false));
+		assertThat(caze.getResponsibleRegion(), is(rdcf2.region));
+		assertThat(caze.getResponsibleDistrict(), is(rdcf2.district));
+		assertThat(caze.getResponsibleCommunity(), is(rdcf2.community));
 		assertThat(caze.getRegion(), is(rdcf2.region));
 		assertThat(caze.getDistrict(), is(rdcf2.district));
 		assertThat(caze.getCommunity(), is(rdcf2.community));
@@ -342,6 +348,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private void assertPseudonymized(CaseDataDto caze) {
 		assertThat(caze.isPseudonymized(), is(true));
+		assertThat(caze.getResponsibleRegion(), is(rdcf1.region));
+		assertThat(caze.getResponsibleDistrict(), is(rdcf1.district));
+		assertThat(caze.getResponsibleCommunity(), is(nullValue()));
 		assertThat(caze.getRegion(), is(rdcf1.region));
 		assertThat(caze.getDistrict(), is(rdcf1.district));
 		assertThat(caze.getCommunity(), is(nullValue()));

@@ -38,7 +38,6 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	public static final String SAMPLE_COUNT = "sampleCount";
 	public static final String SYMPTOM_ONSET_DATE = "symptomOnsetDate";
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
-	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
 
 	private YesNoUnknown reInfection;
@@ -69,7 +68,6 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	private Date symptomOnsetDate;
 
 	private String responsibleRegion;
-	private String responsibleDistrict;
 	private String responsibleCommunity;
 
 	private UserReferenceDto reportingUser;
@@ -77,26 +75,26 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	//@formatter:off
 	public CaseIndexDetailedDto(long id, String uuid, String epidNumber, String externalID, String externalToken, String internalToken, String personFirstName, String personLastName,
 								Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
-								PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate,
-								String regionUuid, String districtUuid, String districtName,
+								PresentCondition presentCondition, Date reportDate, Date creationDate,
+								String regionUuid, String districtUuid,
 								String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 								String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
 								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Vaccination vaccination, Date changeDate, Long facilityId,
-								// responsible jurisdiction
-								String responsibleRegionUuid, String responsibleDistrictUuid, boolean isInJurisdiction,
+								String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleDistrictName, boolean isInJurisdiction,
+								//detailed fields
 								YesNoUnknown reInfection, String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
-								String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
-								String responsibleRegion, String responsibleDistrict, String responsibleCommunity,
+								String reportingUserUuid, String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
+								String responsibleRegion, String responsibleCommunity,
 								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
-
-		super(id, uuid, epidNumber, externalID, externalToken, internalToken, personFirstName, personLastName, disease, diseaseVariant, diseaseDetails, caseClassification, investigationStatus,
-				presentCondition, reportDate, creationDate, regionUuid, districtUuid, districtName,
-				healthFacilityUuid, healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
+		super(id, uuid, epidNumber, externalID, externalToken, internalToken, personFirstName, personLastName,
+				disease, diseaseVariant, diseaseDetails, caseClassification, investigationStatus,
+				presentCondition, reportDate, creationDate,
+				regionUuid, districtUuid, healthFacilityUuid,
+				healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,
 				quarantineTo, completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccination, changeDate, facilityId,
-				responsibleRegionUuid, responsibleDistrictUuid, isInJurisdiction,
-				visitCount);
+				responsibleRegionUuid, responsibleDistrictUuid, responsibleDistrictName, isInJurisdiction, visitCount);
 		//@formatter:on
 
 		this.reInfection = reInfection;
@@ -112,7 +110,6 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		this.sampleCount = sampleCount;
 		this.symptomOnsetDate = symptomOnsetDate;
 		this.responsibleRegion = responsibleRegion;
-		this.responsibleDistrict = responsibleDistrict;
 		this.responsibleCommunity = responsibleCommunity;
 	}
 
@@ -198,10 +195,6 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	public String getResponsibleRegion() {
 		return responsibleRegion;
-	}
-
-	public String getResponsibleDistrict() {
-		return responsibleDistrict;
 	}
 
 	public String getResponsibleCommunity() {

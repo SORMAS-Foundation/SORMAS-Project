@@ -26,9 +26,11 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.joda.time.LocalDate;
 
@@ -458,14 +460,19 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			FieldHelper.updateItems(
 				community,
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+
+			List<DistrictReferenceDto> officerDistricts = new ArrayList<>();
+			officerDistricts.add(districtDto);
+
 			if (districtDto == null && getValue().getCaze() != null) {
 				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getCaze().getUuid());
-				districtDto = caseDto.getDistrict();
-			}
 
-			FieldHelper.updateItems(
-				contactOfficerField,
-				districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.CONTACT_OFFICER) : null);
+				FieldHelper.updateOfficersField(contactOfficerField, caseDto, UserRole.CONTACT_OFFICER);
+			} else {
+				FieldHelper.updateItems(
+					contactOfficerField,
+					districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.CONTACT_OFFICER) : null);
+			}
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 

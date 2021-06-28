@@ -550,7 +550,6 @@ public class CaseController {
 		UserDto user = UserProvider.getCurrent().getUser();
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		caze.setReportingUser(userReference);
-		caze.setReportingDistrict(user.getDistrict());
 
 		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 			caze.setRegion(user.getRegion());
@@ -720,9 +719,7 @@ public class CaseController {
 	}
 
 	public void selectOrCreateCase(CaseDataDto caseDto, PersonDto person, Consumer<String> selectedCaseUuidConsumer) {
-		CaseCriteria caseCriteria = new CaseCriteria().disease(caseDto.getDisease()).region(caseDto.getRegion());
-		CaseSimilarityCriteria criteria =
-			new CaseSimilarityCriteria().personUuid(person.getUuid()).caseCriteria(caseCriteria).reportDate(caseDto.getReportDate());
+		CaseSimilarityCriteria criteria = CaseSimilarityCriteria.forCase(caseDto, person.getUuid());
 
 		// Check for similar cases for the **given person**.
 		// This is a case similarity check for a fixed person and will not return cases where persons are similar.
@@ -1509,8 +1506,8 @@ public class CaseController {
 			CaseDataDto newCase = CaseDataDto.build(PersonDto.build().toReference(), caseLineDto.getDisease());
 
 			newCase.setDiseaseDetails(caseLineDto.getDiseaseDetails());
-			newCase.setRegion(caseLineDto.getRegion());
-			newCase.setDistrict(caseLineDto.getDistrict());
+			newCase.setResponsibleRegion(caseLineDto.getRegion());
+			newCase.setResponsibleDistrict(caseLineDto.getDistrict());
 			newCase.setReportDate(DateHelper8.toDate(caseLineDto.getDateOfReport()));
 			newCase.setEpidNumber(caseLineDto.getEpidNumber());
 			newCase.setCommunity(caseLineDto.getCommunity());

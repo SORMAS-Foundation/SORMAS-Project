@@ -32,6 +32,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -165,6 +166,45 @@ public class ReceivedDataProcessorHelper {
 		return loadLocalInfrastructure(region, district, community, null, null, null, null, null);
 	}
 
+	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(CaseDataDto caze) {
+		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = loadLocalInfrastructure(
+			caze.getRegion(),
+			caze.getDistrict(),
+			caze.getCommunity(),
+			caze.getFacilityType(),
+			caze.getHealthFacility(),
+			caze.getHealthFacilityDetails(),
+			caze.getPointOfEntry(),
+			caze.getPointOfEntryDetails());
+
+		InfrastructureData infrastructureData = infrastructureAndErrors.getElement0();
+		List<String> unmatchedFields = infrastructureAndErrors.getElement1();
+
+		RegionReferenceDto responsibleRegion = caze.getResponsibleRegion();
+		infrastructureData.responsibleRegion = loadLocalRegion(responsibleRegion);
+		if (responsibleRegion != null && infrastructureData.responsibleRegion == null) {
+			unmatchedFields.add(
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_REGION) + ": " + responsibleRegion.getCaption());
+		}
+
+		DistrictReferenceDto responsibleDistrict = caze.getResponsibleDistrict();
+		infrastructureData.responsibleDistrict = loadLocalDistrict(responsibleDistrict);
+		if (responsibleDistrict != null && infrastructureData.responsibleDistrict == null) {
+			unmatchedFields.add(
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT) + ": " + responsibleDistrict.getCaption());
+		}
+
+		CommunityReferenceDto responsibleCommunity = caze.getResponsibleCommunity();
+		infrastructureData.responsibleCommunity = loadLocalCommunity(responsibleCommunity);
+		if (responsibleCommunity != null && infrastructureData.responsibleCommunity == null) {
+			unmatchedFields.add(
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_COMMUNITY) + ": "
+					+ responsibleCommunity.getCaption());
+		}
+
+		return infrastructureAndErrors;
+	}
+
 	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
@@ -230,6 +270,9 @@ public class ReceivedDataProcessorHelper {
 		}
 
 		infrastructureData.community = loadLocalCommunity(community);
+		if (community != null && infrastructureData.community == null) {
+			unmatchedFields.add(I18nProperties.getCaption(Captions.community) + ": " + community.getCaption());
+		}
 
 		if (facility != null) {
 			WithDetails<FacilityReferenceDto> localFacility = loadLocalFacility(facility, facilityType, facilityDetails);
@@ -584,6 +627,9 @@ public class ReceivedDataProcessorHelper {
 		private ContinentReferenceDto continent;
 		private SubcontinentReferenceDto subcontinent;
 		private CountryReferenceDto country;
+		private RegionReferenceDto responsibleRegion;
+		private DistrictReferenceDto responsibleDistrict;
+		private CommunityReferenceDto responsibleCommunity;
 		private RegionReferenceDto region;
 		private DistrictReferenceDto district;
 		private CommunityReferenceDto community;
@@ -602,6 +648,18 @@ public class ReceivedDataProcessorHelper {
 
 		public CountryReferenceDto getCountry() {
 			return country;
+		}
+
+		public RegionReferenceDto getResponsibleRegion() {
+			return responsibleRegion;
+		}
+
+		public DistrictReferenceDto getResponsibleDistrict() {
+			return responsibleDistrict;
+		}
+
+		public CommunityReferenceDto getResponsibleCommunity() {
+			return responsibleCommunity;
 		}
 
 		public RegionReferenceDto getRegion() {

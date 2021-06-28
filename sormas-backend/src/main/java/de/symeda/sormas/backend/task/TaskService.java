@@ -417,8 +417,13 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			if (assignee == null && contact.getPerson().getAddress().getDistrict() != null) {
 				assignee = lookupByDistrict.apply(contact.getPerson().getAddress().getDistrict());
 			}
-			if (assignee == null && contact.getCaze() != null && contact.getCaze().getDistrict() != null) {
-				assignee = lookupByDistrict.apply(contact.getCaze().getDistrict());
+			Case contactCase = contact.getCaze();
+			if (assignee == null && contactCase != null) {
+				assignee = lookupByDistrict.apply(contactCase.getResponsibleDistrict());
+
+				if (assignee == null && contactCase.getDistrict() != null) {
+					assignee = lookupByDistrict.apply(contactCase.getDistrict());
+				}
 			}
 		}
 
@@ -431,12 +436,15 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			if (assignee == null && contact.getPerson().getAddress().getRegion() != null) {
 				assignee = lookupByRegion.apply(contact.getPerson().getAddress().getRegion());
 			}
-			if (assignee == null && contact.getCaze() != null && contact.getCaze().getResponsibleRegion() != null) {
-				assignee = lookupByRegion.apply(contact.getCaze().getResponsibleRegion());
+			Case contactCase = contact.getCaze();
+			if (assignee == null && contactCase != null) {
+				assignee = lookupByRegion.apply(contactCase.getResponsibleRegion());
+
+				if (assignee == null && contactCase.getRegion() != null) {
+					assignee = lookupByRegion.apply(contactCase.getRegion());
+				}
 			}
-			if (assignee == null && contact.getCaze() != null && contact.getCaze().getRegion() != null) {
-				assignee = lookupByRegion.apply(contact.getCaze().getRegion());
-			}
+
 			if (assignee == null) {
 				throw new TaskCreationException("Contact has not contact officer and no region - can't create follow-up task: " + contact.getUuid());
 			}
