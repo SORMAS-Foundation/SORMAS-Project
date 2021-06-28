@@ -47,7 +47,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +87,6 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
-import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
@@ -102,15 +100,12 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventJoins;
 
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
@@ -206,7 +201,8 @@ public class TaskFacadeEjb implements TaskFacade {
 			target.setEvent(null);
 		}
 
-		target.setLabCertificate(labCertificateFacadeEjb.fromDto(source.getLabCertificateDto()));
+		target.setLabCertificate(labCertificateFacadeEjb.fromDto(source.getLabCertificate(), false));
+		target.getLabCertificate().setTask(target);
 
 		return target;
 	}
@@ -256,7 +252,10 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 		});
 
-		target.setLabCertificateDto(labCertificateFacadeEjb.toDto(source.getLabCertificate()));
+		if(source.getLabCertificate() != null){
+			target.setLabCertificate(labCertificateFacadeEjb.toDto(source.getLabCertificate(), false));
+			target.getLabCertificate().setTask(target);
+		}
 
 		return target;
 	}

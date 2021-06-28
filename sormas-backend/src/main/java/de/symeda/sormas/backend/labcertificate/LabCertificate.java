@@ -1,3 +1,5 @@
+
+
 package de.symeda.sormas.backend.labcertificate;
 
 import de.symeda.auditlog.api.Audited;
@@ -7,13 +9,14 @@ import de.symeda.sormas.backend.task.Task;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
-@Entity
+@Entity(name = "labcertificate")
 @Audited
 public class LabCertificate extends AbstractDomainObject {
 
@@ -63,7 +66,10 @@ public class LabCertificate extends AbstractDomainObject {
   private boolean otherFacility;
   private boolean agreedToGdpr;
   private String specialAgreementCode;
+
+
   private Facility healthDepartment;
+
   private Task task;
 
   @Column(length = COLUMN_LENGTH_DEFAULT)
@@ -274,7 +280,9 @@ public class LabCertificate extends AbstractDomainObject {
     this.healthDepartment = healthDepartment;
   }
 
-  @OneToOne(mappedBy = "labcertificate")
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "task_id", referencedColumnName = "id")
   public Task getTask() {
     return task;
   }

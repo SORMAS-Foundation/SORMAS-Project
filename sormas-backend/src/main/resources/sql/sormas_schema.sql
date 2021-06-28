@@ -7433,65 +7433,49 @@ ALTER TABLE cases ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
 ALTER TABLE cases_history ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (377, 'Add a checkbox to avoid sending this case to SurvNet #5324');
--- 2020-03-02 Add fields to facility
+
+
+-- 2021-02-16 - Added a new entity Labcertificate and extended the facility entity #5318
+CREATE TABLE labcertificate(
+   id bigint not null,
+   uuid varchar(36) not null unique,
+   changedate timestamp not null,
+   creationdate timestamp not null,
+   labcertificateguid varchar(255) not null,
+   payernumber varchar(255),
+   doctornumber varchar(255),
+   operatingfacilitynumber varchar(255),
+   labnumber varchar(255),
+   testv boolean,
+   selfpaying boolean,
+   specialagreement boolean,
+   firsttest boolean,
+   nexttest boolean,
+   contactperson boolean,
+   coronaapp boolean,
+   outbreak boolean,
+   outbreakprevention boolean,
+   workinginfacility boolean,
+   livinginfacility boolean,
+   medicalfacility boolean,
+   communityfacility boolean,
+   carefacility boolean,
+   otherfacility boolean,
+   agreedtogdpr boolean,
+   specialagreementcode varchar(255),
+   healthdepartment_id bigint,
+   task_id bigint,
+
+   primary key(id)
+);
+
 ALTER TABLE facility ADD COLUMN department varchar(255);
 ALTER TABLE facility ADD COLUMN sector varchar(255);
 ALTER TABLE facility ADD COLUMN drName varchar(255);
 ALTER TABLE facility ADD COLUMN street varchar(255);
-ALTER TABLE facility ADD COLUMN houseNo varchar(255);
-ALTER TABLE facility ADD COLUMN postalCode varchar(255);
 ALTER TABLE facility ADD COLUMN telNo varchar(255);
 ALTER TABLE facility ADD COLUMN faxNo varchar(255);
 
--- 2020-03-03 Add fields to task
-ALTER TABLE task ADD COLUMN labCertificateGuid varchar(255);
-ALTER TABLE task ADD COLUMN payerNumber varchar(255);
-ALTER TABLE task ADD COLUMN doctorNumber varchar(255);
-ALTER TABLE task ADD COLUMN operatingFacilityNumber varchar(255);
-ALTER TABLE task ADD COLUMN labNumber varchar(255);
-ALTER TABLE task ADD COLUMN testV boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN selfPaying boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN specialAgreement boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN firstTest boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN nextTest boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN contactPerson boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN coronaApp boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN outbreak boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN outbreakPrevention boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN workingInFacility boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN livingInFacility boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN medicalFacility boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN communityFacility boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN careFacility boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN otherFacility boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN agreedToGdpr boolean DEFAULT false;
-ALTER TABLE task ADD COLUMN specialAgreementCode varchar(255);
-ALTER TABLE task ADD COLUMN healthdepartment_id bigint;
-
-ALTER TABLE task_history ADD COLUMN labCertificateGuid varchar(255);
-ALTER TABLE task_history ADD COLUMN payerNumber varchar(255);
-ALTER TABLE task_history ADD COLUMN doctorNumber varchar(255);
-ALTER TABLE task_history ADD COLUMN operatingFacilityNumber varchar(255);
-ALTER TABLE task_history ADD COLUMN labNumber varchar(255);
-ALTER TABLE task_history ADD COLUMN testV boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN selfPaying boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN specialAgreement boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN firstTest boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN nextTest boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN contactPerson boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN coronaApp boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN outbreak boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN outbreakPrevention boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN workingInFacility boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN livingInFacility boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN medicalFacility boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN communityFacility boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN careFacility boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN otherFacility boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN agreedToGdpr boolean DEFAULT false;
-ALTER TABLE task_history ADD COLUMN specialAgreementCode varchar(255);
-ALTER TABLE task_history ADD COLUMN healthdepartment_id bigint;
-
-INSERT INTO schema_version (version_number, comment) VALUES (360, 'Add fields to task and facility');
+INSERT INTO schema_version (version_number, comment) VALUES (378, 'Added new entity for lab certificates and new fields for facility');
 
 -- *** Insert new sql commands BEFORE this line ***

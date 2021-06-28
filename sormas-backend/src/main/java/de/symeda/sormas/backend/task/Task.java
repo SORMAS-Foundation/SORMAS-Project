@@ -275,8 +275,9 @@ public class Task extends AbstractDomainObject {
 		this.archived = archived;
 	}
 
-	@OneToOne(cascade = {})
-	@JoinColumn(name = "taskid", referencedColumnName = "id")
+	@OneToOne(fetch = FetchType.LAZY,
+			cascade = CascadeType.ALL,
+			mappedBy = "task")
 	public LabCertificate getLabCertificate() {
 		return labCertificate;
 	}

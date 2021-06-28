@@ -60,9 +60,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 public class TaskController {
 
@@ -426,29 +424,29 @@ public class TaskController {
 			staPerson.setPlz(person.getAddress().getPostalCode());
 			staPerson.setDatumGeb(new SimpleDateFormat("dd.MM.yyyy").parse(person.getBirthdateDD() + "." + person.getBirthdateMM() + "." + person.getBirthdateYYYY()));
 			staPerson.setOrt(person.getAddress().getCity());
-			staPerson.setKostentraeger(task.getPayerNumber());
-			staPerson.setBetriebsSt(task.getOperatingFacilityNumber());
-			staPerson.setArztNr(task.getDoctorNumber());
+			staPerson.setKostentraeger(task.getLabCertificate().getPayerNumber());
+			staPerson.setBetriebsSt(task.getLabCertificate().getOperatingFacilityNumber());
+			staPerson.setArztNr(task.getLabCertificate().getDoctorNumber());
 			staPerson.setAusstellungsDatum(new Date());
-			staPerson.setErsttest(task.isFirstTest());
-			staPerson.setWeitererTest(task.isNextTest());
-			staPerson.setTaetigkeit(task.isWorkingInFacility());
-			staPerson.setGemeinschaft(task.isCommunityFacility());
-			staPerson.setBetraut(task.isLivingInFacility());
-			staPerson.setVerbreitung(task.isOutbreakPrevention());
-			staPerson.setWohneinrichtung(task.isCareFacility());
+			staPerson.setErsttest(task.getLabCertificate().isFirstTest());
+			staPerson.setWeitererTest(task.getLabCertificate().isNextTest());
+			staPerson.setTaetigkeit(task.getLabCertificate().isWorkingInFacility());
+			staPerson.setGemeinschaft(task.getLabCertificate().isCommunityFacility());
+			staPerson.setBetraut(task.getLabCertificate().isLivingInFacility());
+			staPerson.setVerbreitung(task.getLabCertificate().isOutbreakPrevention());
+			staPerson.setWohneinrichtung(task.getLabCertificate().isCareFacility());
 			staPerson.setTel(person.getPhone());
-			staPerson.setRvo(task.isTestV());
-			staPerson.setRisikoApp(task.isCoronaApp());
-			staPerson.setZustimmung(task.isAgreedToGdpr());
-			staPerson.setLabNr(task.getLabNumber());
-			staPerson.setKontaktPerson(task.isContactPerson());
-			staPerson.setSelbstzahler(task.isSelfPaying());
-			staPerson.setRegionalziffer(task.getSpecialAgreementCode());
-			staPerson.setRegional(task.isSpecialAgreement());
-			staPerson.setAusbruch(task.isOutbreak());
-			staPerson.setMedeinrichtung(task.isMedicalFacility());
-			staPerson.setSonstige(task.isOtherFacility());
+			staPerson.setRvo(task.getLabCertificate().isTestV());
+			staPerson.setRisikoApp(task.getLabCertificate().isCoronaApp());
+			staPerson.setZustimmung(task.getLabCertificate().isAgreedToGdpr());
+			staPerson.setLabNr(task.getLabCertificate().getLabNumber());
+			staPerson.setKontaktPerson(task.getLabCertificate().isContactPerson());
+			staPerson.setSelbstzahler(task.getLabCertificate().isSelfPaying());
+			staPerson.setRegionalziffer(task.getLabCertificate().getSpecialAgreementCode());
+			staPerson.setRegional(task.getLabCertificate().isSpecialAgreement());
+			staPerson.setAusbruch(task.getLabCertificate().isOutbreak());
+			staPerson.setMedeinrichtung(task.getLabCertificate().isMedicalFacility());
+			staPerson.setSonstige(task.getLabCertificate().isOtherFacility());
 
 			switch(person.getSex()){
 				case MALE:
@@ -464,18 +462,18 @@ public class TaskController {
 					staPerson.setGeschlecht("U");
 			}
 
-			FacilityDto healthDepartment = FacadeProvider.getFacilityFacade().getByUuid(task.getHealthDepartment().getUuid());
+			FacilityDto healthDepartment = FacadeProvider.getFacilityFacade().getByUuid(task.getLabCertificate().getHealthDepartment().getUuid());
 			GesundheitsamtDto ga = new GesundheitsamtDto();
 			ga.setOrt(healthDepartment.getPostalCode() + " " + healthDepartment.getCity());
 			ga.setAmt(healthDepartment.getDepartment());
 			ga.setBereich(healthDepartment.getSector());
 			ga.setArzt(healthDepartment.getDrName());
-			ga.setStr(healthDepartment.getStreet() + " " + healthDepartment.getHouseNo());
+			ga.setStr(healthDepartment.getStreet() + " " + healthDepartment.getHouseNumber());
 			ga.setPlz(healthDepartment.getPostalCode());
 			ga.setTel(healthDepartment.getTelNo());
 			ga.setFax(healthDepartment.getFaxNo());
 
-			String guid = task.getLabCertificateGuid();
+			String guid = task.getLabCertificate().getLabCertificateGuid();
 
 			String path = FacadeProvider.getConfigFacade().getTempFilesPath() + guid + File.separator;
 			Generator generator = new Generator(staPerson, ga, guid);

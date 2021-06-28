@@ -20,7 +20,10 @@ package de.symeda.sormas.backend.facility;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -101,7 +104,8 @@ public class Facility extends InfrastructureAdo {
 	private String houseNo;
 	private String telNo;
 	private String faxNo;
-	private List<Task> tasks;
+
+	private List<LabCertificate> labCertificates;
 
 	public String getName() {
 		return name;
@@ -325,12 +329,12 @@ public class Facility extends InfrastructureAdo {
 	}
 
 	@OneToMany(mappedBy = LabCertificate.HEALTH_DEPARTMENT, fetch = FetchType.LAZY)
-	public List<Task> getTasks() {
-		return tasks;
+	public List<LabCertificate> getLabCertificates() {
+		return labCertificates;
 	}
 
-	public void setTasks(List<Task> tasks) {
-		this.tasks = tasks;
+	public void setLabCertificates(List<LabCertificate> labCertificates) {
+		this.labCertificates = labCertificates;
 	}
 
 	@Override

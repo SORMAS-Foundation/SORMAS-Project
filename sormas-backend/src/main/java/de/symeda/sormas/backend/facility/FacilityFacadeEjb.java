@@ -417,7 +417,6 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		dto.setSector(entity.getSector());
 		dto.setDrName(entity.getDrName());
 		dto.setStreet(entity.getStreet());
-		dto.setHouseNo(entity.getHouseNo());
 		dto.setPostalCode(entity.getPostalCode());
 		dto.setTelNo(entity.getTelNo());
 		dto.setFaxNo(entity.getFaxNo());
@@ -669,8 +668,6 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		target.setSector(source.getSector());
 		target.setDrName(source.getDrName());
 		target.setStreet(source.getStreet());
-		target.setHouseNo(source.getHouseNo());
-		target.setPostalCode(source.getPostalCode());
 		target.setTelNo(source.getTelNo());
 		target.setFaxNo(source.getFaxNo());
 

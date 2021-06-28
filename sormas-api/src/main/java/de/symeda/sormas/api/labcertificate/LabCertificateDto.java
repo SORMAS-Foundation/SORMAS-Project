@@ -2,6 +2,8 @@ package de.symeda.sormas.api.labcertificate;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class LabCertificateDto extends EntityDto {
   public static final String LABCERTIFICATEGUID = "labCertificateGuid";
@@ -51,6 +53,14 @@ public class LabCertificateDto extends EntityDto {
   private boolean agreedToGdpr;
   private String specialAgreementCode;
   private FacilityReferenceDto healthDepartment;
+  private TaskDto task;
+
+  public static LabCertificateDto build(TaskDto task){
+    LabCertificateDto labCertificateDto = new LabCertificateDto();
+    labCertificateDto.setUuid(DataHelper.createUuid());
+    labCertificateDto.setTask(task);
+    return labCertificateDto;
+  }
 
   public String getLabCertificateGuid() {
     return labCertificateGuid;
@@ -234,5 +244,13 @@ public class LabCertificateDto extends EntityDto {
 
   public void setHealthDepartment(FacilityReferenceDto healthDepartment) {
     this.healthDepartment = healthDepartment;
+  }
+
+  public TaskDto getTask() {
+    return task;
+  }
+
+  public void setTask(TaskDto task) {
+    this.task = task;
   }
 }

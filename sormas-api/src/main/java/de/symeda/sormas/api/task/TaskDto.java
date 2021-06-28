@@ -281,11 +281,11 @@ public class TaskDto extends EntityDto {
 		this.closedLatLonAccuracy = closedLatLonAccuracy;
 	}
 
-	public LabCertificateDto getLabCertificateDto() {
+	public LabCertificateDto getLabCertificate() {
 		return labCertificate;
 	}
 
-	public void setLabCertificateDto(LabCertificateDto labCertificateDto) {
+	public void setLabCertificate(LabCertificateDto labCertificateDto) {
 		this.labCertificate = labCertificateDto;
 	}
 }

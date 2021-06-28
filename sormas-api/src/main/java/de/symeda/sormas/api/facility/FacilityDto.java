@@ -90,7 +90,6 @@ public class FacilityDto extends EntityDto {
 	private String department;
 	private String sector;
 	private String drName;
-	private String houseNo;
 	private String telNo;
 	private String faxNo;
 
@@ -344,14 +343,6 @@ public class FacilityDto extends EntityDto {
 
 	public void setDrName(String drName) {
 		this.drName = drName;
-	}
-
-	public String getHouseNo() {
-		return houseNo;
-	}
-
-	public void setHouseNo(String houseNo) {
-		this.houseNo = houseNo;
 	}
 
 	public String getTelNo() {
