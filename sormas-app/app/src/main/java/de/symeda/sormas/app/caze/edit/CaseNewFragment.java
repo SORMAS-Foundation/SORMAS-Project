@@ -42,6 +42,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentCaseNewLayoutBinding;
@@ -66,6 +67,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 	private List<Item> plagueTypeList;
 	private List<Item> dengueFeverTypeList;
 	private List<Item> rabiesTypeList;
+	private List<Item> initialResponsibleDistricts;
+	private List<Item> initialResponsibleCommunities;
 	private List<Item> initialRegions;
 	private List<Item> initialDistricts;
 	private List<Item> initialCommunities;
@@ -118,6 +121,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		sexList = DataUtils.getEnumItems(Sex.class, true);
 		presentConditionList = DataUtils.getEnumItems(PresentCondition.class, true);
 
+		initialResponsibleDistricts = InfrastructureDaoHelper.loadDistricts(record.getResponsibleRegion());
+		initialResponsibleCommunities = InfrastructureDaoHelper.loadCommunities(record.getResponsibleDistrict());
 		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
 		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getDistrict());
@@ -138,6 +143,32 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 
 		contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
 		contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
+
+		Facility initialHealthFacility = record.getHealthFacility();
+
+		InfrastructureDaoHelper.initializeRegionFields(
+			contentBinding.caseDataResponsibleRegion,
+			initialRegions,
+			record.getResponsibleRegion(),
+			contentBinding.caseDataResponsibleDistrict,
+			initialResponsibleDistricts,
+			record.getResponsibleDistrict(),
+			contentBinding.caseDataResponsibleCommunity,
+			initialResponsibleCommunities,
+			record.getResponsibleCommunity());
+
+		InfrastructureDaoHelper.initializeRegionFieldListeners(
+			contentBinding.caseDataResponsibleRegion,
+			contentBinding.caseDataResponsibleDistrict,
+			record.getResponsibleDistrict(),
+			contentBinding.caseDataResponsibleCommunity,
+			record.getResponsibleCommunity(),
+			contentBinding.caseDataFacilityType,
+			contentBinding.caseDataHealthFacility,
+			initialHealthFacility,
+			null,
+			null,
+			() -> Boolean.TRUE.equals(contentBinding.caseDataDifferentPlaceOfStayJurisdiction.getValue()));
 
 		InfrastructureDaoHelper.initializeFacilityFields(
 			record,
@@ -163,7 +194,20 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.caseDataPointOfEntry,
 			initialPointsOfEntry,
 			record.getPointOfEntry(),
-			false);
+			false,
+			() -> Boolean.FALSE.equals(contentBinding.caseDataDifferentPlaceOfStayJurisdiction.getValue()));
+
+		// trigger responsible jurisdiction change handlers removing place of stay region/district/community
+		contentBinding.caseDataDifferentPlaceOfStayJurisdiction.addValueChangedListener(f -> {
+			if (Boolean.FALSE.equals(f.getValue())) {
+				InfrastructureDaoHelper.handleCommunityChange(
+						contentBinding.caseDataResponsibleCommunity,
+						contentBinding.caseDataResponsibleDistrict,
+						contentBinding.caseDataHealthFacility,
+						contentBinding.caseDataFacilityType,
+						initialHealthFacility);
+			}
+		});
 
 		contentBinding.caseDataDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
 		contentBinding.caseDataDisease.addValueChangedListener(e -> {
@@ -205,7 +249,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			if (e.getValue() == TypeOfPlace.FACILITY) {
 				contentBinding.facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				contentBinding.caseDataFacilityType.setValue(FacilityType.HOSPITAL);
-			} else if (e.getValue() == TypeOfPlace.HOME){
+			} else if (e.getValue() == TypeOfPlace.HOME) {
 				contentBinding.caseDataHealthFacility.setValue(TypeOfPlace.HOME);
 			}
 		});
@@ -227,10 +271,10 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.caseDataEpidNumber.setVisibility(GONE);
 		}
 
-		contentBinding.caseDataRegion.setEnabled(false);
-		contentBinding.caseDataRegion.setRequired(false);
-		contentBinding.caseDataDistrict.setEnabled(false);
-		contentBinding.caseDataDistrict.setRequired(false);
+		contentBinding.caseDataResponsibleRegion.setEnabled(false);
+		contentBinding.caseDataResponsibleRegion.setRequired(false);
+		contentBinding.caseDataResponsibleDistrict.setEnabled(false);
+		contentBinding.caseDataResponsibleDistrict.setRequired(false);
 
 		User user = ConfigProvider.getUser();
 
@@ -333,6 +377,9 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		setLiveValidationDisabled(true);
 
 		record = getActivityRootData();
+		record.setResponsibleRegion(lastCase.getResponsibleRegion());
+		record.setResponsibleDistrict(lastCase.getResponsibleDistrict());
+		record.setResponsibleCommunity(lastCase.getResponsibleCommunity());
 		record.setRegion(lastCase.getRegion());
 		record.setDistrict(lastCase.getDistrict());
 		record.setCommunity(lastCase.getCommunity());

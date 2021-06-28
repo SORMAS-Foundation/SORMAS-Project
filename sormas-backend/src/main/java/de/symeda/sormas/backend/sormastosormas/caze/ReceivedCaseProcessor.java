@@ -50,7 +50,8 @@ import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessorHelper.Infra
 
 @Stateless
 @LocalBean
-public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData, SormasToSormasCasePreview> {
+public class ReceivedCaseProcessor
+	implements ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData, SormasToSormasCasePreview> {
 
 	@EJB
 	private ReceivedDataProcessorHelper dataProcessorHelper;
@@ -152,17 +153,12 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 		caze.setPerson(person.toReference());
 		dataProcessorHelper.updateReportingUser(caze, existingCaseData);
 
-		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
-			caze.getRegion(),
-			caze.getDistrict(),
-			caze.getCommunity(),
-			caze.getFacilityType(),
-			caze.getHealthFacility(),
-			caze.getHealthFacilityDetails(),
-			caze.getPointOfEntry(),
-			caze.getPointOfEntryDetails());
+		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(caze);
 
 		dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
+			caze.setResponsibleRegion(infrastructureData.getResponsibleRegion());
+			caze.setResponsibleDistrict(infrastructureData.getResponsibleDistrict());
+			caze.setResponsibleCommunity(infrastructureData.getResponsibleCommunity());
 			caze.setRegion(infrastructureData.getRegion());
 			caze.setDistrict(infrastructureData.getDistrict());
 			caze.setCommunity(infrastructureData.getCommunity());

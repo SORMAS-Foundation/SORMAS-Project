@@ -35,4 +35,17 @@ public class CaseDirectoryPage {
   public static final By CASE_RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
   public static final String CASE_RESULTS_UUID_LOCATOR = "[title = '%s']";
   public static final By CASE_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
+  public static final By LINE_LISTING_BUTTON = By.id("lineListing");
+  public static final By GRID_RESULTS_DISEASE =
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(5)");
+  public static final By GRID_RESULTS_FIRST_NAME =
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(10)");
+  public static final By GRID_RESULTS_LAST_NAME =
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(11)");
+  public static final By GRID_RESULTS_DISTRICT =
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(12)");
+  public static final By GRID_RESULTS_HEALTH_FACILITY =
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(13)");
+  public static final By GRID_RESULTS_DATE_OF_REPORT =
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(15)");
 }

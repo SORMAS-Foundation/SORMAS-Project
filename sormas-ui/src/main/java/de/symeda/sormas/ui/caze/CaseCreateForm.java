@@ -19,6 +19,9 @@ package de.symeda.sormas.ui.caze;
 
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
@@ -35,6 +38,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.google.common.collect.Sets;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -77,6 +81,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
@@ -87,11 +92,15 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String FACILITY_TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String DONT_SHARE_WARNING_LOC = "dontShareWithReportingToolWarnLoc";
+	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
+	private static final String DIFFERENT_PLACE_OF_STAY_JURISDICTION = "differentPlaceOfStayJurisdiction";
+	private static final String PLACE_OF_STAY_HEADING_LOC = "placeOfStayHeadingLoc";
 
 	private ComboBox birthDateDay;
 	private NullableOptionGroup facilityOrHome;
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
+	private CheckBox differentPlaceOfStayJurisdiction;
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
@@ -101,14 +110,18 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					fluidColumn(6, 0,
 							locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE,
 									CaseDataDto.RABIES_TYPE)),
-					fluidColumnLoc(6, 0, CaseDataDto.DISEASE_VARIANT))
+					fluidColumnLoc(6, 0, CaseDataDto.DISEASE_VARIANT)) +
+			fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
+			+ fluidRowLocs(CaseDataDto.RESPONSIBLE_REGION, CaseDataDto.RESPONSIBLE_DISTRICT, CaseDataDto.RESPONSIBLE_COMMUNITY)
+			+ fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL)
+			+ fluidRowLocs(DONT_SHARE_WARNING_LOC)
+			+ fluidRowLocs(DIFFERENT_PLACE_OF_STAY_JURISDICTION)
+			+ fluidRowLocs(PLACE_OF_STAY_HEADING_LOC)
 			+ fluidRowLocs(FACILITY_OR_HOME_LOC)
 			+ fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY)
 			+ fluidRowLocs(FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE)
 			+ fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS)
 			+ fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
-			+ fluidRowLocs(CaseDataDto.DONT_SHARE_WITH_REPORTING_TOOL)
-			+ fluidRowLocs(DONT_SHARE_WARNING_LOC)
 			+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
 			+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 			fluidRowLocs(PersonDto.SEX))
@@ -223,10 +236,27 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		phone.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, phone.getCaption())));
 		email.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, email.getCaption())));
 
+		differentPlaceOfStayJurisdiction = addCustomField(DIFFERENT_PLACE_OF_STAY_JURISDICTION, Boolean.class, CheckBox.class);
+		differentPlaceOfStayJurisdiction.addStyleName(VSPACE_3);
+
+		Label placeOfStayHeadingLabel = new Label(I18nProperties.getCaption(Captions.casePlaceOfStay));
+		placeOfStayHeadingLabel.addStyleName(H3);
+		getContent().addComponent(placeOfStayHeadingLabel, PLACE_OF_STAY_HEADING_LOC);
+
 		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
 		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
+
+		FieldHelper.setVisibleWhen(
+			differentPlaceOfStayJurisdiction,
+			Arrays.asList(region, district, community),
+			Collections.singletonList(Boolean.TRUE),
+			true);
+
+		FieldHelper
+			.setRequiredWhen(differentPlaceOfStayJurisdiction, Arrays.asList(region, district), Collections.singletonList(Boolean.TRUE), false, null);
+
 		facilityOrHome =
 			addCustomField(FACILITY_OR_HOME_LOC, TypeOfPlace.class, NullableOptionGroup.class, I18nProperties.getCaption(Captions.casePlaceOfStay));
 		facilityOrHome.removeAllItems();
@@ -397,6 +427,53 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			});
 		}
 
+		// jurisdiction fields
+		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingCaseResponsibleJurisidction));
+		jurisdictionHeadingLabel.addStyleName(H3);
+		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
+
+		ComboBox responsibleRegion = addField(CaseDataDto.RESPONSIBLE_REGION);
+		responsibleRegion.setRequired(true);
+		ComboBox responsibleDistrict = addField(CaseDataDto.RESPONSIBLE_DISTRICT);
+		responsibleDistrict.setRequired(true);
+		ComboBox responsibleCommunity = addField(CaseDataDto.RESPONSIBLE_COMMUNITY);
+		responsibleCommunity.setNullSelectionAllowed(true);
+		responsibleCommunity.addStyleName(SOFT_REQUIRED);
+
+		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
+
+		responsibleDistrict.addValueChangeListener(e -> {
+			Boolean differentPlaceOfStay = differentPlaceOfStayJurisdiction.getValue();
+			if (differentPlaceOfStay == null || Boolean.FALSE.equals(differentPlaceOfStay)) {
+				updateFacility(
+					(DistrictReferenceDto) responsibleDistrict.getValue(),
+					(CommunityReferenceDto) responsibleCommunity.getValue(),
+					facility);
+			}
+		});
+		responsibleCommunity.addValueChangeListener((e) -> {
+			Boolean differentPlaceOfStay = differentPlaceOfStayJurisdiction.getValue();
+			if (differentPlaceOfStay == null || Boolean.FALSE.equals(differentPlaceOfStay)) {
+				updateFacility(
+					(DistrictReferenceDto) responsibleDistrict.getValue(),
+					(CommunityReferenceDto) responsibleCommunity.getValue(),
+					facility);
+			}
+		});
+
+		differentPlaceOfStayJurisdiction.addValueChangeListener(e -> {
+			Boolean differentPlaceOfStay = (Boolean) e.getProperty().getValue();
+			if (differentPlaceOfStay) {
+				updateFacility((DistrictReferenceDto) district.getValue(), (CommunityReferenceDto) community.getValue(), facility);
+
+			} else {
+				updateFacility(
+					(DistrictReferenceDto) responsibleDistrict.getValue(),
+					(CommunityReferenceDto) responsibleCommunity.getValue(),
+					facility);
+			}
+		});
+
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 
@@ -407,8 +484,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			PersonDto.LAST_NAME,
 			CaseDataDto.DISEASE,
 			PersonDto.SEX,
-			CaseDataDto.REGION,
-			CaseDataDto.DISTRICT,
 			FACILITY_OR_HOME_LOC,
 			FACILITY_TYPE_GROUP_LOC,
 			CaseDataDto.FACILITY_TYPE);

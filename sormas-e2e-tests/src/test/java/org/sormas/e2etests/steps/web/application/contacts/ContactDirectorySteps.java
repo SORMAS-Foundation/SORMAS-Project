@@ -73,6 +73,9 @@ public class ContactDirectorySteps implements En {
                 CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT,
                 dataOperations.getPartialUuidFromAssociatedLink(
                     apiState.getCreatedContact().getUuid())));
+     When(      
+        "^I click on Line Listing button$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING));
 
     When(
         "I open the last created contact",

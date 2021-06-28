@@ -230,7 +230,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 	}
 
 	protected Stream<String> getJurisdictionColumns() {
-		return Stream.of(CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME);
+		return Stream.of(CaseIndexDto.RESPONSIBLE_DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME);
 	}
 
 	protected Stream<String> getReinfectionColumn() {

@@ -22,15 +22,15 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
-import de.symeda.sormas.backend.contact.ContactJoins;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.event.EventParticipantJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.event.EventParticipantQueryContext;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventParticipantJoins;
+import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
 public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
@@ -43,15 +43,25 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
         this.currentUser = currentUser;
     }
 
-	public static SampleJurisdictionPredicateValidator of(CriteriaBuilder cb, SampleJoins<?> joins, User currentUser) {
+	public static SampleJurisdictionPredicateValidator of(SampleQueryContext qc, User currentUser) {
 		final List<PredicateJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
 
-		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(cb, new CaseJoins<>(joins.getCaze()), currentUser));
-		associatedJurisdictionValidators.add(ContactJurisdictionPredicateValidator.of(cb, new ContactJoins<>(joins.getContact()), currentUser));
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+		final SampleJoins joins = (SampleJoins) qc.getJoins();
+
 		associatedJurisdictionValidators
-			.add(EventParticipantJurisdictionPredicateValidator.of(cb, new EventParticipantJoins(joins.getEventParticipant()), currentUser));
+			.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze()), currentUser));
+		associatedJurisdictionValidators
+			.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, qc.getQuery(), joins.getContact()), currentUser));
+		associatedJurisdictionValidators.add(
+			EventParticipantJurisdictionPredicateValidator
+				.of(new EventParticipantQueryContext(cb, qc.getQuery(), joins.getEventParticipant()), currentUser));
 
 		return new SampleJurisdictionPredicateValidator(cb, joins, currentUser, associatedJurisdictionValidators);
+	}
+
+	public static SampleJurisdictionPredicateValidator withoutAssociations(CriteriaBuilder cb, SampleJoins<?> joins, User currentUser) {
+		return new SampleJurisdictionPredicateValidator(cb, joins, currentUser, null);
 	}
 
 	@Override
