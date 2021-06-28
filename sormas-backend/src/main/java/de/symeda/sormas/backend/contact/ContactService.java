@@ -1345,11 +1345,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Root<Contact> root = cq.from(Contact.class);
 		cq.multiselect(getJurisdictionSelections(new ContactQueryContext(cb, cq, root)));
 		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
-
-		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {
+
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		final ContactJoins joins = (ContactJoins) qc.getJoins();
 		return Arrays.asList(

@@ -1601,13 +1601,12 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CriteriaQuery<SimilarContactDto> cq = cb.createQuery(SimilarContactDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
 
-
 		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contactRoot);
 		ContactJoins<Contact> joins = (ContactJoins<Contact>) contactQueryContext.getJoins();
 
 		List<Selection<?>> selections = new ArrayList<>(
-				Arrays.asList(
-			joins.getPerson().get(Person.FIRST_NAME),
+			Arrays.asList(
+				joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			contactRoot.get(Contact.UUID),
 			joins.getCaze().get(Case.UUID),

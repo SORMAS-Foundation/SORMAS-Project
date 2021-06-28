@@ -398,18 +398,17 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	}
 
 	public SampleJurisdictionFlagsDto inJurisdictionOrOwned(Sample sample) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleJurisdictionFlagsDto> cq = cb.createQuery(SampleJurisdictionFlagsDto.class);
 		Root<Sample> root = cq.from(Sample.class);
-
 		cq.multiselect(getJurisdictionSelections(new SampleQueryContext(cb, cq, root)));
-
 		cq.where(cb.equal(root.get(Sample.UUID), sample.getUuid()));
-
-		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(SampleQueryContext qc) {
+
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		SampleJoins joins = (SampleJoins) qc.getJoins();
 		CriteriaQuery cq = qc.getQuery();

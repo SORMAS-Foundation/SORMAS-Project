@@ -864,6 +864,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	public boolean inJurisdiction(Event event) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Event> root = cq.from(Event.class);
@@ -873,12 +874,13 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	public boolean inJurisdictionOrOwned(Event event) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Event> root = cq.from(Event.class);
 		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new EventQueryContext(cb, cq, root))));
 		cq.where(cb.equal(root.get(Event.UUID), event.getUuid()));
-		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public Predicate inJurisdiction(EventQueryContext qc) {

@@ -479,7 +479,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		Root<Task> root = cq.from(Task.class);
 		cq.multiselect(getJurisdictionSelections(new TaskQueryContext(cb, cq, root)));
 		cq.where(cb.equal(root.get(Task.UUID), task.getUuid()));
-		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(TaskQueryContext qc) {

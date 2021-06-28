@@ -420,7 +420,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Root<EventParticipant> root = cq.from(EventParticipant.class);
 		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, root))));
 		cq.where(cb.equal(root.get(EventParticipant.UUID), eventParticipant.getUuid()));
-		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public boolean inJurisdiction(EventParticipant eventParticipant) {
@@ -429,7 +429,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Root<EventParticipant> root = cq.from(EventParticipant.class);
 		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdiction(new EventParticipantQueryContext(cb, cq, root))));
 		cq.where(cb.equal(root.get(EventParticipant.UUID), eventParticipant.getUuid()));
-		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public Predicate inJurisdiction(EventParticipantQueryContext qc) {

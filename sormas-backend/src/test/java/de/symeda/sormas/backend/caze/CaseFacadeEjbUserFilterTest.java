@@ -191,9 +191,11 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			s.setComment("Test comment");
 		});
 
-		createCase(rdcf2, nationalUser);
+		CaseDataDto aCase = createCase(rdcf2, nationalUser);
 
 		loginWith(labUser);
+
+		CaseDataDto caseDataByUuid = getCaseFacade().getCaseDataByUuid(aCase.getUuid());
 
 		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, null);
 		assertThat(indexList, hasSize(1));
