@@ -53,7 +53,6 @@ public class EventActionsTableSteps implements En {
     Then(
         "I search last created Event by API using EVENT UUID and wait for (\\d+) entries in the table",
         (Integer expectedEntries) -> {
-          // webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILTER_BY_GENERAL_INPUT);
           webDriverHelpers.fillAndSubmitInWebElement(
               FILTER_BY_GENERAL_INPUT,
               getPartialUuidFromAssociatedLink(apiState.getCreatedEvent().getUuid()));
