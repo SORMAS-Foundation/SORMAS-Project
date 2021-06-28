@@ -57,7 +57,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		return labMessageService.getByUuid(labMessageRef.getUuid()).getTestReports().stream().map(t -> toDto(t)).collect(Collectors.toList());
 	}
 
-	private static TestReportDto toDto(TestReport source) {
+	public static TestReportDto toDto(TestReport source) {
 		if (source == null) {
 			return null;
 		}
@@ -82,7 +82,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		return target;
 	}
 
-	private TestReport fromDto(@NotNull TestReportDto source, boolean checkChangeDate) {
+	public TestReport fromDto(@NotNull TestReportDto source, boolean checkChangeDate) {
 		TestReport target = DtoHelper.fillOrBuildEntity(source, testReportService.getByUuid(source.getUuid()), TestReport::new, checkChangeDate);
 
 		target.setLabMessage(labMessageService.getByReferenceDto(source.getLabMessage()));
