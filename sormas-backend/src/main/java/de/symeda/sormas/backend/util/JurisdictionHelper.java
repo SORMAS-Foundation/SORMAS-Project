@@ -74,7 +74,7 @@ public class JurisdictionHelper {
 		return regions;
 	}
 
-	public static Expression<Object> jurisdictionSelector(CriteriaBuilder cb, Predicate jurisdictionPredicate) {
+	public static Expression<Object> booleanSelector(CriteriaBuilder cb, Predicate jurisdictionPredicate) {
 		return cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false));
 	}
 }

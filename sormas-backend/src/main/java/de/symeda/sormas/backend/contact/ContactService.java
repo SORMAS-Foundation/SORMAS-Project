@@ -817,7 +817,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				if (contact.getFollowUpStatus() != FollowUpStatus.COMPLETED && contact.getContactStatus() == ContactStatus.CONVERTED) {
 					// Cancel follow-up if the contact was converted to a case
 					contact.setFollowUpStatus(FollowUpStatus.CANCELED);
-					contact.setFollowUpComment(I18nProperties.getString(Strings.messageSystemFollowUpCanceled));
+					addToFollowUpStatusComment(contact, I18nProperties.getString(Strings.messageSystemFollowUpCanceled));
 				}
 				statusChangedBySystem = true;
 			}
@@ -836,9 +836,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	public void cancelFollowUp(Contact contact, String comment) {
 		contact.setFollowUpStatus(FollowUpStatus.CANCELED);
-		contact.setFollowUpComment(comment);
+		addToFollowUpStatusComment(contact, comment);
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		ensurePersisted(contact);
+	}
+
+	private void addToFollowUpStatusComment(Contact contact, String comment) {
+		String followUpComment = DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment);
+		contact.setFollowUpComment(followUpComment);
 	}
 
 	// Used only for testing; directly retrieve the contacts from the visit instead
@@ -918,8 +923,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate filter = null;
 		// whoever created it or is assigned to it is allowed to access it
 		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
-			filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
-			filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
+			filter = cb.equal(contactPath.get(Contact.REPORTING_USER), currentUser);
+			filter = cb.or(filter, cb.equal(contactPath.get(Contact.CONTACT_OFFICER), currentUser));
 		}
 
 		switch (jurisdictionLevel) {
@@ -1351,8 +1356,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, ContactJoins joins) {
-		return Arrays.asList(JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
-				JurisdictionHelper.jurisdictionSelector(
+		return Arrays.asList(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(cb, joins)),
+				JurisdictionHelper.booleanSelector(
 						cb,
 						cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))));
 	}
@@ -1398,7 +1403,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException{
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
 	}
 

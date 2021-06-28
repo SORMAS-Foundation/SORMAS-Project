@@ -23,6 +23,7 @@ import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
@@ -68,7 +69,8 @@ public class CampaignDao extends AbstractAdoDao<Campaign> {
 
             List<Where<Campaign, Long>> whereStatements = new ArrayList<>();
             Where<Campaign, Long> where = queryBuilder.where();
-            whereStatements.add(where.eq(Campaign.ARCHIVED, false));
+			where.and(where.eq(Campaign.ARCHIVED, false), where.le(Campaign.START_DATE, new Date()));
+			whereStatements.add(where);
 
             if (!whereStatements.isEmpty()) {
                 Where<Campaign, Long> whereStatement = where.and(whereStatements.size());

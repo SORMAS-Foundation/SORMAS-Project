@@ -380,7 +380,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			return eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver();
 		}
 
-		return inJurisdictionOrOwned(eventParticipant) && !sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant);
+		return inJurisdiction(eventParticipant) && !sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant);
 	}
 
 	public Collection<EventParticipant> getByPersonUuids(List<String> personUuids) {

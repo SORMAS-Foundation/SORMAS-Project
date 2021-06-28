@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -137,13 +138,15 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	@Override
-	public void revokeRequests(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException {
-		String requestUuid = encryptionService.decryptAndVerify(encryptedRequestUuid, String.class);
-		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(requestUuid);
+	public void revokeRequests(SormasToSormasEncryptedDataDto encryptedRequestUuids) throws SormasToSormasException {
+		String[] requestUuids = encryptionService.decryptAndVerify(encryptedRequestUuids, String[].class);
+		List<SormasToSormasShareRequestDto> shareRequests = shareRequestFacade.getShareRequestsByUuids(Arrays.asList(requestUuids));
 
-		shareRequest.setChangeDate(new Date());
-		shareRequest.setStatus(ShareRequestStatus.REVOKED);
-		shareRequestFacade.saveShareRequest(shareRequest);
+		shareRequests.forEach(shareRequest -> {
+			shareRequest.setChangeDate(new Date());
+			shareRequest.setStatus(ShareRequestStatus.REVOKED);
+			shareRequestFacade.saveShareRequest(shareRequest);
+		});
 	}
 
 	@Override

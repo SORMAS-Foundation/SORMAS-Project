@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.event;
 
+import java.util.Collections;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 
@@ -10,6 +12,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
+import de.symeda.sormas.utils.EventJoins;
 import de.symeda.sormas.utils.EventParticipantJoins;
 
 public class EventParticipantJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
@@ -22,7 +25,7 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 	}
 
 	private EventParticipantJurisdictionPredicateValidator(CriteriaBuilder cb, EventParticipantJoins<?> joins, User currentUser) {
-		super(cb, null);
+		super(cb, Collections.singletonList(EventJurisdictionPredicateValidator.of(cb, new EventJoins<>(joins.getEvent()), currentUser)));
 		this.joins = joins;
 		this.currentUser = currentUser;
 	}
