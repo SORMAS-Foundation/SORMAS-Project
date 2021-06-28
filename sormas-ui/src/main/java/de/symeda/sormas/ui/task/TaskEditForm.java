@@ -346,11 +346,11 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	private List<DistrictReferenceDto> getCaseDistricts(CaseDataDto caseDto) {
 		List<DistrictReferenceDto> districts = new ArrayList<>(2);
 
-		if (caseDto.getResponsibleDistrict() != null) {
-			districts.add(caseDto.getResponsibleDistrict());
+		if (caseDto.getDistrict() != null) {
+			districts.add(caseDto.getDistrict());
 		}
 
-		districts.add(caseDto.getDistrict());
+		districts.add(caseDto.getResponsibleDistrict());
 
 		return districts;
 	}
@@ -358,11 +358,11 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	private List<RegionReferenceDto> getCaseRegions(CaseDataDto caseDto) {
 		List<RegionReferenceDto> regions = new ArrayList<>(2);
 
-		if (caseDto.getResponsibleDistrict() != null) {
-			regions.add(caseDto.getResponsibleRegion());
+		if (caseDto.getRegion() != null) {
+			regions.add(caseDto.getRegion());
 		}
 
-		regions.add(caseDto.getRegion());
+		regions.add(caseDto.getResponsibleRegion());
 
 		return regions;
 	}

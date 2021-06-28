@@ -200,26 +200,6 @@ public class TaskController {
 		}
 	}
 
-	private DistrictReferenceDto getTaskIndexDistrict(TaskIndexDto taskDto) {
-		DistrictReferenceDto district = null;
-		if (taskDto.getCaze() != null) {
-			CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(taskDto.getCaze().getUuid());
-			district = caseDto.getDistrict();
-		} else if (taskDto.getContact() != null) {
-			ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
-			if (contactDto.getRegion() != null && contactDto.getDistrict() != null) {
-				district = contactDto.getDistrict();
-			} else {
-				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-				district = caseDto.getDistrict();
-			}
-		} else if (taskDto.getEvent() != null) {
-			EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
-			district = eventDto.getEventLocation().getDistrict();
-		}
-		return district;
-	}
-
 	public void showBulkTaskDataEditComponent(Collection<? extends TaskIndexDto> selectedTasks, Runnable callback) {
 		if (selectedTasks.size() == 0) {
 			new Notification(

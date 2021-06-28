@@ -52,10 +52,11 @@ public class JurisdictionHelper {
 
 	public static List<Region> getCaseRegions(Case caze) {
 		List<Region> regions = new ArrayList<>();
-		if (caze.getResponsibleRegion() != null) {
-			regions.add(caze.getResponsibleRegion());
+		regions.add(caze.getResponsibleRegion());
+
+		if (caze.getRegion() != null) {
+			regions.add(caze.getRegion());
 		}
-		regions.add(caze.getRegion());
 
 		return regions;
 	}
@@ -73,7 +74,7 @@ public class JurisdictionHelper {
 		return regions;
 	}
 
-	public static Expression<Object> jurisdictionSelector(CriteriaBuilder cb, Predicate jurisdictionPredicate) {
+	public static Expression<Object> booleanSelector(CriteriaBuilder cb, Predicate jurisdictionPredicate) {
 		return cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false));
 	}
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import com.j256.ormlite.dao.Dao;
 
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 
 /**
@@ -67,9 +68,9 @@ public class PreviousHospitalizationDao extends AbstractAdoDao<PreviousHospitali
 			previousHospitalization.setDischargeDate(new Date());
 		}
 
-		previousHospitalization.setRegion(oldCase.getRegion());
-		previousHospitalization.setDistrict(oldCase.getDistrict());
-		previousHospitalization.setCommunity(oldCase.getCommunity());
+		previousHospitalization.setRegion(CaseDao.getRegionWithFallback(oldCase));
+		previousHospitalization.setDistrict(CaseDao.getDistrictWithFallback(oldCase));
+		previousHospitalization.setCommunity(CaseDao.getCommunityWithFallback(oldCase));
 		previousHospitalization.setHealthFacility(oldCase.getHealthFacility());
 		previousHospitalization.setHealthFacilityDetails(oldCase.getHealthFacilityDetails());
 		previousHospitalization.setHospitalization(caze.getHospitalization());

@@ -20,7 +20,6 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -28,6 +27,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 import de.symeda.sormas.utils.CaseJoins;
 
 public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
@@ -75,24 +75,24 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 	protected Predicate whenRegionalLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getRegion().get(Region.ID), currentUser.getRegion().getId()),
-			cb.equal(joins.getResponsibleRegion().get(Region.ID), currentUser.getRegion().getId()));
+			cb.equal(joins.getResponsibleRegion().get(Region.ID), currentUser.getRegion().getId()),
+			cb.equal(joins.getRegion().get(Region.ID), currentUser.getRegion().getId()));
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getDistrict().get(District.ID), currentUser.getDistrict().getId()),
-			cb.equal(joins.getResponsibleDistrict().get(District.ID), currentUser.getDistrict().getId()));
+			cb.equal(joins.getResponsibleDistrict().get(District.ID), currentUser.getDistrict().getId()),
+			cb.equal(joins.getDistrict().get(District.ID), currentUser.getDistrict().getId()));
 	}
 
 	@Override
 	protected Predicate whenCommunityLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getCommunity().get(Community.ID), currentUser.getCommunity().getId()),
-			cb.equal(joins.getResponsibleCommunity().get(Community.ID), currentUser.getCommunity().getId()));
+			cb.equal(joins.getResponsibleCommunity().get(Community.ID), currentUser.getCommunity().getId()),
+			cb.equal(joins.getCommunity().get(Community.ID), currentUser.getCommunity().getId()));
 	}
 
 	@Override
