@@ -336,7 +336,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 									cellData.getEntityPropertyPath());
 							}
 						}
-					} else if (!StringUtils.isEmpty(cellData.getValue())) {
+					} else if (StringUtils.isNotEmpty(cellData.getValue())) {
 						// If the cell entry is not empty, try to insert it into the current case or its person
 						insertColumnEntryIntoData(caze, entities.getPerson(), cellData.getValue(), cellData.getEntityPropertyPath());
 					}
