@@ -118,14 +118,15 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetCasePersonInSameResponsibleJurisdiction() {
+	public void testGetCasePersonInSamePlaceOfStayJurisdiction() {
 		loginWith(districtUser2);
 
 		person = createPerson();
 		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf1, c -> {
-			c.setResponsibleRegion(rdcf2.region);
-			c.setResponsibleDistrict(rdcf2.district);
-			c.setResponsibleCommunity(rdcf2.community);
+			c.setRegion(rdcf2.region);
+			c.setDistrict(rdcf2.district);
+			c.setCommunity(rdcf2.community);
+			c.setHealthFacility(rdcf2.facility);
 		});
 
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
@@ -146,45 +147,48 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetCasePersonInSameResponsibleJurisdictionOnRegionLevel() {
+	public void testGetCasePersonInSamePlaceOfStayJurisdictionOnRegionLevel() {
 		loginWith(regionUser2);
 
 		person = createPerson();
 		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf1, c -> {
-			c.setResponsibleRegion(rdcf2.region);
-			c.setResponsibleDistrict(rdcf2.district);
-			c.setResponsibleCommunity(rdcf2.community);
+			c.setRegion(rdcf2.region);
+			c.setDistrict(rdcf2.district);
+			c.setCommunity(rdcf2.community);
+			c.setHealthFacility(rdcf2.facility);
 		});
 
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
-	public void testGetCasePersonInSameResponsibleJurisdictionOnCommunityLevel() {
+	public void testGetCasePersonInSamePlaceOfStayJurisdictionOnCommunityLevel() {
 		loginWith(communityUser2);
 
 		person = createPerson();
 		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf1, c -> {
-			c.setResponsibleRegion(rdcf2.region);
-			c.setResponsibleDistrict(rdcf2.district);
-			c.setResponsibleCommunity(rdcf2.community);
+			c.setRegion(rdcf2.region);
+			c.setDistrict(rdcf2.district);
+			c.setCommunity(rdcf2.community);
+			c.setHealthFacility(rdcf2.facility);
 		});
 
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
-	public void testGetCasePersonResponsibleJurisdictionOnFacilityLevel() {
+	public void testGetCasePersonInPlaceOfStayJurisdictionOnFacilityLevel() {
 		loginWith(facilityUser2);
 
 		person = createPerson();
 		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf1, c -> {
-			c.setResponsibleRegion(rdcf2.region);
-			c.setResponsibleDistrict(rdcf2.district);
-			c.setResponsibleCommunity(rdcf2.community);
+			c.setRegion(rdcf2.region);
+			c.setDistrict(rdcf2.district);
+			c.setCommunity(rdcf2.community);
+			c.setHealthFacility(rdcf2.facility);
 		});
 
-		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
+		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test

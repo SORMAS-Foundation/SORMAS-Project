@@ -150,7 +150,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 
 		// whoever created the task or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(taskPath.join(Task.CREATOR_USER, JoinType.LEFT), currentUser);
+		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
 		filter = cb.or(filter, cb.equal(assigneeUser, currentUser));
 
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT));
@@ -417,8 +417,13 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			if (assignee == null && contact.getPerson().getAddress().getDistrict() != null) {
 				assignee = lookupByDistrict.apply(contact.getPerson().getAddress().getDistrict());
 			}
-			if (assignee == null && contact.getCaze() != null && contact.getCaze().getDistrict() != null) {
-				assignee = lookupByDistrict.apply(contact.getCaze().getDistrict());
+			Case contactCase = contact.getCaze();
+			if (assignee == null && contactCase != null) {
+				assignee = lookupByDistrict.apply(contactCase.getResponsibleDistrict());
+
+				if (assignee == null && contactCase.getDistrict() != null) {
+					assignee = lookupByDistrict.apply(contactCase.getDistrict());
+				}
 			}
 		}
 
@@ -431,12 +436,15 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			if (assignee == null && contact.getPerson().getAddress().getRegion() != null) {
 				assignee = lookupByRegion.apply(contact.getPerson().getAddress().getRegion());
 			}
-			if (assignee == null && contact.getCaze() != null && contact.getCaze().getResponsibleRegion() != null) {
-				assignee = lookupByRegion.apply(contact.getCaze().getResponsibleRegion());
+			Case contactCase = contact.getCaze();
+			if (assignee == null && contactCase != null) {
+				assignee = lookupByRegion.apply(contactCase.getResponsibleRegion());
+
+				if (assignee == null && contactCase.getRegion() != null) {
+					assignee = lookupByRegion.apply(contactCase.getRegion());
+				}
 			}
-			if (assignee == null && contact.getCaze() != null && contact.getCaze().getRegion() != null) {
-				assignee = lookupByRegion.apply(contact.getCaze().getRegion());
-			}
+
 			if (assignee == null) {
 				throw new TaskCreationException("Contact has not contact officer and no region - can't create follow-up task: " + contact.getUuid());
 			}
@@ -479,19 +487,19 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	public List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, TaskJoins joins) {
 		ContactJoins<Task> contactJoins = new ContactJoins<>(joins.getContact());
 		return Arrays.asList(
-			JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
-			JurisdictionHelper.jurisdictionSelector(
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(cb, joins)),
+			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))),
 			JurisdictionHelper
-				.jurisdictionSelector(cb, cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(cb, contactJoins))),
-			JurisdictionHelper.jurisdictionSelector(
+				.booleanSelector(cb, cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(cb, contactJoins))),
+			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getContact()),
 					cb.isNotNull(contactJoins.getCaze()),
 					caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(contactJoins.getCaze())))),
-			JurisdictionHelper.jurisdictionSelector(
+			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(cb.isNotNull(joins.getEvent()), eventService.inJurisdictionOrOwned(cb, new EventJoins<>(joins.getEvent())))));
 	}

@@ -158,7 +158,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetCasesWithResponsibleJurisdictionOnNationalLevel() {
+	public void testGetCasesWithPlaceOfStayOnNationalLevel() {
 		loginWith(nationalUser);
 
 		createCase(rdcf1, districtUser1, rdcf2);
@@ -169,7 +169,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetCasesResponsibleJurisdictionOnRegionLevel() {
+	public void testGetCasesWithPlaceOfStayOnRegionLevel() {
 		loginWith(regionUser);
 
 		CaseDataDto visibleCase = createCase(rdcf1, districtUser1, rdcf2);
@@ -181,7 +181,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetCasesResponsibleJurisdictionOnCommunityLevel() {
+	public void testGetCasesWithPlaceOfStayOnCommunityLevel() {
 		loginWith(communityUser);
 
 		CaseDataDto visibleCase = createCase(rdcf1, districtUser1, rdcf2);
@@ -205,7 +205,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			null);
 	}
 
-	private CaseDataDto createCase(TestDataCreator.RDCF rdcf, UserDto reportingUser, TestDataCreator.RDCF responsibleRdcf) {
+	private CaseDataDto createCase(TestDataCreator.RDCF rdcf, UserDto reportingUser, TestDataCreator.RDCF placeOfStayRdcf) {
 
 		return creator.createCase(
 			reportingUser.toReference(),
@@ -216,9 +216,10 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			new Date(),
 			rdcf,
 			(c) -> {
-				c.setResponsibleRegion(responsibleRdcf.region);
-				c.setResponsibleDistrict(responsibleRdcf.district);
-				c.setResponsibleCommunity(responsibleRdcf.community);
+				c.setRegion(placeOfStayRdcf.region);
+				c.setDistrict(placeOfStayRdcf.district);
+				c.setCommunity(placeOfStayRdcf.community);
+				c.setHealthFacility(placeOfStayRdcf.facility);
 			});
 	}
 }

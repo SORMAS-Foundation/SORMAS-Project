@@ -35,6 +35,7 @@ public class CaseCriteria implements Serializable {
 	private EpiWeek epiWeekFrom;
 	private EpiWeek epiWeekTo;
 	private CaseOrigin caseOrigin;
+	private Region responsibleRegion;
 	private Region region;
 
 	public CaseCriteria setTextFilter(String textFilter) {
@@ -106,6 +107,15 @@ public class CaseCriteria implements Serializable {
 
 	public CaseCriteria setCaseOrigin(CaseOrigin caseOrigin) {
 		this.caseOrigin = caseOrigin;
+		return this;
+	}
+
+	public Region getResponsibleRegion() {
+		return responsibleRegion;
+	}
+
+	public CaseCriteria setResponsibleRegion(Region responsibleRegion) {
+		this.responsibleRegion = responsibleRegion;
 		return this;
 	}
 

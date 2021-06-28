@@ -90,11 +90,11 @@ public class LineListingLayout extends VerticalLayout {
 		sharedInformationBar.addComponent(diseaseDetails);
 		disease.addValueChangeListener(event -> diseaseDetails.setVisible(Disease.OTHER.equals(disease.getValue())));
 
-		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
+		region = new ComboBox<>(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_REGION));
 		region.setId("lineListingRegion");
 		sharedInformationBar.addComponent(region);
 
-		district = new ComboBox<>(I18nProperties.getCaption(Captions.district));
+		district = new ComboBox<>(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT));
 		district.setId("lineListingDistrict");
 		district.addValueChangeListener(e -> setEpidNumberPrefixes());
 		sharedInformationBar.addComponent(district);

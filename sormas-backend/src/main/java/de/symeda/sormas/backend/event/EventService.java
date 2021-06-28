@@ -201,7 +201,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(objects -> (String) objects[0], objects -> (User) objects[1]));
 	}
 
-	public Map<String, Optional<User>> getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(String personUuid, Disease disease, Date date) {
+	public Map<String, Optional<User>> getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
+		String personUuid,
+		Disease disease,
+		Date date) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Event> eventRoot = cq.from(Event.class);
@@ -214,7 +217,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			cb.equal(personJoin.get(Person.UUID), personUuid),
 			cb.equal(eventRoot.get(Event.DISEASE), disease),
 			createActiveEventsFilter(cb, eventRoot),
-			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.REPORT_DATE_TIME), timestamp));
+			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.REPORT_DATE_TIME), timestamp),
+			eventParticipantService.createActiveEventParticipantsFilter(cb, eventParticipantJoin));
 		cq.where(filter);
 		cq.multiselect(eventRoot.get(Event.UUID), responsibleUserJoin);
 		return em.createQuery(cq)
@@ -358,6 +362,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					.or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), currentUser.getDistrict()));
 			}
 			break;
+		case COMMUNITY:
+			if (currentUser.getCommunity() != null) {
+				filter = CriteriaBuilderHelper.or(
+					cb,
+					filter,
+					cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.COMMUNITY), currentUser.getCommunity()));
+			}
+			break;
 		case HEALTH_FACILITY:
 			if (currentUser.getHealthFacility() != null && currentUser.getHealthFacility().getDistrict() != null) {
 				filter = CriteriaBuilderHelper.or(
@@ -372,7 +384,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			final Root<Sample> sampleRoot = sampleEventSubquery.from(Sample.class);
 			final SampleJoins joins = new SampleJoins(sampleRoot);
 			final Join eventJoin = joins.getEvent();
-			sampleEventSubquery.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutAssociations(cb, joins), cb.isNotNull(eventJoin)));
+			sampleEventSubquery
+				.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutAssociations(cb, joins), cb.isNotNull(eventJoin)));
 			sampleEventSubquery.select(eventJoin.get(Event.ID));
 			filter = CriteriaBuilderHelper.or(cb, filter, cb.in(eventPath.get(Event.ID)).value(sampleEventSubquery));
 			break;
@@ -384,8 +397,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				.and(filter, cb.or(cb.equal(eventPath.get(Event.DISEASE), currentUser.getLimitedDisease()), cb.isNull(eventPath.get(Event.DISEASE))));
 		}
 
-		Predicate filterResponsible = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), currentUser);
-		filterResponsible = cb.or(filterResponsible, cb.equal(eventPath.join(Event.RESPONSIBLE_USER, JoinType.LEFT), currentUser));
+		Predicate filterResponsible = cb.equal(eventPath.get(Event.REPORTING_USER), currentUser);
+		filterResponsible = cb.or(filterResponsible, cb.equal(eventPath.get(Event.RESPONSIBLE_USER), currentUser));
 
 		if (eventUserFilterCriteria != null && eventUserFilterCriteria.isIncludeUserCaseAndEventParticipantFilter()) {
 			filter = CriteriaBuilderHelper.or(cb, filter, createCaseAndEventParticipantFilter(cb, cq, eventPath));
@@ -845,13 +858,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	public boolean inJurisdiction(Event event) {
-		return exists(
-			(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), event.getId()), inJurisdiction(cb, new EventJoins<>(root))));
+		return exists((cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), event.getId()), inJurisdiction(cb, new EventJoins<>(root))));
 	}
 
 	public boolean inJurisdictionOrOwned(Event event) {
 		return exists(
-				(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), event.getId()), inJurisdictionOrOwned(cb, new EventJoins<>(root))));
+			(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), event.getId()), inJurisdictionOrOwned(cb, new EventJoins<>(root))));
 	}
 
 	public Predicate inJurisdiction(CriteriaBuilder cb, EventJoins<?> joins) {
