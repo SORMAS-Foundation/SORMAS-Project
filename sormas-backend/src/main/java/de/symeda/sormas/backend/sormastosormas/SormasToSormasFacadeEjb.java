@@ -34,6 +34,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,6 +180,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	 *             in case of failure
 	 */
 	@Override
+	@Transactional(rollbackOn = {
+		Exception.class })
 	public void requestAccepted(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException {
 		String requestUuid = encryptionService.decryptAndVerify(encryptedRequestUuid, String.class);
 
@@ -187,7 +190,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		shareInfo.setRequestStatus(ShareRequestStatus.ACCEPTED);
 		shareInfoService.ensurePersisted(shareInfo);
 
-		if (shareInfo.isOwnershipHandedOver()) {
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && shareInfo.isOwnershipHandedOver()) {
 			try {
 				if (shareInfo.getCases().size() > 0) {
 					externalSurveillanceToolGatewayFacade
