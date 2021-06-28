@@ -1254,7 +1254,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Case> root = cq.from(Case.class);
-		cq.multiselect(JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(new CaseQueryContext(cb, cq, root))));
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new CaseQueryContext(cb, cq, root))));
 		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}

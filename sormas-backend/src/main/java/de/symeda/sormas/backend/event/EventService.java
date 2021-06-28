@@ -867,7 +867,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Event> root = cq.from(Event.class);
-		cq.multiselect(JurisdictionHelper.jurisdictionSelector(cb, inJurisdiction(new EventQueryContext(cb, cq, root))));
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdiction(new EventQueryContext(cb, cq, root))));
 		cq.where(cb.equal(root.get(Event.UUID), event.getUuid()));
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
@@ -876,7 +876,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Event> root = cq.from(Event.class);
-		cq.multiselect(JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(new EventQueryContext(cb, cq, root))));
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new EventQueryContext(cb, cq, root))));
 		cq.where(cb.equal(root.get(Event.UUID), event.getUuid()));
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}

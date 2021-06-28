@@ -79,7 +79,7 @@ public class VisitService extends BaseAdoService<Visit> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Visit> root = cq.from(Visit.class);
-		Expression<Object> objectExpression = JurisdictionHelper.jurisdictionSelector(cb, cb.and(
+		Expression<Object> objectExpression = JurisdictionHelper.booleanSelector(cb, cb.and(
 				cb.equal(root.get(AbstractDomainObject.ID), visit.getId()),
 				inJurisdiction(cq, cb, root.join(Visit.CAZE, JoinType.LEFT), root.join(Visit.CONTACTS, JoinType.LEFT))));
 		cq.multiselect(objectExpression);

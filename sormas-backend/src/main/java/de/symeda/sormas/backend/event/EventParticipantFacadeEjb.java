@@ -498,7 +498,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.EVENT_TITLE),
-			JurisdictionHelper.queryContext(cb, eventParticipantService.inJurisdictionOrOwned(queryContext)));
+			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(queryContext)));
 
 		Predicate filter = CriteriaBuilderHelper.and(
 			cb,
@@ -556,7 +556,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.NATIONAL_HEALTH_ID),
 			person.get(Location.ID),
-			JurisdictionHelper.queryContext(cb, eventParticipantService.inJurisdictionOrOwned(eventParticipantQueryContext)),
+			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(eventParticipantQueryContext)),
 
 			event.get(Event.UUID),
 
@@ -935,7 +935,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
 
 		Expression<Object> jurisdictionSelector = JurisdictionHelper
-			.queryContext(cb, eventParticipantService.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, eventParticipantRoot)));
+			.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, eventParticipantRoot)));
 		cq.multiselect(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),
