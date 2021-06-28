@@ -101,7 +101,6 @@ public class Facility extends InfrastructureAdo {
 	private String department;
 	private String sector;
 	private String drName;
-	private String houseNo;
 	private String telNo;
 	private String faxNo;
 
@@ -290,15 +289,6 @@ public class Facility extends InfrastructureAdo {
 
 	public void setStreet(String street) {
 		this.street = street;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getHouseNo() {
-		return houseNo;
-	}
-
-	public void setHouseNo(String houseNo) {
-		this.houseNo = houseNo;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
