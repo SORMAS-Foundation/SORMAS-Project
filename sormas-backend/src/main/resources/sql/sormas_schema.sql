@@ -7474,9 +7474,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (379, 'Refine the sp
 
 -- 2021-06-25 [Sormas2Sormas] Returning cases without contacts or samples leaves contacts and samples disabled in both instances #5562
 ALTER TABLE sormastosormasorigininfo
-    ADD COLUMN withassociatedcontacts boolean,
-    ADD COLUMN withsamples boolean,
-    ADD COLUMN witheventparticipants boolean;
+    ADD COLUMN withassociatedcontacts boolean DEFAULT false,
+    ADD COLUMN withsamples boolean DEFAULT false,
+    ADD COLUMN witheventparticipants boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (380, '[Sormas2Sormas] Returning cases without contacts or samples leaves contacts and samples disabled in both instances #5562');
 -- *** Insert new sql commands BEFORE this line ***
