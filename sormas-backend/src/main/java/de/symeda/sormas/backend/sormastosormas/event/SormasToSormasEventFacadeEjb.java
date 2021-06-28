@@ -31,11 +31,12 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
@@ -96,13 +97,13 @@ public class SormasToSormasEventFacadeEjb
 
 	@Override
 	protected void validateEntitiesBeforeShare(List<Event> entities, boolean handOverOwnership) throws SormasToSormasException {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 		for (Event event : entities) {
 			if (!eventService.isEventEditAllowed(event)) {
 				validationErrors.put(
 					buildEventValidationGroupName(event),
 					ValidationErrors
-						.create(I18nProperties.getCaption(Captions.Event), Validations.sormasToSormasNotEditable));
+						.create(new ValidationErrorGroup(Captions.Event), new ValidationErrorMessage(Validations.sormasToSormasNotEditable)));
 			}
 		}
 
@@ -165,7 +166,7 @@ public class SormasToSormasEventFacadeEjb
 		ValidationErrors errors = new ValidationErrors();
 
 		if (eventFacade.exists(uuid)) {
-			errors.add(I18nProperties.getCaption(Captions.Event), Validations.sormasToSormasEventExists);
+			errors.add(new ValidationErrorGroup(Captions.Event), new ValidationErrorMessage(Validations.sormasToSormasEventExists));
 		}
 
 		return errors;

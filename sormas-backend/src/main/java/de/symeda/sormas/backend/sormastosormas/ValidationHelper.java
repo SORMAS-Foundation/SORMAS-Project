@@ -21,65 +21,66 @@ import java.util.function.Supplier;
 
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 public class ValidationHelper {
 
-	public static String buildValidationGroupName(String captionTag, HasUuid hasUuid) {
+	public static ValidationErrorGroup buildValidationGroupName(String captionTag, HasUuid hasUuid) {
 		return buildValidationGroupName(captionTag, hasUuid.getUuid());
 	}
 
-	public static String buildValidationGroupName(String captionTag, String uuid) {
-		return String.format("%s %s", I18nProperties.getCaption(captionTag), DataHelper.getShortUuid(uuid));
+	public static ValidationErrorGroup buildValidationGroupName(String captionTag, String uuid) {
+		return new ValidationErrorGroup(captionTag, DataHelper.getShortUuid(uuid));
 	}
 
-	public static String buildCaseValidationGroupName(HasUuid caze) {
+	public static ValidationErrorGroup buildCaseValidationGroupName(HasUuid caze) {
 		return buildValidationGroupName(Captions.CaseData, caze);
 	}
 
-	public static String buildContactValidationGroupName(HasUuid contact) {
+	public static ValidationErrorGroup buildContactValidationGroupName(HasUuid contact) {
 		return buildValidationGroupName(Captions.Contact, contact);
 	}
 
-	public static String buildSampleValidationGroupName(SampleDto sample) {
+	public static ValidationErrorGroup buildSampleValidationGroupName(SampleDto sample) {
 		return buildValidationGroupName(Captions.Sample, sample);
 	}
 
-	public static String buildPathogenTestValidationGroupName(PathogenTestDto pathogenTest) {
+	public static ValidationErrorGroup buildPathogenTestValidationGroupName(PathogenTestDto pathogenTest) {
 		return buildValidationGroupName(Captions.PathogenTest, pathogenTest);
 	}
 
-	public static String buildEventValidationGroupName(HasUuid event) {
+	public static ValidationErrorGroup buildEventValidationGroupName(HasUuid event) {
 		return buildValidationGroupName(Captions.Event, event);
 	}
 
-	public static String buildEventParticipantValidationGroupName(HasUuid event) {
+	public static ValidationErrorGroup buildEventParticipantValidationGroupName(HasUuid event) {
 		return buildValidationGroupName(Captions.Event, event);
 	}
 
-	public static String buildLabMessageValidationGroupName(LabMessageDto labMessageDto) {
+	public static ValidationErrorGroup buildLabMessageValidationGroupName(LabMessageDto labMessageDto) {
 		return buildValidationGroupName(Captions.LabMessage, labMessageDto);
 	}
 
-	public static <T> T handleValidationError(Supplier<T> saveOperation, String validationGroupCaption, String parentValidationGroup)
+	public static <T> T handleValidationError(Supplier<T> saveOperation, String validationGroupCaption, ValidationErrorGroup parentValidationGroup)
 		throws SormasToSormasValidationException {
 		try {
 			return saveOperation.get();
 		} catch (ValidationRuntimeException exception) {
-			Map<String, ValidationErrors> parentError = new HashMap<>(1);
+			Map<ValidationErrorGroup, ValidationErrors> parentError = new HashMap<>(1);
 
 			parentError.put(
 				parentValidationGroup,
 				ValidationErrors
-					.create(I18nProperties.getCaption(validationGroupCaption), Validations.sormasToSormasSaveException, exception.getMessage()));
+					.create(new ValidationErrorGroup(validationGroupCaption), new ValidationErrorMessage(Validations.sormasToSormasSaveException, exception.getMessage())));
 
 			throw new SormasToSormasValidationException(parentError, exception);
 		}

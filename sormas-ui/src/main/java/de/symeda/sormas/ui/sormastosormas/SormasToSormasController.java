@@ -49,6 +49,8 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
@@ -240,7 +242,7 @@ public class SormasToSormasController {
 		try {
 			request.run();
 		} catch (SormasToSormasException ex) {
-			Component messageComponent = buildShareErrorMessage(ex.getHumanErrorMessage(), ex.getErrors());
+			Component messageComponent = buildShareErrorMessage(ex.getHumanMessage(), ex.getErrors());
 			messageComponent.setWidth(100, Sizeable.Unit.PERCENTAGE);
 			VaadinUiUtil.showPopupWindow(new VerticalLayout(messageComponent), I18nProperties.getCaption(Captions.sormasToSormasErrorDialogTitle));
 		} catch (SormasToSormasValidationException ex) {
@@ -293,7 +295,7 @@ public class SormasToSormasController {
 		}, optionsForm, defaultOptions);
 	}
 
-	private Component buildShareErrorMessage(String message, Map<String, ValidationErrors> errors) {
+	private Component buildShareErrorMessage(String message, Map<ValidationErrorGroup, ValidationErrors> errors) {
 		Label errorMessageLabel = new Label(message, ContentMode.HTML);
 
 		if (errors == null || errors.size() == 0) {
@@ -301,7 +303,7 @@ public class SormasToSormasController {
 		}
 
 		VerticalLayout[] errorLayouts = errors.entrySet().stream().map(e -> {
-			Label groupLabel = new Label(e.getKey());
+			Label groupLabel = new Label(e.getKey().getHumanMessage());
 			groupLabel.addStyleNames(CssStyles.LABEL_BOLD);
 
 			VerticalLayout groupErrorsLayout = new VerticalLayout(formatGroupErrors(e.getValue()));
@@ -333,7 +335,7 @@ public class SormasToSormasController {
 				new Label(
 					String.join(
 						", ",
-						e.getValue().stream().map(ValidationErrors.ValidationError::getHumanErrorMessage).collect(Collectors.toList()).toString())));
+						e.getValue().stream().map(ValidationErrorMessage::getHumanMessage).collect(Collectors.toList()).toString())));
 			layout.setMargin(false);
 
 			return layout;

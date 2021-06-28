@@ -32,6 +32,7 @@ import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,7 +138,7 @@ public class SormasToSormasRestClient {
 		if (statusCode != HttpStatus.SC_NO_CONTENT && statusCode != HttpStatus.SC_OK) {
 			String errorMessage = response.readEntity(String.class);
 			String errorProperty = null;
-			Map<String, ValidationErrors> errors = null;
+			Map<ValidationErrorGroup, ValidationErrors> errors = null;
 
 			try {
 				SormasToSormasErrorResponse errorResponse = mapper.readValue(errorMessage, SormasToSormasErrorResponse.class);

@@ -32,7 +32,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
@@ -41,6 +40,8 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.labmessage.LabMessage;
@@ -80,7 +81,7 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 	public void saveLabMessages(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
 		LabMessageDto[] sharedLabMessages = encryptionService.decryptAndVerify(encryptedData, LabMessageDto[].class);
 
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 		List<LabMessageDto> labMessagesToSave = new ArrayList<>(sharedLabMessages.length);
 
 		for (LabMessageDto labMessage : sharedLabMessages) {
@@ -105,7 +106,7 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 		ValidationErrors errors = new ValidationErrors();
 
 		if (labMessageFacade.exists(labMessage.getUuid())) {
-			errors.add(I18nProperties.getCaption(Captions.LabMessage), Validations.sormasToSormasLabMessageExists);
+			errors.add(new ValidationErrorGroup(Captions.LabMessage), new ValidationErrorMessage(Validations.sormasToSormasLabMessageExists));
 		}
 
 		return errors;

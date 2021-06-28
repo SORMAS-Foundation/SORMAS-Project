@@ -21,32 +21,32 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
-public class SormasToSormasException extends Exception implements SormasToSormasErrorMessage {
+public class SormasToSormasException extends Exception implements SormasToSormasI18nMessage {
 
 	private static final long serialVersionUID = 952700907523341584L;
 
-	private final String i18nProperty;
+	private final String i18nTag;
 
 	private final Object[] args;
 
-	private Map<String, ValidationErrors> errors;
+	private Map<ValidationErrorGroup, ValidationErrors> errors;
 
 	public SormasToSormasException(String message, String i18nProperty, Object... args) {
 		super(message);
-		this.i18nProperty = i18nProperty;
+		this.i18nTag = i18nProperty;
 		this.args = args;
 	}
 
-	public SormasToSormasException(String message, String languageKey, Map<String, ValidationErrors> errors, Object... args) {
+	public SormasToSormasException(String message, String languageKey, Map<ValidationErrorGroup, ValidationErrors> errors, Object... args) {
 		super(message);
-		this.i18nProperty = languageKey;
+		this.i18nTag = languageKey;
 		this.args = args;
 		this.errors = errors;
 	}
 
 	@Override
-	public String getI18nProperty() {
-		return i18nProperty;
+	public String getI18nTag() {
+		return i18nTag;
 	}
 
 	@Override
@@ -55,21 +55,21 @@ public class SormasToSormasException extends Exception implements SormasToSormas
 	}
 
 	@Override
-	public String getHumanErrorMessage() {
-		if (StringUtils.isNotBlank(i18nProperty) && ArrayUtils.isNotEmpty(args)) {
-			return String.format(I18nProperties.getString(i18nProperty), args);
-		} else if (StringUtils.isNotBlank(i18nProperty)){
-			return I18nProperties.getString(i18nProperty);
+	public String getHumanMessage() {
+		if (StringUtils.isNotBlank(i18nTag) && ArrayUtils.isNotEmpty(args)) {
+			return String.format(I18nProperties.getString(i18nTag), args);
+		} else if (StringUtils.isNotBlank(i18nTag)){
+			return I18nProperties.getString(i18nTag);
 		} else {
 			return getMessage();
 		}
 	}
 
-	public Map<String, ValidationErrors> getErrors() {
+	public Map<ValidationErrorGroup, ValidationErrors> getErrors() {
 		return errors;
 	}
 
-	public void setErrors(Map<String, ValidationErrors> errors) {
+	public void setErrors(Map<ValidationErrorGroup, ValidationErrors> errors) {
 		this.errors = errors;
 	}
 
@@ -77,19 +77,19 @@ public class SormasToSormasException extends Exception implements SormasToSormas
 		return fromStringProperty(i18nProperty, null, args);
 	}
 
-	public static SormasToSormasException fromStringProperty(String i18nProperty, Map<String, ValidationErrors> errors, Object ... args) {
+	public static SormasToSormasException fromStringProperty(String i18nTag, Map<String, ValidationErrors> errors, Object ... args) {
 
 		String message;
 		if (ArrayUtils.isNotEmpty(args)) {
-			message = String.format(I18nProperties.getString(i18nProperty), args);
+			message = String.format(I18nProperties.getString(i18nTag), args);
 		} else {
-			message = I18nProperties.getString(i18nProperty);
+			message = I18nProperties.getString(i18nTag);
 		}
 
 		if (errors == null) {
-			return new SormasToSormasException(message, i18nProperty, args);
+			return new SormasToSormasException(message, i18nTag, args);
 		} else {
-			return new SormasToSormasException(message, i18nProperty, errors, args);
+			return new SormasToSormasException(message, i18nTag, errors, args);
 		}
 	}
 }

@@ -31,11 +31,12 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
@@ -116,19 +117,19 @@ public class SormasToSormasCaseFacadeEjb
 
 	@Override
 	protected void validateEntitiesBeforeShare(List<Case> entities, boolean handOverOwnership) throws SormasToSormasException {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 		for (Case caze : entities) {
 			if (!caseService.isCaseEditAllowed(caze)) {
 				validationErrors.put(
 					buildCaseValidationGroupName(caze),
 					ValidationErrors
-						.create(I18nProperties.getCaption(Captions.CaseData), Validations.sormasToSormasNotEditable));
+						.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasNotEditable)));
 			}
 			if (handOverOwnership && caze.getPerson().isEnrolledInExternalJournal()) {
 				validationErrors.put(
 						buildCaseValidationGroupName(caze),
 						ValidationErrors
-								.create(I18nProperties.getCaption(Captions.CaseData), Validations.sormasToSormasPersonEnrolled));
+								.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled)));
 			}
 		}
 
@@ -170,7 +171,7 @@ public class SormasToSormasCaseFacadeEjb
 	private ValidationErrors validateSharedUuid(String uuid) {
 		ValidationErrors errors = new ValidationErrors();
 		if (caseFacade.exists(uuid)) {
-			errors.add(I18nProperties.getCaption(Captions.CaseData), Validations.sormasToSormasCaseExists);
+			errors.add(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasCaseExists));
 		}
 
 		return errors;

@@ -32,13 +32,14 @@ import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
@@ -165,14 +166,14 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	public void saveShareRequest(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
 		ShareRequestData<PREVIEW> shareData = encryptionService.decryptAndVerify(encryptedData, previewType);
 
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 		List<PREVIEW> previews = shareData.getPreviews();
 		List<PREVIEW> previewsToSave = new ArrayList<>(previews.size());
 
 		SormasToSormasOriginInfoDto originInfo = shareData.getOriginInfo();
 		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, entityCaptionTag);
 		if (originInfoErrors.hasError()) {
-			validationErrors.put(I18nProperties.getCaption(entityCaptionTag), originInfoErrors);
+			validationErrors.put(new ValidationErrorGroup(entityCaptionTag), originInfoErrors);
 		}
 
 		for (PREVIEW preview : previews) {
@@ -356,7 +357,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		S[] receivedS2SEntities = encryptionService.decryptAndVerify(encryptedData, getShareDataClass());
 
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 		List<PROCESSED> entitiesToPersist = new ArrayList<>(receivedS2SEntities.length);
 		List<DTO> existingEntities =
 			loadExistingEntities(Arrays.stream(receivedS2SEntities).map(e -> e.getEntity().getUuid()).collect(Collectors.toList()));
@@ -403,11 +404,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		}
 	}
 
-	private String buildEntityValidationGroupName(HasUuid entity) {
+	private ValidationErrorGroup buildEntityValidationGroupName(HasUuid entity) {
 		return buildEntityValidationGroupName(entity.getUuid());
 	}
 
-	private String buildEntityValidationGroupName(String uuid) {
+	private ValidationErrorGroup buildEntityValidationGroupName(String uuid) {
 		return buildValidationGroupName(entityCaptionTag, uuid);
 	}
 
@@ -438,7 +439,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		if (existingEntities.stream().noneMatch(e -> e.getUuid().equals(entity.getUuid()))) {
 			errors
-				.add(I18nProperties.getCaption(entityCaptionTag), Validations.sormasToSormasReturnEntityNotExists);
+				.add(new ValidationErrorGroup(entityCaptionTag), new ValidationErrorMessage(Validations.sormasToSormasReturnEntityNotExists));
 
 		}
 
@@ -508,13 +509,13 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		List<String> notOwnedUuids = getUuidsWithPendingOwnershipHandedOver(entities);
 		if (notOwnedUuids.size() > 0) {
 
-			Map<String, ValidationErrors> errors = notOwnedUuids.stream()
+			Map<ValidationErrorGroup, ValidationErrors> errors = notOwnedUuids.stream()
 				.collect(
 					Collectors.toMap(
 						this::buildEntityValidationGroupName,
 						(uuid) -> ValidationErrors.create(
-							I18nProperties.getCaption(entityCaptionTag),
-							Strings.errorSormasToSormasOwnershipAlreadyHandedOver)));
+							new ValidationErrorGroup(entityCaptionTag),
+							new ValidationErrorMessage(Strings.errorSormasToSormasOwnershipAlreadyHandedOver))));
 
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasShare, errors);
 		}

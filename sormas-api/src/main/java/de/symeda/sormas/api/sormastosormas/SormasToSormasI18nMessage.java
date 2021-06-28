@@ -22,12 +22,12 @@ package de.symeda.sormas.api.sormastosormas;
  * @author Alex Vidrean
  * @since 25-Jun-21
  */
-public interface SormasToSormasErrorMessage {
+public interface SormasToSormasI18nMessage {
 
-    String getI18nProperty();
+    String getI18nTag();
 
     Object[] getArgs();
 
-    String getHumanErrorMessage();
+    String getHumanMessage();
 
 }

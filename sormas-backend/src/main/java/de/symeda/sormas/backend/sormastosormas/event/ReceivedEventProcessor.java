@@ -33,6 +33,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
@@ -54,7 +55,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 	@Override
 	public ProcessedEventData processReceivedData(SormasToSormasEventDto receivedEvent, EventDto existingEvent)
 		throws SormasToSormasValidationException {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 
 		EventDto event = receivedEvent.getEntity();
 		SormasToSormasOriginInfoDto originInfo = receivedEvent.getOriginInfo();
@@ -73,13 +74,13 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 
 		List<EventParticipantDto> eventParticipants = receivedEvent.getEventParticipants();
 		if (eventParticipants != null && eventParticipants.size() > 0) {
-			Map<String, ValidationErrors> eventParticipantErrors = processEventParticipants(eventParticipants);
+			Map<ValidationErrorGroup, ValidationErrors> eventParticipantErrors = processEventParticipants(eventParticipants);
 			validationErrors.putAll(eventParticipantErrors);
 		}
 
 		List<SormasToSormasSampleDto> samples = receivedEvent.getSamples();
 		if (samples != null && samples.size() > 0) {
-			Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
+			Map<ValidationErrorGroup, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
 			validationErrors.putAll(sampleErrors);
 		}
 
@@ -92,7 +93,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 
 	@Override
 	public SormasToSormasEventPreview processReceivedPreview(SormasToSormasEventPreview preview) throws SormasToSormasValidationException {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 
 		ValidationErrors eventValidationErrors = new ValidationErrors();
 
@@ -104,7 +105,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 
 		List<SormasToSormasEventParticipantPreview> eventParticipants = preview.getEventParticipants();
 		if (eventParticipants != null && eventParticipants.size() > 0) {
-			Map<String, ValidationErrors> eventParticipantErrors = processEventParticipantPreviews(eventParticipants);
+			Map<ValidationErrorGroup, ValidationErrors> eventParticipantErrors = processEventParticipantPreviews(eventParticipants);
 			validationErrors.putAll(eventParticipantErrors);
 		}
 
@@ -153,8 +154,8 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 		return validationErrors;
 	}
 
-	private Map<String, ValidationErrors> processEventParticipants(List<EventParticipantDto> eventParticipants) {
-		Map<String, ValidationErrors> errors = new HashMap<>();
+	private Map<ValidationErrorGroup, ValidationErrors> processEventParticipants(List<EventParticipantDto> eventParticipants) {
+		Map<ValidationErrorGroup, ValidationErrors> errors = new HashMap<>();
 
 		eventParticipants.forEach(eventParticipant -> {
 			ValidationErrors validationErrors = new ValidationErrors();
@@ -177,8 +178,8 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 		return errors;
 	}
 
-	private Map<String, ValidationErrors> processEventParticipantPreviews(List<SormasToSormasEventParticipantPreview> eventParticipants) {
-		Map<String, ValidationErrors> errors = new HashMap<>();
+	private Map<ValidationErrorGroup, ValidationErrors> processEventParticipantPreviews(List<SormasToSormasEventParticipantPreview> eventParticipants) {
+		Map<ValidationErrorGroup, ValidationErrors> errors = new HashMap<>();
 
 		eventParticipants.forEach(eventParticipant -> {
 			ValidationErrors validationErrors = dataProcessorHelper.processPersonPreview(eventParticipant.getPerson());

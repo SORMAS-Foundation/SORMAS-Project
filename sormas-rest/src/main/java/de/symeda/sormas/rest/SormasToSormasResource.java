@@ -164,7 +164,7 @@ public class SormasToSormasResource {
 		} catch (SormasToSormasValidationException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(null, null, e.getErrors(), null)).build();
 		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new SormasToSormasErrorResponse(e.getMessage(), e.getI18nProperty(), e.getErrors(), e.getArgs())).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new SormasToSormasErrorResponse(e.getMessage(), e.getI18nTag(), e.getErrors(), e.getArgs())).build();
 		}
 
 		return Response.noContent().build();
@@ -177,7 +177,7 @@ public class SormasToSormasResource {
 		} catch (SormasToSormasValidationException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(null, null, e.getErrors(), null)).build();
 		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new SormasToSormasErrorResponse(e.getMessage(), e.getI18nProperty(), e.getErrors(), e.getArgs())).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new SormasToSormasErrorResponse(e.getMessage(), e.getI18nTag(), e.getErrors(), e.getArgs())).build();
 		}
 
 		return Response.ok().entity(response).build();

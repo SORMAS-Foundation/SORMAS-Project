@@ -31,6 +31,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
@@ -99,7 +100,7 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 		boolean isCreate)
 		throws SormasToSormasValidationException {
 
-		String contactValidationGroupName = buildContactValidationGroupName(processedData.getEntity());
+		ValidationErrorGroup contactValidationGroupName = buildContactValidationGroupName(processedData.getEntity());
 
 		final ContactDto savedContact;
 		if (isCreate) {

@@ -32,11 +32,12 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
@@ -121,19 +122,19 @@ public class SormasToSormasContactFacadeEjb
 
 	@Override
 	protected void validateEntitiesBeforeShare(List<Contact> entities, boolean handOverOwnership) throws SormasToSormasException {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 		for (Contact contact : entities) {
 			if (!contactService.isContactEditAllowed(contact)) {
 				validationErrors.put(
 					buildContactValidationGroupName(contact),
 					ValidationErrors
-						.create(I18nProperties.getCaption(Captions.Contact), Validations.sormasToSormasNotEditable));
+						.create(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasNotEditable)));
 			}
 			if (handOverOwnership && contact.getPerson().isEnrolledInExternalJournal()) {
 				validationErrors.put(
 					buildContactValidationGroupName(contact),
 					ValidationErrors
-						.create(I18nProperties.getCaption(Captions.Contact), Validations.sormasToSormasPersonEnrolled));
+						.create(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled)));
 			}
 		}
 
@@ -176,12 +177,12 @@ public class SormasToSormasContactFacadeEjb
 		ValidationErrors errors = new ValidationErrors();
 
 		if (contactFacade.exists(uuid)) {
-			errors.add(I18nProperties.getCaption(Captions.Contact), Validations.sormasToSormasContactExists);
+			errors.add(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasContactExists));
 		}
 
 		if (caze != null && !caseFacade.exists(caze.getUuid())) {
 			errors
-				.add(I18nProperties.getCaption(Captions.CaseData), Validations.sormasToSormasContactCaseNotExists);
+				.add(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasContactCaseNotExists));
 		}
 
 		return errors;

@@ -28,12 +28,12 @@ public class SormasToSormasErrorResponse implements Serializable {
 
 	private Object[] args;
 
-	private Map<String, ValidationErrors> errors;
+	private Map<ValidationErrorGroup, ValidationErrors> errors;
 
 	public SormasToSormasErrorResponse() {
 	}
 
-	public SormasToSormasErrorResponse(String message, String property, Map<String, ValidationErrors> errors, Object[] args) {
+	public SormasToSormasErrorResponse(String message, String property, Map<ValidationErrorGroup, ValidationErrors> errors, Object[] args) {
 		this.message = message;
 		this.property = property;
 		this.errors = errors;
@@ -56,11 +56,11 @@ public class SormasToSormasErrorResponse implements Serializable {
 		this.property = property;
 	}
 
-	public Map<String, ValidationErrors> getErrors() {
+	public Map<ValidationErrorGroup, ValidationErrors> getErrors() {
 		return errors;
 	}
 
-	public void setErrors(Map<String, ValidationErrors> errors) {
+	public void setErrors(Map<ValidationErrorGroup, ValidationErrors> errors) {
 		this.errors = errors;
 	}
 

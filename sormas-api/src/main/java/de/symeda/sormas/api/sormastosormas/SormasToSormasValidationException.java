@@ -21,18 +21,18 @@ public class SormasToSormasValidationException extends Exception {
 
 	private static final long serialVersionUID = -6018922765225477534L;
 
-	private final Map<String, ValidationErrors> errors;
+	private final Map<ValidationErrorGroup, ValidationErrors> errors;
 
-	public SormasToSormasValidationException(Map<String, ValidationErrors> errors) {
+	public SormasToSormasValidationException(Map<ValidationErrorGroup, ValidationErrors> errors) {
 		this.errors = errors;
 	}
 
-	public SormasToSormasValidationException(Map<String, ValidationErrors> errors, Throwable cause) {
+	public SormasToSormasValidationException(Map<ValidationErrorGroup, ValidationErrors> errors, Throwable cause) {
 		super("Validation error", cause);
 		this.errors = errors;
 	}
 
-	public Map<String, ValidationErrors> getErrors() {
+	public Map<ValidationErrorGroup, ValidationErrors> getErrors() {
 		return errors;
 	}
 }

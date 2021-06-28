@@ -53,6 +53,8 @@ import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
@@ -99,22 +101,22 @@ public class ReceivedDataProcessorHelper {
 	public ValidationErrors processOriginInfo(SormasToSormasOriginInfoDto originInfo, String validationGroupCaption) {
 		if (originInfo == null) {
 			return ValidationErrors.create(
-				I18nProperties.getCaption(validationGroupCaption),
-				Validations.sormasToSormasShareInfoMissing);
+				new ValidationErrorGroup(validationGroupCaption),
+				new ValidationErrorMessage(Validations.sormasToSormasShareInfoMissing));
 		}
 
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		if (originInfo.getOrganizationId() == null) {
 			validationErrors.add(
-				I18nProperties.getCaption(Captions.CaseData_sormasToSormasOriginInfo),
-				Validations.sormasToSormasOrganizationIdMissing);
+				new ValidationErrorGroup(Captions.CaseData_sormasToSormasOriginInfo),
+				new ValidationErrorMessage(Validations.sormasToSormasOrganizationIdMissing));
 		}
 
 		if (DataHelper.isNullOrEmpty(originInfo.getSenderName())) {
 			validationErrors.add(
-				I18nProperties.getCaption(Captions.CaseData_sormasToSormasOriginInfo),
-				Validations.sormasToSormasSenderNameMissing);
+				new ValidationErrorGroup(Captions.CaseData_sormasToSormasOriginInfo),
+				new ValidationErrorMessage(Validations.sormasToSormasSenderNameMissing));
 		}
 
 		originInfo.setUuid(DataHelper.createUuid());
@@ -152,7 +154,7 @@ public class ReceivedDataProcessorHelper {
 	private CountryReferenceDto processCountry(CountryReferenceDto country, String errorCaption, ValidationErrors validationErrors) {
 		CountryReferenceDto localCountry = loadLocalCountry(country);
 		if (country != null && localCountry == null) {
-			validationErrors.add(errorCaption, Validations.sormasToSormasCountry, country.getCaption());
+			validationErrors.add(new ValidationErrorGroup(errorCaption), new ValidationErrorMessage(Validations.sormasToSormasCountry, country.getCaption()));
 		}
 		return localCountry;
 	}
@@ -264,16 +266,16 @@ public class ReceivedDataProcessorHelper {
 		List<String> errors = infrastructureAndErrors.getElement1();
 		if (errors.size() > 0) {
 			validationErrors.add(
-				I18nProperties.getCaption(groupNameTag),
-				Validations.sormasToSormasInfrastructure, String.join(",", errors));
+				new ValidationErrorGroup(groupNameTag),
+				new ValidationErrorMessage(Validations.sormasToSormasInfrastructure, String.join(",", errors)));
 
 		} else {
 			onNoErrors.accept(infrastructureAndErrors.getElement0());
 		}
 	}
 
-	public Map<String, ValidationErrors> processSamples(List<SormasToSormasSampleDto> samples) {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+	public Map<ValidationErrorGroup, ValidationErrors> processSamples(List<SormasToSormasSampleDto> samples) {
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 
 		Map<String, SampleDto> existingSamplesMap =
 			sampleFacade.getByUuids(samples.stream().map(s -> s.getSample().getUuid()).collect(Collectors.toList()))

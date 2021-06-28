@@ -38,6 +38,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
@@ -60,7 +61,7 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 	@Override
 	public ProcessedCaseData processReceivedData(SormasToSormasCaseDto receivedCase, CaseDataDto existingCaseData)
 		throws SormasToSormasValidationException {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 
 		PersonDto person = receivedCase.getPerson();
 		CaseDataDto caze = receivedCase.getEntity();
@@ -81,12 +82,12 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 		}
 
 		if (associatedContacts != null && associatedContacts.size() > 0) {
-			Map<String, ValidationErrors> contactValidationErrors = processAssociatedContacts(associatedContacts);
+			Map<ValidationErrorGroup, ValidationErrors> contactValidationErrors = processAssociatedContacts(associatedContacts);
 			validationErrors.putAll(contactValidationErrors);
 		}
 
 		if (samples != null && samples.size() > 0) {
-			Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
+			Map<ValidationErrorGroup, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
 			validationErrors.putAll(sampleErrors);
 		}
 
@@ -99,7 +100,7 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 
 	@Override
 	public SormasToSormasCasePreview processReceivedPreview(SormasToSormasCasePreview preview) throws SormasToSormasValidationException {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 
 		ValidationErrors caseValidationErrors = new ValidationErrors();
 
@@ -132,7 +133,7 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 
 		List<SormasToSormasContactPreview> contacts = preview.getContacts();
 		if (contacts != null && contacts.size() > 0) {
-			Map<String, ValidationErrors> contactValidationErrors = processContactPreviews(contacts);
+			Map<ValidationErrorGroup, ValidationErrors> contactValidationErrors = processContactPreviews(contacts);
 			validationErrors.putAll(contactValidationErrors);
 		}
 
@@ -233,8 +234,8 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 		return validationErrors;
 	}
 
-	private Map<String, ValidationErrors> processAssociatedContacts(List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts) {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+	private Map<ValidationErrorGroup, ValidationErrors> processAssociatedContacts(List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts) {
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 
 		Map<String, ContactDto> existingContactsMap =
 			contactFacade.getByUuids(associatedContacts.stream().map(c -> c.getContact().getUuid()).collect(Collectors.toList()))
@@ -254,8 +255,8 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 		return validationErrors;
 	}
 
-	private Map<String, ValidationErrors> processContactPreviews(List<SormasToSormasContactPreview> contacts) {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+	private Map<ValidationErrorGroup, ValidationErrors> processContactPreviews(List<SormasToSormasContactPreview> contacts) {
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 
 		for (SormasToSormasContactPreview contact : contacts) {
 			ValidationErrors contactErrors = dataProcessorHelper.processContactPreview(contact);

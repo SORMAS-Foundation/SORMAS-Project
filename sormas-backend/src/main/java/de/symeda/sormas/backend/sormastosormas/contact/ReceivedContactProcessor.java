@@ -31,6 +31,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
@@ -48,7 +49,7 @@ public class ReceivedContactProcessor
 	@Override
 	public ProcessedContactData processReceivedData(SormasToSormasContactDto receivedContact, ContactDto existingContact)
 		throws SormasToSormasValidationException {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 
 		PersonDto person = receivedContact.getPerson();
 		ContactDto contact = receivedContact.getEntity();
@@ -68,7 +69,7 @@ public class ReceivedContactProcessor
 		}
 
 		if (samples != null && samples.size() > 0) {
-			Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
+			Map<ValidationErrorGroup, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
 			validationErrors.putAll(sampleErrors);
 		}
 
@@ -81,7 +82,7 @@ public class ReceivedContactProcessor
 
 	@Override
 	public SormasToSormasContactPreview processReceivedPreview(SormasToSormasContactPreview preview) throws SormasToSormasValidationException {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
 
 		ValidationErrors contactErrors = dataProcessorHelper.processContactPreview(preview);
 
