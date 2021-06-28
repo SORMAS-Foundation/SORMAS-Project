@@ -520,13 +520,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getSormasToSormasConfig().getOidcRealmUrl(),
 			getSormasToSormasConfig().getOidcServer());
 
-		// Must be a valid URL
-		UrlValidator urlValidator = new UrlValidator(
-			new String[] {
-				"http",
-				"https" },
-			UrlValidator.ALLOW_LOCAL_URLS);
-
 		UrlValidator urlValidator = new UrlValidator(
 			new String[] {
 				"http",
