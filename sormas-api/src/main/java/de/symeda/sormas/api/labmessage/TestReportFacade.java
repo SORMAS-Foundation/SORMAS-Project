@@ -7,7 +7,7 @@ import java.util.List;
 @Remote
 public interface TestReportFacade {
 
-	TestReportDto getByUuid(String Uuid);
+	TestReportDto getByUuid(String uuid);
 
 	TestReportDto saveTestReport(@Valid TestReportDto dto);
 

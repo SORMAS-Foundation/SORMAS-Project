@@ -28,13 +28,23 @@ public class TestReportFacadeEjb implements TestReportFacade {
 	private PathogenTestService pathogenTestService;
 
 	@Override
-	public TestReportDto getByUuid(String Uuid) {
-		return null;
+	public TestReportDto getByUuid(String uuid) {
+		return toDto(testReportService.getByUuid(uuid));
 	}
 
 	@Override
 	public TestReportDto saveTestReport(@Valid TestReportDto dto) {
-		return null;
+
+		return saveTestReport(dto, true);
+	}
+
+	public TestReportDto saveTestReport(TestReportDto dto, boolean checkCkangeDate) {
+
+		TestReport testReport = fromDto(dto, checkCkangeDate);
+
+		testReportService.ensurePersisted(testReport);
+
+		return toDto(testReport);
 	}
 
 	@Override
