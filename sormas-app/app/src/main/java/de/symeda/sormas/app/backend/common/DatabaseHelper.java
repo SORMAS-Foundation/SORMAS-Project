@@ -2594,6 +2594,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withSamples boolean;");
 					getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withEventParticipants boolean;");
 
+				case 303:
+					currentVersion = 303;
+					getDao(Case.class).executeRaw("UPDATE cases" +
+							" SET responsibleRegion_id = region_id," +
+							" responsibleDistrict_id = district_id," +
+							" responsibleCommunity_id = community_id," +
+							" region_id = null," +
+							" district_id = null," +
+							" community_id = null," +
+							" reportingDistrict_id = null"+
+							" WHERE responsibleRegion_id IS NULL AND (reportingDistrict_id IS NULL OR reportingDistrict_id = district_id)");
+
+					getDao(Case.class).executeRaw("UPDATE cases" +
+							" SET responsibleRegion_id = (SELECT region_id from district where id = cases.reportingDistrict_id)," +
+							" responsibleDistrict_id = reportingDistrict_id," +
+							" reportingDistrict_id = null"+
+							" WHERE responsibleRegion_id IS NULL AND reportingDistrict_id IS NOT NULL");
+
 				// ATTENTION: break should only be done after last version
 				break;
 

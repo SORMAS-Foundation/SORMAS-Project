@@ -7439,11 +7439,44 @@ UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epi
 
 INSERT INTO schema_version (version_number, comment) VALUES (378, 'Set contact with source case known for all existing cases #5841');
 
+-- 2021-06-22 Refine the split of jurisdiction and place of stay #5852
+DO $$
+    DECLARE _case RECORD;
+    BEGIN
+        FOR _case IN SELECT * FROM cases WHERE responsibleregion_id IS NULL
+                                           AND (reportingdistrict_id IS NULL OR reportingdistrict_id = district_id)
+            LOOP
+                UPDATE cases
+                    SET responsibleregion_id = _case.region_id,
+                        responsibledistrict_id = _case.district_id,
+                        responsiblecommunity_id = _case.community_id,
+                        region_id = null,
+                        district_id = null,
+                        community_id = null,
+                        reportingdistrict_id = null
+                where id = _case.id;
+            END LOOP;
+
+        FOR _case IN SELECT * FROM cases WHERE responsibleregion_id IS NULL AND reportingdistrict_id IS NOT NULL
+            LOOP
+                UPDATE cases
+                SET responsibleregion_id = (SELECT region_id from district where id = _case.reportingdistrict_id),
+                    responsibledistrict_id = _case.reportingdistrict_id,
+                    reportingdistrict_id = null
+                where id = _case.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE cases DROP COLUMN reportingdistrict_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (379, 'Refine the split of jurisdiction and place of stay #5852');
+
 -- 2021-06-25 [Sormas2Sormas] Returning cases without contacts or samples leaves contacts and samples disabled in both instances #5562
 ALTER TABLE sormastosormasorigininfo
     ADD COLUMN withassociatedcontacts boolean,
     ADD COLUMN withsamples boolean,
     ADD COLUMN witheventparticipants boolean;
 
-INSERT INTO schema_version (version_number, comment) VALUES (379, '[Sormas2Sormas] Returning cases without contacts or samples leaves contacts and samples disabled in both instances #5562');
+INSERT INTO schema_version (version_number, comment) VALUES (380, '[Sormas2Sormas] Returning cases without contacts or samples leaves contacts and samples disabled in both instances #5562');
 -- *** Insert new sql commands BEFORE this line ***
