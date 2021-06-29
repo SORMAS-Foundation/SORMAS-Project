@@ -913,13 +913,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 
 		differentPlaceOfStayJurisdiction.addValueChangeListener(e -> {
-			Boolean differentPlaceOfStay = (Boolean) e.getProperty().getValue();
-			if (differentPlaceOfStay) {
-				updateFacility();
-
-			} else {
-				updateFacility();
-			}
+			updateFacility();
 		});
 
 		// Set initial visibilities & accesses
