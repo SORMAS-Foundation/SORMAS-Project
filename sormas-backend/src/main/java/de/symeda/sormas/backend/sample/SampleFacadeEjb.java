@@ -41,6 +41,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
@@ -66,6 +67,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
@@ -435,9 +437,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		Subquery<Long> testCountSq = cq.subquery(Long.class);
 		Root<PathogenTest> testCountRoot = testCountSq.from(PathogenTest.class);
 		testCountSq.where(
-			cb.equal(testCountRoot.join(PathogenTest.SAMPLE, JoinType.LEFT).get(AbstractDomainObject.ID), sample.get(AbstractDomainObject.ID)),
+			cb.equal(testCountRoot.join(PathogenTest.SAMPLE, JoinType.LEFT).get(Sample.ID), sample.get(Sample.ID)),
 			cb.isFalse(testCountRoot.get(PathogenTest.DELETED)));
-		testCountSq.select(cb.countDistinct(testCountRoot.get(AbstractDomainObject.ID)));
+		testCountSq.select(cb.countDistinct(testCountRoot.get(PathogenTest.ID)));
 		selections.add(testCountSq.getSelection());
 
 		selections.addAll(getCaseJurisdictionSelections(joins));
@@ -521,25 +523,30 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		if (!samples.isEmpty()) {
-			Map<String, PathogenTest> tests = null;
-			List<PathogenTest> testList = null;
-			CriteriaQuery<PathogenTest> testCq = cb.createQuery(PathogenTest.class);
+			CriteriaQuery<Object[]> testCq = cb.createQuery(Object[].class);
 			Root<PathogenTest> testRoot = testCq.from(PathogenTest.class);
-			Expression<String> testIdsExpr = testRoot.get(PathogenTest.SAMPLE).get(Sample.UUID);
+			Expression<String> sampleIdExpr = testRoot.get(PathogenTest.SAMPLE).get(Sample.UUID);
+
+			Path<Long> testType = testRoot.get(PathogenTest.TEST_TYPE);
+			Path<Date> cqValue = testRoot.get(PathogenTest.CQ_VALUE);
+			testCq.select(cb.array(testType, cqValue, sampleIdExpr));
+
 			testCq.where(
 				cb.isFalse(testRoot.get(PathogenTest.DELETED)),
-				testIdsExpr.in(samples.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList())));
+				sampleIdExpr.in(samples.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList())));
 			testCq.orderBy(cb.desc(testRoot.get(PathogenTest.CHANGE_DATE)));
-			testList = em.createQuery(testCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-			tests = testList.stream()
-				.filter(distinctByKey(pathogenTest -> pathogenTest.getSample().getUuid()))
-				.collect(Collectors.toMap(pathogenTest -> pathogenTest.getSample().getUuid(), Function.identity()));
+
+			List<Object[]> testList = em.createQuery(testCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+
+			Map<String, Object[]> tests = testList.stream()
+				.filter(distinctByKey(pathogenTest -> pathogenTest[2]))
+				.collect(Collectors.toMap(pathogenTest -> pathogenTest[2].toString(), Function.identity()));
 
 			if (tests != null) {
 				for (SampleIndexDto indexDto : samples) {
 					Optional.ofNullable(tests.get(indexDto.getUuid())).ifPresent(test -> {
-						indexDto.setTypeOfLastTest(test.getTestType());
-						indexDto.setLastTestCqValue(test.getCqValue());
+						indexDto.setTypeOfLastTest((PathogenTestType) test[0]);
+						indexDto.setLastTestCqValue((Float) test[1]);
 					});
 				}
 			}
