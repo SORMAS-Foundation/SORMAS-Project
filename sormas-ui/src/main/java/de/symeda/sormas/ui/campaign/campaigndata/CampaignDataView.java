@@ -15,14 +15,25 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
+import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
@@ -49,14 +60,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import org.vaadin.hene.popupbutton.PopupButton;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-
-import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
 
 @SuppressWarnings("serial")
 public class CampaignDataView extends AbstractCampaignView {
@@ -136,38 +139,50 @@ public class CampaignDataView extends AbstractCampaignView {
 			}
 		}
 
-		VerticalLayout newFormLayout = new VerticalLayout();
 		PopupButton newFormButton;
+		VerticalLayout newFormLayout = new VerticalLayout();
 		{
 			newFormLayout.setSpacing(true);
 			newFormLayout.setMargin(true);
 			newFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 			newFormLayout.setWidth(350, Unit.PIXELS);
+			fillNewFormLayout(newFormLayout);
 
-			newFormButton = ButtonHelper.createIconPopupButton(Captions.actionNewForm, VaadinIcons.PLUS_CIRCLE, newFormLayout);
+			Panel newFormPanel = new Panel();
+			newFormPanel.setContent(newFormLayout);
+			newFormPanel.setWidth(newFormLayout.getWidth() + 20.0f, Unit.PIXELS);
+			newFormPanel.setHeight(500, Unit.PIXELS);
+
+			newFormButton = ButtonHelper.createIconPopupButton(Captions.actionNewForm, VaadinIcons.PLUS_CIRCLE, newFormPanel);
 			newFormButton.setId("new-form");
-
-			createNewFormLayout(newFormLayout);
-
 			addHeaderComponent(newFormButton);
 		}
 
+		PopupButton importCampaignButton;
 		VerticalLayout importFormLayout = new VerticalLayout();
-		importFormLayout.setSpacing(true);
-		importFormLayout.setMargin(true);
-		importFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-		importFormLayout.setWidth(350, Unit.PIXELS);
+		{
+			importFormLayout.setSpacing(true);
+			importFormLayout.setMargin(true);
+			importFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			importFormLayout.setWidth(350, Unit.PIXELS);
+			fillImportLayout(importFormLayout);
 
-		Button importCampaignButton = ButtonHelper.createIconPopupButton(Captions.actionImport, VaadinIcons.PLUS_CIRCLE, importFormLayout);
-		importCampaignButton.setId("campaign-form-import");
-		createImportLayout(importFormLayout);
-		addHeaderComponent(importCampaignButton);
+			Panel importFormPanel = new Panel();
+			importFormPanel.setContent(importFormLayout);
+			importFormPanel.setWidth(importFormLayout.getWidth() + 20.0f, Unit.PIXELS);
+			importFormPanel.setHeight(500, Unit.PIXELS);
+
+			importCampaignButton = ButtonHelper.createIconPopupButton(Captions.actionImport, VaadinIcons.PLUS_CIRCLE, importFormPanel);
+			importCampaignButton.setId("campaign-form-import");
+			addHeaderComponent(importCampaignButton);
+		}
+
 		campaignSelector.addValueChangeListener(e -> {
 			importFormLayout.removeAllComponents();
 			newFormLayout.removeAllComponents();
 			if (!Objects.isNull(campaignSelector.getValue())) {
-				createImportLayout(importFormLayout);
-				createNewFormLayout(newFormLayout);
+				fillImportLayout(importFormLayout);
+				fillNewFormLayout(newFormLayout);
 				importCampaignButton.setEnabled(true);
 				newFormButton.setEnabled(true);
 			} else {
@@ -186,7 +201,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		addComponent(mainLayout);
 	}
 
-	private void createImportLayout(VerticalLayout importFormLayout) {
+	private void fillImportLayout(VerticalLayout importFormLayout) {
 
 		CampaignReferenceDto campaignReferenceDto = campaignSelector.getValue();
 		if (campaignReferenceDto != null) {
@@ -208,7 +223,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 	}
 
-	private void createNewFormLayout(VerticalLayout newFormLayout) {
+	private void fillNewFormLayout(VerticalLayout newFormLayout) {
 
 		CampaignReferenceDto campaignReferenceDto = campaignSelector.getValue();
 		if (campaignReferenceDto != null) {
