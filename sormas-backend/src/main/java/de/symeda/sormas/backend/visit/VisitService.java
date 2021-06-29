@@ -74,7 +74,7 @@ public class VisitService extends BaseAdoService<Visit> {
 		super(Visit.class);
 	}
 
-	protected boolean inJurisdiction(Visit visit) {
+	public boolean inJurisdiction(Visit visit) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
