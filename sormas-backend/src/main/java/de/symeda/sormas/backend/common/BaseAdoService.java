@@ -80,6 +80,15 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return currentUser.get().getUser();
 	}
 
+	/**
+	 * Should only be used for testing scenarios of user rights & jurisdiction!
+	 * @param user
+	 */
+	@Deprecated
+	public void setCurrentUser(User user) {
+		currentUser.get().setUser(user);
+	}
+
 	protected Class<ADO> getElementClass() {
 		return elementClass;
 	}
@@ -290,6 +299,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		query.select(cb.selectCase().when(exists, trueExpression).otherwise(falseExpression));
 
 		final TypedQuery<Object> typedQuery = em.createQuery(query);
+		typedQuery.setMaxResults(1);
 
 		try {
 			return (Boolean) typedQuery.getSingleResult();

@@ -22,6 +22,11 @@ import org.openqa.selenium.By;
 
 public class TaskManagementPage {
   public static final By NEW_TASK_BUTTON = By.cssSelector("div#taskNewTask");
+  public static final By GENERAL_SEARCH_INPUT = By.cssSelector("input#freeText");
   public static final String EDIT_BUTTON_XPATH_BY_TEXT =
       "//td[contains(text(),'%s')]/../td/span[contains(@class, 'v-icon-edit')]";
+  public static final By COLUMN_HEADERS_TEXT =
+      By.cssSelector("thead .v-grid-column-default-header-content");
+  public static final By TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static final By TABLE_DATA = By.tagName("td");
 }

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -104,11 +105,13 @@ public class DocumentListComponent extends VerticalLayout {
 		PopupButton mainButton =
 			ButtonHelper.createIconPopupButton(Captions.documentUploadDocument, VaadinIcons.PLUS_CIRCLE, uploadLayout, ValoTheme.BUTTON_PRIMARY);
 
+		boolean multipleUpload = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS_MULTI_UPLOAD);
+
 		UploadStateWindow uploadStateWindow = new UploadStateWindow();
 		MultiFileUpload multiFileUpload = new DocumentMultiFileUpload(() -> {
 			mainButton.setButtonClickTogglesPopupVisibility(false);
 			mainButton.setClosePopupOnOutsideClick(false);
-		}, new DocumentUploadFinishedHandler(relatedEntityType, entityRef.getUuid(), this::reload), uploadStateWindow);
+		}, new DocumentUploadFinishedHandler(relatedEntityType, entityRef.getUuid(), this::reload), uploadStateWindow, multipleUpload);
 		multiFileUpload
 			.setUploadButtonCaptions(I18nProperties.getCaption(Captions.importImportData), I18nProperties.getCaption(Captions.importImportData));
 		multiFileUpload.setAllUploadFinishedHandler(() -> {

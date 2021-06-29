@@ -29,7 +29,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.pojo.Case;
+import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.services.CaseService;
 
 public class CreateNewCaseSteps implements En {
@@ -68,6 +68,30 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_MESSAGE);
         });
+
+    When(
+        "^I create a new case with specific data using line listing feature$",
+        () -> {
+          caze = caseService.buildCaseForLineListingFeature();
+
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth());
+          selectSex(caze.getSex());
+          fillNationalHealthId(caze.getNationalHealthId());
+          fillPassportNumber(caze.getPassportNumber());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport());
+          fillPlaceDescription(caze.getPlaceDescription());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_MESSAGE);
+        });
   }
 
   public void selectCaseOrigin(String caseOrigin) {
@@ -75,7 +99,7 @@ public class CreateNewCaseSteps implements En {
   }
 
   public void fillDateOfReport(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
   }
 
@@ -143,7 +167,7 @@ public class CreateNewCaseSteps implements En {
   }
 
   public void fillDateOfSymptomOnset(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_ONSET_INPUT, formatter.format(date));
   }
 

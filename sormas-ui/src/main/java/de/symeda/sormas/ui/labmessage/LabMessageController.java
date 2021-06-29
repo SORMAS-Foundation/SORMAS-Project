@@ -1,20 +1,17 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
+ *******************************************************************************/
 
 package de.symeda.sormas.ui.labmessage;
 
@@ -26,6 +23,9 @@ import java.util.stream.Collectors;
 
 import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
@@ -45,6 +45,7 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -103,8 +104,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LabMessageController {
 
@@ -399,7 +398,7 @@ public class LabMessageController {
 		LabMessageDto labMessageDto,
 		EventParticipantDto eventParticipant,
 		Window window) {
-		EventParticipantEditForm createForm = new EventParticipantEditForm(eventDto, false);
+		EventParticipantEditForm createForm = new EventParticipantEditForm(eventDto, false, eventParticipant.getPerson().isPseudonymized());
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,
@@ -410,7 +409,7 @@ public class LabMessageController {
 			if (!createForm.getFieldGroup().isModified()) {
 				final EventParticipantDto dto = createForm.getValue();
 
-				FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(dto.getPerson());
+				FacadeProvider.getPersonFacade().savePerson(dto.getPerson());
 				EventParticipantDto savedDto = FacadeProvider.getEventParticipantFacade().saveEventParticipant(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
 				createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), savedDto.toReference()), labMessageDto, true);
@@ -437,7 +436,7 @@ public class LabMessageController {
 			personDto.getAddress().setPostalCode(labMessageDto.getPersonPostalCode());
 			personDto.getAddress().setCity(labMessageDto.getPersonCity());
 		}
-		FacadeProvider.getPersonFacade().savePersonAndNotifyExternalJournal(personDto);
+		FacadeProvider.getPersonFacade().savePerson(personDto);
 	}
 
 	private void pickOrCreateSample(PseudonymizableDto dto, LabMessageDto labMessageDto, List<SampleDto> samples) {
@@ -682,7 +681,10 @@ public class LabMessageController {
 			.setValue(labMessageDto.isTestResultVerified());
 		((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
 			.setValue(labMessageDto.getTestDateTime());
-		((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE)).setValue(labMessageDto.getMessageDateTime());
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE))
+				.setValue(labMessageDto.getMessageDateTime());
+		}
 
 		sampleCreateComponent.addCommitListener(() -> {
 			window.close();
@@ -914,7 +916,7 @@ public class LabMessageController {
 
 		buttonsPanel.addComponent(forwardButton);
 
-		if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()) {
+		if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
 			Button shareButton = ButtonHelper.createIconButton(Captions.sormasToSormasSendLabMessage, VaadinIcons.SHARE, (e) -> {
 				ControllerProvider.getSormasToSormasController().shareLabMessage(labMessage, callback);
 			});
@@ -936,18 +938,18 @@ public class LabMessageController {
 				return Optional.of(result.getValue());
 			} else {
 				new Notification(
-						I18nProperties.getString(Strings.headingLabMessageDownload),
-						result.getError(),
-						Notification.Type.ERROR_MESSAGE,
-						false).show(Page.getCurrent());
+					I18nProperties.getString(Strings.headingLabMessageDownload),
+					result.getError(),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
 			}
 
 		} catch (NamingException e) {
 			new Notification(
-					I18nProperties.getString(Strings.headingLabMessageDownload),
-					I18nProperties.getString(Strings.messageExternalLabResultsAdapterNotFound),
-					Notification.Type.ERROR_MESSAGE,
-					false).show(Page.getCurrent());
+				I18nProperties.getString(Strings.headingLabMessageDownload),
+				I18nProperties.getString(Strings.messageExternalLabResultsAdapterNotFound),
+				Notification.Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
 			logger.error(e.getMessage());
 		}
 		return Optional.empty();

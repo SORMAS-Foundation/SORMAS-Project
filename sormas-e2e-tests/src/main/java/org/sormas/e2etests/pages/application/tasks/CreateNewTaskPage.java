@@ -42,5 +42,7 @@ public class CreateNewTaskPage {
       By.cssSelector(".v-window #assigneeReply");
   public static final By TASK_STATUS_OPTIONS =
       By.cssSelector(".v-window #taskStatus .v-radiobutton label");
-  public static final By SAVE_BUTTON = By.id("commit");
+  public static final By SAVE_BUTTON = By.cssSelector(".v-window #commit");
+  public static final By SELECTED_TASK_CONTEXT =
+      By.cssSelector(".v-window #taskContext input:checked");
 }

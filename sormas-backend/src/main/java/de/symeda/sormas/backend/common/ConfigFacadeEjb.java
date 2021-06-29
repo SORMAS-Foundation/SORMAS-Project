@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.common;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -58,6 +59,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String COUNTRY_EPID_PREFIX = "country.epidprefix";
 	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
 	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
+	private static final String MAP_USE_COUNTRY_CENTER = "map.usecountrycenter";
 	private static final String MAP_ZOOM = "map.zoom";
 
 	public static final String VERSION_PLACEHOLER = "%version";
@@ -88,7 +90,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String SMS_AUTH_KEY = "sms.auth.key";
 	public static final String SMS_AUTH_SECRET = "sms.auth.secret";
 
+	public static final String DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES = "duplicatechecks.excludepersonsonlylinkedtoarchivedentries";
 	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
+
 	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
 
 	public static final String INTERFACE_SYMPTOM_JOURNAL_URL = "interface.symptomjournal.url";
@@ -193,7 +197,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		if (countryName.isEmpty()) {
 			logger.info("No country name is specified in sormas.properties.");
 		}
-		return countryName;
+		return new String(countryName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 	}
 
 	/**
@@ -247,6 +251,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public GeoLatLon getCountryCenter() {
 		return new GeoLatLon(getDouble(COUNTRY_CENTER_LAT, 0), getDouble(COUNTRY_CENTER_LON, 0));
+	}
+
+	@Override
+	public boolean isMapUseCountryCenter() {
+		return getBoolean(MAP_USE_COUNTRY_CENTER, false);
 	}
 
 	@Override
@@ -362,6 +371,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getSmsAuthSecret() {
 		return getProperty(SMS_AUTH_SECRET, "");
+	}
+
+	@Override
+	public boolean isDuplicateChecksExcludePersonsOfArchivedEntries() {
+		return getBoolean(DUPLICATE_CHECKS_EXCLUDE_PERSONS_OF_ACHIVED_ENTRIES, false);
 	}
 
 	@Override
@@ -493,15 +507,18 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getPatientDiaryConfig().getProbandsUrl(),
 			getPatientDiaryConfig().getAuthUrl());
 
+		UrlValidator urlValidator = new UrlValidator(
+			new String[] {
+				"http",
+				"https" },
+			UrlValidator.ALLOW_LOCAL_URLS);
+
 		urls.forEach(url -> {
 			if (StringUtils.isBlank(url)) {
 				return;
 			}
-			// Must be a valid URL
-			if (!new UrlValidator(
-				new String[] {
-					"http",
-					"https" }).isValid(url)) {
+
+			if (!urlValidator.isValid(url)) {
 				throw new IllegalArgumentException("'" + url + "' is not a valid URL");
 			}
 		});

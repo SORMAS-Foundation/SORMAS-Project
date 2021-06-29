@@ -149,6 +149,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
 	public static final String INFECTION_SETTING = "infectionSetting";
@@ -194,8 +195,6 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String RE_INFECTION = "reInfection";
 	public static final String PREVIOUS_INFECTION_DATE = "previousInfectionDate";
 
-	public static final String REPORTING_DISTRICT = "reportingDistrict";
-
 	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
 
 	public static final String NOT_A_CASE_REASON_NEGATIVE_TEST = "notACaseReasonNegativeTest";
@@ -205,6 +204,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String NOT_A_CASE_REASON_DETAILS = "notACaseReasonDetails";
 	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
 	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
+	public static final String DONT_SHARE_WITH_REPORTING_TOOL = "dontShareWithReportingTool";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -278,6 +278,9 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	private RegionReferenceDto responsibleRegion;
 	private DistrictReferenceDto responsibleDistrict;
+	@Outbreaks
+	@PersonalData
+	@SensitiveData
 	private CommunityReferenceDto responsibleCommunity;
 
 	@Outbreaks
@@ -501,6 +504,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		COUNTRY_CODE_SWITZERLAND })
 	private String externalID;
 	private String externalToken;
+	private String internalToken;
 	private boolean sharedToCountry;
 	@HideForCountriesExcept
 	private boolean nosocomialOutbreak;
@@ -594,9 +598,6 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private Date previousInfectionDate;
 
 	@HideForCountriesExcept
-	private DistrictReferenceDto reportingDistrict;
-
-	@HideForCountriesExcept
 	private YesNoUnknown bloodOrganOrTissueDonated;
 
 	@HideForCountriesExcept
@@ -615,6 +616,8 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private String notACaseReasonDetails;
 	private Date followUpStatusChangeDate;
 	private UserReferenceDto followUpStatusChangeUser;
+
+	private boolean dontShareWithReportingTool;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -1320,6 +1323,14 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		this.externalToken = externalToken;
 	}
 
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
+	}
+
 	public boolean isSharedToCountry() {
 		return sharedToCountry;
 	}
@@ -1601,6 +1612,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	}
 
 	@Override
+	@ImportIgnore
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
@@ -1648,14 +1660,6 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	public void setPreviousInfectionDate(Date previousInfectionDate) {
 		this.previousInfectionDate = previousInfectionDate;
-	}
-
-	public DistrictReferenceDto getReportingDistrict() {
-		return reportingDistrict;
-	}
-
-	public void setReportingDistrict(DistrictReferenceDto reportingDistrict) {
-		this.reportingDistrict = reportingDistrict;
 	}
 
 	public YesNoUnknown getBloodOrganOrTissueDonated() {
@@ -1733,5 +1737,13 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	public boolean hasResponsibleJurisdiction() {
 		return responsibleRegion != null || responsibleDistrict != null || responsibleCommunity != null;
+	}
+
+	public boolean isDontShareWithReportingTool() {
+		return dontShareWithReportingTool;
+	}
+
+	public void setDontShareWithReportingTool(boolean dontShareWithReportingTool) {
+		this.dontShareWithReportingTool = dontShareWithReportingTool;
 	}
 }
