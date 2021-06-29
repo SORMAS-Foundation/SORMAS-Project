@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.caze.importer;
 
 import java.io.File;
@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.utils.DataHelper;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +34,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -106,6 +107,12 @@ public class CaseImporter extends DataImporter {
 		boolean firstLine)
 		throws IOException, InvalidColumnException, InterruptedException {
 
+		// regenerate the UUID to prevent overwrite in case of export and import of the same entities
+		int uuidIndex = ArrayUtils.indexOf(entityProperties, CaseDataDto.UUID);
+		if (uuidIndex >= 0) {
+			values[uuidIndex] = DataHelper.createUuid();
+		}
+
 		ImportLineResultDto<CaseImportEntities> importResult =
 			caseImportFacade.importCaseData(values, entityClasses, entityProperties, entityPropertyPaths, !firstLine);
 
@@ -162,11 +169,8 @@ public class CaseImporter extends DataImporter {
 				final CaseImportLock caseSelectLock = new CaseImportLock();
 				synchronized (caseSelectLock) {
 					// Retrieve all similar cases from the database
-					CaseCriteria caseCriteria = new CaseCriteria().disease(importCase.getDisease()).region(importCase.getRegion());
 					CaseSimilarityCriteria criteria =
-						new CaseSimilarityCriteria().personUuid(selectedPersonUuid != null ? selectedPersonUuid : importPerson.getUuid())
-							.caseCriteria(caseCriteria)
-							.reportDate(importCase.getReportDate());
+						CaseSimilarityCriteria.forCase(importCase, selectedPersonUuid != null ? selectedPersonUuid : importPerson.getUuid());
 
 					List<CaseIndexDto> similarCases = caseFacade.getSimilarCases(criteria);
 
@@ -195,7 +199,7 @@ public class CaseImporter extends DataImporter {
 						}
 
 						// If the user chose to override an existing case with the imported case, insert the new data into the existing case and associate the imported samples with it
-						if (resultOption == ImportSimilarityResultOption.OVERRIDE && consumer.result.getMatchingCase() != null) {
+						if (resultOption == ImportSimilarityResultOption.OVERRIDE && consumer.result != null &&  consumer.result.getMatchingCase() != null) {
 							selectedCaseUuid = consumer.result.getMatchingCase().getUuid();
 						}
 					}

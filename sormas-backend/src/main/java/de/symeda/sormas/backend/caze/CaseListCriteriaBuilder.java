@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -46,6 +45,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.utils.CaseJoins;
 
@@ -168,13 +168,8 @@ public class CaseListCriteriaBuilder {
 	}
 
 	public List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseQueryContext caseQueryContext) {
-
-		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
-
-		return getCaseIndexSelections(root, joins);
-	}
-
-	public List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseJoins<Case> joins) {
+		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		return Arrays.asList(
 			root.get(AbstractDomainObject.ID),
 			root.get(Case.UUID),
@@ -191,12 +186,9 @@ public class CaseListCriteriaBuilder {
 			root.get(Case.INVESTIGATION_STATUS),
 			joins.getPerson().get(Person.PRESENT_CONDITION),
 			root.get(Case.REPORT_DATE),
-			joins.getReportingUser().get(User.UUID),
 			root.get(AbstractDomainObject.CREATION_DATE),
 			joins.getRegion().get(Region.UUID),
 			joins.getDistrict().get(District.UUID),
-			joins.getDistrict().get(District.NAME),
-			joins.getCommunity().get(Community.UUID),
 			joins.getFacility().get(Facility.UUID),
 			joins.getFacility().get(Facility.NAME),
 			root.get(Case.HEALTH_FACILITY_DETAILS),
@@ -221,7 +213,8 @@ public class CaseListCriteriaBuilder {
 			joins.getFacility().get(Facility.ID),
 			joins.getResponsibleRegion().get(Region.UUID),
 			joins.getResponsibleDistrict().get(District.UUID),
-			joins.getResponsibleCommunity().get(Community.UUID));
+			joins.getResponsibleDistrict().get(District.NAME),
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {
@@ -262,8 +255,8 @@ public class CaseListCriteriaBuilder {
 			return Collections.singletonList(joins.getRegion().get(Region.UUID));
 		case CaseIndexDto.DISTRICT_UUID:
 			return Collections.singletonList(joins.getDistrict().get(District.UUID));
-		case CaseIndexDto.DISTRICT_NAME:
-			return Collections.singletonList(joins.getDistrict().get(District.NAME));
+		case CaseIndexDto.RESPONSIBLE_DISTRICT_NAME:
+			return Collections.singletonList(joins.getResponsibleDistrict().get(District.NAME));
 		case CaseIndexDto.HEALTH_FACILITY_UUID:
 			return Collections.singletonList(joins.getFacility().get(Facility.UUID));
 		case CaseIndexDto.HEALTH_FACILITY_NAME:
@@ -291,11 +284,11 @@ public class CaseListCriteriaBuilder {
 				joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getAddress().get(Location.POSTAL_CODE),
 				((Expression<String>) caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
+				joins.getReportingUser().get(User.UUID),
 				joins.getReportingUser().get(User.FIRST_NAME),
 				joins.getReportingUser().get(User.LAST_NAME),
 				joins.getSymptoms().get(Symptoms.ONSET_DATE),
 				joins.getResponsibleRegion().get(Region.NAME),
-				joins.getResponsibleDistrict().get(District.NAME),
 				joins.getResponsibleCommunity().get(Community.NAME)));
 
 		return selections;
@@ -318,27 +311,11 @@ public class CaseListCriteriaBuilder {
 			return Collections.singletonList(joins.getSymptoms().get(Symptoms.ONSET_DATE));
 		case CaseIndexDetailedDto.RESPONSIBLE_REGION:
 			return Collections.singletonList(joins.getResponsibleRegion().get(Region.NAME));
-		case CaseIndexDetailedDto.RESPONSIBLE_DISTRICT:
-			return Collections.singletonList(joins.getResponsibleDistrict().get(District.NAME));
 		case CaseIndexDetailedDto.RESPONSIBLE_COMMUNITY:
 			return Collections.singletonList(joins.getResponsibleCommunity().get(Community.NAME));
 		default:
 			return getIndexOrders(sortProperty, caze, joins, cb);
 		}
-	}
-
-	public Stream<Selection<?>> getJurisdictionSelections(CaseJoins<Case> joins) {
-
-		return Stream.of(
-			joins.getReportingUser().get(User.UUID),
-			joins.getResponsibleRegion().get(Region.UUID),
-			joins.getResponsibleDistrict().get(District.UUID),
-			joins.getResponsibleCommunity().get(Community.UUID),
-			joins.getRegion().get(Region.UUID),
-			joins.getDistrict().get(District.UUID),
-			joins.getCommunity().get(Community.UUID),
-			joins.getFacility().get(Facility.UUID),
-			joins.getPointOfEntry().get(PointOfEntry.UUID));
 	}
 
 	private interface OrderExpressionProvider {

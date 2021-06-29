@@ -17,13 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -48,7 +48,6 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
-import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
@@ -56,7 +55,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -189,19 +187,18 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testFilterTasksByUserJurisdiction() {
+
 		RDCF rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
+
+		// 1. Region level user without a task
+		UserDto survSup = creator.createUser(rdcf1.region.getUuid(), null, null, "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		loginWith(survSup);
+		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(empty()));
+
+		// 2a. District level user with task
 		UserDto survOff = creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), null, "Surv", "Off", UserRole.SURVEILLANCE_OFFICER);
-
-		creator.createUser(
-			rdcf1.region.getUuid(),
-			rdcf1.district.getUuid(),
-			rdcf1.community.getUuid(),
-			null,
-			"Comm",
-			"Inf",
-			UserRole.COMMUNITY_INFORMANT);
-
-		when(MockProducer.getPrincipal().getName()).thenReturn("CommInf");
+		loginWith(survOff);
+		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(empty()));
 
 		CaseDataDto caze = creator.createCase(survOff.toReference(), creator.createPerson("First", "Last").toReference(), rdcf1);
 		creator.createTask(
@@ -213,17 +210,32 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			new Date(),
 			survOff.toReference());
+		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(not(empty())));
 
-		List<TaskIndexDto> indexTasks = getTaskFacade().getIndexList(null, 0, 100, null);
-		assertThat(indexTasks.size(), is(0));
+		// 2b. Region user now sees tasks from district level
+		loginWith(survSup);
+		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(not(empty())));
+
+		// 3. Community level user does not see task of district level user
+		UserDto commInf = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.community.getUuid(),
+			null,
+			"Comm",
+			"Inf",
+			UserRole.COMMUNITY_INFORMANT);
+		loginWith(commInf);
+
+		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(empty()));
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 2019);
 		List<TaskDto> activeTasks = getTaskFacade().getAllActiveTasksAfter(calendar.getTime());
-		assertThat(activeTasks.size(), is(0));
+		assertThat(activeTasks, is(empty()));
 
 		List<TaskDto> tasksByCase = getTaskFacade().getAllByCase(caze.toReference());
-		assertThat(tasksByCase.size(), is(0));
+		assertThat(tasksByCase, is(empty()));
 	}
 
 	@Test
