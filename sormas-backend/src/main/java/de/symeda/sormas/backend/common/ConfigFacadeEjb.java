@@ -132,6 +132,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SORMAS2SORMAS_ID = "sormas2sormas.id";
 	private static final String SORMAS2SORMAS_REDIS_CLIENT_NAME = "sormas2sormas.redis.clientName";
 	private static final String SORMAS2SORMAS_REDIS_CLIENT_PASSWORD = "sormas2sormas.redis.clientPassword";
+	private static final String SORMAS2SORMAS_OIDC_SERVER = "sormas2sormas.oidc.server";
+	private static final String SORMAS2SORMAS_OIDC_REALM = "sormas2sormas.oidc.realm";
+	private static final String SORMAS2SORMAS_OIDC_CLIENT_ID = "sormas2sormas.oidc.clientId";
+	private static final String SORMAS2SORMAS_OIDC_CLIENT_SECRET = "sormas2sormas.oidc.clientSecret";
 
 	private static final String SORMAS_TO_SORMAS_USER_PASSWORD = "sormasToSormasUserPassword";
 
@@ -494,7 +498,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setId(getProperty(SORMAS2SORMAS_ID, null));
 		config.setRedisClientName(getProperty(SORMAS2SORMAS_REDIS_CLIENT_NAME, null));
 		config.setRedisClientPassword(getProperty(SORMAS2SORMAS_REDIS_CLIENT_PASSWORD, null));
-
+		config.setOidcServer(getProperty(SORMAS2SORMAS_OIDC_SERVER, null));
+		config.setOidcRealm(getProperty(SORMAS2SORMAS_OIDC_REALM, null));
+		config.setOidcClientId(getProperty(SORMAS2SORMAS_OIDC_CLIENT_ID, null));
+		config.setOidcClientSecret(getProperty(SORMAS2SORMAS_OIDC_CLIENT_SECRET, null));
 		return config;
 	}
 
@@ -516,7 +523,12 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getSymptomJournalConfig().getAuthUrl(),
 			getPatientDiaryConfig().getUrl(),
 			getPatientDiaryConfig().getProbandsUrl(),
-			getPatientDiaryConfig().getAuthUrl());
+			getPatientDiaryConfig().getAuthUrl(),
+
+			getSormasToSormasConfig().getOidcRealmCertEndoint(),
+			getSormasToSormasConfig().getOidcRealmTokenEndoint(),
+			getSormasToSormasConfig().getOidcRealmUrl(),
+			getSormasToSormasConfig().getOidcServer());
 
 		UrlValidator urlValidator = new UrlValidator(
 			new String[] {
