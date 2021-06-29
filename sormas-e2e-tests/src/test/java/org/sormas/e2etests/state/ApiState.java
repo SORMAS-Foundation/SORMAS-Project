@@ -37,4 +37,5 @@ public class ApiState {
   Event createdEvent;
   Task createdTask;
   Sample createdSample;
+  Action createdAction;
 }

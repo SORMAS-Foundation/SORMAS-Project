@@ -15,20 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.sormas.e2etests.pojo.web;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.*;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
-public class Action {
-  LocalDate date;
-  String priority;
-  String measure;
-  String title;
-  String description;
+public class EventActionTableEntry {
+  String eventId;
+  String actionTitle;
+  LocalDateTime actionCreationDate;
+  LocalDateTime actionChangeDate;
   String actionStatus;
+  String actionPriority;
+  String actionLastModifiedBy;
 }

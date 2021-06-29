@@ -15,20 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo.web;
 
+package org.sormas.e2etests.services;
+
+import com.github.javafaker.Faker;
+import com.google.inject.Inject;
 import java.time.LocalDate;
-import lombok.*;
+import org.sormas.e2etests.pojo.web.Action;
+import org.sormas.e2etests.pojo.web.Event;
 
-@Value
-@AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@Builder(toBuilder = true, builderClassName = "builder")
-public class Action {
-  LocalDate date;
-  String priority;
-  String measure;
-  String title;
-  String description;
-  String actionStatus;
+public class EventActionTableEntryService {
+  private final Faker faker;
+
+  @Inject
+  public EventActionTableEntryService(Faker faker) {
+    this.faker = faker;
+  }
+
+  public Action buildEventActionTableEntryInput(Event event, Action action) {
+    String timestamp = String.valueOf(System.currentTimeMillis());
+    return Action.builder()
+        .date(LocalDate.now())
+        .priority("Normal")
+        .measure("Closure of facility")
+        .title("Dummy Action " + timestamp)
+        .description("Dummy Action " + timestamp)
+        .actionStatus("PENDING")
+        .build();
+  }
 }
