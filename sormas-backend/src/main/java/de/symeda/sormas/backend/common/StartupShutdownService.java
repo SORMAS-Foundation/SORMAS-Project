@@ -516,7 +516,7 @@ public class StartupShutdownService {
 				DefaultUserHelper.SORMAS_TO_SORMAS_PASSWORD,
 				"Sormas to Sormas",
 				"Client");
-		}));
+		}
 	}
 
 	private void createOrUpdateSymptomJournalUser() {
