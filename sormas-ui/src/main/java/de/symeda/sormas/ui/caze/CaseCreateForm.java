@@ -259,13 +259,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			Collections.singletonList(Boolean.TRUE),
 			true);
 
-		FieldHelper
-			.setRequiredWhen(
-				differentPlaceOfStayJurisdiction,
-				Arrays.asList(region, districtCombo),
-				Collections.singletonList(Boolean.TRUE),
-				false,
-				null);
+		FieldHelper.setRequiredWhen(
+			differentPlaceOfStayJurisdiction,
+			Arrays.asList(region, districtCombo),
+			Collections.singletonList(Boolean.TRUE),
+			false,
+			null);
 
 		facilityOrHome =
 			addCustomField(FACILITY_OR_HOME_LOC, TypeOfPlace.class, NullableOptionGroup.class, I18nProperties.getCaption(Captions.casePlaceOfStay));
@@ -600,7 +599,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			if (!visibleAndRequired) {
 				tfFacilityDetails.clear();
 			}
-		} else {
+		} else if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
 			tfFacilityDetails.setVisible(false);
 			tfFacilityDetails.setRequired(false);
 			tfFacilityDetails.clear();
