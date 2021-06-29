@@ -203,6 +203,11 @@
 			<artifactId>wiremock-standalone</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>

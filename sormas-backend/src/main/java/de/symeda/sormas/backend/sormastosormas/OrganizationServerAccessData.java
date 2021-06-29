@@ -11,12 +11,16 @@ public class OrganizationServerAccessData {
 	private String hostName;
 	private String restUserPassword;
 
-	public OrganizationServerAccessData() {
-	}
-
 	public OrganizationServerAccessData(String id, String name) {
 		this.id = id;
 		this.name = name;
+	}
+
+	public OrganizationServerAccessData(String id, String name, String hostName, String restUserPassword) {
+		this.id = id;
+		this.name = name;
+		this.hostName = hostName;
+		this.restUserPassword = restUserPassword;
 	}
 
 	public String getId() {

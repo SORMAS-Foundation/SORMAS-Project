@@ -15,53 +15,83 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.MalformedURLException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.opencsv.CSVReader;
-
 import de.symeda.sormas.api.SormasToSormasConfig;
-import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import io.lettuce.core.ClientOptions;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
+import io.lettuce.core.SslOptions;
+import io.lettuce.core.SslVerifyMode;
+import io.lettuce.core.api.sync.RedisCommands;
 
 @Stateless
 @LocalBean
 public class ServerAccessDataService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServerAccessDataService.class);
+	// todo move this and reject at runtime if setup was wrong
+	private static final String S2S_REALM_PREFIX = "s2s:%s";
 
-	private static final String ORGANIZATION_LIST_FILE_NAME = "organization-list.csv";
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServerAccessDataService.class);
 
 	@Inject
 	private SormasToSormasConfig sormasToSormasConfig;
 
-	public Optional<OrganizationServerAccessData> getServerAccessData() {
+	@EJB
+	private ConfigFacadeEjbLocal configFacadeEjb;
 
-		String configPath = sormasToSormasConfig.getPath();
+	private RedisCommands<String, String> createRedisConnection() {
+		String[] redis = configFacadeEjb.getKvRedisHost().split(":");
 
-		if (StringUtils.isEmpty(configPath)) {
-			return Optional.empty();
+		RedisURI uri = RedisURI.Builder.redis(redis[0], Integer.parseInt(redis[1]))
+			.withAuthentication(sormasToSormasConfig.getRedisClientName(), sormasToSormasConfig.getRedisClientPassword())
+			.withSsl(true)
+			.withVerifyPeer(SslVerifyMode.FULL)
+			.build();
+
+		SslOptions sslOptions;
+		try {
+			sslOptions = SslOptions.builder()
+				.jdkSslProvider()
+				.keystore(
+					Paths.get(configFacadeEjb.getKvRedisKeystorePath()).toUri().toURL(),
+					configFacadeEjb.getKvRedisKeystorePasswor().toCharArray())
+				.truststore(Paths.get(configFacadeEjb.getKvRedisTruststorePath()).toUri().toURL(), configFacadeEjb.getKvRedisTruststorePassword())
+				.build();
+		} catch (MalformedURLException e) {
+			LOGGER.error(String.format("Could not load key material to connect to redis: %s", e));
+			return null;
 		}
 
-		Path inputFile = Paths.get(configPath, sormasToSormasConfig.getServerAccessDataFileName());
+		RedisClient redisClient = RedisClient.create(uri);
+		ClientOptions clientOptions = ClientOptions.builder().sslOptions(sslOptions).build();
+		redisClient.setOptions(clientOptions);
+		return redisClient.connect().sync();
+	}
 
-		try (Reader reader = Files.newBufferedReader(inputFile, StandardCharsets.UTF_8);
-			CSVReader csvReader = CSVUtils.createCSVReader(reader, ',')) {
-			return Optional.of(buildServerAccessData(csvReader.readNext()));
+	public Optional<OrganizationServerAccessData> getServerAccessData() {
+		try {
+			RedisCommands<String, String> redis = createRedisConnection();
+			if (redis == null) {
+				return Optional.empty();
+			}
+			Map<String, String> serverAccess = redis.hgetall(String.format(S2S_REALM_PREFIX, sormasToSormasConfig.getId()));
+			return Optional.of(buildServerAccessData(sormasToSormasConfig.getId(), serverAccess));
 
 		} catch (Exception e) {
 			LOGGER.warn("Unexpected error while reading sormas to sormas server access data", e);
@@ -69,55 +99,39 @@ public class ServerAccessDataService {
 		}
 	}
 
-	public List<OrganizationServerAccessData> getOrganizationList() {
-		String configPath = sormasToSormasConfig.getPath();
-
-		if (StringUtils.isEmpty(configPath)) {
-			return Collections.emptyList();
-		}
-
-		String ownOrganizationId = getServerAccessData().map(OrganizationServerAccessData::getId).orElse(null);
-		if (StringUtils.isEmpty(ownOrganizationId)) {
-			return Collections.emptyList();
-		}
-
-		Path inputFile = Paths.get(configPath, ORGANIZATION_LIST_FILE_NAME);
-
-		try (Reader reader = Files.newBufferedReader(inputFile, StandardCharsets.UTF_8);
-			CSVReader csvReader = CSVUtils.createCSVReader(reader, ',')) {
-			return csvReader.readAll()
-				.stream()
-				// skip the empty line and comment lines(starting with #)
-				.filter(r -> r.length > 1 || r[0].startsWith("#"))
-				// parse non-empty lines
-				.map(this::buildServerAccessData)
-				.filter(serverAccessData -> !ownOrganizationId.equals(serverAccessData.getId()))
-				.collect(Collectors.toList());
-		} catch (Exception e) {
-			LOGGER.warn("Unexpected error while reading sormas to sormas server list", e);
-			return Collections.emptyList();
-		}
-	}
-
 	public Optional<OrganizationServerAccessData> getServerListItemById(String id) {
 		return getOrganizationList().stream().filter(i -> i.getId().equals(id)).findFirst();
 	}
 
-	private OrganizationServerAccessData buildServerAccessData(String[] row) {
-		OrganizationServerAccessData dto = new OrganizationServerAccessData();
-		if (row[0] != null) {
-			dto.setId(row[0]);
-		}
-		if (row[1] != null) {
-			dto.setName(row[1]);
-		}
-		if (row[2] != null) {
-			dto.setHostName(row[2]);
-		}
-		if (row[3] != null) {
-			dto.setRestUserPassword(row[3]);
+	private OrganizationServerAccessData buildServerAccessData(String id, Map<String, String> entry) {
+		return new OrganizationServerAccessData(id, entry.get("name"), entry.get("hostName"), entry.get("restUserPassword"));
+
+	}
+
+	public List<OrganizationServerAccessData> getOrganizationList() {
+		try {
+			RedisCommands<String, String> redis = createRedisConnection();
+			if (redis == null) {
+				return Collections.emptyList();
+			}
+			// todo pin to the same prefix as the scopes s2s:
+			List<String> keys = redis.keys(String.format(S2S_REALM_PREFIX, "*"));
+
+			// remove own Id from the set
+			keys.remove(String.format(S2S_REALM_PREFIX, sormasToSormasConfig.getId()));
+
+			List<OrganizationServerAccessData> list = new ArrayList<>();
+			for (String key : keys) {
+				Map<String, String> hgetAll = redis.hgetall(key);
+				OrganizationServerAccessData organizationServerAccessData = buildServerAccessData(key.split(":")[1], hgetAll);
+				list.add(organizationServerAccessData);
+			}
+			return list;
+		} catch (Exception e) {
+			LOGGER.warn("Unexpected error while reading sormas to sormas server list", e);
+			return Collections.emptyList();
 		}
 
-		return dto;
 	}
+
 }
