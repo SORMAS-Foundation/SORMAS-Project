@@ -25,11 +25,12 @@ public enum ExposureDetailsRole {
   }
 
   public static ExposureDetailsRole fromString(String role) {
-    for (ExposureDetailsRole b : ExposureDetailsRole.values()) {
-      if (b.role.equalsIgnoreCase(role)) {
-        return b;
+    for (ExposureDetailsRole exposureDetailsRole : ExposureDetailsRole.values()) {
+      if (exposureDetailsRole.role.equalsIgnoreCase(role)) {
+        return exposureDetailsRole;
       }
     }
+    System.out.println("Could not map " + role + " to ExposureDetailsRole");
     return null;
   }
 }

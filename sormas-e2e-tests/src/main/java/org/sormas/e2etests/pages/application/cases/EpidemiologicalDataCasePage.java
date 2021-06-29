@@ -23,7 +23,7 @@ import org.openqa.selenium.By;
 public class EpidemiologicalDataCasePage {
   public static final By EXPOSURE_DETAILS_KNOWN_OPTIONS =
       By.cssSelector("#exposureDetailsKnown .v-select-option");
-  public static final By EPIDEMIOLOGICAL_DATA_TAB_BUTON = By.cssSelector("#tab-cases-epidata");
+  public static final By EPIDEMIOLOGICAL_DATA_TAB_BUTTON = By.cssSelector("#tab-cases-epidata");
   public static final By EXPOSURE_DETAILS_NEW_ENTRY_BUTTON = By.cssSelector("#actionNewEntry");
   public static final By EXPOSURE_UUID = By.cssSelector(".v-window #uuid");
   public static final By START_OF_EXPOSURE_INPUT =
@@ -73,17 +73,17 @@ public class EpidemiologicalDataCasePage {
   public static final By POSTAL_CODE_INPUT = By.cssSelector(".v-window input#postalCode");
   public static final By CITY_INPUT = By.cssSelector(".v-window input#city");
   public static final By AREA_TYPE_COMBOBOX = By.cssSelector(".v-window #areaType");
-  public static final By COMMUNITY_CONTACT_PERSON = By.cssSelector(".v-window #details");
+  public static final By COMMUNITY_CONTACT_PERSON_INPUT = By.cssSelector(".v-window #details");
   public static final By DONE_BUTTON = By.cssSelector(".v-window #commit");
   public static final By DISCARD_BUTTON = By.cssSelector(".v-window #discard");
 
-  public static final By ACTIVITY_DETAILS_KNOWN =
+  public static final By ACTIVITY_DETAILS_KNOWN_OPTIONS =
       By.cssSelector("#activityAsCaseDetailsKnown .v-select-option");
-  public static final By ACTIVITY_DETAILS_NEW_ENTRY =
+  public static final By ACTIVITY_DETAILS_NEW_ENTRY_BUTTON =
       By.cssSelector("#activitiesAsCase #actionNewEntry");
-  public static final By ACTIVITY_START_OF_ACTIVITY =
+  public static final By ACTIVITY_START_OF_ACTIVITY_INPUT =
       By.cssSelector(".v-window #startDate .v-textfield.v-datefield-textfield");
-  public static final By ACTIVITY_END_OF_ACTIVITY =
+  public static final By ACTIVITY_END_OF_ACTIVITY_INPUT =
       By.cssSelector(".v-window #endDate .v-textfield.v-datefield-textfield");
   public static final By ACTIVITY_DESCRIPTION = By.cssSelector(".v-window #description");
   public static final By ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX =
@@ -109,12 +109,13 @@ public class EpidemiologicalDataCasePage {
   public static final By ACTIVITY_DONE_BUTTON = By.cssSelector(".v-window #commit");
   public static final By ACTIVITY_DISCARD_BUTTON = By.cssSelector(".v-window #discard");
 
-  public static final By RESIDING_AREA_WITH_RISK =
+  public static final By RESIDING_AREA_WITH_RISK_OPTIONS =
       By.cssSelector("#highTransmissionRiskArea .v-checkbox");
 
-  public static final By LARGE_OUTBREAKS_AREA = By.cssSelector("#largeOutbreaksArea .v-checkbox");
+  public static final By LARGE_OUTBREAKS_AREA_OPTIONS =
+      By.cssSelector("#largeOutbreaksArea .v-checkbox");
 
-  public static final By CONTACTS_WITH_SOURCE_CASE_KNOWN =
+  public static final By CONTACTS_WITH_SOURCE_CASE_KNOWN_OPTIONS =
       By.cssSelector("#contactWithSourceCaseKnown .v-checkbox");
 
   public static final By SAVE_BUTTON_EPIDEMIOLOGICAL_DATA = By.id("commit");

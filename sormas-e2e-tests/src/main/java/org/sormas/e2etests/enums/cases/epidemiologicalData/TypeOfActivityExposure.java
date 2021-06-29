@@ -23,11 +23,12 @@ public enum TypeOfActivityExposure {
   }
 
   public static TypeOfActivityExposure fromString(String activity) {
-    for (TypeOfActivityExposure b : TypeOfActivityExposure.values()) {
-      if (b.activity.equalsIgnoreCase(activity)) {
-        return b;
+    for (TypeOfActivityExposure typeOfActivityExposure : TypeOfActivityExposure.values()) {
+      if (typeOfActivityExposure.activity.equalsIgnoreCase(activity)) {
+        return typeOfActivityExposure;
       }
     }
+    System.out.println("Could not map " + activity + " to TypeOfActivityExposure");
     return null;
   }
 }

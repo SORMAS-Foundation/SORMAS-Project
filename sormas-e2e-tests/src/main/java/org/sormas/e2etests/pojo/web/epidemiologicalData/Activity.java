@@ -2,8 +2,8 @@ package org.sormas.e2etests.pojo.web.epidemiologicalData;
 
 import java.time.LocalDate;
 import lombok.*;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.ActivityAsCaseType;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ActivityDetailsRole;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityActivity;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 
 @Value
@@ -17,7 +17,7 @@ public class Activity {
   LocalDate startOfActivity;
   LocalDate endOfActivity;
   String description;
-  TypeOfActivityActivity typeOfActivity;
+  ActivityAsCaseType typeOfActivity;
   ActivityDetailsRole role;
   TypeOfPlace typeOfPlace;
   String continent;

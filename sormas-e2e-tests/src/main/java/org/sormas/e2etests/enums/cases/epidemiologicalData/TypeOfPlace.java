@@ -21,11 +21,12 @@ public enum TypeOfPlace {
   }
 
   public static TypeOfPlace fromString(String place) {
-    for (TypeOfPlace b : TypeOfPlace.values()) {
-      if (b.place.equalsIgnoreCase(place)) {
-        return b;
+    for (TypeOfPlace typeOfPlace : TypeOfPlace.values()) {
+      if (typeOfPlace.place.equalsIgnoreCase(place)) {
+        return typeOfPlace;
       }
     }
+    System.out.println("Could not map " + place + " to TypeOfPlace");
     return null;
   }
 }

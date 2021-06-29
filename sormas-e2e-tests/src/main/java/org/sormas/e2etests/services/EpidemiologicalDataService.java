@@ -86,7 +86,7 @@ public class EpidemiologicalDataService {
         .startOfActivity(LocalDate.now().minusDays(3))
         .endOfActivity(LocalDate.now().minusDays(1))
         .description("played sports and had lunch")
-        .typeOfActivity(TypeOfActivityActivity.WORK)
+        .typeOfActivity(ActivityAsCaseType.WORK)
         .continent("Africa")
         .subcontinent("Central Africa")
         .country("Cameroon")
