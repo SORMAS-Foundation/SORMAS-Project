@@ -22,9 +22,7 @@ public class ContactsDetailedTableViewSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   private static BaseSteps baseSteps;
-  ApiState apiState;
-  SoftAssertions softly;
-  // ContactsDetailedTableEntry contactsDetailedTableEntry;
+
 
   @Inject
   public ContactsDetailedTableViewSteps(
