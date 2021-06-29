@@ -140,18 +140,16 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 
 		PopupButton newFormButton;
-		VerticalLayout newFormLayout = new VerticalLayout();
+		Panel newFormPanel = new Panel();
 		{
+			VerticalLayout newFormLayout = new VerticalLayout();
 			newFormLayout.setSpacing(true);
 			newFormLayout.setMargin(true);
 			newFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 			newFormLayout.setWidth(350, Unit.PIXELS);
-			fillNewFormLayout(newFormLayout);
 
-			Panel newFormPanel = new Panel();
 			newFormPanel.setContent(newFormLayout);
-			newFormPanel.setWidth(newFormLayout.getWidth() + 20.0f, Unit.PIXELS);
-			newFormPanel.setHeight(500, Unit.PIXELS);
+			fillNewFormDropdown(newFormPanel);
 
 			newFormButton = ButtonHelper.createIconPopupButton(Captions.actionNewForm, VaadinIcons.PLUS_CIRCLE, newFormPanel);
 			newFormButton.setId("new-form");
@@ -159,18 +157,16 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 
 		PopupButton importCampaignButton;
-		VerticalLayout importFormLayout = new VerticalLayout();
+		Panel importFormPanel = new Panel();
 		{
+			VerticalLayout importFormLayout = new VerticalLayout();
 			importFormLayout.setSpacing(true);
 			importFormLayout.setMargin(true);
 			importFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 			importFormLayout.setWidth(350, Unit.PIXELS);
-			fillImportLayout(importFormLayout);
 
-			Panel importFormPanel = new Panel();
 			importFormPanel.setContent(importFormLayout);
-			importFormPanel.setWidth(importFormLayout.getWidth() + 20.0f, Unit.PIXELS);
-			importFormPanel.setHeight(500, Unit.PIXELS);
+			fillImportDropdown(importFormPanel);
 
 			importCampaignButton = ButtonHelper.createIconPopupButton(Captions.actionImport, VaadinIcons.PLUS_CIRCLE, importFormPanel);
 			importCampaignButton.setId("campaign-form-import");
@@ -178,11 +174,11 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 
 		campaignSelector.addValueChangeListener(e -> {
-			importFormLayout.removeAllComponents();
-			newFormLayout.removeAllComponents();
+			((VerticalLayout) importFormPanel.getContent()).removeAllComponents();
+			((VerticalLayout) newFormPanel.getContent()).removeAllComponents();
 			if (!Objects.isNull(campaignSelector.getValue())) {
-				fillImportLayout(importFormLayout);
-				fillNewFormLayout(newFormLayout);
+				fillImportDropdown(importFormPanel);
+				fillNewFormDropdown(newFormPanel);
 				importCampaignButton.setEnabled(true);
 				newFormButton.setEnabled(true);
 			} else {
@@ -201,10 +197,11 @@ public class CampaignDataView extends AbstractCampaignView {
 		addComponent(mainLayout);
 	}
 
-	private void fillImportLayout(VerticalLayout importFormLayout) {
+	private void fillImportDropdown(Panel containerPanel) {
 
 		CampaignReferenceDto campaignReferenceDto = campaignSelector.getValue();
 		if (campaignReferenceDto != null) {
+			int numButtons = 0;
 			for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade()
 				.getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid())) {
 
@@ -218,22 +215,41 @@ public class CampaignDataView extends AbstractCampaignView {
 					}
 				});
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
-				importFormLayout.addComponent(campaignFormButton);
+				((VerticalLayout) containerPanel.getContent()).addComponent(campaignFormButton);
+				numButtons++;
+			}
+			if (numButtons >= 10) {
+				// setting a fixed height will enable a scrollbar. Increase width to accommodate it
+				containerPanel.setHeight(400, Unit.PIXELS);
+				containerPanel.setWidth(containerPanel.getContent().getWidth() + 20.0f, Unit.PIXELS);
+			} else {
+				containerPanel.setHeightUndefined();
+				containerPanel.setWidth(containerPanel.getContent().getWidth(), Unit.PIXELS);
 			}
 		}
 	}
 
-	private void fillNewFormLayout(VerticalLayout newFormLayout) {
+	private void fillNewFormDropdown(Panel containerPanel) {
 
 		CampaignReferenceDto campaignReferenceDto = campaignSelector.getValue();
 		if (campaignReferenceDto != null) {
+			int numButtons = 0;
 			for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade()
 				.getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid())) {
 				Button campaignFormButton = ButtonHelper.createButton(
 					campaignForm.toString(),
 					e -> ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm));
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
-				newFormLayout.addComponent(campaignFormButton);
+				((VerticalLayout) containerPanel.getContent()).addComponent(campaignFormButton);
+				numButtons++;
+			}
+			if (numButtons >= 10) {
+				// setting a fixed height will enable a scrollbar. Increase width to accommodate it
+				containerPanel.setHeight(400, Unit.PIXELS);
+				containerPanel.setWidth(containerPanel.getContent().getWidth() + 20.0f, Unit.PIXELS);
+			} else {
+				containerPanel.setHeightUndefined();
+				containerPanel.setWidth(containerPanel.getContent().getWidth(), Unit.PIXELS);
 			}
 		}
 	}
