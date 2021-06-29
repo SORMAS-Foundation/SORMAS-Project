@@ -32,6 +32,8 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
@@ -55,6 +57,8 @@ public interface CaseFacade {
 	List<CaseDataDto> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters);
 
 	long count(CaseCriteria caseCriteria);
+
+	long count(CaseCriteria caseCriteria, boolean ignoreUserFilter);
 
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
@@ -185,7 +189,7 @@ public interface CaseFacade {
 
 	List<ManualMessageLogDto> getMessageLog(String caseUuid, MessageType messageType);
 
-	String getFirstCaseUuidWithOwnershipHandedOver(List<String> caseUuids);
+	String getFirstUuidNotShareableWithExternalReportingTools(List<String> caseUuids);
 
 	void saveBulkCase(
 		List<String> caseUuidList,
@@ -213,4 +217,8 @@ public interface CaseFacade {
 	List<CaseDataDto> getByPersonUuids(List<String> personUuids);
 
 	List<CaseDataDto> getByExternalId(String externalId);
+
+	void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
+
+	int updateCompleteness();
 }

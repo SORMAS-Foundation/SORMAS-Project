@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.fieldvisibility;
 
+import java.io.Serializable;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilit
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.FeatureTypeFieldVisibilityChecker;
 
-public class FieldVisibilityCheckers {
+public class FieldVisibilityCheckers implements Serializable {
 
 	private List<FieldNameBaseChecker> fieldNameBasedCheckers = new ArrayList<>();
 	private List<FieldBasedChecker> fieldBasedCheckers = new ArrayList<>();
@@ -125,7 +126,7 @@ public class FieldVisibilityCheckers {
 		return ret;
 	}
 
-	interface Checker {
+	interface Checker extends Serializable {
 
 	}
 

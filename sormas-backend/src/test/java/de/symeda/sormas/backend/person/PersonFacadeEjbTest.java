@@ -54,7 +54,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		person1.setPresentCondition(PresentCondition.DEAD);
 		creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1920, 1, 1);
 
-		getPersonFacade().savePersonAndNotifyExternalJournal(person1);
+		getPersonFacade().savePerson(person1);
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria().presentCondition(PresentCondition.DEAD), null, null, null).size());
 		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
@@ -108,7 +108,6 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetMatchingNameDtos() {
-
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 
@@ -139,8 +138,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			.stream()
 			.map(dto -> dto.getUuid())
 			.collect(Collectors.toList());
-		assertThat(relevantNameUuids, hasSize(3));
-		assertThat(relevantNameUuids, containsInAnyOrder(person1.getUuid(), person2.getUuid(), person3.getUuid()));
+		assertThat(relevantNameUuids, hasSize(6));
+		assertThat(
+			relevantNameUuids,
+			containsInAnyOrder(person1.getUuid(), person2.getUuid(), person3.getUuid(), person5.getUuid(), person6.getUuid(), person7.getUuid()));
 
 		creator.createCase(user.toReference(), person4.toReference(), rdcf);
 		getCaseFacade().archiveOrDearchiveCase(inactiveCase.getUuid(), false);
@@ -301,7 +302,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		contact1.setFollowUpUntil(DateHelper.subtractDays(now, 20));
 		contact2.setFollowUpUntil(DateHelper.subtractDays(now, 8));
 
-		getPersonFacade().savePersonAndNotifyExternalJournal(person);
+		getPersonFacade().savePerson(person);
 		getContactFacade().saveContact(contact1);
 		getContactFacade().saveContact(contact2);
 
@@ -441,7 +442,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		Date t1 = new Date();
 
 		PersonDto person1 = creator.createPerson();
-		person1 = getPersonFacade().savePersonAndNotifyExternalJournal(person1);
+		person1 = getPersonFacade().savePerson(person1);
 		final ContactDto contact1 = creator.createContact(natUser.toReference(), person1.toReference());
 		getContactFacade().saveContact(contact1);
 
@@ -452,7 +453,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		Date t2 = new Date();
 
 		PersonDto person2 = creator.createPerson();
-		person2 = getPersonFacade().savePersonAndNotifyExternalJournal(person2);
+		person2 = getPersonFacade().savePerson(person2);
 		final ContactDto contact2 = creator.createContact(natUser.toReference(), person2.toReference());
 		getContactFacade().saveContact(contact2);
 
@@ -472,7 +473,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		person.setAddress(new LocationDto());
 		person.setAddresses(Collections.singletonList(new LocationDto()));
 
-		PersonDto savedPerson = getPersonFacade().savePersonAndNotifyExternalJournal(person);
+		PersonDto savedPerson = getPersonFacade().savePerson(person);
 
 		assertThat(savedPerson.getUuid(), not(isEmptyOrNullString()));
 		assertThat(savedPerson.getAddress().getUuid(), not(isEmptyOrNullString()));

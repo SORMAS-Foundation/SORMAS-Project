@@ -18,8 +18,6 @@ package de.symeda.sormas.ui.exposure;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -51,6 +49,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -141,7 +140,7 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 					: (StringUtils.isNotEmpty(exposure.getHabitationDetails()) ? exposure.getHabitationDetails() : HabitationType.OTHER.toString()));
 			}
 
-			if (exposure.getExposureType() == ExposureType.ANIMAL_CONTACT) {
+			if (exposure.getExposureType() == ExposureType.ANIMAL_CONTACT && exposure.getTypeOfAnimal() != null) {
 				exposureString += " (" + (exposure.getTypeOfAnimal() != TypeOfAnimal.OTHER
 					? exposure.getTypeOfAnimal().toString()
 					: (exposure.getTypeOfAnimalDetails() != null ? exposure.getTypeOfAnimalDetails() : TypeOfAnimal.OTHER.toString())) + ")";
@@ -208,14 +207,9 @@ public class ExposuresField extends AbstractTableField<ExposureDto> {
 			return DateFormatHelper.buildPeriodString(exposure.getStartDate(), exposure.getEndDate());
 		});
 
-		table.addGeneratedColumn(COLUMN_ADDRESS, (Table.ColumnGenerator) (source, itemId, columnId) -> {
-			ExposureDto exposure = (ExposureDto) itemId;
-			String region = DataHelper.toStringNullable(exposure.getLocation().getRegion());
-			String district = DataHelper.toStringNullable(exposure.getLocation().getDistrict());
-			String address = DataHelper.toStringNullable(exposure.getLocation().buildAddressCaption());
-
-			return Stream.of(region, district, address).filter(StringUtils::isNotBlank).collect(Collectors.joining(", "));
-		});
+		table.addGeneratedColumn(
+			COLUMN_ADDRESS,
+			(Table.ColumnGenerator) (source, itemId, columnId) -> LocationHelper.buildLocationString(((ExposureDto) itemId).getLocation()));
 
 		table.addGeneratedColumn(COLUMN_DESCRIPTION, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			ExposureDto exposure = (ExposureDto) itemId;

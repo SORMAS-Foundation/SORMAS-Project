@@ -87,7 +87,7 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 
 		try {
 			return queryBuilder().where()
-				.eq(EventParticipant.RESULTING_CASE_UUID + "_id", caze)
+				.eq(EventParticipant.RESULTING_CASE_UUID, caze.getUuid())
 				.and()
 				.eq(AbstractDomainObject.SNAPSHOT, false)
 				.query();

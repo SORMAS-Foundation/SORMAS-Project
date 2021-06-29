@@ -29,8 +29,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -47,6 +45,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
+import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryIdatId;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonData;
@@ -59,6 +58,7 @@ import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -320,7 +320,7 @@ public class ExternalJournalService {
 			} else {
 				logger.info("Successfully registered patient " + person.getUuid() + " in patient diary.");
 				person.setSymptomJournalStatus(SymptomJournalStatus.REGISTERED);
-				personFacade.savePersonAndNotifyExternalJournal(person);
+				personFacade.savePerson(person);
 			}
 			return new PatientDiaryResult(success, message);
 		} catch (IOException e) {
@@ -540,7 +540,7 @@ public class ExternalJournalService {
 			} else {
 				logger.info("Successfully cancelled follow-up for person " + person.getUuid() + " in patient diary.");
 				person.setSymptomJournalStatus(SymptomJournalStatus.DELETED);
-				personFacade.savePersonAndNotifyExternalJournal(person);
+				personFacade.savePerson(person);
 			}
 			return new PatientDiaryResult(success, message);
 		} catch (IOException e) {

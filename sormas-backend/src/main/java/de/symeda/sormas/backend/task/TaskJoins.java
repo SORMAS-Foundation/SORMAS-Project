@@ -34,7 +34,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
+public class TaskJoins<T> extends AbstractDomainObjectJoins<T, Task> {
 
 	private Join<Task, Case> caze;
 	private Join<Case, Person> casePerson;
@@ -74,7 +74,7 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 	private Join<Case, Facility> contactCaseHealthFacility;
 	private Join<Case, PointOfEntry> contactCasePointOfEntry;
 
-	public TaskJoins(From<Task, Task> root) {
+	public TaskJoins(From<T, Task> root) {
 		super(root);
 	}
 

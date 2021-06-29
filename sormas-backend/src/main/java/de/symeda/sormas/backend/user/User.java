@@ -36,6 +36,8 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.sormas.api.Disease;
@@ -331,5 +333,17 @@ public class User extends AbstractDomainObject {
 	@Transient
 	public JurisdictionLevel getJurisdictionLevel() {
 		return UserRole.getJurisdictionLevel(this.getUserRoles());
+	}
+
+	public static String buildCaptionForNotification(User user) {
+		if (user == null) {
+			return "-";
+		}
+
+		String caption = user.getFirstName() + " " + user.getLastName();
+		if (StringUtils.isNotEmpty(user.getUserEmail())) {
+			caption += " (" + user.getUserEmail() + ")";
+		}
+		return caption;
 	}
 }

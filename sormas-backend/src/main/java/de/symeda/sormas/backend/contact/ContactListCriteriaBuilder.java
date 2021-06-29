@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -24,19 +23,17 @@ import javax.persistence.criteria.Selection;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 
@@ -47,6 +44,9 @@ public class ContactListCriteriaBuilder {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
+	@EJB
+	private CaseService caseService;
+	
 	@EJB
 	private ContactService contactService;
 
@@ -64,27 +64,10 @@ public class ContactListCriteriaBuilder {
 			sortProperties);
 	}
 
-	public Stream<Selection<?>> getJurisdictionSelections(ContactJoins<Contact> joins) {
-
-		return Stream.of(
-			joins.getReportingUser().get(User.UUID),
-			joins.getRegion().get(Region.UUID),
-			joins.getDistrict().get(District.UUID),
-			joins.getCommunity().get(Community.UUID),
-			joins.getCaseReportingUser().get(User.UUID),
-			joins.getCaseResponsibleRegion().get(Region.UUID),
-			joins.getCaseResponsibleDistrict().get(District.UUID),
-			joins.getCaseResponsibleCommunity().get(Community.UUID),
-			joins.getCaseRegion().get(Region.UUID),
-			joins.getCaseDistrict().get(District.UUID),
-			joins.getCaseCommunity().get(Community.UUID),
-			joins.getCaseHealthFacility().get(Facility.UUID),
-			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID));
-	}
-
 	public List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
 
 		ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
+		CriteriaBuilder cb = contactQueryContext.getCriteriaBuilder();
 
 		return Arrays.asList(
 			contact.get(Contact.UUID),
@@ -95,11 +78,8 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.DISEASE_DETAILS),
 			joins.getCasePerson().get(Person.FIRST_NAME),
 			joins.getCasePerson().get(Person.LAST_NAME),
-			joins.getRegion().get(Region.UUID),
 			joins.getRegion().get(Region.NAME),
-			joins.getDistrict().get(District.UUID),
 			joins.getDistrict().get(District.NAME),
-			joins.getCommunity().get(Community.UUID),
 			contact.get(Contact.LAST_CONTACT_DATE),
 			contact.get(Contact.CONTACT_CATEGORY),
 			contact.get(Contact.CONTACT_PROXIMITY),
@@ -114,20 +94,20 @@ public class ContactListCriteriaBuilder {
 			joins.getReportingUser().get(User.UUID),
 			contact.get(Contact.REPORT_DATE_TIME),
 			joins.getCaze().get(Case.CASE_CLASSIFICATION),
-			joins.getCaseReportingUser().get(User.UUID),
-			joins.getCaseResponsibleRegion().get(Region.UUID),
-			joins.getCaseResponsibleDistrict().get(District.UUID),
-			joins.getCaseResponsibleCommunity().get(Community.UUID),
-			joins.getCaseRegion().get(Region.UUID),
 			joins.getCaseRegion().get(Region.NAME),
-			joins.getCaseDistrict().get(District.UUID),
 			joins.getCaseDistrict().get(District.NAME),
-			joins.getCaseCommunity().get(Community.UUID),
-			joins.getCaseHealthFacility().get(Facility.UUID),
-			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID),
 			contact.get(Contact.CHANGE_DATE),
 			contact.get(Contact.EXTERNAL_ID),
-			contact.get(Contact.EXTERNAL_TOKEN));
+			contact.get(Contact.EXTERNAL_TOKEN),
+			contact.get(Contact.INTERNAL_TOKEN),
+			JurisdictionHelper.booleanSelector(cb, contactService.inJurisdictionOrOwned(contactQueryContext)),
+			JurisdictionHelper.booleanSelector(
+				cb,
+				caseService.inJurisdictionOrOwned(
+					new CaseQueryContext<>(
+						contactQueryContext.getCriteriaBuilder(),
+						contactQueryContext.getQuery(),
+						((ContactJoins) contactQueryContext.getJoins()).getCaze()))));
 	}
 
 	public List<Selection<?>> getMergeContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
@@ -176,6 +156,7 @@ public class ContactListCriteriaBuilder {
 		case ContactIndexDto.CASE_CLASSIFICATION:
 		case ContactIndexDto.EXTERNAL_ID:
 		case ContactIndexDto.EXTERNAL_TOKEN:
+		case ContactIndexDto.INTERNAL_TOKEN:
 			expressions.add(contact.get(sortProperty.propertyName));
 			break;
 		case ContactIndexDto.PERSON_FIRST_NAME:
@@ -187,10 +168,10 @@ public class ContactListCriteriaBuilder {
 			expressions.add(joins.getCasePerson().get(Person.FIRST_NAME));
 			expressions.add(joins.getCasePerson().get(Person.LAST_NAME));
 			break;
-		case ContactJurisdictionDto.REGION_UUID:
+		case ContactIndexDto.REGION_UUID:
 			expressions.add(joins.getRegion().get(Region.NAME));
 			break;
-		case ContactJurisdictionDto.DISTRICT_UUID:
+		case ContactIndexDto.DISTRICT_UUID:
 			expressions.add(joins.getDistrict().get(District.NAME));
 			break;
 		case ContactIndexDto.VACCINATION:
