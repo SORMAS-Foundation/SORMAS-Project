@@ -39,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
+
 import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -47,6 +47,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.auth.Oidc;
 import de.symeda.sormas.backend.util.ClientHelper;
 
@@ -127,13 +128,10 @@ public class SormasToSormasRestClient {
 				entity = Entity.entity(mapper.writeValueAsString(encryptedBody), MediaType.APPLICATION_JSON_TYPE);
 			} else {
 				// no sender org id in the encrypted DTP, therefore, we pass it as query parameter
-				String onwOrgId = this.serverAccessDataService.getServerAccessData().get().getId();
+				String onwOrgId = this.serverAccessDataService.getServerAccessData().getId();
 
 				// safely append the parameter
-				endpoint = UriBuilder.fromUri(endpoint)
-					.queryParam(SormasToSormasConfig.ORG_ID_REQUEST_PARAM, onwOrgId)
-					.build()
-					.toString();
+				endpoint = UriBuilder.fromUri(endpoint).queryParam(SormasToSormasConfig.ORG_ID_REQUEST_PARAM, onwOrgId).build().toString();
 			}
 
 			Invocation.Builder invocation = buildRestClient(receiverId, endpoint);
