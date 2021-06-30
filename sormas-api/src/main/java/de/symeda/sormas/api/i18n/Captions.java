@@ -11,6 +11,7 @@ public interface Captions {
 	 */
 
 	String about = "about";
+	String aboutAdditionalInfo = "aboutAdditionalInfo";
 	String aboutBrandedSormasVersion = "aboutBrandedSormasVersion";
 	String aboutCaseClassificationRules = "aboutCaseClassificationRules";
 	String aboutChangelog = "aboutChangelog";

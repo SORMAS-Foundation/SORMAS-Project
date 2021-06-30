@@ -90,6 +90,13 @@ public class AboutView extends VerticalLayout implements View {
 			aboutLayout.addComponent(infoLayout);
 		}
 
+		// Additional Info section
+		VerticalLayout additionalInfoSection =
+			createCustomHtmlSection(I18nProperties.getCaption(Captions.aboutAdditionalInfo), "additionalinfo.html");
+		if (additionalInfoSection != null) {
+			aboutLayout.addComponent(additionalInfoSection);
+		}
+
 		// Copyright section
 		VerticalLayout copyrightSection = createCustomHtmlSection(I18nProperties.getCaption(Captions.aboutCopyright), "copyrightnotices.html");
 		if (copyrightSection != null) {
