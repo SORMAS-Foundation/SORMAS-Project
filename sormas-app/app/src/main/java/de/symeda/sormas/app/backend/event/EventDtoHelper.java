@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -108,6 +108,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 
 		target.setReportLat(source.getReportLat());
@@ -192,6 +193,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 
 		if (source.getResponsibleUser() != null) {
