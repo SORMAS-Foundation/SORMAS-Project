@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -728,11 +728,13 @@ public enum UserRight {
 			LAB_USER
 	),
 	EVENT_ARCHIVE(
-			ADMIN
+			ADMIN,
+			ADMIN_SUPERVISOR
 	),
 	EVENT_DELETE(
 			ADMIN,
-			NATIONAL_USER
+			NATIONAL_USER,
+			ADMIN_SUPERVISOR
 	),
 	EVENTPARTICIPANT_CREATE(
 			ADMIN,
