@@ -1,9 +1,9 @@
 package de.symeda.sormas.api.externaljournal;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.io.Serializable;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExternalJournalSyncResponseDto implements Serializable {

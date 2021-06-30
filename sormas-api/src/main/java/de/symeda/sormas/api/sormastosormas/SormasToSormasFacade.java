@@ -36,7 +36,9 @@ public interface SormasToSormasFacade {
 
 	void revokeShare(String shareInfoUuid) throws SormasToSormasException;
 
-	void revokeRequests(List<String> requestUuids);
+	void revokeRequests(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 
-	boolean isFeatureEnabled();
+	boolean isFeatureEnabledForUser();
+
+	boolean isFeatureConfigured();
 }

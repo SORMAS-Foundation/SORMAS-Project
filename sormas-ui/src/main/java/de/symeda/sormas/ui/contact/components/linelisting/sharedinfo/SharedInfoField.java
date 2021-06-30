@@ -71,11 +71,7 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 		sharedInformationBar.addComponent(district);
 
 		binder.forField(caseSelector).bind(SharedInfoFieldDto.CAZE);
-		if (caseDataDto != null) {
-			binder.forField(disease).bind(SharedInfoFieldDto.DISEASE);
-		} else {
-			binder.forField(disease).asRequired().bind(SharedInfoFieldDto.DISEASE);
-		}
+		binder.forField(disease).asRequired().bind(SharedInfoFieldDto.DISEASE);
 		binder.forField(region).asRequired().bind(SharedInfoFieldDto.REGION);
 		binder.forField(district).asRequired().bind(SharedInfoFieldDto.DISTRICT);
 

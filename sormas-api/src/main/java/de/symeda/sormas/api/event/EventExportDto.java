@@ -87,7 +87,7 @@ public class EventExportDto implements Serializable {
 	private EventManagementStatus eventManagementStatus;
 	private EventIdentificationSource eventIdentificationSource;
 
-	private EventJurisdictionDto jurisdiction;
+	private boolean isInJurisdictionOrOwned;
 
 	public EventExportDto(
 		String uuid,
@@ -137,6 +137,7 @@ public class EventExportDto implements Serializable {
 		String responsibleUserUuid,
 		String responsibleUserFirstName,
 		String responsibleUserLastName,
+		boolean isInJurisdictionOrOwned,
 		EventManagementStatus eventManagementStatus,
 		EventIdentificationSource eventIdentificationSource) {
 		this.uuid = uuid;
@@ -177,10 +178,9 @@ public class EventExportDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
 		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null);
+		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
 		this.eventManagementStatus = eventManagementStatus;
 		this.eventIdentificationSource = eventIdentificationSource;
-
-		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
 	}
 
 	@Order(0)
@@ -643,7 +643,7 @@ public class EventExportDto implements Serializable {
 		this.contactCountSourceInEvent = contactCountSourceInEvent;
 	}
 
-	public EventJurisdictionDto getJurisdiction() {
-		return jurisdiction;
+	public boolean getInJurisdictionOrOwned() {
+		return isInJurisdictionOrOwned;
 	}
 }

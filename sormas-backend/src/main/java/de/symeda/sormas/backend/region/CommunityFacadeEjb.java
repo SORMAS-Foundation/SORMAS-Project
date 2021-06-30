@@ -42,6 +42,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityCriteria;
@@ -141,7 +142,10 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		Join<Community, District> district = community.join(Community.DISTRICT, JoinType.LEFT);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 
-		Predicate filter = communityService.buildCriteriaFilter(criteria, cb, community);
+		Predicate filter = null;
+		if (criteria != null) {
+			filter = communityService.buildCriteriaFilter(criteria, cb, community);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -193,6 +197,12 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		}
 	}
 
+	public Page<CommunityDto> getIndexPage(CommunityCriteria communityCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<CommunityDto> communityList = getIndexList(communityCriteria, offset, size, sortProperties);
+		long totalElementCount = count(communityCriteria);
+		return new Page<>(communityList, offset, size, totalElementCount);
+	}
+
 	@Override
 	public long count(CommunityCriteria criteria) {
 
@@ -200,7 +210,11 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Community> root = cq.from(Community.class);
 
-		Predicate filter = communityService.buildCriteriaFilter(criteria, cb, root);
+		Predicate filter = null;
+
+		if (criteria != null) {
+			filter = communityService.buildCriteriaFilter(criteria, cb, root);
+		}
 
 		if (filter != null) {
 			cq.where(filter);

@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.common;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -196,7 +197,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		if (countryName.isEmpty()) {
 			logger.info("No country name is specified in sormas.properties.");
 		}
-		return countryName;
+		return new String(countryName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 	}
 
 	/**
@@ -506,15 +507,18 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getPatientDiaryConfig().getProbandsUrl(),
 			getPatientDiaryConfig().getAuthUrl());
 
+		UrlValidator urlValidator = new UrlValidator(
+			new String[] {
+				"http",
+				"https" },
+			UrlValidator.ALLOW_LOCAL_URLS);
+
 		urls.forEach(url -> {
 			if (StringUtils.isBlank(url)) {
 				return;
 			}
-			// Must be a valid URL
-			if (!new UrlValidator(
-				new String[] {
-					"http",
-					"https" }).isValid(url)) {
+
+			if (!urlValidator.isValid(url)) {
 				throw new IllegalArgumentException("'" + url + "' is not a valid URL");
 			}
 		});

@@ -164,7 +164,7 @@ public class AreasView extends AbstractConfigurationView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 				filterRelevanceStatus = new ComboBox<>();
 				filterRelevanceStatus.setId("relevanceStatus");
 				filterRelevanceStatus.setWidth(220, Unit.PERCENTAGE);

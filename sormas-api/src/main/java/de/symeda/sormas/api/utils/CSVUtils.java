@@ -22,12 +22,13 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVWriter;
 import com.opencsv.validators.LineValidator;
-import org.apache.commons.lang3.ArrayUtils;
 
 public final class CSVUtils {
 

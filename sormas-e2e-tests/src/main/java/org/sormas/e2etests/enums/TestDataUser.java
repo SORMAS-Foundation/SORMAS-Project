@@ -25,7 +25,8 @@ public enum TestDataUser {
   NATIONAL_USER("NatUser", "NatUser38118", "National User"),
   CONTACT_SUPERVISOR("ContSup", "ContSup38118", "Contact Supervisor"),
   SURVEILLANCE_OFFICER("SurvOff", "SurvOff38118", "Surveillance Officer"),
-  LABORATORY_OFFICER("LabOff", "LabOff38118", "Laboratory Officer");
+  LABORATORY_OFFICER("LabOff", "LabOff38118", "Laboratory Officer"),
+  ADMIN_USER("automation_admin", "DbXC5Yimro9m", "Admin User");
 
   private final String username;
   private final String password;

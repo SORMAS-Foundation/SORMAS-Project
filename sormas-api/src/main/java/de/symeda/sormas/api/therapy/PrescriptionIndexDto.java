@@ -3,8 +3,6 @@ package de.symeda.sormas.api.therapy;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.utils.SensitiveData;
 
 public class PrescriptionIndexDto implements Serializable {
@@ -31,7 +29,7 @@ public class PrescriptionIndexDto implements Serializable {
 	@SensitiveData
 	private String prescribingClinician;
 
-	private CaseJurisdictionDto caseJurisdiction;
+	private Boolean isInJurisdiction;
 
 	public PrescriptionIndexDto(
 		String uuid,
@@ -46,15 +44,7 @@ public class PrescriptionIndexDto implements Serializable {
 		TreatmentRoute route,
 		String routeDetails,
 		String prescribingClinician,
-		String caseReportingUserUuid,
-		String caseResponsibleRegionUuid,
-		String caseResponsibleDistrictUid,
-		String caseResponsibleCommunityUid,
-		String caseRegionUuid,
-		String caseDistrictUuid,
-		String caseCommunityUuid,
-		String caseHealthFacilityUuid,
-		String casePointOfEntryUuid) {
+		boolean isInJurisdiction) {
 
 		this.uuid = uuid;
 		this.prescriptionIndexType = new PrescriptionIndexType(prescriptionType, prescriptionDetails, typeOfDrug);
@@ -64,15 +54,7 @@ public class PrescriptionIndexDto implements Serializable {
 		this.dose = dose;
 		this.prescriptionIndexRoute = new PrescriptionIndexRoute(route, routeDetails);
 		this.prescribingClinician = prescribingClinician;
-
-		this.caseJurisdiction = new CaseJurisdictionDto(
-			caseReportingUserUuid,
-			ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
-			caseRegionUuid,
-			caseDistrictUuid,
-			caseCommunityUuid,
-			caseHealthFacilityUuid,
-			casePointOfEntryUuid);
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -139,8 +121,8 @@ public class PrescriptionIndexDto implements Serializable {
 		this.prescribingClinician = prescribingClinician;
 	}
 
-	public CaseJurisdictionDto getCaseJurisdiction() {
-		return caseJurisdiction;
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 
 	public static class PrescriptionIndexType implements Serializable {
