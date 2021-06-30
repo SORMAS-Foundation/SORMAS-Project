@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -458,6 +459,43 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
 		// Database should contain one contact, associated visit and task
+		assertEquals(1, getContactFacade().getIndexList(null, 0, 100, null).size());
+	}
+
+	@Test
+	public void testGetIndexListWithLabUser() {
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
+
+		UserDto labUser = creator
+				.createUser(null, null, null, "Lab", "Off", UserRole.LAB_USER);
+		FacilityReferenceDto laboratory = new FacilityReferenceDto(rdcf.facility.getUuid(), rdcf.facility.toString(), rdcf.facility.getExternalID());
+		labUser.setLaboratory(laboratory);
+		getUserFacade().saveUser(labUser);
+
+		loginWith(labUser);
+		assertEquals(0, getContactFacade().getIndexList(null, 0, 100, null).size());
+
+		loginWith(user);
+		creator.createSample(contact.toReference(), user.toReference(), laboratory, s -> {
+			s.setSampleDateTime(new Date());
+			s.setComment("Test contact sample");
+		});
+
+		loginWith(labUser);
 		assertEquals(1, getContactFacade().getIndexList(null, 0, 100, null).size());
 	}
 

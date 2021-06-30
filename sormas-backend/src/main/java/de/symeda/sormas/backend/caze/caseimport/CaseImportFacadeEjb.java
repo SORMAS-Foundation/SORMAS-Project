@@ -43,6 +43,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
@@ -336,7 +337,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 									cellData.getEntityPropertyPath());
 							}
 						}
-					} else if (!StringUtils.isEmpty(cellData.getValue())) {
+					} else if (StringUtils.isNotEmpty(cellData.getValue())) {
 						// If the cell entry is not empty, try to insert it into the current case or its person
 						insertColumnEntryIntoData(caze, entities.getPerson(), cellData.getValue(), cellData.getEntityPropertyPath());
 					}
@@ -514,7 +515,8 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 						}
 					} else if (propertyType.isAssignableFrom(PointOfEntryReferenceDto.class)) {
 						PointOfEntryReferenceDto pointOfEntryReference;
-						List<PointOfEntryReferenceDto> customPointsOfEntry = pointOfEntryFacade.getByName(entry, caze.getDistrict(), false);
+						DistrictReferenceDto pointOfEntryDistrict = CaseLogic.getDistrictWithFallback(caze);
+						List<PointOfEntryReferenceDto> customPointsOfEntry = pointOfEntryFacade.getByName(entry, pointOfEntryDistrict, false);
 						if (customPointsOfEntry.isEmpty()) {
 							final String poeName = entry;
 							List<PointOfEntryDto> defaultPointOfEntries = pointOfEntryFacade.getByUuids(PointOfEntryDto.CONSTANT_POE_UUIDS);

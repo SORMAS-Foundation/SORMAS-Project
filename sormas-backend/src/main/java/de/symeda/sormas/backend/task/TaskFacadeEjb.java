@@ -47,6 +47,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 
+import de.symeda.sormas.backend.event.EventQueryContext;
+import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -354,7 +356,8 @@ public class TaskFacadeEjb implements TaskFacade {
 		CriteriaQuery<TaskIndexDto> cq = cb.createQuery(TaskIndexDto.class);
 		Root<Task> task = cq.from(Task.class);
 
-		TaskJoins joins = new TaskJoins(task);
+		TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
+		TaskJoins<Task> joins = (TaskJoins<Task>) taskQueryContext.getJoins();
 
 		// Filter select based on case/contact/event region/district/community
 		Expression<Object> region = cb.selectCase()
@@ -414,7 +417,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			district,
 			community));
 
-		selections.addAll(taskService.getJurisdictionSelections(cb, joins));
+		selections.addAll(taskService.getJurisdictionSelections(taskQueryContext));
 		cq.multiselect(selections);
 
 		Predicate filter = null;

@@ -46,8 +46,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
-import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -74,6 +72,7 @@ import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -502,14 +501,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			Arrays.asList(
 				new SortProperty(CaseIndexDto.DISEASE),
 				new SortProperty(CaseIndexDto.PERSON_FIRST_NAME),
-				new SortProperty(CaseIndexDto.DISTRICT_NAME),
+				new SortProperty(CaseIndexDto.RESPONSIBLE_DISTRICT_NAME),
 				new SortProperty(CaseIndexDto.HEALTH_FACILITY_NAME, false),
 				new SortProperty(CaseIndexDto.SURVEILLANCE_OFFICER_UUID)));
 
 		// List should have one entry
 		assertEquals(3, results.size());
 
-		assertEquals(districtName, results.get(0).getDistrictName());
+		assertEquals(districtName, results.get(0).getResponsibleDistrictName());
 		assertEquals(lastName, results.get(0).getPersonLastName());
 		assertEquals("Facility - xyz", results.get(0).getHealthFacilityName());
 		assertEquals("Facility - abc", results.get(1).getHealthFacilityName());
@@ -1520,10 +1519,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(survOff2, creator.createPerson().toReference(), rdcf);
 		assertThat(caze.getSurveillanceOfficer(), is(survOff2));
 
-		// Surveillance officer is removed if the district changes
-		caze.setRegion(new RegionReferenceDto(rdcf3.region.getUuid(), null, null));
-		caze.setDistrict(new DistrictReferenceDto(rdcf3.district.getUuid(), null, null));
-		caze.setCommunity(new CommunityReferenceDto(rdcf3.community.getUuid(), null, null));
+		// Surveillance officer is removed if the responsible district changes
+		caze.setResponsibleRegion(new RegionReferenceDto(rdcf3.region.getUuid(), null, null));
+		caze.setResponsibleDistrict(new DistrictReferenceDto(rdcf3.district.getUuid(), null, null));
+		caze.setResponsibleCommunity(new CommunityReferenceDto(rdcf3.community.getUuid(), null, null));
 		caze.setHealthFacility(new FacilityReferenceDto(rdcf3.facility.getUuid(), null, null));
 		caze = getCaseFacade().saveCase(caze);
 		assertNull(caze.getSurveillanceOfficer());
@@ -1616,7 +1615,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CasePersonDto casePerson = new CasePersonDto();
 		PersonDto duplicatePerson = PersonDto.build();
 		CaseDataDto duplicateCaze = CaseDataDto.build(duplicatePerson.toReference(), Disease.CORONAVIRUS);
-		duplicateCaze.setDistrict(rdcf.district);
+		duplicateCaze.setResponsibleDistrict(rdcf.district);
 		duplicateCaze.setReportDate(new Date());
 
 		casePerson.setCaze(duplicateCaze);
@@ -1691,8 +1690,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.setInvestigationStatus(InvestigationStatus.PENDING);
 		caze.setDisease(Disease.CORONAVIRUS);
 		caze.setPerson(creator.createPerson().toReference());
-		caze.setRegion(rdcf.region);
-		caze.setDistrict(rdcf.district);
+		caze.setResponsibleRegion(rdcf.region);
+		caze.setResponsibleDistrict(rdcf.district);
 		caze.setFacilityType(FacilityType.HOSPITAL);
 		caze.setHealthFacility(rdcf.facility);
 
@@ -1744,7 +1743,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CasePersonDto casePerson = new CasePersonDto();
 		PersonDto duplicatePerson = PersonDto.build();
 		CaseDataDto duplicateCaze = CaseDataDto.build(duplicatePerson.toReference(), Disease.CORONAVIRUS);
-		duplicateCaze.setDistrict(rdcf.district);
+		duplicateCaze.setResponsibleDistrict(rdcf.district);
 		duplicateCaze.setReportDate(new Date());
 
 		casePerson.setCaze(duplicateCaze);

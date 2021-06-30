@@ -25,7 +25,6 @@ import lombok.*;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
 public class Action {
-
   LocalDate date;
   String priority;
   String measure;

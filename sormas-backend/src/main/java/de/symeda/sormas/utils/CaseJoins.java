@@ -305,14 +305,6 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 		this.personCitizenship = personCitizenship;
 	}
 
-	public Join<Case, District> getReportingDistrict() {
-		return getOrCreate(reportingDistrict, Case.REPORTING_DISTRICT, JoinType.LEFT, this::setReportingDistrict);
-	}
-
-	private void setReportingDistrict(Join<Case, District> reportingDistrict) {
-		this.reportingDistrict = reportingDistrict;
-	}
-
 	public Join<Case, SormasToSormasShareInfo> getShareInfoCases() {
 		return getOrCreate(shareInfoCases, Case.SHARE_INFO_CASES, JoinType.LEFT, this::setShareInfoCases);
 	}

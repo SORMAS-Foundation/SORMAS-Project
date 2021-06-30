@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.events.eventparticipantimporter;
 
 import java.beans.IntrospectionException;
@@ -22,9 +22,12 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,12 +106,22 @@ public class EventParticipantImporter extends DataImporter {
 		String[] entityProperties,
 		String[][] entityPropertyPaths,
 		boolean firstLine)
-		throws IOException, InvalidColumnException, InterruptedException {
+		throws IOException, InterruptedException {
 
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
 			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));
 			return ImportLineResult.ERROR;
+		}
+
+		// regenerate the UUID to prevent overwrite in case of export and import of the same entities
+		int uuidIndex = ArrayUtils.indexOf(entityProperties, EventParticipantDto.UUID);
+		if (uuidIndex >= 0) {
+			values[uuidIndex] = DataHelper.createUuid();
+		}
+		int personUuidIndex = ArrayUtils.indexOf(entityProperties, String.join(".", EventParticipantDto.PERSON, PersonDto.UUID));
+		if (personUuidIndex >= 0) {
+			values[personUuidIndex] = DataHelper.createUuid();
 		}
 
 		final PersonDto newPersonTemp = PersonDto.build();
@@ -208,16 +221,16 @@ public class EventParticipantImporter extends DataImporter {
 					}
 				}
 
-				// Determine the import result and, if there was no duplicate, the user did not skip over the eventparticipant 
+				// Determine the import result and, if there was no duplicate, the user did not skip over the eventparticipant
 				// or an existing person was picked, save the eventparticipant and person to the database
-				if (eventParticipantHasImportError) {
-					return ImportLineResult.ERROR;
-				} else if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
+				if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
 					return ImportLineResult.SKIPPED;
 				} else {
+					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
+					newPerson.setChangeDate(new Date());
 					PersonDto savedPerson = personFacade.savePerson(newPerson);
 					newEventParticipant.setPerson(savedPerson);
-
+					newEventParticipant.setChangeDate(new Date());
 					eventParticipantFacade.saveEventParticipant(newEventParticipant);
 
 					consumer.result = null;
@@ -266,7 +279,7 @@ public class EventParticipantImporter extends DataImporter {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade()
-							.getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), null, null, person, currentElement), false);
+							.getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), null, person, currentElement), false);
 						if (district.isEmpty()) {
 							throw new ImportErrorException(
 								I18nProperties

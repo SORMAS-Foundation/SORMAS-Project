@@ -25,10 +25,8 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
@@ -107,10 +105,8 @@ public class ShareDataBuilderHelper {
 		return contactDto;
 	}
 
-	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, boolean isOwnershipHandedOver, String comment)
-		throws SormasToSormasException {
-		OrganizationServerAccessData serverAccessData = getServerAccessData();
-
+	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, boolean isOwnershipHandedOver, String comment) {
+		OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerAccessData();
 		SormasToSormasOriginInfoDto sormasToSormasOriginInfo = new SormasToSormasOriginInfoDto();
 		sormasToSormasOriginInfo.setOrganizationId(serverAccessData.getId());
 		sormasToSormasOriginInfo.setSenderName(String.format("%s %s", user.getFirstName(), user.getLastName()));
@@ -132,11 +128,6 @@ public class ShareDataBuilderHelper {
 				s.getPathogenTests().stream().map(t -> pathogenTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()),
 				s.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()));
 		}).collect(Collectors.toList());
-	}
-
-	private OrganizationServerAccessData getServerAccessData() throws SormasToSormasException {
-		return serverAccessDataService.getServerAccessData()
-			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasCertNotGenerated)));
 	}
 
 	public SormasToSormasPersonPreview getPersonPreview(Person person) {
