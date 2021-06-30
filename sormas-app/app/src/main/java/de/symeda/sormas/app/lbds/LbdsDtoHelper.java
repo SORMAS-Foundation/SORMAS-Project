@@ -12,8 +12,6 @@ import com.googlecode.openbeans.IntrospectionException;
 import com.googlecode.openbeans.Introspector;
 import com.googlecode.openbeans.PropertyDescriptor;
 
-import android.util.Log;
-
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -107,16 +105,12 @@ public class LbdsDtoHelper {
 
 	public static void stripLbdsDto(EntityDto entityDto) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
 
-		Log.i("SORMAS_LBDS", "==========================");
 		String entityDtoClass = entityDto.getClass().getSimpleName();
 		List<String> lbdsProperties = LBDS_DTO_PROPERTIES.get(entityDtoClass);
 		if (lbdsProperties != null) {
-			Log.i("SORMAS_LBDS", "Properties:");
 			for (PropertyDescriptor property : Introspector.getBeanInfo(entityDto.getClass()).getPropertyDescriptors()) {
 				String propertyName = property.getName();
 				boolean isLbdsProperty = LBDS_PROPERTIES_ENTITY_DTO.contains(propertyName) || lbdsProperties.contains(propertyName);
-				String marker = isLbdsProperty ? "* " : "- ";
-				Log.i("SORMAS_LBDS", marker + propertyName + ": " + property.getPropertyType().getName());
 				if (!isLbdsProperty) {
 					Method writeMethod = property.getWriteMethod();
 					if (writeMethod != null && writeMethod.getGenericParameterTypes().length == 1)
@@ -127,9 +121,8 @@ public class LbdsDtoHelper {
 				}
 			}
 		} else {
-			Log.i("SORMAS_LBDS", entityDtoClass + " is not intended for LBDS sending");
+			throw new IllegalArgumentException(entityDtoClass + " is not intended for LBDS sending");
 		}
-		Log.i("SORMAS_LBDS", "==========================");
 	}
 
 	public static boolean isModifiedLbds(Person person, PersonDto personDto, boolean checkNonLbdsProperties)
@@ -166,26 +159,20 @@ public class LbdsDtoHelper {
 					if (isLbdsProperty) {
 						Object propertyValue = readMethod.invoke(dto);
 
-						Log.i("SORMAS_LBDS", "inspecting " + propertyName + ": local " + localPropertyValue + " / " + propertyValue);
-
 						if ((propertyValue == null || localPropertyValue == null)) {
 							if (!(propertyValue == null && localPropertyValue == null)) {
-								Log.i("SORMAS_LBDS", "1. modified " + propertyName + ": local " + localPropertyValue + " / " + propertyValue);
 								return true;
 							}
 						} else if (ReferenceDto.class.isAssignableFrom(propertyValue.getClass())) {
 							String uuid = ((ReferenceDto) propertyValue).getUuid();
 							String localUuid = ((ReferenceDto) localPropertyValue).getUuid();
 							if (!uuid.equals(localUuid)) {
-								Log.i("SORMAS_LBDS", "2. modified " + propertyName + ": local " + localPropertyValue + " / " + propertyValue);
 								return true;
 							}
 						} else if (!propertyValue.equals(localPropertyValue)) {
-							Log.i("SORMAS_LBDS", "3. modified " + propertyName + ": local " + localPropertyValue + " / " + propertyValue);
 							return true;
 						}
 					} else {
-						Log.i("SORMAS_LBDS", "inspecting non-LBDS:" + propertyName + ": local " + localPropertyValue);
 						if (checkNonLbdsProperties
 							&& !isNullOrEmptyLbds(localPropertyValue)
 							&& !(CaseDataDto.class.isAssignableFrom(entityDtoClass) && isCaseDefaultValue(propertyName, localPropertyValue))) {
