@@ -3,6 +3,7 @@ Feature: Case view tests
 
   Scenario: Create a new Case and check details in Detailed view table
     Given I log in with the user
+    Given API: I create a new person
     When API: I create a new case
     Given I click on the Cases button from navbar
     When I click on the DETAILED radiobutton from Case directory

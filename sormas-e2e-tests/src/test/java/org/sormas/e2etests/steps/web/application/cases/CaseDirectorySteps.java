@@ -68,11 +68,14 @@ public class CaseDirectorySteps implements En {
 
     When(
         "I filter by CaseID on Case directory page",
-        () ->
-            webDriverHelpers.fillAndSubmitInWebElement(
-                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT,
-                dataOperations.getPartialUuidFromAssociatedLink(
-                    apiState.getCreatedContact().getUuid())));
+        () -> {
+          String partialUuid =
+              dataOperations.getPartialUuidFromAssociatedLink(apiState.getCreatedCase().getUuid());
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
+          webDriverHelpers.clickOnWebElementBySelector(
+              CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+        });
 
     When(
         "^I open the last created Case via API",

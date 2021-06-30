@@ -26,6 +26,8 @@ public class CaseDirectoryPage {
       By.cssSelector("div#casesViewSwitcher span:nth-child(2) > label");
   public static final By CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT =
       By.cssSelector("input#nameUuidEpidNumberLike");
+  public static final By CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON =
+      By.cssSelector("div#actionApplyFilters");
   public static final By CASE_DETAILED_TABLE_DATA = By.tagName("td");
   public static final By CASE_DETAILED_COLUMN_HEADERS =
       By.cssSelector("thead .v-grid-column-default-header-content");

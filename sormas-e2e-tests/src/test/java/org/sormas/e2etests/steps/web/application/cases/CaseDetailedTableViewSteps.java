@@ -1,19 +1,21 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
 
 import cucumber.api.java8.En;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.enums.ContactOutcome;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -45,21 +47,20 @@ public class CaseDetailedTableViewSteps implements En {
               .containsIgnoringCase(
                   dataOperations.getPartialUuidFromAssociatedLink(
                       apiState.getCreatedCase().getUuid()));
-          //          softly
-          //              .assertThat(
-          //
-          // detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.DISEASE.toString()))
-          //              .containsIgnoringCase();
-          //          softly
-          //              .assertThat(
-          //                  detailedCaseDTableRow.get(
-          //                          CaseDetailedTableViewHeaders.CASE_CLASSIFICATION.toString()))
-          //              .containsIgnoringCase();
-          //          softly
-          //              .assertThat(
-          //                  detailedCaseDTableRow.get(
-          //                          CaseDetailedTableViewHeaders.OUTCOME_OF_CASE.toString()))
-          //              .containsIgnoringCase();
+          softly
+              .assertThat(
+                  detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.DISEASE.toString()))
+              .containsIgnoringCase(CaseOutcome.CORONAVIRUS.getOutcome());
+          softly
+              .assertThat(
+                  detailedCaseDTableRow.get(
+                      CaseDetailedTableViewHeaders.CASE_CLASSIFICATION.toString()))
+              .containsIgnoringCase(CaseOutcome.NOT_CLASSIFIED.getOutcome());
+          softly
+              .assertThat(
+                  detailedCaseDTableRow.get(
+                      CaseDetailedTableViewHeaders.OUTCOME_OF_CASE.toString()))
+              .containsIgnoringCase(CaseOutcome.NO_OUTCOME.getOutcome());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
@@ -68,78 +69,58 @@ public class CaseDetailedTableViewSteps implements En {
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.FIRST_NAME.toString()))
-              .containsIgnoringCase(apiState.getCreatedCase().getPerson().getFirstName());
+              .containsIgnoringCase(apiState.getEditPerson().getFirstName());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.LAST_NAME.toString()))
-              .containsIgnoringCase(apiState.getCreatedCase().getPerson().getLastName());
-          //          softly
-          //              .assertThat(
-          //                  detailedCaseDTableRow.get(
-          //                          CaseDetailedTableViewHeaders.SEX.toString()))
-          //              .containsIgnoringCase();
-          //          softly
-          //              .assertThat(
-          //                  detailedCaseDTableRow.get(
-          //                          CaseDetailedTableViewHeaders.AGE_AND_BIRTH_DATE.toString()))
-          //              .containsIgnoringCase();
+              .containsIgnoringCase(apiState.getEditPerson().getLastName());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.NUMBER_OF_EVENTS.toString()))
               .containsIgnoringCase("0");
-          //          softly
-          //              .assertThat(
-          //                  detailedCaseDTableRow.get(
-          //
-          // CaseDetailedTableViewHeaders.DATE_OF_SYMPTOM_ONSET.toString()))
-          //              .containsIgnoringCase();
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.RESPONSIBLE_REGION.toString()))
-              .containsIgnoringCase(apiState.getCreatedCase().getRegion().getCaption());
+              .containsIgnoringCase(CaseOutcome.RESPONSIBLE_REGION.getOutcome());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.RESPONSIBLE_DISTRICT.toString()))
-              .containsIgnoringCase(apiState.getCreatedCase().getDistrict().getCaption());
-          softly
-              .assertThat(
-                  detailedCaseDTableRow.get(
-                      CaseDetailedTableViewHeaders.RESPONSIBLE_COMMUNITY.toString()))
-              .containsIgnoringCase(apiState.getCreatedCase().getCommunity().getUuid());
+              .containsIgnoringCase(CaseOutcome.RESPONSIBLE_DISTRICT.getOutcome());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.HEALTH_FACILITY.toString()))
-              .containsIgnoringCase(apiState.getCreatedCase().getHealthFacility().getUuid());
-          //            softly
-          //                    .assertThat(
-          //                            detailedCaseDTableRow.get(
-          //
-          // CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString()))
-          //                    .containsIgnoringCase();
+              .containsIgnoringCase(CaseOutcome.HEALTH_FACILITY.getOutcome());
+          softly
+              .assertThat(
+                  detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.DATE_OF_REPORT.toString()))
+              .containsIgnoringCase(
+                  getDetaOfReportDateTime(apiState.getCreatedCase().getReportDate().toString()));
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.FOLLOW_UP_STATUS.toString()))
               .containsIgnoringCase(ContactOutcome.FOLLOW_UP.getOutcome());
-          //            softly
-          //                    .assertThat(
-          //                            detailedCaseDTableRow.get(
-          //
-          // CaseDetailedTableViewHeaders.FOLLOW_UP_UNTIL.toString()))
-          //                    .containsIgnoringCase();
+          softly
+              .assertThat(
+                  detailedCaseDTableRow.get(
+                      CaseDetailedTableViewHeaders.FOLLOW_UP_UNTIL.toString()))
+              .containsIgnoringCase(
+                  getFollowUpUntilCaseDate(
+                      getDetaOfReportDateTime(
+                          apiState.getCreatedCase().getReportDate().toString())));
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
                       CaseDetailedTableViewHeaders.NUMBER_OF_VISITS.toString()))
-              .containsIgnoringCase("0(1 missed)");
+              .containsIgnoringCase("0 (0 missed)");
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.COMPLETENESS.toString()))
-              .containsIgnoringCase("15%");
+              .containsIgnoringCase("-");
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.REPORTING_USER.toString()))
@@ -193,5 +174,44 @@ public class CaseDetailedTableViewSteps implements En {
               headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
             });
     return headerHashmap;
+  }
+
+  /* Used in test: Check Case details in Detailed table view from Case directory
+  Returns Case report date as displayed in the UI
+  <parameter> dateTimeString: represents the date time value read from Case created through API <parameter>
+  */
+
+  public String getDetaOfReportDateTime(String dateTimeString) {
+    SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy h:mm a");
+    // because API request is sending local GMT and UI displays GMT+2 (server GMT)
+    outputFormat.setTimeZone(TimeZone.getTimeZone("GMT+2"));
+
+    // inputFormat is the format of teh dateTime as read from API created case
+    DateFormat inputFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
+    Date parsedDate = null;
+    try {
+      parsedDate = inputFormat.parse(dateTimeString);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    return outputFormat.format(parsedDate);
+  }
+
+  public String getFollowUpUntilCaseDate(String dateOfReportDateDateTime) {
+    SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy");
+    DateFormat inputFormat = new SimpleDateFormat("MM/dd/yyyy h:mm a");
+    ZoneId defaultZoneId = ZoneId.systemDefault();
+    Date parsedDate = null;
+    try {
+      parsedDate = inputFormat.parse(dateOfReportDateDateTime);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    LocalDate date = parsedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    LocalDate addedDate = date.plusDays(14);
+    Date finalDate = Date.from(addedDate.atStartOfDay(defaultZoneId).toInstant());
+
+    return outputFormat.format(finalDate);
   }
 }
