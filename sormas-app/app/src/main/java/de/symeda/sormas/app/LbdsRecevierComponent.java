@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.hzi.sormas.lbds.core.http.HttpContainer;
 import org.hzi.sormas.lbds.core.http.HttpMethod;
+import org.hzi.sormas.lbds.core.http.HttpResult;
 import org.hzi.sormas.lbds.messaging.Constants;
 import org.hzi.sormas.lbds.messaging.IntentType;
 import org.hzi.sormas.lbds.messaging.IntentTypeCarrying;
@@ -15,6 +16,7 @@ import org.hzi.sormas.lbds.messaging.LbdsResponseIntent;
 import org.hzi.sormas.lbds.messaging.util.KeySerializationUtil;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -81,6 +83,25 @@ public class LbdsRecevierComponent extends IntentService {
 				break;
 			case HTTP_RESPONSE_INTENT:
 				LbdsResponseIntent responseIntent = (LbdsResponseIntent) IntentTypeCarrying.toStrongTypedIntent(intent);
+				HttpContainer httpContainerResponse = responseIntent.getHttpContainer(ConfigProvider.getLbdsAesSecret());
+				HttpMethod methodFromResponse = httpContainerResponse.getMethod();
+				HttpResult resultFromResponse = httpContainerResponse.getResult();
+				Log.i("SORMAS_LBDS", "Request: " + methodFromResponse);
+				Log.i("SORMAS_LBDS", "Result Headers: " + resultFromResponse.headers);
+				Log.i("SORMAS_LBDS", "Result Body: " + resultFromResponse.body);
+
+				try {
+					Gson gson = RetroProvider.initGson();
+					List<PersonDto> sendPersonDtos = gson.fromJson(methodFromResponse.payload, new TypeToken<List<PersonDto>>() {
+					}.getType());
+					List<PushResult> responsePushResults = gson.fromJson(resultFromResponse.body, new TypeToken<List<PushResult>>() {
+					}.getType());
+					Log.i("SORMAS_LBDS", "sent " + sendPersonDtos.size() + " PersonDtos and received " + responsePushResults.size() + " PushResults");
+				} catch (Exception e) {
+					Log.i("SORMAS_LBDS", e.getMessage());
+					e.printStackTrace();
+				}
+
 				break;
 			case KEX_TO_SORMAS_INTENT:
 				LbdsPropagateKexToSormasIntent kexToSormasIntent = (LbdsPropagateKexToSormasIntent) IntentTypeCarrying.toStrongTypedIntent(intent);
