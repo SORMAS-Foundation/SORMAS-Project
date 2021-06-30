@@ -15,7 +15,7 @@ Please follow the [Server Setup Instructions](SERVER_SETUP.md) to set up a local
 - Open Git Bash and execute the following command to ensure that rebase is used when pulling the development branch rather than merge: `git config --global branch.development.rebase true`
 
 ## Step 3: Install Java
-Download and install the **Java 11 JDK** (not JRE) for your operating system. We suggest using [Zulu OpenJDK](https://www.azul.com/downloads/?version=java-11-lts&package=jdk). If you're running Linux, please refer to the [official documentation](https://docs.azul.com/zulu/zuludocs/ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm) on how to install Zulu OpenJDK on your system.
+Download and install the **Java 11 JDK** (not JRE) for your operating system. We suggest using [Zulu OpenJDK](https://www.azul.com/downloads/?version=java-11-lts&package=jdk). If you're running Linux, please refer to the [official documentation](https://docs.azul.com/zulu/zuludocs/ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm) on how to install Zulu OpenJDK on your system. If you plan to work on the Android App as well, you will also need the **Java 8 JDK** to use with Android Studio.
 
 ## Step 4: Install and Configure Your IDE
 
