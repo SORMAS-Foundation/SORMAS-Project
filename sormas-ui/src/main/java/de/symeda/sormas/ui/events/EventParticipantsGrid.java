@@ -34,7 +34,6 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.jurisdiction.EventParticipantJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
@@ -70,10 +69,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 				return entry.getCaseUuid();
 			}
 
-			boolean isInJurisdiction = FieldAccessColumnStyleGenerator.callJurisdictionChecker(
-				EventParticipantJurisdictionHelper::isInJurisdictionOrOwned,
-				UserProvider.getCurrent().getUser(),
-				entry.getJurisdiction());
+			boolean isInJurisdiction = entry.getInJurisdiction();
 			if (!isInJurisdiction) {
 				return NO_CASE_CREATE;
 			}
@@ -124,10 +120,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {
 			if (e.getCaseUuid() != null) {
 				ControllerProvider.getCaseController().navigateToCase(e.getCaseUuid());
-			} else if (FieldAccessColumnStyleGenerator.callJurisdictionChecker(
-				EventParticipantJurisdictionHelper::isInJurisdictionOrOwned,
-				UserProvider.getCurrent().getUser(),
-				e.getJurisdiction())) {
+			} else if (e.getInJurisdiction()) {
 				EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getUuid());
 				ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
 			}

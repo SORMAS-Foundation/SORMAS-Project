@@ -25,12 +25,11 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
-import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
+import de.symeda.sormas.api.utils.DateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRole;
@@ -40,6 +39,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
@@ -76,6 +76,13 @@ public class CronService {
 	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
 	public void sendNewAndDueTaskMessages() {
 		taskFacade.sendNewAndDueTaskMessages();
+	}
+
+	@Schedule(hour = "*", minute = "*/2", second = "0", persistent = false)
+	public void calculateCaseCompletion() {
+		long timeStart = DateHelper.startTime();
+		int casesUpdated = caseFacade.updateCompleteness();
+		logger.debug("calculateCaseCompletion finished. {} cases, {} s", casesUpdated, DateHelper.durationSeconds(timeStart));
 	}
 
 	@Schedule(hour = "1", minute = "0", second = "0", persistent = false)
@@ -160,5 +167,4 @@ public class CronService {
 			labMessageFacade.fetchAndSaveExternalLabMessages(null);
 		}
 	}
-
 }

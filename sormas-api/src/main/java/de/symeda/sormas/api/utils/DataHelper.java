@@ -35,6 +35,8 @@ import java.util.TreeSet;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.base.CharMatcher;
 
 import de.symeda.sormas.api.AgeGroup;
@@ -420,5 +422,16 @@ public final class DataHelper {
 		}
 
 		return Collections.singletonList(object);
+	}
+
+	public static String joinStrings(String separator, String... strings) {
+		List<String> notEmptyValues = new ArrayList<>();
+		for (String string : strings) {
+			if (!StringUtils.isBlank(string)) {
+				notEmptyValues.add(string);
+			}
+		}
+
+		return StringUtils.join(notEmptyValues, separator);
 	}
 }

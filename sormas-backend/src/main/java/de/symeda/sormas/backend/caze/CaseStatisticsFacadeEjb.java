@@ -282,7 +282,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				.append(" ON ")
 				.append(Case.TABLE_NAME)
 				.append(".")
-				.append(Case.COMMUNITY)
+				.append(Case.RESPONSIBLE_COMMUNITY)
 				.append("_id = ")
 				.append(Community.TABLE_NAME)
 				.append(".")
@@ -294,7 +294,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				.append(" ON ")
 				.append(Case.TABLE_NAME)
 				.append(".")
-				.append(Case.DISTRICT)
+				.append(Case.RESPONSIBLE_DISTRICT)
 				.append("_id = ")
 				.append(District.TABLE_NAME)
 				.append(".")
@@ -306,7 +306,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				.append(" ON ")
 				.append(Case.TABLE_NAME)
 				.append(".")
-				.append(Case.REGION)
+				.append(Case.RESPONSIBLE_REGION)
 				.append("_id = ")
 				.append(Region.TABLE_NAME)
 				.append(".")
@@ -814,7 +814,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				caseFilterBuilder,
 				filterBuilderParameters,
 				Case.TABLE_NAME,
-				Case.REGION + "_id",
+				Case.RESPONSIBLE_REGION + "_id",
 				regionIds,
 				entry -> entry);
 		}
@@ -825,7 +825,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				caseFilterBuilder,
 				filterBuilderParameters,
 				Case.TABLE_NAME,
-				Case.DISTRICT + "_id",
+				Case.RESPONSIBLE_DISTRICT + "_id",
 				districtIds,
 				entry -> entry);
 		}
@@ -836,7 +836,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				caseFilterBuilder,
 				filterBuilderParameters,
 				Case.TABLE_NAME,
-				Case.COMMUNITY + "_id",
+				Case.RESPONSIBLE_COMMUNITY + "_id",
 				communityIds,
 				entry -> entry);
 		}

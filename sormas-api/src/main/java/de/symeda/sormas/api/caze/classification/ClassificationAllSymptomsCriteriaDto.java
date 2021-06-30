@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze.classification;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -22,31 +23,22 @@ import de.symeda.sormas.api.utils.HideForCountriesExcept;
 public class ClassificationAllSymptomsCriteriaDto extends ClassificationCriteriaDto {
 
 	private SymptomState symptomState;
-	private Disease disease;
+	private FieldVisibilityCheckers fieldVisibilityCheckers;
 
-	public ClassificationAllSymptomsCriteriaDto(SymptomState symptomState, Disease disease) {
+	public ClassificationAllSymptomsCriteriaDto(SymptomState symptomState, Disease disease, String countryLocale) {
 		this.symptomState = symptomState;
-		this.disease = disease;
+		fieldVisibilityCheckers = FieldVisibilityCheckers.withDisease(disease).andWithCountry(countryLocale);
 	}
 
 	@Override
 	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events) {
 
-		Disease caseDisease = caze.getDisease();
-
 		for (Field field : SymptomsDto.class.getDeclaredFields()) {
-			Diseases annotation = field.getAnnotation(Diseases.class);
-			HideForCountries hideForCountriesAnnotation = field.getAnnotation(HideForCountries.class);
-			HideForCountriesExcept hideForCountriesExceptAnnotation = field.getAnnotation(HideForCountriesExcept.class);
 
 			SymptomsDto symptomsDto = caze.getSymptoms();
 			if (field.getType() == SymptomState.class
-				&& annotation != null
-				&& ArrayUtils.contains(annotation.value(), caseDisease)
-				&& (hideForCountriesAnnotation == null || !ArrayUtils.contains(hideForCountriesAnnotation.countries(), getCountryLocale()))
-				&& (hideForCountriesExceptAnnotation == null
-					|| ArrayUtils.contains(hideForCountriesExceptAnnotation.countries(), getCountryLocale()))) {
-
+				&& fieldVisibilityCheckers.isVisible(SymptomsDto.class, field.getName()))
+			{
 				field.setAccessible(true);
 				try {
 					boolean matchedFieldState = field.get(symptomsDto) == symptomState;
@@ -76,24 +68,11 @@ public class ClassificationAllSymptomsCriteriaDto extends ClassificationCriteria
 		}
 
 		for (Field field : SymptomsDto.class.getDeclaredFields()) {
-			Diseases annotation = field.getAnnotation(Diseases.class);
-			HideForCountries hideForCountriesAnnotation = field.getAnnotation(HideForCountries.class);
-			HideForCountriesExcept hideForCountriesExceptAnnotation = field.getAnnotation(HideForCountriesExcept.class);
-
 			if (field.getType() == SymptomState.class
-				&& annotation != null
-				&& ArrayUtils.contains(annotation.value(), disease)
-				&& (hideForCountriesAnnotation == null || !ArrayUtils.contains(hideForCountriesAnnotation.countries(), getCountryLocale()))
-				&& (hideForCountriesExceptAnnotation == null
-					|| ArrayUtils.contains(hideForCountriesExceptAnnotation.countries(), getCountryLocale()))) {
-
-				stringBuilder.append(field.getName()).append("; ");
+					&& fieldVisibilityCheckers.isVisible(SymptomsDto.class, field.getName())) {
+				stringBuilder.append(I18nProperties.getPrefixCaption( SymptomsDto.I18N_PREFIX,field.getName())).append("; ");
 			}
 		}
 		return stringBuilder.toString();
-	}
-
-	private String getCountryLocale() {
-		return FacadeProvider.getConfigFacade().getCountryLocale();
 	}
 }

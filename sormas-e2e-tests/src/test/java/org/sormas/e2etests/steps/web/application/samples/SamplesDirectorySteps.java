@@ -24,6 +24,7 @@ import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.util.Arrays;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.sormas.e2etests.enums.LabCaption;
 import org.sormas.e2etests.enums.PathogenTestResults;
 import org.sormas.e2etests.enums.SpecimenConditions;
@@ -36,7 +37,10 @@ public class SamplesDirectorySteps implements En {
 
   @Inject
   public SamplesDirectorySteps(
-      WebDriverHelpers webDriverHelpers, ApiState apiState, AssertHelpers assertHelpers) {
+      WebDriverHelpers webDriverHelpers,
+      @Named("ENVIRONMENT_URL") String environmentUrl,
+      ApiState apiState,
+      AssertHelpers assertHelpers) {
 
     When(
         "^I search last created Sample by Case ID$",
@@ -61,13 +65,22 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
+        "I am accessing the created sample via api",
+        () -> {
+          String CREATED_SAMPLE_VIA_API_URL =
+              environmentUrl + "/sormas-ui/#!samples/data/" + apiState.getCreatedSample().getUuid();
+          webDriverHelpers.accessWebSite(CREATED_SAMPLE_VIA_API_URL);
+          webDriverHelpers.waitForPageLoaded();
+        });
+
+    When(
         "^I search for samples created with the API",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
           int maximumNumberOfRows = 23;
           webDriverHelpers.waitUntilNumberOfElementsIsExactlyOrLess(
               SEARCH_RESULT_SAMPLE, maximumNumberOfRows);
-          Thread.sleep(1000); // reset filter acts chaotic, to be modified in the future
+          Thread.sleep(2000); // reset filter acts chaotic, to be modified in the future
           webDriverHelpers.fillAndSubmitInWebElement(
               SAMPLE_SEARCH_INPUT, apiState.getEditPerson().getFirstName());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);

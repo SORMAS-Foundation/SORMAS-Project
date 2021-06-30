@@ -17,11 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
+
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 public enum CaseClassification
 	implements

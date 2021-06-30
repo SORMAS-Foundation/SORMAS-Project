@@ -170,12 +170,12 @@ public class EventParticipantExportDto implements Serializable {
 
 	private List<EmbeddedSampleExportDto> eventParticipantSamples = new ArrayList<>();
 
-	private EventParticipantJurisdictionDto jurisdiction;
+	private boolean isInJurisdiction;
 
 	private long contactCount;
 
 	//@formatter:off
-    public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String personNationalHealthId, long personAddressId, String reportingUserUuid, String eventUuid,
+    public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String personNationalHealthId, long personAddressId, boolean isInJurisdiction, String eventUuid,
 
 									 EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventTitle, String eventDesc,
 									 String eventRegion, String eventDistrict, String eventCommunity, String eventCity, String eventStreet, String eventHouseNumber,
@@ -255,7 +255,7 @@ public class EventParticipantExportDto implements Serializable {
 		this.vaccineUniiCode = vaccineUniiCode;
 		this.vaccineAtcCode = vaccineAtcCode;
 
-		jurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	@Order(9)
@@ -965,7 +965,7 @@ public class EventParticipantExportDto implements Serializable {
 		this.eventParticipantSamples = eventParticipantSamples;
 	}
 
-	public EventParticipantJurisdictionDto getJurisdiction() {
-		return jurisdiction;
+	public boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 }

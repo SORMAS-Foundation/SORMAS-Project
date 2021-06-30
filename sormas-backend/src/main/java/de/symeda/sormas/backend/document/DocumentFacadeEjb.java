@@ -29,13 +29,10 @@ import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -73,15 +70,9 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@EJB
 	private CaseService caseService;
 	@EJB
-	private CaseJurisdictionChecker caseJurisdictionChecker;
-	@EJB
 	private ContactService contactService;
 	@EJB
-	private ContactJurisdictionChecker contactJurisdictionChecker;
-	@EJB
 	private EventService eventService;
-	@EJB
-	private EventJurisdictionChecker eventJurisdictionChecker;
 
 	@Override
 	public DocumentDto getDocumentByUuid(String uuid) {
@@ -187,13 +178,13 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		switch (dto.getRelatedEntityType()) {
 		case CASE:
 			Case caze = caseService.getByUuid(dto.getRelatedEntityUuid());
-			return caseJurisdictionChecker.isInJurisdictionOrOwned(caze);
+			return caseService.inJurisdictionOrOwned(caze);
 		case CONTACT:
 			Contact contact = contactService.getByUuid(dto.getRelatedEntityUuid());
-			return contactJurisdictionChecker.isInJurisdictionOrOwned(contact);
+			return contactService.inJurisdictionOrOwned(contact).getInJurisdiction();
 		case EVENT:
 			Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
-			return eventJurisdictionChecker.isInJurisdictionOrOwned(event);
+			return eventService.inJurisdictionOrOwned(event);
 		}
 		return true;
 	}

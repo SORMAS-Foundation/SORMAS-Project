@@ -362,11 +362,40 @@ public class WebDriverHelpers {
     }
   }
 
+  public void waitUntilAListOfElementsIsPresent(By selector, int number) {
+    waitForPageLoaded();
+    try {
+      assertHelpers.assertWithPoll(
+          () -> {
+            List<WebElement> webElements = baseSteps.getDriver().findElements(selector);
+            scrollToElement(webElements.get(0));
+            assertThat(webElements.size()).isAtLeast(number);
+          },
+          4);
+    } catch (Throwable ignored) {
+    }
+  }
+
+  public void fillValueOfListElement(By selector, int index, String text) {
+    baseSteps.getDriver().findElements(selector).get(index).sendKeys(text);
+  }
+
+  public String getValueOfListElement(By selector, int index) {
+    scrollToElement(selector);
+    return baseSteps.getDriver().findElements(selector).get(index).getAttribute("value");
+  }
+
+  public String getTextFromListElement(By selector, int index) {
+    scrollToElement(selector);
+    return baseSteps.getDriver().findElements(selector).get(index).getText();
+  }
+
   public WebElement getWebElementBySelectorAndText(final By selector, final String text) {
     return getWebElementByText(selector, webElement -> webElement.getText().contentEquals(text));
   }
 
   public void clickWebElementByText(final By selector, final String text) {
+    scrollToElement(selector);
     getWebElementBySelectorAndText(selector, text).click();
   }
 
@@ -467,6 +496,15 @@ public class WebDriverHelpers {
                 .isAtMost(given));
   }
 
+  public void waitUntilNumberOfElementsIsExactly(By selector, int given) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
+    assertHelpers.assertWithPoll15Second(
+        () ->
+            assertWithMessage("Number of identified element should be %s", given)
+                .that(getNumberOfElements(selector))
+                .isEqualTo(given));
+  }
+
   public String getCheckedOptionFromHorizontalOptionGroup(By options) {
     waitUntilIdentifiedElementIsPresent(options);
     scrollToElement(options);
@@ -496,5 +534,17 @@ public class WebDriverHelpers {
     } else {
       throw new Error("checked was found as NULL");
     }
+  }
+
+  // always needs the raw header value from the DOM, not the stylized one (the one displayed in UI)
+  // rowIndex parameter will return the demanded row. 0 is the header
+  // style.substring(style.length() - 17) matches the width value for the selector. it will be used
+  // to match the header and the rows by the lenght.
+  public String getValueFromTableRowUsingTheHeader(String headerValue, int rowIndex) {
+    By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
+    scrollToElement(header);
+    String style = getAttributeFromWebElement(header, "style");
+    By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
+    return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
   }
 }

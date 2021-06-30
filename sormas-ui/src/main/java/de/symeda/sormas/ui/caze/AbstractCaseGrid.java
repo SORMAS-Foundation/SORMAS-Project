@@ -46,12 +46,10 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -232,7 +230,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 	}
 
 	protected Stream<String> getJurisdictionColumns() {
-		return Stream.of(CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME);
+		return Stream.of(CaseIndexDto.RESPONSIBLE_DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME);
 	}
 
 	protected Stream<String> getReinfectionColumn() {
@@ -327,32 +325,4 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 	}
 
 	protected abstract List<IndexDto> getGridData(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
-
-	public static UserJurisdiction createUserJurisdiction(UserDto user) {
-
-		UserJurisdiction jurisdiction = new UserJurisdiction();
-		jurisdiction.setUuid(user.getUuid());
-
-		if (user.getRegion() != null) {
-			jurisdiction.setRegionUuid(user.getRegion().getUuid());
-		}
-		if (user.getDistrict() != null) {
-			jurisdiction.setDistrictUuid(user.getDistrict().getUuid());
-		}
-		if (user.getCommunity() != null) {
-			jurisdiction.setCommunityUuid(user.getCommunity().getUuid());
-		}
-		if (user.getHealthFacility() != null) {
-			jurisdiction.setHealthFacilityUuid(user.getHealthFacility().getUuid());
-		}
-		if (user.getPointOfEntry() != null) {
-			jurisdiction.setPointOfEntryUuid(user.getPointOfEntry().getUuid());
-		}
-
-		if (user.getLaboratory() != null) {
-			jurisdiction.setLabUuid(user.getLaboratory().getUuid());
-		}
-
-		return jurisdiction;
-	}
 }

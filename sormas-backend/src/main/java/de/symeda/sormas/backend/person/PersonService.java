@@ -23,6 +23,7 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEqualsReferenceDto;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -72,7 +73,6 @@ import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
@@ -82,16 +82,17 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless
 @LocalBean
 public class PersonService extends AdoServiceWithUserFilter<Person> {
 
+	@EJB
+	private UserService userService;
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -356,8 +357,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			.collect(Collectors.toList());
 	}
 
-	public List<Long> getInJurisdictionIDs(final List<Person> selectedPersons) {
-		if (selectedPersons.size() == 0) {
+	public List<Long> getInJurisdictionIDs(final List<Person> selectedEntities) {
+		if (selectedEntities.size() == 0) {
 			return Collections.emptyList();
 		}
 
@@ -368,42 +369,21 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		inJurisdictionQuery.select(personRoot.get(Person.ID));
 
 		final Predicate isFromSelectedPersons =
-			cb.in(personRoot.get(Person.ID)).value(selectedPersons.stream().map(Person::getId).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedPersons, getJurisdictionPredicate(cb, inJurisdictionQuery, personRoot)));
+			cb.in(personRoot.get(Person.ID)).value(selectedEntities.stream().map(Person::getId).collect(Collectors.toList()));
+		inJurisdictionQuery.where(cb.and(isFromSelectedPersons, inJurisdictionOrOwned(new PersonQueryContext(cb,inJurisdictionQuery, personRoot))));
 
 		return em.createQuery(inJurisdictionQuery).getResultList();
 	}
 
-	public Predicate getJurisdictionPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<Person> personRoot) {
+	public boolean inJurisdictionOrOwned(Person person) {
+		return !getInJurisdictionIDs(Arrays.asList(person)).isEmpty();
+	}
 
-		final Path<Object> personId = personRoot.get(Person.ID);
-
-		final Subquery<Long> caseJurisdictionSubQuery = cq.subquery(Long.class);
-		final Root<Case> caseRoot = caseJurisdictionSubQuery.from(Case.class);
-		caseJurisdictionSubQuery.select(caseRoot.get(Case.ID));
-		caseJurisdictionSubQuery.where(
-			cb.and(cb.equal(caseRoot.get(Case.PERSON).get(Person.ID), personId), caseService.isInJurisdictionOrOwned(cb, new CaseJoins<>(caseRoot))));
-		final Predicate isCaseInJurisdiction = cb.exists(caseJurisdictionSubQuery);
-
-		final Subquery<Long> contactJurisdictionSubQuery = cq.subquery(Long.class);
-		final Root<Contact> contactRoot = contactJurisdictionSubQuery.from(Contact.class);
-		contactJurisdictionSubQuery.select(contactRoot.get(Contact.ID));
-		contactJurisdictionSubQuery.where(
-			cb.and(
-				cb.equal(contactRoot.get(Contact.PERSON).get(Person.ID), personId),
-				contactService.isInJurisdictionOrOwned(cb, cq, contactRoot, new ContactJoins(contactRoot))));
-		final Predicate isContactInJurisdiction = cb.exists(contactJurisdictionSubQuery);
-
-		final Subquery<Long> eventParticipantJurisdictionSubQuery = cq.subquery(Long.class);
-		final Root<EventParticipant> eventParticipantRoot = eventParticipantJurisdictionSubQuery.from(EventParticipant.class);
-		eventParticipantJurisdictionSubQuery.select(eventParticipantRoot.get(EventParticipant.ID));
-		eventParticipantJurisdictionSubQuery.where(
-			cb.and(
-				cb.equal(eventParticipantRoot.get(EventParticipant.PERSON).get(Person.ID), personId),
-				eventParticipantService.isInJurisdictionOrOwned(cb, cq, eventParticipantRoot, new EventParticipantJoins<>(eventParticipantRoot))));
-		final Predicate isEventParticipantInJurisdiction = cb.exists(eventParticipantJurisdictionSubQuery);
-
-		return cb.or(isCaseInJurisdiction, isContactInJurisdiction, isEventParticipantInJurisdiction);
+	public Predicate inJurisdictionOrOwned(PersonQueryContext personQueryContext) {
+		final User currentUser = userService.getCurrentUser();
+		return PersonJurisdictionPredicateValidator
+			.of(personQueryContext.getQuery(), personQueryContext.getCriteriaBuilder(), (PersonJoins) personQueryContext.getJoins(), currentUser)
+			.inJurisdictionOrOwned();
 	}
 
 	public List<PersonNameDto> getMatchingNameDtos(PersonSimilarityCriteria criteria, Integer limit) {

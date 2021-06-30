@@ -58,6 +58,8 @@ public interface CaseFacade {
 
 	long count(CaseCriteria caseCriteria);
 
+	long count(CaseCriteria caseCriteria, boolean ignoreUserFilter);
+
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
@@ -217,4 +219,6 @@ public interface CaseFacade {
 	List<CaseDataDto> getByExternalId(String externalId);
 
 	void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
+
+	int updateCompleteness();
 }

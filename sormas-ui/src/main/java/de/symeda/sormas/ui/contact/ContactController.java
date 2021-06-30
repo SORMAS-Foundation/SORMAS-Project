@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.contact;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,6 +43,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -315,7 +317,7 @@ public class ContactController {
 		if (casePerson != null && asSourceContact) {
 			createForm.setPerson(casePerson);
 		}
-		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<>(
+		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE),
 			createForm.getFieldGroup());
@@ -362,18 +364,7 @@ public class ContactController {
 							if (selectedPerson != null) {
 								dto.setPerson(selectedPerson);
 
-								// set the contact person's address to the one of the case when it is currently empty and
-								// the relationship with the case has been set to living in the same household
-								if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
-									PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
-									if (personDto.getAddress().checkIsEmptyLocation()) {
-										CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-										personDto.getAddress().setRegion(caseDto.getRegion());
-										personDto.getAddress().setDistrict(caseDto.getDistrict());
-										personDto.getAddress().setCommunity(caseDto.getCommunity());
-									}
-									FacadeProvider.getPersonFacade().savePerson(personDto);
-								}
+								fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
 
 								selectOrCreateContact(dto, person, selectedContactUuid -> {
 									if (selectedContactUuid != null) {
@@ -432,17 +423,7 @@ public class ContactController {
 				final ContactDto dto = createForm.getValue();
 				PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
 
-				// set the contact person's address to the one of the case when it is currently empty and
-				// the relationship with the case has been set to living in the same household
-				if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
-					if (personDto.getAddress().checkIsEmptyLocation()) {
-						CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-						personDto.getAddress().setRegion(caseDto.getRegion());
-						personDto.getAddress().setDistrict(caseDto.getDistrict());
-						personDto.getAddress().setCommunity(caseDto.getCommunity());
-					}
-					FacadeProvider.getPersonFacade().savePerson(personDto);
-				}
+				fillPersonAddressIfEmpty(dto, () -> personDto);
 
 				selectOrCreateContact(dto, personDto, selectedContactUuid -> {
 					if (selectedContactUuid != null) {
@@ -478,7 +459,9 @@ public class ContactController {
 				}
 			});
 
-			contactSelect.setSelectionChangeCallback(component.getCommitButton()::setEnabled);
+			contactSelect.setSelectionChangeCallback((commitAllowed) -> {
+				component.getCommitButton().setEnabled(commitAllowed);
+			});
 
 			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateContact));
 			contactSelect.selectBestMatch();
@@ -502,28 +485,25 @@ public class ContactController {
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
 		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized);
 		editForm.setValue(contact);
-		final CommitDiscardWrapperComponent<ContactDataForm> editComponent =
-			new CommitDiscardWrapperComponent<>(editForm, UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT), editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(
+			editForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
+			editForm.getFieldGroup());
 
-		editComponent.addCommitListener(() -> {
-			if (!editForm.getFieldGroup().isModified()) {
-				ContactDto dto = editForm.getValue();
+		editComponent.addCommitListener(new CommitDiscardWrapperComponent.CommitListener() {
 
-				// set the contact person's address to the one of the case when it is currently empty and
-				// the relationship with the case has been set to living in the same household
-				if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
-					PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
-					if (person.getAddress().checkIsEmptyLocation()) {
-						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-						person.getAddress().setRegion(caze.getRegion());
-						person.getAddress().setDistrict(caze.getDistrict());
-						person.getAddress().setCommunity(caze.getCommunity());
-					}
-					FacadeProvider.getPersonFacade().savePerson(person);
+			@Override
+			public void onCommit() {
+				if (!editForm.getFieldGroup().isModified()) {
+					ContactDto dto = editForm.getValue();
+
+					fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid()));
+
+					FacadeProvider.getContactFacade().saveContact(dto);
+
+					Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
+					SormasUI.refreshView();
 				}
-
-				Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
-				SormasUI.refreshView();
 			}
 		});
 
@@ -565,34 +545,39 @@ public class ContactController {
 		ContactBulkEditData bulkEditData = new ContactBulkEditData();
 		BulkContactDataForm form = new BulkContactDataForm(district);
 		form.setValue(bulkEditData);
-		final CommitDiscardWrapperComponent<BulkContactDataForm> editView = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<BulkContactDataForm> editView =
+			new CommitDiscardWrapperComponent<BulkContactDataForm>(form, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditContacts));
 
-		editView.addCommitListener(() -> {
-			ContactBulkEditData updatedBulkEditData = form.getValue();
-			for (ContactIndexDto indexDto : selectedContacts) {
-				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(indexDto.getUuid());
-				if (form.getClassificationCheckBox().getValue() == true) {
-					contactDto.setContactClassification(updatedBulkEditData.getContactClassification());
-				}
-				// Setting the contact officer is only allowed if all selected contacts are in the same district
-				if (district != null && form.getContactOfficerCheckBox().getValue() == true) {
-					contactDto.setContactOfficer(updatedBulkEditData.getContactOfficer());
-				}
+		editView.addCommitListener(new CommitDiscardWrapperComponent.CommitListener() {
 
-				FacadeProvider.getContactFacade().saveContact(contactDto);
+			@Override
+			public void onCommit() {
+				ContactBulkEditData updatedBulkEditData = form.getValue();
+				for (ContactIndexDto indexDto : selectedContacts) {
+					ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(indexDto.getUuid());
+					if (form.getClassificationCheckBox().getValue() == true) {
+						contactDto.setContactClassification(updatedBulkEditData.getContactClassification());
+					}
+					// Setting the contact officer is only allowed if all selected contacts are in the same district
+					if (district != null && form.getContactOfficerCheckBox().getValue() == true) {
+						contactDto.setContactOfficer(updatedBulkEditData.getContactOfficer());
+					}
+
+					FacadeProvider.getContactFacade().saveContact(contactDto);
+				}
+				popupWindow.close();
+				if (caseUuid == null) {
+					overview();
+				} else {
+					caseContactsOverview(caseUuid);
+				}
+				Notification.show(I18nProperties.getString(Strings.messageContactsEdited), Type.HUMANIZED_MESSAGE);
 			}
-			popupWindow.close();
-			if (caseUuid == null) {
-				overview();
-			} else {
-				caseContactsOverview(caseUuid);
-			}
-			Notification.show(I18nProperties.getString(Strings.messageContactsEdited), Type.HUMANIZED_MESSAGE);
 		});
 
-		editView.addDiscardListener(popupWindow::close);
+		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
 	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
@@ -605,16 +590,19 @@ public class ContactController {
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteContacts), selectedRows.size()),
-				() -> {
-					for (ContactIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getContactFacade().deleteContact(selectedRow.getUuid());
+				new Runnable() {
+
+					public void run() {
+						for (ContactIndexDto selectedRow : selectedRows) {
+							FacadeProvider.getContactFacade().deleteContact(selectedRow.getUuid());
+						}
+						callback.run();
+						new Notification(
+							I18nProperties.getString(Strings.headingContactsDeleted),
+							I18nProperties.getString(Strings.messageContactsDeleted),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
 					}
-					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingContactsDeleted),
-						I18nProperties.getString(Strings.messageContactsDeleted),
-						Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
 				});
 		}
 	}
@@ -629,7 +617,7 @@ public class ContactController {
 				false).show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingContactsCancelFollowUp),
+				String.format(I18nProperties.getString(Strings.headingContactsCancelFollowUp)),
 				new Label(String.format(I18nProperties.getString(Strings.confirmationCancelFollowUp), selectedRows.size())),
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
@@ -637,10 +625,11 @@ public class ContactController {
 				confirmed -> {
 					if (confirmed) {
 						for (ContactIndexDto contact : selectedRows) {
-							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
+							if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
+								&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
 								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 								contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
-								contactDto.setFollowUpComment(
+								contactDto.addToFollowUpComment(
 									String.format(I18nProperties.getString(Strings.infoCanceledBy), UserProvider.getCurrent().getUserName()));
 								FacadeProvider.getContactFacade().saveContact(contactDto);
 							}
@@ -665,7 +654,7 @@ public class ContactController {
 				false).show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingContactsLostToFollowUp),
+				String.format(I18nProperties.getString(Strings.headingContactsLostToFollowUp)),
 				new Label(String.format(I18nProperties.getString(Strings.confirmationLostToFollowUp), selectedRows.size())),
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
@@ -676,7 +665,7 @@ public class ContactController {
 							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 								contactDto.setFollowUpStatus(FollowUpStatus.LOST);
-								contactDto.setFollowUpComment(
+								contactDto.addToFollowUpComment(
 									String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), UserProvider.getCurrent().getUserName()));
 								FacadeProvider.getContactFacade().saveContact(contactDto);
 							}
@@ -701,9 +690,13 @@ public class ContactController {
 		final CommitDiscardWrapperComponent<CaseSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
 		component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 		component.getCommitButton().setEnabled(false);
-		component.addCommitListener(() -> selectedCaseCallback.accept(selectionField.getValue()));
+		component.addCommitListener(() -> {
+			selectedCaseCallback.accept(selectionField.getValue());
+		});
 
-		selectionField.setSelectionChangeCallback(commitAllowed -> component.getCommitButton().setEnabled(commitAllowed));
+		selectionField.setSelectionChangeCallback((commitAllowed) -> {
+			component.getCommitButton().setEnabled(commitAllowed);
+		});
 
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectSourceCase));
 	}
@@ -714,7 +707,7 @@ public class ContactController {
 		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), ContactDto.class, contact.getEpiData().isPseudonymized(), null);
 		epiDataForm.setValue(contact.getEpiData());
 
-		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<>(
+		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
 			epiDataForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
 			epiDataForm.getFieldGroup());
@@ -790,5 +783,20 @@ public class ContactController {
 		titleLayout.addComponent(contactLabel);
 
 		return titleLayout;
+	}
+
+	private void fillPersonAddressIfEmpty(ContactDto contact, Supplier<PersonDto> personSupplier) {
+		// set the contact person's address to the one of the case when it is currently empty and
+		// the relationship with the case has been set to living in the same household
+		if (contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && contact.getCaze() != null) {
+			PersonDto person = personSupplier.get();
+			if (person.getAddress().checkIsEmptyLocation()) {
+				CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
+				person.getAddress().setRegion(CaseLogic.getRegionWithFallback(caze));
+				person.getAddress().setDistrict(CaseLogic.getDistrictWithFallback(caze));
+				person.getAddress().setCommunity(CaseLogic.getCommunityWithFallback(caze));
+			}
+			FacadeProvider.getPersonFacade().savePerson(person);
+		}
 	}
 }

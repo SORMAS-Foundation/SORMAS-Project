@@ -22,6 +22,7 @@ import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 
 public class NavBarSteps implements En {
 
@@ -41,10 +42,16 @@ public class NavBarSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON));
 
     When(
+        "^I click on the Actions button from Events view switcher$",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                EventDirectoryPage.EVENT_ACTIONS_RADIOBUTTON));
+
+    When(
         "^I click on the Tasks button from navbar$",
         () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.TASKS_BUTTON));
 
-    And(
+    When(
         "^I click on the Persons button from navbar$",
         () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.PERSONS_BUTTON));
 
@@ -55,6 +62,13 @@ public class NavBarSteps implements En {
     When(
         "^I click on the Sample button from navbar$",
         () -> webDriverHelpers.clickOnWebElementBySelector(NavBarPage.SAMPLE_BUTTON));
+
+    When(
+        "^I click on the Users from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.USERS_BUTTON);
+        });
 
     And(
         "^I confirm navigation$",

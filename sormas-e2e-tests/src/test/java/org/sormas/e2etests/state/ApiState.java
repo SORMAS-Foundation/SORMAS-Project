@@ -28,6 +28,7 @@ import org.sormas.e2etests.pojo.api.Event;
 import org.sormas.e2etests.pojo.api.Person;
 import org.sormas.e2etests.pojo.api.Sample;
 import org.sormas.e2etests.pojo.api.Task;
+import org.sormas.e2etests.pojo.web.Action;
 
 @ScenarioScoped
 @Getter
@@ -36,9 +37,11 @@ public class ApiState {
   Response response;
   Person editPerson;
   Case createdCase;
+  List<Case> createdCases;
   List<Sample> createdSamples;
   Contact createdContact;
   Event createdEvent;
   Task createdTask;
   Sample createdSample;
+  Action createdAction;
 }

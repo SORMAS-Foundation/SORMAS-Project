@@ -17,9 +17,6 @@ package de.symeda.sormas.backend.contact;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 
@@ -30,40 +27,18 @@ public class VisitSummaryExportDetails {
 	private VisitStatus visitStatus;
 	private Symptoms symptoms;
 
-	private ContactJurisdictionDto jurisdiction;
+	private Boolean isInJurisdiction;
 
 	public VisitSummaryExportDetails(
 		Long contactId,
 		Date visitDateTime,
 		VisitStatus visitStatus,
 		Symptoms symptoms,
-		String reportingUserUuid,
-		String regionUuid,
-		String districtUuid,
-		String communityUuid,
-		String caseReportingUserUuid,
-		String caseResponsibleRegionUuid,
-		String caseResponsibleDistrictUid,
-		String caseResponsibleCommunityUid,
-		String caseRegionUui,
-		String caseDistrictUud,
-		String caseCommunityUuid,
-		String caseHealthFacilityUuid,
-		String casePointOfEntryUuid) {
+		boolean isInJurisdiction) {
 
 		this(contactId, visitDateTime, visitStatus, symptoms);
 
-		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
-			? null
-			: new CaseJurisdictionDto(
-				caseReportingUserUuid,
-				ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
-				caseRegionUui,
-				caseDistrictUud,
-				caseCommunityUuid,
-				caseHealthFacilityUuid,
-				casePointOfEntryUuid);
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public VisitSummaryExportDetails(Long contactId, Date visitDateTime, VisitStatus visitStatus, Symptoms symptoms) {
@@ -105,7 +80,7 @@ public class VisitSummaryExportDetails {
 		this.symptoms = symptoms;
 	}
 
-	public ContactJurisdictionDto getJurisdiction() {
-		return jurisdiction;
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 }
