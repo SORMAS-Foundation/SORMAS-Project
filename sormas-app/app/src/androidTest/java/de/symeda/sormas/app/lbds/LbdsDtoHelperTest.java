@@ -13,11 +13,14 @@ import com.googlecode.openbeans.IntrospectionException;
 
 import androidx.test.rule.ActivityTestRule;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.app.TestBackendActivity;
 import de.symeda.sormas.app.TestEntityCreator;
 import de.symeda.sormas.app.TestHelper;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 
@@ -32,7 +35,7 @@ public class LbdsDtoHelperTest {
 	}
 
 	@Test
-	public void testModifiedLbds() throws IllegalAccessException, IntrospectionException, InvocationTargetException {
+	public void testModifiedPersonsLbds() throws IllegalAccessException, IntrospectionException, InvocationTargetException {
 
 		Person person = TestEntityCreator.createPerson("Klaus", "Kinski", Sex.MALE, null, null, null);
 		PersonDto personDto = new PersonDtoHelper().adoToDto(person);
@@ -47,5 +50,13 @@ public class LbdsDtoHelperTest {
 
 		personDto2.setLastName("Kinski");
 		assertThat(LbdsDtoHelper.isModifiedLbds(person2, personDto2, false), is(true));
+	}
+
+	@Test
+	public void testModifiedCasesLbds() throws IllegalAccessException, IntrospectionException, InvocationTargetException {
+		Case caze = TestEntityCreator.createCase();
+		CaseDataDto caseDataDto = new CaseDtoHelper().adoToDto(caze);
+		LbdsDtoHelper.stripLbdsDto(caseDataDto);
+		assertThat(LbdsDtoHelper.isModifiedLbds(caze, caseDataDto, true), is(false));
 	}
 }
