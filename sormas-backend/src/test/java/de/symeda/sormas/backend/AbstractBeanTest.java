@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.immunization.ImmunizationFacade;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;
 import de.symeda.sormas.backend.user.CurrentUser;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
@@ -254,6 +256,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public CaseService getCaseService() {
 		return getBean(CaseService.class);
+	}
+
+	public ImmunizationFacade getImmunizationFacade() {
+		return getBean(ImmunizationFacadeEjbLocal.class);
 	}
 
 	public CaseStatisticsFacade getCaseStatisticsFacade() {

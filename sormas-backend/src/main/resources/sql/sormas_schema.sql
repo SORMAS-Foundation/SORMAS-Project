@@ -7471,4 +7471,51 @@ $$ LANGUAGE plpgsql;
 ALTER TABLE cases DROP COLUMN reportingdistrict_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (379, 'Refine the split of jurisdiction and place of stay #5852');
+
+-- 2021-06-29 Immunizations I: Entities, DTOs and backend logic #4756
+CREATE TABLE immunization (
+                        id bigint not null,
+                        uuid varchar(36) not null unique,
+                        changedate timestamp not null,
+                        creationdate timestamp not null,
+                        disease varchar(255) not null,
+                        person_id bigint not null,
+                        reportdate timestamp not null,
+                        reportinguser_id bigint not null,
+                        archived boolean DEFAULT false,
+                        immunizationstatus varchar(255) not null,
+                        meansofimmunization varchar(255) not null,
+                        immunizationmanagementstatus varchar(255) not null,
+                        externalid varchar(255) not null,
+                        responsibleregion_id bigint,
+                        responsibledistrict_id bigint,
+                        responsiblecommunity_id bigint,
+                        startdate timestamp,
+                        enddate timestamp,
+                        numberofdoses int,
+                        previousinfection varchar(255),
+                        lastinfectiondate timestamp,
+                        additionaldetails varchar(521),
+                        positivetestresultdate timestamp not null,
+                        recoverydate timestamp not null,
+                        relatedcase_id bigint,
+                        sys_period tstzrange not null,
+                        primary key(id));
+ALTER TABLE immunization OWNER TO sormas_user;
+
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_person_id FOREIGN KEY (person_id) REFERENCES person(id);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_responsibleregion_id FOREIGN KEY (responsibleregion_id) REFERENCES region(id);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_responsibledistrict_id FOREIGN KEY (responsibledistrict_id) REFERENCES district(id);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_responsiblecommunity_id FOREIGN KEY (responsiblecommunity_id) REFERENCES community(id);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_relatedcase_id FOREIGN KEY (relatedcase_id) REFERENCES cases(id);
+
+CREATE TABLE immunization_history (LIKE immunization);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON immunization
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'immunization_history', true);
+ALTER TABLE immunization_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (380, 'Immunizations I: Entities, DTOs and backend logic #4756');
+
 -- *** Insert new sql commands BEFORE this line ***
