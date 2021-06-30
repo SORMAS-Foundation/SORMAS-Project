@@ -84,7 +84,7 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 	}
 
 	@Test
-	public void testGetVisitsAfter(){
+	public void testGetVisitsAfter() {
 		CaseDataDto case1 = createCase(user1, rdcf1);
 		// create contact ro have access to @case1
 		creator.createContact(user2.toReference(), case1.getPerson(), case1);
@@ -109,7 +109,7 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 		CaseDataDto case2 = createCase(user2, rdcf2);
 		ClinicalVisitDto visit2 = createClinicalVisit(case2);
 
-		List<ClinicalVisitIndexDto> indexList = getClinicalVisitFacade().getIndexList(null);
+		List<ClinicalVisitIndexDto> indexList = getClinicalVisitFacade().getIndexList(null, null, null, null);
 
 		ClinicalVisitIndexDto export1 = indexList.stream().filter(v -> v.getUuid().equals(visit1.getUuid())).findFirst().get();
 		assertThat(export1.getVisitingPerson(), is("Confidential"));
