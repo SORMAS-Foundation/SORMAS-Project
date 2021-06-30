@@ -57,7 +57,7 @@ public class EventDirectorySteps implements En {
     When(
         "^I search for specific event in event directory",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESET_FILTER);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(RESET_FILTER, 35);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_EVENT_BY_FREE_TEXT_INPUT);
