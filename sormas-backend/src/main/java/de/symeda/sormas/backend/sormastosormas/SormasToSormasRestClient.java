@@ -33,7 +33,6 @@ import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +53,7 @@ import de.symeda.sormas.backend.util.ClientHelper;
 
 public class SormasToSormasRestClient {
 
-	public static final String SORMAS_REST_URL_TEMPLATE = "http://%s" + SORMAS_REST_PATH + "%s";
+	public static final String SORMAS_REST_URL_TEMPLATE = "https://%s" + SORMAS_REST_PATH + "%s";
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasRestClient.class);
 	private final ServerAccessDataService serverAccessDataService;
 
