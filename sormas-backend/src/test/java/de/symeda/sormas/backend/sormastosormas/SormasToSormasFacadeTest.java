@@ -15,10 +15,12 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
-import java.io.IOException;
+import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
@@ -26,11 +28,12 @@ import java.util.function.Consumer;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 
+import de.symeda.sormas.backend.sormastosormas.access.OrganizationServerAccessData;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.SormasToSormasConfig;
@@ -59,6 +62,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -71,11 +75,12 @@ import de.symeda.sormas.backend.user.User;
 public class SormasToSormasFacadeTest extends AbstractBeanTest {
 
 	// values are set in server-list.csv located in serveraccessdefault and serveraccesssecond
-	public static final String DEFAULT_SERVER_ACCESS_ID = "default";
-	public static final String DEFAULT_SERVER_ACCESS_DATA_CSV = "default-server-access-data.csv";
-	public static final String SECOND_SERVER_ACCESS_ID = "second";
-	public static final String SECOND_SERVER_ACCESS_DATA_CSV = "second-server-access-data.csv";
-
+	public static final String DEFAULT_SERVER_ACCESS_ID = "2.sormas.id.sormas_a";
+	public static final OrganizationServerAccessData DEFAULT_SERVER_ACCESS_DATA =
+		new OrganizationServerAccessData("2.sormas.id.sormas_a", "sormas_a", "sormas_a:6048");
+	public static final String SECOND_SERVER_ACCESS_ID = "2.sormas.id.sormas_b";
+	public static final OrganizationServerAccessData SECOND_SERVER_ACCESS_DATA =
+		new OrganizationServerAccessData("2.sormas.id.sormas_b", "sormas_b", "sormas_b:6048");
 	private ObjectMapper objectMapper;
 
 	@Override
@@ -157,29 +162,50 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return shareInfo;
 	}
 
-	protected SormasToSormasEncryptedDataDto encryptShareDataAsArray(Object shareData) throws JsonProcessingException, SormasToSormasException {
+	protected SormasToSormasEncryptedDataDto encryptShareDataAsArray(Object shareData) throws SormasToSormasException {
+
 		return encryptShareData(Collections.singletonList(shareData));
 	}
 
 	protected SormasToSormasEncryptedDataDto encryptShareData(Object shareData) throws SormasToSormasException {
+		mockS2Snetwork();
 		mockDefaultServerAccess();
 
-		SormasToSormasEncryptedDataDto encryptedData = getSormasToSormasEncryptionService().signAndEncrypt(shareData, SECOND_SERVER_ACCESS_ID);
+		SormasToSormasEncryptedDataDto encryptedData = getSormasToSormasEncryptionEjb().signAndEncrypt(shareData, SECOND_SERVER_ACCESS_ID);
 
 		mockSecondServerAccess();
 
 		return encryptedData;
 	}
 
-	protected <T> T decryptSharesData(byte[] data, Class<T> dataType) throws SormasToSormasException, IOException {
+	protected <T> T decryptSharesData(byte[] data, Class<T> dataType) throws SormasToSormasException {
 		mockSecondServerAccess();
 
 		T decryptData =
-			getSormasToSormasEncryptionService().decryptAndVerify(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_ID, data), dataType);
+			getSormasToSormasEncryptionEjb().decryptAndVerify(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_ID, data), dataType);
 
 		mockDefaultServerAccess();
 
 		return decryptData;
+	}
+
+	protected void mockS2Snetwork() throws SormasToSormasException {
+		Mockito.when(MockProducer.getSormasToSormasClient().get(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+			.thenAnswer(invocation -> {
+				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/cert"));
+				if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ACCESS_ID)) {
+					mockDefaultServerAccess();
+				} else {
+					mockSecondServerAccess();
+				}
+				X509Certificate cert = getSormasToSormasEncryptionEjb().getOwnCertificate();
+				if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ACCESS_ID)) {
+					mockSecondServerAccess();
+				} else {
+					mockDefaultServerAccess();
+				}
+				return cert.getEncoded();
+			});
 	}
 
 	protected void mockDefaultServerAccess() {
@@ -187,28 +213,34 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccessdefault");
 
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getServerAccessDataFileName()).thenReturn(DEFAULT_SERVER_ACCESS_DATA_CSV);
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("default.sormas2sormas.keystore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certPass");
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("sormas_a.sormas2sormas.keystore.p12");
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("1234");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststoreName()).thenReturn("sormas2sormas.truststore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststorePass()).thenReturn("truster");
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststorePass()).thenReturn("password");
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getRootCaAlias()).thenReturn("S2SCA");
+
+		Mockito.when(MockProducer.MockServerAccessDataServiceProducer.S2S_ACCESS_DATA_SERVICE.getServerAccessData())
+			.thenReturn(DEFAULT_SERVER_ACCESS_DATA);
 	}
 
 	protected void mockSecondServerAccess() {
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccesssecond");
 
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getServerAccessDataFileName()).thenReturn(SECOND_SERVER_ACCESS_DATA_CSV);
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("second.sormas2sormas.keystore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certiPass");
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("sormas_b.sormas2sormas.keystore.p12");
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("1234");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststoreName()).thenReturn("sormas2sormas.truststore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststorePass()).thenReturn("trusteR");
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststorePass()).thenReturn("password");
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getRootCaAlias()).thenReturn("S2SCA");
+
+		Mockito.when(MockProducer.MockServerAccessDataServiceProducer.S2S_ACCESS_DATA_SERVICE.getServerAccessData())
+			.thenReturn(SECOND_SERVER_ACCESS_DATA);
 	}
 
 	@Specializes
-	private static class MockSormasToSormasConfigProducer extends SormasToSormasConfigProducer {
+	public static class MockSormasToSormasConfigProducer extends SormasToSormasConfigProducer {
 
-		static SormasToSormasConfig sormasToSormasConfig = mock(SormasToSormasConfig.class);
+		public static SormasToSormasConfig sormasToSormasConfig = mock(SormasToSormasConfig.class);
 
 		@Override
 		@Produces

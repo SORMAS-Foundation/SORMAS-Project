@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -48,6 +49,8 @@ import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.access.OrganizationServerAccessData;
+import de.symeda.sormas.backend.sormastosormas.access.ServerAccessDataService;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -60,7 +63,7 @@ public class ShareDataBuilderHelper {
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
-	@EJB
+	@Inject
 	private ServerAccessDataService serverAccessDataService;
 	@EJB
 	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;

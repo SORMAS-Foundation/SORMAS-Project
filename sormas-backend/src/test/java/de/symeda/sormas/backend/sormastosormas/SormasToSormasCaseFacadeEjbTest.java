@@ -657,19 +657,19 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		getSormasToSormasShareInfoService().persist(
 			createShareInfo(
 				officerUser,
-					DEFAULT_SERVER_ACCESS_ID,
+				DEFAULT_SERVER_ACCESS_ID,
 				true,
 				i -> i.getCases().add(new ShareInfoCase(i, getCaseService().getByReferenceDto(caze.toReference())))));
 		getSormasToSormasShareInfoService().persist(
 			createShareInfo(
 				officerUser,
-					DEFAULT_SERVER_ACCESS_ID,
+				DEFAULT_SERVER_ACCESS_ID,
 				true,
 				i -> i.getContacts().add(new ShareInfoContact(i, getContactService().getByReferenceDto(sharedContact.toReference())))));
 		getSormasToSormasShareInfoService().persist(
 			createShareInfo(
 				officerUser,
-					DEFAULT_SERVER_ACCESS_ID,
+				DEFAULT_SERVER_ACCESS_ID,
 				true,
 				i -> i.getSamples().add(new ShareInfoSample(i, getSampleService().getByReferenceDto(sharedSample.toReference())))));
 
@@ -782,7 +782,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 	}
 
 	@Test
-	public void testSaveReturnedCaseWithKnownOtherFacility() throws JsonProcessingException, SormasToSormasException {
+	public void testSaveReturnedCaseWithKnownOtherFacility() throws SormasToSormasException {
 		MappableRdcf rdcf = createRDCF(false);
 
 		UserReferenceDto officer = creator.createUser(rdcf.localRdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
@@ -798,7 +798,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		getSormasToSormasShareInfoService().persist(
 			createShareInfo(
 				officerUser,
-					DEFAULT_SERVER_ACCESS_ID,
+				DEFAULT_SERVER_ACCESS_ID,
 				true,
 				i -> i.getCases().add(new ShareInfoCase(i, getCaseService().getByReferenceDto(caze.toReference())))));
 
@@ -844,7 +844,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		getSormasToSormasShareInfoService().persist(
 			createShareInfo(
 				officerUser,
-					DEFAULT_SERVER_ACCESS_ID,
+				DEFAULT_SERVER_ACCESS_ID,
 				true,
 				i -> i.getCases().add(new ShareInfoCase(i, getCaseService().getByReferenceDto(caze.toReference())))));
 

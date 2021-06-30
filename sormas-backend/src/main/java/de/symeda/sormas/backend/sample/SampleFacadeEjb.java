@@ -88,7 +88,6 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
-import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -114,11 +113,8 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {

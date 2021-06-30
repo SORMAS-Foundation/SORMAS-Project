@@ -41,8 +41,8 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareReque
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.sormastosormas.OrganizationServerAccessData;
-import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
+import de.symeda.sormas.backend.sormastosormas.access.OrganizationServerAccessData;
+import de.symeda.sormas.backend.sormastosormas.access.ServerAccessDataService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;

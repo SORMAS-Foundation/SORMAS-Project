@@ -35,6 +35,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.sormastosormas.access.OrganizationServerAccessData;
+import de.symeda.sormas.backend.sormastosormas.access.ServerAccessDataService;
+import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.SormasToSormasConfig;
@@ -53,6 +56,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareReque
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
@@ -71,7 +75,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private SormasToSormasShareInfoService shareInfoService;
 	@EJB
 	private UserService userService;
-	@EJB
+	@Inject
 	private ServerAccessDataService serverAccessDataService;
 	@Inject
 	private SormasToSormasRestClient sormasToSormasRestClient;
@@ -84,7 +88,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@EJB
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
-	private SormasToSormasEncryptionService encryptionService;
+	private SormasToSormasEncryptionFacadeEjbLocal encryptionService;
 	@Inject
 	private SormasToSormasConfig sormasToSormasConfig;
 

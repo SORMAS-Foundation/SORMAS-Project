@@ -37,12 +37,15 @@ import javax.jms.Topic;
 import javax.mail.Session;
 import javax.transaction.UserTransaction;
 
+import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClient;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClientProducer;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.access.ServerAccessDataService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.access.ServerAccessDataServiceProducer;
+import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
+import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProducer;
 
 /**
  * Creates mocks for resources needed in bean test / external services.
@@ -162,9 +165,28 @@ public class MockProducer {
 		@Produces
 		public SormasToSormasRestClient sormasToSormasClient(
 			ServerAccessDataService serverAccessDataService,
-			SormasToSormasEncryptionService encryptionService) {
+			SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
+			SormasToSormasConfig sormasToSormasConfig) {
 			return SORMAS_TO_SORMAS_REST_CLIENT;
 		}
+	}
+
+	public static ServerAccessDataService getServerAccessDataService() {
+		return MockServerAccessDataServiceProducer.S2S_ACCESS_DATA_SERVICE;
+	}
+
+	@Specializes
+	public static class MockServerAccessDataServiceProducer extends ServerAccessDataServiceProducer {
+		public static final ServerAccessDataService S2S_ACCESS_DATA_SERVICE = mock(ServerAccessDataService.class);
+		@Override
+		@Produces
+		public ServerAccessDataService serverAccessDataService(
+			SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
+			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb,
+			SormasToSormasConfig sormasToSormasConfig) {
+			return S2S_ACCESS_DATA_SERVICE;
+		}
+
 	}
 
 	@Produces

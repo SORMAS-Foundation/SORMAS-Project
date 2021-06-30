@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.fail;
 
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -33,7 +34,6 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testValidateExternalUrls() {
-
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.google.com");
 		getConfigFacade().validateExternalUrls();
 
