@@ -20,27 +20,28 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
-
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.util.Arrays;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.common.*;
 import org.sormas.e2etests.enums.CaseClasification;
 import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.enums.Disease;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.common.*;
 
 public class CaseDirectorySteps implements En {
 
   @Inject
   public CaseDirectorySteps(
-      WebDriverHelpers webDriverHelpers, DataOperations dataOperations, ApiState apiState, AssertHelpers assertHelpers) {
+      WebDriverHelpers webDriverHelpers,
+      DataOperations dataOperations,
+      ApiState apiState,
+      AssertHelpers assertHelpers) {
 
     When(
         "^I click on the NEW CASE button$",
@@ -61,17 +62,17 @@ public class CaseDirectorySteps implements En {
         () ->
             webDriverHelpers.fillAndSubmitInWebElement(
                 NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid()));
-      When(
-              "I click on the DETAILED radiobutton from Case directory",
-              () -> webDriverHelpers.clickOnWebElementBySelector(CASE_DIRECTORY_DETAILED_RADIOBUTTON));
+    When(
+        "I click on the DETAILED radiobutton from Case directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CASE_DIRECTORY_DETAILED_RADIOBUTTON));
 
-      When(
-              "I filter by CaseID on Case directory page",
-              () ->
-                      webDriverHelpers.fillAndSubmitInWebElement(
-                              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT,
-                              dataOperations.getPartialUuidFromAssociatedLink(
-                                      apiState.getCreatedContact().getUuid())));
+    When(
+        "I filter by CaseID on Case directory page",
+        () ->
+            webDriverHelpers.fillAndSubmitInWebElement(
+                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT,
+                dataOperations.getPartialUuidFromAssociatedLink(
+                    apiState.getCreatedContact().getUuid())));
 
     When(
         "^I open the last created Case via API",

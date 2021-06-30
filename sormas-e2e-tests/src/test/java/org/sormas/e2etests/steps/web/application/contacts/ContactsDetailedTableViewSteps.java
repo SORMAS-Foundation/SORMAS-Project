@@ -23,7 +23,6 @@ public class ContactsDetailedTableViewSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   private static BaseSteps baseSteps;
 
-
   @Inject
   public ContactsDetailedTableViewSteps(
       WebDriverHelpers webDriverHelpers,
