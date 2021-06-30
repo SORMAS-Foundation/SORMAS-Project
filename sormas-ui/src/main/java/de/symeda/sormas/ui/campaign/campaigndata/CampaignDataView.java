@@ -201,10 +201,9 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		CampaignReferenceDto campaignReferenceDto = campaignSelector.getValue();
 		if (campaignReferenceDto != null) {
-			int numButtons = 0;
-			for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade()
-				.getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid())) {
-
+			List<CampaignFormMetaReferenceDto> campagaignFormReferences =
+				FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
+			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
 				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
 					try {
 						Window popupWindow = VaadinUiUtil.showPopupWindow(new CampaignFormDataImportLayout(campaignForm, campaignReferenceDto));
@@ -216,9 +215,8 @@ public class CampaignDataView extends AbstractCampaignView {
 				});
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
 				((VerticalLayout) containerPanel.getContent()).addComponent(campaignFormButton);
-				numButtons++;
 			}
-			if (numButtons >= 10) {
+			if (campagaignFormReferences.size() >= 10) {
 				// setting a fixed height will enable a scrollbar. Increase width to accommodate it
 				containerPanel.setHeight(400, Unit.PIXELS);
 				containerPanel.setWidth(containerPanel.getContent().getWidth() + 20.0f, Unit.PIXELS);
@@ -233,17 +231,16 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		CampaignReferenceDto campaignReferenceDto = campaignSelector.getValue();
 		if (campaignReferenceDto != null) {
-			int numButtons = 0;
-			for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade()
-				.getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid())) {
+			List<CampaignFormMetaReferenceDto> campagaignFormReferences =
+				FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
+			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
 				Button campaignFormButton = ButtonHelper.createButton(
 					campaignForm.toString(),
 					e -> ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm));
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
 				((VerticalLayout) containerPanel.getContent()).addComponent(campaignFormButton);
-				numButtons++;
 			}
-			if (numButtons >= 10) {
+			if (campagaignFormReferences.size() >= 10) {
 				// setting a fixed height will enable a scrollbar. Increase width to accommodate it
 				containerPanel.setHeight(400, Unit.PIXELS);
 				containerPanel.setWidth(containerPanel.getContent().getWidth() + 20.0f, Unit.PIXELS);
