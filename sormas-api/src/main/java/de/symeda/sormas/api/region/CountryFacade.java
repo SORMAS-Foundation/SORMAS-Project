@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -23,6 +24,8 @@ public interface CountryFacade {
 	List<CountryReferenceDto> getAllActiveByContinent(String uuid);
 
 	List<CountryIndexDto> getIndexList(CountryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	Page<CountryIndexDto> getIndexPage(CountryCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	long count(CountryCriteria criteria);
 

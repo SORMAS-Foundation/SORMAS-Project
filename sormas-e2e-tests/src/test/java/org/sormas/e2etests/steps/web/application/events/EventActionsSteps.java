@@ -20,22 +20,38 @@ package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.actions.EditActionPage.EDIT_ACTION_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventActionsPage.EDIT_SPECIFIC_EVENT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.*;
 
 import cucumber.api.java8.En;
+import java.util.*;
 import javax.inject.Inject;
+import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Action;
+import org.sormas.e2etests.pojo.web.EventActionTableEntry;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.actions.CreateNewActionSteps;
 
 public class EventActionsSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static Action createdAction;
+  private ApiState apiState;
+  private final BaseSteps baseSteps;
+  private List<EventActionTableEntry> actionsTableRows;
 
   @Inject
-  public EventActionsSteps(WebDriverHelpers webDriverHelpers) {
+  public EventActionsSteps(
+      WebDriverHelpers webDriverHelpers,
+      BaseSteps baseSteps,
+      ApiState apiState,
+      SoftAssertions softly,
+      Properties properties) {
     this.webDriverHelpers = webDriverHelpers;
+    this.baseSteps = baseSteps;
 
     When(
         "I open the Action recently created from Event tab",

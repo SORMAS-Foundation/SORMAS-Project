@@ -38,7 +38,9 @@ import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -96,6 +98,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private SormasToSormasEncryptionService encryptionService;
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
+	@Inject
+	private SormasToSormasConfig sormasToSormasConfig;
 
 	@Override
 	public List<ServerAccessDataReferenceDto> getAvailableOrganizations() {
@@ -153,7 +157,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	/**
 	 * Called from the REST api when the sender revokes share requests
-	 * 
+	 *
 	 * @param encryptedRequestUuids
 	 *            the uuids of requests
 	 * @throws SormasToSormasException
@@ -173,7 +177,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	/**
 	 * Called from REST api when the receiver accepts a share request
-	 * 
+	 *
 	 * @param encryptedRequestUuid
 	 *            the uuid of the request
 	 * @throws SormasToSormasException
@@ -210,8 +214,13 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	@Override
-	public boolean isFeatureEnabled() {
-		return userService.hasRight(UserRight.SORMAS_TO_SORMAS_SHARE) && !serverAccessDataService.getOrganizationList().isEmpty();
+	public boolean isFeatureEnabledForUser() {
+		return userService.hasRight(UserRight.SORMAS_TO_SORMAS_SHARE) && isFeatureConfigured();
+	}
+
+	@Override
+	public boolean isFeatureConfigured() {
+		return !StringUtils.isEmpty(sormasToSormasConfig.getPath());
 	}
 
 	public SormasToSormasShareInfoDto toSormasToSormasShareInfoDto(SormasToSormasShareInfo source) {

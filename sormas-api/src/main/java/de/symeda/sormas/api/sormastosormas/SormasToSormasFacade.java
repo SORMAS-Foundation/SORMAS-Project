@@ -40,5 +40,7 @@ public interface SormasToSormasFacade {
 
 	void requestAccepted(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 
-	boolean isFeatureEnabled();
+	boolean isFeatureEnabledForUser();
+
+	boolean isFeatureConfigured();
 }

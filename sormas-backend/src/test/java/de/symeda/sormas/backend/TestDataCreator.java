@@ -364,9 +364,9 @@ public class TestDataCreator {
 		caze.getSymptoms().setOnsetDate(reportAndOnsetDate);
 		caze.setCaseClassification(caseClassification);
 		caze.setInvestigationStatus(investigationStatus);
-		caze.setRegion(rdcf.region);
-		caze.setDistrict(rdcf.district);
-		caze.setCommunity(rdcf.community);
+		caze.setResponsibleRegion(rdcf.region);
+		caze.setResponsibleDistrict(rdcf.district);
+		caze.setResponsibleCommunity(rdcf.community);
 		caze.setFacilityType(beanTest.getFacilityFacade().getByUuid(rdcf.facility.getUuid()).getType());
 		caze.setHealthFacility(rdcf.facility);
 		caze.setPointOfEntry(rdcf.pointOfEntry);
