@@ -23,6 +23,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.sormas.e2etests.pojo.api.*;
+import org.sormas.e2etests.pojo.web.*;
 
 @ScenarioScoped
 @Getter
