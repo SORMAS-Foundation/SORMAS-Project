@@ -168,7 +168,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 304;
+	public static final int DATABASE_VERSION = 305;
 
 	private static DatabaseHelper instance = null;
 
@@ -2101,7 +2101,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ "		UNIQUE (snapshot ASC, uuid ASC)"
 					+ ");"
 				);
-				
+
 				getDao(EpiData.class).executeRaw(
 					"INSERT INTO epidata(exposureDetailsKnown, contactWithSourceCaseKnown, areaInfectedAnimals, changeDate, creationDate, "
 						+ "id, lastOpenedDate, localChangeDate, modified, snapshot, uuid, pseudonymized) "
@@ -2351,7 +2351,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ "		UNIQUE (snapshot ASC, uuid ASC)"
 					+ ");"
 				);
-				
+
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN activityAsCaseDetailsKnown varchar(255);");
 
 				getDao(Case.class).executeRaw("UPDATE cases SET changeDate = 0 WHERE changeDate IS NOT NULL;");
@@ -2455,7 +2455,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ "		UNIQUE (snapshot ASC, uuid ASC)"
 					+ ");"
 				);
-				
+
 				migratePersonContactDetails();
 
 			case 289:
@@ -2482,7 +2482,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ "		UNIQUE (snapshot ASC, uuid ASC)"
 					+ ");"
 				);
-				
+
 				getDao(Subcontinent.class).executeRaw(
 					"CREATE TABLE IF NOT EXISTS subcontinent ("
 					+ "		continent_id BIGINT NOT NULL,"
@@ -2499,7 +2499,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ "		UNIQUE (snapshot ASC, uuid ASC)"
 					+ ");"
 				);
-				
+
 				getDao(Country.class).executeRaw("ALTER TABLE country ADD COLUMN subcontinent_id BIGINT REFERENCES subcontinent(id);");
 
 			case 291:
@@ -2607,7 +2607,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							" reportingDistrict_id = null"+
 							" WHERE responsibleRegion_id IS NULL AND reportingDistrict_id IS NOT NULL");
 
-				// ATTENTION: break should only be done after last version
+				case 304:
+					currentVersion = 304;
+					getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withAssociatedContacts boolean;");
+					getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withSamples boolean;");
+					getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withEventParticipants boolean;");
+
+					// ATTENTION: break should only be done after last version
 				break;
 
 			default:
