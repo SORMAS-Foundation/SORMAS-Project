@@ -35,4 +35,6 @@ public class CaseDirectoryPage {
   public static final By CASE_RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
   public static final String CASE_RESULTS_UUID_LOCATOR = "[title = '%s']";
   public static final By CASE_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
+  public static final By CASE_CLASSIFICATION_COLUMNS =
+      By.cssSelector("[role=rowgroup] tr>td:nth-child(7)");
 }
