@@ -28,13 +28,16 @@ public class TestReportService extends BaseAdoService<TestReport> {
 
 	/**
 	 * Creates a default filter that should be used as the basis of queries in this service..
-	 * This essentially removes {@link CoreAdo#deleted} pathogen tests from the queries.
+	 * This essentially removes {@link CoreAdo#deleted} test reports from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<TestReport> root) {
 		return cb.isFalse(root.get(TestReport.DELETED));
 	}
 
 	public List<TestReport> getByPathogenTestUuids(List<String> pathogenTestUuids, boolean ordered) {
+		if (pathogenTestUuids.isEmpty()) {
+			return new ArrayList();
+		}
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TestReport> cq = cb.createQuery(TestReport.class);
 		Root<TestReport> testReportRoot = cq.from(TestReport.class);

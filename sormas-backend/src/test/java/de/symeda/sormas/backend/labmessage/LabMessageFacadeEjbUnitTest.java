@@ -16,10 +16,6 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.labmessage.TestReportDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.backend.sample.PathogenTest;
-import de.symeda.sormas.backend.sample.PathogenTestService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -44,8 +40,6 @@ public class LabMessageFacadeEjbUnitTest {
 	private EntityManager em;
 	@Mock
 	private LabMessageService labMessageService;
-	@Mock
-	private PathogenTestService pathogenTestService;
 	@Mock
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 
