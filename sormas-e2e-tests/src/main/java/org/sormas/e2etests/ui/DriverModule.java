@@ -24,11 +24,11 @@ import com.google.inject.Exposed;
 import com.google.inject.PrivateModule;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
-import org.sormas.e2etests.enums.OperatingSystems;
 import javax.inject.Named;
 import lombok.SneakyThrows;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.sormas.e2etests.enums.OperatingSystems;
 
 public class DriverModule extends PrivateModule {
 

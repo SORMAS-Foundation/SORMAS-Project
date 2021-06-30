@@ -43,6 +43,7 @@ import javax.persistence.Transient;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
@@ -72,7 +73,7 @@ import de.symeda.sormas.backend.region.Region;
 
 @Entity
 @Audited
-public class Person extends AbstractDomainObject {
+public class Person extends AbstractDomainObject implements HasExternalData {
 
 	private static final long serialVersionUID = -1735038738114840087L;
 
@@ -125,6 +126,7 @@ public class Person extends AbstractDomainObject {
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_TOKEN = "externalToken";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String BIRTH_COUNTRY = "birthCountry";
 	public static final String CITIZENSHIP = "citizenship";
 	public static final String CASES = "cases";
@@ -193,6 +195,7 @@ public class Person extends AbstractDomainObject {
 	private boolean covidCodeDelivered;
 	private String externalId;
 	private String externalToken;
+	private String internalToken;
 
 	private Country birthCountry;
 	private Country citizenship;
@@ -661,6 +664,15 @@ public class Person extends AbstractDomainObject {
 		this.externalToken = externalToken;
 	}
 
+	@Column
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
+	}
+
 	@ManyToOne
 	public Country getBirthCountry() {
 		return birthCountry;
@@ -761,6 +773,11 @@ public class Person extends AbstractDomainObject {
 
 	public PersonReferenceDto toReference() {
 		return new PersonReferenceDto(getUuid(), getFirstName(), getLastName());
+	}
+
+	@Transient
+	public boolean isEnrolledInExternalJournal() {
+		return SymptomJournalStatus.ACCEPTED.equals(symptomJournalStatus) || SymptomJournalStatus.REGISTERED.equals(symptomJournalStatus);
 	}
 
 	@Override

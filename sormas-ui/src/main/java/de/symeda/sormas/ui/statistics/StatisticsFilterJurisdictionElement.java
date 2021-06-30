@@ -39,6 +39,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
@@ -79,12 +80,12 @@ public class StatisticsFilterJurisdictionElement extends StatisticsFilterElement
 			rowIndex);
 		HorizontalLayout facilityTypeFilterLayout = new HorizontalLayout();
 		facilityTypeFilterLayout.setWidth(100, Unit.PERCENTAGE);
-		ComboBox typeGroup = new ComboBox();
+		ComboBox typeGroup = ComboBoxHelper.createComboBoxV7();
 		typeGroup.setId("typeGroup");
 		typeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		typeGroup.setWidth(100, Unit.PERCENTAGE);
 		typeGroup.addItems(FacilityTypeGroup.values());
-		type = new ComboBox();
+		type = ComboBoxHelper.createComboBoxV7();
 		type.setId("type");
 		type.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
 		type.setWidth(100, Unit.PERCENTAGE);

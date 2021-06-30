@@ -33,6 +33,9 @@ import static de.symeda.sormas.api.caze.CaseDataDto.POINT_OF_ENTRY_DETAILS;
 import static de.symeda.sormas.api.caze.CaseDataDto.RABIES_TYPE;
 import static de.symeda.sormas.api.caze.CaseDataDto.REGION;
 import static de.symeda.sormas.api.caze.CaseDataDto.REPORT_DATE;
+import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_COMMUNITY;
+import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_DISTRICT;
+import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_REGION;
 import static de.symeda.sormas.api.caze.CaseDataDto.SYMPTOMS;
 
 import java.beans.PropertyDescriptor;
@@ -221,6 +224,11 @@ public class ImportFacadeEjb implements ImportFacade {
 		writeTemplate(Paths.get(getCaseImportTemplateFilePath()), importColumns, true);
 	}
 
+	private void addPrimaryPhoneAndEmail(char separator, List<ImportColumn> importColumns) {
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.PHONE, String.class, separator));
+		importColumns.add(ImportColumn.from(PersonDto.class, PERSON + "." + PersonDto.EMAIL_ADDRESS, String.class, separator));
+	}
+
 	@Override
 	public void generateEventImportTemplateFile() throws IOException {
 
@@ -228,7 +236,10 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		char separator = configFacade.getCsvSeparator();
 
-		List<String> columnsToRemove = Arrays.asList(EventDto.SORMAS_TO_SORMAS_ORIGIN_INFO, EventDto.OWNERSHIP_HANDED_OVER);
+		ArrayList<String> columnsToRemove = new ArrayList<>(Arrays.asList(EventDto.SORMAS_TO_SORMAS_ORIGIN_INFO, EventDto.OWNERSHIP_HANDED_OVER));
+		if (featureConfigurationFacade.isFeatureDisabled(FeatureType.EVENT_HIERARCHIES)) {
+			columnsToRemove.add(EventDto.SUPERORDINATE_EVENT);
+		}
 
 		List<ImportColumn> importColumns = new ArrayList<>();
 		appendListOfFields(importColumns, EventDto.class, "", separator);
@@ -261,6 +272,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.DISTRICT, String.class, separator));
 
 		appendListOfFields(importColumns, PersonDto.class, "person.", separator);
+		addPrimaryPhoneAndEmail(separator, importColumns);
 
 		importColumns =
 			importColumns.stream().filter(column -> keepColumn(column, PERSON_PREFIX, PERSON_COLUMNS_TO_REMOVE)).collect(Collectors.toList());
@@ -352,9 +364,9 @@ public class ImportFacadeEjb implements ImportFacade {
 		importColumns.add(ImportColumn.from(CaseDataDto.class, EPID_NUMBER, String.class, separator));
 		importColumns.add(ImportColumn.from(CaseDataDto.class, REPORT_DATE, Date.class, separator));
 		importColumns.add(ImportColumn.from(CaseDataDto.class, CASE_ORIGIN, CaseOrigin.class, separator));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, REGION, RegionReferenceDto.class, separator));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, DISTRICT, DistrictReferenceDto.class, separator));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, COMMUNITY, CommunityReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, RESPONSIBLE_REGION, RegionReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, RESPONSIBLE_DISTRICT, DistrictReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, RESPONSIBLE_COMMUNITY, CommunityReferenceDto.class, separator));
 		importColumns.add(ImportColumn.from(CaseDataDto.class, FACILITY_TYPE, FacilityType.class, separator));
 		importColumns.add(ImportColumn.from(CaseDataDto.class, HEALTH_FACILITY, FacilityReferenceDto.class, separator));
 		importColumns.add(ImportColumn.from(CaseDataDto.class, HEALTH_FACILITY_DETAILS, String.class, separator));
@@ -730,6 +742,7 @@ public class ImportFacadeEjb implements ImportFacade {
 					PersonDto.class,
 					StringUtils.isEmpty(prefix) ? field.getName() + "." : prefix + field.getName() + ".",
 					separator);
+				addPrimaryPhoneAndEmail(separator, importColumns);
 			} else {
 				importColumns.add(ImportColumn.from(clazz, prefix + field.getName(), field.getType(), separator));
 			}
@@ -847,7 +860,10 @@ public class ImportFacadeEjb implements ImportFacade {
 			// If the string is smaller than the length of the expected date format, throw an exception
 			if (entry.length() < 10) {
 				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
+					I18nProperties.getValidationError(
+						Validations.importInvalidDate,
+						buildEntityProperty(entryHeaderPath),
+						DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
 			} else {
 				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));
 				return true;

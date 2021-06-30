@@ -26,6 +26,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CountryCriteria;
@@ -102,7 +103,10 @@ public class CountryFacadeEjb implements CountryFacade {
 		Root<Country> country = cq.from(Country.class);
 		Join<Country, Subcontinent> subcontinent = country.join(Country.SUBCONTINENT, JoinType.LEFT);
 
-		Predicate filter = countryService.buildCriteriaFilter(criteria, cb, country);
+		Predicate filter = null;
+		if (criteria != null) {
+			filter = countryService.buildCriteriaFilter(criteria, cb, country);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -149,13 +153,23 @@ public class CountryFacadeEjb implements CountryFacade {
 		}
 	}
 
+	public Page<CountryIndexDto> getIndexPage(CountryCriteria countryCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<CountryIndexDto> countryIndexList = getIndexList(countryCriteria, offset, size, sortProperties);
+		long totalElementCount = count(countryCriteria);
+		return new Page<>(countryIndexList, offset, size, totalElementCount);
+	}
+
 	@Override
 	public long count(CountryCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Country> root = cq.from(Country.class);
 
-		Predicate filter = countryService.buildCriteriaFilter(criteria, cb, root);
+		Predicate filter = null;
+
+		if (criteria != null) {
+			filter = countryService.buildCriteriaFilter(criteria, cb, root);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -272,6 +286,17 @@ public class CountryFacadeEjb implements CountryFacade {
 		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
 
 		return dto;
+	}
+
+	public List<CountryReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
+		return countryService.getByExternalId(externalId, includeArchived)
+			.stream()
+			.map(CountryFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	public List<CountryReferenceDto> getReferencesByName(String caption, boolean includeArchived) {
+		return countryService.getByDefaultName(caption, includeArchived).stream().map(CountryFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	private Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {

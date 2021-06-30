@@ -71,6 +71,7 @@ import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelpe
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -122,7 +123,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 	private List<Item> caseConfirmationBasisList;
 
-	private boolean differentJurisdiction;
+	private boolean differentPlaceOfStayJurisdiction;
 
 	// Static methods
 
@@ -135,9 +136,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
 			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 
-		caseEditFragment.differentJurisdiction = activityRootData.getResponsibleRegion() != null
-			|| activityRootData.getResponsibleDistrict() != null
-			|| activityRootData.getResponsibleCommunity() != null;
+		caseEditFragment.differentPlaceOfStayJurisdiction =
+			activityRootData.getRegion() != null || activityRootData.getDistrict() != null || activityRootData.getCommunity() != null;
 
 		return caseEditFragment;
 	}
@@ -176,6 +176,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		if (record.getPerson().getSex() != Sex.FEMALE) {
 			contentBinding.caseDataPregnant.setVisibility(GONE);
 			contentBinding.caseDataPostpartum.setVisibility(GONE);
+			contentBinding.caseDataTrimester.setVisibility(GONE);
 		}
 
 		// Smallpox vaccination scar image
@@ -447,7 +448,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 		contentBinding.setVaccinationClass(Vaccination.class);
 		contentBinding.setTrimesterClass(Trimester.class);
-		contentBinding.setDifferentJurisdiction(differentJurisdiction);
+		contentBinding.setDifferentPlaceOfStayJurisdiction(differentPlaceOfStayJurisdiction);
+
+		Facility initialHealthFacility = record.getHealthFacility();
 
 		InfrastructureDaoHelper.initializeRegionFields(
 			contentBinding.caseDataResponsibleRegion,
@@ -459,6 +462,19 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataResponsibleCommunity,
 			initialResponsibleCommunities,
 			record.getResponsibleCommunity());
+
+		InfrastructureDaoHelper.initializeRegionFieldListeners(
+			contentBinding.caseDataResponsibleRegion,
+			contentBinding.caseDataResponsibleDistrict,
+			record.getResponsibleDistrict(),
+			contentBinding.caseDataResponsibleCommunity,
+			record.getResponsibleCommunity(),
+			contentBinding.caseDataFacilityType,
+			contentBinding.caseDataHealthFacility,
+			initialHealthFacility,
+			null,
+			null,
+			() -> Boolean.TRUE.equals(contentBinding.caseDataDifferentPlaceOfStayJurisdiction.getValue()));
 
 		InfrastructureDaoHelper
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
@@ -482,9 +498,25 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			null,
 			contentBinding.caseDataHealthFacility,
 			initialFacilities,
-			record.getHealthFacility(),
+			initialHealthFacility,
 			contentBinding.caseDataHealthFacilityDetails,
-			false);
+			null,
+			null,
+			null,
+			false,
+			() -> Boolean.FALSE.equals(contentBinding.caseDataDifferentPlaceOfStayJurisdiction.getValue()));
+
+		// trigger responsible jurisdiction change handlers removing place of stay region/district/community
+		contentBinding.caseDataDifferentPlaceOfStayJurisdiction.addValueChangedListener(f -> {
+			if (Boolean.FALSE.equals(f.getValue())) {
+				InfrastructureDaoHelper.handleCommunityChange(
+					contentBinding.caseDataResponsibleCommunity,
+					contentBinding.caseDataResponsibleDistrict,
+					contentBinding.caseDataHealthFacility,
+					contentBinding.caseDataFacilityType,
+					initialHealthFacility);
+			}
+		});
 
 		if (record.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY && isFieldAccessible(CaseDataDto.class, contentBinding.caseDataHealthFacility)) {
 			contentBinding.caseDataHealthFacility.setRequired(true);
@@ -657,7 +689,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataNotifyingClinic.initializeSpinner(hospitalWardTypeList);
 		contentBinding.caseDataVaccinationInfoSource.initializeSpinner(vaccinationInfoSourceList);
 		contentBinding.caseDataQuarantine.initializeSpinner(quarantineList);
-		contentBinding.caseDataReportingDistrict.initializeSpinner(allDistricts);
 		contentBinding.caseDataCaseConfirmationBasis.initializeSpinner(caseConfirmationBasisList);
 
 		// Initialize ControlDateFields
@@ -679,11 +710,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataClassifiedBy.setValue(getResources().getString(R.string.system));
 		}
 
-		if (record.getHealthFacility() == null) {
+		if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 			contentBinding.caseDataHealthFacility.setVisibility(GONE);
 			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
-		} else if (FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())) {
+		} else if (record.getHealthFacility() != null && FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())) {
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
 		} else {
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);

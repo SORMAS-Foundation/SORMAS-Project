@@ -52,6 +52,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String VACCINATION = "vaccination";
+	public static final String RELATION_TO_CASE = "relationToCase";
 	public static final String QUARANTINE_TYPE = "quarantineType";
 	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
 	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT = "quarantineOrderedOfficialDocument";
@@ -60,6 +61,8 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String ONLY_HIGH_PRIORITY_CONTACTS = "onlyHighPriorityContacts";
 	public static final String WITH_EXTENDED_QUARANTINE = "withExtendedQuarantine";
 	public static final String WITH_REDUCED_QUARANTINE = "withReducedQuarantine";
+	public static final String CREATION_DATE_FROM = "creationDateFrom";
+	public static final String CREATION_DATE_TO = "creationDateTo";
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
@@ -68,6 +71,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String INCLUDE_CONTACTS_FROM_OTHER_JURISDICTIONS = "includeContactsFromOtherJurisdictions";
 	public static final String ONLY_CONTACTS_SHARING_EVENT_WITH_SOURCE_CASE = "onlyContactsSharingEventWithSourceCase";
 	public static final String ONLY_CONTACTS_FROM_OTHER_INSTANCES = "onlyContactsFromOtherInstances";
+	public static final String REPORTING_USER_LIKE = "reportingUserLike";
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -96,6 +100,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	 */
 	private SymptomJournalStatus symptomJournalStatus;
 	private Vaccination vaccination;
+	private ContactRelation relationToCase;
 	private Date lastContactDateFrom;
 	private Date lastContactDateTo;
 	private Boolean deleted = Boolean.FALSE;
@@ -125,6 +130,9 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private EventParticipantReferenceDto eventParticipant;
 	private EventReferenceDto onlyContactsWithSourceCaseInGivenEvent;
 	private Boolean onlyContactsFromOtherInstances;
+	private Date creationDateFrom;
+	private Date creationDateTo;
+	private String reportingUserLike;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -347,6 +355,14 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setVaccination(Vaccination vaccination) {
 		this.vaccination = vaccination;
+	}
+
+	public ContactRelation getRelationToCase() {
+		return relationToCase;
+	}
+
+	public void setRelationToCase(ContactRelation relationToCase) {
+		this.relationToCase = relationToCase;
 	}
 
 	public Boolean getFollowUpUntilToPrecise() {
@@ -610,5 +626,44 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setOnlyContactsFromOtherInstances(Boolean onlyContactsFromOtherInstances) {
 		this.onlyContactsFromOtherInstances = onlyContactsFromOtherInstances;
+	}
+
+	public Date getCreationDateFrom() {
+		return creationDateFrom;
+	}
+
+	public void setCreationDateFrom(Date creationDateFrom) {
+		this.creationDateFrom = creationDateFrom;
+	}
+
+	public ContactCriteria creationDateFrom(Date creationDateFrom) {
+		this.creationDateFrom = creationDateFrom;
+		return this;
+	}
+
+	public Date getCreationDateTo() {
+		return creationDateTo;
+	}
+
+	public void setCreationDateTo(Date creationDateTo) {
+		this.creationDateTo = creationDateTo;
+	}
+
+	public ContactCriteria creationDateTo(Date creationDateTo) {
+		this.creationDateTo = creationDateTo;
+		return this;
+	}
+
+	public String getReportingUserLike() {
+		return reportingUserLike;
+	}
+
+	public void setReportingUserLike(String reportingUserLike) {
+		this.reportingUserLike = reportingUserLike;
+	}
+
+	public ContactCriteria reportingUserLike(String reportingUserLike) {
+		this.reportingUserLike = reportingUserLike;
+		return this;
 	}
 }

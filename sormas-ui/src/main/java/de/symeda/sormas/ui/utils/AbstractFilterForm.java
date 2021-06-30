@@ -19,6 +19,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.PopupDateField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -47,6 +48,15 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix, FieldVisibilityCheckers fieldVisibilityCheckers) {
+		this(type, propertyI18nPrefix, fieldVisibilityCheckers, Captions.actionApplyFilters, Captions.actionResetFilters);
+	}
+
+	protected AbstractFilterForm(
+		Class<T> type,
+		String propertyI18nPrefix,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		String applyCaptionTag,
+		String resetCaptionTag) {
 
 		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(fieldVisibilityCheckers, null), true);
 
@@ -60,7 +70,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			getContent().addComponent(moreFiltersLayout, MORE_FILTERS_ID);
 		}
 
-		formActionButtonsComponent = new FormActionButtonsComponent(moreFiltersLayout);
+		formActionButtonsComponent = new FormActionButtonsComponent(applyCaptionTag, resetCaptionTag, moreFiltersLayout);
 		getContent().addComponent(formActionButtonsComponent, ACTION_BUTTONS_ID);
 
 		if (hasMoreFilters) {

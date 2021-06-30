@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.user;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -44,6 +45,8 @@ import javax.validation.ValidationException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
+import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -73,12 +76,12 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
@@ -166,11 +169,29 @@ public class UserFacadeEjb implements UserFacade {
 		return dto;
 	}
 
+	public static UserReferenceDto toReferenceDto(UserReference entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
+		return dto;
+	}
+
+	private List<String> toUuidList(HasUuid hasUuid) {
+
+		/*
+		 * Supports conversion of a null object into a list with one "null" value in it.
+		 * Uncertain if that use case exists, but wasn't suppose to be broken when replacing the Dto to Entity lookup.
+		 */
+		return Arrays.asList(hasUuid == null ? null : hasUuid.getUuid());
+	}
+
 	@Override
 	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles) {
 
-		Region region = regionService.getByReferenceDto(regionRef);
-		return userService.getAllByRegionAndUserRolesInJurisdiction(region, assignableRoles)
+		return userService.getReferenceList(toUuidList(regionRef), null, false, true, true, assignableRoles)
 			.stream()
 			.map(f -> toReferenceDto(f))
 			.collect(Collectors.toList());
@@ -179,8 +200,14 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs, UserRole... assignableRoles) {
 
-		List<Region> regions = regionService.getByUuids(regionRefs.stream().map(RegionReferenceDto::getUuid).collect(Collectors.toList()));
-		return userService.getAllByRegionsAndUserRolesInJurisdiction(regions, assignableRoles)
+		return userService
+			.getReferenceList(
+				regionRefs.stream().map(RegionReferenceDto::getUuid).collect(Collectors.toList()),
+				null,
+				false,
+				true,
+				true,
+				assignableRoles)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -195,45 +222,61 @@ public class UserFacadeEjb implements UserFacade {
 		JurisdictionLevel superordinateJurisdiction =
 			JurisdictionHelper.getSuperordinateJurisdiction(UserRole.getJurisdictionLevel(user.getUserRoles()));
 
-		List<User> superiorUsersList;
-
+		List<UserReference> superiorUsersList = Collections.emptyList();
 		switch (superordinateJurisdiction) {
 		case NATION:
 			superiorUsersList =
-				userService.getAllByUserRoles(UserRole.getWithJurisdictionLevels(superordinateJurisdiction).toArray(new UserRole[] {}));
+				userService.getReferenceList(null, null, null, false, false, true, UserRole.getWithJurisdictionLevels(superordinateJurisdiction));
 			break;
 		case REGION:
-			superiorUsersList = userService.getAllByRegionAndUserRoles(
-				regionService.getByReferenceDto(user.getRegion()),
-				UserRole.getWithJurisdictionLevels(superordinateJurisdiction).toArray(new UserRole[] {}));
+			superiorUsersList = userService.getReferenceList(
+				Arrays.asList(user.getRegion().getUuid()),
+				null,
+				null,
+				false,
+				false,
+				true,
+				UserRole.getWithJurisdictionLevels(superordinateJurisdiction));
 			break;
 		case DISTRICT:
 			// if user is assigned to a facility, but that facility is not assigned to a district, show no superordinate users. Else, show users of the district (and community) in which the facility is located
 
 			District district = null;
+			Community community = null;
 			List<UserRole> superordinateRoles = UserRole.getWithJurisdictionLevels(superordinateJurisdiction);
 			if (user.getDistrict() != null) {
 				district = districtService.getByReferenceDto(user.getDistrict());
 			} else if (user.getHealthFacility() != null) {
-				district = facilityService.getByReferenceDto(user.getHealthFacility()).getDistrict();
+				Facility facility = facilityService.getByReferenceDto(user.getHealthFacility());
+				district = facility.getDistrict();
+				community = facility.getCommunity();
 				superordinateRoles.addAll(UserRole.getWithJurisdictionLevels(JurisdictionLevel.COMMUNITY));
 			}
 
-			superiorUsersList =
-				(district == null) ? null : userService.getAllByDistrict(district, false, superordinateRoles.toArray(new UserRole[] {}));
+			if (community == null) {
+				superiorUsersList =
+					userService.getReferenceList(null, Arrays.asList(district.getUuid()), null, false, false, true, superordinateRoles);
+			} else if (district != null) {
+				superiorUsersList = userService.getReferenceList(
+					null,
+					Arrays.asList(district.getUuid()),
+					Arrays.asList(community.getUuid()),
+					false,
+					false,
+					true,
+					superordinateRoles);
+			}
+
 			break;
-		default:
-			superiorUsersList = null;
 		}
 
-		return superiorUsersList == null ? null : superiorUsersList.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return superiorUsersList.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, boolean includeSupervisors, UserRole... userRoles) {
 
-		District district = districtService.getByReferenceDto(districtRef);
-		return userService.getAllByDistrictInJurisdiction(district, includeSupervisors, userRoles)
+		return userService.getReferenceList(null, toUuidList(districtRef), includeSupervisors, true, true, userRoles)
 			.stream()
 			.map(f -> toReferenceDto(f))
 			.collect(Collectors.toList());
@@ -242,8 +285,14 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, boolean includeSupervisors, UserRole... userRoles) {
 
-		List<District> districts = districtService.getByUuids(districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()));
-		return userService.getAllByDistrictsInJurisdiction(districts, includeSupervisors, userRoles)
+		return userService
+			.getReferenceList(
+				null,
+				districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()),
+				includeSupervisors,
+				true,
+				true,
+				userRoles)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -251,7 +300,11 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public List<UserReferenceDto> getAllUserRefs(boolean includeInactive) {
-		return userService.getAllInJurisdiction(includeInactive).stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
+
+		return userService.getReferenceList(null, null, false, true, !includeInactive)
+			.stream()
+			.map(c -> toReferenceDto(c))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -259,6 +312,13 @@ public class UserFacadeEjb implements UserFacade {
 
 		User associatedOfficer = userService.getByReferenceDto(associatedOfficerRef);
 		return userService.getAllByAssociatedOfficer(associatedOfficer, userRoles).stream().map(f -> toDto(f)).collect(Collectors.toList());
+	}
+
+	@Override
+	public Page<UserDto> getIndexPage(UserCriteria userCriteria, int offset, int size, List<SortProperty> sortProperties) {
+		List<UserDto> userIndexList = getIndexList(userCriteria, offset, size, sortProperties);
+		long totalElementCount = count(userCriteria);
+		return new Page<>(userIndexList, offset, size, totalElementCount);
 	}
 
 	@Override
@@ -335,7 +395,11 @@ public class UserFacadeEjb implements UserFacade {
 		// TODO: We'll need a user filter for users at some point, to make sure that users can edit their own details,
 		// but not those of others
 
-		Predicate filter = userService.buildCriteriaFilter(userCriteria, cb, user);
+		Predicate filter = null;
+
+		if (userCriteria != null) {
+			filter = userService.buildCriteriaFilter(userCriteria, cb, user);
+		}
 
 		if (filter != null) {
 			/*
@@ -398,7 +462,11 @@ public class UserFacadeEjb implements UserFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<User> root = cq.from(User.class);
 
-		Predicate filter = userService.buildCriteriaFilter(userCriteria, cb, root);
+		Predicate filter = null;
+
+		if (userCriteria != null) {
+			filter = userService.buildCriteriaFilter(userCriteria, cb, root);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -541,6 +609,7 @@ public class UserFacadeEjb implements UserFacade {
 		}
 	}
 
+	@Override
 	public void enableUsers(List<String> userUuids) {
 		updateActiveState(userUuids, true);
 	}
@@ -551,6 +620,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	private void updateActiveState(List<String> userUuids, boolean active) {
+
 		List<User> users = userService.getByUuids(userUuids);
 		for (User user : users) {
 			User oldUser;

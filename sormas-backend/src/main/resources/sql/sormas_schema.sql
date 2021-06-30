@@ -7268,7 +7268,6 @@ ALTER TABLE task_history ADD COLUMN archived boolean NOT NULL DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (371, 'Add archived to task #3430');
 
-
 -- 2021-04-29 Add customizable enums #5247
 CREATE TABLE customizableenumvalue(
     id bigint not null,
@@ -7305,9 +7304,9 @@ DO $$
     BEGIN
         FOR rec IN SELECT id, disease, name FROM diseasevariant
             LOOP
-                INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', UPPER(REGEXP_REPLACE(rec.name, ' ', '_')), rec.name, rec.disease);
-                UPDATE cases SET diseasevariant = UPPER(REGEXP_REPLACE(rec.name, ' ', '_')), changedate = now() WHERE diseasevariant = rec.id::text;
-                UPDATE pathogentest SET testeddiseasevariant = UPPER(REGEXP_REPLACE(rec.name, ' ', '_')), changedate = now() WHERE testeddiseasevariant = rec.id::text;
+                INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, diseases) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISEASE_VARIANT', UPPER(REGEXP_REPLACE(rec.name, ' ', '_', 'g')), rec.name, rec.disease);
+                UPDATE cases SET diseasevariant = UPPER(REGEXP_REPLACE(rec.name, ' ', '_', 'g')) WHERE diseasevariant = rec.id::text;
+                UPDATE pathogentest SET testeddiseasevariant = UPPER(REGEXP_REPLACE(rec.name, ' ', '_', 'g')) WHERE testeddiseasevariant = rec.id::text;
             END LOOP;
     END;
 $$ LANGUAGE plpgsql;
@@ -7316,4 +7315,160 @@ DROP TABLE diseasevariant;
 DROP TABLE diseasevariant_history;
 
 INSERT INTO schema_version (version_number, comment) VALUES (372, '2021-04-29 Add customizable enums #5247');
+
+-- 2021-03-01 Make contacts mergeable #2409
+ALTER TABLE contact ADD COLUMN completeness real;
+ALTER TABLE contact_history ADD COLUMN completeness real;
+
+ALTER TABLE contact ADD COLUMN duplicateof_id bigint;
+ALTER TABLE contact_history ADD COLUMN duplicateof_id bigint;
+
+ALTER TABLE contact ADD CONSTRAINT fk_contact_duplicateof_id FOREIGN KEY (duplicateof_id) REFERENCES contact(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (373, 'Make contacts mergeable #2409');
+
+-- 2021-05-19 Indexing by deleted flag on all containing entities should be applied #5465
+CREATE INDEX IF NOT EXISTS idx_cases_deleted ON cases (deleted);
+CREATE INDEX IF NOT EXISTS idx_contact_deleted ON contact (deleted);
+CREATE INDEX IF NOT EXISTS idx_events_deleted ON events (deleted);
+CREATE INDEX IF NOT EXISTS idx_samples_deleted ON samples (deleted);
+CREATE INDEX IF NOT EXISTS idx_pathogentest_deleted ON pathogentest (deleted);
+CREATE INDEX IF NOT EXISTS idx_campaigns_deleted ON campaigns (deleted);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_deleted ON eventparticipant (deleted);
+CREATE INDEX IF NOT EXISTS idx_documents_deleted ON documents (deleted);
+
+INSERT INTO schema_version (version_number, comment) VALUES (374, 'Indexing by deleted flag on all containing entities should be applied #5465');
+
+-- 2021-04-30 [SORMAS2SORMAS] accept or reject a shared case from another SORMAS Instance #4423
+CREATE TABLE sormastosormassharerequest(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+
+    dataType varchar(255),
+    status  varchar(255),
+    originInfo_id bigint,
+    cases json,
+    contacts json,
+    events json,
+
+    sys_period tstzrange not null,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE sormastosormassharerequest OWNER TO sormas_user;
+ALTER TABLE sormastosormassharerequest ADD CONSTRAINT fk_sormastosormassharerequest_originInfo_id FOREIGN KEY (originInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+CREATE TABLE sormastosormassharerequest_history (LIKE sormastosormassharerequest);
+ALTER TABLE sormastosormassharerequest_history OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON sormastosormassharerequest
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sormastosormassharerequest_history', true);
+
+CREATE TABLE sormastosormasshareinfo_entities(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+
+    type varchar(255),
+    shareinfo_id bigint,
+    caze_id bigint,
+    contact_id bigint,
+    sample_id bigint,
+    event_id bigint,
+    eventparticipant_id bigint
+);
+ALTER TABLE sormastosormasshareinfo_entities OWNER TO sormas_user;
+ALTER TABLE sormastosormasshareinfo_entities ADD CONSTRAINT fk_sormastosormasshareinfo_entities_shareinfo_id FOREIGN KEY (shareinfo_id) REFERENCES sormastosormasshareinfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo_entities ADD CONSTRAINT fk_sormastosormasshareinfo_entities_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo_entities ADD CONSTRAINT fk_sormastosormasshareinfo_entities_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo_entities ADD CONSTRAINT fk_sormastosormasshareinfo_entities_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo_entities ADD CONSTRAINT fk_sormastosormasshareinfo_entities_event_id FOREIGN KEY (event_id) REFERENCES events (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo_entities ADD CONSTRAINT fk_sormastosormasshareinfo_entities_eventparticipant_id FOREIGN KEY (eventparticipant_id) REFERENCES eventparticipant (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+insert into sormastosormasshareinfo_entities (id, uuid, changedate, creationdate, type, shareinfo_id, caze_id, contact_id, sample_id, event_id, eventparticipant_id)
+select nextval('entity_seq'), generate_base32_uuid(), now(), now(),
+            CASE WHEN caze_id is not null THEN 'CASE'
+            WHEN contact_id is not null THEN 'CONTACT'
+            WHEN sample_id is not null THEN 'SAMPLE'
+            WHEN event_id is not null THEN 'EVENT'
+            WHEN eventparticipant_id is not null THEN 'EVENT_PARTICIPANT'
+            ELSE null END, id, caze_id, contact_id, sample_id, event_id, eventparticipant_id from sormastosormasshareinfo;
+
+ALTER TABLE sormastosormasshareinfo
+    ADD COLUMN requestUuid varchar(36) unique,
+    ADD COLUMN requestStatus varchar(255),
+    DROP COLUMN caze_id,
+    DROP COLUMN contact_id,
+    DROP COLUMN sample_id,
+    DROP COLUMN event_id,
+    DROP COLUMN eventparticipant_id;
+
+update sormastosormasshareinfo set requestUuid = generate_base32_uuid(), requestStatus = 'ACCEPTED';
+
+ALTER TABLE sormastosormasshareinfo
+    ALTER COLUMN requestUuid SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (375, '[SORMAS2SORMAS] accept or reject a shared case from another SORMAS Instance #4423');
+
+-- 2020-05-26 Introduce an internal token field #5224
+ALTER TABLE cases ADD COLUMN internaltoken text;
+ALTER TABLE cases_history ADD COLUMN internaltoken text;
+
+ALTER TABLE contact ADD COLUMN internaltoken text;
+ALTER TABLE contact_history ADD COLUMN internaltoken text;
+
+ALTER TABLE person ADD COLUMN internaltoken text;
+ALTER TABLE person_history ADD COLUMN internaltoken text;
+
+ALTER TABLE events RENAME internalid TO internaltoken;
+ALTER TABLE events_history RENAME internalid TO internaltoken;
+
+INSERT INTO schema_version (version_number, comment) VALUES (376, 'Introduce an internal token field #5224');
+
+
+-- 2021-06-02 Add a checkbox to avoid sending this case to SurvNet #5324
+ALTER TABLE cases ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN dontsharewithreportingtool boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (377, 'Add a checkbox to avoid sending this case to SurvNet #5324');
+
+-- 2021-06-22 Set contact with source case known for all existing cases #5841
+UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND exists (SELECT 1 FROM contact WHERE contact.resultingcase_id = cases.id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (378, 'Set contact with source case known for all existing cases #5841');
+
+-- 2021-06-22 Refine the split of jurisdiction and place of stay #5852
+DO $$
+    DECLARE _case RECORD;
+    BEGIN
+        FOR _case IN SELECT * FROM cases WHERE responsibleregion_id IS NULL
+                                           AND (reportingdistrict_id IS NULL OR reportingdistrict_id = district_id)
+            LOOP
+                UPDATE cases
+                    SET responsibleregion_id = _case.region_id,
+                        responsibledistrict_id = _case.district_id,
+                        responsiblecommunity_id = _case.community_id,
+                        region_id = null,
+                        district_id = null,
+                        community_id = null,
+                        reportingdistrict_id = null
+                where id = _case.id;
+            END LOOP;
+
+        FOR _case IN SELECT * FROM cases WHERE responsibleregion_id IS NULL AND reportingdistrict_id IS NOT NULL
+            LOOP
+                UPDATE cases
+                SET responsibleregion_id = (SELECT region_id from district where id = _case.reportingdistrict_id),
+                    responsibledistrict_id = _case.reportingdistrict_id,
+                    reportingdistrict_id = null
+                where id = _case.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE cases DROP COLUMN reportingdistrict_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (379, 'Refine the split of jurisdiction and place of stay #5852');
 -- *** Insert new sql commands BEFORE this line ***

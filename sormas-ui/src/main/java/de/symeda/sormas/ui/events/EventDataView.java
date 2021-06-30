@@ -139,13 +139,16 @@ public class EventDataView extends AbstractEventView {
 		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
 
-		SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(event, () -> editComponent.discard());
-		superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
+		boolean eventHierarchiesFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_HIERARCHIES);
+		if (eventHierarchiesFeatureEnabled) {
+			SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(event, () -> editComponent.discard());
+			superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
 
-		EventListComponent subordinateEventList = new EventListComponent(event.toReference());
-		subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
+			EventListComponent subordinateEventList = new EventListComponent(event.toReference());
+			subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
+		}
 
 		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
 		if (eventGroupsFeatureEnabled) {
@@ -154,7 +157,7 @@ public class EventDataView extends AbstractEventView {
 			layout.addComponent(eventGroupsList, EVENT_GROUPS_LOC);
 		}
 
-		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser();
 		if (sormasToSormasEnabled || event.getSormasToSormasOriginInfo() != null) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);

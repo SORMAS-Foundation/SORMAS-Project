@@ -26,5 +26,5 @@ for ((i = 1; i <= $1; ++i)); do
   rm -rf ./allure-results
   ./gradlew clean
   echo "Run: $i "
-  ./gradlew test -Dcucumber.tags="@Login" -Dheadless=true -Dcourgette.threads=9
+  ./gradlew startTests -Dcucumber.tags="@Login" -Dheadless=true -Dcourgette.threads=9
 done

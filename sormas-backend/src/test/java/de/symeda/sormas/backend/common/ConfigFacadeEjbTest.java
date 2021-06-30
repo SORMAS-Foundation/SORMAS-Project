@@ -40,6 +40,9 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "http://www.google.com");
 		getConfigFacade().validateExternalUrls();
 
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "http://my-docker-service:12345/route/path");
+		getConfigFacade().validateExternalUrls();
+
 		try {
 			MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "htps://www.google.com#");
 		} catch (IllegalArgumentException ignored) {

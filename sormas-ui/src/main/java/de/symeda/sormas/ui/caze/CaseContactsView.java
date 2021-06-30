@@ -40,11 +40,11 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -62,6 +62,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.contact.ContactGrid;
 import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.ContactDownloadUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -71,6 +72,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
+import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 public class CaseContactsView extends AbstractCaseView {
 
@@ -78,8 +80,8 @@ public class CaseContactsView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
 
-	private ContactCriteria criteria;
-	private ViewConfiguration viewConfiguration;
+	private final ContactCriteria criteria;
+	private final ViewConfiguration viewConfiguration;
 
 	private ContactGrid grid;
 
@@ -92,7 +94,6 @@ public class CaseContactsView extends AbstractCaseView {
 	private Button resetButton;
 	private Button applyButton;
 
-	private Button newButton;
 	private DetailSubComponentWrapper gridLayout;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
@@ -113,17 +114,17 @@ public class CaseContactsView extends AbstractCaseView {
 		topLayout.setSpacing(true);
 		topLayout.setSizeUndefined();
 
-		classificationFilter = new ComboBox();
+		classificationFilter = ComboBoxHelper.createComboBoxV7();
 		classificationFilter.setWidth(240, Unit.PIXELS);
 		classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
 		classificationFilter.addValueChangeListener(e -> criteria.setContactClassification((ContactClassification) e.getProperty().getValue()));
 		topLayout.addComponent(classificationFilter);
 
 		UserDto user = UserProvider.getCurrent().getUser();
-		regionFilter = new ComboBox();
+		regionFilter = ComboBoxHelper.createComboBoxV7();
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(240, Unit.PIXELS);
-			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactJurisdictionDto.REGION_UUID));
+			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.REGION_UUID));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -137,9 +138,9 @@ public class CaseContactsView extends AbstractCaseView {
 			topLayout.addComponent(regionFilter);
 		}
 
-		districtFilter = new ComboBox();
+		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setWidth(240, Unit.PIXELS);
-		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.DISTRICT_UUID));
+		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID));
 		districtFilter.addValueChangeListener(e -> criteria.district((DistrictReferenceDto) e.getProperty().getValue()));
 
 		if (user.getRegion() != null && user.getDistrict() == null) {
@@ -166,7 +167,7 @@ public class CaseContactsView extends AbstractCaseView {
 		CssStyles.style(infoLabel, CssStyles.LABEL_XLARGE, CssStyles.LABEL_SECONDARY);
 		topLayout.addComponent(infoLabel);
 
-		officerFilter = new ComboBox();
+		officerFilter = ComboBoxHelper.createComboBoxV7();
 		officerFilter.setWidth(240, Unit.PIXELS);
 		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
 		officerFilter.addValueChangeListener(e -> criteria.setContactOfficer((UserReferenceDto) e.getProperty().getValue()));
@@ -327,7 +328,13 @@ public class CaseContactsView extends AbstractCaseView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
-			newButton = ButtonHelper.createIconButtonWithCaption(
+			final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(this.getCaseRef().getUuid());
+			final ExpandableButton lineListingButton =
+				new ExpandableButton(Captions.lineListing).expand(e -> ControllerProvider.getContactController().openLineListingWindow(caseDto));
+
+			statusFilterLayout.addComponent(lineListingButton);
+
+			final Button newButton = ButtonHelper.createIconButtonWithCaption(
 				Captions.contactNewContact,
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, Captions.contactNewContact),
 				VaadinIcons.PLUS_CIRCLE,

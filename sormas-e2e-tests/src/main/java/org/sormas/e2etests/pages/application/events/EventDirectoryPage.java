@@ -22,4 +22,24 @@ import org.openqa.selenium.By;
 
 public class EventDirectoryPage {
   public static final By NEW_EVENT_BUTTON = By.id("eventNewEvent");
+  public static final By SEARCH_EVENT_BY_FREE_TEXT_INPUT = By.id("freeText");
+  public static final By RESET_FILTER = By.id("actionResetFilters");
+  public static final By APPLY_FILTER = By.id("actionApplyFilters");
+  public static final By EVENT_STATUS_FILTER_BUTTONS =
+      By.xpath("//*[@id='status-Signal']/span/../../..//span[@class='v-button-wrap']/span/../..");
+
+  public static final By EVENT_ACTIONS_RADIOBUTTON =
+      By.cssSelector("div#eventsViewSwitcher span:nth-child(2)");
+  public static final By FILTER_BY_GENERAL_INPUT = By.cssSelector("input#freeText");
+  public static final By EVENT_ACTIONS_COLUMN_HEADERS =
+      By.cssSelector("thead .v-grid-column-default-header-content");
+  public static final By EVENT_ACTIONS_TABLE_ROW =
+      By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static final By EVENT_ACTIONS_TABLE_DATA = By.tagName("td");
+  public static final By ACTION_DIRECTORY_HEADER_TEXT =
+      By.xpath("//div[contains(text(),'Action Directory')]");
+
+  public static By getByEventUuid(String eventUuid) {
+    return By.cssSelector("a[title='" + eventUuid + "']");
+  }
 }
