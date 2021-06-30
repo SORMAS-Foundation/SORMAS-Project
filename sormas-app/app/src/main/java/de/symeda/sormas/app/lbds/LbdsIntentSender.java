@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,42 +59,51 @@ public class LbdsIntentSender {
 		PersonDao personDao = DatabaseHelper.getPersonDao();
 		List<Person> modifiedEntities = personDao.getModifiedEntities();
 
-		// PersonDtoHelper personDtoHelper = new PersonDtoHelper();
-
-		String payload = "[]";
+		List<PersonDto> personsDto = new ArrayList<>();
 		if (!modifiedEntities.isEmpty()) {
 			Person firstEntry = modifiedEntities.get(0);
+			Person snapshot = personDao.querySnapshotByUuid(firstEntry.getUuid());
 			PersonDto personDto = new PersonDtoHelper().adoToDto(firstEntry);
-			payload = createRequest(personDto);
+			boolean isModifiedLbds = false;
+			try {
+				LbdsDtoHelper.stripLbdsDto(personDto);
+				isModifiedLbds = LbdsDtoHelper.isModifiedLbds(snapshot, personDto, false);
+			} catch (IllegalAccessException | IntrospectionException | InvocationTargetException e) {
+				throw new IllegalArgumentException("LBDS inspection failed", e);
+			}
+			if (isModifiedLbds) {
+				String payload = createRequest(personDto);
+				Log.i("SORMAS_LBDS", "Send object: " + payload);
+
+				String authBasicCredentials = ConfigProvider.getUsername() + ":" + ConfigProvider.getPassword();
+				String headers =
+					"Authorization: Basic " + Base64.encodeToString(authBasicCredentials.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
+				// "Content-Type: application/json";
+
+				HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, "http://localhost:6070/sormas-rest/persons/push", headers, payload);
+				// HttpMethod method = new HttpMethod(HttpMethod.MethodType.GET, "http://perdu.com");
+
+				String lbdsAesSecret = ConfigProvider.getLbdsAesSecret();
+				Log.i("SORMAS_LBDS", "AES secret: " + lbdsAesSecret);
+				HttpContainer httpContainer = new HttpContainer(method);
+				LbdsSendIntent lbdsSendIntent = new LbdsSendIntent(httpContainer, lbdsAesSecret);
+				lbdsSendIntent.setComponent(LbdsRelated.componentName);
+
+				HttpContainer httpContainerRead = lbdsSendIntent.getHttpContainer(lbdsAesSecret);
+				Log.i("SORMAS_LBDS", "HttpContainer: " + httpContainerRead);
+
+				ContextCompat.startForegroundService(context, lbdsSendIntent);
+			} else {
+				Log.i("SORMAS_LBDS", "No modified LBDS properties");
+			}
+		} else {
+			Log.i("SORMAS_LBDS", "Nothing to send.");
 		}
-		Log.i("SORMAS_LBDS", "Send object: " + payload);
-
-		String authBasicCredentials = ConfigProvider.getUsername() + ":" + ConfigProvider.getPassword();
-		String headers = "Authorization: Basic " + Base64.encodeToString(authBasicCredentials.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
-		// "Content-Type: application/json";
-
-		HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, "http://localhost:6070/sormas-rest/persons/push", headers, payload);
-		// HttpMethod method = new HttpMethod(HttpMethod.MethodType.GET, "http://perdu.com");
-
-		String lbdsAesSecret = ConfigProvider.getLbdsAesSecret();
-		Log.i("SORMAS_LBDS", "AES secret: " + lbdsAesSecret);
-		HttpContainer httpContainer = new HttpContainer(method);
-		LbdsSendIntent lbdsSendIntent = new LbdsSendIntent(httpContainer, lbdsAesSecret);
-		lbdsSendIntent.setComponent(LbdsRelated.componentName);
-
-		HttpContainer httpContainerRead = lbdsSendIntent.getHttpContainer(lbdsAesSecret);
-		Log.i("SORMAS_LBDS", "HttpContainer: " + httpContainerRead);
-
-		ContextCompat.startForegroundService(context, lbdsSendIntent);
 		Log.i("SORMAS_LBDS", "==========================");
 	}
 
 	private static String createRequest(PersonDto personDto) {
-		try {
-			LbdsDtoHelper.stripLbdsDto(personDto);
-		} catch (IllegalAccessException | IntrospectionException | InvocationTargetException e) {
-			e.printStackTrace();
-		}
+
 		Retrofit retrofit = RetroProvider.buildRetrofit("http://localhost:6070/sormas-rest/");
 		PersonFacadeRetro personFacadeRetro = retrofit.create(PersonFacadeRetro.class);
 		Call<List<PushResult>> call = personFacadeRetro.pushAll(Collections.singletonList(personDto));
