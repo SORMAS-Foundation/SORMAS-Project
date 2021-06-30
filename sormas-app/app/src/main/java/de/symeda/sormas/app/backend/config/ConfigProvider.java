@@ -88,6 +88,7 @@ public final class ConfigProvider {
 	private static String LBDS_SORMAS_PUBLIC_KEY = "lbdsSormasPublicKey";
 	private static String LBDS_SERVICE_PUBLIC_KEY = "lbdsServicePublicKey";
 	private static String LBDS_AES_SECRET = "lbdsAesSecret";
+	private static String LBDS_DEBUG_URL = "lbdsDebugUrl";
 
 	private static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
 
@@ -122,6 +123,7 @@ public final class ConfigProvider {
 	private PublicKey lbdsSormasPublicKey;
 	private PublicKey lbdsServicePublicKey;
 	private String lbdsAesSecret;
+	private String serverLbdsDebugUrl;
 
 	private ConfigProvider(Context context) {
 		this.context = context;
@@ -856,5 +858,39 @@ public final class ConfigProvider {
 		instance.lbdsAesSecret = lbdsAesSecret;
 		DatabaseHelper.getConfigDao()
 			.createOrUpdate(new Config(LBDS_AES_SECRET, Base64.encodeToString(lbdsAesSecret.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT)));
+	}
+
+	public static String getServerLbdsDebugUrl() {
+		if (instance.serverLbdsDebugUrl == null)
+			synchronized (ConfigProvider.class) {
+				if (instance.serverLbdsDebugUrl == null) {
+					Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_DEBUG_URL);
+					if (config != null) {
+						instance.serverLbdsDebugUrl = config.getValue();
+
+						// take care of old mal-formatted urls
+						String properServerRestUrl = toProperRestUrl(instance.serverLbdsDebugUrl);
+						if (!DataHelper.equal(instance.serverLbdsDebugUrl, properServerRestUrl)) {
+							instance.serverLbdsDebugUrl = properServerRestUrl;
+							saveConfigEntry(LBDS_DEBUG_URL, instance.serverLbdsDebugUrl);
+						}
+					}
+				}
+			}
+		return instance.serverLbdsDebugUrl;
+	}
+
+	public static void setServerLbdsDebugUrl(String serverRestUrl) {
+
+		serverRestUrl = toProperRestUrl(serverRestUrl);
+		String currentServerRestUrl = getServerRestUrl();
+
+		if (DataHelper.equal(serverRestUrl, currentServerRestUrl))
+			return;
+
+		boolean wasNull = currentServerRestUrl == null;
+
+		instance.serverLbdsDebugUrl = serverRestUrl;
+		saveConfigEntry(LBDS_DEBUG_URL, serverRestUrl);
 	}
 }
