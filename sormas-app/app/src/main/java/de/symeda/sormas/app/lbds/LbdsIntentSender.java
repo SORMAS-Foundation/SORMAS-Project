@@ -7,6 +7,7 @@ import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hzi.sormas.lbds.core.http.HttpContainer;
 import org.hzi.sormas.lbds.core.http.HttpMethod;
 import org.hzi.sormas.lbds.messaging.LbdsPropagateKexToLbdsIntent;
@@ -57,17 +58,10 @@ public class LbdsIntentSender {
 		Log.i("SORMAS_LBDS", "==========================");
 	}
 
-	public static void sendLbdsSendIntent(Context context) {
-		Log.i("SORMAS_LBDS", "==========================");
-		Log.i("SORMAS_LBDS", "Sync LBDS");
-		sendPersonsLbds(context);
-		sendCasesLbds(context);
-		Log.i("SORMAS_LBDS", "==========================");
-	}
+	public static void sendPersonsLbds(Context context) {
 
-	private static void sendPersonsLbds(Context context) {
-
-		Log.i("SORMAS_LBDS", "Persons-------------------");
+		Log.i("SORMAS_LBDS", "==========================");
+		Log.i("SORMAS_LBDS", "Sync Persons LBDS");
 		PersonDao personDao = DatabaseHelper.getPersonDao();
 		List<Person> modifiedPersons = personDao.getModifiedEntities();
 		List<PersonDto> personsToSend = new ArrayList<>();
@@ -93,16 +87,18 @@ public class LbdsIntentSender {
 			String headers = getAuthHeader();
 			String payload = createLbdsPayloadPersons(personsToSend);
 			Log.i("SORMAS_LBDS", "Send persons: " + payload);
-			HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, "http://localhost:6070/sormas-rest/persons/push", headers, payload);
+			HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, getLbdsUrl("persons/push"), headers, payload);
 			sendLbdsRequest(context, method);
 		} else {
 			Log.i("SORMAS_LBDS", "Nothing to send.");
 		}
+		Log.i("SORMAS_LBDS", "==========================");
 	}
 
-	private static void sendCasesLbds(Context context) {
+	public static void sendCasesLbds(Context context) {
 
-		Log.i("SORMAS_LBDS", "Cases---------------------");
+		Log.i("SORMAS_LBDS", "==========================");
+		Log.i("SORMAS_LBDS", "Sync Cases LBDS");
 		CaseDao caseDao = DatabaseHelper.getCaseDao();
 		List<Case> modifiedCases = caseDao.getModifiedEntities();
 		List<CaseDataDto> casesToSend = new ArrayList<>();
@@ -128,11 +124,12 @@ public class LbdsIntentSender {
 			String headers = getAuthHeader();
 			String payload = createLbdsPayloadCases(casesToSend);
 			Log.i("SORMAS_LBDS", "Send cases: " + payload);
-			HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, "http://localhost:6070/sormas-rest/cases/push", headers, payload);
+			HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, getLbdsUrl("cases/push"), headers, payload);
 			sendLbdsRequest(context, method);
 		} else {
 			Log.i("SORMAS_LBDS", "Nothing to send.");
 		}
+		Log.i("SORMAS_LBDS", "==========================");
 	}
 
 	private static void sendLbdsRequest(Context context, HttpMethod method) {
@@ -157,7 +154,7 @@ public class LbdsIntentSender {
 
 	private static String createLbdsPayloadPersons(List<PersonDto> personsToSend) {
 
-		Retrofit retrofit = RetroProvider.buildRetrofit("http://localhost:6070/sormas-rest/");
+		Retrofit retrofit = RetroProvider.buildRetrofit(getLbdsUrl(""));
 		PersonFacadeRetro personFacadeRetro = retrofit.create(PersonFacadeRetro.class);
 		Call<List<PushResult>> call = personFacadeRetro.pushAll(personsToSend);
 		Buffer buffer = new Buffer();
@@ -172,7 +169,7 @@ public class LbdsIntentSender {
 
 	private static String createLbdsPayloadCases(List<CaseDataDto> casesToSend) {
 
-		Retrofit retrofit = RetroProvider.buildRetrofit("http://localhost:6070/sormas-rest/");
+		Retrofit retrofit = RetroProvider.buildRetrofit(getLbdsUrl(""));
 		CaseFacadeRetro caseFacadeRetro = retrofit.create(CaseFacadeRetro.class);
 		Call<List<PushResult>> call = caseFacadeRetro.pushAll(casesToSend);
 		Buffer buffer = new Buffer();
@@ -183,5 +180,14 @@ public class LbdsIntentSender {
 		}
 		String json = buffer.readUtf8();
 		return json;
+	}
+
+	private static String getLbdsUrl(String path) {
+		String lbdsUrl = ConfigProvider.getServerLbdsDebugUrl();
+		if (lbdsUrl == null || lbdsUrl.isEmpty() || StringUtils.isBlank(lbdsUrl)) {
+			lbdsUrl = ConfigProvider.getServerRestUrl();
+		}
+		String separator = lbdsUrl.endsWith("/") ? "" : "/";
+		return lbdsUrl + separator + path;
 	}
 }
