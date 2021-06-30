@@ -7834,5 +7834,10 @@ ALTER TABLE vaccination_history ADD COLUMN vaccinedose text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (394, 'Add missing vaccination columns #4763');
 
+-- 2021-06-30 Add reportId to labMessage #5622
+ALTER TABLE labmessage ADD COLUMN reportid varchar(512);
+ALTER TABLE labmessage_history ADD COLUMN reportid varchar(512);
 
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
+INSERT INTO schema_version (version_number, comment) VALUES (395, 'Add reportId to labMessage #5622');
+
+-- *** Insert new sql commands BEFORE this line ***
