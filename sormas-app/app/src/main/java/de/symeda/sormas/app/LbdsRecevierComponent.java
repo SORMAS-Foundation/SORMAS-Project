@@ -1,8 +1,8 @@
 package de.symeda.sormas.app;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
-import java.util.Collections;
 import java.util.List;
 
 import org.hzi.sormas.lbds.core.http.HttpContainer;
@@ -17,6 +17,7 @@ import org.hzi.sormas.lbds.messaging.util.KeySerializationUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.googlecode.openbeans.IntrospectionException;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -28,10 +29,14 @@ import androidx.annotation.Nullable;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
+import de.symeda.sormas.app.backend.common.DaoException;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.person.PersonDtoHelper;
-import de.symeda.sormas.app.rest.NoConnectionException;
+import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDao;
+import de.symeda.sormas.app.lbds.LbdsDtoHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -55,27 +60,6 @@ public class LbdsRecevierComponent extends IntentService {
 		if (intentType != null && !intentType.trim().isEmpty()) {
 			IntentType type = IntentType.valueOf(intentType);
 			switch (type) {
-			case HTTP_SEND_INTENT:
-				final String httpContainer = intent.getStringExtra(Constants.HTTP_CONTAINER);
-				HttpContainer container = HttpContainer.deserializePackedHttpContainer(httpContainer);
-				HttpMethod method = container.getMethod();
-				String url = method.url;
-				String payload = method.payload;
-				Log.i("SORMAS_LBDS", "url=" + url + ", payload=" + payload);
-
-				BaseActivity activeActivity = BaseActivity.getActiveActivity();
-				if (activeActivity == null || !activeActivity.isEditing()) {
-					if (ConfigProvider.getUser() != null && !RetroProvider.isConnectedOrConnecting()) {
-						RetroProvider.connectAsync(getApplicationContext(), false, (result, versionCompatible) -> {
-							if (result.getResultStatus().isSuccess()) {
-								pushData(url, payload);
-							}
-						});
-					} else {
-						pushData(url, payload);
-					}
-				}
-				break;
 			case KEX_TO_LBDS_INTENT:
 				final String publicKey = intent.getStringExtra(Constants.SORMAS_KEY);
 				final PublicKey key = KeySerializationUtil.deserializePublicKey(publicKey);
@@ -84,22 +68,18 @@ public class LbdsRecevierComponent extends IntentService {
 			case HTTP_RESPONSE_INTENT:
 				LbdsResponseIntent responseIntent = (LbdsResponseIntent) IntentTypeCarrying.toStrongTypedIntent(intent);
 				HttpContainer httpContainerResponse = responseIntent.getHttpContainer(ConfigProvider.getLbdsAesSecret());
-				HttpMethod methodFromResponse = httpContainerResponse.getMethod();
-				HttpResult resultFromResponse = httpContainerResponse.getResult();
-				Log.i("SORMAS_LBDS", "Request: " + methodFromResponse);
-				Log.i("SORMAS_LBDS", "Result Headers: " + resultFromResponse.headers);
-				Log.i("SORMAS_LBDS", "Result Body: " + resultFromResponse.body);
 
-				try {
-					Gson gson = RetroProvider.initGson();
-					List<PersonDto> sendPersonDtos = gson.fromJson(methodFromResponse.payload, new TypeToken<List<PersonDto>>() {
-					}.getType());
-					List<PushResult> responsePushResults = gson.fromJson(resultFromResponse.body, new TypeToken<List<PushResult>>() {
-					}.getType());
-					Log.i("SORMAS_LBDS", "sent " + sendPersonDtos.size() + " PersonDtos and received " + responsePushResults.size() + " PushResults");
-				} catch (Exception e) {
-					Log.i("SORMAS_LBDS", e.getMessage());
-					e.printStackTrace();
+				HttpMethod methodFromResponse = httpContainerResponse.getMethod();
+				if (methodFromResponse == null || methodFromResponse.url == null) {
+					throw new IllegalArgumentException("Missing HTTP request or HTTP request URL");
+				}
+
+				if (methodFromResponse.url.endsWith("persons/push")) {
+					processLbdsResponsePersons(httpContainerResponse);
+				} else if (methodFromResponse.url.endsWith("cases/push")) {
+					processLbdsResponseCases(httpContainerResponse);
+				} else {
+					throw new IllegalArgumentException("Unknown HTTP request URL " + methodFromResponse.url);
 				}
 
 				break;
@@ -117,6 +97,7 @@ public class LbdsRecevierComponent extends IntentService {
 				String aesSecret = kexToSormasIntent.getAesSecret(ConfigProvider.getLbdsSormasPrivateKey());
 				ConfigProvider.setLbdsAesSecret(aesSecret);
 				Log.i("SORMAS_LBDS", "Lbds AES secret: " + Base64.encodeToString(aesSecret.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT));
+
 				break;
 			default:
 				Log.i("SORMAS_LBDS", "unknown LBDS intent");
@@ -125,21 +106,115 @@ public class LbdsRecevierComponent extends IntentService {
 		Log.i("SORMAS_LBDS", "==========================");
 	}
 
-	private void pushData(final String url, final String payload) {
-		try {
-			if (url.contains("/persons/push")) {
-				PersonDtoHelper personDtoHelper = new PersonDtoHelper();
-				PersonDto personDto = new Gson().fromJson(payload, PersonDto.class);
-				Call<List<PushResult>> listCall = personDtoHelper.pushAll(Collections.singletonList(personDto));
-				listCall.enqueue(new PushResultCallback());
-			} else if (url.contains("/cases/push")) {
-				CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
-				CaseDataDto caseDataDto = new Gson().fromJson(payload, CaseDataDto.class);
-				Call<List<PushResult>> listCall = caseDtoHelper.pushAll(Collections.singletonList(caseDataDto));
-				listCall.enqueue(new PushResultCallback());
+	private void processLbdsResponsePersons(HttpContainer httpContainerResponse) {
+
+		HttpMethod methodFromResponse = httpContainerResponse.getMethod();
+		HttpResult resultFromResponse = httpContainerResponse.getResult();
+
+		Log.i("SORMAS_LBDS", "Request: " + methodFromResponse);
+		Log.i("SORMAS_LBDS", "Result Headers: " + resultFromResponse.headers);
+		Log.i("SORMAS_LBDS", "Result Body: " + resultFromResponse.body);
+
+		Gson gson = RetroProvider.initGson();
+		List<PersonDto> sentPersonDtos = gson.fromJson(methodFromResponse.payload, new TypeToken<List<PersonDto>>() {
+		}.getType());
+		List<PushResult> responsePushResults = gson.fromJson(resultFromResponse.body, new TypeToken<List<PushResult>>() {
+		}.getType());
+		Log.i("SORMAS_LBDS", "sent " + sentPersonDtos.size() + " PersonDtos and received " + responsePushResults.size() + " PushResults");
+
+		if (sentPersonDtos.size() != responsePushResults.size()) {
+			Log.i("SORMAS_LBDS", "List lengths differ, abort.");
+			throw new IllegalArgumentException("Number of sent Dtos and received PushResults must be equal");
+		}
+
+		for (int i = 0; i < sentPersonDtos.size(); i++) {
+			PersonDto personDto = sentPersonDtos.get(i);
+			String uuid = personDto.getUuid();
+			PushResult pushResult = responsePushResults.get(i);
+			if (pushResult != PushResult.OK) {
+				Log.i("SORMAS_LBDS", "Ignore PushResult " + pushResult + " for PersonDto " + uuid);
+				continue;
 			}
-		} catch (NoConnectionException e) {
-			Log.e("LBDS", "Error connecting to backend: " + e.getMessage());
+			PersonDao personDao = DatabaseHelper.getPersonDao();
+			Person person = personDao.queryUuid(uuid);
+			if (person == null) {
+				Log.i("SORMAS_LBDS", "Person " + uuid + " not found, skip.");
+				continue;
+			}
+			if (!person.isModified()) {
+				Log.i("SORMAS_LBDS", "Person " + uuid + " not modified, skip.");
+				continue;
+			}
+			Person snapshot = personDao.querySnapshotByUuid(uuid);
+			if (snapshot != null) {
+				Log.i("SORMAS_LBDS", "Person " + uuid + " has a snapshot, skip.");
+				continue;
+			}
+			try {
+				if (!LbdsDtoHelper.isModifiedLbds(person, personDto, true)) {
+					personDao.accept(person);
+				} else {
+					// TODO: create snapshot
+				}
+			} catch (DaoException | IntrospectionException | InvocationTargetException | IllegalAccessException e) {
+				throw new IllegalArgumentException("Error processing LBDS response for person " + uuid, e);
+			}
+		}
+	}
+
+	private void processLbdsResponseCases(HttpContainer httpContainerResponse) {
+
+		HttpMethod methodFromResponse = httpContainerResponse.getMethod();
+		HttpResult resultFromResponse = httpContainerResponse.getResult();
+
+		Log.i("SORMAS_LBDS", "Request: " + methodFromResponse);
+		Log.i("SORMAS_LBDS", "Result Headers: " + resultFromResponse.headers);
+		Log.i("SORMAS_LBDS", "Result Body: " + resultFromResponse.body);
+
+		Gson gson = RetroProvider.initGson();
+		List<CaseDataDto> sentCaseDataDtos = gson.fromJson(methodFromResponse.payload, new TypeToken<List<CaseDataDto>>() {
+		}.getType());
+		List<PushResult> responsePushResults = gson.fromJson(resultFromResponse.body, new TypeToken<List<PushResult>>() {
+		}.getType());
+		Log.i("SORMAS_LBDS", "sent " + sentCaseDataDtos.size() + " CaseDataDtos and received " + responsePushResults.size() + " PushResults");
+
+		if (sentCaseDataDtos.size() != responsePushResults.size()) {
+			Log.i("SORMAS_LBDS", "List lengths differ, abort.");
+			throw new IllegalArgumentException("Number of sent Dtos and received PushResults must be equal");
+		}
+
+		for (int i = 0; i < sentCaseDataDtos.size(); i++) {
+			CaseDataDto caseDataDto = sentCaseDataDtos.get(i);
+			String uuid = caseDataDto.getUuid();
+			PushResult pushResult = responsePushResults.get(i);
+			if (pushResult != PushResult.OK) {
+				Log.i("SORMAS_LBDS", "Ignore PushResult " + pushResult + " for CaseDataDto " + uuid);
+				continue;
+			}
+			CaseDao caseDao = DatabaseHelper.getCaseDao();
+			Case caze = caseDao.queryUuid(uuid);
+			if (caze == null) {
+				Log.i("SORMAS_LBDS", "Case " + uuid + " not found, skip.");
+				continue;
+			}
+			if (!caze.isModified()) {
+				Log.i("SORMAS_LBDS", "Case " + uuid + " not modified, skip.");
+				continue;
+			}
+			Case snapshot = caseDao.querySnapshotByUuid(uuid);
+			if (snapshot != null) {
+				Log.i("SORMAS_LBDS", "Case " + uuid + " has a snapshot, skip.");
+				continue;
+			}
+			try {
+				if (!LbdsDtoHelper.isModifiedLbds(caze, caseDataDto, true)) {
+					caseDao.accept(caze);
+				} else {
+					// TODO: create snapshot
+				}
+			} catch (DaoException | IntrospectionException | InvocationTargetException | IllegalAccessException e) {
+				throw new IllegalArgumentException("Error processing LBDS response for case " + uuid, e);
+			}
 		}
 	}
 
