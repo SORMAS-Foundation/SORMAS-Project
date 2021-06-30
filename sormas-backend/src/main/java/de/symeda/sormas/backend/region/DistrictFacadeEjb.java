@@ -42,6 +42,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictCriteria;
@@ -131,7 +132,10 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		Root<District> district = cq.from(District.class);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 
-		Predicate filter = districtService.buildCriteriaFilter(criteria, cb, district);
+		Predicate filter = null;
+		if (criteria != null) {
+			filter = districtService.buildCriteriaFilter(criteria, cb, district);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -176,6 +180,12 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		}
 	}
 
+	public Page<DistrictIndexDto> getIndexPage(DistrictCriteria districtCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<DistrictIndexDto> districtIndexList = getIndexList(districtCriteria, offset, size, sortProperties);
+		long totalElementCount = count(districtCriteria);
+		return new Page<>(districtIndexList, offset, size, totalElementCount);
+	}
+
 	@Override
 	public long count(DistrictCriteria criteria) {
 
@@ -183,7 +193,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<District> root = cq.from(District.class);
 
-		Predicate filter = districtService.buildCriteriaFilter(criteria, cb, root);
+		Predicate filter = null;
+
+		if (criteria != null) {
+			filter = districtService.buildCriteriaFilter(criteria, cb, root);
+		}
 
 		if (filter != null) {
 			cq.where(filter);

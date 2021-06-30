@@ -48,4 +48,6 @@ public class CaseDirectoryPage {
       By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(13)");
   public static final By GRID_RESULTS_DATE_OF_REPORT =
       By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(15)");
+  public static final By CASE_CLASSIFICATION_COLUMNS =
+      By.cssSelector("[role=rowgroup] tr>td:nth-child(7)");
 }

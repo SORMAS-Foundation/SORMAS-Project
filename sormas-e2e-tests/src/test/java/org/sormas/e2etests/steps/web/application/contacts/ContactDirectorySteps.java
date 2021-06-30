@@ -27,6 +27,7 @@ import cucumber.api.java8.En;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -40,7 +41,9 @@ public class ContactDirectorySteps implements En {
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       AssertHelpers assertHelpers,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      DataOperations dataOperations,
+      @Named("ENVIRONMENT_URL") String environmentUrl)
+      throws InterruptedException {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -59,6 +62,17 @@ public class ContactDirectorySteps implements En {
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 NEW_CONTACT_BUTTON, FIRST_NAME_OF_CONTACT_PERSON_INPUT));
 
+    When(
+        "I click on the DETAILED radiobutton",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CONTACT_DIRECTORY_DETAILED_RADIOBUTTON));
+
+    When(
+        "I filter by ContactID",
+        () ->
+            webDriverHelpers.fillAndSubmitInWebElement(
+                CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT,
+                dataOperations.getPartialUuidFromAssociatedLink(
+                    apiState.getCreatedContact().getUuid())));
     When(
         "^I click on Line Listing button$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING));

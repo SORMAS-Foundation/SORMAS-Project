@@ -300,6 +300,7 @@ public class CaseController {
 				caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
 				saveCase(caze);
 				setResultingCase(caze, matchingContacts, matchingEventParticipants);
+				SormasUI.refreshView();
 			});
 
 			Button convertSomeButton =
@@ -337,6 +338,7 @@ public class CaseController {
 			}
 			saveCase(caze);
 			setResultingCase(caze, selectedContacts, convertToCaseSelectionField.getSelectedEventParticipants());
+			SormasUI.refreshView();
 		});
 
 		VaadinUiUtil.showModalPopupWindow(convertToCaseSelectComponent, I18nProperties.getString(Strings.headingCaseConversion));
