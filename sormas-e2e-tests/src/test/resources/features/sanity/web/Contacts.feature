@@ -36,17 +36,42 @@ Feature: Contacts end to end tests
     When API: I create a new person
     And API: I create a new contact
     And I navigate to the last created contact via the url
-    And I click on the CHOOSE SOURCE CASE button
-    And I click yes on the DISCARD UNSAVED CHANGES popup
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
     And I search for the last case uuid in the CHOOSE SOURCE window
     And I open the first found result in the CHOOSE SOURCE window
     Then I check the linked case information is correctly displayed
     When I open the Case Contacts tab of the created case via api
     Then I check the linked contact information is correctly displayed
 
+  Scenario: Change the source case contact and then delete
+    Given I log in with the user
+    Given API: I create a new person
+    Given API: I create a new case
+    When API: I create a new person
+    And API: I create a new contact
+    And I navigate to the last created contact via the url
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
+    And I search for the last case uuid in the CHOOSE SOURCE window
+    And I open the first found result in the CHOOSE SOURCE window
+    Then I check the linked case information is correctly displayed
+    When I open the Case Contacts tab of the created case via api
+    Then I check the linked contact information is correctly displayed
+    Given API: I create a new person
+    Given API: I create a new case
+    When I navigate to the last created contact via the url
+    And I click on the CHANGE CASE button
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
+    And I search for the last case uuid in the CHOOSE SOURCE window
+    And I open the first found result in the CHOOSE SOURCE window
+    Then I check the linked case information is correctly displayed
+    When I click on the Remove Case CTA
+    And I click yes on the CONFIRM REMOVAL popup from CONTACT page
+    Then I check the CHOOSE SOURCE CASE BUTTON is displayed
+
   @FollowUpVisit
   Scenario: Edit all fields from Follow-up visits  tab
-
     Given I log in with the user
     When API: I create a new person
     When API: I create a new contact
@@ -54,11 +79,9 @@ Feature: Contacts end to end tests
     And I create a new Follow-up visit
     And I select created followUp
     Then I am checking all data is saved and displayed
-#    And I am accessing the contacts
-#    Then I am switching to Follow up Visits view from contact directory
-#    And I am validating the From and To dates displayed
-#    And I am checking the created visit is displayed in the same date range
-    And I change all Follow-up visit fields and save
-    When I am accessing the Follow-up visits tab using of created contact via api
-#    And I am checking all data is saved and displayed
-
+    And I select created followUp
+    And I change Follow-up visit fields and save
+    Then I am checking all changed data is saved and displayed
+    And I am accessing the contacts
+    And I am switching to Follow up Visits view from contact directory
+    Then I am validating the From and To dates displayed

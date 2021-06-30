@@ -221,7 +221,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		final SampleIndexDto sample14 = sampleList1.get(3);
 		Assert.assertEquals(sampleOfEventParticipant.getUuid(), sample14.getUuid());
 		Assert.assertEquals(eventParticipant.getUuid(), sample14.getAssociatedEventParticipant().getUuid());
-		Assert.assertEquals(rdcf.district, sample14.getDistrict());
+		Assert.assertEquals(rdcf.district.getCaption(), sample14.getDistrict());
 
 		assertEquals(2, getSampleFacade().count(new SampleCriteria().sampleAssociationType(SampleAssociationType.CONTACT)));
 		assertEquals(
@@ -272,8 +272,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		creator.createAdditionalTest(sample.toReference());
 
 		CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact);
-		caseDataDto.setRegion(new RegionReferenceDto(rdcf.region.getUuid(), null, null));
-		caseDataDto.setDistrict(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
+		caseDataDto.setResponsibleRegion(new RegionReferenceDto(rdcf.region.getUuid(), null, null));
+		caseDataDto.setResponsibleDistrict(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		caseDataDto.setFacilityType(rdcf.facility.getType());
 		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid(), null, null));
 		caseDataDto.setReportingUser(user.toReference());

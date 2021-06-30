@@ -18,9 +18,10 @@
 
 package de.symeda.sormas.api.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.opencsv.exceptions.CsvValidationException;
 import com.opencsv.validators.LineValidator;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * CSV Line validator which fails whenever a line which starts with {@link #DEFAULT_COMMENT_LINE_PREFIX} is found.

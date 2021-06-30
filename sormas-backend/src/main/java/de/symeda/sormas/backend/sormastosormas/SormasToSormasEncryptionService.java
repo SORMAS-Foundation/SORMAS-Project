@@ -104,7 +104,7 @@ public class SormasToSormasEncryptionService {
 		X509Certificate otherCert = (X509Certificate) truststore.getCertificate(otherId);
 
 		if (otherCert == null) {
-			throw new SormasToSormasException(String.format("No certificate for id %s could be found", otherId));
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasCertNotGenerated));
 		}
 
 		switch (mode) {
@@ -119,9 +119,7 @@ public class SormasToSormasEncryptionService {
 
 	public SormasToSormasEncryptedDataDto signAndEncrypt(Object entities, String recipientId) throws SormasToSormasException {
 		try {
-			OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerAccessData()
-				.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
-
+			OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerAccessData();
 			byte[] encryptedData = cipher(Mode.ENCRYPTION, objectMapper.writeValueAsBytes(entities), recipientId);
 			return new SormasToSormasEncryptedDataDto(serverAccessData.getId(), encryptedData);
 		} catch (Exception e) {
@@ -140,9 +138,7 @@ public class SormasToSormasEncryptionService {
 		}
 	}
 
-	private String getOrganizationId() throws SormasToSormasException {
-		return serverAccessDataService.getServerAccessData()
-			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasCertNotGenerated)))
-			.getId();
+	private String getOrganizationId() {
+		return serverAccessDataService.getServerAccessData().getId();
 	}
 }

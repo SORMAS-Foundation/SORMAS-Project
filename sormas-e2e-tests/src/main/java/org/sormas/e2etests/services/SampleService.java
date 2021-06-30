@@ -54,12 +54,13 @@ public class SampleService {
   public Sample buildGeneratedSampleTestResult() {
     long currentTimeMillis = System.currentTimeMillis();
     return Sample.builder()
-        .sampleTestResults("Create test result for this sample now")
+        .sampleTestResults("Pending")
         .reportDate(LocalDate.now().minusDays(10))
         .typeOfTest("Culture")
         .testedDisease("COVID-19")
         .dateOfResult(LocalDate.now().minusDays(10))
         .timeOfResult(LocalTime.of(11, 30))
+        .laboratory("Other facility")
         .resultVerifiedByLabSupervisor("YES")
         .testResultsComment(currentTimeMillis + "Comment on new Pathogen requests or received")
         .build();
@@ -92,6 +93,22 @@ public class SampleService {
         .testedDisease("Anthrax")
         .dateOfResult(LocalDate.now())
         .timeOfResult(LocalTime.of(15, 15))
+        .resultVerifiedByLabSupervisor("NO")
+        .laboratory("Voreingestelltes Labor")
+        .testResultsComment(currentTimeMillis + "Comment on Edit Pathogen requests or received")
+        .build();
+  }
+
+  public Sample buildPathogenTestResult() {
+    long currentTimeMillis = System.currentTimeMillis();
+    return Sample.builder()
+        .reportDate(LocalDate.now().minusDays(10))
+        .typeOfTest("Histopathology")
+        .testedDisease("Anthrax")
+        .dateOfResult(LocalDate.now())
+        .timeOfResult(LocalTime.of(15, 15))
+        .laboratory("Voreingestelltes Labor")
+        .sampleTestResults("Positive")
         .resultVerifiedByLabSupervisor("NO")
         .testResultsComment(currentTimeMillis + "Comment on Edit Pathogen requests or received")
         .build();

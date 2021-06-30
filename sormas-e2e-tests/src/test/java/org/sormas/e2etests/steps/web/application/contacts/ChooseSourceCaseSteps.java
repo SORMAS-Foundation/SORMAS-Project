@@ -18,13 +18,12 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
+import static com.google.common.truth.Truth.assertWithMessage;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.assertj.core.api.SoftAssertions;
-import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 
@@ -34,10 +33,7 @@ public class ChooseSourceCaseSteps implements En {
 
   @Inject
   public ChooseSourceCaseSteps(
-      WebDriverHelpers webDriverHelpers,
-      ApiState apiState,
-      AssertHelpers assertHelpers,
-      final SoftAssertions softly) {
+      WebDriverHelpers webDriverHelpers, ApiState apiState, final SoftAssertions softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -52,25 +48,31 @@ public class ChooseSourceCaseSteps implements En {
         "^I open the first found result in the CHOOSE SOURCE window$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
-          webDriverHelpers.clickWhileOtherButtonIsDisplayed(
-              SOURCE_CASE_WINDOW_CONFIRM_BUTTON, CHANGE_CASE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CASE_CHANGE_POPUP_SUCCESS_MESSAGE);
         });
 
     When(
-        "I click on the CHOOSE SOURCE CASE button",
+        "I click on the CHOOSE SOURCE CASE button from CONTACT page",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
-                CHOOSE_SOURCE_CASE_BUTTON, DISCARD_POPUP_YES_BUTTON));
+                CHOOSE_SOURCE_CASE_BUTTON, POPUP_YES_BUTTON));
 
     When(
-        "I click yes on the DISCARD UNSAVED CHANGES popup",
+        "I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
-                DISCARD_POPUP_YES_BUTTON, SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON));
+                POPUP_YES_BUTTON, SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON));
 
     Then(
         "I check the linked case information is correctly displayed",
         () -> {
+          // this substring method will return the first 6 characters from the UUID.
+          // those characters are used in UI as the Case ID.
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              CASE_ID_LABEL, apiState.getCreatedCase().getUuid().substring(0, 6));
           String casePerson = webDriverHelpers.getTextFromWebElement(CASE_PERSON_LABEL);
           String caseDisease =
               (webDriverHelpers.getTextFromWebElement(CASE_DISEASE_LABEL).equals("COVID-19"))
@@ -103,5 +105,30 @@ public class ChooseSourceCaseSteps implements En {
               .isEqualToIgnoringCase(caseId);
           softly.assertAll();
         });
+
+    When(
+        "I click on the CHANGE CASE button",
+        () ->
+            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+                CHANGE_CASE_BUTTON, POPUP_YES_BUTTON));
+
+    When(
+        "I click on the Remove Case CTA",
+        () ->
+            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+                REMOVE_CASE_CTA_LINK, POPUP_YES_BUTTON));
+
+    Then(
+        "I check the CHOOSE SOURCE CASE BUTTON is displayed",
+        () ->
+            assertWithMessage("The expected element was not displayed")
+                .that(webDriverHelpers.isElementVisibleWithTimeout(CHOOSE_SOURCE_CASE_BUTTON, 1))
+                .isTrue());
+
+    When(
+        "I click yes on the CONFIRM REMOVAL popup from CONTACT page",
+        () ->
+            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+                POPUP_YES_BUTTON, CHOOSE_SOURCE_CASE_BUTTON));
   }
 }

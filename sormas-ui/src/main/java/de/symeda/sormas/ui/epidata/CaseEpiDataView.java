@@ -101,7 +101,7 @@ public class CaseEpiDataView extends AbstractCaseView {
 				sourceContactsLayout.addComponent(contactCreationDisclaimer);
 			}
 
-			if (sourceContactList.getSize() > 0) {
+			if (!sourceContactList.isEmpty()) {
 				epiDataComponent.getWrappedComponent().disableContactWithSourceCaseKnownField();
 			}
 

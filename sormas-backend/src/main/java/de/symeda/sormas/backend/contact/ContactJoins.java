@@ -32,6 +32,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
@@ -71,6 +72,9 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 	private Join<Case, EventParticipant> caseEventParticipants;
 	private Join<EventParticipant, Event> event;
 	private Join<EventParticipant, Event> caseEvent;
+
+	private Join<Contact, Sample> samples;
+	private Join<Sample, Facility> sampleLabs;
 
 	private Join<Contact, Visit> visits;
 	private Join<Visit, Symptoms> visitSymptoms;
@@ -386,5 +390,21 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 
 	public void setShareInfoContacts(Join<Contact, SormasToSormasShareInfo> shareInfoContacts) {
 		this.shareInfoContacts = shareInfoContacts;
+	}
+
+	public Join<Contact, Sample> getSamples() {
+		return getOrCreate(samples, Case.SAMPLES, JoinType.LEFT, this::setSamples);
+	}
+
+	private void setSamples(Join<Contact, Sample> samples) {
+		this.samples = samples;
+	}
+
+	public Join<Sample, Facility> getSampleLabs() {
+		return getOrCreate(sampleLabs, Sample.LAB, JoinType.LEFT, getSamples(), this::setSampleLabs);
+	}
+
+	private void setSampleLabs(Join<Sample, Facility> sampleLabs) {
+		this.sampleLabs = sampleLabs;
 	}
 }

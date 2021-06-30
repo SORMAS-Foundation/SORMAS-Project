@@ -944,14 +944,14 @@ public class DevModeView extends AbstractConfigurationView {
 				caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 				caze.setHealthFacility(noFacilityRef);
 				caze.setFacilityType(null);
-				caze.setRegion(config.getRegion());
-				caze.setDistrict(config.getDistrict());
+				caze.setResponsibleRegion(config.getRegion());
+				caze.setResponsibleDistrict(config.getDistrict());
 			} else {
 				FacilityIndexDto healthFacility = random(healthFacilities);
 				caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
-				caze.setRegion(healthFacility.getRegion());
-				caze.setDistrict(healthFacility.getDistrict());
-				caze.setCommunity(healthFacility.getCommunity());
+				caze.setResponsibleRegion(healthFacility.getRegion());
+				caze.setResponsibleDistrict(healthFacility.getDistrict());
+				caze.setResponsibleCommunity(healthFacility.getCommunity());
 				caze.setHealthFacility(healthFacility.toReference());
 				caze.setFacilityType(healthFacility.getType());
 				caze.setReportLat(healthFacility.getLatitude());

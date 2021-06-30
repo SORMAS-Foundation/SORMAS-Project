@@ -18,10 +18,15 @@
 
 package org.sormas.e2etests.services;
 
+import static org.sormas.e2etests.enums.AvailableAndCooperative.*;
+import static org.sormas.e2etests.enums.YesNoUnknownOptions.*;
+
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import org.sormas.e2etests.enums.SourceOfTemperature;
+import org.sormas.e2etests.pojo.web.*;
 import org.sormas.e2etests.pojo.web.FollowUpVisit;
 
 public class FollowUpVisitService {
@@ -33,35 +38,53 @@ public class FollowUpVisitService {
     this.faker = faker;
   }
 
+  public Visit buildVisit() {
+    return Visit.builder()
+        .personAvailableAndCooperative(AVAILABLE_AND_COOPERATIVE.getAvailable())
+        .dateOfVisit(LocalDate.now().minusDays(1))
+        .timeOfVisit(LocalTime.now())
+        .visitRemarks(faker.book().title())
+        .currentBodyTemperature("35.5")
+        .sourceOfBodyTemperature(SourceOfTemperature.getRandomTemperature())
+        .setClearToNo("Set cleared to No")
+        .chillsAndSweats(YES.toString())
+        .feelingIll(YES.toString())
+        .fever(YES.toString())
+        .comments(faker.book().title())
+        .firstSymptom("Fever")
+        .dateOfSymptom(LocalDate.now().minusDays(2))
+        .build();
+  }
+
   public FollowUpVisit buildGeneratedFollowUpVisit() {
     return FollowUpVisit.builder()
-        .personAvailableAndCooperative("AVAILABLE AND COOPERATIVE")
+        .personAvailableAndCooperative(AVAILABLE_AND_COOPERATIVE.getAvailable())
         .dateOfVisit(LocalDate.now())
-        .timeOfVisit("10:15")
-        .visitRemarks("visit remark" + currentTimeMillis)
-        .currentBodyTemperature("35.0 °C")
+        .timeOfVisit(LocalTime.now())
+        .visitRemarks(faker.book().title())
+        .currentBodyTemperature("35")
         .sourceOfBodyTemperature("oral")
-        .chillsOrSweats("YES")
-        .feelingIll("YES")
-        .fever("YES")
-        .headache("NO")
-        .musclePain("NO")
-        .shivering("NO")
-        .acuteRespiratoryDistressSyndrome("NO")
-        .cough("NO")
-        .difficultyBreathing("NO")
-        .oxygenSaturation94("UNKNOWN")
-        .pneumoniaClinicalRadiologic("UNKNOWN")
-        .rapidBreathing("UNKNOWN")
-        .respiratoryDiseaseRequiringVentilation("UNKNOWN")
-        .runnyNose("UNKNOWN")
-        .soreThroatPharyngitis("UNKNOWN")
-        .fastHeartRate("NO")
-        .diarrhea("YES")
-        .nausea("NO")
-        .newLossOfSmell("YES")
-        .newLossOfTaste("NO")
-        .otherClinicalSymptoms("UNKNOWN")
+        .chillsOrSweats(YES.toString())
+        .feelingIll(YES.toString())
+        .fever(YES.toString())
+        .headache(NO.toString())
+        .musclePain(NO.toString())
+        .shivering(NO.toString())
+        .acuteRespiratoryDistressSyndrome(NO.toString())
+        .cough(NO.toString())
+        .difficultyBreathing(NO.toString())
+        .oxygenSaturation94(UNKNOW.toString())
+        .pneumoniaClinicalRadiologic(UNKNOW.toString())
+        .rapidBreathing(UNKNOW.toString())
+        .respiratoryDiseaseRequiringVentilation(UNKNOW.toString())
+        .runnyNose(UNKNOW.toString())
+        .soreThroatPharyngitis(UNKNOW.toString())
+        .fastHeartRate(NO.toString())
+        .diarrhea(YES.toString())
+        .nausea(NO.toString())
+        .newLossOfSmell(YES.toString())
+        .newLossOfTaste(NO.toString())
+        .otherClinicalSymptoms(UNKNOW.toString())
         .comments("Automated -comment" + LocalTime.now())
         .firstSymptom("Diarrhea")
         .dateOfSymptomOnset(LocalDate.now().minusDays(1))
@@ -70,10 +93,10 @@ public class FollowUpVisitService {
 
   public FollowUpVisit buildEditFollowUpVisit() {
     return FollowUpVisit.builder()
-        .personAvailableAndCooperative("UNAVAILABLE")
+        .personAvailableAndCooperative(UNAVAILABLE.getAvailable())
         .dateOfVisit(LocalDate.now())
-        .timeOfVisit("10:15")
-        .visitRemarks("Automated - visit remark" + currentTimeMillis)
+        .timeOfVisit(LocalTime.now())
+        .visitRemarks("Automated changed - visit remark" + currentTimeMillis)
         .build();
   }
 }

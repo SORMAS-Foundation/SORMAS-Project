@@ -61,4 +61,5 @@ public class CreateNewVisitPage {
   public static final By FIRSTSYMPTOM_COMBOBOX = By.cssSelector("#onsetSymptom div");
   public static final By DATE_OF_SYMPTOM_ONSET_INPUT = By.cssSelector("#onsetDate input");
   public static final By SAVE_VISIT_BUTTON = By.id("commit");
+  public static final By DISCARD_BUTTON = By.id("discard");
 }

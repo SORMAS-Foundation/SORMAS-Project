@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.region;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -7,9 +9,6 @@ import javax.persistence.OrderBy;
 
 import de.symeda.sormas.api.region.ContinentReferenceDto;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
-import org.docx4j.org.apache.xpath.axes.SubContextList;
-
-import java.util.List;
 
 @Entity
 public class Continent extends InfrastructureAdo {

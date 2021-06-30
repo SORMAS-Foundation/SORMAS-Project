@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewVisitPage.*;
 import static org.sormas.e2etests.pages.application.contacts.FollowUpVisitsTabPage.*;
 
@@ -25,6 +26,7 @@ import cucumber.api.java8.En;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pojo.web.FollowUpVisit;
@@ -42,10 +44,9 @@ public class FollowUpVisitsTabSteps implements En {
       WebDriverHelpers webDriverHelpers,
       FollowUpVisitService followUpVisitService,
       ApiState apiState,
+      final SoftAssertions softly,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
-
-    When("I am checking all data is saved and displayed", () -> {});
 
     When(
         "^I am accessing the Follow-up visits tab using of created contact via api$",
@@ -64,12 +65,5 @@ public class FollowUpVisitsTabSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_VISIT_BUTTON);
         });
-  }
-
-  public FollowUpVisit collectFollowUpData() {
-    return FollowUpVisit.builder()
-        .personAvailableAndCooperative(
-            webDriverHelpers.getValueFromWebElement(PERSON_AVAILABLE_AND_COOPERATIVE))
-        .build();
   }
 }

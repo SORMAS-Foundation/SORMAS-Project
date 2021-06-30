@@ -382,9 +382,9 @@ public class SampleController {
 			editView.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
 		}
 
-		editView.getWrappedComponent()
-			.getField(SampleDto.SAMPLE_PURPOSE)
-			.setEnabled(dto.getReferredTo() == null || dto.getSamplePurpose() != SamplePurpose.EXTERNAL);
+		if (dto.getReferredTo() != null || dto.getSamplePurpose() == SamplePurpose.EXTERNAL) {
+			editView.getWrappedComponent().getField(SampleDto.SAMPLE_PURPOSE).setEnabled(false);
+		}
 
 		return editView;
 	}

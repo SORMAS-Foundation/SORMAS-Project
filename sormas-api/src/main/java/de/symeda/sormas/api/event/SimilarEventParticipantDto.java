@@ -32,6 +32,7 @@ public class SimilarEventParticipantDto extends PseudonymizableIndexDto implemen
 	private EventStatus eventStatus;
 	private String eventTitle;
 	private Date startDate;
+	private Boolean isInJurisdiction;
 
 	public SimilarEventParticipantDto(
 		String uuid,
@@ -41,7 +42,8 @@ public class SimilarEventParticipantDto extends PseudonymizableIndexDto implemen
 		String eventUuid,
 		EventStatus eventStatus,
 		String eventTitle,
-		Date startDate) {
+		Date startDate,
+		boolean isInJurisdiction) {
 
 		this.uuid = uuid;
 		this.firstName = firstName;
@@ -51,6 +53,7 @@ public class SimilarEventParticipantDto extends PseudonymizableIndexDto implemen
 		this.eventStatus = eventStatus;
 		this.eventTitle = eventTitle;
 		this.startDate = startDate;
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -115,5 +118,9 @@ public class SimilarEventParticipantDto extends PseudonymizableIndexDto implemen
 
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
+	}
+
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 }

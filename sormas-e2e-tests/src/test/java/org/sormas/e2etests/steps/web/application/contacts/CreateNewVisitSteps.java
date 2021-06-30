@@ -18,27 +18,34 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewVisitPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
+import static org.sormas.e2etests.pages.application.contacts.FollowUpVisitsTabPage.CONTACTS_LIST_BUTTON;
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
+import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.FollowUpVisit;
 import org.sormas.e2etests.services.FollowUpVisitService;
+import org.sormas.e2etests.state.ApiState;
 
 public class CreateNewVisitSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static FollowUpVisit followUpVisit;
+  public static FollowUpVisit followUpEditVisit;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
   public CreateNewVisitSteps(
-      WebDriverHelpers webDriverHelpers, FollowUpVisitService followUpVisitService) {
+      WebDriverHelpers webDriverHelpers,
+      FollowUpVisitService followUpVisitService,
+      ApiState apiState,
+      final SoftAssertions softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -47,12 +54,9 @@ public class CreateNewVisitSteps implements En {
           followUpVisit = followUpVisitService.buildGeneratedFollowUpVisit();
           webDriverHelpers.waitForPageLoaded();
           selectPersonAvailableAndCooperative(followUpVisit.getPersonAvailableAndCooperative());
-          fillDateAndTimeVisit(
-              followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit(),
-              followUpVisitService.buildGeneratedFollowUpVisit().getTimeOfVisit());
+          fillDateAndTimeVisit(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
           fillVisitRemark(followUpVisit.getVisitRemarks());
-          // selectBodyTemperature(followUpVisit.getCurrentBodyTemperature());
-
+          selectBodyTemperature(followUpVisit.getCurrentBodyTemperature());
           selectSourceOfBodyTemperature(followUpVisit.getSourceOfBodyTemperature());
           selectChillsOrSweats(followUpVisit.getChillsOrSweats());
           selectFeelingIll(followUpVisit.getFeelingIll());
@@ -80,7 +84,6 @@ public class CreateNewVisitSteps implements En {
           fillComments(followUpVisit.getComments());
           selectFirstSymptom(followUpVisit.getFirstSymptom());
           fillDateOfFirstSymptom(followUpVisit.getDateOfSymptomOnset());
-
           webDriverHelpers.clickOnWebElementBySelector(SAVE_VISIT_BUTTON);
         });
 
@@ -89,20 +92,54 @@ public class CreateNewVisitSteps implements En {
         () -> {
           final FollowUpVisit actualFollowUpVisit = collectFollowUpData();
           Truth.assertThat(followUpVisit).isEqualTo(actualFollowUpVisit);
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON);
         });
 
     And(
-        "^I change all Follow-up visit fields and save$",
+        "^I change Follow-up visit fields and save$",
         () -> {
-          followUpVisit = followUpVisitService.buildEditFollowUpVisit();
+          followUpEditVisit = followUpVisitService.buildEditFollowUpVisit();
           webDriverHelpers.waitForPageLoaded();
-          selectPersonAvailableAndCooperative(followUpVisit.getPersonAvailableAndCooperative());
-          fillDateAndTimeVisit(
-              followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit(),
-              followUpVisitService.buildGeneratedFollowUpVisit().getTimeOfVisit());
-          fillVisitRemark(followUpVisit.getVisitRemarks());
-          // selectBodyTemperature(followUpVisit.getCurrentBodyTemperature());
+          selectPersonAvailableAndCooperative(followUpEditVisit.getPersonAvailableAndCooperative());
+          fillDateAndTimeVisit(followUpVisitService.buildEditFollowUpVisit().getDateOfVisit());
+          fillVisitRemark(followUpEditVisit.getVisitRemarks());
+        });
 
+    Then(
+        "^I am checking all changed data is saved and displayed$",
+        () -> {
+          final FollowUpVisit editedFollowUpVisit = collectEditedFollowUpData();
+          Truth.assertThat(followUpEditVisit).isEqualTo(editedFollowUpVisit);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_VISIT_BUTTON);
+        });
+
+    And(
+        "^I am accessing the contacts$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONTACTS_LIST_BUTTON);
+        });
+
+    And(
+        "^I am switching to Follow up Visits view from contact directory$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_VISITS_BUTTON);
+        });
+
+    Then(
+        "^I am validating the From and To dates displayed$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          String uuid = apiState.getCreatedContact().getUuid();
+          fillDateFrom(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
+          fillDateTo(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
+          webDriverHelpers.clearAndFillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, uuid);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CONTACT_GRID_RESULTS_ROWS);
+          softly
+              .assertThat(webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))
+              .isEqualTo(1);
+          softly.assertAll();
         });
   }
 
@@ -118,10 +155,12 @@ public class CreateNewVisitSteps implements En {
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 PERSON_AVAILABLE_AND_COOPERATIVE))
         .dateOfVisit(parsedDateOfVisit)
-        .timeOfVisit(webDriverHelpers.getValueFromCombobox(TIME_OF_VISIT_INPUT))
+        .timeOfVisit(followUpVisit.getTimeOfVisit())
         .visitRemarks(webDriverHelpers.getValueFromWebElement(VISIT_REMARKS_INPUT))
         .currentBodyTemperature(
-            webDriverHelpers.getValueFromCombobox(CURRENT_BODY_TEMPERATURE_COMBOBOX))
+            webDriverHelpers
+                .getValueFromCombobox(CURRENT_BODY_TEMPERATURE_COMBOBOX)
+                .substring(0, 2))
         .sourceOfBodyTemperature(
             webDriverHelpers.getValueFromCombobox(SOURCE_BODY_TEMPERATURE_COMBOBOX))
         .chillsOrSweats(
@@ -164,6 +203,21 @@ public class CreateNewVisitSteps implements En {
         .comments(webDriverHelpers.getValueFromWebElement(COMMENTS_INPUT))
         .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRSTSYMPTOM_COMBOBOX))
         .dateOfSymptomOnset(parsedDateOfSymptomOnset)
+        .build();
+  }
+
+  public FollowUpVisit collectEditedFollowUpData() {
+    String dateOfVisit = webDriverHelpers.getValueFromWebElement(DATE_AND_TIME_OF_VISIT_INPUT);
+    LocalDate parsedDateOfVisit = LocalDate.parse(dateOfVisit, DATE_FORMATTER);
+    String dateOfSymptomOnset =
+        webDriverHelpers.getValueFromWebElement(DATE_OF_SYMPTOM_ONSET_INPUT);
+    return FollowUpVisit.builder()
+        .personAvailableAndCooperative(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                PERSON_AVAILABLE_AND_COOPERATIVE))
+        .dateOfVisit(parsedDateOfVisit)
+        .timeOfVisit(followUpEditVisit.getTimeOfVisit())
+        .visitRemarks(webDriverHelpers.getValueFromWebElement(VISIT_REMARKS_INPUT))
         .build();
   }
 
@@ -260,8 +314,16 @@ public class CreateNewVisitSteps implements En {
         DATE_OF_SYMPTOM_ONSET_INPUT, DATE_FORMATTER.format(dateOfSymptomOnset));
   }
 
+  public void fillDateFrom(LocalDate from) {
+    webDriverHelpers.clearAndFillInWebElement(FROM_INPUT, DATE_FORMATTER.format(from));
+  }
+
+  public void fillDateTo(LocalDate to) {
+    webDriverHelpers.clearAndFillInWebElement(TO_INPUT, DATE_FORMATTER.format(to));
+  }
+
   public void fillVisitRemark(String visitRemark) {
-    webDriverHelpers.fillInWebElement(VISIT_REMARKS_INPUT, "visit remark" + LocalTime.now());
+    webDriverHelpers.clearAndFillInWebElement(VISIT_REMARKS_INPUT, visitRemark);
   }
 
   public void selectSoreThroat(String soreThroat) {
@@ -297,9 +359,8 @@ public class CreateNewVisitSteps implements En {
     webDriverHelpers.fillInWebElement(COMMENTS_INPUT, symptomsComments);
   }
 
-  public void fillDateAndTimeVisit(LocalDate dateOfSymptomOnset, String timeOfVisit) {
+  public void fillDateAndTimeVisit(LocalDate dateOfSymptomOnset) {
     webDriverHelpers.fillInWebElement(
         DATE_AND_TIME_OF_VISIT_INPUT, DATE_FORMATTER.format(dateOfSymptomOnset));
-    webDriverHelpers.selectFromCombobox(TIME_OF_VISIT_INPUT, timeOfVisit);
   }
 }
