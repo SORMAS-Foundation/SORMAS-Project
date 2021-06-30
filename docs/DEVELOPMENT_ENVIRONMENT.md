@@ -15,12 +15,14 @@ Please follow the [Server Setup Instructions](SERVER_SETUP.md) to set up a local
 - Open Git Bash and execute the following command to ensure that rebase is used when pulling the development branch rather than merge: `git config --global branch.development.rebase true`
 
 ## Step 3: Install Java
-Download and install the **Java 11 JDK** (not JRE) for your operating system. We suggest using [Zulu OpenJDK](https://www.azul.com/downloads/?version=java-11-lts&package=jdk). If you're running Linux, please refer to the [official documentation](https://docs.azul.com/zulu/zuludocs/ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm) on how to install Zulu OpenJDK on your system. If you plan to work on the Android App as well, you will also need the **Java 8 JDK** to use with Android Studio.
+Download and install the **Java 11 JDK** (not JRE) for your operating system.
+We suggest using [Zulu OpenJDK](https://www.azul.com/downloads/?version=java-11-lts&package=jdk). If you're running Linux, please refer to the [official documentation](https://docs.azul.com/zulu/zuludocs/ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm) on how to install Zulu OpenJDK on your system.
+If you plan to work on the Android App as well, you will also need the **Java 8 JDK** to use with Android Studio.
 
 ## Step 4: Install and Configure Your IDE
 
 ### IntelliJ
-- Download and install the latest [IntelliJ IDEA Ultimate](https://www.jetbrains.com/lp/intellij-frameworks/); (newer than version of 2020-04-15 to enable debugging, see https://youtrack.jetbrains.com/issue/IDEA-216528)
+- Download and install the latest [IntelliJ IDEA Ultimate](https://www.jetbrains.com/lp/intellij-frameworks/); (newer than version of 2020-04-15 to enable debugging, see <https://youtrack.jetbrains.com/issue/IDEA-216528>)
 - Set the project SDK to the installed JDK
 - *Optional:* Clone the SORMAS-Open repository if you haven't done so already
 - Open the project in Intellij; make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
@@ -77,7 +79,7 @@ Download and install the **Java 11 JDK** (not JRE) for your operating system. We
 ## Step 5: Configure Code Formatting and Import Settings
 In order to ensure a consistent code style and prevent so-called edit wars, we have set up custom configuration files for automatic code formatting and import ordering. Please make sure to adhere to the following steps for your IDE(s) before you start developing.
 
-### IntelliJ and Android Studio
+### IntelliJ and Android Studio Settings
 - Install the [Eclipse Code Formatter for Intellij/Android Studio plugin](https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
 - Open the plugin settings via `File -> Settings -> Other Settings -> Eclipse Code Formatter` and select `Use the Eclipse Code Formatter`
 - Under `Eclipse formatter config`, choose `Eclipse workspace/project folder or config file` and select `sormas-base/java-formatter-profile.xml`
@@ -91,7 +93,7 @@ Optional, but strongly recommended:
 - Install the [Save Actions plugin](https://plugins.jetbrains.com/plugin/7642-save-actions) that automatically applies code formatting and import reordering whenever you save a file - otherwise you will manually have to do so (by default with Ctrl+Alt+L)
 - Open the plugin settings via `File -> Settings -> Other Settings -> Save Actions` and make sure that the *first three checkboxes* under `General` and the *first two checkboxes* under `Formatting Actions` are selected
 
-### Eclipse
+### Eclipse Settings
 - Open `Window -> Preferences`
 - Navigate to `Java -> Code Style -> Formatter`, import `sormas-base/java-formatter-profile.xml` and apply the changes
 - Navigate to `Java -> Code Style -> Organize Imports` and import `sormas-base/java-importorder-profile.importorder`
@@ -119,4 +121,4 @@ Optional, but strongly recommended:
 
 6. M2_HOME need to be set. By default, for newer version, it is set to MAVEN_HOME. But Ant script is looking for M2_HOME
 
-7. For eclipse formatted plugin, there is an issue for Idea: https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter - `cannot save settings Path to custom eclipse folder is not valid` - it works only when settings were saved from down to up. And not vice versa.
+7. For eclipse formatted plugin, there is an issue for Idea: <https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter> - `cannot save settings Path to custom eclipse folder is not valid` - it works only when settings were saved from down to up. And not vice versa.
