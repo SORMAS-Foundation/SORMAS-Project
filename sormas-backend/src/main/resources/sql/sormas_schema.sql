@@ -7478,10 +7478,10 @@ ALTER TABLE testreport ADD CONSTRAINT fk_testreport_labmessage_id FOREIGN KEY (l
 DO $$
     DECLARE rec RECORD;
     BEGIN
-        FOR rec IN SELECT id, labname, labexternalid, labpostalcode, labcity, testtype, testdatetime, testresult, testresultverified, testresulttext FROM labmessage
+        FOR rec IN SELECT id, labname, labexternalid, labpostalcode, labcity, testtype, testdatetime, testresult, testresultverified, testresulttext, pathogentest_id FROM labmessage
              LOOP
-                INSERT INTO testreport(id, uuid, changedate, creationdate, labmessage_id, testlabname, testlabexternalid, testlabpostalcode, testlabcity, testtype, testdatetime, testresult, testresultverified, testresulttext)
-                VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), rec.id, rec.labname, rec.labexternalid, rec.labpostalcode, rec.labcity, rec.testtype, rec.testdatetime, rec.testresult, rec.testresultverified, rec.testresulttext);
+                INSERT INTO testreport(id, uuid, changedate, creationdate, labmessage_id, testlabname, testlabexternalid, testlabpostalcode, testlabcity, testtype, testdatetime, testresult, testresultverified, testresulttext, pathogentest_id)
+                VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), rec.id, rec.labname, rec.labexternalid, rec.labpostalcode, rec.labcity, rec.testtype, rec.testdatetime, rec.testresult, rec.testresultverified, rec.testresulttext, rec.pathogentest_id);
             END LOOP;
         END;
 $$ LANGUAGE plpgsql;
