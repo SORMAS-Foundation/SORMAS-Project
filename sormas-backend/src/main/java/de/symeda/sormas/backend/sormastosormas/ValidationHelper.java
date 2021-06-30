@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import de.symeda.sormas.api.HasUuid;
@@ -75,14 +75,13 @@ public class ValidationHelper {
 		try {
 			return saveOperation.get();
 		} catch (ValidationRuntimeException exception) {
-			Map<ValidationErrorGroup, ValidationErrors> parentError = new HashMap<>(1);
+			List<ValidationErrors> errors = new ArrayList<>();
 
-			parentError.put(
-				parentValidationGroup,
-				ValidationErrors
-					.create(new ValidationErrorGroup(validationGroupCaption), new ValidationErrorMessage(Validations.sormasToSormasSaveException, exception.getMessage())));
+			ValidationErrors validationErrors = new ValidationErrors(parentValidationGroup);
+			validationErrors.add(new ValidationErrorGroup(validationGroupCaption), new ValidationErrorMessage(Validations.sormasToSormasSaveException, exception.getMessage()));
+			errors.add(validationErrors);
 
-			throw new SormasToSormasValidationException(parentError, exception);
+			throw new SormasToSormasValidationException(errors, exception);
 		}
 	}
 }

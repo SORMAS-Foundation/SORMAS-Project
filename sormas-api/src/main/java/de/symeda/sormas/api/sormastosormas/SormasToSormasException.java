@@ -19,6 +19,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
 import java.util.Map;
 
 public class SormasToSormasException extends Exception implements SormasToSormasI18nMessage {
@@ -29,7 +30,7 @@ public class SormasToSormasException extends Exception implements SormasToSormas
 
 	private final Object[] args;
 
-	private Map<ValidationErrorGroup, ValidationErrors> errors;
+	private List<ValidationErrors> errors;
 
 	public SormasToSormasException(String message, String i18nProperty, Object... args) {
 		super(message);
@@ -37,7 +38,7 @@ public class SormasToSormasException extends Exception implements SormasToSormas
 		this.args = args;
 	}
 
-	public SormasToSormasException(String message, String languageKey, Map<ValidationErrorGroup, ValidationErrors> errors, Object... args) {
+	public SormasToSormasException(String message, String languageKey, List<ValidationErrors> errors, Object... args) {
 		super(message);
 		this.i18nTag = languageKey;
 		this.args = args;
@@ -65,11 +66,11 @@ public class SormasToSormasException extends Exception implements SormasToSormas
 		}
 	}
 
-	public Map<ValidationErrorGroup, ValidationErrors> getErrors() {
+	public List<ValidationErrors> getErrors() {
 		return errors;
 	}
 
-	public void setErrors(Map<ValidationErrorGroup, ValidationErrors> errors) {
+	public void setErrors(List<ValidationErrors> errors) {
 		this.errors = errors;
 	}
 

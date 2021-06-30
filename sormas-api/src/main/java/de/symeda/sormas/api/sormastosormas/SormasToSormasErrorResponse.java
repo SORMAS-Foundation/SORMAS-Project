@@ -16,7 +16,7 @@
 package de.symeda.sormas.api.sormastosormas;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.List;
 
 public class SormasToSormasErrorResponse implements Serializable {
 
@@ -24,18 +24,18 @@ public class SormasToSormasErrorResponse implements Serializable {
 
 	private String message;
 
-	private String property;
+	private String i18nTag;
 
 	private Object[] args;
 
-	private Map<ValidationErrorGroup, ValidationErrors> errors;
+	private List<ValidationErrors> errors;
 
 	public SormasToSormasErrorResponse() {
 	}
 
-	public SormasToSormasErrorResponse(String message, String property, Map<ValidationErrorGroup, ValidationErrors> errors, Object[] args) {
+	public SormasToSormasErrorResponse(String message, String i18nTag, List<ValidationErrors> errors, Object[] args) {
 		this.message = message;
-		this.property = property;
+		this.i18nTag = i18nTag;
 		this.errors = errors;
 		this.args = args;
 	}
@@ -48,19 +48,19 @@ public class SormasToSormasErrorResponse implements Serializable {
 		this.message = message;
 	}
 
-	public String getProperty() {
-		return property;
+	public String getI18nTag() {
+		return i18nTag;
 	}
 
-	public void setProperty(String property) {
-		this.property = property;
+	public void setI18nTag(String i18nTag) {
+		this.i18nTag = i18nTag;
 	}
 
-	public Map<ValidationErrorGroup, ValidationErrors> getErrors() {
+	public List<ValidationErrors> getErrors() {
 		return errors;
 	}
 
-	public void setErrors(Map<ValidationErrorGroup, ValidationErrors> errors) {
+	public void setErrors(List<ValidationErrors> errors) {
 		this.errors = errors;
 	}
 

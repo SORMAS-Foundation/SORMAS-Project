@@ -17,9 +17,8 @@ package de.symeda.sormas.backend.sormastosormas.contact;
 
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -31,7 +30,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
-import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
@@ -49,7 +47,7 @@ public class ReceivedContactProcessor
 	@Override
 	public ProcessedContactData processReceivedData(SormasToSormasContactDto receivedContact, ContactDto existingContact)
 		throws SormasToSormasValidationException {
-		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 
 		PersonDto person = receivedContact.getPerson();
 		ContactDto contact = receivedContact.getEntity();
@@ -65,12 +63,12 @@ public class ReceivedContactProcessor
 		contactValidationErrors.addAll(contactDataErrors);
 
 		if (contactValidationErrors.hasError()) {
-			validationErrors.put(buildContactValidationGroupName(contact), contactValidationErrors);
+			validationErrors.add(new ValidationErrors(buildContactValidationGroupName(contact), contactValidationErrors));
 		}
 
 		if (samples != null && samples.size() > 0) {
-			Map<ValidationErrorGroup, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
-			validationErrors.putAll(sampleErrors);
+			List<ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
+			validationErrors.addAll(sampleErrors);
 		}
 
 		if (validationErrors.size() > 0) {
@@ -82,12 +80,12 @@ public class ReceivedContactProcessor
 
 	@Override
 	public SormasToSormasContactPreview processReceivedPreview(SormasToSormasContactPreview preview) throws SormasToSormasValidationException {
-		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 
 		ValidationErrors contactErrors = dataProcessorHelper.processContactPreview(preview);
 
 		if (contactErrors.hasError()) {
-			validationErrors.put(buildContactValidationGroupName(preview), contactErrors);
+			validationErrors.add(new ValidationErrors(buildContactValidationGroupName(preview), contactErrors));
 		}
 
 		if (validationErrors.size() > 0) {

@@ -15,24 +15,24 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import java.util.Map;
+import java.util.List;
 
 public class SormasToSormasValidationException extends Exception {
 
 	private static final long serialVersionUID = -6018922765225477534L;
 
-	private final Map<ValidationErrorGroup, ValidationErrors> errors;
+	private final List<ValidationErrors> errors;
 
-	public SormasToSormasValidationException(Map<ValidationErrorGroup, ValidationErrors> errors) {
+	public SormasToSormasValidationException(List<ValidationErrors> errors) {
 		this.errors = errors;
 	}
 
-	public SormasToSormasValidationException(Map<ValidationErrorGroup, ValidationErrors> errors, Throwable cause) {
+	public SormasToSormasValidationException(List<ValidationErrors> errors, Throwable cause) {
 		super("Validation error", cause);
 		this.errors = errors;
 	}
 
-	public Map<ValidationErrorGroup, ValidationErrors> getErrors() {
+	public List<ValidationErrors> getErrors() {
 		return errors;
 	}
 }

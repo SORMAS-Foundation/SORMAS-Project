@@ -21,9 +21,7 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildLabM
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -81,13 +79,14 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 	public void saveLabMessages(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
 		LabMessageDto[] sharedLabMessages = encryptionService.decryptAndVerify(encryptedData, LabMessageDto[].class);
 
-		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 		List<LabMessageDto> labMessagesToSave = new ArrayList<>(sharedLabMessages.length);
 
 		for (LabMessageDto labMessage : sharedLabMessages) {
 			ValidationErrors errors = validateSharedLabMessage(labMessage);
 			if (errors.hasError()) {
-				validationErrors.put(buildLabMessageValidationGroupName(labMessage), errors);
+				errors.setGroup(buildLabMessageValidationGroupName(labMessage));
+				validationErrors.add(errors);
 			}
 
 			labMessagesToSave.add(labMessage);

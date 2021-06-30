@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -53,7 +54,7 @@ import de.symeda.sormas.backend.util.ClientHelper;
 
 public class SormasToSormasRestClient {
 
-	public static final String SORMAS_REST_URL_TEMPLATE = "https://%s" + SORMAS_REST_PATH + "%s";
+	public static final String SORMAS_REST_URL_TEMPLATE = "http://%s" + SORMAS_REST_PATH + "%s";
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasRestClient.class);
 	private final ServerAccessDataService serverAccessDataService;
 
@@ -138,12 +139,12 @@ public class SormasToSormasRestClient {
 		if (statusCode != HttpStatus.SC_NO_CONTENT && statusCode != HttpStatus.SC_OK) {
 			String errorMessage = response.readEntity(String.class);
 			String errorProperty = null;
-			Map<ValidationErrorGroup, ValidationErrors> errors = null;
+			List<ValidationErrors> errors = null;
 
 			try {
 				SormasToSormasErrorResponse errorResponse = mapper.readValue(errorMessage, SormasToSormasErrorResponse.class);
-				errorMessage = Optional.ofNullable(errorResponse.getProperty()).orElse(I18nProperties.getString(Strings.errorSormasToSormasShare));
-				errorProperty = Optional.ofNullable(errorResponse.getProperty()).orElse(Strings.errorSormasToSormasShare);
+				errorMessage = Optional.ofNullable(errorResponse.getI18nTag()).orElse(I18nProperties.getString(Strings.errorSormasToSormasShare));
+				errorProperty = Optional.ofNullable(errorResponse.getI18nTag()).orElse(Strings.errorSormasToSormasShare);
 				errors = errorResponse.getErrors();
 			} catch (IOException e) {
 				// do nothing, keep the unparsed response as error message

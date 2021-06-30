@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.vaadin.navigator.Navigator;
@@ -49,7 +48,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
-import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
@@ -295,18 +293,18 @@ public class SormasToSormasController {
 		}, optionsForm, defaultOptions);
 	}
 
-	private Component buildShareErrorMessage(String message, Map<ValidationErrorGroup, ValidationErrors> errors) {
+	private Component buildShareErrorMessage(String message, List<ValidationErrors> errors) {
 		Label errorMessageLabel = new Label(message, ContentMode.HTML);
 
 		if (errors == null || errors.size() == 0) {
 			return errorMessageLabel;
 		}
 
-		VerticalLayout[] errorLayouts = errors.entrySet().stream().map(e -> {
-			Label groupLabel = new Label(e.getKey().getHumanMessage());
+		VerticalLayout[] errorLayouts = errors.stream().map(e -> {
+			Label groupLabel = new Label(e.getGroup().getHumanMessage());
 			groupLabel.addStyleNames(CssStyles.LABEL_BOLD);
 
-			VerticalLayout groupErrorsLayout = new VerticalLayout(formatGroupErrors(e.getValue()));
+			VerticalLayout groupErrorsLayout = new VerticalLayout(formatSubGroupErrors(e));
 			groupErrorsLayout.setMargin(false);
 			groupErrorsLayout.setSpacing(false);
 			groupErrorsLayout.setStyleName(CssStyles.HSPACE_LEFT_3);
@@ -326,16 +324,16 @@ public class SormasToSormasController {
 		return errorsLayout;
 	}
 
-	private Component[] formatGroupErrors(ValidationErrors errors) {
-		return errors.getErrors().entrySet().stream().map(e -> {
-			Label groupLabel = new Label(e.getKey() + ":");
+	private Component[] formatSubGroupErrors(ValidationErrors errors) {
+		return errors.getSubGroups().stream().map(e -> {
+			Label groupLabel = new Label(e.getHumanMessage() + ":");
 			groupLabel.addStyleName(CssStyles.LABEL_BOLD);
 			HorizontalLayout layout = new HorizontalLayout(
 				groupLabel,
 				new Label(
 					String.join(
 						", ",
-						e.getValue().stream().map(ValidationErrorMessage::getHumanMessage).collect(Collectors.toList()).toString())));
+						e.getMessages().stream().map(ValidationErrorMessage::getHumanMessage).collect(Collectors.toList()).toString())));
 			layout.setMargin(false);
 
 			return layout;

@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -27,48 +28,61 @@ import java.util.Objects;
 
 public class ValidationErrorMessage implements SormasToSormasI18nMessage, Serializable {
 
-		private static final long serialVersionUID = 1693893611287329737L;
+    private static final long serialVersionUID = 1693893611287329737L;
 
-		private final String i18nTag;
+    private String i18nTag;
 
-		private final Object[] args;
+    private Object[] args;
 
-		public ValidationErrorMessage(String i18nProperty, Object... args) {
-			this.i18nTag = i18nProperty;
-			this.args = args;
-		}
+    public ValidationErrorMessage() {
 
-		@Override
-		public String getI18nTag() {
-			return i18nTag;
-		}
+    }
 
-		@Override
-		public Object[] getArgs() {
-			return args;
-		}
+    public ValidationErrorMessage(String i18nProperty, Object... args) {
+        this.i18nTag = i18nProperty;
+        this.args = args;
+    }
 
-		@Override
-		public String getHumanMessage() {
-			if (ArrayUtils.isNotEmpty(args)) {
-				return String.format(I18nProperties.getValidationError(i18nTag), args);
-			} else {
-				return I18nProperties.getValidationError(i18nTag);
-			}
-		}
+    public void setI18nTag(String i18nTag) {
+        this.i18nTag = i18nTag;
+    }
 
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			ValidationErrorMessage that = (ValidationErrorMessage) o;
-			return Objects.equals(i18nTag, that.i18nTag) && Arrays.equals(args, that.args);
-		}
+    @Override
+    public String getI18nTag() {
+        return i18nTag;
+    }
 
-		@Override
-		public int hashCode() {
-			int result = Objects.hash(i18nTag);
-			result = 31 * result + Arrays.hashCode(args);
-			return result;
-		}
-	}
+    public void setArgs(Object[] args) {
+        this.args = args;
+    }
+
+    @Override
+    public Object[] getArgs() {
+        return args;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getHumanMessage() {
+        if (ArrayUtils.isNotEmpty(args)) {
+            return I18nProperties.getValidationError(i18nTag, args);
+        } else {
+            return I18nProperties.getValidationError(i18nTag);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ValidationErrorMessage that = (ValidationErrorMessage) o;
+        return Objects.equals(i18nTag, that.i18nTag) && Arrays.equals(args, that.args);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(i18nTag);
+        result = 31 * result + Arrays.hashCode(args);
+        return result;
+    }
+}

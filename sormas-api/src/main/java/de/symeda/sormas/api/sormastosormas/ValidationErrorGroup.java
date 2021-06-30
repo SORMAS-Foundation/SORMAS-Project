@@ -18,49 +18,81 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ValidationErrorGroup implements SormasToSormasI18nMessage, Serializable {
 
-		private static final long serialVersionUID = 2075921523238507571L;
+	private static final long serialVersionUID = 2075921523238507571L;
 
-		private final String i18nTag;
+	private String i18nTag;
 
-		private final String uuid;
+	private String uuid;
 
-		public ValidationErrorGroup(String i18nTag) {
-			this.i18nTag = i18nTag;
-			this.uuid = null;
-		}
+	private List<ValidationErrorMessage> messages = new ArrayList<>();
 
-		public ValidationErrorGroup(String i18nTag, String uuid) {
-			this.i18nTag = i18nTag;
-			this.uuid = uuid;
-		}
+	public ValidationErrorGroup() {
+		messages = new ArrayList<>();
 
-		@Override
-		public String getI18nTag() {
-			return i18nTag;
-		}
+	}
 
-		@Override
-		public Object[] getArgs() {
-			return new Object[] {
+	public ValidationErrorGroup(String i18nTag) {
+		this.i18nTag = i18nTag;
+		this.uuid = null;
+	}
+
+	public ValidationErrorGroup(String i18nTag, String uuid) {
+		this.i18nTag = i18nTag;
+		this.uuid = uuid;
+	}
+
+	@Override
+	public String getI18nTag() {
+		return i18nTag;
+	}
+
+	public void setI18nTag(String i18nTag) {
+		this.i18nTag = i18nTag;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	@JsonIgnore
+	@Override
+	public Object[] getArgs() {
+		return new Object[] {
 				uuid };
-		}
+	}
 
-		@Override
-		public String getHumanMessage() {
-			if (StringUtils.isNotBlank(uuid)) {
-				return String.format("%s %s", I18nProperties.getCaption(i18nTag), uuid);
-			} else {
-				return I18nProperties.getCaption(i18nTag);
-			}
+	public List<ValidationErrorMessage> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(List<ValidationErrorMessage> messages) {
+		this.messages = messages;
+	}
+
+	@JsonIgnore
+	@Override
+	public String getHumanMessage() {
+		if (StringUtils.isNotBlank(uuid)) {
+			return String.format("%s %s", I18nProperties.getCaption(i18nTag), uuid);
+		} else {
+			return I18nProperties.getCaption(i18nTag);
 		}
+	}
 
 	@Override
 	public boolean equals(Object o) {
