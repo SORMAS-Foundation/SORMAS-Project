@@ -35,7 +35,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
+public class SampleJoins<T> extends AbstractDomainObjectJoins<T, Sample> {
 
 	private Join<Sample, User> reportingUser;
 	private Join<Sample, Sample> referredSample;
@@ -85,7 +85,7 @@ public class SampleJoins<P> extends AbstractDomainObjectJoins<P, Sample> {
 	private Join<Event, User> eventReportingUser;
 	private Join<Event, User> eventResponsibleUser;
 
-	public SampleJoins(From<P, Sample> root) {
+	public SampleJoins(From<T, Sample> root) {
 		super(root);
 	}
 

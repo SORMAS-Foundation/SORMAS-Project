@@ -482,7 +482,7 @@ public class ContactsView extends AbstractView {
 							VaadinIcons.SHARE,
 							mi -> grid.bulkActionHandler(
 								items -> ControllerProvider.getSormasToSormasController().shareSelectedContacts(items, () -> navigateTo(criteria))),
-							FacadeProvider.getSormasToSormasFacade().isFeatureEnabled())));
+							FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser())));
 
 				if (isDocGenerationAllowed() && grid instanceof AbstractContactGrid) {
 					bulkActions.add(
@@ -594,7 +594,7 @@ public class ContactsView extends AbstractView {
 	private boolean isBulkEditAllowed() {
 		return viewConfiguration.getViewType().isContactOverview()
 			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
-				|| FacadeProvider.getSormasToSormasFacade().isFeatureEnabled());
+				|| FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser());
 	}
 
 	private HorizontalLayout buildScrollLayout() {

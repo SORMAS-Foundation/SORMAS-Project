@@ -76,7 +76,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 			prescription.get(Prescription.ROUTE),
 			prescription.get(Prescription.ROUTE_DETAILS),
 			prescription.get(Prescription.PRESCRIBING_CLINICIAN),
-			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaze()))));
 
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, prescription));
@@ -170,6 +170,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		PrescriptionJoins joins = new PrescriptionJoins(prescription);
 
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, joins.getCaze());
 		cq.multiselect(
 			joins.getCaze().get(Case.UUID),
 			joins.getCasePerson().get(Person.FIRST_NAME),
@@ -186,10 +187,10 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 			prescription.get(Prescription.ROUTE),
 			prescription.get(Prescription.ROUTE_DETAILS),
 			prescription.get(Prescription.ADDITIONAL_NOTES),
-			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 
 		Predicate filter = service.createUserFilter(cb, cq, prescription);
-		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, new CaseQueryContext(cb, cq, joins.getCaze()));
+		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(Case.UUID));
 		cq.where(filter);

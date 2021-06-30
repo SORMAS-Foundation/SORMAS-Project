@@ -385,6 +385,11 @@ public class WebDriverHelpers {
     return baseSteps.getDriver().findElements(selector).get(index).getAttribute("value");
   }
 
+  public String getTextFromListElement(By selector, int index) {
+    scrollToElement(selector);
+    return baseSteps.getDriver().findElements(selector).get(index).getText();
+  }
+
   public WebElement getWebElementBySelectorAndText(final By selector, final String text) {
     return getWebElementByText(selector, webElement -> webElement.getText().contentEquals(text));
   }
@@ -489,6 +494,15 @@ public class WebDriverHelpers {
             assertWithMessage("Number of identified element should be %s", given)
                 .that(getNumberOfElements(selector))
                 .isAtMost(given));
+  }
+
+  public void waitUntilNumberOfElementsIsExactly(By selector, int given) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
+    assertHelpers.assertWithPoll15Second(
+        () ->
+            assertWithMessage("Number of identified element should be %s", given)
+                .that(getNumberOfElements(selector))
+                .isEqualTo(given));
   }
 
   public String getCheckedOptionFromHorizontalOptionGroup(By options) {

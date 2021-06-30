@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 
 public class EditCasePage {
   public static final By FOLLOW_UP_BUTTON = By.cssSelector("[id='tab-cases-visits'] a");
+  public static final By SYMPTOMS_BUTTON = By.cssSelector("[id='tab-cases-symptoms']");
   public static final By REGION_INPUT = By.cssSelector("#region input");
   public static final By DISTRICT_INPUT = By.cssSelector("#district input");
   public static final By COMMUNITY_INPUT = By.cssSelector("#community input");

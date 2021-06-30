@@ -53,6 +53,8 @@ public class Case {
   PortHealthInfo portHealthInfo;
   District district;
   Region region;
+  District responsibleDistrict;
+  Region responsibleRegion;
   HealthFacility healthFacility;
   MaternalHistory maternalHistory;
   String facilityType;

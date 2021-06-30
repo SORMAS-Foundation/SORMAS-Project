@@ -18,7 +18,11 @@ package de.symeda.sormas.backend.caze;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
@@ -26,6 +30,9 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleJoins;
+import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 import de.symeda.sormas.utils.CaseJoins;
@@ -34,8 +41,10 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 
 	private final CaseJoins<?> joins;
 	private final User currentUser;
+	private final CriteriaQuery<?> cq;
 
 	private CaseJurisdictionPredicateValidator(
+		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		CaseJoins<?> joins,
 		User currentUser,
@@ -43,10 +52,11 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 		super(cb, associatedJurisdictionValidators);
 		this.joins = joins;
 		this.currentUser = currentUser;
+		this.cq = cq;
 	}
 
-	public static CaseJurisdictionPredicateValidator of(CriteriaBuilder cb, CaseJoins<?> joins, User currentUser) {
-		return new CaseJurisdictionPredicateValidator(cb, joins, currentUser, null);
+	public static CaseJurisdictionPredicateValidator of(CaseQueryContext qc, User currentUser) {
+		return new CaseJurisdictionPredicateValidator(qc.getQuery(), qc.getCriteriaBuilder(), (CaseJoins<?>) qc.getJoins(), currentUser, null);
 	}
 
 	@Override
@@ -107,6 +117,15 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 
 	@Override
 	protected Predicate whenLaboratoryLevel() {
-		return cb.equal(joins.getSampleLabs().get(Facility.ID), currentUser.getLaboratory().getId());
+
+		final Subquery<Long> sampleSubquery = cq.subquery(Long.class);
+		final Root<Sample> sampleRoot = sampleSubquery.from(Sample.class);
+		final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
+		final Join caseJoin = sampleJoins.getCaze();
+		SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
+			SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
+		sampleSubquery.where(cb.and(cb.equal(caseJoin, joins.getRoot()), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
+		sampleSubquery.select(sampleRoot.get(Sample.ID));
+		return cb.exists(sampleSubquery);
 	}
 }
