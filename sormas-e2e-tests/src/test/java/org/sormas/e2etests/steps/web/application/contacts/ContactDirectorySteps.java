@@ -63,7 +63,7 @@ public class ContactDirectorySteps implements En {
                 NEW_CONTACT_BUTTON, FIRST_NAME_OF_CONTACT_PERSON_INPUT));
 
     When(
-        "I click on the DETAILED radiobutton",
+        "I click on the DETAILED radiobutton from Contact directory",
         () -> webDriverHelpers.clickOnWebElementBySelector(CONTACT_DIRECTORY_DETAILED_RADIOBUTTON));
 
     When(

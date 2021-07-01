@@ -75,7 +75,7 @@ Feature: Contacts end to end tests
       When API: I create a new person
       And API: I create a new contact
       Given I click on the Contacts button from navbar
-      When I click on the DETAILED radiobutton
+      When I click on the DETAILED radiobutton from Contact directory
       And I filter by ContactID
       And I am checking if all the fields are correctly displayed in the Contacts directory Detailed table
 
