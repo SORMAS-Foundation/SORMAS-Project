@@ -1,5 +1,8 @@
 package org.sormas.e2etests.enums.cases.epidemiologicalData;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public enum ExposureDetailsRole {
   PASSENGER("Passenger"),
   STAFF("Staff"),
@@ -30,7 +33,7 @@ public enum ExposureDetailsRole {
         return exposureDetailsRole;
       }
     }
-    System.out.println("Could not map " + role + " to ExposureDetailsRole");
+    log.error("Couldn't map role!");
     return null;
   }
 }

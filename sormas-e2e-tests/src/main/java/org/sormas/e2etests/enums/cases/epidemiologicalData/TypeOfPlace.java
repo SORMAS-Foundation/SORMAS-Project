@@ -1,5 +1,8 @@
 package org.sormas.e2etests.enums.cases.epidemiologicalData;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public enum TypeOfPlace {
   FACILITY("Facility"),
   FESTIVITIES("Festivities"),
@@ -26,7 +29,7 @@ public enum TypeOfPlace {
         return typeOfPlace;
       }
     }
-    System.out.println("Could not map " + place + " to TypeOfPlace");
+    log.error("Couldn't map place!");
     return null;
   }
 }

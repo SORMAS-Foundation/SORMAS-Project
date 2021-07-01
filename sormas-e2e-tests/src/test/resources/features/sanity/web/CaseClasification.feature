@@ -1,4 +1,4 @@
-@Sanity @Case @Classification
+@UI @Sanity @Case @Classification
 Feature: Case Classification functionality
 
   Scenario: Case Classification for a suspect case

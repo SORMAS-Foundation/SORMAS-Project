@@ -1,4 +1,4 @@
-@Sanity @Case @Listing
+@UI @Sanity @Case @Listing
 Feature: Contacts end to end tests
 
   Scenario: Create cases using Line Listing feature and validate the entries.

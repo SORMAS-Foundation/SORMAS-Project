@@ -1,5 +1,8 @@
 package org.sormas.e2etests.enums.cases.epidemiologicalData;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public enum ActivityAsCaseType {
   WORK("Work"),
   HABITATION("Habitation"),
@@ -23,7 +26,7 @@ public enum ActivityAsCaseType {
         return activityAsCaseType;
       }
     }
-    System.out.println("Could not map " + activity + " to ActivityAsCaseType");
+    log.error("Couldn't map activity !");
     return null;
   }
 }

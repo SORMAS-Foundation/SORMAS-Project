@@ -6,8 +6,6 @@ import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.sormas.e2etests.enums.YesNoUnknownOptions;
@@ -45,7 +43,7 @@ public class EpidemiologicalDataSteps implements En {
         });
 
     Then(
-        "I create a new Exposure and fill all the data",
+        "I create a new Exposure fro Epidemiological data tab and fill all the data",
         () -> {
           epidemiologicalData = epidemiologicalDataService.buildGeneratedEpidemiologicalData();
           webDriverHelpers.waitForPageLoaded();
@@ -59,7 +57,7 @@ public class EpidemiologicalDataSteps implements En {
         });
 
     Then(
-        "I create a new Activity and fill all the data",
+        "I create a new Activity from Epidemiological data tab and fill all the data",
         () -> {
           EpidemiologicalData epidemiologicalData =
               epidemiologicalDataService.buildGeneratedEpidemiologicalData();
@@ -73,10 +71,9 @@ public class EpidemiologicalDataSteps implements En {
         });
 
     And(
-        "I click on save Epidemiological Data",
+        "I click on save button from Epidemiological Data",
         () -> {
           webDriverHelpers.scrollToElementUntilIsVisible(SAVE_BUTTON_EPIDEMIOLOGICAL_DATA);
-
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_EPIDEMIOLOGICAL_DATA);
         });
 
@@ -91,13 +88,19 @@ public class EpidemiologicalDataSteps implements En {
                   .orElse(Exposure.builder().build());
           Exposure actualExposureData = collectExposureData();
           Truth.assertThat(generatedExposureData).isEqualTo(actualExposureData);
-          webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON);
         });
+
+    Then(
+        "I click on discard button from Epidemiological Data Exposure popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON));
+
+    Then(
+        "I open saved activity from Epidemiological Data",
+        () -> webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON));
 
     When(
         "I am checking all Activity data is saved and displayed",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON);
           Activity generatedActivityData =
               epidemiologicalData.getActivities().stream()
                   .findFirst()
@@ -147,14 +150,6 @@ public class EpidemiologicalDataSteps implements En {
     webDriverHelpers.selectFromCombobox(CONTINENT_COMBOBOX, exposureData.getContinent());
     webDriverHelpers.selectFromCombobox(SUBCONTINENT_COMBOBOX, exposureData.getSubcontinent());
     webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, exposureData.getCountry());
-    //    webDriverHelpers.selectFromCombobox(
-    //        STREET_INPUT, exposureData.getStreet());
-    //    webDriverHelpers.selectFromCombobox(
-    //        HOUSE_NUMBER_INPUT, exposureData.getHouseNumber());
-    //    webDriverHelpers.selectFromCombobox(
-    //        POSTAL_CODE_INPUT, exposureData.getPostalCode());
-    //    webDriverHelpers.selectFromCombobox(
-    //        CITY_INPUT, exposureData.getCity());
     webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
   }
 
@@ -173,38 +168,6 @@ public class EpidemiologicalDataSteps implements En {
     webDriverHelpers.selectFromCombobox(ACTIVITY_COUNTRY_COMBOBOX, activityData.getCountry());
 
     webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_DONE_BUTTON);
-  }
-
-  public EpidemiologicalData collectEpidemiologicalData() {
-    List<Exposure> exposures = new ArrayList<Exposure>();
-    exposures.add(collectExposureData());
-    List<Activity> activities = new ArrayList<Activity>();
-    activities.add(collectActivityData());
-
-    return EpidemiologicalData.builder()
-        .exposures(exposures)
-        .activities(activities)
-        .exposureDetailsKnown(
-            YesNoUnknownOptions.valueOf(
-                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                    EXPOSURE_DETAILS_KNOWN_OPTIONS)))
-        .activityDetailsKnown(
-            YesNoUnknownOptions.valueOf(
-                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                    EXPOSURE_DETAILS_KNOWN_OPTIONS)))
-        .residingAreaWithRisk(
-            YesNoUnknownOptions.valueOf(
-                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                    RESIDING_AREA_WITH_RISK_OPTIONS)))
-        .largeOutbreaksArea(
-            YesNoUnknownOptions.valueOf(
-                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                    LARGE_OUTBREAKS_AREA_OPTIONS)))
-        .contactsWithSourceCaseKnown(
-            YesNoUnknownOptions.valueOf(
-                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                    CONTACTS_WITH_SOURCE_CASE_KNOWN_OPTIONS)))
-        .build();
   }
 
   public Exposure collectExposureData() {

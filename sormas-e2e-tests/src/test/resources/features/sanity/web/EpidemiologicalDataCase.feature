@@ -1,4 +1,4 @@
-@Sanity @Case @EpidemiologicalData
+@UI @Sanity @Case @EpidemiologicalData
 Feature: Epidemiological data coverage
 
   Scenario: Edit all fields from Epidemiological data tab
@@ -7,9 +7,11 @@ Feature: Epidemiological data coverage
     Given I log in with the user
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
-    Then I create a new Exposure and fill all the data
-    Then I create a new Activity and fill all the data
-    And I click on save Epidemiological Data
+    Then I create a new Exposure fro Epidemiological data tab and fill all the data
+    Then I create a new Activity from Epidemiological data tab and fill all the data
+    And I click on save button from Epidemiological Data
     When I am accessing via URL the Epidemiological data tab of the created case
     And I am checking all Exposure data is saved and displayed
-    And I am checking all Activity data is saved and displayed
+    Then I click on discard button from Epidemiological Data Exposure popup
+    And I open saved activity from Epidemiological Data
+    Then I am checking all Activity data is saved and displayed

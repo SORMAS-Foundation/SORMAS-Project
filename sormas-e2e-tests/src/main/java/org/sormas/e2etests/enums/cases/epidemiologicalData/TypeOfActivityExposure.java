@@ -1,5 +1,8 @@
 package org.sormas.e2etests.enums.cases.epidemiologicalData;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public enum TypeOfActivityExposure {
   WORK("Work"),
   TRAVEL("Travel"),
@@ -28,7 +31,7 @@ public enum TypeOfActivityExposure {
         return typeOfActivityExposure;
       }
     }
-    System.out.println("Could not map " + activity + " to TypeOfActivityExposure");
+    log.error("Couldn't map activity!");
     return null;
   }
 }

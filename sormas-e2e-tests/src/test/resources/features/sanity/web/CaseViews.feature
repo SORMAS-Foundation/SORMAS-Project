@@ -1,4 +1,4 @@
-@Sanity @CaseView
+@UI @Sanity @CaseView
 Feature: Case view tests
 
   Scenario: Create a new Case and check details in Detailed view table
