@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -155,8 +156,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			associatedEntities.addAll(shareData.getAssociatedEntities());
 		}
 
-		SormasToSormasOriginInfoDto originInfo =
-			dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options);
+		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options);
 		String requestUuid = DataHelper.createUuid();
 
 		sormasToSormasRestClient
@@ -276,7 +276,16 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		}
 
 		sormasToSormasRestClient.post(options.getOrganization().getUuid(), saveEndpoint, entitiesToSend, null);
-		saveNewShareInfo(currentUser.toReference(), options, DataHelper.createUuid(), ShareRequestStatus.ACCEPTED, entities, associatedEntities);
+		SormasToSormasShareInfo shareInfo =
+			saveNewShareInfo(currentUser.toReference(), options, DataHelper.createUuid(), ShareRequestStatus.ACCEPTED, entities, associatedEntities);
+
+		try {
+			shareInfoService.handleOwnershipChangeInExternalSurvTool(shareInfo);
+		} catch (ExternalSurveillanceToolException e) {
+			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
+
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool));
+		}
 	}
 
 	@Override
@@ -317,7 +326,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			.filter(wrapper -> wrapper.getEntity().getSormasToSormasOriginInfo() == null)
 			.collect(Collectors.toList());
 
-		saveNewShareInfo(
+		SormasToSormasShareInfo shareInfo = saveNewShareInfo(
 			currentUser.toReference(),
 			options,
 			// if SORMAS_TO_SORMAS_ACCEPT_REJECT feature is not active then there is no request, so generate a random uuid in that case
@@ -325,6 +334,15 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			ShareRequestStatus.ACCEPTED,
 			Collections.emptyList(),
 			sharedAssociatedObjects);
+
+		try {
+			shareInfoService.handleOwnershipChangeInExternalSurvTool(originInfo);
+			shareInfoService.handleOwnershipChangeInExternalSurvTool(shareInfo);
+		} catch (ExternalSurveillanceToolException e) {
+			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
+
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool));
+		}
 	}
 
 	@Override
@@ -350,6 +368,14 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			.collect(Collectors.toList());
 
 		updateShareInfoOptions(shareInfo, additionalAssociatedObjects, options);
+
+		try {
+			shareInfoService.handleOwnershipChangeInExternalSurvTool(shareInfo);
+		} catch (ExternalSurveillanceToolException e) {
+			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
+
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool));
+		}
 	}
 
 	@Override
@@ -459,7 +485,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		return errors;
 	}
 
-	private void saveNewShareInfo(
+	private SormasToSormasShareInfo saveNewShareInfo(
 		UserReferenceDto sender,
 		SormasToSormasOptionsDto options,
 		String requestUuid,
@@ -483,6 +509,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		});
 
 		shareInfoService.ensurePersisted(shareInfo);
+
+		return shareInfo;
 	}
 
 	private void addOptionsToShareInfo(SormasToSormasOptionsDto options, SormasToSormasShareInfo shareInfo) {
