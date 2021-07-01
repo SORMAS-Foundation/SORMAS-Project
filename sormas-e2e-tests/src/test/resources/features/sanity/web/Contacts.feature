@@ -79,7 +79,7 @@ Feature: Contacts end to end tests
       And I am checking if all the fields are correctly displayed in the Contacts directory Detailed table
 
   Scenario: Edit all fields from Follow-up visits  tab
-    Given I log in as a National User
+    Given I log in with the user
     When API: I create a new person
     When API: I create a new contact
     When I am accessing the Follow-up visits tab using of created contact via api

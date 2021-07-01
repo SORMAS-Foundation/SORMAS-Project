@@ -36,8 +36,7 @@ public class CreateNewVisitPage {
   public static final By SHIVERING = By.cssSelector("#shivering > span label");
   public static final By OXIGEN_SATURANTION =
       By.cssSelector("#oxygenSaturationLower94 > span label");
-  public static final By PNEUMONIA =
-      By.cssSelector("#pneumoniaClinicalOrRadiologic > span label");
+  public static final By PNEUMONIA = By.cssSelector("#pneumoniaClinicalOrRadiologic > span label");
   public static final By RAPID_BREATHING = By.cssSelector("#rapidBreathing > span label");
   public static final By RESPIRATORY_DISEASE_REQUIRING_VENTILATION =
       By.cssSelector("#respiratoryDiseaseVentilation > span label");
@@ -45,8 +44,7 @@ public class CreateNewVisitPage {
   public static final By ACUTE_RESPIRATORY_DISTRESS_SYNDROME =
       By.cssSelector("#acuteRespiratoryDistressSyndrome > span label");
   public static final By COUGH = By.cssSelector("#cough > span label");
-  public static final By DIFFICULTY_BREATHING =
-      By.cssSelector("#difficultyBreathing > span label");
+  public static final By DIFFICULTY_BREATHING = By.cssSelector("#difficultyBreathing > span label");
   public static final By SORE_THROAT_PHARYNGITIS = By.cssSelector("#soreThroat > span label");
   public static final By FAST_HEART_RATE = By.cssSelector("#fastHeartRate > span label");
   public static final By DIARRHEA = By.cssSelector("#diarrhea > span label");

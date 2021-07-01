@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.contacts.FollowUpVisitsTabPage.*;
+
 import cucumber.api.java8.En;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
@@ -52,8 +53,9 @@ public class FollowUpVisitsTabSteps implements En {
           webDriverHelpers.accessWebSite(URL);
         });
 
-      Then("I click on New visit button from Follow-up visits tab",
-              () ->  webDriverHelpers.clickOnWebElementBySelector(NEW_VISIT_BUTTON) );
+    Then(
+        "I click on New visit button from Follow-up visits tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_VISIT_BUTTON));
 
     And(
         "^I open the first displayed follow up$",

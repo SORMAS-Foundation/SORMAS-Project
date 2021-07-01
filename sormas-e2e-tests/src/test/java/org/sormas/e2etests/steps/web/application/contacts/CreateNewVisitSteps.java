@@ -93,8 +93,9 @@ public class CreateNewVisitSteps implements En {
           Truth.assertThat(followUpVisit).isEqualTo(actualFollowUpVisit);
         });
 
-    And("I click on discard button from follow up view",
-            ()-> webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON));
+    And(
+        "I click on discard button from follow up view",
+        () -> webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON));
 
     And(
         "^I change Follow-up visit fields and save$",
@@ -154,7 +155,7 @@ public class CreateNewVisitSteps implements En {
     return FollowUpVisit.builder()
         .personAvailableAndCooperative(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                    PERSON_AVAILABLE_AND_COOPERATIVE_OPTIONS))
+                PERSON_AVAILABLE_AND_COOPERATIVE_OPTIONS))
         .dateOfVisit(parsedDateOfVisit)
         .timeOfVisit(followUpVisit.getTimeOfVisit())
         .visitRemarks(webDriverHelpers.getValueFromWebElement(VISIT_REMARKS_INPUT))
@@ -164,8 +165,7 @@ public class CreateNewVisitSteps implements En {
                 .substring(0, 2))
         .sourceOfBodyTemperature(
             webDriverHelpers.getValueFromCombobox(SOURCE_BODY_TEMPERATURE_COMBOBOX))
-        .chillsOrSweats(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CHILLS_OR_SWATS))
+        .chillsOrSweats(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CHILLS_OR_SWATS))
         .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL))
         .fever(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEVER))
         .headache(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HEADACHE))
@@ -173,7 +173,7 @@ public class CreateNewVisitSteps implements En {
         .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING))
         .acuteRespiratoryDistressSyndrome(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                    ACUTE_RESPIRATORY_DISTRESS_SYNDROME))
+                ACUTE_RESPIRATORY_DISTRESS_SYNDROME))
         .cough(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COUGH))
         .difficultyBreathing(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIFFICULTY_BREATHING))
@@ -181,26 +181,20 @@ public class CreateNewVisitSteps implements En {
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OXIGEN_SATURANTION))
         .pneumoniaClinicalRadiologic(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PNEUMONIA))
-        .rapidBreathing(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RAPID_BREATHING))
+        .rapidBreathing(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RAPID_BREATHING))
         .respiratoryDiseaseRequiringVentilation(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                    RESPIRATORY_DISEASE_REQUIRING_VENTILATION))
+                RESPIRATORY_DISEASE_REQUIRING_VENTILATION))
         .runnyNose(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RUNNY_NOSE))
         .soreThroatPharyngitis(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                    SORE_THROAT_PHARYNGITIS))
-        .fastHeartRate(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_RATE))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SORE_THROAT_PHARYNGITIS))
+        .fastHeartRate(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_RATE))
         .diarrhea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIARRHEA))
         .nausea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(NAUSEA))
-        .newLossOfSmell(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_SMELL))
-        .newLossOfTaste(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_TASTE))
+        .newLossOfSmell(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_SMELL))
+        .newLossOfTaste(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_TASTE))
         .otherClinicalSymptoms(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                    OTHER_CLINICAL_SYMPTOMS))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OTHER_CLINICAL_SYMPTOMS))
         .comments(webDriverHelpers.getValueFromWebElement(COMMENTS_INPUT))
         .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRSTSYMPTOM_COMBOBOX))
         .dateOfSymptomOnset(parsedDateOfSymptomOnset)
@@ -215,7 +209,7 @@ public class CreateNewVisitSteps implements En {
     return FollowUpVisit.builder()
         .personAvailableAndCooperative(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                    PERSON_AVAILABLE_AND_COOPERATIVE_OPTIONS))
+                PERSON_AVAILABLE_AND_COOPERATIVE_OPTIONS))
         .dateOfVisit(parsedDateOfVisit)
         .timeOfVisit(followUpEditVisit.getTimeOfVisit())
         .visitRemarks(webDriverHelpers.getValueFromWebElement(VISIT_REMARKS_INPUT))
@@ -274,7 +268,7 @@ public class CreateNewVisitSteps implements En {
 
   public void selectAcuteRespiratoryDistressSyndrome(String acuteRespiratoryDistressSyndrome) {
     webDriverHelpers.clickWebElementByText(
-            ACUTE_RESPIRATORY_DISTRESS_SYNDROME, acuteRespiratoryDistressSyndrome);
+        ACUTE_RESPIRATORY_DISTRESS_SYNDROME, acuteRespiratoryDistressSyndrome);
   }
 
   public void selectCough(String cough) {
@@ -303,7 +297,7 @@ public class CreateNewVisitSteps implements En {
 
   public void selectRespiratoryDiseaseVentilation(String respiratoryDiseaseVentilation) {
     webDriverHelpers.clickWebElementByText(
-            RESPIRATORY_DISEASE_REQUIRING_VENTILATION, respiratoryDiseaseVentilation);
+        RESPIRATORY_DISEASE_REQUIRING_VENTILATION, respiratoryDiseaseVentilation);
   }
 
   public void selectRunnyNose(String runnyNose) {
@@ -352,8 +346,7 @@ public class CreateNewVisitSteps implements En {
   }
 
   public void selectOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
-    webDriverHelpers.clickWebElementByText(
-            OTHER_CLINICAL_SYMPTOMS, otherNonHemorrhagicSymptoms);
+    webDriverHelpers.clickWebElementByText(OTHER_CLINICAL_SYMPTOMS, otherNonHemorrhagicSymptoms);
   }
 
   public void fillComments(String symptomsComments) {
