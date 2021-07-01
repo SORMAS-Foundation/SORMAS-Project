@@ -17,7 +17,7 @@
  */
 package org.sormas.e2etests.helpers.api;
 
-import static org.sormas.e2etests.constants.api.Endpoints.TASKS;
+import static org.sormas.e2etests.constants.api.Endpoints.TASKS_PATH;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
@@ -46,6 +46,10 @@ public class TaskHelper {
     List<Task> listOfContacts = List.of(task);
     objectMapper.writeValue(out, listOfContacts);
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.POST).path(TASKS + "push").body(out.toString()).build());
+        Request.builder()
+            .method(Method.POST)
+            .path(TASKS_PATH + "push")
+            .body(out.toString())
+            .build());
   }
 }
