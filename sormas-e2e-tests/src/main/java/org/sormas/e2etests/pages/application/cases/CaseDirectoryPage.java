@@ -31,7 +31,7 @@ public class CaseDirectoryPage {
   public static final By CASE_DETAILED_TABLE_DATA = By.tagName("td");
   public static final By CASE_DETAILED_COLUMN_HEADERS =
       By.cssSelector("thead .v-grid-column-default-header-content");
-  public static final By CASE_DETAILED_FIRST_TABLE_ROW =
+  public static final By CASE_DETAILED_TABLE_ROWS =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By FIRST_CASE_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT =
