@@ -16,7 +16,6 @@ import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-
 import org.sormas.e2etests.pojo.web.EpidemiologicalData;
 import org.sormas.e2etests.pojo.web.epidemiologicalData.Activity;
 import org.sormas.e2etests.pojo.web.epidemiologicalData.Exposure;
@@ -53,10 +52,8 @@ public class EpidemiologicalDataSteps implements En {
           webDriverHelpers.clickWebElementByText(
               EXPOSURE_DETAILS_KNOWN_OPTIONS,
               epidemiologicalData.getExposureDetailsKnown().toString());
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(
-              EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
           Exposure exposureData = epidemiologicalDataService.buildGeneratedExposureData();
           fillExposure(exposureData);
         });
@@ -64,32 +61,30 @@ public class EpidemiologicalDataSteps implements En {
     Then(
         "I create a new Activity and fill all the data",
         () -> {
-          EpidemiologicalData epidemiologicalData = epidemiologicalDataService.buildGeneratedEpidemiologicalData();
+          EpidemiologicalData epidemiologicalData =
+              epidemiologicalDataService.buildGeneratedEpidemiologicalData();
 
           Activity activityData = epidemiologicalDataService.buildGeneratedActivityData();
           webDriverHelpers.clickWebElementByText(
               ACTIVITY_DETAILS_KNOWN_OPTIONS,
               epidemiologicalData.getActivityDetailsKnown().toString());
-          webDriverHelpers.clickOnWebElementBySelector(
-              ACTIVITY_DETAILS_NEW_ENTRY_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_DETAILS_NEW_ENTRY_BUTTON);
           fillActivity(activityData);
         });
 
     And(
         "I click on save Epidemiological Data",
         () -> {
-          webDriverHelpers.scrollToElementUntilIsVisible(
-              SAVE_BUTTON_EPIDEMIOLOGICAL_DATA);
+          webDriverHelpers.scrollToElementUntilIsVisible(SAVE_BUTTON_EPIDEMIOLOGICAL_DATA);
 
-          webDriverHelpers.clickOnWebElementBySelector(
-              SAVE_BUTTON_EPIDEMIOLOGICAL_DATA);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_EPIDEMIOLOGICAL_DATA);
         });
 
     When(
         "I am checking all Exposure data is saved and displayed",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(
-              OPEN_SAVED_EXPOSURE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_EXPOSURE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
           Exposure generatedExposureData =
               epidemiologicalData.getExposures().stream()
                   .findFirst()
@@ -102,76 +97,56 @@ public class EpidemiologicalDataSteps implements En {
     When(
         "I am checking all Activity data is saved and displayed",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(
-              OPEN_SAVED_ACTIVITY_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON);
           Activity generatedActivityData =
               epidemiologicalData.getActivities().stream()
                   .findFirst()
                   .orElse(Activity.builder().build());
           Activity actualActivityData = collectActivityData();
           Truth.assertThat(generatedActivityData).isEqualTo(actualActivityData);
-          webDriverHelpers.clickOnWebElementBySelector(
-              ACTIVITY_DISCARD_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_DISCARD_BUTTON);
         });
   }
 
   public void fillExposure(Exposure exposureData) {
     webDriverHelpers.waitForPageLoaded();
     webDriverHelpers.fillInWebElement(
-        START_OF_EXPOSURE_INPUT,
-        formatter.format(exposureData.getStartOfExposure()));
+        START_OF_EXPOSURE_INPUT, formatter.format(exposureData.getStartOfExposure()));
     webDriverHelpers.fillInWebElement(
-        END_OF_EXPOSURE_INPUT,
-        formatter.format(exposureData.getEndOfExposure()));
+        END_OF_EXPOSURE_INPUT, formatter.format(exposureData.getEndOfExposure()));
     webDriverHelpers.fillInWebElement(
-        EXPOSURE_DESCRIPTION_INPUT,
-        exposureData.getExposureDescription());
+        EXPOSURE_DESCRIPTION_INPUT, exposureData.getExposureDescription());
     webDriverHelpers.selectFromCombobox(
-        TYPE_OF_ACTIVITY_COMBOBOX,
-        exposureData.getTypeOfActivity().getActivity());
+        TYPE_OF_ACTIVITY_COMBOBOX, exposureData.getTypeOfActivity().getActivity());
     webDriverHelpers.selectFromCombobox(
-        EXPOSURE_DETAILS_ROLE_COMBOBOX,
-        exposureData.getExposureDetailsRole().getRole());
+        EXPOSURE_DETAILS_ROLE_COMBOBOX, exposureData.getExposureDetailsRole().getRole());
     webDriverHelpers.clickWebElementByText(
         RISK_AREA_OPTIONS, exposureData.getRiskArea().toString());
-    webDriverHelpers.clickWebElementByText(
-        INDOORS_OPTIONS, exposureData.getIndoors().toString());
-    webDriverHelpers.clickWebElementByText(
-        OUTDOORS_OPTIONS, exposureData.getOutdoors().toString());
+    webDriverHelpers.clickWebElementByText(INDOORS_OPTIONS, exposureData.getIndoors().toString());
+    webDriverHelpers.clickWebElementByText(OUTDOORS_OPTIONS, exposureData.getOutdoors().toString());
     webDriverHelpers.clickWebElementByText(
         WEARING_MASK_OPTIONS, exposureData.getWearingMask().toString());
     webDriverHelpers.clickWebElementByText(
         WEARING_PPE_OPTIONS, exposureData.getWearingPpe().toString());
     webDriverHelpers.clickWebElementByText(
-        OTHER_PROTECTIVE_MEASURES_OPTIONS,
-        exposureData.getOtherProtectiveMeasures().toString());
+        OTHER_PROTECTIVE_MEASURES_OPTIONS, exposureData.getOtherProtectiveMeasures().toString());
     webDriverHelpers.clickWebElementByText(
-        SHORT_DISTANCE_OPTIONS,
-        exposureData.getShortDistance().toString());
+        SHORT_DISTANCE_OPTIONS, exposureData.getShortDistance().toString());
     webDriverHelpers.clickWebElementByText(
-        LONG_FACE_TO_FACE_CONTACT_OPTIONS,
-        exposureData.getLongFaceToFaceContact().toString());
+        LONG_FACE_TO_FACE_CONTACT_OPTIONS, exposureData.getLongFaceToFaceContact().toString());
     webDriverHelpers.clickWebElementByText(
-        ANIMAL_MARKET_OPTIONS,
-        exposureData.getAnimalMarket().toString());
+        ANIMAL_MARKET_OPTIONS, exposureData.getAnimalMarket().toString());
     webDriverHelpers.clickWebElementByText(
-        PERCUTANEOUS_OPTIONS,
-        exposureData.getPercutaneous().toString());
+        PERCUTANEOUS_OPTIONS, exposureData.getPercutaneous().toString());
     webDriverHelpers.clickWebElementByText(
-        CONTACT_TO_BODY_FLUIDS_OPTONS,
-        exposureData.getContactToBodyFluids().toString());
+        CONTACT_TO_BODY_FLUIDS_OPTONS, exposureData.getContactToBodyFluids().toString());
     webDriverHelpers.clickWebElementByText(
-        HANDLING_SAMPLES_OPTIONS,
-        exposureData.getHandlingSamples().toString());
+        HANDLING_SAMPLES_OPTIONS, exposureData.getHandlingSamples().toString());
     webDriverHelpers.selectFromCombobox(
-        TYPE_OF_PLACE_COMBOBOX,
-        exposureData.getTypeOfPlace().getPlace());
-    webDriverHelpers.selectFromCombobox(
-        CONTINENT_COMBOBOX, exposureData.getContinent());
-    webDriverHelpers.selectFromCombobox(
-        SUBCONTINENT_COMBOBOX, exposureData.getSubcontinent());
-    webDriverHelpers.selectFromCombobox(
-        COUNTRY_COMBOBOX, exposureData.getCountry());
+        TYPE_OF_PLACE_COMBOBOX, exposureData.getTypeOfPlace().getPlace());
+    webDriverHelpers.selectFromCombobox(CONTINENT_COMBOBOX, exposureData.getContinent());
+    webDriverHelpers.selectFromCombobox(SUBCONTINENT_COMBOBOX, exposureData.getSubcontinent());
+    webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, exposureData.getCountry());
     //    webDriverHelpers.selectFromCombobox(
     //        STREET_INPUT, exposureData.getStreet());
     //    webDriverHelpers.selectFromCombobox(
@@ -186,22 +161,16 @@ public class EpidemiologicalDataSteps implements En {
   public void fillActivity(Activity activityData) {
     webDriverHelpers.waitForPageLoaded();
     webDriverHelpers.fillInWebElement(
-        ACTIVITY_START_OF_ACTIVITY_INPUT,
-        formatter.format(activityData.getStartOfActivity()));
+        ACTIVITY_START_OF_ACTIVITY_INPUT, formatter.format(activityData.getStartOfActivity()));
     webDriverHelpers.fillInWebElement(
-        ACTIVITY_END_OF_ACTIVITY_INPUT,
-        formatter.format(activityData.getEndOfActivity()));
-    webDriverHelpers.fillInWebElement(
-        ACTIVITY_DESCRIPTION, activityData.getDescription());
+        ACTIVITY_END_OF_ACTIVITY_INPUT, formatter.format(activityData.getEndOfActivity()));
+    webDriverHelpers.fillInWebElement(ACTIVITY_DESCRIPTION, activityData.getDescription());
     webDriverHelpers.selectFromCombobox(
-        ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX,
-        activityData.getTypeOfActivity().getActivityCase());
-    webDriverHelpers.selectFromCombobox(
-        ACTIVITY_CONTINENT_COMBOBOX, activityData.getContinent());
+        ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX, activityData.getTypeOfActivity().getActivityCase());
+    webDriverHelpers.selectFromCombobox(ACTIVITY_CONTINENT_COMBOBOX, activityData.getContinent());
     webDriverHelpers.selectFromCombobox(
         ACTIVITY_SUBCONTINENT_COMBOBOX, activityData.getSubcontinent());
-    webDriverHelpers.selectFromCombobox(
-        ACTIVITY_COUNTRY_COMBOBOX, activityData.getCountry());
+    webDriverHelpers.selectFromCombobox(ACTIVITY_COUNTRY_COMBOBOX, activityData.getCountry());
 
     webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_DONE_BUTTON);
   }
@@ -215,56 +184,86 @@ public class EpidemiologicalDataSteps implements En {
     return EpidemiologicalData.builder()
         .exposures(exposures)
         .activities(activities)
-        .exposureDetailsKnown(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            EXPOSURE_DETAILS_KNOWN_OPTIONS)))
-        .activityDetailsKnown(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            EXPOSURE_DETAILS_KNOWN_OPTIONS)))
-        .residingAreaWithRisk(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            RESIDING_AREA_WITH_RISK_OPTIONS)))
-        .largeOutbreaksArea(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            LARGE_OUTBREAKS_AREA_OPTIONS)))
-        .contactsWithSourceCaseKnown(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            CONTACTS_WITH_SOURCE_CASE_KNOWN_OPTIONS)))
+        .exposureDetailsKnown(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    EXPOSURE_DETAILS_KNOWN_OPTIONS)))
+        .activityDetailsKnown(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    EXPOSURE_DETAILS_KNOWN_OPTIONS)))
+        .residingAreaWithRisk(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    RESIDING_AREA_WITH_RISK_OPTIONS)))
+        .largeOutbreaksArea(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    LARGE_OUTBREAKS_AREA_OPTIONS)))
+        .contactsWithSourceCaseKnown(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    CONTACTS_WITH_SOURCE_CASE_KNOWN_OPTIONS)))
         .build();
   }
 
   public Exposure collectExposureData() {
     return Exposure.builder()
-        .startOfExposure(LocalDate.parse(
-            webDriverHelpers.getValueFromWebElement(START_OF_EXPOSURE_INPUT), formatter))
-        .endOfExposure(LocalDate.parse(
-            webDriverHelpers.getValueFromWebElement(END_OF_EXPOSURE_INPUT), formatter))
-        .exposureDescription(webDriverHelpers.getValueFromWebElement(
-            EXPOSURE_DESCRIPTION_INPUT))
-        .typeOfActivity(TypeOfActivityExposure.fromString(webDriverHelpers.getValueFromCombobox(
-            TYPE_OF_ACTIVITY_COMBOBOX)))
-        .exposureDetailsRole(ExposureDetailsRole.fromString(webDriverHelpers.getValueFromCombobox(
-            EXPOSURE_DETAILS_ROLE_COMBOBOX)))
-        .riskArea(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            RISK_AREA_OPTIONS)))
-        .indoors(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            INDOORS_OPTIONS)))
-        .outdoors(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            OUTDOORS_OPTIONS)))
-        .wearingMask(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            WEARING_MASK_OPTIONS)))
-        .wearingPpe(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            WEARING_PPE_OPTIONS)))
-        .otherProtectiveMeasures(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            OTHER_PROTECTIVE_MEASURES_OPTIONS)))
-        .shortDistance(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            SHORT_DISTANCE_OPTIONS)))
-        .longFaceToFaceContact(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            LONG_FACE_TO_FACE_CONTACT_OPTIONS)))
-        .animalMarket(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            ANIMAL_MARKET_OPTIONS)))
-        .percutaneous(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            PERCUTANEOUS_OPTIONS)))
-        .contactToBodyFluids(YesNoUnknownOptions.valueOf(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            CONTACT_TO_BODY_FLUIDS_OPTONS)))
-        .handlingSamples(YesNoUnknownOptions.valueOf( webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-            HANDLING_SAMPLES_OPTIONS)))
-        .typeOfPlace(TypeOfPlace.fromString( webDriverHelpers.getValueFromCombobox(TYPE_OF_PLACE_COMBOBOX)))
+        .startOfExposure(
+            LocalDate.parse(
+                webDriverHelpers.getValueFromWebElement(START_OF_EXPOSURE_INPUT), formatter))
+        .endOfExposure(
+            LocalDate.parse(
+                webDriverHelpers.getValueFromWebElement(END_OF_EXPOSURE_INPUT), formatter))
+        .exposureDescription(webDriverHelpers.getValueFromWebElement(EXPOSURE_DESCRIPTION_INPUT))
+        .typeOfActivity(
+            TypeOfActivityExposure.fromString(
+                webDriverHelpers.getValueFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX)))
+        .exposureDetailsRole(
+            ExposureDetailsRole.fromString(
+                webDriverHelpers.getValueFromCombobox(EXPOSURE_DETAILS_ROLE_COMBOBOX)))
+        .riskArea(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RISK_AREA_OPTIONS)))
+        .indoors(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(INDOORS_OPTIONS)))
+        .outdoors(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OUTDOORS_OPTIONS)))
+        .wearingMask(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(WEARING_MASK_OPTIONS)))
+        .wearingPpe(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(WEARING_PPE_OPTIONS)))
+        .otherProtectiveMeasures(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    OTHER_PROTECTIVE_MEASURES_OPTIONS)))
+        .shortDistance(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHORT_DISTANCE_OPTIONS)))
+        .longFaceToFaceContact(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    LONG_FACE_TO_FACE_CONTACT_OPTIONS)))
+        .animalMarket(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(ANIMAL_MARKET_OPTIONS)))
+        .percutaneous(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PERCUTANEOUS_OPTIONS)))
+        .contactToBodyFluids(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    CONTACT_TO_BODY_FLUIDS_OPTONS)))
+        .handlingSamples(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    HANDLING_SAMPLES_OPTIONS)))
+        .typeOfPlace(
+            TypeOfPlace.fromString(webDriverHelpers.getValueFromCombobox(TYPE_OF_PLACE_COMBOBOX)))
         .continent(webDriverHelpers.getValueFromCombobox(CONTINENT_COMBOBOX))
         .subcontinent(webDriverHelpers.getValueFromCombobox(SUBCONTINENT_COMBOBOX))
         .country(webDriverHelpers.getValueFromCombobox(COUNTRY_COMBOBOX))
@@ -273,24 +272,20 @@ public class EpidemiologicalDataSteps implements En {
 
   public Activity collectActivityData() {
     return Activity.builder()
-        .startOfActivity(LocalDate.parse(
-            webDriverHelpers.getValueFromWebElement(
-                ACTIVITY_START_OF_ACTIVITY_INPUT),
-            formatter))
-        .endOfActivity(LocalDate.parse(
-            webDriverHelpers.getValueFromWebElement(
-                ACTIVITY_END_OF_ACTIVITY_INPUT),
-            formatter))
-        .description(webDriverHelpers.getValueFromWebElement(
-            ACTIVITY_DESCRIPTION))
-        .typeOfActivity(ActivityAsCaseType.fromString(webDriverHelpers.getValueFromCombobox(
-            ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX)))
-        .continent(webDriverHelpers.getValueFromCombobox(
-            ACTIVITY_CONTINENT_COMBOBOX))
-        .subcontinent(webDriverHelpers.getValueFromCombobox(
-            ACTIVITY_SUBCONTINENT_COMBOBOX))
-        .country(webDriverHelpers.getValueFromCombobox(
-            ACTIVITY_COUNTRY_COMBOBOX))
+        .startOfActivity(
+            LocalDate.parse(
+                webDriverHelpers.getValueFromWebElement(ACTIVITY_START_OF_ACTIVITY_INPUT),
+                formatter))
+        .endOfActivity(
+            LocalDate.parse(
+                webDriverHelpers.getValueFromWebElement(ACTIVITY_END_OF_ACTIVITY_INPUT), formatter))
+        .description(webDriverHelpers.getValueFromWebElement(ACTIVITY_DESCRIPTION))
+        .typeOfActivity(
+            ActivityAsCaseType.fromString(
+                webDriverHelpers.getValueFromCombobox(ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX)))
+        .continent(webDriverHelpers.getValueFromCombobox(ACTIVITY_CONTINENT_COMBOBOX))
+        .subcontinent(webDriverHelpers.getValueFromCombobox(ACTIVITY_SUBCONTINENT_COMBOBOX))
+        .country(webDriverHelpers.getValueFromCombobox(ACTIVITY_COUNTRY_COMBOBOX))
         .build();
   }
 }

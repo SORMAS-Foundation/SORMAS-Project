@@ -26,10 +26,8 @@ public class EpidemiologicalDataCasePage {
   public static final By EPIDEMIOLOGICAL_DATA_TAB_BUTTON = By.cssSelector("#tab-cases-epidata");
   public static final By EXPOSURE_DETAILS_NEW_ENTRY_BUTTON = By.cssSelector("#actionNewEntry");
   public static final By EXPOSURE_UUID = By.cssSelector(".v-window #uuid");
-  public static final By START_OF_EXPOSURE_INPUT =
-      By.cssSelector(".v-window #startDate .v-textfield.v-datefield-textfield");
-  public static final By END_OF_EXPOSURE_INPUT =
-      By.cssSelector(".v-window #endDate .v-textfield.v-datefield-textfield");
+  public static final By START_OF_EXPOSURE_INPUT = By.cssSelector(".v-window #startDate input");
+  public static final By END_OF_EXPOSURE_INPUT = By.cssSelector(".v-window #endDate input");
   public static final By EXPOSURE_DESCRIPTION_INPUT = By.cssSelector(".v-window #description");
   public static final By TYPE_OF_ACTIVITY_COMBOBOX = By.cssSelector(".v-window #exposureType div");
   public static final By TYPE_OF_ACTIVITY_COMBOBOX_OUTPUT =
@@ -121,7 +119,7 @@ public class EpidemiologicalDataCasePage {
   public static final By SAVE_BUTTON_EPIDEMIOLOGICAL_DATA = By.id("commit");
   public static final By DISCARD_BUTTON_EPIDEMIOLOGICAL_DATA = By.cssSelector("#discard");
   public static final By OPEN_SAVED_EXPOSURE_BUTTON =
-      By.cssSelector("div[id='exposures'] .v-slot .v-table .v-button ");
+      By.xpath("//div[contains(@id, 'de.symeda.sormas.api.exposure')]");
   public static final By OPEN_SAVED_ACTIVITY_BUTTON =
-      By.cssSelector("div[id='activitiesAsCase'] .v-slot .v-table .v-button  ");
+      By.xpath("//div[contains(@id, 'de.symeda.sormas.api.activityascase')]");
 }
