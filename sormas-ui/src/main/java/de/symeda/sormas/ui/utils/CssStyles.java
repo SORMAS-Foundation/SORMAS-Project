@@ -287,8 +287,6 @@ public final class CssStyles {
 	public static final String PRINT_VIEW_CONTAINER = "print-view-container";
 	public static final String FILTER_FORM = "filter-form";
 
-	public static final String FORCE_HORIZONTAL_SCROLL = "force-horizontal-scroll";
-
 	@Deprecated
 	public static final String CALLOUT = "callout";
 

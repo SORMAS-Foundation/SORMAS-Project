@@ -84,9 +84,10 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		dashboardLayout.setExpandRatio(tabLayout, 1);
 
 		final OptionGroup tabSwitcher = new OptionGroup();
-		tabSwitcher.setStyleName(CssStyles.FORCE_HORIZONTAL_SCROLL);
+		tabSwitcher.setWidthFull();
 
 		final VerticalLayout tabSwitcherLayout = new VerticalLayout(tabSwitcher);
+		tabSwitcherLayout.setWidthFull();
 		tabSwitcherLayout.setMargin(new MarginInfo(false, false, false, true));
 		tabSwitcherLayout.setSpacing(false);
 		tabLayout.addComponent(tabSwitcherLayout);
