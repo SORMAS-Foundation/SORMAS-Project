@@ -32,16 +32,39 @@ import de.symeda.sormas.backend.TestDataCreator;
 
 public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
-    @Test
-    public void testSaveAndGetByUuid() {
-        TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-        UserDto user = creator
-                .createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-        PersonDto person = creator.createPerson("John", "Doe");
-        ImmunizationDto immunizationDto = creator.createImmunization(Disease.CORONAVIRUS, person.toReference(), user.toReference(), ImmunizationStatus.ACQUIRED, MeansOfImmunization.VACCINATION, ImmunizationManagementStatus.COMPLETED, rdcf);
-        ImmunizationDto actual = getImmunizationFacade().getByUuid(immunizationDto.getUuid());
-        assertEquals(immunizationDto.getUuid(), actual.getUuid());
-        assertEquals(immunizationDto.getPerson(), actual.getPerson());
-    }
+	private TestDataCreator.RDCF rdcf;
+	private UserDto nationalUser;
+
+	@Override
+	public void init() {
+		super.init();
+		rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		nationalUser = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.community.getUuid(),
+			rdcf.facility.getUuid(),
+			"Nat",
+			"User",
+			UserRole.NATIONAL_USER);
+	}
+
+	@Test
+	public void testSaveAndGetByUuid() {
+		loginWith(nationalUser);
+
+		PersonDto person = creator.createPerson("John", "Doe");
+		ImmunizationDto immunizationDto = creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf);
+		ImmunizationDto actual = getImmunizationFacade().getByUuid(immunizationDto.getUuid());
+		assertEquals(immunizationDto.getUuid(), actual.getUuid());
+		assertEquals(immunizationDto.getPerson(), actual.getPerson());
+	}
 
 }

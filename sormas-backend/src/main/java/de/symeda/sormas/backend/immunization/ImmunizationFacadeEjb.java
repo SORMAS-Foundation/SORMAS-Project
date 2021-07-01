@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -44,9 +46,9 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "ImmunizationFacade")
@@ -195,7 +197,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		dto.setDisease(entity.getDisease());
 		dto.setPerson(PersonFacadeEjb.toReferenceDto(entity.getPerson()));
 		dto.setReportDate(entity.getReportDate());
-		dto.setReportingUser(UserFacadeEjb.toReferenceDto(entity.getReportingUser()));
+		dto.setReportingUser(entity.getReportingUser().toReference());
 		dto.setArchived(entity.isArchived());
 		dto.setExternalId(entity.getExternalId());
 		dto.setResponsibleRegion(RegionFacadeEjb.toReferenceDto(entity.getResponsibleRegion()));

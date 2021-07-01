@@ -57,7 +57,7 @@ public class UserReferenceDto extends ReferenceDto {
 		StringBuilder result = new StringBuilder();
 		result.append(DataHelper.toStringNullable(firstName)).append(" ").append(DataHelper.toStringNullable(lastName).toUpperCase());
 		boolean first = true;
-		if (CollectionUtils.isNotEmpty(userRoles)) {
+		if (userRoles != null) {
 			for (UserRole userRole : userRoles) {
 				if (first) {
 					result.append(" - ");
