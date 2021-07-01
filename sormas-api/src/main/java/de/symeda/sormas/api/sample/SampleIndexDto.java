@@ -60,8 +60,6 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	public static final String ADDITIONAL_TESTING_STATUS = "additionalTestingStatus";
 	public static final String PATHOGEN_TEST_COUNT = "pathogenTestCount";
-	public static final String TYPE_OF_LAST_TEST = "typeOfLastTest";
-	public static final String LAST_TEST_CQ_VALUE = "lastTestCqValue";
 
 	private String uuid;
 	@EmbeddedPersonalData
@@ -100,6 +98,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	private Float lastTestCqValue;
 
 	private SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto;
+
 	//@formatter:off
 	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
 						  boolean shipped, Date shipmentDate, boolean received, Date receivedDate,
@@ -154,11 +153,11 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 		this.lastTestCqValue = lastTestCqValue;
 
 		this.sampleJurisdictionFlagsDto = new SampleJurisdictionFlagsDto(
-				isInJurisdiction,
-				isCaseInJurisdiction,
-				isContactInJurisdiction,
-				isContactCaseInJurisdiction,
-				isEventParticipantInJurisdiction);
+			isInJurisdiction,
+			isCaseInJurisdiction,
+			isContactInJurisdiction,
+			isContactCaseInJurisdiction,
+			isEventParticipantInJurisdiction);
 	}
 
 	public String getUuid() {
