@@ -15,33 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+package org.sormas.e2etests.constants.api;
 
-package org.sormas.e2etests.enums;
-
-import java.util.Random;
-import lombok.Getter;
-
-@Getter
-public enum CaseOutcome {
-  NO_OUTCOME("No Outcome Yet"),
-  NOT_CLASSIFIED("Not yet classified"),
-  PENDING("Investigation pending"),
-  DECEASED("Deceased"),
-  RECOVERED("Recovered"),
-  UNKNOWN("Unknown"),
-  CORONAVIRUS("COVID-19"),
-  RESPONSIBLE_REGION("Voreingestellte Bundesl"),
-  RESPONSIBLE_DISTRICT("Voreingestellter Landkreis"),
-  HEALTH_FACILITY("Standard Einrichtung - Details");
-
-  private final String outcome;
-
-  CaseOutcome(String outcomeCase) {
-    outcome = outcomeCase;
-  }
-
-  public static String getRandomOutcome() {
-    Random random = new Random();
-    return String.valueOf(CaseOutcome.values()[random.nextInt(values().length)]);
-  }
+public interface JsonResourcesLocations {
+  String POST_CASES_BASIC_JSON_BODY = "src/test/resources/JsonFiles/PostCase-Basic.json";
+  String POST_PERSON_JSON_BODY = "src/test/resources/JsonFiles/PostPerson-Basic.json";
 }

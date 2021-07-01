@@ -16,32 +16,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.enums;
+package org.sormas.e2etests.utils;
 
-import java.util.Random;
-import lombok.Getter;
-
-@Getter
-public enum CaseOutcome {
-  NO_OUTCOME("No Outcome Yet"),
-  NOT_CLASSIFIED("Not yet classified"),
-  PENDING("Investigation pending"),
-  DECEASED("Deceased"),
-  RECOVERED("Recovered"),
-  UNKNOWN("Unknown"),
-  CORONAVIRUS("COVID-19"),
-  RESPONSIBLE_REGION("Voreingestellte Bundesl"),
-  RESPONSIBLE_DISTRICT("Voreingestellter Landkreis"),
-  HEALTH_FACILITY("Standard Einrichtung - Details");
-
-  private final String outcome;
-
-  CaseOutcome(String outcomeCase) {
-    outcome = outcomeCase;
-  }
-
-  public static String getRandomOutcome() {
-    Random random = new Random();
-    return String.valueOf(CaseOutcome.values()[random.nextInt(values().length)]);
+public class IncorrectDataException extends Throwable {
+  public IncorrectDataException(String errorMessage, Throwable err) {
+    super(errorMessage, err);
   }
 }

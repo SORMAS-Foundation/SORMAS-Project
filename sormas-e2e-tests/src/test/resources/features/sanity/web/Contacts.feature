@@ -69,14 +69,14 @@ Feature: Contacts end to end tests
     And I click yes on the CONFIRM REMOVAL popup from CONTACT page
     Then I check the CHOOSE SOURCE CASE BUTTON is displayed
 
-  Scenario: Create Contact and check details in Detailed view table
-    Given I log in with the user
-    When API: I create a new person
-    And API: I create a new contact
-    Given I click on the Contacts button from navbar
-    When I click on the DETAILED radiobutton
-    And I filter by ContactID
-    And I am checking if all the fields are correctly displayed in the Contacts directory Detailed table
+    Scenario: Create Contact and check details in Detailed view table
+      Given I log in with the user
+      When API: I create a new person
+      And API: I create a new contact
+      Given I click on the Contacts button from navbar
+      When I click on the DETAILED button from Case directory
+      And I filter by ContactID
+      And I am checking if all the fields are correctly displayed in the Contacts directory Detailed table
 
   Scenario: Edit all fields from Follow-up visits  tab
     Given I log in as a National User

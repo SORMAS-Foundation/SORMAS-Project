@@ -17,7 +17,7 @@
  */
 package org.sormas.e2etests.helpers.api;
 
-import static org.sormas.e2etests.constants.api.Endpoints.SAMPLES;
+import static org.sormas.e2etests.constants.api.Endpoints.SAMPLES_PATH;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
@@ -46,6 +46,10 @@ public class SampleHelper {
     List<Sample> listOfContacts = List.of(sample);
     objectMapper.writeValue(out, listOfContacts);
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.POST).path(SAMPLES + "push").body(out.toString()).build());
+        Request.builder()
+            .method(Method.POST)
+            .path(SAMPLES_PATH + "push")
+            .body(out.toString())
+            .build());
   }
 }
