@@ -59,18 +59,33 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 		final PersonDto person = newFieldValue.getPerson();
 		if (person != null) {
 			final Field<String> firstNameField = getField(FIRST_NAME);
-			firstNameField.setEnabled(false);
-			firstNameField.setValue(person.getFirstName());
 			final Field<String> lastNameField = getField(LAST_NAME);
-			lastNameField.setEnabled(false);
-			lastNameField.setValue(person.getLastName());
+			if (person.isPseudonymized()) {
+				firstNameField.setRequired(false);
+				firstNameField.setVisible(false);
+				lastNameField.setRequired(false);
+				lastNameField.setVisible(false);
+			} else {
+				firstNameField.setEnabled(false);
+				firstNameField.setValue(person.getFirstName());
+				lastNameField.setEnabled(false);
+				lastNameField.setValue(person.getLastName());
+			}
 		}
 	}
 
+	/**
+	 * 
+	 * @return first name of the person. ATTENTION: For pseudonymised persons, this method may return an empty string!
+	 */
 	public String getPersonFirstName() {
 		return (String) getField(FIRST_NAME).getValue();
 	}
 
+	/**
+	 * 
+	 * @return first name of the person. ATTENTION: For pseudonymised persons, this method may return an empty string!
+	 */
 	public String getPersonLastName() {
 		return (String) getField(LAST_NAME).getValue();
 	}

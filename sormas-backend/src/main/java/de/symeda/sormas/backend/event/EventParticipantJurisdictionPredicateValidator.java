@@ -1,31 +1,55 @@
 package de.symeda.sormas.backend.event;
 
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import java.util.Collections;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.utils.jurisdiction.JurisdictionValidator;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleJoins;
+import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
+import de.symeda.sormas.utils.EventJoins;
 import de.symeda.sormas.utils.EventParticipantJoins;
 
-public class EventParticipantJurisdictionPredicateValidator extends JurisdictionValidator<Predicate> {
+public class EventParticipantJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final CriteriaBuilder cb;
+	private final CriteriaQuery<?> cq;
 	private EventParticipantJoins<?> joins;
 	private User currentUser;
 
-	public static EventParticipantJurisdictionPredicateValidator of(CriteriaBuilder cb, EventParticipantJoins<?> joins, User currentUser) {
-		return new EventParticipantJurisdictionPredicateValidator(cb, joins, currentUser);
+	private EventParticipantJurisdictionPredicateValidator(EventParticipantQueryContext qc, User currentUser) {
+		super(qc.getCriteriaBuilder(), null);
+		this.joins = (EventParticipantJoins<?>) qc.getJoins();
+		this.currentUser = currentUser;
+		this.cq = qc.getQuery();
 	}
 
-	private EventParticipantJurisdictionPredicateValidator(CriteriaBuilder cb, EventParticipantJoins<?> joins, User currentUser) {
-		this.cb = cb;
-		this.joins = joins;
-		this.currentUser = currentUser;
+	public static EventParticipantJurisdictionPredicateValidator of(EventParticipantQueryContext qc, User currentUser) {
+		return new EventParticipantJurisdictionPredicateValidator(qc, currentUser);
+	}
+
+	@Override
+	protected Predicate isInJurisdictionOrOwned() {
+		final Predicate reportedByCurrentUser = cb.and(
+			cb.isNotNull(joins.getEventParticipantReportingUser()),
+			cb.equal(joins.getEventParticipantReportingUser().get(User.UUID), currentUser.getUuid()));
+		return cb.or(reportedByCurrentUser, isInJurisdiction());
+	}
+
+	@Override
+	protected Predicate isInJurisdiction() {
+		return isInJurisdictionByJurisdictionLevel(currentUser.getJurisdictionLevel());
 	}
 
 	@Override
@@ -66,6 +90,19 @@ public class EventParticipantJurisdictionPredicateValidator extends Jurisdiction
 
 	@Override
 	protected Predicate whenPointOfEntryLevel() {
-		return null;
+		return cb.disjunction();
+	}
+
+	@Override
+	protected Predicate whenLaboratoryLevel() {
+		final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
+		final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
+		final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
+		final Join eventParticipant = sampleJoins.getEventParticipant();
+		SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
+			SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
+		sampleSubQuery.where(cb.and(cb.equal(eventParticipant, joins.getRoot()), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
+		sampleSubQuery.select(sampleRoot.get(Sample.ID));
+		return cb.exists(sampleSubQuery);
 	}
 }

@@ -15,7 +15,10 @@ import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.therapy.TreatmentIndexDto;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/treatments")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
@@ -47,5 +50,11 @@ public class TreatmentResource extends EntityDtoResource {
 	@Path("/uuids")
 	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getTreatmentFacade().getAllActiveUuids();
+	}
+
+	@POST
+	@Path("/indexList")
+	public List<TreatmentIndexDto> getIndexList(@RequestBody TreatmentCriteria treatmentCriteria) {
+		return FacadeProvider.getTreatmentFacade().getIndexList(treatmentCriteria);
 	}
 }

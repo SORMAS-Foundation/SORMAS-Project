@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -94,7 +95,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String EPIDEMIOLOGICAL_EVIDENCE_DETAILS = "epidemiologicalEvidenceDetails";
 	public static final String LABORATORY_DIAGNOSTIC_EVIDENCE = "laboratoryDiagnosticEvidence";
 	public static final String LABORATORY_DIAGNOSTIC_EVIDENCE_DETAILS = "laboratoryDiagnosticEvidenceDetails";
-	public static final String INTERNALID = "internalId";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String EVENT_GROUP = "eventGroup";
 
 	private EventReferenceDto superordinateEvent;
@@ -173,7 +174,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	private boolean ownershipHandedOver;
 
 	@HideForCountriesExcept
-	private String internalId;
+	private String internalToken;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -572,6 +573,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	}
 
 	@Override
+	@ImportIgnore
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
@@ -630,12 +632,12 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 		this.laboratoryDiagnosticEvidenceDetails = laboratoryDiagnosticEvidenceDetails;
 	}
 
-	public String getInternalId() {
-		return internalId;
+	public String getInternalToken() {
+		return internalToken;
 	}
 
-	public void setInternalId(String internalId) {
-		this.internalId = internalId;
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	public EventReferenceDto toReference() {

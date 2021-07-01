@@ -185,30 +185,34 @@ public class EventParticipantsView extends AbstractEventView {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>(
-				Collections
-					.singletonList(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-						ControllerProvider.getEventParticipantController()
-							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
-					})));
+				Collections.singletonList(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
+					grid.bulkActionHandler(items -> {
+						ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> navigateTo(criteria));
+					}, true);
+				})));
 
 			if (isDocGenerationAllowed()) {
 				bulkActions
 					.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
-						List<ReferenceDto> references =
-							grid.asMultiSelect().getSelectedItems().stream().map(EventParticipantIndexDto::toReference).collect(Collectors.toList());
+						grid.bulkActionHandler(items -> {
+							List<ReferenceDto> references = grid.asMultiSelect()
+								.getSelectedItems()
+								.stream()
+								.map(EventParticipantIndexDto::toReference)
+								.collect(Collectors.toList());
+							if (references.size() == 0) {
+								new Notification(
+									I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
+									I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
+									Notification.Type.WARNING_MESSAGE,
+									false).show(Page.getCurrent());
 
-						if (references.size() == 0) {
-							new Notification(
-								I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
-								I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
-								Notification.Type.WARNING_MESSAGE,
-								false).show(Page.getCurrent());
+								return;
+							}
 
-							return;
-						}
-
-						ControllerProvider.getDocGenerationController()
-							.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT);
+							ControllerProvider.getDocGenerationController()
+								.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT);
+						});
 					}));
 			}
 

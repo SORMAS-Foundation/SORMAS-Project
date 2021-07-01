@@ -42,6 +42,7 @@ public class EventExportDto implements Serializable {
 	private String uuid;
 	private String externalId;
 	private String externalToken;
+	private String internalToken;
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
@@ -85,12 +86,13 @@ public class EventExportDto implements Serializable {
 	private UserReferenceDto responsibleUser;
 	private EventManagementStatus eventManagementStatus;
 
-	private EventJurisdictionDto jurisdiction;
+	private boolean isInJurisdictionOrOwned;
 
 	public EventExportDto(
 		String uuid,
 		String externalId,
 		String externalToken,
+		String internalToken,
 		EventStatus eventStatus,
 		RiskLevel riskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
@@ -134,10 +136,12 @@ public class EventExportDto implements Serializable {
 		String responsibleUserUuid,
 		String responsibleUserFirstName,
 		String responsibleUserLastName,
+		boolean isInJurisdictionOrOwned,
 		EventManagementStatus eventManagementStatus) {
 		this.uuid = uuid;
 		this.externalId = externalId;
 		this.externalToken = externalToken;
+		this.internalToken = internalToken;
 		this.eventStatus = eventStatus;
 		this.riskLevel = riskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
@@ -172,9 +176,8 @@ public class EventExportDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
 		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null);
+		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
 		this.eventManagementStatus = eventManagementStatus;
-
-		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, responsibleUserUuid, regionUuid, districtUuid, communityUuid);
 	}
 
 	@Order(0)
@@ -616,11 +619,17 @@ public class EventExportDto implements Serializable {
 		return externalToken;
 	}
 
+	@Order(45)
+	@ExportProperty(EventDto.INTERNAL_TOKEN)
+	@ExportGroup(ExportGroupType.CORE)
+	public String getInternalToken() {
+		return internalToken;
+	}
 	public void setContactCountSourceInEvent(long contactCountSourceInEvent) {
 		this.contactCountSourceInEvent = contactCountSourceInEvent;
 	}
 
-	public EventJurisdictionDto getJurisdiction() {
-		return jurisdiction;
+	public boolean getInJurisdictionOrOwned() {
+		return isInJurisdictionOrOwned;
 	}
 }

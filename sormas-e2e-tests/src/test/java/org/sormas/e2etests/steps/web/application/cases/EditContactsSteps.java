@@ -27,7 +27,6 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CATEGORY_OPTIONS;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.DATE_OF_LAST_CONTACT_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.TYPE_OF_CONTACT_OPTIONS;
 
@@ -149,6 +148,46 @@ public class EditContactsSteps implements En {
           softly
               .assertThat(contact.getDescriptionOfHowContactTookPlace())
               .isEqualTo(collectedContact.getDescriptionOfHowContactTookPlace());
+          softly.assertAll();
+        });
+
+    Then(
+        "I check the linked contact information is correctly displayed",
+        () -> {
+          String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
+          String contactDisease =
+              (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 1).equals("COVID-19"))
+                  ? "CORONAVIRUS"
+                  : "Not expected string!";
+          String contactClassification =
+              (webDriverHelpers
+                      .getValueFromTableRowUsingTheHeader("Contact classification", 1)
+                      .equals("Unconfirmed contact"))
+                  ? "UNCONFIRMED"
+                  : "Not expected string!";
+          String firstName =
+              webDriverHelpers.getValueFromTableRowUsingTheHeader(
+                  "First name of contact person", 1);
+          String lastName =
+              webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 1);
+
+          softly
+              // this substring method will return the first 6 characters from the UUID.
+              // those characters are used in UI as the Contact ID.
+              .assertThat(apiState.getCreatedContact().getUuid().substring(0, 6))
+              .isEqualToIgnoringCase(contactId);
+          softly
+              .assertThat(apiState.getCreatedContact().getDisease())
+              .isEqualToIgnoringCase(contactDisease);
+          softly
+              .assertThat(apiState.getCreatedContact().getContactClassification())
+              .isEqualToIgnoringCase(contactClassification);
+          softly
+              .assertThat(apiState.getCreatedContact().getPerson().getFirstName())
+              .isEqualToIgnoringCase(firstName);
+          softly
+              .assertThat(apiState.getCreatedContact().getPerson().getLastName())
+              .isEqualToIgnoringCase(lastName);
           softly.assertAll();
         });
   }

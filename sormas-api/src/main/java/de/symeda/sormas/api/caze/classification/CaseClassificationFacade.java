@@ -25,12 +25,11 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
 
 @Remote
 public interface CaseClassificationFacade {
 
-	CaseClassification getClassification(CaseDataDto caze, List<PathogenTestDto> pathogenTests);
+	CaseClassification getClassification(CaseDataDto caze);
 
 	DiseaseClassificationCriteriaDto getByDisease(Disease disease);
 

@@ -106,11 +106,19 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 			ageAndBirthDateField.setWidthUndefined();
 			caseInfoLayout.addComponent(ageAndBirthDateField);
 
-			Label districtField = new Label();
-			districtField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
-			districtField.setValue(newCase.getDistrict() != null ? newCase.getDistrict().toString() : "");
-			districtField.setWidthUndefined();
-			caseInfoLayout.addComponent(districtField);
+			Label responsibleDistrictField = new Label();
+			responsibleDistrictField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT));
+			responsibleDistrictField.setValue(newCase.getResponsibleDistrict() != null ? newCase.getResponsibleDistrict().toString() : "");
+			responsibleDistrictField.setWidthUndefined();
+			caseInfoLayout.addComponent(responsibleDistrictField);
+
+			if (newCase.getDistrict() != null) {
+				Label districtField = new Label();
+				districtField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+				districtField.setValue(newCase.getDistrict().toString());
+				districtField.setWidthUndefined();
+				caseInfoLayout.addComponent(districtField);
+			}
 
 			Label facilityField = new Label();
 			facilityField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY));

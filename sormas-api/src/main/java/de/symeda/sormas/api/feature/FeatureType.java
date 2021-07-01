@@ -70,6 +70,13 @@ public enum FeatureType {
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE }),
+	SORMAS_TO_SORMAS_ACCEPT_REJECT(true,
+		false,
+		new FeatureType[] {
+			CASE_SURVEILANCE,
+			CONTACT_TRACING,
+			EVENT_SURVEILLANCE }),
+	PERSON_DUPLICATE_CUSTOM_SEARCH(true, false, null),
 
 	// SHOW/HIDE VIEW TAB FEATURES
 	VIEW_TAB_CASES_HOSPITALIZATION(true,

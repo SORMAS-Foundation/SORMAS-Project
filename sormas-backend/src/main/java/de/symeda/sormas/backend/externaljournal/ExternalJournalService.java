@@ -29,8 +29,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -47,6 +45,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
+import de.symeda.sormas.api.externaljournal.ExternalJournalSyncResponseDto;
 import de.symeda.sormas.api.externaljournal.ExternalJournalValidation;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryIdatId;
 import de.symeda.sormas.api.externaljournal.patientdiary.PatientDiaryPersonData;
@@ -59,6 +58,7 @@ import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -458,16 +458,12 @@ public class ExternalJournalService {
 			.map(PatientDiaryIdatId::getIdat)
 			.map(PatientDiaryPersonDto::getPersonUUID)
 			.anyMatch(uuid -> person.getUuid().equals(uuid));
-		boolean sameFamily = response.getResults()
+		boolean differentFirstNames = response.getResults()
 			.stream()
 			.map(PatientDiaryPersonData::getIdatId)
 			.map(PatientDiaryIdatId::getIdat)
-			.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
-		return notUsed || samePerson || sameFamily;
-	}
-
-	private boolean inSameFamily(PersonDto person, PatientDiaryPersonDto patientDiaryPerson) {
-		return patientDiaryPerson.getLastName().equals(person.getLastName()) && !patientDiaryPerson.getFirstName().equals(person.getFirstName());
+			.noneMatch(patientDiaryPerson -> person.getFirstName().equals(patientDiaryPerson.getFirstName()));
+		return notUsed || samePerson || differentFirstNames;
 	}
 
 	private boolean isPhoneAvailable(PersonDto person, String phone) {
@@ -480,12 +476,12 @@ public class ExternalJournalService {
 			.map(PatientDiaryIdatId::getIdat)
 			.map(PatientDiaryPersonDto::getPersonUUID)
 			.anyMatch(uuid -> person.getUuid().equals(uuid));
-		boolean sameFamily = response.getResults()
+		boolean differentFirstNames = response.getResults()
 			.stream()
 			.map(PatientDiaryPersonData::getIdatId)
 			.map(PatientDiaryIdatId::getIdat)
-			.anyMatch(patientDiaryPerson -> inSameFamily(person, patientDiaryPerson));
-		return notUsed || samePerson || sameFamily;
+			.noneMatch(patientDiaryPerson -> person.getFirstName().equals(patientDiaryPerson.getFirstName()));
+		return notUsed || samePerson || differentFirstNames;
 	}
 
 	/**

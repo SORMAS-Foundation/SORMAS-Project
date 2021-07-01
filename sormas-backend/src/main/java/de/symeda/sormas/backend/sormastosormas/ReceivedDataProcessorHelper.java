@@ -32,6 +32,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -55,6 +56,8 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
@@ -140,6 +143,14 @@ public class ReceivedDataProcessorHelper {
 		return validationErrors;
 	}
 
+	public ValidationErrors processPersonPreview(SormasToSormasPersonPreview person) {
+		ValidationErrors validationErrors = new ValidationErrors();
+
+		processLocation(person.getAddress(), Captions.Person, validationErrors);
+
+		return validationErrors;
+	}
+
 	private CountryReferenceDto processCountry(CountryReferenceDto country, String errorCaption, ValidationErrors validationErrors) {
 		CountryReferenceDto localCountry = loadLocalCountry(country);
 		if (country != null && localCountry == null) {
@@ -153,6 +164,45 @@ public class ReceivedDataProcessorHelper {
 		DistrictReferenceDto district,
 		CommunityReferenceDto community) {
 		return loadLocalInfrastructure(region, district, community, null, null, null, null, null);
+	}
+
+	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(CaseDataDto caze) {
+		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = loadLocalInfrastructure(
+			caze.getRegion(),
+			caze.getDistrict(),
+			caze.getCommunity(),
+			caze.getFacilityType(),
+			caze.getHealthFacility(),
+			caze.getHealthFacilityDetails(),
+			caze.getPointOfEntry(),
+			caze.getPointOfEntryDetails());
+
+		InfrastructureData infrastructureData = infrastructureAndErrors.getElement0();
+		List<String> unmatchedFields = infrastructureAndErrors.getElement1();
+
+		RegionReferenceDto responsibleRegion = caze.getResponsibleRegion();
+		infrastructureData.responsibleRegion = loadLocalRegion(responsibleRegion);
+		if (responsibleRegion != null && infrastructureData.responsibleRegion == null) {
+			unmatchedFields.add(
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_REGION) + ": " + responsibleRegion.getCaption());
+		}
+
+		DistrictReferenceDto responsibleDistrict = caze.getResponsibleDistrict();
+		infrastructureData.responsibleDistrict = loadLocalDistrict(responsibleDistrict);
+		if (responsibleDistrict != null && infrastructureData.responsibleDistrict == null) {
+			unmatchedFields.add(
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT) + ": " + responsibleDistrict.getCaption());
+		}
+
+		CommunityReferenceDto responsibleCommunity = caze.getResponsibleCommunity();
+		infrastructureData.responsibleCommunity = loadLocalCommunity(responsibleCommunity);
+		if (responsibleCommunity != null && infrastructureData.responsibleCommunity == null) {
+			unmatchedFields.add(
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_COMMUNITY) + ": "
+					+ responsibleCommunity.getCaption());
+		}
+
+		return infrastructureAndErrors;
 	}
 
 	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
@@ -220,6 +270,9 @@ public class ReceivedDataProcessorHelper {
 		}
 
 		infrastructureData.community = loadLocalCommunity(community);
+		if (community != null && infrastructureData.community == null) {
+			unmatchedFields.add(I18nProperties.getCaption(Captions.community) + ": " + community.getCaption());
+		}
 
 		if (facility != null) {
 			WithDetails<FacilityReferenceDto> localFacility = loadLocalFacility(facility, facilityType, facilityDetails);
@@ -338,6 +391,21 @@ public class ReceivedDataProcessorHelper {
 		return validationErrors;
 	}
 
+	public ValidationErrors processContactPreview(SormasToSormasContactPreview contact) {
+		ValidationErrors validationErrors = new ValidationErrors();
+
+		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
+			loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
+
+		handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
+			contact.setRegion(infrastructure.region);
+			contact.setDistrict(infrastructure.district);
+			contact.setCommunity(infrastructure.community);
+		}));
+
+		return validationErrors;
+	}
+
 	public void processEpiData(EpiDataDto epiData, ValidationErrors validationErrors) {
 		if (epiData != null) {
 			epiData.getExposures().forEach(exposure -> {
@@ -361,7 +429,7 @@ public class ReceivedDataProcessorHelper {
 		entity.setReportingUser(reportingUser);
 	}
 
-	private void processLocation(LocationDto address, String groupNameTag, ValidationErrors validationErrors) {
+	public void processLocation(LocationDto address, String groupNameTag, ValidationErrors validationErrors) {
 		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = loadLocalInfrastructure(
 			address.getContinent(),
 			address.getSubcontinent(),
@@ -559,6 +627,9 @@ public class ReceivedDataProcessorHelper {
 		private ContinentReferenceDto continent;
 		private SubcontinentReferenceDto subcontinent;
 		private CountryReferenceDto country;
+		private RegionReferenceDto responsibleRegion;
+		private DistrictReferenceDto responsibleDistrict;
+		private CommunityReferenceDto responsibleCommunity;
 		private RegionReferenceDto region;
 		private DistrictReferenceDto district;
 		private CommunityReferenceDto community;
@@ -577,6 +648,18 @@ public class ReceivedDataProcessorHelper {
 
 		public CountryReferenceDto getCountry() {
 			return country;
+		}
+
+		public RegionReferenceDto getResponsibleRegion() {
+			return responsibleRegion;
+		}
+
+		public DistrictReferenceDto getResponsibleDistrict() {
+			return responsibleDistrict;
+		}
+
+		public CommunityReferenceDto getResponsibleCommunity() {
+			return responsibleCommunity;
 		}
 
 		public RegionReferenceDto getRegion() {

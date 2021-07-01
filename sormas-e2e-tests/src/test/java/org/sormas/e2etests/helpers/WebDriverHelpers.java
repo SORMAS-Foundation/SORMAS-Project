@@ -18,16 +18,17 @@
 
 package org.sormas.e2etests.helpers;
 
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
+import static com.google.common.truth.Truth.*;
 import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
-import static org.sormas.e2etests.helpers.AssertHelpers.takeScreenshot;
+import static org.sormas.e2etests.helpers.AssertHelpers.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +43,12 @@ public class WebDriverHelpers {
   public static final By SELECTED_RADIO_BUTTON =
       By.xpath("ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
+  public static final By CHECKBOX_TEXT_LABEL = By.xpath("ancestor::span//label");
 
   private final BaseSteps baseSteps;
   private final AssertHelpers assertHelpers;
+  private static final String SCROLL_TO_WEB_ELEMENT_SCRIPT =
+      "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});";
 
   @Inject
   public WebDriverHelpers(BaseSteps baseSteps, AssertHelpers assertHelpers) {
@@ -53,19 +57,11 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoaded() {
-    try {
-      assertHelpers.assertWithPoll15Second(
-          () ->
-              assertThat(
-                      baseSteps
-                          .getDriver()
-                          .executeScript("return document.readyState")
-                          .toString()
-                          .contentEquals("complete"))
-                  .isTrue());
-    } catch (Throwable ignored) {
 
-    }
+    assertHelpers.assertWithPoll15Second(
+        () ->
+            assertThat(baseSteps.getDriver().executeScript("return document.readyState").toString())
+                .isEqualTo("complete"));
   }
 
   public void waitUntilElementIsVisibleAndClickable(By selector) {
@@ -138,6 +134,26 @@ public class WebDriverHelpers {
     } else {
       throw new NotFoundException("This type is not available");
     }
+  }
+
+  public void waitUntilAListOfWebElementsAreNotEmpty(final By selector) {
+    assertHelpers.assertWithPoll(
+        () -> {
+          List<String> webElementsTexts =
+              baseSteps.getDriver().findElements(selector).stream()
+                  .map(
+                      webElement -> {
+                        scrollToElement(webElement);
+                        return webElement.getText();
+                      })
+                  .collect(Collectors.toList());
+          webElementsTexts.forEach(
+              text ->
+                  assertWithMessage("The element was empty or null: %s", text)
+                      .that(text)
+                      .isNotEmpty());
+        },
+        FLUENT_WAIT_TIMEOUT_SECONDS);
   }
 
   public void fillInWebElement(By selector, String text) {
@@ -279,14 +295,34 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsPresent(selector);
     try {
       if (selector instanceof WebElement) {
-        javascriptExecutor.executeScript(
-            "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});",
-            selector);
+        javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
       } else {
         waitUntilIdentifiedElementIsPresent(selector);
         javascriptExecutor.executeScript(
-            "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});",
-            baseSteps.getDriver().findElement((By) selector));
+            SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
+      }
+    } catch (Exception ignored) {
+    }
+    waitForPageLoaded();
+  }
+
+  public void scrollToElementUntilIsVisible(final Object selector) {
+    JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
+    waitUntilIdentifiedElementIsPresent(selector);
+    try {
+      if (selector instanceof WebElement) {
+        assertHelpers.assertWithPoll15Second(
+            () -> {
+              javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
+              assertThat(((WebElement) selector).isDisplayed()).isTrue();
+            });
+      } else {
+        assertHelpers.assertWithPoll15Second(
+            () -> {
+              javascriptExecutor.executeScript(
+                  SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
+              assertThat(baseSteps.getDriver().findElement((By) selector).isDisplayed()).isTrue();
+            });
       }
     } catch (Exception ignored) {
     }
@@ -310,11 +346,56 @@ public class WebDriverHelpers {
             () -> new NotFoundException("The selector containing text has not been found"));
   }
 
+  public void waitUntilAListOfElementsHasText(By selector, String text) {
+    waitForPageLoaded();
+    try {
+      assertHelpers.assertWithPoll(
+          () -> {
+            List<WebElement> webElements = baseSteps.getDriver().findElements(selector);
+            scrollToElement(webElements.get(0));
+            assertThat(webElements.size()).isAtLeast(2);
+            assertThat(
+                webElements.stream().allMatch(webElement -> webElement.getText().equals(text)));
+          },
+          3);
+    } catch (Throwable ignored) {
+    }
+  }
+
+  public void waitUntilAListOfElementsIsPresent(By selector, int number) {
+    waitForPageLoaded();
+    try {
+      assertHelpers.assertWithPoll(
+          () -> {
+            List<WebElement> webElements = baseSteps.getDriver().findElements(selector);
+            scrollToElement(webElements.get(0));
+            assertThat(webElements.size()).isAtLeast(number);
+          },
+          4);
+    } catch (Throwable ignored) {
+    }
+  }
+
+  public void fillValueOfListElement(By selector, int index, String text) {
+    baseSteps.getDriver().findElements(selector).get(index).sendKeys(text);
+  }
+
+  public String getValueOfListElement(By selector, int index) {
+    scrollToElement(selector);
+    return baseSteps.getDriver().findElements(selector).get(index).getAttribute("value");
+  }
+
+  public String getTextFromListElement(By selector, int index) {
+    scrollToElement(selector);
+    return baseSteps.getDriver().findElements(selector).get(index).getText();
+  }
+
   public WebElement getWebElementBySelectorAndText(final By selector, final String text) {
     return getWebElementByText(selector, webElement -> webElement.getText().contentEquals(text));
   }
 
   public void clickWebElementByText(final By selector, final String text) {
+    scrollToElement(selector);
     getWebElementBySelectorAndText(selector, text).click();
   }
 
@@ -406,6 +487,24 @@ public class WebDriverHelpers {
                 .isLessThan(given));
   }
 
+  public void waitUntilNumberOfElementsIsExactlyOrLess(By selector, int given) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
+    assertHelpers.assertWithPoll15Second(
+        () ->
+            assertWithMessage("Number of identified element should be %s", given)
+                .that(getNumberOfElements(selector))
+                .isAtMost(given));
+  }
+
+  public void waitUntilNumberOfElementsIsExactly(By selector, int given) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(selector, 15);
+    assertHelpers.assertWithPoll15Second(
+        () ->
+            assertWithMessage("Number of identified element should be %s", given)
+                .that(getNumberOfElements(selector))
+                .isEqualTo(given));
+  }
+
   public String getCheckedOptionFromHorizontalOptionGroup(By options) {
     waitUntilIdentifiedElementIsPresent(options);
     scrollToElement(options);
@@ -426,5 +525,26 @@ public class WebDriverHelpers {
         throw new Error("The field didn't clear");
       }
     }
+  }
+
+  public String getTextFromLabelIfCheckboxIsChecked(By checkbox) {
+    scrollToElement(checkbox);
+    if (getAttributeFromWebElement(checkbox, "checked").equals("true")) {
+      return baseSteps.getDriver().findElement(checkbox).findElement(CHECKBOX_TEXT_LABEL).getText();
+    } else {
+      throw new Error("checked was found as NULL");
+    }
+  }
+
+  // always needs the raw header value from the DOM, not the stylized one (the one displayed in UI)
+  // rowIndex parameter will return the demanded row. 0 is the header
+  // style.substring(style.length() - 17) matches the width value for the selector. it will be used
+  // to match the header and the rows by the lenght.
+  public String getValueFromTableRowUsingTheHeader(String headerValue, int rowIndex) {
+    By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
+    scrollToElement(header);
+    String style = getAttributeFromWebElement(header, "style");
+    By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
+    return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
   }
 }

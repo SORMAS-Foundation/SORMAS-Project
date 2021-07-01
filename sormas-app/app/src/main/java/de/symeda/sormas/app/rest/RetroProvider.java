@@ -35,9 +35,11 @@ import android.util.Log;
 import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationEventClusterCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationExposureCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNoneOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationNotInStartDateRangeCriteriaDto;
@@ -149,7 +151,10 @@ public final class RetroProvider {
 				.registerSubtype(ClassificationExposureCriteriaDto.class, "ClassificationExposureCriteriaDto")
 				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto.class, "ClassificationXOfSubCriteriaDto")
 				.registerSubtype(ClassificationXOfCriteriaDto.ClassificationOneOfCompactCriteriaDto.class, "ClassificationOneOfCompactCriteriaDto")
-				.registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto");
+				.registerSubtype(ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto.class, "ClassificationAllOfCompactCriteriaDto")
+				.registerSubtype(ClassificationEventClusterCriteriaDto.class, "ClassificationEventClusterCriteriaDto")
+				.registerSubtype(ClassificationAllSymptomsCriteriaDto.class, "ClassificationAllSymptomsCriteriaDto");
+
 
 		Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
 			if (json.isJsonNull()) {
@@ -171,7 +176,7 @@ public final class RetroProvider {
 
 		OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 		httpClient.connectTimeout(20, TimeUnit.SECONDS);
-		httpClient.readTimeout(240, TimeUnit.SECONDS); // for infrastructure data
+		httpClient.readTimeout(1800, TimeUnit.SECONDS); // for infrastructure data
 		httpClient.writeTimeout(60, TimeUnit.SECONDS);
 
 		// adds "Accept-Encoding: gzip" by default
