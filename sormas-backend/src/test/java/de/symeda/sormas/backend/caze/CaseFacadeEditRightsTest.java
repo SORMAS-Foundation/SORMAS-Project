@@ -100,8 +100,8 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 	public void testCanEditCaseByPlaceOfStay() {
 		loginWith(districtUser2);
 
-		CaseDataDto editableCase = createCase(rdcf2, districtUser1);
-		CaseDataDto notEditableCase = createCase(rdcf1, districtUser1);
+		CaseDataDto editableCase = createCase(rdcf1, districtUser1, rdcf2);
+		CaseDataDto notEditableCase = createCase(rdcf1, districtUser1, rdcf1);
 
 		assertThat(getCaseFacade().isCaseEditAllowed(editableCase.getUuid()), is(true));
 		assertThat(getCaseFacade().isCaseEditAllowed(notEditableCase.getUuid()), is(false));
@@ -111,8 +111,8 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 	public void testCanEditByResponsibleJurisdiction() {
 		loginWith(districtUser2);
 
-		CaseDataDto editableCase = createCase(rdcf1, districtUser1, rdcf2);
-		CaseDataDto notEditableCase = createCase(rdcf1, districtUser1, rdcf1);
+		CaseDataDto editableCase = createCase(rdcf2, districtUser1);
+		CaseDataDto notEditableCase = createCase(rdcf1, districtUser1);
 
 		assertThat(getCaseFacade().isCaseEditAllowed(editableCase.getUuid()), is(true));
 		assertThat(getCaseFacade().isCaseEditAllowed(notEditableCase.getUuid()), is(false));
@@ -123,8 +123,8 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 
 		loginWith(regionUser);
 
-		CaseDataDto editableCaseByPlaceOfStay = createCase(rdcf2, districtUser1, rdcf1);
-		CaseDataDto editableCaseByJurisdiction = createCase(rdcf1, districtUser1, rdcf2);
+		CaseDataDto editableCaseByPlaceOfStay = createCase(rdcf1, districtUser1, rdcf2);
+		CaseDataDto editableCaseByJurisdiction = createCase(rdcf2, districtUser1);
 		CaseDataDto notEditableCase = createCase(rdcf1, districtUser1, rdcf1);
 
 		assertThat(getCaseFacade().isCaseEditAllowed(editableCaseByPlaceOfStay.getUuid()), is(true));
@@ -137,8 +137,8 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 
 		loginWith(communityUser);
 
-		CaseDataDto editableCaseByPlaceOfStay = createCase(rdcf2, districtUser1, rdcf1);
-		CaseDataDto editableCaseByJurisdiction = createCase(rdcf1, districtUser1, rdcf2);
+		CaseDataDto editableCaseByPlaceOfStay = createCase(rdcf1, districtUser1, rdcf2);
+		CaseDataDto editableCaseByJurisdiction = createCase(rdcf2, districtUser1);
 		CaseDataDto notEditableCase = createCase(rdcf1, districtUser1, rdcf1);
 
 		assertThat(getCaseFacade().isCaseEditAllowed(editableCaseByPlaceOfStay.getUuid()), is(true));
@@ -151,8 +151,8 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 
 		loginWith(facilityUser);
 
-		CaseDataDto editableCaseByPlaceOfStay = createCase(rdcf2, districtUser1, rdcf1);
-		CaseDataDto notEditableCaseByJurisdiction = createCase(rdcf1, districtUser1, rdcf2);
+		CaseDataDto editableCaseByPlaceOfStay = createCase(rdcf1, districtUser1, rdcf2);
+		CaseDataDto notEditableCaseByJurisdiction = createCase(rdcf1, districtUser1);
 		CaseDataDto notEditableCase = createCase(rdcf1, districtUser1, rdcf1);
 
 		assertThat(getCaseFacade().isCaseEditAllowed(editableCaseByPlaceOfStay.getUuid()), is(true));
@@ -160,7 +160,7 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 		assertThat(getCaseFacade().isCaseEditAllowed(notEditableCase.getUuid()), is(false));
 	}
 
-	private CaseDataDto createCase(TestDataCreator.RDCF rdcf, UserDto reportingUser) {
+	private CaseDataDto createCase(TestDataCreator.RDCF responsibleRdcf, UserDto reportingUser) {
 
 		return creator.createCase(
 			reportingUser.toReference(),
@@ -169,11 +169,11 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
 			new Date(),
-			rdcf,
+			responsibleRdcf,
 			null);
 	}
 
-	private CaseDataDto createCase(TestDataCreator.RDCF rdcf, UserDto reportingUser, TestDataCreator.RDCF responsibleRdcf) {
+	private CaseDataDto createCase(TestDataCreator.RDCF responsibleRdcf, UserDto reportingUser, TestDataCreator.RDCF placeOfStayRdcf) {
 
 		return creator.createCase(
 			reportingUser.toReference(),
@@ -182,11 +182,12 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 			CaseClassification.PROBABLE,
 			InvestigationStatus.PENDING,
 			new Date(),
-			rdcf,
+			responsibleRdcf,
 			(c) -> {
-				c.setResponsibleRegion(responsibleRdcf.region);
-				c.setResponsibleDistrict(responsibleRdcf.district);
-				c.setResponsibleCommunity(responsibleRdcf.community);
+				c.setRegion(placeOfStayRdcf.region);
+				c.setDistrict(placeOfStayRdcf.district);
+				c.setCommunity(placeOfStayRdcf.community);
+				c.setHealthFacility(placeOfStayRdcf.facility);
 			});
 	}
 }

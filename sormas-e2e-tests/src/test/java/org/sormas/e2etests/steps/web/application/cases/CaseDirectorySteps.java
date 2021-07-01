@@ -20,7 +20,6 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
-import static org.sormas.e2etests.pages.application.samples.SampleManagementPage.*;
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
@@ -45,6 +44,10 @@ public class CaseDirectorySteps implements En {
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 NEW_CASE_BUTTON, DATE_OF_REPORT_INPUT));
+
+    When(
+        "^I click on Case Line Listing button$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_BUTTON));
 
     When(
         "^I open last created case",

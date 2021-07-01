@@ -80,7 +80,7 @@ Feature: Create events
 
   Scenario: Add a New action from event and verify the fields.
     Given API: I create a new event
-    Given I log in with the user
+    Given I log in as a National User
     And I click on the Events button from navbar
     Then I open the last created event via api
     And I click on New Action button from Event tab
@@ -98,6 +98,20 @@ Feature: Create events
     Then I navigate to Event Action tab for created Event
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
+
+
+  Scenario: Add a New action for an Event and verify the Action in EventActions table
+      Given I log in with the user
+      Given API: I create a new event
+      Then I navigate to Event Action tab for created Event
+      And I click on New Action from Event Actions tab
+      And I create New Action from event tab
+      And I click on the Events button from navbar
+      And I click on the Actions button from Events view switcher
+      And I search last created Event by API using EVENT UUID and wait for 1 entries in the table
+      And I collect the event actions from table view
+      And I am checking if all the fields are correctly displayed in the Event directory Actions table
+
 
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event

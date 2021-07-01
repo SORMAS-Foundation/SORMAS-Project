@@ -33,7 +33,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class SampleEditForm extends AbstractSampleForm {
@@ -71,6 +74,14 @@ public class SampleEditForm extends AbstractSampleForm {
 		addValueChangeListener(e -> {
 			defaultValueChangeListener();
 			fillPathogenTestResult();
+			UserReferenceDto reportingUser = getValue().getReportingUser();
+			if (!(UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED)
+					|| (reportingUser != null && UserProvider.getCurrent().getUuid().equals(reportingUser.getUuid())))) {
+				getField(SampleDto.SAMPLE_PURPOSE).setEnabled(false);
+				getField(SampleDto.SAMPLING_REASON).setEnabled(false);
+				getField(SampleDto.SAMPLING_REASON_DETAILS).setEnabled(false);
+				getField(SampleDto.FIELD_SAMPLE_ID).setEnabled(false);
+			}
 		});
 	}
 

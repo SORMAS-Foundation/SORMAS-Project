@@ -27,10 +27,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import javax.inject.Named;
+import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.services.CaseService;
+import org.sormas.e2etests.state.ApiState;
 
 public class EditCaseSteps implements En {
 
@@ -38,12 +40,22 @@ public class EditCaseSteps implements En {
   public static Case aCase;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
+  @SneakyThrows
   @Inject
   public EditCaseSteps(
       WebDriverHelpers webDriverHelpers,
       CaseService caseService,
+      ApiState apiState,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
+
+    And(
+        "I navigate to fallow-up tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_BUTTON));
+
+    And(
+        "I navigate to symptoms tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SYMPTOMS_BUTTON));
 
     When(
         "I check the created data is correctly displayed on Edit case page",

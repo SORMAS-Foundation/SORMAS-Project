@@ -41,6 +41,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CountryReferenceDto;
@@ -156,8 +157,10 @@ public class RegionFacadeEjb implements RegionFacade {
 		Join<Region, Area> area = region.join(Region.AREA, JoinType.LEFT);
 		Join<Region, Country> country = region.join(Region.COUNTRY, JoinType.LEFT);
 
-		Predicate filter = regionService.buildCriteriaFilter(criteria, cb, region);
-
+		Predicate filter = null;
+		if (criteria != null) {
+			filter = regionService.buildCriteriaFilter(criteria, cb, region);
+		}
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -204,6 +207,12 @@ public class RegionFacadeEjb implements RegionFacade {
 		}
 	}
 
+	public Page<RegionIndexDto> getIndexPage(RegionCriteria regionCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<RegionIndexDto> regionIndexList = getIndexList(regionCriteria, offset, size, sortProperties);
+		long totalElementCount = count(regionCriteria);
+		return new Page<>(regionIndexList, offset, size, totalElementCount);
+	}
+
 	@Override
 	public long count(RegionCriteria criteria) {
 
@@ -211,7 +220,11 @@ public class RegionFacadeEjb implements RegionFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Region> root = cq.from(Region.class);
 
-		Predicate filter = regionService.buildCriteriaFilter(criteria, cb, root);
+		Predicate filter = null;
+
+		if (criteria != null) {
+			filter = regionService.buildCriteriaFilter(criteria, cb, root);
+		}
 
 		if (filter != null) {
 			cq.where(filter);

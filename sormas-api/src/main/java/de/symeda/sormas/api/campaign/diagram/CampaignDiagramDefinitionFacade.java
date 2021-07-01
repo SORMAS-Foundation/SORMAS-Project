@@ -1,7 +1,6 @@
 package de.symeda.sormas.api.campaign.diagram;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.ejb.Remote;
 

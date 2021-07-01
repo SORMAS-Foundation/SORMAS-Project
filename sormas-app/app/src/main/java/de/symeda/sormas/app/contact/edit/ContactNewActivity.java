@@ -190,9 +190,9 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 							&& contactToSave.getPerson().getAddress().isEmptyLocation()) {
 							Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(contactToSave.getCaseUuid());
 							if (contactCase != null) {
-								contactToSave.getPerson().getAddress().setRegion(contactCase.getRegion());
-								contactToSave.getPerson().getAddress().setDistrict(contactCase.getDistrict());
-								contactToSave.getPerson().getAddress().setCommunity(contactCase.getCommunity());
+								contactToSave.getPerson().getAddress().setRegion(contactCase.getResponsibleRegion());
+								contactToSave.getPerson().getAddress().setDistrict(contactCase.getResponsibleDistrict());
+								contactToSave.getPerson().getAddress().setCommunity(contactCase.getResponsibleCommunity());
 							}
 						}
 

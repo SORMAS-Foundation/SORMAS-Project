@@ -68,4 +68,14 @@ public class CreateNewSamplePage {
   public static final By TEST_RESULTS_COMMENT_AREA_INPUT = By.cssSelector("[id='testResultText']");
   public static final By SAVE_SAMPLE_BUTTON =
       By.cssSelector("[class='popupContent'] [id='commit']");
+  public static final By PATHOGEN_TEST_RESULT_COMBOBOX =
+      By.cssSelector("[id='testResult'] [class='v-filterselect-button']");
+  public static final By PATHOGEN_TEST_RESULT_INPUT = By.cssSelector("[id='testResult'] input");
+  public static final By PATHOGEN_LABORATORY_COMBOBOX =
+      By.cssSelector(
+          "[class='v-filterselect v-widget v-required v-filterselect-required"
+              + " v-has-width v-filterselect-prompt'] [class='v-filterselect-button']");
+  public static final By PATHOGEN_LABORATORY_INPUT =
+      By.cssSelector(
+          "[location='lab'] [class='v-filterselect v-widget v-required v-filterselect-required v-has-width'] input");
 }
