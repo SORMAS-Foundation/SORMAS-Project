@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class TestReportServiceUnitTest extends AbstractBeanTest {
 
 	@Mock
@@ -82,7 +82,6 @@ public class TestReportServiceUnitTest extends AbstractBeanTest {
 		when(cq.from(TestReport.class)).thenReturn(testReportRoot);
 		when(testReportRoot.join(TestReport.PATHOGEN_TEST, JoinType.LEFT)).thenReturn(testReportJoin);
 		when(testReportJoin.get(AbstractDomainObject.UUID)).thenReturn(path);
-		when(cb.and(any())).thenReturn(predicate);
 		when(em.createQuery(cq)).thenReturn(typedQuery);
 		when(typedQuery.getResultList()).thenReturn(expectedResult);
 
@@ -106,7 +105,6 @@ public class TestReportServiceUnitTest extends AbstractBeanTest {
 		when(cq.from(TestReport.class)).thenReturn(testReportRoot);
 		when(testReportRoot.join(TestReport.PATHOGEN_TEST, JoinType.LEFT)).thenReturn(testReportJoin);
 		when(testReportJoin.get(AbstractDomainObject.UUID)).thenReturn(path);
-		when(cb.and(any())).thenReturn(predicate);
 		when(em.createQuery(cq)).thenReturn(typedQuery);
 		when(typedQuery.getResultList()).thenReturn(expectedResult);
 
