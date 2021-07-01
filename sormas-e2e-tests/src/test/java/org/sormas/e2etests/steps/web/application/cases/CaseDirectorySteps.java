@@ -63,7 +63,7 @@ public class CaseDirectorySteps implements En {
             webDriverHelpers.fillAndSubmitInWebElement(
                 NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid()));
     When(
-        "I click on the DETAILED radiobutton from Case directory",
+        "I click on the DETAILED button from Case directory",
         () -> webDriverHelpers.clickOnWebElementBySelector(CASE_DIRECTORY_DETAILED_RADIOBUTTON));
 
     When(

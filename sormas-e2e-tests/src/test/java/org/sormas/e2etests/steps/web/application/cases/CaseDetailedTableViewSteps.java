@@ -13,7 +13,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
-
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebElement;
@@ -23,6 +22,7 @@ import org.sormas.e2etests.enums.ContactOutcome;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
+
 @Slf4j
 public class CaseDetailedTableViewSteps implements En {
 
