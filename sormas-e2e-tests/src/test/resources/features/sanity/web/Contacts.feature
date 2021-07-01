@@ -3,23 +3,22 @@ Feature: Contacts end to end tests
 
   Scenario: Create simple contact
     Given I log in with the user
-      And I click on the Contacts button from navbar
-      And I click on the NEW CONTACT button
-      And I create a new contact
-      Then I check the created data is correctly displayed on Edit Contact page
-      Then I open Contact Person tab
-      And I check the created data is correctly displayed on Edit Contact Person page
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I create a new contact
+    Then I check the created data is correctly displayed on Edit Contact page
+    Then I open Contact Person tab
+    And I check the created data is correctly displayed on Edit Contact Person page
 
-    Scenario: Delete created contact
-      Given I log in with the user
-      When API: I create a new person
-      Then API: I create a new contact
-      When I click on the Contacts button from navbar
-      Then I open the last created contact
-      Then I delete the contact
-      And I check that number of displayed contact results is 0
+  Scenario: Delete created contact
+    Given I log in with the user
+    When API: I create a new person
+    Then API: I create a new contact
+    When I click on the Contacts button from navbar
+    Then I open the last created contact
+    Then I delete the contact
+    And I check that number of displayed contact results is 0
 
-  @EditContact @issue=5634
   Scenario: Edit a created contact
     Given I log in with the user
     When API: I create a new person
@@ -70,28 +69,28 @@ Feature: Contacts end to end tests
     And I click yes on the CONFIRM REMOVAL popup from CONTACT page
     Then I check the CHOOSE SOURCE CASE BUTTON is displayed
 
-    Scenario: Create Contact and check details in Detailed view table
-      Given I log in with the user
-      When API: I create a new person
-      And API: I create a new contact
-      Given I click on the Contacts button from navbar
-      When I click on the DETAILED radiobutton
-      And I filter by ContactID
-      And I am checking if all the fields are correctly displayed in the Contacts directory Detailed table
-
-
-  @FollowUpVisit
-  Scenario: Edit all fields from Follow-up visits  tab
+  Scenario: Create Contact and check details in Detailed view table
     Given I log in with the user
+    When API: I create a new person
+    And API: I create a new contact
+    Given I click on the Contacts button from navbar
+    When I click on the DETAILED radiobutton
+    And I filter by ContactID
+    And I am checking if all the fields are correctly displayed in the Contacts directory Detailed table
+
+  Scenario: Edit all fields from Follow-up visits  tab
+    Given I log in as a National User
     When API: I create a new person
     When API: I create a new contact
     When I am accessing the Follow-up visits tab using of created contact via api
     And I create a new Follow-up visit
-    And I select created followUp
-    Then I am checking all data is saved and displayed
-    And I select created followUp
+    Then I click on New visit button from Follow-up visits tab
+    And I open the first displayed follow up
+    Then I validate recently created follow up is correctly displayed
+    And I click on discard button from follow up view
+    And I open the first displayed follow up
     And I change Follow-up visit fields and save
-    Then I am checking all changed data is saved and displayed
-    And I am accessing the contacts
-    And I am switching to Follow up Visits view from contact directory
+    Then I check all changes from follow up are correctly displayed
+    And I am accessing the contacts from New Visit
+    And I open Follow up Visits tab from contact directory
     Then I am validating the From and To dates displayed

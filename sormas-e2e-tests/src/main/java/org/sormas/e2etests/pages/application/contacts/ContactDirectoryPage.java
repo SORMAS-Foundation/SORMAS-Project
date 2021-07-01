@@ -31,7 +31,6 @@ public class ContactDirectoryPage {
       By.cssSelector("div#contactsViewSwitcher span:nth-child(2) > label");
   public static final By CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT =
       By.cssSelector("input#nameUuidCaseLike");
-
   public static final By CONTACTS_DETAILED_COLUMN_HEADERS =
       By.cssSelector("thead .v-grid-column-default-header-content");
   public static final By CONTACTS_DETAILED_FIRST_TABLE_ROW =
@@ -42,8 +41,6 @@ public class ContactDirectoryPage {
   public static final By LAST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(9)");
   public static final By TYPE_OF_CONTACT_COLUMNS =
       By.cssSelector("[role=rowgroup] tr>td:nth-child(11)");
-  public static final By FOLLOW_UP_VISITS_SPAN =
-      By.cssSelector("#contactsViewSwitcher span:nth-child(3)");
   public static final By FOLLOW_UP_VISITS_BUTTON =
       By.cssSelector("#contactsViewSwitcher span:nth-child(3)");
   public static final By FROM_INPUT = By.cssSelector("#fromReferenceDateField input");

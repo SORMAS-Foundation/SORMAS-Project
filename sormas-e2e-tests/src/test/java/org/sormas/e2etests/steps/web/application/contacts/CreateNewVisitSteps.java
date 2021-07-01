@@ -20,7 +20,6 @@ package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewVisitPage.*;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.FollowUpVisitsTabPage.CONTACTS_LIST_BUTTON;
 
 import com.google.common.truth.Truth;
@@ -88,12 +87,14 @@ public class CreateNewVisitSteps implements En {
         });
 
     Then(
-        "^I am checking all data is saved and displayed$",
+        "^I validate recently created follow up is correctly displayed$",
         () -> {
           final FollowUpVisit actualFollowUpVisit = collectFollowUpData();
           Truth.assertThat(followUpVisit).isEqualTo(actualFollowUpVisit);
-          webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON);
         });
+
+    And("I click on discard button from follow up view",
+            ()-> webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON));
 
     And(
         "^I change Follow-up visit fields and save$",
@@ -106,7 +107,7 @@ public class CreateNewVisitSteps implements En {
         });
 
     Then(
-        "^I am checking all changed data is saved and displayed$",
+        "^I check all changes from follow up are correctly displayed$",
         () -> {
           final FollowUpVisit editedFollowUpVisit = collectEditedFollowUpData();
           Truth.assertThat(followUpEditVisit).isEqualTo(editedFollowUpVisit);
@@ -114,13 +115,13 @@ public class CreateNewVisitSteps implements En {
         });
 
     And(
-        "^I am accessing the contacts$",
+        "^I am accessing the contacts from New Visit$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONTACTS_LIST_BUTTON);
         });
 
     And(
-        "^I am switching to Follow up Visits view from contact directory$",
+        "^I open Follow up Visits tab from contact directory$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_VISITS_BUTTON);
@@ -153,7 +154,7 @@ public class CreateNewVisitSteps implements En {
     return FollowUpVisit.builder()
         .personAvailableAndCooperative(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                PERSON_AVAILABLE_AND_COOPERATIVE))
+                    PERSON_AVAILABLE_AND_COOPERATIVE_OPTIONS))
         .dateOfVisit(parsedDateOfVisit)
         .timeOfVisit(followUpVisit.getTimeOfVisit())
         .visitRemarks(webDriverHelpers.getValueFromWebElement(VISIT_REMARKS_INPUT))
@@ -164,42 +165,42 @@ public class CreateNewVisitSteps implements En {
         .sourceOfBodyTemperature(
             webDriverHelpers.getValueFromCombobox(SOURCE_BODY_TEMPERATURE_COMBOBOX))
         .chillsOrSweats(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CHILLS_OR_SWATS_LABEL))
-        .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL_LABEL))
-        .fever(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEVER_LABEL))
-        .headache(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HEADACHE_LABEL))
-        .musclePain(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MUSCLE_PAIN_LABEL))
-        .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING_LABEL))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CHILLS_OR_SWATS))
+        .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL))
+        .fever(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEVER))
+        .headache(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HEADACHE))
+        .musclePain(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MUSCLE_PAIN))
+        .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING))
         .acuteRespiratoryDistressSyndrome(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                ACUTE_RESPIRATORY_DISTRESS_SYNDROME_LABEL))
-        .cough(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COUGH_LABEL))
+                    ACUTE_RESPIRATORY_DISTRESS_SYNDROME))
+        .cough(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COUGH))
         .difficultyBreathing(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIFFICULTY_BREATHING_LABEL))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIFFICULTY_BREATHING))
         .oxygenSaturation94(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OXIGEN_SATURANTION_LABEL))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OXIGEN_SATURANTION))
         .pneumoniaClinicalRadiologic(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PNEUMONIA_LABEL))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PNEUMONIA))
         .rapidBreathing(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RAPID_BREATHING_LABEL))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RAPID_BREATHING))
         .respiratoryDiseaseRequiringVentilation(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                RESPIRATORY_DISEASE_REQUIRING_VENTILATION_LABEL))
-        .runnyNose(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RUNNY_NOSE_LABEL))
+                    RESPIRATORY_DISEASE_REQUIRING_VENTILATION))
+        .runnyNose(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RUNNY_NOSE))
         .soreThroatPharyngitis(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                SORE_THROAT_PHARYNGITIS_LABEL))
+                    SORE_THROAT_PHARYNGITIS))
         .fastHeartRate(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_RATE_LABEL))
-        .diarrhea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIARRHEA_LABEL))
-        .nausea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(NAUSEA_LABEL))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_RATE))
+        .diarrhea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIARRHEA))
+        .nausea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(NAUSEA))
         .newLossOfSmell(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_SMELL_LABEL))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_SMELL))
         .newLossOfTaste(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_TASTE_LABEL))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_TASTE))
         .otherClinicalSymptoms(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                OTHER_CLINICAL_SYMPTOMS_LABEL))
+                    OTHER_CLINICAL_SYMPTOMS))
         .comments(webDriverHelpers.getValueFromWebElement(COMMENTS_INPUT))
         .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRSTSYMPTOM_COMBOBOX))
         .dateOfSymptomOnset(parsedDateOfSymptomOnset)
@@ -214,7 +215,7 @@ public class CreateNewVisitSteps implements En {
     return FollowUpVisit.builder()
         .personAvailableAndCooperative(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                PERSON_AVAILABLE_AND_COOPERATIVE))
+                    PERSON_AVAILABLE_AND_COOPERATIVE_OPTIONS))
         .dateOfVisit(parsedDateOfVisit)
         .timeOfVisit(followUpEditVisit.getTimeOfVisit())
         .visitRemarks(webDriverHelpers.getValueFromWebElement(VISIT_REMARKS_INPUT))
@@ -239,19 +240,19 @@ public class CreateNewVisitSteps implements En {
   }
 
   public void selectChillsOrSweats(String chillsOrSweats) {
-    webDriverHelpers.clickWebElementByText(CHILLS_OR_SWATS_LABEL, chillsOrSweats);
+    webDriverHelpers.clickWebElementByText(CHILLS_OR_SWATS, chillsOrSweats);
   }
 
   public void selectHeadache(String headache) {
-    webDriverHelpers.clickWebElementByText(HEADACHE_LABEL, headache);
+    webDriverHelpers.clickWebElementByText(HEADACHE, headache);
   }
 
   public void selectFeelingIll(String feelingIll) {
-    webDriverHelpers.clickWebElementByText(FEELING_ILL_LABEL, feelingIll);
+    webDriverHelpers.clickWebElementByText(FEELING_ILL, feelingIll);
   }
 
   public void selectMusclePain(String musclePain) {
-    webDriverHelpers.clickWebElementByText(MUSCLE_PAIN_LABEL, musclePain);
+    webDriverHelpers.clickWebElementByText(MUSCLE_PAIN, musclePain);
   }
 
   public void fillDateOfFirstSymptom(LocalDate dateOfFirstSymptom) {
@@ -260,53 +261,53 @@ public class CreateNewVisitSteps implements En {
   }
 
   public void selectFever(String fever) {
-    webDriverHelpers.clickWebElementByText(FEVER_LABEL, fever);
+    webDriverHelpers.clickWebElementByText(FEVER, fever);
   }
 
   public void selectShivering(String shivering) {
-    webDriverHelpers.clickWebElementByText(SHIVERING_LABEL, shivering);
+    webDriverHelpers.clickWebElementByText(SHIVERING, shivering);
   }
 
   public void selectOtherClinicalSymptoms(String otherClinicalSymptoms) {
-    webDriverHelpers.clickWebElementByText(OTHER_CLINICAL_SYMPTOMS_LABEL, otherClinicalSymptoms);
+    webDriverHelpers.clickWebElementByText(OTHER_CLINICAL_SYMPTOMS, otherClinicalSymptoms);
   }
 
   public void selectAcuteRespiratoryDistressSyndrome(String acuteRespiratoryDistressSyndrome) {
     webDriverHelpers.clickWebElementByText(
-        ACUTE_RESPIRATORY_DISTRESS_SYNDROME_LABEL, acuteRespiratoryDistressSyndrome);
+            ACUTE_RESPIRATORY_DISTRESS_SYNDROME, acuteRespiratoryDistressSyndrome);
   }
 
   public void selectCough(String cough) {
-    webDriverHelpers.clickWebElementByText(COUGH_LABEL, cough);
+    webDriverHelpers.clickWebElementByText(COUGH, cough);
   }
 
   public void selectDifficultyBreathing(String difficultyBreathing) {
-    webDriverHelpers.clickWebElementByText(DIFFICULTY_BREATHING_LABEL, difficultyBreathing);
+    webDriverHelpers.clickWebElementByText(DIFFICULTY_BREATHING, difficultyBreathing);
   }
 
   public void selectOxygenSaturationLower94(String oxygenSaturationLower94) {
-    webDriverHelpers.clickWebElementByText(OXIGEN_SATURANTION_LABEL, oxygenSaturationLower94);
+    webDriverHelpers.clickWebElementByText(OXIGEN_SATURANTION, oxygenSaturationLower94);
   }
 
   public void selectPneumoniaClinicalOrRadiologic(String pneumoniaClinicalOrRadiologic) {
-    webDriverHelpers.clickWebElementByText(PNEUMONIA_LABEL, pneumoniaClinicalOrRadiologic);
+    webDriverHelpers.clickWebElementByText(PNEUMONIA, pneumoniaClinicalOrRadiologic);
   }
 
   public void selectPersonAvailableAndCooperative(String available) {
-    webDriverHelpers.clickWebElementByText(PERSON_AVAILABLE_AND_COOPERATIVE, available);
+    webDriverHelpers.clickWebElementByText(PERSON_AVAILABLE_AND_COOPERATIVE_OPTIONS, available);
   }
 
   public void selectRapidBreathing(String rapidBreathing) {
-    webDriverHelpers.clickWebElementByText(RAPID_BREATHING_LABEL, rapidBreathing);
+    webDriverHelpers.clickWebElementByText(RAPID_BREATHING, rapidBreathing);
   }
 
   public void selectRespiratoryDiseaseVentilation(String respiratoryDiseaseVentilation) {
     webDriverHelpers.clickWebElementByText(
-        RESPIRATORY_DISEASE_REQUIRING_VENTILATION_LABEL, respiratoryDiseaseVentilation);
+            RESPIRATORY_DISEASE_REQUIRING_VENTILATION, respiratoryDiseaseVentilation);
   }
 
   public void selectRunnyNose(String runnyNose) {
-    webDriverHelpers.clickWebElementByText(RUNNY_NOSE_LABEL, runnyNose);
+    webDriverHelpers.clickWebElementByText(RUNNY_NOSE, runnyNose);
   }
 
   public void fillDateOfSymptomOnset(LocalDate dateOfSymptomOnset) {
@@ -327,32 +328,32 @@ public class CreateNewVisitSteps implements En {
   }
 
   public void selectSoreThroat(String soreThroat) {
-    webDriverHelpers.clickWebElementByText(SORE_THROAT_PHARYNGITIS_LABEL, soreThroat);
+    webDriverHelpers.clickWebElementByText(SORE_THROAT_PHARYNGITIS, soreThroat);
   }
 
   public void selectFastHeartRate(String fastHeartRate) {
-    webDriverHelpers.clickWebElementByText(FAST_HEART_RATE_LABEL, fastHeartRate);
+    webDriverHelpers.clickWebElementByText(FAST_HEART_RATE, fastHeartRate);
   }
 
   public void selectDiarrhea(String diarrhea) {
-    webDriverHelpers.clickWebElementByText(DIARRHEA_LABEL, diarrhea);
+    webDriverHelpers.clickWebElementByText(DIARRHEA, diarrhea);
   }
 
   public void selectNausea(String nausea) {
-    webDriverHelpers.clickWebElementByText(NAUSEA_LABEL, nausea);
+    webDriverHelpers.clickWebElementByText(NAUSEA, nausea);
   }
 
   public void selectLossOfSmell(String lossOfSmell) {
-    webDriverHelpers.clickWebElementByText(LOSS_OF_SMELL_LABEL, lossOfSmell);
+    webDriverHelpers.clickWebElementByText(LOSS_OF_SMELL, lossOfSmell);
   }
 
   public void selectLossOfTaste(String lossOfTaste) {
-    webDriverHelpers.clickWebElementByText(LOSS_OF_TASTE_LABEL, lossOfTaste);
+    webDriverHelpers.clickWebElementByText(LOSS_OF_TASTE, lossOfTaste);
   }
 
   public void selectOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
     webDriverHelpers.clickWebElementByText(
-        OTHER_CLINICAL_SYMPTOMS_LABEL, otherNonHemorrhagicSymptoms);
+            OTHER_CLINICAL_SYMPTOMS, otherNonHemorrhagicSymptoms);
   }
 
   public void fillComments(String symptomsComments) {

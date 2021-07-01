@@ -18,19 +18,14 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewVisitPage.*;
 import static org.sormas.e2etests.pages.application.contacts.FollowUpVisitsTabPage.*;
-
 import cucumber.api.java8.En;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pojo.web.FollowUpVisit;
-import org.sormas.e2etests.services.FollowUpVisitService;
 import org.sormas.e2etests.state.ApiState;
 
 public class FollowUpVisitsTabSteps implements En {
@@ -42,9 +37,7 @@ public class FollowUpVisitsTabSteps implements En {
   @Inject
   public FollowUpVisitsTabSteps(
       WebDriverHelpers webDriverHelpers,
-      FollowUpVisitService followUpVisitService,
       ApiState apiState,
-      final SoftAssertions softly,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -57,11 +50,13 @@ public class FollowUpVisitsTabSteps implements En {
           String uuid = apiState.getCreatedContact().getUuid();
           String URL = environmentUrl + visitLinkPath + uuid;
           webDriverHelpers.accessWebSite(URL);
-          webDriverHelpers.clickOnWebElementBySelector(NEW_VISIT_BUTTON);
         });
 
+      Then("I click on New visit button from Follow-up visits tab",
+              () ->  webDriverHelpers.clickOnWebElementBySelector(NEW_VISIT_BUTTON) );
+
     And(
-        "^I select created followUp$",
+        "^I open the first displayed follow up$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_VISIT_BUTTON);
         });
