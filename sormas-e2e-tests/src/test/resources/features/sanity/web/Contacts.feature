@@ -1,4 +1,4 @@
-@Sanity @Contacts
+@UI @Sanity @Contacts
 Feature: Contacts end to end tests
 
   Scenario: Create simple contact

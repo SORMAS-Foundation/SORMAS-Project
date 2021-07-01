@@ -1,4 +1,4 @@
-@Sanity @Persons
+@UI @Sanity @Persons
 Feature: Edit Persons
 
   Scenario: Edit existent person

@@ -1,4 +1,4 @@
-@Sanity @Case @Filters
+@UI @Sanity @Case @Filters
 Feature: Case filter functionality
 
   Scenario: Check Cases on Sample page work as expected

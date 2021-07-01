@@ -16,14 +16,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.pages.application.contacts;
+package org.sormas.e2etests.pojo.web;
 
-import org.openqa.selenium.By;
+import java.util.List;
+import lombok.*;
+import org.sormas.e2etests.enums.YesNoUnknownOptions;
+import org.sormas.e2etests.pojo.web.epidemiologicalData.Activity;
+import org.sormas.e2etests.pojo.web.epidemiologicalData.Exposure;
 
-public class FollowUpVisitsTabPage {
-
-  public static final By NEW_VISIT_BUTTON = By.id("visitNewVisit");
-  public static final By CONTACTS_LIST_BUTTON = By.id("tab-contacts");
-  public static final By FIRST_VISIT_BUTTON =
-      By.cssSelector(".v-grid-body tr:nth-child(1) .v-icon.v-icon-edit");
+@Value
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderClassName = "builder")
+public class EpidemiologicalData {
+  List<Exposure> exposures;
+  List<Activity> activities;
+  YesNoUnknownOptions exposureDetailsKnown;
+  YesNoUnknownOptions activityDetailsKnown;
+  YesNoUnknownOptions residingAreaWithRisk;
+  YesNoUnknownOptions largeOutbreaksArea;
+  YesNoUnknownOptions contactsWithSourceCaseKnown;
 }
