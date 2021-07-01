@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.backend.caze.Case;
@@ -224,12 +223,12 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 	}
 
 	public void handleOwnershipChangeInExternalSurvTool(SormasToSormasOriginInfo originInfo)
-		throws SormasToSormasException, ExternalSurveillanceToolException {
+		throws ExternalSurveillanceToolException {
 		handleOwnershipChangeInExternalSurvTool(originInfo.isOwnershipHandedOver(), originInfo.getCases(), originInfo.getEvents());
 	}
 
 	public void handleOwnershipChangeInExternalSurvTool(SormasToSormasShareInfo shareInfo)
-		throws SormasToSormasException, ExternalSurveillanceToolException {
+		throws ExternalSurveillanceToolException {
 		handleOwnershipChangeInExternalSurvTool(
 			shareInfo.isOwnershipHandedOver(),
 			shareInfo.getCases().stream().map(ShareInfoCase::getCaze).collect(Collectors.toList()),

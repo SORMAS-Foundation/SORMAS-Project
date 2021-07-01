@@ -284,7 +284,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		} catch (ExternalSurveillanceToolException e) {
 			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
 
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool));
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool), true);
 		}
 	}
 
@@ -341,7 +341,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		} catch (ExternalSurveillanceToolException e) {
 			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
 
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool));
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool), true);
 		}
 	}
 
@@ -374,7 +374,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		} catch (ExternalSurveillanceToolException e) {
 			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
 
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool));
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool), true);
 		}
 	}
 
