@@ -79,8 +79,8 @@ public class SourceContactListComponent extends VerticalLayout {
 		}
 	}
 
-	public int getSize() {
-		return list.getSize();
+	public boolean isEmpty() {
+		return list.isEmpty();
 	}
 
 	public List<ContactReferenceDto> getEntries() {

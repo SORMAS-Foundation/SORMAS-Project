@@ -36,6 +36,8 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.sormas.api.Disease;
@@ -339,7 +341,7 @@ public class User extends AbstractDomainObject {
 		}
 
 		String caption = user.getFirstName() + " " + user.getLastName();
-		if (user.getUserEmail() != null) {
+		if (StringUtils.isNotEmpty(user.getUserEmail())) {
 			caption += " (" + user.getUserEmail() + ")";
 		}
 		return caption;

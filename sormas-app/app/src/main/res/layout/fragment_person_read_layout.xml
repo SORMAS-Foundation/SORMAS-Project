@@ -434,6 +434,11 @@
 
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/person_internalToken"
+                app:value="@{data.internalToken}"
+                style="@style/ControlSingleColumnStyle"/>
+
             <LinearLayout
                 android:id="@+id/personContactDetails_layout"
                 android:layout_width="match_parent"

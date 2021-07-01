@@ -34,6 +34,9 @@ import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.followup.FollowUpStartDateType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -169,5 +172,29 @@ public final class CaseLogic {
 
 		Date overwriteUntilDate = !ignoreOverwrite && caze.isOverwriteFollowUpUntil() ? caze.getFollowUpUntil() : null;
 		return FollowUpLogic.calculateFollowUpUntilDate(followUpPeriod, overwriteUntilDate, visits, followUpDuration);
+	}
+
+	public static RegionReferenceDto getRegionWithFallback(CaseDataDto caze) {
+		if (caze.getRegion() == null) {
+			return caze.getResponsibleRegion();
+		}
+
+		return caze.getRegion();
+	}
+
+	public static DistrictReferenceDto getDistrictWithFallback(CaseDataDto caze) {
+		if (caze.getDistrict() == null) {
+			return caze.getResponsibleDistrict();
+		}
+
+		return caze.getDistrict();
+	}
+
+	public static CommunityReferenceDto getCommunityWithFallback(CaseDataDto caze) {
+		if (caze.getRegion() == null) {
+			return caze.getResponsibleCommunity();
+		}
+
+		return caze.getCommunity();
 	}
 }

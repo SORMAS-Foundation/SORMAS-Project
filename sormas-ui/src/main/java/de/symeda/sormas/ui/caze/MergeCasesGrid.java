@@ -51,7 +51,7 @@ public class MergeCasesGrid extends AbstractMergeGrid<CaseIndexDto, CaseCriteria
 			CaseIndexDto.PERSON_LAST_NAME,
 			CaseIndexDto.AGE_AND_BIRTH_DATE,
 			CaseIndexDto.SEX,
-			CaseIndexDto.DISTRICT_NAME,
+			CaseIndexDto.RESPONSIBLE_DISTRICT_NAME,
 			CaseIndexDto.HEALTH_FACILITY_NAME,
 			CaseIndexDto.REPORT_DATE,
 			CaseIndexDto.CREATION_DATE,
@@ -69,9 +69,9 @@ public class MergeCasesGrid extends AbstractMergeGrid<CaseIndexDto, CaseCriteria
 				: PersonHelper.getAgeAndBirthdateString(
 					value.getAge(),
 					value.getAgeType(),
-					value.getBirthdateDD(),
-					value.getBirthdateMM(),
-					value.getBirthdateYYYY(),
+					value.getDateOfBirthDD(),
+					value.getDateOfBirthMM(),
+					value.getDateOfBirthYYYY(),
 					I18nProperties.getUserLanguage()),
 			new TextRenderer());
 	}

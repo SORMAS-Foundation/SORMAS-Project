@@ -59,9 +59,11 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 
 	private final boolean isPseudonymized;
 
+	private final boolean isPersonPseudonymized;
+
 	private VaccinationInfoForm vaccinationForm;
 
-	public EventParticipantEditForm(EventDto event, boolean isPseudonymized) {
+	public EventParticipantEditForm(EventDto event, boolean isPseudonymized, boolean isPersonPseudonymized) {
 		super(
 			EventParticipantDto.class,
 			EventParticipantDto.I18N_PREFIX,
@@ -70,6 +72,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 			UiFieldAccessCheckers.getDefault(isPseudonymized));
 		this.event = event;
 		this.isPseudonymized = isPseudonymized;
+		this.isPersonPseudonymized = isPersonPseudonymized;
 
 		addFields();
 	}
@@ -82,7 +85,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		}
 
 		PersonEditForm pef =
-			new PersonEditForm(PersonContext.EVENT_PARTICIPANT, event.getDisease(), event.getDiseaseDetails(), null, isPseudonymized);
+			new PersonEditForm(PersonContext.EVENT_PARTICIPANT, event.getDisease(), event.getDiseaseDetails(), null, isPersonPseudonymized);
 		pef.setWidth(100, Unit.PERCENTAGE);
 		pef.setImmediate(true);
 		getFieldGroup().bind(pef, EventParticipantDto.PERSON);

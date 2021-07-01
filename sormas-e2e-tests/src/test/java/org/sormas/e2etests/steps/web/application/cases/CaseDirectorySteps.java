@@ -23,8 +23,13 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.util.Arrays;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.common.*;
+import org.sormas.e2etests.enums.CaseClasification;
+import org.sormas.e2etests.enums.CaseOutcome;
+import org.sormas.e2etests.enums.Disease;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -33,13 +38,20 @@ public class CaseDirectorySteps implements En {
 
   @Inject
   public CaseDirectorySteps(
-      WebDriverHelpers webDriverHelpers, ApiState apiState, AssertHelpers assertHelpers) {
+      WebDriverHelpers webDriverHelpers,
+      DataOperations dataOperations,
+      ApiState apiState,
+      AssertHelpers assertHelpers) {
 
     When(
         "^I click on the NEW CASE button$",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 NEW_CASE_BUTTON, DATE_OF_REPORT_INPUT));
+
+    When(
+        "^I click on Case Line Listing button$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_BUTTON));
 
     When(
         "^I open last created case",
@@ -50,6 +62,20 @@ public class CaseDirectorySteps implements En {
         () ->
             webDriverHelpers.fillAndSubmitInWebElement(
                 NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid()));
+    When(
+        "I click on the DETAILED radiobutton from Case directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CASE_DIRECTORY_DETAILED_RADIOBUTTON));
+
+    When(
+        "I filter by CaseID on Case directory page",
+        () -> {
+          String partialUuid =
+              dataOperations.getPartialUuidFromAssociatedLink(apiState.getCreatedCase().getUuid());
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
+          webDriverHelpers.clickOnWebElementBySelector(
+              CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+        });
 
     When(
         "^I open the last created Case via API",
@@ -61,11 +87,105 @@ public class CaseDirectorySteps implements En {
         });
 
     Then(
-        "I check that number of displayed cases results is {int}",
+        "I check that number of displayed cas" + "es results is {int}",
         (Integer number) ->
             assertHelpers.assertWithPoll15Second(
                 () ->
                     Truth.assertThat(webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS))
                         .isEqualTo(number)));
+
+    When(
+        "^I search for cases created with the API",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_RESET_FILTERS_BUTTON);
+          int maximumNumberOfRows = 23;
+          webDriverHelpers.waitUntilAListOfElementsIsPresent(
+              CASE_GRID_RESULTS_ROWS, maximumNumberOfRows);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getEditPerson().getFirstName());
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitUntilAListOfElementsIsPresent(
+              NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getCreatedCases().size());
+          Truth.assertThat(apiState.getCreatedCases().size())
+              .isEqualTo(webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS));
+        });
+
+    Then(
+        "^I check the displayed Case Outcome filter dropdown",
+        () ->
+            Arrays.stream(CaseOutcome.values())
+                .forEach(
+                    outcome -> {
+                      webDriverHelpers.selectFromCombobox(
+                          CASE_OUTCOME_FILTER_COMBOBOX, outcome.getOutcome());
+                      webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+                      webDriverHelpers.waitUntilAListOfElementsHasText(
+                          CASE_GRID_RESULTS_ROWS, outcome.getOutcome());
+                      assertHelpers.assertWithPoll15Second(
+                          () ->
+                              Truth.assertThat(
+                                      apiState.getCreatedCases().stream()
+                                          .filter(
+                                              sample ->
+                                                  sample
+                                                      .getOutcome()
+                                                      .contentEquals(outcome.toString()))
+                                          .count())
+                                  .isEqualTo(
+                                      webDriverHelpers.getNumberOfElements(
+                                          CASE_GRID_RESULTS_ROWS)));
+                    }));
+
+    Then(
+        "^I check the displayed Case Classification filter dropdown",
+        () ->
+            Arrays.stream(CaseClasification.values())
+                .forEach(
+                    clasification -> {
+                      webDriverHelpers.selectFromCombobox(
+                          CASE_CLASSIFICATION_FILTER_COMBOBOX, clasification.getClassification());
+                      webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+                      webDriverHelpers.waitUntilAListOfElementsHasText(
+                          CASE_GRID_RESULTS_ROWS, clasification.getClassification());
+                      assertHelpers.assertWithPoll15Second(
+                          () ->
+                              Truth.assertThat(
+                                      apiState.getCreatedCases().stream()
+                                          .filter(
+                                              sample ->
+                                                  sample
+                                                      .getCaseClassification()
+                                                      .contentEquals(clasification.toString()))
+                                          .count())
+                                  .isEqualTo(
+                                      webDriverHelpers.getNumberOfElements(
+                                          CASE_GRID_RESULTS_ROWS)));
+                    }));
+
+    Then(
+        "^I check the displayed Disease filter dropdown",
+        () ->
+            Arrays.stream(Disease.values())
+                .forEach(
+                    aDisease -> {
+                      webDriverHelpers.selectFromCombobox(
+                          CASE_DISEASE_FILTER_COMBOBOX, aDisease.getDisease());
+                      webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+                      webDriverHelpers.waitUntilAListOfElementsHasText(
+                          CASE_GRID_RESULTS_ROWS, aDisease.getDisease());
+                      assertHelpers.assertWithPoll15Second(
+                          () ->
+                              Truth.assertThat(
+                                      apiState.getCreatedCases().stream()
+                                          .filter(
+                                              sample ->
+                                                  sample
+                                                      .getDisease()
+                                                      .contentEquals(aDisease.toString()))
+                                          .count())
+                                  .isEqualTo(
+                                      webDriverHelpers.getNumberOfElements(
+                                          CASE_GRID_RESULTS_ROWS)));
+                    }));
   }
 }

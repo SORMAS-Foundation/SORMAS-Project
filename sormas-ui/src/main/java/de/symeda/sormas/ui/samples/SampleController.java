@@ -50,6 +50,7 @@ import com.vaadin.v7.ui.DateField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -147,7 +148,7 @@ public class SampleController {
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				saveSample(createForm, consumer);
+				saveSample(createForm, consumer, editView);
 				callback.run();
 			}
 		});
@@ -167,7 +168,7 @@ public class SampleController {
 
 		createView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				saveSample(createForm);
+				saveSample(createForm, createView);
 
 				SampleDto updatedSample = FacadeProvider.getSampleFacade().getSampleByUuid(sample.getUuid());
 				updatedSample.setReferredTo(referralSample.toReference());
@@ -189,12 +190,12 @@ public class SampleController {
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
 	}
 
-	private void saveSample(SampleCreateForm createForm) {
+	private void saveSample(SampleCreateForm createForm, CommitDiscardWrapperComponent createView) {
 		saveSample(createForm, ((sampleDto, pathogenTestDto) -> {
-		}));
+		}), createView);
 	}
 
-	private void saveSample(SampleCreateForm createForm, BiConsumer<SampleDto, PathogenTestDto> consumer) {
+	private void saveSample(SampleCreateForm createForm, BiConsumer<SampleDto, PathogenTestDto> consumer, CommitDiscardWrapperComponent createView) {
 
 		final SampleDto newSample = createForm.getValue();
 		final PathogenTestResultType testResult = (PathogenTestResultType) createForm.getField(PathogenTestDto.TEST_RESULT).getValue();
@@ -264,6 +265,17 @@ public class SampleController {
 
 					// Handle positive test results for different disease variants
 					showCaseUpdateWithNewDiseaseVariantDialog(postSaveCaseDto, pathogenTest.getTestedDiseaseVariant());
+				}
+				if (savedPathogenTest.getTestResult() != savedSample.getPathogenTestResult()) {
+					showChangePathogenTestResultWindow(createView, savedSample.getUuid(), savedPathogenTest.getTestResult(), () -> {
+					});
+				}
+				if (savedPathogenTest.getTestedDisease() == postSaveCaseDto.getDisease()
+					&& PathogenTestResultType.POSITIVE.equals(savedPathogenTest.getTestResult())
+					&& savedPathogenTest.getTestResultVerified()
+					&& postSaveCaseDto.getCaseClassification() != CaseClassification.CONFIRMED
+					&& postSaveCaseDto.getCaseClassification() != CaseClassification.NO_CASE) {
+					ControllerProvider.getPathogenTestController().showConfirmCaseDialog(postSaveCaseDto);
 				}
 			}
 
@@ -370,9 +382,9 @@ public class SampleController {
 			editView.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
 		}
 
-		editView.getWrappedComponent()
-			.getField(SampleDto.SAMPLE_PURPOSE)
-			.setEnabled(dto.getReferredTo() == null || dto.getSamplePurpose() != SamplePurpose.EXTERNAL);
+		if (dto.getReferredTo() != null || dto.getSamplePurpose() == SamplePurpose.EXTERNAL) {
+			editView.getWrappedComponent().getField(SampleDto.SAMPLE_PURPOSE).setEnabled(false);
+		}
 
 		return editView;
 	}
@@ -447,7 +459,9 @@ public class SampleController {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				editComponent.commit();
+				if (!SampleCreateForm.class.equals(editComponent.getWrappedComponent().getClass())) {
+					editComponent.commit();
+				}
 				SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
 				sample.setPathogenTestResult(newResult);
 				FacadeProvider.getSampleFacade().saveSample(sample);

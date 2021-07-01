@@ -51,6 +51,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
@@ -64,17 +65,16 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 public class SormasToSormasFacadeTest extends AbstractBeanTest {
 
 	// values are set in server-list.csv located in serveraccessdefault and serveraccesssecond
-	public static final String DEFAULT_SERVER_ACCESS_CN = "default";
+	public static final String DEFAULT_SERVER_ACCESS_ID = "default";
 	public static final String DEFAULT_SERVER_ACCESS_DATA_CSV = "default-server-access-data.csv";
-	public static final String SECOND_SERVER_ACCESS_CN = "second";
+	public static final String SECOND_SERVER_ACCESS_ID = "second";
 	public static final String SECOND_SERVER_ACCESS_DATA_CSV = "second-server-access-data.csv";
-	public static final String SECOND_SERVER_REST_URL = "second.sormas.com";
-	public static final String SECOND_SERVER_REST_PASSWORD = "RestPasswoRdish";
 
 	private ObjectMapper objectMapper;
 
@@ -157,26 +157,29 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return shareInfo;
 	}
 
-	protected byte[] encryptShareData(Object shareData) throws JsonProcessingException, SormasToSormasException {
+	protected SormasToSormasEncryptedDataDto encryptShareDataAsArray(Object shareData) throws JsonProcessingException, SormasToSormasException {
+		return encryptShareData(Collections.singletonList(shareData));
+	}
+
+	protected SormasToSormasEncryptedDataDto encryptShareData(Object shareData) throws SormasToSormasException {
 		mockDefaultServerAccess();
 
-		byte[] data = objectMapper.writeValueAsBytes(Collections.singletonList(shareData));
-		byte[] encryptedData = getSormasToSormasEncryptionService().signAndEncrypt(data, SECOND_SERVER_ACCESS_CN);
+		SormasToSormasEncryptedDataDto encryptedData = getSormasToSormasEncryptionService().signAndEncrypt(shareData, SECOND_SERVER_ACCESS_ID);
 
 		mockSecondServerAccess();
 
 		return encryptedData;
 	}
 
-	protected <T> T[] decryptSharesData(byte[] data, Class<T[]> dataType) throws SormasToSormasException, IOException {
+	protected <T> T decryptSharesData(byte[] data, Class<T> dataType) throws SormasToSormasException, IOException {
 		mockSecondServerAccess();
 
-		byte[] decryptData = getSormasToSormasEncryptionService().decryptAndVerify(data, DEFAULT_SERVER_ACCESS_CN);
-		T[] parsedData = objectMapper.readValue(decryptData, dataType);
+		T decryptData =
+			getSormasToSormasEncryptionService().decryptAndVerify(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_ID, data), dataType);
 
 		mockDefaultServerAccess();
 
-		return parsedData;
+		return decryptData;
 	}
 
 	protected void mockDefaultServerAccess() {

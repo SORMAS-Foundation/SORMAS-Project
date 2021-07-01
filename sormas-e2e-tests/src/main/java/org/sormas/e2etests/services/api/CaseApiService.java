@@ -31,12 +31,15 @@ public class CaseApiService {
   public Case buildGeneratedCase(Person person) {
     return Case.builder()
         .disease("CORONAVIRUS")
+        .diseaseDetails("Test Disease")
         .pseudonymized(false)
         .uuid(UUID.randomUUID().toString())
         .reportDate(new Date())
         .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())
         .district(District.builder().uuid("SZ75BK-5OUMFU-V2DTKG-5BYACHFE").build())
         .region(Region.builder().uuid("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY").build())
+        .responsibleDistrict(District.builder().uuid("SZ75BK-5OUMFU-V2DTKG-5BYACHFE").build())
+        .responsibleRegion(Region.builder().uuid("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY").build())
         .community(Community.builder().uuid("QWK33J-XYN3DE-5CSXFJ-MMFOKNKM").build())
         .followUpStatus("FOLLOW_UP")
         .person(person)
@@ -47,7 +50,7 @@ public class CaseApiService {
         .hospitalization(Hospitalization.builder().uuid(UUID.randomUUID().toString()).build())
         .symptoms(Symptoms.builder().uuid(UUID.randomUUID().toString()).build())
         .therapy(Therapy.builder().uuid(UUID.randomUUID().toString()).build())
-        .healthFacility(HealthFacility.builder().uuid("SORMAS-CONSTID-ISNONE-FACILITY").build())
+        .healthFacility(HealthFacility.builder().uuid("WYPOCQ-IWVWGQ-XU7YCF-OSQJSAD4").build())
         .maternalHistory(MaternalHistory.builder().uuid(UUID.randomUUID().toString()).build())
         .portHealthInfo(PortHealthInfo.builder().uuid(UUID.randomUUID().toString()).build())
         .clinicalCourse(
@@ -60,6 +63,7 @@ public class CaseApiService {
             SurveillanceOfficer.builder().uuid("Q2IYCN-TNYTOY-4OAYCA-DW662MTA").build())
         .healthFacilityDetails("Details")
         .caseOrigin("IN_COUNTRY")
+        .facilityType("HOSPITAL")
         .build();
   }
 }

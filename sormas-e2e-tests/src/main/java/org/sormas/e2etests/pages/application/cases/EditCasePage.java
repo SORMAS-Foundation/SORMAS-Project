@@ -21,6 +21,8 @@ package org.sormas.e2etests.pages.application.cases;
 import org.openqa.selenium.By;
 
 public class EditCasePage {
+  public static final By FOLLOW_UP_BUTTON = By.cssSelector("[id='tab-cases-visits'] a");
+  public static final By SYMPTOMS_BUTTON = By.cssSelector("[id='tab-cases-symptoms']");
   public static final By REGION_INPUT = By.cssSelector("#region input");
   public static final By DISTRICT_INPUT = By.cssSelector("#district input");
   public static final By COMMUNITY_INPUT = By.cssSelector("#community input");
@@ -69,7 +71,6 @@ public class EditCasePage {
   public static final By RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector("#responsibleDistrict div");
   public static final By RESPONSIBLE_COMMUNITY_COMBOBOX =
       By.cssSelector("#responsibleCommunity div");
-  public static final By NOSOCOMIAL_OUTBREAK_OPTIONS = By.cssSelector("#nosocomialOutbreak label");
   public static final By PROHIBITION_TO_WORK_OPTIONS = By.cssSelector("#prohibitionToWork label");
   public static final By HOME_BASED_QUARANTINE_POSSIBLE_OPTIONS =
       By.cssSelector("#quarantineHomePossible label");

@@ -21,6 +21,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoFacade;
+import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "SormasToSormasOriginInfoFacade")
@@ -31,6 +32,9 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 
 	@EJB
 	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
+
+	@EJB
+	private SormasToSormasShareRequestService sormasToSormasShareRequestService;
 
 	public SormasToSormasOriginInfoDto saveOriginInfo(SormasToSormasOriginInfoDto originInfoDto) {
 
@@ -54,6 +58,9 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+		target.setWithAssociatedContacts(source.isWithAssociatedContacts());
+		target.setWithSamples(source.isWithSamples());
+		target.setWithEventParticipants(source.isWithEventParticipants());
 		target.setComment(source.getComment());
 
 		return target;
@@ -73,6 +80,9 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+		target.setWithAssociatedContacts(source.isWithAssociatedContacts());
+		target.setWithSamples(source.isWithSamples());
+		target.setWithEventParticipants(source.isWithEventParticipants());
 		target.setComment(source.getComment());
 
 		return target;

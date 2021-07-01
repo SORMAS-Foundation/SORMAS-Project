@@ -32,7 +32,8 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
@@ -72,6 +73,9 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 	private Join<EventParticipant, Event> event;
 	private Join<EventParticipant, Event> caseEvent;
 
+	private Join<Contact, Sample> samples;
+	private Join<Sample, Facility> sampleLabs;
+
 	private Join<Contact, Visit> visits;
 	private Join<Visit, Symptoms> visitSymptoms;
 	private Join<Contact, HealthConditions> healthConditions;
@@ -84,7 +88,7 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 
 	private Join<Contact, VaccinationInfo> vaccinationInfo;
 
-	private Join<Contact, SormasToSormasShareInfo> sormasToSormasShareInfo;
+	private Join<Contact, SormasToSormasShareInfo> shareInfoContacts;
 
 	public ContactJoins(From<T, Contact> contact) {
 		super(contact);
@@ -380,11 +384,27 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 		this.vaccinationInfo = vaccinationInfo;
 	}
 
-	public Join<Contact, SormasToSormasShareInfo> getSormasToSormasShareInfo() {
-		return getOrCreate(sormasToSormasShareInfo, Contact.SORMAS_TO_SORMAS_SHARES, JoinType.LEFT, this::setSormasToSormasShareInfo);
+	public Join<Contact, SormasToSormasShareInfo> getShareInfoContacts() {
+		return getOrCreate(shareInfoContacts, Contact.SHARE_INFO_CONTACTS, JoinType.LEFT, this::setShareInfoContacts);
 	}
 
-	public void setSormasToSormasShareInfo(Join<Contact, SormasToSormasShareInfo> sormasToSormasShareInfo) {
-		this.sormasToSormasShareInfo = sormasToSormasShareInfo;
+	public void setShareInfoContacts(Join<Contact, SormasToSormasShareInfo> shareInfoContacts) {
+		this.shareInfoContacts = shareInfoContacts;
+	}
+
+	public Join<Contact, Sample> getSamples() {
+		return getOrCreate(samples, Case.SAMPLES, JoinType.LEFT, this::setSamples);
+	}
+
+	private void setSamples(Join<Contact, Sample> samples) {
+		this.samples = samples;
+	}
+
+	public Join<Sample, Facility> getSampleLabs() {
+		return getOrCreate(sampleLabs, Sample.LAB, JoinType.LEFT, getSamples(), this::setSampleLabs);
+	}
+
+	private void setSampleLabs(Join<Sample, Facility> sampleLabs) {
+		this.sampleLabs = sampleLabs;
 	}
 }

@@ -68,6 +68,30 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_MESSAGE);
         });
+
+    When(
+        "^I create a new case with specific data using line listing feature$",
+        () -> {
+          caze = caseService.buildCaseForLineListingFeature();
+
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth());
+          selectSex(caze.getSex());
+          fillNationalHealthId(caze.getNationalHealthId());
+          fillPassportNumber(caze.getPassportNumber());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport());
+          fillPlaceDescription(caze.getPlaceDescription());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_MESSAGE);
+        });
   }
 
   public void selectCaseOrigin(String caseOrigin) {

@@ -27,4 +27,5 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Lab {
   String uuid;
+  String caption;
 }

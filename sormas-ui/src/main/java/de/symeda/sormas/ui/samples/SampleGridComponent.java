@@ -157,7 +157,7 @@ public class SampleGridComponent extends VerticalLayout {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW_ARCHIVED)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
 				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatusFilter");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);

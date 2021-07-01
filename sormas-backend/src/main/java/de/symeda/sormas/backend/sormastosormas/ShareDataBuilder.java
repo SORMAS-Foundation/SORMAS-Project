@@ -15,13 +15,20 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import java.util.List;
+
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
-public interface ShareDataBuilder<T extends AbstractDomainObject, S extends SormasToSormasDto> {
+public interface ShareDataBuilder<T extends AbstractDomainObject, S extends SormasToSormasDto, P> {
 
-	ShareData<S> buildShareData(T data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	ShareData<T, S> buildShareData(T data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException;
+
+	ShareData<T, P> buildShareDataPreview(T data, User user, SormasToSormasOptionsDto options) throws SormasToSormasException;
+
+	List<ShareData<T, S>> buildShareData(User user, SormasToSormasShareInfo shareInfo) throws SormasToSormasException;
 }

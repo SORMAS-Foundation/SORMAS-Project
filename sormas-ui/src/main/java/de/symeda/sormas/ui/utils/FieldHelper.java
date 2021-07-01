@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Function;
@@ -40,7 +41,11 @@ import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
@@ -709,5 +714,14 @@ public final class FieldHelper {
 		} else {
 			return sourceField.getValue();
 		}
+	}
+
+	public static void updateOfficersField(AbstractSelect officerField, CaseDataDto caze, UserRole role) {
+		List<DistrictReferenceDto> officerDistricts =
+			Stream.of(caze.getResponsibleDistrict(), caze.getDistrict()).filter(Objects::nonNull).collect(Collectors.toList());
+		FieldHelper.updateItems(
+			officerField,
+			officerDistricts.size() > 0 ? FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, false, role) : null);
+
 	}
 }

@@ -622,6 +622,11 @@
                     style="@style/ControlSecondOfTwoColumnsStyle"/>
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/person_internalToken"
+                app:value="@={data.internalToken}"
+                style="@style/ControlSingleColumnStyle"/>
+
             <ImageView style="@style/FullHorizontalDividerStyle" />
 
             <TextView

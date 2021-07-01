@@ -30,9 +30,6 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -184,26 +181,6 @@ public class TaskController {
 					}
 				});
 		}
-	}
-
-	private DistrictReferenceDto getTaskIndexDistrict(TaskIndexDto taskDto) {
-		DistrictReferenceDto district = null;
-		if (taskDto.getCaze() != null) {
-			CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(taskDto.getCaze().getUuid());
-			district = caseDto.getDistrict();
-		} else if (taskDto.getContact() != null) {
-			ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
-			if (contactDto.getRegion() != null && contactDto.getDistrict() != null) {
-				district = contactDto.getDistrict();
-			} else {
-				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-				district = caseDto.getDistrict();
-			}
-		} else if (taskDto.getEvent() != null) {
-			EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
-			district = eventDto.getEventLocation().getDistrict();
-		}
-		return district;
 	}
 
 	public void showBulkTaskDataEditComponent(Collection<? extends TaskIndexDto> selectedTasks, Runnable callback) {
