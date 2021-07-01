@@ -15,16 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.constants.api;
 
-public interface Endpoints {
-  String PERSONS_PATH = "persons/";
-  String CASES_PATH = "cases/";
-  String COMMUNITIES_PATH = "communities/";
-  String COUNTRIES_PATH = "countries/";
-  String FACILITIES_PATH = "facilities/";
-  String CONTACTS_PATH = "contacts/";
-  String EVENTS_PATH = "events/";
-  String SAMPLES_PATH = "samples/";
-  String TASKS_PATH = "tasks/";
+package org.sormas.e2etests.utils;
+
+public class IncorrectDataException extends Throwable {
+  public IncorrectDataException(String errorMessage, Throwable err) {
+    super(errorMessage, err);
+  }
 }

@@ -35,6 +35,9 @@ import org.sormas.e2etests.pojo.web.Action;
 @Setter
 public class ApiState {
   Response response;
+  String casesAllSince;
+  String communitiesAllSince;
+  String facilitiesFromRegion;
   Person editPerson;
   Case createdCase;
   List<Case> createdCases;

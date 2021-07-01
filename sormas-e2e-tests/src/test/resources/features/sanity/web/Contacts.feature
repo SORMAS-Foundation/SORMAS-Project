@@ -1,6 +1,6 @@
-@Sanity @Contacts
-Feature: Contacts end to end tests
-  
+@Sanity @Contacts @UI
+Feature: Create contacts
+
   Scenario: Create simple contact
     Given I log in with the user
       And I click on the Contacts button from navbar
@@ -78,5 +78,6 @@ Feature: Contacts end to end tests
       When I click on the DETAILED radiobutton from Contact directory
       And I filter by ContactID
       And I am checking if all the fields are correctly displayed in the Contacts directory Detailed table
+
 
 

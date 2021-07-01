@@ -17,14 +17,7 @@
  */
 package org.sormas.e2etests.constants.api;
 
-public interface Endpoints {
-  String PERSONS_PATH = "persons/";
-  String CASES_PATH = "cases/";
-  String COMMUNITIES_PATH = "communities/";
-  String COUNTRIES_PATH = "countries/";
-  String FACILITIES_PATH = "facilities/";
-  String CONTACTS_PATH = "contacts/";
-  String EVENTS_PATH = "events/";
-  String SAMPLES_PATH = "samples/";
-  String TASKS_PATH = "tasks/";
+public interface JsonResourcesLocations {
+  String POST_CASES_BASIC_JSON_BODY = "src/test/resources/JsonFiles/PostCase-Basic.json";
+  String POST_PERSON_JSON_BODY = "src/test/resources/JsonFiles/PostPerson-Basic.json";
 }
