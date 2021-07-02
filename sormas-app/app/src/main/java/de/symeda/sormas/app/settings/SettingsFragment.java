@@ -94,8 +94,8 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.showSyncLog.setOnClickListener(v -> openSyncLog());
 		binding.logout.setOnClickListener(v -> logout());
 		binding.kexLbds.setOnClickListener(v -> kexLbds());
-		binding.syncPersonLbds.setOnClickListener(v -> LbdsIntentSender.sendPersonsLbds(getContext()));
-		binding.syncCaseLbds.setOnClickListener(v -> LbdsIntentSender.sendCasesLbds(getContext()));
+		binding.syncPersonLbds.setOnClickListener(v -> LbdsIntentSender.sendNewCasePersonsLbds(getContext()));
+		binding.syncCaseLbds.setOnClickListener(v -> LbdsIntentSender.sendNewCasesLbds(getContext()));
 		binding.settingsLbdsDebugUrl.setValue(ConfigProvider.getServerLbdsDebugUrl());
 
 		binding.sormasVersion.setText("SORMAS " + InfoProvider.get().getVersion());

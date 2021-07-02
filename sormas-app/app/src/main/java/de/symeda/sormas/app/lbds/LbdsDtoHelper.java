@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,6 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -45,20 +45,13 @@ public class LbdsDtoHelper {
 		CaseDataDto.MATERNAL_HISTORY,
 		CaseDataDto.PORT_HEALTH_INFO);
 
-	private static final List<String> LBDS_PROPERTIES_ENTITY_DTO = Arrays.asList(
-		EntityDto.UUID,
-		EntityDto.CHANGE_DATE,
-		EntityDto.CREATION_DATE,
-		// Necessary for deserialization:
-		PseudonymizableDto.PSEUDONYMIZED);
+	private static final List<String> LBDS_PROPERTIES_ENTITY_DTO = Arrays.asList(EntityDto.UUID, EntityDto.CHANGE_DATE, EntityDto.CREATION_DATE);
 
 	private static final List<String> LBDS_PROPERTIES_PERSON_DTO = Arrays.asList(
 		PersonDto.FIRST_NAME,
 		PersonDto.LAST_NAME,
 		PersonDto.SEX,
-		// Necessary for deserialization:
-		PersonDto.COVID_CODE_DELIVERED,
-		PersonDto.HAS_COVID_APP,
+		// Do not set phone to null
 		PersonDto.PHONE);
 
 	private static final List<String> LBDS_PROPERTIES_CASE_DATA_DTO = Arrays.asList(
@@ -68,24 +61,10 @@ public class LbdsDtoHelper {
 		CaseDataDto.REPORTING_USER,
 		CaseDataDto.CASE_CLASSIFICATION,
 		CaseDataDto.INVESTIGATION_STATUS,
-		CaseDataDto.REGION,
-		CaseDataDto.DISTRICT,
+		CaseDataDto.RESPONSIBLE_REGION,
+		CaseDataDto.RESPONSIBLE_DISTRICT,
 		CaseDataDto.FACILITY_TYPE,
-		CaseDataDto.HEALTH_FACILITY,
-		// Necessary for deserialization:
-		CaseDataDto.NOSOCOMIAL_OUTBREAK,
-		CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN,
-		CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST,
-		CaseDataDto.NOT_A_CASE_REASON_OTHER,
-		CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION,
-		CaseDataDto.SHARED_TO_COUNTRY,
-		CaseDataDto.QUARANTINE_ORDERED_VERBALLY,
-		CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
-		CaseDataDto.QUARANTINE_EXTENDED,
-		CaseDataDto.QUARANTINE_REDUCED,
-		CaseDataDto.QUARANTINE_OFFICIAL_ORDER_SENT,
-		CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
-		"ownershipHandedOver");
+		CaseDataDto.HEALTH_FACILITY);
 
 	private static final Map<String, Object> CASE_DEFAULT_VALUES = new HashMap<>();
 
@@ -110,14 +89,18 @@ public class LbdsDtoHelper {
 		if (lbdsProperties != null) {
 			for (PropertyDescriptor property : Introspector.getBeanInfo(entityDto.getClass()).getPropertyDescriptors()) {
 				String propertyName = property.getName();
-				boolean isLbdsProperty = LBDS_PROPERTIES_ENTITY_DTO.contains(propertyName) || lbdsProperties.contains(propertyName);
+				boolean isLbdsProperty = property.getPropertyType().isPrimitive()
+					|| LBDS_PROPERTIES_ENTITY_DTO.contains(propertyName)
+					|| lbdsProperties.contains(propertyName);
 				if (!isLbdsProperty) {
 					Method writeMethod = property.getWriteMethod();
-					if (writeMethod != null && writeMethod.getGenericParameterTypes().length == 1)
+					if (writeMethod != null && writeMethod.getGenericParameterTypes().length == 1) {
+						Object value = List.class.isAssignableFrom(property.getPropertyType()) ? Collections.emptyList() : null;
 						writeMethod.invoke(
 							entityDto,
 							new Object[] {
-								null });
+								value });
+					}
 				}
 			}
 		} else {

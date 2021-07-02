@@ -2,10 +2,10 @@ package de.symeda.sormas.app.lbds;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hzi.sormas.lbds.core.http.HttpContainer;
@@ -18,13 +18,14 @@ import org.hzi.sormas.lbds.messaging.util.KeySerializationUtil;
 import com.googlecode.openbeans.IntrospectionException;
 
 import android.content.Context;
-import android.util.Base64;
 import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
@@ -34,9 +35,13 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.rest.CaseFacadeRetro;
 import de.symeda.sormas.app.rest.PersonFacadeRetro;
 import de.symeda.sormas.app.rest.RetroProvider;
+import okhttp3.Credentials;
 import okio.Buffer;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -51,6 +56,7 @@ public class LbdsIntentSender {
 			PublicKey lbdsSormasPublicKey = ConfigProvider.getLbdsSormasPublicKey();
 			Log.i("SORMAS_LBDS", "send SORMAS public key: " + KeySerializationUtil.serializePublicKey(lbdsSormasPublicKey));
 			LbdsPropagateKexToLbdsIntent kexToLbdsIntent = new LbdsPropagateKexToLbdsIntent(lbdsSormasPublicKey);
+
 			ContextCompat.startForegroundService(context, kexToLbdsIntent);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -58,7 +64,7 @@ public class LbdsIntentSender {
 		Log.i("SORMAS_LBDS", "==========================");
 	}
 
-	public static void sendPersonsLbds(Context context) {
+	public static void sendNewCasePersonsLbds(Context context) {
 
 		Log.i("SORMAS_LBDS", "==========================");
 		Log.i("SORMAS_LBDS", "Sync Persons LBDS");
@@ -84,18 +90,21 @@ public class LbdsIntentSender {
 		}
 
 		if (!personsToSend.isEmpty()) {
-			String headers = getAuthHeader();
-			String payload = createLbdsPayloadPersons(personsToSend);
-			Log.i("SORMAS_LBDS", "Send persons: " + payload);
-			HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, getLbdsUrl("persons/push"), headers, payload);
+			Log.i(
+				"SORMAS_LBDS",
+				"Send persons: " + StringUtils.join(personsToSend.stream().map(PersonDto::getUuid).collect(Collectors.toList()), ", "));
+			HttpMethod method = createLbdsHttpMethodPersons(personsToSend);
 			sendLbdsRequest(context, method);
+			NotificationHelper
+				.showNotification((NotificationContext) context, NotificationType.SUCCESS, "LBDS Sync. Persons transferred: " + personsToSend.size());
 		} else {
 			Log.i("SORMAS_LBDS", "Nothing to send.");
+			NotificationHelper.showNotification((NotificationContext) context, NotificationType.INFO, "LBDS Sync. No person to transfer");
 		}
 		Log.i("SORMAS_LBDS", "==========================");
 	}
 
-	public static void sendCasesLbds(Context context) {
+	public static void sendNewCasesLbds(Context context) {
 
 		Log.i("SORMAS_LBDS", "==========================");
 		Log.i("SORMAS_LBDS", "Sync Cases LBDS");
@@ -106,6 +115,9 @@ public class LbdsIntentSender {
 
 		for (Case caze : modifiedCases) {
 			CaseDataDto caseDataDto = caseDtoHelper.adoToDto(caze);
+			if (caseDataDto.getHealthFacility() == null) {
+				caseDataDto.setHealthFacility(new FacilityReferenceDto(FacilityDto.NONE_FACILITY_UUID));
+			}
 			Case snapshot = caseDao.querySnapshotByUuid(caze.getUuid());
 
 			boolean isModifiedLbds = false;
@@ -121,13 +133,16 @@ public class LbdsIntentSender {
 		}
 
 		if (!casesToSend.isEmpty()) {
-			String headers = getAuthHeader();
-			String payload = createLbdsPayloadCases(casesToSend);
-			Log.i("SORMAS_LBDS", "Send cases: " + payload);
-			HttpMethod method = new HttpMethod(HttpMethod.MethodType.POST, getLbdsUrl("cases/push"), headers, payload);
+			Log.i(
+				"SORMAS_LBDS",
+				"Send cases: " + StringUtils.join(casesToSend.stream().map(CaseDataDto::getUuid).collect(Collectors.toList()), ", "));
+			HttpMethod method = createLbdsHttpMethodCases(casesToSend);
 			sendLbdsRequest(context, method);
+			NotificationHelper
+				.showNotification((NotificationContext) context, NotificationType.SUCCESS, "LBDS Sync. Cases transferred: " + casesToSend.size());
 		} else {
 			Log.i("SORMAS_LBDS", "Nothing to send.");
+			NotificationHelper.showNotification((NotificationContext) context, NotificationType.INFO, "LBDS Sync. No case to transfer");
 		}
 		Log.i("SORMAS_LBDS", "==========================");
 	}
@@ -135,7 +150,6 @@ public class LbdsIntentSender {
 	private static void sendLbdsRequest(Context context, HttpMethod method) {
 
 		String lbdsAesSecret = ConfigProvider.getLbdsAesSecret();
-		Log.i("SORMAS_LBDS", "AES secret: " + lbdsAesSecret);
 		HttpContainer httpContainer = new HttpContainer(method);
 		LbdsSendIntent lbdsSendIntent = new LbdsSendIntent(httpContainer, lbdsAesSecret);
 		lbdsSendIntent.setComponent(LbdsRelated.componentName);
@@ -148,46 +162,48 @@ public class LbdsIntentSender {
 
 	private static String getAuthHeader() {
 
-		String authBasicCredentials = ConfigProvider.getUsername() + ":" + ConfigProvider.getPassword();
-		return "Authorization: Basic " + Base64.encodeToString(authBasicCredentials.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
+		String authToken = Credentials.basic(ConfigProvider.getUsername(), ConfigProvider.getPassword());
+		return "Authorization: " + authToken;
 	}
 
-	private static String createLbdsPayloadPersons(List<PersonDto> personsToSend) {
+	private static HttpMethod createLbdsHttpMethodPersons(List<PersonDto> personsToSend) {
 
-		Retrofit retrofit = RetroProvider.buildRetrofit(getLbdsUrl(""));
+		Retrofit retrofit = RetroProvider.buildRetrofit(getLbdsUrl());
 		PersonFacadeRetro personFacadeRetro = retrofit.create(PersonFacadeRetro.class);
 		Call<List<PushResult>> call = personFacadeRetro.pushAll(personsToSend);
-		Buffer buffer = new Buffer();
-		try {
-			call.request().body().writeTo(buffer);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		String json = buffer.readUtf8();
-		return json;
+
+		return toHttpMethod(call);
 	}
 
-	private static String createLbdsPayloadCases(List<CaseDataDto> casesToSend) {
+	private static HttpMethod createLbdsHttpMethodCases(List<CaseDataDto> casesToSend) {
 
-		Retrofit retrofit = RetroProvider.buildRetrofit(getLbdsUrl(""));
+		Retrofit retrofit = RetroProvider.buildRetrofit(getLbdsUrl());
 		CaseFacadeRetro caseFacadeRetro = retrofit.create(CaseFacadeRetro.class);
 		Call<List<PushResult>> call = caseFacadeRetro.pushAll(casesToSend);
+
+		return toHttpMethod(call);
+	}
+
+	private static HttpMethod toHttpMethod(Call<?> call) {
+
 		Buffer buffer = new Buffer();
 		try {
 			call.request().body().writeTo(buffer);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		String json = buffer.readUtf8();
-		return json;
+		String payload = buffer.readUtf8();
+		String headers = getAuthHeader();
+		HttpMethod httpMethod = new HttpMethod(HttpMethod.MethodType.POST, call.request().url().toString(), headers, payload);
+
+		return httpMethod;
 	}
 
-	private static String getLbdsUrl(String path) {
+	private static String getLbdsUrl() {
 		String lbdsUrl = ConfigProvider.getServerLbdsDebugUrl();
 		if (lbdsUrl == null || lbdsUrl.isEmpty() || StringUtils.isBlank(lbdsUrl)) {
 			lbdsUrl = ConfigProvider.getServerRestUrl();
 		}
-		String separator = lbdsUrl.endsWith("/") ? "" : "/";
-		return lbdsUrl + separator + path;
+		return lbdsUrl;
 	}
 }

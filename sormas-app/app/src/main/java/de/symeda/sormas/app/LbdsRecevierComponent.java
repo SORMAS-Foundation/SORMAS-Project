@@ -1,7 +1,6 @@
 package de.symeda.sormas.app;
 
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 import java.util.List;
 
@@ -13,7 +12,6 @@ import org.hzi.sormas.lbds.messaging.IntentType;
 import org.hzi.sormas.lbds.messaging.IntentTypeCarrying;
 import org.hzi.sormas.lbds.messaging.LbdsPropagateKexToSormasIntent;
 import org.hzi.sormas.lbds.messaging.LbdsResponseIntent;
-import org.hzi.sormas.lbds.messaging.util.KeySerializationUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -21,8 +19,8 @@ import com.googlecode.openbeans.IntrospectionException;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -60,12 +58,8 @@ public class LbdsRecevierComponent extends IntentService {
 		if (intentType != null && !intentType.trim().isEmpty()) {
 			IntentType type = IntentType.valueOf(intentType);
 			switch (type) {
-			case KEX_TO_LBDS_INTENT:
-				final String publicKey = intent.getStringExtra(Constants.SORMAS_KEY);
-				final PublicKey key = KeySerializationUtil.deserializePublicKey(publicKey);
-
-				break;
 			case HTTP_RESPONSE_INTENT:
+				// HTTP responses received from the LBDS service app
 				LbdsResponseIntent responseIntent = (LbdsResponseIntent) IntentTypeCarrying.toStrongTypedIntent(intent);
 				HttpContainer httpContainerResponse = responseIntent.getHttpContainer(ConfigProvider.getLbdsAesSecret());
 
@@ -84,10 +78,10 @@ public class LbdsRecevierComponent extends IntentService {
 
 				break;
 			case KEX_TO_SORMAS_INTENT:
+				// Key Exchange: public key and AES secret are transferred from the LBDS service app
 				LbdsPropagateKexToSormasIntent kexToSormasIntent = (LbdsPropagateKexToSormasIntent) IntentTypeCarrying.toStrongTypedIntent(intent);
 
 				Log.i("SORMAS_LBDS", "Process LbdsPropagateKexToSormasIntent..");
-
 				Log.i("SORMAS_LBDS", "Sormas public key: " + kexToSormasIntent.getSormasKey());
 
 				PublicKey lbdsKey = kexToSormasIntent.getLbdsKey();
@@ -96,7 +90,8 @@ public class LbdsRecevierComponent extends IntentService {
 
 				String aesSecret = kexToSormasIntent.getAesSecret(ConfigProvider.getLbdsSormasPrivateKey());
 				ConfigProvider.setLbdsAesSecret(aesSecret);
-				Log.i("SORMAS_LBDS", "Lbds AES secret: " + Base64.encodeToString(aesSecret.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT));
+
+				Toast.makeText(getApplicationContext(), "LBDS Sync: Key Exchange successful", Toast.LENGTH_LONG).show();
 
 				break;
 			default:
@@ -126,6 +121,8 @@ public class LbdsRecevierComponent extends IntentService {
 			Log.i("SORMAS_LBDS", "List lengths differ, abort.");
 			throw new IllegalArgumentException("Number of sent Dtos and received PushResults must be equal");
 		}
+
+		Toast.makeText(getApplicationContext(), "LBDS Sync: Received Response.", Toast.LENGTH_LONG).show();
 
 		for (int i = 0; i < sentPersonDtos.size(); i++) {
 			PersonDto personDto = sentPersonDtos.get(i);

@@ -117,7 +117,7 @@ public class DtoPseudonymizer {
 		List<Field> embeddedFields = getEmbeddedFields(type, isInJurisdiction);
 
 		for (Field pseudonymizedField : pseudonymizableFields) {
-			if (!getFieldAccessCheckers(isInJurisdiction).isAccessible(pseudonymizedField, pseudonymizeMandatoryFields) || (dto != null && dto.isPseudonymized())) {
+			if (!getFieldAccessCheckers(isInJurisdiction).isAccessible(pseudonymizedField, pseudonymizeMandatoryFields) || dto.isPseudonymized()) {
 				restoreOriginalValue(dto, pseudonymizedField, originalDto);
 			}
 		}
