@@ -22,8 +22,6 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -41,6 +39,8 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
+import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
@@ -48,7 +48,6 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "ImmunizationFacade")
@@ -68,6 +67,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	private CommunityService communityService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private CountryService countryService;
 
 	public static ImmunizationReferenceDto toReferenceDto(Immunization entity) {
 		if (entity == null) {
@@ -199,10 +200,15 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		dto.setReportDate(entity.getReportDate());
 		dto.setReportingUser(entity.getReportingUser().toReference());
 		dto.setArchived(entity.isArchived());
+		dto.setImmunizationStatus(entity.getImmunizationStatus());
+		dto.setMeansOfImmunization(entity.getMeansOfImmunization());
+		dto.setMeansOfImmunizationDetails(entity.getMeansOfImmunizationDetails());
+		dto.setImmunizationManagementStatus(entity.getImmunizationManagementStatus());
 		dto.setExternalId(entity.getExternalId());
 		dto.setResponsibleRegion(RegionFacadeEjb.toReferenceDto(entity.getResponsibleRegion()));
 		dto.setResponsibleDistrict(DistrictFacadeEjb.toReferenceDto(entity.getResponsibleDistrict()));
 		dto.setResponsibleCommunity(CommunityFacadeEjb.toReferenceDto(entity.getResponsibleCommunity()));
+		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
 		dto.setStartDate(entity.getStartDate());
 		dto.setEndDate(entity.getEndDate());
 		dto.setNumberOfDoses(entity.getNumberOfDoses());
@@ -224,10 +230,15 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setArchived(source.isArchived());
+		target.setImmunizationStatus(source.getImmunizationStatus());
+		target.setMeansOfImmunization(source.getMeansOfImmunization());
+		target.setMeansOfImmunizationDetails(source.getMeansOfImmunizationDetails());
+		target.setImmunizationManagementStatus(source.getImmunizationManagementStatus());
 		target.setExternalId(source.getExternalId());
 		target.setResponsibleRegion(regionService.getByReferenceDto(source.getResponsibleRegion()));
 		target.setResponsibleDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
 		target.setResponsibleCommunity(communityService.getByReferenceDto(source.getResponsibleCommunity()));
+		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
 		target.setNumberOfDoses(source.getNumberOfDoses());

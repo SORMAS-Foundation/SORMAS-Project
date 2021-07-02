@@ -42,6 +42,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
@@ -79,6 +80,7 @@ public class Immunization extends CoreAdo {
 	private boolean archived;
 	private ImmunizationStatus immunizationStatus;
 	private MeansOfImmunization meansOfImmunization;
+	private String meansOfImmunizationDetails;
 	private ImmunizationManagementStatus immunizationManagementStatus;
 	private String externalId;
 
@@ -98,6 +100,8 @@ public class Immunization extends CoreAdo {
 	private Date recoveryDate;
 
 	private Case relatedCase;
+
+	private Country country;
 
 	@Enumerated(EnumType.STRING)
 	public Disease getDisease() {
@@ -287,5 +291,22 @@ public class Immunization extends CoreAdo {
 
 	public void setImmunizationManagementStatus(ImmunizationManagementStatus immunizationManagementStatus) {
 		this.immunizationManagementStatus = immunizationManagementStatus;
+	}
+
+	public String getMeansOfImmunizationDetails() {
+		return meansOfImmunizationDetails;
+	}
+
+	public void setMeansOfImmunizationDetails(String meansOfImmunizationDetails) {
+		this.meansOfImmunizationDetails = meansOfImmunizationDetails;
+	}
+
+	@ManyToOne(cascade = {})
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
 	}
 }

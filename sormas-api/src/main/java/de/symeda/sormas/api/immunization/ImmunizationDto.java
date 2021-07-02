@@ -22,6 +22,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -44,12 +45,14 @@ public class ImmunizationDto extends PseudonymizableDto {
     private boolean archived;
     private ImmunizationStatus immunizationStatus;
     private MeansOfImmunization meansOfImmunization;
+    private String meansOfImmunizationDetails;
     private ImmunizationManagementStatus immunizationManagementStatus;
     private String externalId;
 
     private RegionReferenceDto responsibleRegion;
     private DistrictReferenceDto responsibleDistrict;
     private CommunityReferenceDto responsibleCommunity;
+    private CountryReferenceDto country;
 
     private Date startDate;
     private Date endDate;
@@ -230,5 +233,21 @@ public class ImmunizationDto extends PseudonymizableDto {
 
     public void setImmunizationManagementStatus(ImmunizationManagementStatus immunizationManagementStatus) {
         this.immunizationManagementStatus = immunizationManagementStatus;
+    }
+
+    public String getMeansOfImmunizationDetails() {
+        return meansOfImmunizationDetails;
+    }
+
+    public void setMeansOfImmunizationDetails(String meansOfImmunizationDetails) {
+        this.meansOfImmunizationDetails = meansOfImmunizationDetails;
+    }
+
+    public CountryReferenceDto getCountry() {
+        return country;
+    }
+
+    public void setCountry(CountryReferenceDto country) {
+        this.country = country;
     }
 }

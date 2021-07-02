@@ -7485,17 +7485,19 @@ CREATE TABLE immunization (
                         archived boolean DEFAULT false,
                         immunizationstatus varchar(255) not null,
                         meansofimmunization varchar(255) not null,
+                        meansOfImmunizationDetails varchar(512),
                         immunizationmanagementstatus varchar(255) not null,
                         externalid varchar(255) not null,
                         responsibleregion_id bigint,
                         responsibledistrict_id bigint,
                         responsiblecommunity_id bigint,
+                        country_id bigint,
                         startdate timestamp,
                         enddate timestamp,
                         numberofdoses int,
                         previousinfection varchar(255),
                         lastinfectiondate timestamp,
-                        additionaldetails varchar(521),
+                        additionaldetails varchar(512),
                         positivetestresultdate timestamp not null,
                         recoverydate timestamp not null,
                         relatedcase_id bigint,
@@ -7508,6 +7510,7 @@ ALTER TABLE immunization ADD CONSTRAINT fk_immunization_reportinguser_id FOREIGN
 ALTER TABLE immunization ADD CONSTRAINT fk_immunization_responsibleregion_id FOREIGN KEY (responsibleregion_id) REFERENCES region(id);
 ALTER TABLE immunization ADD CONSTRAINT fk_immunization_responsibledistrict_id FOREIGN KEY (responsibledistrict_id) REFERENCES district(id);
 ALTER TABLE immunization ADD CONSTRAINT fk_immunization_responsiblecommunity_id FOREIGN KEY (responsiblecommunity_id) REFERENCES community(id);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_country_id FOREIGN KEY (country_id) REFERENCES country(id);
 ALTER TABLE immunization ADD CONSTRAINT fk_immunization_relatedcase_id FOREIGN KEY (relatedcase_id) REFERENCES cases(id);
 
 CREATE TABLE immunization_history (LIKE immunization);
