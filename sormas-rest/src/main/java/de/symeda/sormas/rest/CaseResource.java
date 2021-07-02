@@ -73,8 +73,12 @@ public class CaseResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postCases(@Valid List<CaseDataDto> dtos) {
-		return savePushedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);
+	public List<PushResult> postCases(@Valid List<CaseDataDto> dtos, @QueryParam("createShareInfo") boolean createShareInfo) {
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);
+		if (createShareInfo) {
+			FacadeProvider.getExternalSurveillanceToolFacade().createCaseShareInfo(dtos);
+		}
+		return result;
 	}
 
 	@GET
