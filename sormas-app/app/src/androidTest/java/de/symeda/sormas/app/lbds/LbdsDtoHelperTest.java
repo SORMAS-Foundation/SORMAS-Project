@@ -1,6 +1,7 @@
 package de.symeda.sormas.app.lbds;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.InvocationTargetException;
@@ -40,23 +41,29 @@ public class LbdsDtoHelperTest {
 		Person person = TestEntityCreator.createPerson("Klaus", "Kinski", Sex.MALE, null, null, null);
 		PersonDto personDto = new PersonDtoHelper().adoToDto(person);
 		LbdsDtoHelper.stripLbdsDto(personDto);
-		assertThat(LbdsDtoHelper.isModifiedLbds(person, personDto, true), is(false));
+
+		assertThat(personDto.getFirstName(), is("Klaus"));
+		assertThat(personDto.getLastName(), is("Kinski"));
+		assertThat(personDto.getSex(), is(Sex.MALE));
 
 		Person person2 = TestEntityCreator.createPerson("Werner", "Herzog", Sex.MALE, 1942, 9, 5);
 		PersonDto personDto2 = new PersonDtoHelper().adoToDto(person2);
 		LbdsDtoHelper.stripLbdsDto(personDto2);
-		assertThat(LbdsDtoHelper.isModifiedLbds(person2, personDto2, true), is(true));
-		assertThat(LbdsDtoHelper.isModifiedLbds(person2, personDto2, false), is(false));
-
-		personDto2.setLastName("Kinski");
-		assertThat(LbdsDtoHelper.isModifiedLbds(person2, personDto2, false), is(true));
+		assertNull(personDto2.getBirthdateYYYY());
+		assertNull(personDto2.getBirthdateMM());
+		assertNull(personDto2.getBirthdateDD());
 	}
 
 	@Test
 	public void testModifiedCasesLbds() throws IllegalAccessException, IntrospectionException, InvocationTargetException {
+
 		Case caze = TestEntityCreator.createCase();
 		CaseDataDto caseDataDto = new CaseDtoHelper().adoToDto(caze);
+		caseDataDto.setAdditionalDetails("Some additional detail");
 		LbdsDtoHelper.stripLbdsDto(caseDataDto);
-		assertThat(LbdsDtoHelper.isModifiedLbds(caze, caseDataDto, true), is(false));
+
+		assertThat(caseDataDto.getResponsibleRegion().getUuid(), is(caze.getResponsibleRegion().getUuid()));
+		assertThat(caseDataDto.getResponsibleDistrict().getUuid(), is(caze.getResponsibleDistrict().getUuid()));
+		assertNull(caseDataDto.getAdditionalDetails());
 	}
 }
