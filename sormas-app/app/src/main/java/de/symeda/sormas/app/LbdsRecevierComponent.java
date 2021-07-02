@@ -1,6 +1,5 @@
 package de.symeda.sormas.app;
 
-import java.lang.reflect.InvocationTargetException;
 import java.security.PublicKey;
 import java.util.List;
 
@@ -15,7 +14,6 @@ import org.hzi.sormas.lbds.messaging.LbdsResponseIntent;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.googlecode.openbeans.IntrospectionException;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -27,14 +25,9 @@ import androidx.annotation.Nullable;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDao;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.person.Person;
-import de.symeda.sormas.app.backend.person.PersonDao;
-import de.symeda.sormas.app.lbds.LbdsDtoHelper;
+import de.symeda.sormas.app.backend.lbds.LbdsSyncDao;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -91,7 +84,8 @@ public class LbdsRecevierComponent extends IntentService {
 				String aesSecret = kexToSormasIntent.getAesSecret(ConfigProvider.getLbdsSormasPrivateKey());
 				ConfigProvider.setLbdsAesSecret(aesSecret);
 
-				Toast.makeText(getApplicationContext(), "LBDS Sync: Key Exchange successful", Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), getResources().getString(R.string.info_lbds_key_exchange_successful), Toast.LENGTH_LONG)
+					.show();
 
 				break;
 			default:
@@ -122,41 +116,30 @@ public class LbdsRecevierComponent extends IntentService {
 			throw new IllegalArgumentException("Number of sent Dtos and received PushResults must be equal");
 		}
 
-		Toast.makeText(getApplicationContext(), "LBDS Sync: Received Response.", Toast.LENGTH_LONG).show();
+		LbdsSyncDao lbdsSyncDao = DatabaseHelper.getLbdsSyncDao();
+		int successful = 0;
+		int ignored = 0;
 
 		for (int i = 0; i < sentPersonDtos.size(); i++) {
 			PersonDto personDto = sentPersonDtos.get(i);
 			String uuid = personDto.getUuid();
 			PushResult pushResult = responsePushResults.get(i);
-			if (pushResult != PushResult.OK) {
+			if (pushResult == PushResult.OK) {
+				Log.i("SORMAS_LBDS", "Process PushResult " + pushResult + " for PersonDto " + uuid);
+				lbdsSyncDao.logLbdsReceive(uuid);
+				successful++;
+			} else {
 				Log.i("SORMAS_LBDS", "Ignore PushResult " + pushResult + " for PersonDto " + uuid);
-				continue;
-			}
-			PersonDao personDao = DatabaseHelper.getPersonDao();
-			Person person = personDao.queryUuid(uuid);
-			if (person == null) {
-				Log.i("SORMAS_LBDS", "Person " + uuid + " not found, skip.");
-				continue;
-			}
-			if (!person.isModified()) {
-				Log.i("SORMAS_LBDS", "Person " + uuid + " not modified, skip.");
-				continue;
-			}
-			Person snapshot = personDao.querySnapshotByUuid(uuid);
-			if (snapshot != null) {
-				Log.i("SORMAS_LBDS", "Person " + uuid + " has a snapshot, skip.");
-				continue;
-			}
-			try {
-				if (!LbdsDtoHelper.isModifiedLbds(person, personDto, true)) {
-					personDao.accept(person);
-				} else {
-					// TODO: create snapshot
-				}
-			} catch (DaoException | IntrospectionException | InvocationTargetException | IllegalAccessException e) {
-				throw new IllegalArgumentException("Error processing LBDS response for person " + uuid, e);
+				ignored++;
 			}
 		}
+
+		Toast
+			.makeText(
+				getApplicationContext(),
+				String.format(getResources().getString(R.string.lbds_response_persons), successful, ignored),
+				Toast.LENGTH_LONG)
+			.show();
 	}
 
 	private void processLbdsResponseCases(HttpContainer httpContainerResponse) {
@@ -180,39 +163,30 @@ public class LbdsRecevierComponent extends IntentService {
 			throw new IllegalArgumentException("Number of sent Dtos and received PushResults must be equal");
 		}
 
+		LbdsSyncDao lbdsSyncDao = DatabaseHelper.getLbdsSyncDao();
+		int successful = 0;
+		int ignored = 0;
+
 		for (int i = 0; i < sentCaseDataDtos.size(); i++) {
 			CaseDataDto caseDataDto = sentCaseDataDtos.get(i);
 			String uuid = caseDataDto.getUuid();
 			PushResult pushResult = responsePushResults.get(i);
-			if (pushResult != PushResult.OK) {
-				Log.i("SORMAS_LBDS", "Ignore PushResult " + pushResult + " for CaseDataDto " + uuid);
-				continue;
-			}
-			CaseDao caseDao = DatabaseHelper.getCaseDao();
-			Case caze = caseDao.queryUuid(uuid);
-			if (caze == null) {
-				Log.i("SORMAS_LBDS", "Case " + uuid + " not found, skip.");
-				continue;
-			}
-			if (!caze.isModified()) {
-				Log.i("SORMAS_LBDS", "Case " + uuid + " not modified, skip.");
-				continue;
-			}
-			Case snapshot = caseDao.querySnapshotByUuid(uuid);
-			if (snapshot != null) {
-				Log.i("SORMAS_LBDS", "Case " + uuid + " has a snapshot, skip.");
-				continue;
-			}
-			try {
-				if (!LbdsDtoHelper.isModifiedLbds(caze, caseDataDto, true)) {
-					caseDao.accept(caze);
-				} else {
-					// TODO: create snapshot
-				}
-			} catch (DaoException | IntrospectionException | InvocationTargetException | IllegalAccessException e) {
-				throw new IllegalArgumentException("Error processing LBDS response for case " + uuid, e);
+			if (pushResult == PushResult.OK) {
+				Log.i("SORMAS_LBDS", "Process PushResult " + pushResult + " for PersonDto " + uuid);
+				lbdsSyncDao.logLbdsReceive(uuid);
+				successful++;
+			} else {
+				Log.i("SORMAS_LBDS", "Ignore PushResult " + pushResult + " for PersonDto " + uuid);
+				ignored++;
 			}
 		}
+
+		Toast
+			.makeText(
+				getApplicationContext(),
+				String.format(getResources().getString(R.string.lbds_response_cases), successful, ignored),
+				Toast.LENGTH_LONG)
+			.show();
 	}
 
 	private static class PushResultCallback implements Callback<List<PushResult>> {

@@ -27,11 +27,13 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.lbds.LbdsSyncDao;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDao;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
@@ -57,6 +59,11 @@ public class LbdsIntentSender {
 			Log.i("SORMAS_LBDS", "send SORMAS public key: " + KeySerializationUtil.serializePublicKey(lbdsSormasPublicKey));
 			LbdsPropagateKexToLbdsIntent kexToLbdsIntent = new LbdsPropagateKexToLbdsIntent(lbdsSormasPublicKey);
 
+			NotificationHelper.showNotification(
+				(NotificationContext) context,
+				NotificationType.INFO,
+				context.getResources().getString(R.string.info_lbds_key_exchange_started));
+
 			ContextCompat.startForegroundService(context, kexToLbdsIntent);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -68,38 +75,29 @@ public class LbdsIntentSender {
 
 		Log.i("SORMAS_LBDS", "==========================");
 		Log.i("SORMAS_LBDS", "Sync Persons LBDS");
-		PersonDao personDao = DatabaseHelper.getPersonDao();
-		List<Person> modifiedPersons = personDao.getModifiedEntities();
-		List<PersonDto> personsToSend = new ArrayList<>();
-		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
-
-		for (Person person : modifiedPersons) {
-			PersonDto personDto = personDtoHelper.adoToDto(person);
-			Person snapshot = personDao.querySnapshotByUuid(person.getUuid());
-
-			boolean isModifiedLbds = false;
-			try {
-				LbdsDtoHelper.stripLbdsDto(personDto);
-				isModifiedLbds = LbdsDtoHelper.isModifiedLbds(snapshot, personDto, false);
-				if (isModifiedLbds) {
-					personsToSend.add(personDto);
-				}
-			} catch (IllegalAccessException | IntrospectionException | InvocationTargetException e) {
-				throw new IllegalArgumentException("LBDS preparation failed for person " + person.getUuid(), e);
-			}
-		}
+		LbdsSyncDao lbdsSyncDao = DatabaseHelper.getLbdsSyncDao();
+		List<PersonDto> personsToSend = getNewPersonsToSendLbds();
 
 		if (!personsToSend.isEmpty()) {
-			Log.i(
-				"SORMAS_LBDS",
-				"Send persons: " + StringUtils.join(personsToSend.stream().map(PersonDto::getUuid).collect(Collectors.toList()), ", "));
+			List<String> personUuids = personsToSend.stream().map(PersonDto::getUuid).collect(Collectors.toList());
+			Log.i("SORMAS_LBDS", "Send persons: " + StringUtils.join(personUuids, ", "));
 			HttpMethod method = createLbdsHttpMethodPersons(personsToSend);
 			sendLbdsRequest(context, method);
-			NotificationHelper
-				.showNotification((NotificationContext) context, NotificationType.SUCCESS, "LBDS Sync. Persons transferred: " + personsToSend.size());
+
+			for (String personUuid : personUuids) {
+				lbdsSyncDao.logLbdsSend(personUuid);
+			}
+
+			NotificationHelper.showNotification(
+				(NotificationContext) context,
+				NotificationType.SUCCESS,
+				String.format(context.getResources().getString(R.string.lbds_persons_transferred), personsToSend.size()));
 		} else {
 			Log.i("SORMAS_LBDS", "Nothing to send.");
-			NotificationHelper.showNotification((NotificationContext) context, NotificationType.INFO, "LBDS Sync. No person to transfer");
+			NotificationHelper.showNotification(
+				(NotificationContext) context,
+				NotificationType.INFO,
+				context.getResources().getString(R.string.info_lbds_no_person_to_transfer));
 		}
 		Log.i("SORMAS_LBDS", "==========================");
 	}
@@ -108,43 +106,81 @@ public class LbdsIntentSender {
 
 		Log.i("SORMAS_LBDS", "==========================");
 		Log.i("SORMAS_LBDS", "Sync Cases LBDS");
+		List<CaseDataDto> casesToSend = getNewCasesToSendLbds();
+		LbdsSyncDao lbdsSyncDao = DatabaseHelper.getLbdsSyncDao();
+
+		if (!casesToSend.isEmpty()) {
+			List<String> caseUuids = casesToSend.stream().map(CaseDataDto::getUuid).collect(Collectors.toList());
+			Log.i("SORMAS_LBDS", "Send cases: " + StringUtils.join(caseUuids, ", "));
+			HttpMethod method = createLbdsHttpMethodCases(casesToSend);
+			sendLbdsRequest(context, method);
+
+			for (String caseUuid : caseUuids) {
+				lbdsSyncDao.logLbdsSend(caseUuid);
+			}
+
+			NotificationHelper.showNotification(
+				(NotificationContext) context,
+				NotificationType.SUCCESS,
+				String.format(context.getResources().getString(R.string.lbds_cases_transferred), casesToSend.size()));
+		} else {
+			Log.i("SORMAS_LBDS", "Nothing to send.");
+			NotificationHelper.showNotification(
+				(NotificationContext) context,
+				NotificationType.INFO,
+				context.getResources().getString(R.string.info_lbds_no_case_to_transfer));
+		}
+		Log.i("SORMAS_LBDS", "==========================");
+	}
+
+	public static List<PersonDto> getNewPersonsToSendLbds() {
+		List<CaseDataDto> casesToSend = getNewCasesToSendLbds();
+		PersonDao personDao = DatabaseHelper.getPersonDao();
+		LbdsSyncDao lbdsSyncDao = DatabaseHelper.getLbdsSyncDao();
+		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
+		List<PersonDto> personsToSend = new ArrayList<>();
+
+		for (CaseDataDto caze : casesToSend) {
+			Person person = personDao.queryUuid(caze.getPerson().getUuid());
+			if ((!person.isNew()) || lbdsSyncDao.hasBeenSuccessfullySent(person)) {
+				continue;
+			}
+			PersonDto personDto = personDtoHelper.adoToDto(person);
+			try {
+				LbdsDtoHelper.stripLbdsDto(personDto);
+			} catch (IllegalAccessException | IntrospectionException | InvocationTargetException e) {
+				throw new IllegalArgumentException("LBDS preparation failed for person " + person.getUuid(), e);
+			}
+			personsToSend.add(personDto);
+		}
+
+		return personsToSend;
+	}
+
+	private static List<CaseDataDto> getNewCasesToSendLbds() {
 		CaseDao caseDao = DatabaseHelper.getCaseDao();
+		LbdsSyncDao lbdsSyncDao = DatabaseHelper.getLbdsSyncDao();
+		CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
 		List<Case> modifiedCases = caseDao.getModifiedEntities();
 		List<CaseDataDto> casesToSend = new ArrayList<>();
-		CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
 
 		for (Case caze : modifiedCases) {
+			if ((!caze.isNew()) || lbdsSyncDao.hasBeenSuccessfullySent(caze)) {
+				continue;
+			}
 			CaseDataDto caseDataDto = caseDtoHelper.adoToDto(caze);
 			if (caseDataDto.getHealthFacility() == null) {
 				caseDataDto.setHealthFacility(new FacilityReferenceDto(FacilityDto.NONE_FACILITY_UUID));
 			}
-			Case snapshot = caseDao.querySnapshotByUuid(caze.getUuid());
-
-			boolean isModifiedLbds = false;
 			try {
 				LbdsDtoHelper.stripLbdsDto(caseDataDto);
-				isModifiedLbds = LbdsDtoHelper.isModifiedLbds(snapshot, caseDataDto, false);
-				if (isModifiedLbds) {
-					casesToSend.add(caseDataDto);
-				}
 			} catch (IllegalAccessException | IntrospectionException | InvocationTargetException e) {
 				throw new IllegalArgumentException("LBDS preparation failed for case " + caze.getUuid(), e);
 			}
+			casesToSend.add(caseDataDto);
 		}
 
-		if (!casesToSend.isEmpty()) {
-			Log.i(
-				"SORMAS_LBDS",
-				"Send cases: " + StringUtils.join(casesToSend.stream().map(CaseDataDto::getUuid).collect(Collectors.toList()), ", "));
-			HttpMethod method = createLbdsHttpMethodCases(casesToSend);
-			sendLbdsRequest(context, method);
-			NotificationHelper
-				.showNotification((NotificationContext) context, NotificationType.SUCCESS, "LBDS Sync. Cases transferred: " + casesToSend.size());
-		} else {
-			Log.i("SORMAS_LBDS", "Nothing to send.");
-			NotificationHelper.showNotification((NotificationContext) context, NotificationType.INFO, "LBDS Sync. No case to transfer");
-		}
-		Log.i("SORMAS_LBDS", "==========================");
+		return casesToSend;
 	}
 
 	private static void sendLbdsRequest(Context context, HttpMethod method) {
