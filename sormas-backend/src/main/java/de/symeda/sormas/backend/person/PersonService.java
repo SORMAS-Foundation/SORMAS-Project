@@ -186,12 +186,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Predicate contactFilter = CriteriaBuilderHelper.and(cb, contactUserFilter, contactNotDeleted);
 		final Predicate eventParticipantFilter = CriteriaBuilderHelper.and(cb, eventParticipantUserFilter, eventParticipantNotDeleted);
 
-		return CriteriaBuilderHelper.or(
-			cb,
-			caseFilter,
-			contactFilter,
-			eventParticipantFilter,
-			cb.and(cb.isNull(caseJoin), cb.isNull(contactJoin), cb.isNull(eventParticipantJoin)));
+		return CriteriaBuilderHelper.or(cb, caseFilter, contactFilter, eventParticipantFilter);
 	}
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, PersonQueryContext personQueryContext) {
@@ -370,7 +365,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		final Predicate isFromSelectedPersons =
 			cb.in(personRoot.get(Person.ID)).value(selectedEntities.stream().map(Person::getId).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedPersons, inJurisdictionOrOwned(new PersonQueryContext(cb,inJurisdictionQuery, personRoot))));
+		inJurisdictionQuery.where(cb.and(isFromSelectedPersons, inJurisdictionOrOwned(new PersonQueryContext(cb, inJurisdictionQuery, personRoot))));
 
 		return em.createQuery(inJurisdictionQuery).getResultList();
 	}
