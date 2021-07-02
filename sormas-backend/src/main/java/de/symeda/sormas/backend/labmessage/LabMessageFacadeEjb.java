@@ -78,6 +78,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@EJB
 	private TestReportService testReportService;
 	@EJB
+	private TestReportFacadeEjb.TestReportFacadeEjbLocal testReportFacade;
+	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
@@ -112,6 +114,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setLabExternalId(source.getLabExternalId());
 		target.setLabName(source.getLabName());
 		target.setLabPostalCode(source.getLabPostalCode());
+		if (source.getTestReports() != null) {
+			target.setTestReports(source.getTestReports().stream().map(t -> testReportFacade.fromDto(t, false)).collect(toList()));
+		}
 
 		return target;
 	}
@@ -161,6 +166,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
 		target.setSpecimenCondition(source.getSpecimenCondition());
+		if (source.getTestReports() != null) {
+			target.setTestReports(source.getTestReports().stream().map(t -> TestReportFacadeEjb.toDto(t)).collect(toList()));
+		}
 
 		return target;
 	}

@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.labmessage;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -65,6 +67,8 @@ public class LabMessageDto extends EntityDto {
 	private String personHouseNumber;
 	private String personPhone;
 	private String personEmail;
+
+	private List<TestReportDto> testReports;
 
 	private String labMessageDetails;
 
@@ -260,6 +264,25 @@ public class LabMessageDto extends EntityDto {
 
 	public void setPersonEmail(String personEmail) {
 		this.personEmail = personEmail;
+	}
+
+	public List<TestReportDto> getTestReports() {
+		return testReports;
+	}
+
+	public void setTestReports(List<TestReportDto> testReports) {
+		this.testReports = testReports;
+	}
+
+	public void addTestReport(TestReportDto testReport) {
+		testReport.setLabMessage(this.toReference());
+		if (this.testReports == null) {
+			ArrayList testReports = new ArrayList();
+			testReports.add(testReport);
+			this.testReports = testReports;
+		} else {
+			this.testReports.add(testReport);
+		}
 	}
 
 	public String getLabMessageDetails() {
