@@ -27,6 +27,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.EntityDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -107,6 +108,20 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		default:
 			throw new ExternalSurveillanceToolException(Strings.ExternalSurveillanceToolGateway_notificationErrorSending);
 		}
+	}
+
+	@Override
+	public void createCaseShareInfo(List<CaseDataDto> caseDataDtos) {
+		List<String> caseUuids = caseDataDtos.stream().map(EntityDto::getUuid).collect(Collectors.toList());
+		caseService.getByUuids(caseUuids)
+				.forEach(caze -> shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.SHARED));
+	}
+
+	@Override
+	public void createEventShareInfo(List<EventDto> eventDtos) {
+		List<String> eventUuids = eventDtos.stream().map(EntityDto::getUuid).collect(Collectors.toList());
+		eventService.getByUuids(eventUuids)
+				.forEach(event -> shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED));
 	}
 
 	@Override

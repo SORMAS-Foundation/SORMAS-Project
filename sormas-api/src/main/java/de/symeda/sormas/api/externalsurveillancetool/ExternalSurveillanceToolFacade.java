@@ -40,6 +40,10 @@ public interface ExternalSurveillanceToolFacade {
 
 	void sendEvents(List<String> eventUuids) throws ExternalSurveillanceToolException;
 
+	void createCaseShareInfo(List<CaseDataDto> cases);
+
+	void createEventShareInfo(List<EventDto> events);
+
 	void deleteCases(List<CaseDataDto> cases) throws ExternalSurveillanceToolException;
 
 	void deleteEvents(List<EventDto> events) throws ExternalSurveillanceToolException;
