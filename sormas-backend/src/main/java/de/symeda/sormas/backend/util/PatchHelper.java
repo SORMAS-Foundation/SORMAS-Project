@@ -5,14 +5,12 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -62,31 +60,20 @@ public class PatchHelper {
 
 			Iterator<Map.Entry<String, JsonNode>> jsonObjectFieldMap = jsonObject.fields();
 			while (jsonObjectFieldMap.hasNext()) {
-				try {
-					Map.Entry<String, JsonNode> jsonObjectFieldMapEntry = jsonObjectFieldMap.next();
-					JsonNode jsonObjectFieldNode = jsonObjectFieldMapEntry.getValue();
-					Field existingObjectField = getFieldByName(jsonObjectFieldMapEntry.getKey(), existingObject.getClass());
-					if (existingObjectField == null) {
-						throw new RuntimeException("No such field exception! " + jsonObjectFieldMapEntry.getKey());
-					}
-					existingObjectField.setAccessible(true);
+				Map.Entry<String, JsonNode> jsonObjectFieldMapEntry = jsonObjectFieldMap.next();
+				JsonNode jsonObjectFieldNode = jsonObjectFieldMapEntry.getValue();
+				Field existingObjectField = getFieldByName(jsonObjectFieldMapEntry.getKey(), existingObject.getClass());
+				existingObjectField.setAccessible(true);
 
-					if (jsonObjectFieldNode.isObject()) {
-						updateExistingObject(existingObject, jsonObjectFieldNode, existingObjectField);
+				if (jsonObjectFieldNode.isObject()) {
+					updateExistingObject(existingObject, jsonObjectFieldNode, existingObjectField);
 
-					} else if (jsonObjectFieldNode.isArray()) {
-						updateObjectList(existingObject, jsonObjectFieldNode, existingObjectField);
+				} else if (jsonObjectFieldNode.isArray()) {
+					updateObjectList(existingObject, jsonObjectFieldNode, existingObjectField);
 
-					} else {
-						setFieldValue(existingObject, existingObjectField, jsonObjectFieldNode);
-					}
-
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-					Logger logger = LoggerFactory.getLogger(existingObject.getClass());
-					logger.error(String.format("Failed to update object" + existingObject.getClass().getSimpleName() + ". Error: " + e.getMessage()));
+				} else {
+					setFieldValue(existingObject, existingObjectField, jsonObjectFieldNode);
 				}
-
 			}
 
 		} catch (Exception e) {
@@ -114,11 +101,11 @@ public class PatchHelper {
 			addOrReplaceListElement(existingObject, existingObjectField, listElementClass, tempNewElementList, listElement);
 		}
 
-		if (existingObjectField.getType().isAssignableFrom(List.class)) {
+		if (existingObjectField.getType().isAssignableFrom(Collection.class)) {
 			Object existingObjectFieldInstance = existingObjectField.get(existingObject);
-			List existingElementList = tempNewElementList;
+			Collection existingElementList = tempNewElementList;
 			if (existingObjectFieldInstance != null) {
-				existingElementList = (List) existingObjectFieldInstance;
+				existingElementList = (Collection) existingObjectFieldInstance;
 				existingElementList.clear();
 				existingElementList.addAll(tempNewElementList);
 			} else {
@@ -249,10 +236,13 @@ public class PatchHelper {
 	 *            - the class where the field is searched
 	 * @return
 	 */
-	private static Field getFieldByName(@NotNull String fieldName, @NotNull Class objectClass) {
+	private static @NotNull Field getFieldByName(@NotNull String fieldName, @NotNull Class objectClass) {
 		Field field = Arrays.stream(objectClass.getDeclaredFields()).filter(fld -> fld.getName().equals(fieldName)).findFirst().orElse(null);
 		while (field == null && objectClass.getSuperclass() != null) {
 			field = getFieldByName(fieldName, objectClass.getSuperclass());
+		}
+		if (field == null) {
+			throw new RuntimeException("No such field exception! " + fieldName + " in the class:" + objectClass.getName());
 		}
 		return field;
 	}
