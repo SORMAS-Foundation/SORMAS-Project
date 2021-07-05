@@ -136,6 +136,24 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
+	public PathogenTestDto getLatestPathogenTest(String sampleUuid) {
+		if (sampleUuid == null) {
+			return null;
+		}
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PathogenTest> cq = cb.createQuery(PathogenTest.class);
+		Root<PathogenTest> pathogenTestRoot = cq.from(PathogenTest.class);
+		Join<PathogenTest, Sample> sampleJoin = pathogenTestRoot.join(PathogenTest.SAMPLE);
+
+		Predicate filter = cb.equal(sampleJoin.get(Sample.UUID), sampleUuid);
+		cq.where(filter);
+		cq.orderBy(cb.desc(pathogenTestRoot.get(PathogenTest.CREATION_DATE)));
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return convertToDto(em.createQuery(cq).setMaxResults(1).getSingleResult(), pseudonymizer);
+	}
+
+	@Override
 	public List<PathogenTestDto> getAllBySample(SampleReferenceDto sampleRef) {
 		if (sampleRef == null) {
 			return Collections.emptyList();

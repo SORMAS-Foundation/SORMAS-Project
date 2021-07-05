@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -40,6 +41,8 @@ public interface RegionFacade {
 	List<RegionDto> getAllAfter(Date date);
 
 	List<RegionIndexDto> getIndexList(RegionCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	Page<RegionIndexDto> getIndexPage(RegionCriteria regionCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	long count(RegionCriteria criteria);
 

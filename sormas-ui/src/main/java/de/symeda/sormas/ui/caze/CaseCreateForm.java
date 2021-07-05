@@ -555,7 +555,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		FieldHelper.removeItems(facilityCombo);
-		if (facilityType.getValue() != null && district != null) {
+		if (TypeOfPlace.HOME.equals(facilityOrHome.isRequired() ? facilityOrHome.getValue() : facilityOrHome.getNullableValue())) {
+			FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
+			facilityCombo.addItem(noFacilityRef);
+			facilityCombo.setValue(noFacilityRef);
+		} else if (facilityType.getValue() != null && district != null) {
 			if (community != null) {
 				FieldHelper.updateItems(
 					facilityCombo,
