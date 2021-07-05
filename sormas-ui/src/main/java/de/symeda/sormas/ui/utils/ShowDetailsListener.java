@@ -2,6 +2,8 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.function.Consumer;
 
+import org.joda.time.DateTime;
+
 import com.vaadin.ui.Grid.ItemClick;
 import com.vaadin.ui.components.grid.ItemClickListener;
 
@@ -18,6 +20,8 @@ public class ShowDetailsListener<T> implements ItemClickListener<T> {
 	private final String detailsColumnId;
 	private final boolean showOnDoubleClick;
 	private final Consumer<T> itemHandler;
+
+	private DateTime lastHandlingTimestamp;
 
 	/**
 	 * {@code showOnDoubleClick=true}
@@ -45,6 +49,7 @@ public class ShowDetailsListener<T> implements ItemClickListener<T> {
 		this.detailsColumnId = detailsColumnId;
 		this.showOnDoubleClick = showOnDoubleClick;
 		this.itemHandler = itemHandler;
+		this.lastHandlingTimestamp = DateTime.now().minusSeconds(1);
 	}
 
 	/**
@@ -70,11 +75,14 @@ public class ShowDetailsListener<T> implements ItemClickListener<T> {
 
 	@Override
 	public void itemClick(ItemClick<T> event) {
-
 		if (event.getItem() != null
 			&& ((event.getColumn() != null && detailsColumnId.equals(event.getColumn().getId()))
 				|| (showOnDoubleClick && event.getMouseEventDetails().isDoubleClick()))) {
-			handleItemClick(event);
+			// if the last invocation of the itemHandler is less than 1 second ago, ignore the event
+			if (DateTime.now().minusSeconds(1).isAfter(lastHandlingTimestamp)) {
+				lastHandlingTimestamp = DateTime.now();
+				handleItemClick(event);
+			}
 		}
 	}
 
