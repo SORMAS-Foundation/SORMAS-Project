@@ -1023,11 +1023,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			if (userFilterCriteria == null
 				|| (!userFilterCriteria.isExcludeCasesFromContacts()
 					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
-				Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
-				Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
-				contactCaseSubquery.where(contactService.createUserFilterWithoutCase(new ContactQueryContext(cb, cq, contactRoot)));
-				contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
+				filter = CriteriaBuilderHelper.or(
+					cb,
+					filter,
+					contactService.createUserFilterWithoutCase(new ContactQueryContext(cb, cq, casePath.join(Case.CONTACTS, JoinType.LEFT))));
 			}
 
 			// users can only be assigned to a task when they have also access to the case
