@@ -51,27 +51,27 @@ import de.symeda.sormas.backend.user.User;
 @Audited
 public class Immunization extends CoreAdo {
 
-	public static String DISEASE = "disease";
-	public static String PERSON = "person";
-	public static String REPORT_DATE = "reportDate";
-	public static String REPORTING_USER = "reportingUser";
-	public static String ARCHIVED = "archived";
-	public static String IMMUNIZATION_STATUS = "immunizationStatus";
-	public static String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
-	public static String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
-	public static String EXTERNAL_ID = "externalId";
-	public static String RESPONSIBLE_REGION = "responsibleRegion";
-	public static String RESPONSIBLE_DISTRICT = "responsibleDistrict";
-	public static String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
-	public static String START_DATE = "startDate";
-	public static String END_DATE = "endDate";
-	public static String NUMBER_OF_DOSES = "numberOfDoses";
-	public static String PREVIOUS_INFECTION = "previousInfection";
-	public static String LAST_INFECTION_DATE = "lastInfectionDate";
-	public static String ADDITIONAL_DETAILS = "additionalDetails";
-	public static String POSITIVE_TEST_RESULT_DATE = "positiveTestResultDate";
-	public static String RECOVERY_DATE = "recoveryDate";
-	public static String RELATED_CASE = "relatedCase";
+	public static final String DISEASE = "disease";
+	public static final String PERSON = "person";
+	public static final String REPORT_DATE = "reportDate";
+	public static final String REPORTING_USER = "reportingUser";
+	public static final String ARCHIVED = "archived";
+	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
+	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
+	public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
+	public static final String EXTERNAL_ID = "externalId";
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
+	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
+	public static final String START_DATE = "startDate";
+	public static final String END_DATE = "endDate";
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+	public static final String PREVIOUS_INFECTION = "previousInfection";
+	public static final String LAST_INFECTION_DATE = "lastInfectionDate";
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String POSITIVE_TEST_RESULT_DATE = "positiveTestResultDate";
+	public static final String RECOVERY_DATE = "recoveryDate";
+	public static final String RELATED_CASE = "relatedCase";
 	
 	private Disease disease;
 	private Person person;

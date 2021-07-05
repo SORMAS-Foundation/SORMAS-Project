@@ -16,6 +16,9 @@
 
 package de.symeda.sormas.backend.immunization;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -26,7 +29,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -37,6 +42,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
     @EJB
     private UserService userService;
+    @EJB
+    private PersonService personService;
 
     public ImmunizationService() {
         super(Immunization.class);
@@ -57,12 +64,46 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
         return ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
     }
 
-    @Override
-    public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> from) {
-        return null;
+	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> immunizationPath) {
+//		return personService.createUserFilter(cb, cq, immunizationPath.join(Immunization.PERSON, JoinType.LEFT));
+		return inJurisdictionOrOwned(new ImmunizationQueryContext(cb, cq, immunizationPath));
+	}
+
+    public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Immunization> root) {
+        return cb.isFalse(root.get(Immunization.DELETED));
     }
 
     public Predicate buildCriteriaFilter(ImmunizationCriteria criteria, CriteriaBuilder cb, Root<Immunization> from) {
         return cb.conjunction();
+    }
+
+    public List<Immunization> getAllActiveAfter(Date date) {
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Immunization> cq = cb.createQuery(getElementClass());
+        Root<Immunization> from = cq.from(getElementClass());
+
+        Predicate filter = createDefaultFilter(cb, from);
+
+        if (getCurrentUser() != null) {
+            Predicate userFilter = createUserFilter(cb, cq, from);
+            if (userFilter != null) {
+                filter = cb.and(filter, userFilter);
+            }
+        }
+
+        if (date != null) {
+            Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+            if (dateFilter != null) {
+                filter = cb.and(filter, dateFilter);
+            }
+        }
+
+        cq.where(filter);
+        cq.orderBy(cb.desc(from.get(Immunization.CHANGE_DATE)));
+        cq.distinct(true);
+
+        return em.createQuery(cq).getResultList();
     }
 }

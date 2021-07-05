@@ -109,10 +109,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public List<ImmunizationDto> getAllAfter(Date date) {
-		return immunizationService.getAll((cb, root) -> immunizationService.createChangeDateFilter(cb, root, date))
-			.stream()
-			.map(this::toDto)
-			.collect(Collectors.toList());
+		return immunizationService.getAllActiveAfter(date).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
