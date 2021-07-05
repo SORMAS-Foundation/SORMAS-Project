@@ -60,6 +60,8 @@ import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.PersonEditForm;
 
+import static java.util.Objects.nonNull;
+
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
 	private static final long serialVersionUID = 1L;
@@ -332,7 +334,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	 */
 	public Button getCommitButton() {
 		if (commitButton == null) {
-			commitButton = ButtonHelper.createButtonWithCaption("commit", I18nProperties.getCaption(Captions.actionSave), new ClickListener() {
+			commitButton = ButtonHelper.createButton("commit", I18nProperties.getCaption(Captions.actionSave), new ClickListener() {
 
 				private static final long serialVersionUID = 1L;
 
@@ -354,7 +356,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	 */
 	public Button getDiscardButton() {
 		if (discardButton == null) {
-			discardButton = ButtonHelper.createButtonWithCaption("discard", I18nProperties.getCaption(Captions.actionDiscard), new ClickListener() {
+			discardButton = ButtonHelper.createButton("discard", I18nProperties.getCaption(Captions.actionDiscard), new ClickListener() {
 
 				private static final long serialVersionUID = 1L;
 
@@ -371,7 +373,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public Button getDeleteButton(String entityName) {
 		if (deleteButton == null) {
-			deleteButton = ButtonHelper.createButtonWithCaption("delete", I18nProperties.getCaption(Captions.actionDelete), new ClickListener() {
+			deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete), new ClickListener() {
 
 				private static final long serialVersionUID = 1L;
 
@@ -463,6 +465,16 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return null;
 	}
 
+	private String findHtmlMessageDetails(InvalidValueException exception) {
+		for (InvalidValueException cause : exception.getCauses()) {
+			String message = findHtmlMessage(cause);
+			if (message != null)
+				return message;
+		}
+
+		return null;
+	}
+
 	public void commitAndHandle() {
 		try {
 			commit();
@@ -499,6 +511,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						htmlMsg.append("</ul>");
 					} else if (firstCause != null) {
 						htmlMsg.append(findHtmlMessage(firstCause));
+						String additionalInfo = findHtmlMessageDetails(firstCause);
+						if (nonNull(additionalInfo) && !additionalInfo.isEmpty()) {
+							htmlMsg.append(" : ");
+							htmlMsg.append(findHtmlMessageDetails(firstCause));
+						}
 					}
 
 				}

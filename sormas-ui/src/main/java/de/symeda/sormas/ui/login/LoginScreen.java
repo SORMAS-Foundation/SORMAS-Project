@@ -315,7 +315,7 @@ public class LoginScreen extends CssLayout {
 		imgHzi.setWidth(isCustomBranding ? CUSTOM_BRANDING_LOGO_WIDTH : LOGO_WIDTH, Unit.PIXELS);
 		poweredByLayout.addComponent(imgHzi);
 
-		Image imgSymeda = new Image(null, new ThemeResource("img/symeda-logo.png"));
+		Image imgSymeda = new Image(null, new ThemeResource("img/vitagroup-logo.png"));
 		imgSymeda.setWidth(isCustomBranding ? CUSTOM_BRANDING_LOGO_WIDTH : LOGO_WIDTH, Unit.PIXELS);
 		poweredByLayout.addComponent(imgSymeda);
 

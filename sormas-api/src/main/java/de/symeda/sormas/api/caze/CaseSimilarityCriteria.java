@@ -1,9 +1,9 @@
 package de.symeda.sormas.api.caze;
 
-import de.symeda.sormas.api.BaseCriteria;
-import de.symeda.sormas.api.utils.IgnoreForUrl;
-
 import java.util.Date;
+
+import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class CaseSimilarityCriteria extends BaseCriteria implements Cloneable {
 
@@ -51,5 +51,11 @@ public class CaseSimilarityCriteria extends BaseCriteria implements Cloneable {
 	public CaseSimilarityCriteria caseCriteria(CaseCriteria caseCriteria) {
 		this.caseCriteria = caseCriteria;
 		return this;
+	}
+
+	public static CaseSimilarityCriteria forCase(CaseDataDto caze, String personUuid) {
+		CaseCriteria caseCriteria = new CaseCriteria().disease(caze.getDisease()).region(CaseLogic.getRegionWithFallback(caze));
+
+		return new CaseSimilarityCriteria().personUuid(personUuid).caseCriteria(caseCriteria).reportDate(caze.getReportDate());
 	}
 }

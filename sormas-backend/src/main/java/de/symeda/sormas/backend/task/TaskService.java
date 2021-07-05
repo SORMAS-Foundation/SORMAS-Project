@@ -17,45 +17,60 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
-import java.util.ArrayList;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
+import java.util.function.Function;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
+import de.symeda.sormas.api.task.TaskJurisdictionFlagsDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.utils.EventJoins;
 
 @Stateless
 @LocalBean
@@ -139,7 +154,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 
 		// whoever created the task or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(taskPath.join(Task.CREATOR_USER, JoinType.LEFT), currentUser);
+		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
 		filter = cb.or(filter, cb.equal(assigneeUser, currentUser));
 
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT));
@@ -193,6 +208,35 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			cq.where(filter);
 		}
 		cq.orderBy(cb.asc(from.get(Task.CREATION_DATE)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<String> getArchivedUuidsSince(Date since) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Task> taskRoot = cq.from(Task.class);
+
+		Predicate filter = createUserFilter(cb, cq, taskRoot);
+		if (since != null) {
+			Predicate dateFilter = cb.greaterThanOrEqualTo(taskRoot.get(Task.CHANGE_DATE), since);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
+		}
+
+		Predicate archivedFilter = cb.equal(taskRoot.get(Task.ARCHIVED), true);
+		if (filter != null) {
+			filter = cb.and(filter, archivedFilter);
+		} else {
+			filter = archivedFilter;
+		}
+
+		cq.where(filter);
+		cq.select(taskRoot.get(Task.UUID));
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -252,6 +296,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					cb,
 					filter,
 					cb.or(
+						cb.isTrue(from.get(Task.ARCHIVED)),
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE), cb.equal(joins.getCaze().get(Case.ARCHIVED), true)),
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT), cb.equal(joins.getContactCase().get(Case.ARCHIVED), true)),
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT), cb.equal(joins.getEvent().get(Event.ARCHIVED), true))));
@@ -337,17 +382,19 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		Join<Contact, Case> contactCaze = contact.join(Contact.CAZE, JoinType.LEFT);
 		Join<Task, Event> event = from.join(Task.EVENT, JoinType.LEFT);
 
-		return cb.or(
-			cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
-			cb.and(
-				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
-				cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)))),
-			cb.and(
-				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
-				cb.or(cb.equal(contactCaze.get(Case.ARCHIVED), false), cb.isNull(contactCaze.get(Case.ARCHIVED)))),
-			cb.and(
-				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
-				cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED)))));
+		return cb.and(
+			cb.isFalse(from.get(Task.ARCHIVED)),
+			cb.or(
+				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
+				cb.and(
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
+					cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)))),
+				cb.and(
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
+					cb.or(cb.equal(contactCaze.get(Case.ARCHIVED), false), cb.isNull(contactCaze.get(Case.ARCHIVED)))),
+				cb.and(
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
+					cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED))))));
 	}
 
 	public Task buildTask(User creatorUser) {
@@ -360,49 +407,106 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	}
 
 	public User getTaskAssignee(Contact contact) throws TaskCreationException {
-		User assignee = null;
 
+		User assignee = null;
 		if (contact.getContactOfficer() != null) {
 			// 1) The contact officer that is responsible for the contact
 			assignee = contact.getContactOfficer();
 		} else {
 			// 2) A random contact officer from the contact's, contact person's or contact case's district
-			List<User> officers = new ArrayList<>();
+			Function<District, User> lookupByDistrict = district -> userService.getRandomUser(district, UserRole.CONTACT_OFFICER);
 			if (contact.getDistrict() != null) {
-				officers = userService.getAllByDistrict(contact.getDistrict(), false, UserRole.CONTACT_OFFICER);
+				assignee = lookupByDistrict.apply(contact.getDistrict());
 			}
-			if (officers.isEmpty() && contact.getPerson().getAddress().getDistrict() != null) {
-				officers = userService.getAllByDistrict(contact.getPerson().getAddress().getDistrict(), false, UserRole.CONTACT_OFFICER);
+			if (assignee == null && contact.getPerson().getAddress().getDistrict() != null) {
+				assignee = lookupByDistrict.apply(contact.getPerson().getAddress().getDistrict());
 			}
-			if (officers.isEmpty() && contact.getCaze() != null && contact.getCaze().getDistrict() != null) {
-				officers = userService.getAllByDistrict(contact.getCaze().getDistrict(), false, UserRole.CONTACT_OFFICER);
-			}
-			if (!officers.isEmpty()) {
-				Random rand = new Random();
-				assignee = officers.get(rand.nextInt(officers.size()));
+			Case contactCase = contact.getCaze();
+			if (assignee == null && contactCase != null) {
+				assignee = lookupByDistrict.apply(contactCase.getResponsibleDistrict());
+
+				if (assignee == null && contactCase.getDistrict() != null) {
+					assignee = lookupByDistrict.apply(contactCase.getDistrict());
+				}
 			}
 		}
 
 		if (assignee == null) {
 			// 3) Assign a random contact supervisor from the contact's, contact person's or contact case's region
-			List<User> supervisors = new ArrayList<>();
+			Function<Region, User> lookupByRegion = region -> userService.getRandomUser(region, UserRole.CONTACT_SUPERVISOR);
 			if (contact.getRegion() != null) {
-				supervisors = userService.getAllByRegionAndUserRoles(contact.getRegion(), UserRole.CONTACT_SUPERVISOR);
+				assignee = lookupByRegion.apply(contact.getRegion());
 			}
-			if (supervisors.isEmpty() && contact.getPerson().getAddress().getRegion() != null) {
-				supervisors = userService.getAllByRegionAndUserRoles(contact.getPerson().getAddress().getRegion(), UserRole.CONTACT_SUPERVISOR);
+			if (assignee == null && contact.getPerson().getAddress().getRegion() != null) {
+				assignee = lookupByRegion.apply(contact.getPerson().getAddress().getRegion());
 			}
-			if (supervisors.isEmpty() && contact.getCaze() != null && contact.getCaze().getDistrict() != null) {
-				supervisors = userService.getAllByRegionAndUserRoles(contact.getCaze().getRegion(), UserRole.CONTACT_SUPERVISOR);
+			Case contactCase = contact.getCaze();
+			if (assignee == null && contactCase != null) {
+				assignee = lookupByRegion.apply(contactCase.getResponsibleRegion());
+
+				if (assignee == null && contactCase.getRegion() != null) {
+					assignee = lookupByRegion.apply(contactCase.getRegion());
+				}
 			}
-			if (!supervisors.isEmpty()) {
-				Random rand = new Random();
-				assignee = supervisors.get(rand.nextInt(supervisors.size()));
-			} else {
+
+			if (assignee == null) {
 				throw new TaskCreationException("Contact has not contact officer and no region - can't create follow-up task: " + contact.getUuid());
 			}
 		}
 
 		return assignee;
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void updateArchived(List<String> taskUuids, boolean archived) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Task> cu = cb.createCriteriaUpdate(Task.class);
+		Root<Task> root = cu.from(Task.class);
+
+		cu.set(Task.CHANGE_DATE, Timestamp.from(Instant.now()));
+		cu.set(root.get(Task.ARCHIVED), archived);
+
+		cu.where(root.get(Task.UUID).in(taskUuids));
+
+		em.createQuery(cu).executeUpdate();
+	}
+
+	public TaskJurisdictionFlagsDto inJurisdictionOrOwned(Task task) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<TaskJurisdictionFlagsDto> cq = cb.createQuery(TaskJurisdictionFlagsDto.class);
+		Root<Task> root = cq.from(Task.class);
+		cq.multiselect(getJurisdictionSelections(new TaskQueryContext(cb, cq, root)));
+		cq.where(cb.equal(root.get(Task.UUID), task.getUuid()));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	public List<Selection<?>> getJurisdictionSelections(TaskQueryContext qc) {
+		CriteriaBuilder cb = qc.getCriteriaBuilder();
+		TaskJoins joins = (TaskJoins) qc.getJoins();
+
+		ContactJoins<Task> contactJoins = new ContactJoins<>(joins.getContact());
+		return Arrays.asList(
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
+			JurisdictionHelper.booleanSelector(
+				cb,
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze())))),
+			JurisdictionHelper
+				.booleanSelector(cb, cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(new ContactQueryContext<>(cb, qc.getQuery(), joins.getContact())))),
+			JurisdictionHelper.booleanSelector(
+				cb,
+				cb.and(
+					cb.isNotNull(joins.getContact()),
+					cb.isNotNull(contactJoins.getCaze()),
+					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), contactJoins.getCaze())))),
+			JurisdictionHelper.booleanSelector(
+				cb,
+				cb.and(cb.isNotNull(joins.getEvent()), eventService.inJurisdictionOrOwned(new EventQueryContext<>(cb, qc.getQuery(), joins.getEvent())))));
+	}
+
+	public Predicate inJurisdictionOrOwned(TaskQueryContext qc) {
+		final User currentUser = userService.getCurrentUser();
+		return TaskJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 	}
 }

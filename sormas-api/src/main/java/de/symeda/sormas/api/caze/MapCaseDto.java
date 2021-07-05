@@ -63,7 +63,9 @@ public class MapCaseDto implements Serializable {
 	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double addressLon;
 
-	private CaseJurisdictionDto jurisdiction;
+	private String healthFacilityUuid;
+
+	private Boolean isInJurisdiction;
 
 	public MapCaseDto(
 		String uuid,
@@ -80,11 +82,7 @@ public class MapCaseDto implements Serializable {
 		Double reportLon,
 		Double addressLat,
 		Double addressLon,
-		String reportingUserUuid,
-		String regionUuid,
-		String districtUuid,
-		String communityUuid,
-		String pointOfEntryUuid) {
+		boolean isInJurisdiction) {
 
 		this.uuid = uuid;
 		this.reportDate = reportDate;
@@ -97,8 +95,8 @@ public class MapCaseDto implements Serializable {
 		this.reportLon = reportLon;
 		this.addressLat = addressLat;
 		this.addressLon = addressLon;
-
-		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
+		this.healthFacilityUuid = healthFacilityUuid;
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -134,7 +132,7 @@ public class MapCaseDto implements Serializable {
 	}
 
 	public String getHealthFacilityUuid() {
-		return jurisdiction.getHealthFacilityUuid();
+		return healthFacilityUuid;
 	}
 
 	public PersonReferenceDto getPerson() {
@@ -198,7 +196,7 @@ public class MapCaseDto implements Serializable {
 		this.healthFacilityLon = healthFacilityLon;
 	}
 
-	public CaseJurisdictionDto getJurisdiction() {
-		return jurisdiction;
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 }

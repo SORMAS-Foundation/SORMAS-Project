@@ -25,13 +25,13 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.utils.DateFormatHelper;
-import de.symeda.sormas.backend.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserService;
 
 /**
  * Handles storage of document content itself.

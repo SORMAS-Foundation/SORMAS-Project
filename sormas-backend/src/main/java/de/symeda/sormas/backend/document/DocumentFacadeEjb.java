@@ -29,13 +29,10 @@ import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -59,6 +56,8 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 @Stateless(name = "DocumentFacade")
 public class DocumentFacadeEjb implements DocumentFacade {
 
+	private static final String MIME_TYPE_DEFAULT = "application/octet-stream";
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
@@ -71,15 +70,9 @@ public class DocumentFacadeEjb implements DocumentFacade {
 	@EJB
 	private CaseService caseService;
 	@EJB
-	private CaseJurisdictionChecker caseJurisdictionChecker;
-	@EJB
 	private ContactService contactService;
 	@EJB
-	private ContactJurisdictionChecker contactJurisdictionChecker;
-	@EJB
 	private EventService eventService;
-	@EJB
-	private EventJurisdictionChecker eventJurisdictionChecker;
 
 	@Override
 	public DocumentDto getDocumentByUuid(String uuid) {
@@ -91,6 +84,10 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		Document existingDocument = dto.getUuid() == null ? null : documentService.getByUuid(dto.getUuid());
 		if (existingDocument != null) {
 			throw new EntityExistsException("Tried to save a document that already exists: " + dto.getUuid());
+		}
+
+		if (dto.getMimeType() == null) {
+			dto.setMimeType(MIME_TYPE_DEFAULT);
 		}
 
 		Document document = fromDto(dto, true);
@@ -170,24 +167,24 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		if (dto != null) {
 			boolean inJurisdiction = isInJurisdiction(dto);
 			pseudonymizer.pseudonymizeDto(
-					DocumentDto.class,
-					dto,
-					inJurisdiction,
-					(e) -> pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser));
+				DocumentDto.class,
+				dto,
+				inJurisdiction,
+				(e) -> pseudonymizer.pseudonymizeUser(document.getUploadingUser(), userService.getCurrentUser(), dto::setUploadingUser));
 		}
 	}
 
 	private boolean isInJurisdiction(DocumentDto dto) {
 		switch (dto.getRelatedEntityType()) {
-			case CASE:
-				Case caze = caseService.getByUuid(dto.getRelatedEntityUuid());
-				return caseJurisdictionChecker.isInJurisdictionOrOwned(caze);
-			case CONTACT:
-				Contact contact = contactService.getByUuid(dto.getRelatedEntityUuid());
-				return contactJurisdictionChecker.isInJurisdictionOrOwned(contact);
-			case EVENT:
-				Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
-				return eventJurisdictionChecker.isInJurisdictionOrOwned(event);
+		case CASE:
+			Case caze = caseService.getByUuid(dto.getRelatedEntityUuid());
+			return caseService.inJurisdictionOrOwned(caze);
+		case CONTACT:
+			Contact contact = contactService.getByUuid(dto.getRelatedEntityUuid());
+			return contactService.inJurisdictionOrOwned(contact).getInJurisdiction();
+		case EVENT:
+			Event event = eventService.getByUuid(dto.getRelatedEntityUuid());
+			return eventService.inJurisdictionOrOwned(event);
 		}
 		return true;
 	}

@@ -96,7 +96,7 @@ public class EventParticipantsController {
 							selectedPerson -> {
 								if (selectedPerson != null) {
 									EventParticipantCriteria criteria = new EventParticipantCriteria();
-									criteria.event(eventRef);
+									criteria.withEvent(eventRef);
 									List<EventParticipantIndexDto> currentEventParticipants =
 										FacadeProvider.getEventParticipantFacade().getIndexList(criteria, null, null, null);
 									Boolean alreadyParticipant = false;
@@ -149,8 +149,10 @@ public class EventParticipantsController {
 	public void createEventParticipant(String eventParticipantUuid, Consumer<EventParticipantReferenceDto> doneConsumer) {
 
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
-		EventParticipantEditForm editForm =
-			new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()), false);
+		EventParticipantEditForm editForm = new EventParticipantEditForm(
+			FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()),
+			false,
+			eventParticipant.getPerson().isPseudonymized());
 		editForm.setValue(eventParticipant);
 
 		CommitDiscardWrapperComponent<EventParticipantEditForm> createView = createEventParticipantEditCommitWrapper(editForm, doneConsumer);
@@ -212,7 +214,8 @@ public class EventParticipantsController {
 		final EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
 
-		final EventParticipantEditForm editForm = new EventParticipantEditForm(event, eventParticipant.isPseudonymized());
+		final EventParticipantEditForm editForm =
+			new EventParticipantEditForm(event, eventParticipant.isPseudonymized(), eventParticipant.getPerson().isPseudonymized());
 		editForm.setValue(eventParticipant);
 		editForm.setWidth(100, Unit.PERCENTAGE);
 

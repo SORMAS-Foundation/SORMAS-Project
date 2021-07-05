@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>de.symeda.sormas</groupId>
 		<artifactId>sormas-base</artifactId>
-		<version>1.60.0-SNAPSHOT</version>
+		<version>1.62.0-SNAPSHOT</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 
@@ -114,6 +114,26 @@
 				</configuration>
 			</plugin>
 
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>src/main/resources/workflow-documentation.properties</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- Swagger Generation -->
 			<plugin>
 				<groupId>io.openapitools.swagger</groupId>
@@ -139,7 +159,7 @@
 								<info>
 									<title>SORMAS external visits journal API</title>
 									<description>
-										The purpose of this API is to enable communication between SORMAS and other symptom journals. Only users with the role ``REST_EXTERNAL_VISITS_USER`` are authorized to use the endpoints. For technical details please contact the dev team on gitter. Authentication is done using basic auth, with the user and password.
+										${externalVisitsDescription}
 									</description>
 									<version>1.41.1</version>
 								</info>

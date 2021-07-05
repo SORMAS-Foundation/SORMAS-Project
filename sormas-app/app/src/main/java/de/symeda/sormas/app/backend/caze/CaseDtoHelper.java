@@ -27,7 +27,6 @@ import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.disease.DiseaseVariantDtoHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -107,7 +106,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setDisease(source.getDisease());
-		target.setDiseaseVariant(DatabaseHelper.getDiseaseVariantDao().getByReferenceDto(source.getDiseaseVariant()));
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
@@ -122,6 +121,10 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
 
 		target.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(target.getSymptoms(), source.getSymptoms()));
+
+		target.setResponsibleRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getResponsibleRegion()));
+		target.setResponsibleDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getResponsibleDistrict()));
+		target.setResponsibleCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getResponsibleCommunity()));
 
 		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
 		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
@@ -178,6 +181,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
@@ -221,8 +225,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
 
-		target.setReportingDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getReportingDistrict()));
-
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
 		target.setSormasToSormasOriginInfo(
@@ -260,7 +262,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setInvestigationStatus(source.getInvestigationStatus());
 
 		target.setDisease(source.getDisease());
-		target.setDiseaseVariant(DiseaseVariantDtoHelper.toReferenceDto(source.getDiseaseVariant()));
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPlagueType(source.getPlagueType());
 		target.setDengueFeverType(source.getDengueFeverType());
@@ -295,6 +297,27 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 			target.setSymptoms(symptomsDto);
 		} else {
 			target.setSymptoms(null);
+		}
+
+		if (source.getResponsibleRegion() != null) {
+			Region region = DatabaseHelper.getRegionDao().queryForId(source.getResponsibleRegion().getId());
+			target.setResponsibleRegion(RegionDtoHelper.toReferenceDto(region));
+		} else {
+			target.setResponsibleRegion(null);
+		}
+
+		if (source.getResponsibleDistrict() != null) {
+			District district = DatabaseHelper.getDistrictDao().queryForId(source.getResponsibleDistrict().getId());
+			target.setResponsibleDistrict(DistrictDtoHelper.toReferenceDto(district));
+		} else {
+			target.setResponsibleDistrict(null);
+		}
+
+		if (source.getResponsibleCommunity() != null) {
+			Community community = DatabaseHelper.getCommunityDao().queryForId(source.getResponsibleCommunity().getId());
+			target.setResponsibleCommunity(CommunityDtoHelper.toReferenceDto(community));
+		} else {
+			target.setResponsibleCommunity(null);
 		}
 
 		if (source.getRegion() != null) {
@@ -416,6 +439,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setExternalID(source.getExternalID());
 		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
 
 		target.setQuarantine(source.getQuarantine());
 		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
@@ -458,13 +482,6 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
-
-		if (source.getReportingDistrict() != null) {
-			District district = DatabaseHelper.getDistrictDao().queryForId(source.getReportingDistrict().getId());
-			target.setReportingDistrict(DistrictDtoHelper.toReferenceDto(district));
-		} else {
-			target.setReportingDistrict(null);
-		}
 
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 

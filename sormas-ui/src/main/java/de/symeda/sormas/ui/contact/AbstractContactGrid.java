@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -47,6 +49,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -60,6 +63,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 	public static final String NUMBER_OF_VISITS = Captions.Contact_numberOfVisits;
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
+	public static final String COLUMN_COMPLETENESS = "completenessValue";
 
 	private DataProviderListener<IndexDto> dataProviderListener;
 
@@ -120,6 +124,26 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		visitsColumn.setId(NUMBER_OF_VISITS);
 		visitsColumn.setSortable(false);
 
+		addComponentColumn(indexDto -> {
+			Label label =
+				new Label(indexDto.getCompleteness() != null ? new DecimalFormat("#").format(indexDto.getCompleteness() * 100) + " %" : "-");
+			if (indexDto.getCompleteness() != null) {
+				if (indexDto.getCompleteness() < 0.25f) {
+					CssStyles.style(label, CssStyles.LABEL_CRITICAL);
+				} else if (indexDto.getCompleteness() < 0.5f) {
+					CssStyles.style(label, CssStyles.LABEL_IMPORTANT);
+				} else if (indexDto.getCompleteness() < 0.75f) {
+					CssStyles.style(label, CssStyles.LABEL_RELEVANT);
+				} else {
+					CssStyles.style(label, CssStyles.LABEL_POSITIVE);
+				}
+			}
+			return label;
+		}).setId(COLUMN_COMPLETENESS);
+
+		getColumn(COLUMN_COMPLETENESS).setCaption(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.COMPLETENESS));
+		getColumn(COLUMN_COMPLETENESS).setSortable(false);
+
 		boolean tasksFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT);
 		if (tasksFeatureEnabled) {
 			Column<IndexDto, String> pendingTasksColumn = addColumn(
@@ -158,6 +182,8 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
+
+		getColumn(ContactIndexDto.VACCINATION).setCaption(I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus));
 	}
 
 	protected Stream<String> getColumnList() {
@@ -170,6 +196,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					ContactIndexDto.UUID,
 					ContactIndexDto.EXTERNAL_ID,
 					ContactIndexDto.EXTERNAL_TOKEN,
+					ContactIndexDto.INTERNAL_TOKEN,
 					DISEASE_SHORT,
 					ContactIndexDto.CONTACT_CLASSIFICATION,
 					ContactIndexDto.CONTACT_STATUS),
@@ -181,8 +208,10 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 					ContactIndexDto.FOLLOW_UP_STATUS,
 					ContactIndexDto.FOLLOW_UP_UNTIL,
 					ContactIndexDto.SYMPTOM_JOURNAL_STATUS,
+					ContactIndexDto.VACCINATION,
 					NUMBER_OF_VISITS),
-				Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> tasksFeatureEnabled))
+				Stream.of(NUMBER_OF_PENDING_TASKS).filter(column -> tasksFeatureEnabled),
+				Stream.of(COLUMN_COMPLETENESS))
 			.flatMap(s -> s);
 	}
 

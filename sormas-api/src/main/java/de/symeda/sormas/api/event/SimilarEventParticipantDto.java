@@ -5,8 +5,9 @@ import java.util.Date;
 
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class SimilarEventParticipantDto implements Serializable {
+public class SimilarEventParticipantDto extends PseudonymizableIndexDto implements Serializable {
 
 	public static final String I18N_PREFIX = "EventParticipant";
 
@@ -31,6 +32,7 @@ public class SimilarEventParticipantDto implements Serializable {
 	private EventStatus eventStatus;
 	private String eventTitle;
 	private Date startDate;
+	private Boolean isInJurisdiction;
 
 	public SimilarEventParticipantDto(
 		String uuid,
@@ -40,7 +42,8 @@ public class SimilarEventParticipantDto implements Serializable {
 		String eventUuid,
 		EventStatus eventStatus,
 		String eventTitle,
-		Date startDate) {
+		Date startDate,
+		boolean isInJurisdiction) {
 
 		this.uuid = uuid;
 		this.firstName = firstName;
@@ -50,6 +53,7 @@ public class SimilarEventParticipantDto implements Serializable {
 		this.eventStatus = eventStatus;
 		this.eventTitle = eventTitle;
 		this.startDate = startDate;
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -114,5 +118,9 @@ public class SimilarEventParticipantDto implements Serializable {
 
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
+	}
+
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 }

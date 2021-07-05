@@ -16,8 +16,10 @@
 package de.symeda.sormas.api.event;
 
 import java.util.Date;
+import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -89,7 +91,11 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String HUMAN_TRANSMISSION_MODE = "humanTransmissionMode";
 	public static final String PARENTERAL_TRANSMISSION_MODE = "parenteralTransmissionMode";
 	public static final String MEDICALLY_ASSOCIATED_TRANSMISSION_MODE = "medicallyAssociatedTransmissionMode";
-	public static final String INTERNALID = "internalId";
+	public static final String EPIDEMIOLOGICAL_EVIDENCE = "epidemiologicalEvidence";
+	public static final String EPIDEMIOLOGICAL_EVIDENCE_DETAILS = "epidemiologicalEvidenceDetails";
+	public static final String LABORATORY_DIAGNOSTIC_EVIDENCE = "laboratoryDiagnosticEvidence";
+	public static final String LABORATORY_DIAGNOSTIC_EVIDENCE_DETAILS = "laboratoryDiagnosticEvidenceDetails";
+	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String EVENT_GROUP = "eventGroup";
 
 	private EventReferenceDto superordinateEvent;
@@ -155,11 +161,20 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	@HideForCountriesExcept
 	private MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode;
 
+	@HideForCountriesExcept
+	private YesNoUnknown epidemiologicalEvidence;
+	@HideForCountriesExcept
+	private Map<EpidemiologicalEvidenceDetail, Boolean> epidemiologicalEvidenceDetails;
+	@HideForCountriesExcept
+	private YesNoUnknown laboratoryDiagnosticEvidence;
+	@HideForCountriesExcept
+	private Map<LaboratoryDiagnosticEvidenceDetail, Boolean> laboratoryDiagnosticEvidenceDetails;
+
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
 
 	@HideForCountriesExcept
-	private String internalId;
+	private String internalToken;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -558,6 +573,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	}
 
 	@Override
+	@ImportIgnore
 	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;
 	}
@@ -584,12 +600,44 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 		this.eventManagementStatus = eventManagementStatus;
 	}
 
-	public String getInternalId() {
-		return internalId;
+	public YesNoUnknown getEpidemiologicalEvidence() {
+		return epidemiologicalEvidence;
 	}
 
-	public void setInternalId(String internalId) {
-		this.internalId = internalId;
+	public void setEpidemiologicalEvidence(YesNoUnknown epidemiologicalEvidence) {
+		this.epidemiologicalEvidence = epidemiologicalEvidence;
+	}
+
+	public YesNoUnknown getLaboratoryDiagnosticEvidence() {
+		return laboratoryDiagnosticEvidence;
+	}
+
+	public void setLaboratoryDiagnosticEvidence(YesNoUnknown laboratoryDiagnosticEvidence) {
+		this.laboratoryDiagnosticEvidence = laboratoryDiagnosticEvidence;
+	}
+
+	public Map<EpidemiologicalEvidenceDetail, Boolean> getEpidemiologicalEvidenceDetails() {
+		return epidemiologicalEvidenceDetails;
+	}
+
+	public void setEpidemiologicalEvidenceDetails(Map<EpidemiologicalEvidenceDetail, Boolean> epidemiologicalEvidenceDetails) {
+		this.epidemiologicalEvidenceDetails = epidemiologicalEvidenceDetails;
+	}
+
+	public Map<LaboratoryDiagnosticEvidenceDetail, Boolean> getLaboratoryDiagnosticEvidenceDetails() {
+		return laboratoryDiagnosticEvidenceDetails;
+	}
+
+	public void setLaboratoryDiagnosticEvidenceDetails(Map<LaboratoryDiagnosticEvidenceDetail, Boolean> laboratoryDiagnosticEvidenceDetails) {
+		this.laboratoryDiagnosticEvidenceDetails = laboratoryDiagnosticEvidenceDetails;
+	}
+
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
 	}
 
 	public EventReferenceDto toReference() {

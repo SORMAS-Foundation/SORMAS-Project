@@ -45,12 +45,15 @@
         <import type="de.symeda.sormas.api.caze.EndOfIsolationReason" />
         <import type="de.symeda.sormas.api.caze.Vaccine" />
         <import type="de.symeda.sormas.api.caze.VaccineManufacturer" />
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Strings" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="caseEditData" type="de.symeda.sormas.app.caze.edit.CaseEditFragment" />
         <variable name="yesNoUnknownClass" type="Class" />
         <variable name="vaccinationClass" type="Class" />
         <variable name="trimesterClass" type="Class" />
+        <variable name="differentPlaceOfStayJurisdiction" type="Boolean" />
     </data>
 
     <ScrollView
@@ -97,6 +100,11 @@
                         style="@style/ControlSecondOfTwoColumnsStyle"/>
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_internalToken"
+                    app:value="@={data.internalToken}"
+                    style="@style/ControlSingleColumnStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/caseData_caseIdIsm"
@@ -188,6 +196,7 @@
                         app:dependencyParentField="@{caseDataOutcome}"
                         app:dependencyParentValue="@{CaseOutcome.DECEASED}"
                         app:dependencyParentValue2="@{CaseOutcome.RECOVERED}"
+                        app:dependencyParentValue3="@{CaseOutcome.UNKNOWN}"
                         app:dependencyParentVisibility="@{true}"
                         app:userEditRight="@{UserRight.CASE_CLASSIFY}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
@@ -218,11 +227,6 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
-
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/caseData_reportingDistrict"
-                    app:value="@={data.reportingDistrict}"
-                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/caseData_reportDate"
@@ -345,6 +349,57 @@
                     app:value="@{data.caseOrigin}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{I18nProperties.getString(Strings.headingCaseResponsibleJurisidction)}"
+                    style="@style/SubHeadingStyle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/caseData_responsibleRegion"
+                        app:value="@={data.responsibleRegion}"
+                        app:required="true"
+                        app:userEditRight="@{UserRight.CASE_TRANSFER}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        android:id="@+id/caseData_responsibleDistrict"
+                        app:value="@={data.responsibleDistrict}"
+                        app:required="true"
+                        app:userEditRight="@{UserRight.CASE_TRANSFER}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_responsibleCommunity"
+                    app:value="@={data.responsibleCommunity}"
+                    app:userEditRight="@{UserRight.CASE_TRANSFER}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/caseData_differentPlaceOfStayJurisdiction"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@={differentPlaceOfStayJurisdiction}" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_case_place_of_stay"
+                    style="@style/SubHeadingStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/facilityOrHome"
+                    app:caption="@string/caption_facility_or_home"
+                    app:userEditRight="@{UserRight.CASE_TRANSFER}"
+                    app:required="true"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -353,40 +408,31 @@
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/caseData_region"
                         app:value="@={data.region}"
-                        app:required="true"
                         app:userEditRight="@{UserRight.CASE_TRANSFER}"
+                        app:required="@{differentPlaceOfStayJurisdiction}"
+                        app:dependencyParentField="@{caseDataDifferentPlaceOfStayJurisdiction}"
+                        app:dependencyParentValue="@{true}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlSpinnerField
                         android:id="@+id/caseData_district"
                         app:value="@={data.district}"
-                        app:required="true"
                         app:userEditRight="@{UserRight.CASE_TRANSFER}"
+                        app:required="@{differentPlaceOfStayJurisdiction}"
+                        app:dependencyParentField="@{caseDataDifferentPlaceOfStayJurisdiction}"
+                        app:dependencyParentValue="@{true}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/facility_or_home_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/caseData_community"
-                        app:value="@={data.community}"
-                        app:softRequired="true"
-                        app:userEditRight="@{UserRight.CASE_TRANSFER}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/facilityOrHome"
-                        app:caption="@string/caption_facility_or_home"
-                        app:userEditRight="@{UserRight.CASE_TRANSFER}"
-                        app:required="true"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                </LinearLayout>
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/caseData_community"
+                    app:value="@={data.community}"
+                    app:softRequired="true"
+                    app:userEditRight="@{UserRight.CASE_TRANSFER}"
+                    app:dependencyParentField="@{caseDataDifferentPlaceOfStayJurisdiction}"
+                    app:dependencyParentValue="@{true}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:id="@+id/facility_type_fields_layout"

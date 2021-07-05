@@ -1,35 +1,24 @@
 package de.symeda.sormas.ui.utils.components;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.div;
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.ui.HorizontalLayout;
 
 public class FormActionButtonsComponent extends HorizontalLayout {
 
-	private static final String APPLY_RESET_BUTTON_ID = "apply-reset";
-	private static final String EXPAND_COLLAPSE_ID = "expandCollapse";
-
-	private static final String HTML_LAYOUT = div(filterLocs(EXPAND_COLLAPSE_ID, APPLY_RESET_BUTTON_ID));
+	private static final long serialVersionUID = -1159701271006170763L;
 
 	private ToggleMoreFiltersComponent showHideMoreButton;
-	private ApplyResetButtonsComponent applyResetButtonsComponent;
+	private final ApplyResetButtonsComponent applyResetButtonsComponent;
 
-	public FormActionButtonsComponent(CustomLayout moreFiltersLayout) {
-		CustomLayout layout = new CustomLayout();
-		layout.setTemplateContents(HTML_LAYOUT);
-
+	public FormActionButtonsComponent(String applyCaptionTag, String resetCaptionTag, CustomLayout moreFiltersLayout) {
 		if (moreFiltersLayout != null) {
 			showHideMoreButton = new ToggleMoreFiltersComponent(moreFiltersLayout);
-			layout.addComponent(showHideMoreButton, EXPAND_COLLAPSE_ID);
+			addComponent(showHideMoreButton);
 		}
 
-		applyResetButtonsComponent = new ApplyResetButtonsComponent();
-		layout.addComponent(applyResetButtonsComponent, APPLY_RESET_BUTTON_ID);
-
-		addComponent(layout);
+		applyResetButtonsComponent = new ApplyResetButtonsComponent(applyCaptionTag, resetCaptionTag);
+		addComponent(applyResetButtonsComponent);
 	}
 
 	public void addResetHandler(Button.ClickListener resetHandler) {

@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -37,6 +38,8 @@ public interface DistrictFacade {
 	List<DistrictDto> getAllAfter(Date date);
 
 	List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	Page<DistrictIndexDto> getIndexPage(DistrictCriteria districtCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	long count(DistrictCriteria criteria);
 

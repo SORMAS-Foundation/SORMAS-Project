@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Function;
@@ -40,7 +41,11 @@ import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
@@ -463,23 +468,28 @@ public final class FieldHelper {
 	 * Sets the target fields to enabled when the source field has a value that's
 	 * contained in the sourceValues list.
 	 */
-	@SuppressWarnings("rawtypes")
 	public static void setEnabledWhen(
 		FieldGroup fieldGroup,
-		Field sourceField,
+		Field<?> sourceField,
 		final List<?> sourceValues,
 		List<?> targetPropertyIds,
 		boolean clearOnDisabled) {
+		final List<Field<?>> targetFields = targetPropertyIds.stream().map(fieldGroup::getField).collect(Collectors.toList());
+
+		setEnabledWhen(sourceField, sourceValues, targetFields, clearOnDisabled);
+	}
+
+	public static void setEnabledWhen(Field<?> sourceField, final List<?> sourceValues, List<Field<?>> targetFields,
+		boolean clearOnDisabled) {
 
 		if (sourceField instanceof AbstractField<?>) {
-			((AbstractField) sourceField).setImmediate(true);
+			((AbstractField<?>) sourceField).setImmediate(true);
 		}
 
 		// initialize
 		{
 			boolean enabled = sourceValues.contains(getNullableSourceFieldValue(sourceField));
-			for (Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
+			for (Field<?> targetField : targetFields) {
 				targetField.setEnabled(enabled);
 				if (!enabled && clearOnDisabled) {
 					targetField.clear();
@@ -489,8 +499,7 @@ public final class FieldHelper {
 
 		sourceField.addValueChangeListener(event -> {
 			boolean enabled = sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())));
-			for (Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
+			for (Field<?> targetField : targetFields) {
 				targetField.setEnabled(enabled);
 				if (!enabled && clearOnDisabled) {
 					targetField.clear();
@@ -705,5 +714,14 @@ public final class FieldHelper {
 		} else {
 			return sourceField.getValue();
 		}
+	}
+
+	public static void updateOfficersField(AbstractSelect officerField, CaseDataDto caze, UserRole role) {
+		List<DistrictReferenceDto> officerDistricts =
+			Stream.of(caze.getResponsibleDistrict(), caze.getDistrict()).filter(Objects::nonNull).collect(Collectors.toList());
+		FieldHelper.updateItems(
+			officerField,
+			officerDistricts.size() > 0 ? FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, false, role) : null);
+
 	}
 }

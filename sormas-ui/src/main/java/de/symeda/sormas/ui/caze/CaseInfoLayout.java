@@ -23,6 +23,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -131,7 +132,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 				rightColumnLayout,
 				CaseDataDto.DISEASE,
 				caseDto.getDisease() != Disease.OTHER
-					? caseDto.getDisease().toShortString()
+					? DiseaseHelper.toString(caseDto.getDisease(), caseDto.getDiseaseDetails(), caseDto.getDiseaseVariant())
 					: DataHelper.toStringNullable(caseDto.getDiseaseDetails()),
 				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
 

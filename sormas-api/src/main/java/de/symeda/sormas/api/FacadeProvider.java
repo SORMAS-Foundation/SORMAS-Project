@@ -34,9 +34,9 @@ import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
+import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
-import de.symeda.sormas.api.disease.DiseaseFacade;
-import de.symeda.sormas.api.disease.DiseaseVariantFacade;
 import de.symeda.sormas.api.docgeneneration.DocumentTemplateFacade;
 import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
@@ -55,6 +55,7 @@ import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.i18n.I18nFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.info.InfoFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
@@ -81,6 +82,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -273,16 +275,12 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(ClinicalVisitFacade.class);
 	}
 
-	public static DiseaseFacade getDiseaseFacade() {
-		return get().lookupEjbRemote(DiseaseFacade.class);
+	public static DashboardFacade getDashboardFacade() {
+		return get().lookupEjbRemote(DashboardFacade.class);
 	}
 
 	public static DiseaseConfigurationFacade getDiseaseConfigurationFacade() {
 		return get().lookupEjbRemote(DiseaseConfigurationFacade.class);
-	}
-
-	public static DiseaseVariantFacade getDiseaseVariantFacade() {
-		return get().lookupEjbRemote(DiseaseVariantFacade.class);
 	}
 
 	public static MaternalHistoryFacade getMaternalHistoryFacade() {
@@ -422,6 +420,18 @@ public class FacadeProvider {
 
 	public static UserRightsFacade getUserRightsFacade() {
 		return get().lookupEjbRemote(UserRightsFacade.class);
+	}
+
+	public static SormasToSormasShareRequestFacade getSormasToSormasShareRequestFacade() {
+		return get().lookupEjbRemote(SormasToSormasShareRequestFacade.class);
+	}
+
+	public static CustomizableEnumFacade getCustomizableEnumFacade() {
+		return get().lookupEjbRemote(CustomizableEnumFacade.class);
+	}
+
+	public static InfoFacade getInfoFacae() {
+		return get().lookupEjbRemote(InfoFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -27,9 +27,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.api.event.EventGroupReferenceDto;
-import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
-import de.symeda.sormas.backend.event.EventGroupFacadeEjb.EventGroupFacadeEjbLocal;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -38,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.eventimport.EventImportEntities;
@@ -55,8 +53,10 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventGroupFacadeEjb.EventGroupFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportCellData;
@@ -411,7 +411,10 @@ public class EventImportFacadeEjb implements EventImportFacade {
 				throw new ImportErrorException(entry, importFacade.buildEntityProperty(entryHeaderPath));
 			} catch (ParseException e) {
 				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importInvalidDate, importFacade.buildEntityProperty(entryHeaderPath)));
+					I18nProperties.getValidationError(
+						Validations.importInvalidDate,
+						importFacade.buildEntityProperty(entryHeaderPath),
+						DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {
@@ -534,7 +537,10 @@ public class EventImportFacadeEjb implements EventImportFacade {
 				throw new ImportErrorException(entry, importFacade.buildEntityProperty(entryHeaderPath));
 			} catch (ParseException e) {
 				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importInvalidDate, importFacade.buildEntityProperty(entryHeaderPath)));
+					I18nProperties.getValidationError(
+						Validations.importInvalidDate,
+						importFacade.buildEntityProperty(entryHeaderPath),
+						DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {

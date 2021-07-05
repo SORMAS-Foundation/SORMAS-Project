@@ -1,5 +1,8 @@
 package de.symeda.sormas.backend.region;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -11,9 +14,6 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.region.ContinentCriteria;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-
-import java.util.Collections;
-import java.util.List;
 
 @Stateless
 @LocalBean
@@ -32,7 +32,7 @@ public class ContinentService extends AbstractInfrastructureAdoService<Continent
 		CriteriaQuery<Continent> cq = cb.createQuery(getElementClass());
 		Root<Continent> from = cq.from(getElementClass());
 
-		Predicate filter = CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Continent.DEFAULT_NAME), name.trim());
+		Predicate filter = CriteriaBuilderHelper.unaccentedIlikePrecise(cb, from.get(Continent.DEFAULT_NAME), name.trim());
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -58,4 +58,20 @@ public class ContinentService extends AbstractInfrastructureAdoService<Continent
 		}
 		return filter;
 	}
+
+	public List<Continent> getByExternalId(String externalId, boolean includeArchived) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Continent> cq = cb.createQuery(getElementClass());
+		Root<Continent> from = cq.from(getElementClass());
+
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(Continent.EXTERNAL_ID), externalId.trim());
+		if (!includeArchived) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
+
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList();
+	}
+
 }

@@ -101,6 +101,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setStatus(source.getStatus());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setPersonPhone(source.getPersonPhone());
@@ -158,6 +159,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setStatus(source.getStatus());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		target.setTestDateTime(source.getTestDateTime());
@@ -312,6 +314,12 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		return labMessages;
 	}
 
+	@Override
+	public boolean atLeastOneFetchExecuted() {
+		SystemEventDto latestSuccessEvent = systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES);
+		return latestSuccessEvent != null;
+	}
+
 	/**
 	 * This method marks the previously unfinished system events as UNCLEAR(if any exists) and creates a new event with status STARTED.
 	 * If the fetching succeds, the status of the currentSystemEvent is changed to SUCCESS.
@@ -320,11 +328,11 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	 * @return An indication whether the fetching of new labMessage was successful. If it was not, an error message meant for UI users.
 	 */
 	@Override
-	public LabMessageFetchResult fetchAndSaveExternalLabMessages() {
+	public LabMessageFetchResult fetchAndSaveExternalLabMessages(Date since) {
 		systemEventFacade.markPreviouslyStartedAsUnclear(SystemEventType.FETCH_LAB_MESSAGES);
 		SystemEventDto currentSystemEvent = initializeFetchEvent();
 		try {
-			return fetchAndSaveExternalLabMessages(currentSystemEvent);
+			return fetchAndSaveExternalLabMessages(currentSystemEvent, since);
 		} catch (CannotProceedException e) {
 			systemEventFacade.reportError(currentSystemEvent, e.getMessage(), new Date());
 			return new LabMessageFetchResult(false, NewMessagesState.UNCLEAR, e.getMessage());
@@ -337,8 +345,10 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		}
 	}
 
-	protected LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSystemEvent) throws NamingException {
-		Date since = findLastUpdateDate();
+	protected LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSystemEvent, Date since) throws NamingException {
+		if (since == null) {
+			since = findLastUpdateDate();
+		}
 		ExternalMessageResult<List<LabMessageDto>> externalMessageResult = fetchExternalMessages(since);
 		if (externalMessageResult.isSuccess()) {
 			externalMessageResult.getValue().forEach(this::save);

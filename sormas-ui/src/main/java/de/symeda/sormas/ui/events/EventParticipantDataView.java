@@ -152,7 +152,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.addComponent(contactsLayout, CONTACTS_LOC);
 		}
 
-		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabled();
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser();
 		if (sormasToSormasEnabled || eventParticipant.getSormasToSormasOriginInfo() != null) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);

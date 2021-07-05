@@ -26,8 +26,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -35,6 +35,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class EventGroupMemberListComponent extends VerticalLayout {
@@ -71,7 +72,7 @@ public class EventGroupMemberListComponent extends VerticalLayout {
 		componentHeader.addComponent(eventLabel);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_LINK)) {
-			createButton = new Button(I18nProperties.getCaption(Captions.linkEvent));
+			createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.linkEvent));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(event -> ControllerProvider.getEventController().selectEvent(eventGroupReference));

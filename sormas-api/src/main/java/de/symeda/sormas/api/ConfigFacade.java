@@ -35,6 +35,8 @@ public interface ConfigFacade {
 
 	String getAppUrl();
 
+	String getUiUrl();
+
 	boolean isFeatureAutomaticCaseClassification();
 
 	String getEmailSenderAddress();
@@ -77,6 +79,8 @@ public interface ConfigFacade {
 
 	String getSormasInstanceName();
 
+	boolean isDuplicateChecksExcludePersonsOfArchivedEntries();
+
 	double getNameSimilarityThreshold();
 
 	int getInfrastructureSyncThreshold();
@@ -88,6 +92,8 @@ public interface ConfigFacade {
 	int getDaysAfterSystemEventGetsDeleted();
 
 	GeoLatLon getCountryCenter();
+
+	boolean isMapUseCountryCenter();
 
 	int getMapZoom();
 

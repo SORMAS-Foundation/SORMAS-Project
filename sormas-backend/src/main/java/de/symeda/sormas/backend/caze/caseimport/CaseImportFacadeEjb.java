@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import javax.ejb.EJB;
@@ -29,6 +30,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
+import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -40,11 +43,12 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.disease.DiseaseVariantReferenceDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -74,7 +78,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.EnumService;
-import de.symeda.sormas.backend.disease.DiseaseVariantFacadeEjb.DiseaseVariantFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportCellData;
@@ -130,8 +133,6 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private EnumService enumService;
-	@EJB
-	private DiseaseVariantFacadeEjbLocal diseaseVariantFacade;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
 
@@ -336,7 +337,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 									cellData.getEntityPropertyPath());
 							}
 						}
-					} else if (!StringUtils.isEmpty(cellData.getValue())) {
+					} else if (StringUtils.isNotEmpty(cellData.getValue())) {
 						// If the cell entry is not empty, try to insert it into the current case or its person
 						insertColumnEntryIntoData(caze, entities.getPerson(), cellData.getValue(), cellData.getEntityPropertyPath());
 					}
@@ -386,6 +387,12 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 				if (exception != null) {
 					if (exception instanceof ImportErrorException) {
 						importError = exception.getMessage();
+						StringBuilder additionalInfo = new StringBuilder();
+						for (int j = 0; j < entityPropertyPath.length; j++) {
+							additionalInfo.append(" ").append(entityPropertyPath[j]);
+						}
+						importError += additionalInfo;
+						importError += "value:" + value;
 						break;
 					} else if (exception instanceof InvalidColumnException) {
 						invalidColumns.add(((InvalidColumnException) exception).getColumnName());
@@ -422,9 +429,9 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 				} else if (CaseExportDto.BIRTH_DATE.equals(headerPathElementName)) {
 					BirthDateDto birthDateDto = PersonHelper.parseBirthdate(entry, language);
 					if (birthDateDto != null) {
-						person.setBirthdateDD(birthDateDto.getBirthdateDD());
-						person.setBirthdateMM(birthDateDto.getBirthdateMM());
-						person.setBirthdateYYYY(birthDateDto.getBirthdateYYYY());
+						person.setBirthdateDD(birthDateDto.getDateOfBirthDD());
+						person.setBirthdateMM(birthDateDto.getDateOfBirthMM());
+						person.setBirthdateYYYY(birthDateDto.getDateOfBirthYYYY());
 					}
 				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
@@ -507,39 +514,33 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 							pd.getWriteMethod().invoke(currentElement, facilities.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(PointOfEntryReferenceDto.class)) {
-						List<PointOfEntryReferenceDto> pointOfEntry = pointOfEntryFacade.getByName(entry, caze.getDistrict(), false);
-						if (pointOfEntry.isEmpty()) {
+						PointOfEntryReferenceDto pointOfEntryReference;
+						DistrictReferenceDto pointOfEntryDistrict = CaseLogic.getDistrictWithFallback(caze);
+						List<PointOfEntryReferenceDto> customPointsOfEntry = pointOfEntryFacade.getByName(entry, pointOfEntryDistrict, false);
+						if (customPointsOfEntry.isEmpty()) {
+							final String poeName = entry;
+							List<PointOfEntryDto> defaultPointOfEntries = pointOfEntryFacade.getByUuids(PointOfEntryDto.CONSTANT_POE_UUIDS);
+							Optional<PointOfEntryDto> defaultPointOfEntry = defaultPointOfEntries.stream().filter(defaultPoe -> InfrastructureHelper.buildPointOfEntryString(defaultPoe.getUuid(), defaultPoe.getName()).equals(poeName)).findFirst();
+							if (!defaultPointOfEntry.isPresent()) {
+								throw new ImportErrorException(
+										I18nProperties.getValidationError(
+												Validations.importEntryDoesNotExistDbOrDistrict,
+												entry,
+												buildEntityProperty(entryHeaderPath)));
+							}
+							pointOfEntryReference = defaultPointOfEntry.get().toReference();
+						} else if (customPointsOfEntry.size() > 1) {
 							throw new ImportErrorException(
-								I18nProperties.getValidationError(
-									Validations.importEntryDoesNotExistDbOrDistrict,
-									entry,
-									buildEntityProperty(entryHeaderPath)));
-						} else if (pointOfEntry.size() > 1) {
-							throw new ImportErrorException(
-								I18nProperties.getValidationError(
-									Validations.importPointOfEntryNotUniqueInDistrict,
-									entry,
-									buildEntityProperty(entryHeaderPath)));
+									I18nProperties.getValidationError(
+											Validations.importPointOfEntryNotUniqueInDistrict,
+											entry,
+											buildEntityProperty(entryHeaderPath)));
+
 						} else {
-							pd.getWriteMethod().invoke(currentElement, pointOfEntry.get(0));
+							pointOfEntryReference = customPointsOfEntry.get(0);
 						}
-					} else if (propertyType.isAssignableFrom(DiseaseVariantReferenceDto.class)) {
-						List<DiseaseVariantReferenceDto> variants = diseaseVariantFacade.getByName(entry, caze.getDisease());
-						if (variants.isEmpty()) {
-							throw new ImportErrorException(
-								I18nProperties.getValidationError(
-									Validations.importDiseaseVariantNotExistOrDisease,
-									entry,
-									buildEntityProperty(entryHeaderPath)));
-						} else if (variants.size() > 1) {
-							throw new ImportErrorException(
-								I18nProperties.getValidationError(
-									Validations.importDiseaseVariantNotUniqueForDisease,
-									entry,
-									buildEntityProperty(entryHeaderPath)));
-						} else {
-							pd.getWriteMethod().invoke(currentElement, variants.get(0));
-						}
+
+						pd.getWriteMethod().invoke(currentElement, pointOfEntryReference);
 					} else {
 						throw new UnsupportedOperationException(
 							I18nProperties.getValidationError(Validations.importCasesPropertyTypeNotAllowed, propertyType.getName()));
@@ -612,7 +613,10 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 				throw new ImportErrorException(entry, buildEntityProperty(entryHeaderPath));
 			} catch (ParseException e) {
 				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importInvalidDate, buildEntityProperty(entryHeaderPath)));
+					I18nProperties.getValidationError(
+						Validations.importInvalidDate,
+						buildEntityProperty(entryHeaderPath),
+						DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {
@@ -639,7 +643,6 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		Class<?> propertyType = pd.getPropertyType();
 
 		if (propertyType.isEnum()) {
-
 			Enum enumValue = null;
 			Class<Enum> enumType = (Class<Enum>) propertyType;
 			try {
@@ -654,6 +657,17 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 
 			pd.getWriteMethod().invoke(element, enumValue);
 			return true;
+		}
+		if (propertyType.getSuperclass() != null && propertyType.getSuperclass() == CustomizableEnum.class) {
+			try {
+				Object test = propertyType.newInstance();
+				((CustomizableEnum) test).setValue(entry);
+				pd.getWriteMethod().invoke(element, test);
+				return true;
+			} catch (InstantiationException e) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importErrorCustomizableEnumValue, entry, buildEntityProperty(entryHeaderPath)));
+			}
 		}
 		if (propertyType.isAssignableFrom(Date.class)) {
 			pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));

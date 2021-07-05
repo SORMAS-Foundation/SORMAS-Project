@@ -34,7 +34,6 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.jurisdiction.EventParticipantJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
@@ -70,10 +69,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 				return entry.getCaseUuid();
 			}
 
-			boolean isInJurisdiction = FieldAccessColumnStyleGenerator.callJurisdictionChecker(
-				EventParticipantJurisdictionHelper::isInJurisdictionOrOwned,
-				UserProvider.getCurrent().getUser(),
-				entry.getJurisdiction());
+			boolean isInJurisdiction = entry.getInJurisdiction();
 			if (!isInJurisdiction) {
 				return NO_CASE_CREATE;
 			}
@@ -101,7 +97,8 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			CASE_ID,
 			EventParticipantIndexDto.CONTACT_COUNT,
 			SampleIndexDto.PATHOGEN_TEST_RESULT,
-			SampleIndexDto.SAMPLE_DATE_TIME);
+			SampleIndexDto.SAMPLE_DATE_TIME,
+			EventParticipantIndexDto.VACCINATION);
 		((Column<EventParticipantIndexDto, Date>) getColumn(SampleIndexDto.SAMPLE_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.UUID)).setRenderer(new UuidRenderer());
@@ -118,14 +115,12 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			.setCaption(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.PATHOGEN_TEST_RESULT));
 		getColumn(SampleIndexDto.SAMPLE_DATE_TIME)
 			.setCaption(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.SAMPLE_DATE_TIME));
+		getColumn(EventParticipantIndexDto.VACCINATION).setCaption(I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus));
 
 		addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {
 			if (e.getCaseUuid() != null) {
 				ControllerProvider.getCaseController().navigateToCase(e.getCaseUuid());
-			} else if (FieldAccessColumnStyleGenerator.callJurisdictionChecker(
-				EventParticipantJurisdictionHelper::isInJurisdictionOrOwned,
-				UserProvider.getCurrent().getUser(),
-				e.getJurisdiction())) {
+			} else if (e.getInJurisdiction()) {
 				EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getUuid());
 				ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
 			}

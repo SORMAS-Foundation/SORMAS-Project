@@ -35,7 +35,7 @@ public class EventGroup extends AbstractDomainObject {
 
     private static final long serialVersionUID = -6609939162115335854L;
 
-    public static final String TABLE_NAME = "event_groups";
+    public static final String TABLE_NAME = "eventgroups";
 
     public static final String NAME = "name";
     public static final String EVENTS = "events";

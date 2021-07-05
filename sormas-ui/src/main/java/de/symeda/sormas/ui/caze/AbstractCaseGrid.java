@@ -46,12 +46,10 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -93,17 +91,6 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		}
 
 		initColumns();
-
-		for (Column<IndexDto, ?> column : getColumns()) {
-			column.setCaption(
-				I18nProperties.findPrefixCaptionWithDefault(
-					column.getId(),
-					column.getCaption(),
-					CaseIndexDto.I18N_PREFIX,
-					PersonDto.I18N_PREFIX,
-					LocationDto.I18N_PREFIX));
-			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
-		}
 
 		addItemClickListener(new ShowDetailsListener<>(CaseIndexDto.UUID, e -> ControllerProvider.getCaseController().navigateToCase(e.getUuid())));
 	}
@@ -192,6 +179,19 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		} else {
 			removeColumn(CaseIndexDto.CREATION_DATE);
 		}
+
+		for (Column<IndexDto, ?> column : getColumns()) {
+			column.setCaption(
+				I18nProperties.findPrefixCaptionWithDefault(
+					column.getId(),
+					column.getCaption(),
+					CaseIndexDto.I18N_PREFIX,
+					PersonDto.I18N_PREFIX,
+					LocationDto.I18N_PREFIX));
+			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
+		}
+
+		getColumn(CaseIndexDto.VACCINATION).setCaption(I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus));
 	}
 
 	protected Stream<String> getGridColumns() {
@@ -203,6 +203,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 					CaseIndexDto.EPID_NUMBER,
 					CaseIndexDto.EXTERNAL_ID,
 					CaseIndexDto.EXTERNAL_TOKEN,
+					CaseIndexDto.INTERNAL_TOKEN,
 					DISEASE_SHORT,
 					CaseIndexDto.DISEASE_VARIANT,
 					CaseIndexDto.CASE_CLASSIFICATION,
@@ -213,7 +214,8 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				getEventColumns(),
 				getSymptomsColumns(),
 				getSampleColumns(),
-				Stream.of(CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME, CaseIndexDto.REPORT_DATE),
+				getJurisdictionColumns(),
+				Stream.of(CaseIndexDto.REPORT_DATE),
 				externalSurveillanceToolShareEnabled
 					? Stream.of(
 						CaseIndexDto.SURVEILLANCE_TOOL_LAST_SHARE_DATE,
@@ -222,8 +224,13 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 					: Stream.<String> empty(),
 				Stream.of(CaseIndexDto.QUARANTINE_TO, CaseIndexDto.CREATION_DATE),
 				getFollowUpColumns(),
+				Stream.of(CaseIndexDto.VACCINATION),
 				Stream.of(COLUMN_COMPLETENESS))
 			.flatMap(Function.identity());
+	}
+
+	protected Stream<String> getJurisdictionColumns() {
+		return Stream.of(CaseIndexDto.RESPONSIBLE_DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME);
 	}
 
 	protected Stream<String> getReinfectionColumn() {
@@ -318,32 +325,4 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 	}
 
 	protected abstract List<IndexDto> getGridData(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
-
-	public static UserJurisdiction createUserJurisdiction(UserDto user) {
-
-		UserJurisdiction jurisdiction = new UserJurisdiction();
-		jurisdiction.setUuid(user.getUuid());
-
-		if (user.getRegion() != null) {
-			jurisdiction.setRegionUuid(user.getRegion().getUuid());
-		}
-		if (user.getDistrict() != null) {
-			jurisdiction.setDistrictUuid(user.getDistrict().getUuid());
-		}
-		if (user.getCommunity() != null) {
-			jurisdiction.setCommunityUuid(user.getCommunity().getUuid());
-		}
-		if (user.getHealthFacility() != null) {
-			jurisdiction.setHealthFacilityUuid(user.getHealthFacility().getUuid());
-		}
-		if (user.getPointOfEntry() != null) {
-			jurisdiction.setPointOfEntryUuid(user.getPointOfEntry().getUuid());
-		}
-
-		if (user.getLaboratory() != null) {
-			jurisdiction.setLabUuid(user.getLaboratory().getUuid());
-		}
-
-		return jurisdiction;
-	}
 }

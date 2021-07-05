@@ -42,7 +42,15 @@ public enum FeatureType {
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			EVENT_SURVEILLANCE }),
+	DOCUMENTS_MULTI_UPLOAD(true,
+		true,
+		new FeatureType[] {
+			DOCUMENTS }),
 	EVENT_GROUPS(true,
+		true,
+		new FeatureType[] {
+			EVENT_SURVEILLANCE }),
+	EVENT_HIERARCHIES(true,
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE }),
@@ -62,6 +70,47 @@ public enum FeatureType {
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE }),
+	SORMAS_TO_SORMAS_ACCEPT_REJECT(true,
+		false,
+		new FeatureType[] {
+			CASE_SURVEILANCE,
+			CONTACT_TRACING,
+			EVENT_SURVEILLANCE }),
+	PERSON_DUPLICATE_CUSTOM_SEARCH(true, false, null),
+
+	// SHOW/HIDE VIEW TAB FEATURES
+	VIEW_TAB_CASES_HOSPITALIZATION(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	VIEW_TAB_CASES_SYMPTOMS(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	VIEW_TAB_CASES_THERAPY(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	VIEW_TAB_CASES_FOLLOW_UP(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	VIEW_TAB_CASES_CLINICAL_COURSE(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	VIEW_TAB_CONTACTS_EPIDEMIOLOGICAL_DATA(true,
+		true,
+		new FeatureType[] {
+			CONTACT_TRACING }),
+	VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS(true,
+		true,
+		new FeatureType[] {
+			CONTACT_TRACING }),
 
 	// ADDITIONAL FEATURES
 	GDPR_CONSENT_POPUP(true, false, null),
@@ -82,6 +131,10 @@ public enum FeatureType {
 		new FeatureType[] {
 			EVENT_GROUPS }),
 	EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS(true,
+		true,
+		new FeatureType[] {
+			EVENT_SURVEILLANCE }),
+	EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS_NOTIFICATIONS(true,
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE }),

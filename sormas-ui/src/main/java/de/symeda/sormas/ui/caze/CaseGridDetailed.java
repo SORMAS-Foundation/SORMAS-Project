@@ -12,6 +12,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -39,6 +40,16 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 	@Override
 	protected Stream<String> getGridColumns() {
 		return Stream.concat(super.getGridColumns(), Stream.of(CaseIndexDetailedDto.REPORTING_USER));
+	}
+
+	@Override
+	protected Stream<String> getJurisdictionColumns() {
+		return Stream.of(
+			CaseIndexDetailedDto.RESPONSIBLE_REGION,
+			CaseIndexDto.RESPONSIBLE_DISTRICT_NAME,
+			CaseIndexDetailedDto.RESPONSIBLE_COMMUNITY,
+			CaseIndexDto.HEALTH_FACILITY_NAME,
+			CaseIndexDto.POINT_OF_ENTRY_NAME);
 	}
 
 	@Override
@@ -125,9 +136,9 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 				: PersonHelper.getAgeAndBirthdateString(
 					value.getAge(),
 					value.getAgeType(),
-					value.getBirthdateDD(),
-					value.getBirthdateMM(),
-					value.getBirthdateYYYY(),
+					value.getDateOfBirthDD(),
+					value.getDateOfBirthMM(),
+					value.getDateOfBirthYYYY(),
 					I18nProperties.getUserLanguage()),
 			new TextRenderer());
 
