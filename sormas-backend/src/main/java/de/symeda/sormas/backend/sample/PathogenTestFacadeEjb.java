@@ -93,8 +93,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-	@EJB
-	private SampleJurisdictionChecker sampleJurisdictionChecker;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -135,6 +133,24 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			.stream()
 			.map(p -> convertToDto(p, pseudonymizer))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public PathogenTestDto getLatestPathogenTest(String sampleUuid) {
+		if (sampleUuid == null) {
+			return null;
+		}
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PathogenTest> cq = cb.createQuery(PathogenTest.class);
+		Root<PathogenTest> pathogenTestRoot = cq.from(PathogenTest.class);
+		Join<PathogenTest, Sample> sampleJoin = pathogenTestRoot.join(PathogenTest.SAMPLE);
+
+		Predicate filter = cb.equal(sampleJoin.get(Sample.UUID), sampleUuid);
+		cq.where(filter);
+		cq.orderBy(cb.desc(pathogenTestRoot.get(PathogenTest.CREATION_DATE)));
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return convertToDto(em.createQuery(cq).setMaxResults(1).getSingleResult(), pseudonymizer);
 	}
 
 	@Override
@@ -345,13 +361,13 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	private void pseudonymizeDto(PathogenTest source, PathogenTestDto target, Pseudonymizer pseudonymizer) {
 		if (source != null && target != null) {
-			pseudonymizer.pseudonymizeDto(PathogenTestDto.class, target, sampleJurisdictionChecker.isInJurisdictionOrOwned(source.getSample()), null);
+			pseudonymizer.pseudonymizeDto(PathogenTestDto.class, target, sampleService.inJurisdictionOrOwned(source.getSample()).getInJurisdiction(), null);
 		}
 	}
 
 	private void restorePseudonymizedDto(PathogenTestDto dto, PathogenTest existingSampleTest, PathogenTestDto existingSampleTestDto) {
 		if (existingSampleTestDto != null) {
-			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(existingSampleTest.getSample());
+			boolean isInJurisdiction = sampleService.inJurisdictionOrOwned(existingSampleTest.getSample()).getInJurisdiction();
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
 			pseudonymizer.restorePseudonymizedValues(PathogenTestDto.class, dto, existingSampleTestDto, isInJurisdiction);

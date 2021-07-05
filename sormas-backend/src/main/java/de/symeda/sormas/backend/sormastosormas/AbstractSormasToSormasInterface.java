@@ -152,7 +152,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		}
 
 		SormasToSormasOriginInfoDto originInfo =
-			dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options.isHandOverOwnership(), options.getComment());
+			dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options);
 		String requestUuid = DataHelper.createUuid();
 
 		sormasToSormasRestClient
@@ -242,7 +242,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		String requestUuid = encryptionService.decryptAndVerify(encryptedRequestUuid, String.class);
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByRequestUuid(requestUuid);
 
-		List<ShareData<ADO, S>> shareData = getShareDataBuilder().buildShareData(shareInfo, currentUser);
+		List<ShareData<ADO, S>> shareData = getShareDataBuilder().buildShareData(currentUser, shareInfo);
 
 		List<S> entitiesToSend = shareData.stream().map(ShareData::getDto).collect(Collectors.toList());
 		validateEntitiesBeforeShare(shareData.stream().map(ShareData::getEntity).collect(Collectors.toList()), shareInfo.isOwnershipHandedOver());
@@ -284,17 +284,28 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	@Override
 	public void returnEntity(String entityUuid, SormasToSormasOptionsDto options) throws SormasToSormasException {
-		options.setHandOverOwnership(true);
 		User currentUser = userService.getCurrentUser();
 
 		ADO entity = getEntityService().getByUuid(entityUuid);
+
+		SormasToSormasOriginInfo originInfo = entity.getSormasToSormasOriginInfo();
+		options.setHandOverOwnership(true);
+		if (originInfo.getContacts().size() > 0) {
+			options.setWithAssociatedContacts(true);
+		}
+		if (originInfo.getSamples().size() > 0) {
+			options.setWithSamples(true);
+		}
+		if (originInfo.getEventParticipants().size() > 0) {
+			options.setWithEventParticipants(true);
+		}
+
 		validateEntitiesBeforeShare(Collections.singletonList(entity), options.isHandOverOwnership());
 
 		ShareData<ADO, S> shareData = getShareDataBuilder().buildShareData(entity, currentUser, options);
 
 		sormasToSormasRestClient.put(options.getOrganization().getUuid(), saveEndpoint, Collections.singletonList(shareData.getDto()), null);
 
-		SormasToSormasOriginInfo originInfo = entity.getSormasToSormasOriginInfo();
 		originInfo.setOwnershipHandedOver(false);
 		originInfoService.persist(originInfo);
 

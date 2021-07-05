@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -448,7 +448,8 @@ public enum UserRight {
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
 			EVENT_OFFICER,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			LAB_USER
 
 	),
 	CONTACT_ASSIGN(
@@ -464,8 +465,8 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER,
-			COMMUNITY_OFFICER
-
+			COMMUNITY_OFFICER,
+			LAB_USER
 	),
 	CONTACT_DELETE(
 			ADMIN,
@@ -698,7 +699,8 @@ public enum UserRight {
 			HOSPITAL_INFORMANT,
 			COMMUNITY_INFORMANT,
 			EVENT_OFFICER,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			LAB_USER
 	),
 	EVENT_EDIT(
 			ADMIN,
@@ -726,11 +728,13 @@ public enum UserRight {
 			LAB_USER
 	),
 	EVENT_ARCHIVE(
-			ADMIN
+			ADMIN,
+			ADMIN_SUPERVISOR
 	),
 	EVENT_DELETE(
 			ADMIN,
-			NATIONAL_USER
+			NATIONAL_USER,
+			ADMIN_SUPERVISOR
 	),
 	EVENTPARTICIPANT_CREATE(
 			ADMIN,
@@ -748,7 +752,8 @@ public enum UserRight {
 			ADMIN_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			EVENT_OFFICER,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			LAB_USER
 	),
 	EVENTPARTICIPANT_DELETE(
 			ADMIN,
@@ -1193,7 +1198,8 @@ public enum UserRight {
 			POE_INFORMANT,
 			REST_EXTERNAL_VISITS_USER,
             SORMAS_TO_SORMAS_CLIENT,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			LAB_USER
 	),
 	SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION(
 			REST_EXTERNAL_VISITS_USER,

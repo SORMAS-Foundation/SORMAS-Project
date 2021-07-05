@@ -19,7 +19,6 @@
 package org.sormas.e2etests.steps.web.application.actions;
 
 import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.*;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -30,6 +29,7 @@ import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Action;
 import org.sormas.e2etests.services.ActionService;
+import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 
 public class CreateNewActionSteps implements En {
@@ -41,7 +41,10 @@ public class CreateNewActionSteps implements En {
 
   @Inject
   public CreateNewActionSteps(
-      WebDriverHelpers webDriverHelpers, BaseSteps baseSteps, ActionService actionService) {
+      WebDriverHelpers webDriverHelpers,
+      BaseSteps baseSteps,
+      ActionService actionService,
+      ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -49,6 +52,7 @@ public class CreateNewActionSteps implements En {
         "I create New Action from event tab",
         () -> {
           action = actionService.buildGeneratedAction();
+          apiState.setCreatedAction(action);
           fillDate(action.getDate());
           selectPriority(action.getPriority());
           selectMeasure(action.getMeasure());
@@ -56,7 +60,6 @@ public class CreateNewActionSteps implements En {
           fillDescription("Dummy description for automated test");
           selectActionStatus(action.getActionStatus());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
         });
   }
 

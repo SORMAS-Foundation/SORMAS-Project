@@ -14,7 +14,7 @@ public class PersonQueryContext<T> extends QueryContext<T, Person> {
 	public static final String PERSON_EMAIL_SUBQUERY = "personEmailSubquery";
 
 	public PersonQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<T, Person> root) {
-		super(cb, query, root, null);
+		super(cb, query, root, new PersonJoins(root));
 	}
 
 	@Override

@@ -53,6 +53,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -109,6 +110,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.utils.EventJoins;
 
 @Stateless(name = "EventFacade")
 public class EventFacadeEjb implements EventFacade {
@@ -124,8 +126,6 @@ public class EventFacadeEjb implements EventFacade {
 	private EventGroupService eventGroupService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
-	@EJB
-	private EventJurisdictionChecker eventJurisdictionChecker;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
 	@EJB
@@ -274,12 +274,17 @@ public class EventFacadeEjb implements EventFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventIndexDto> cq = cb.createQuery(EventIndexDto.class);
 		Root<Event> event = cq.from(Event.class);
-		Join<Event, Location> location = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
-		Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
-		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
-		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
-		Join<Event, User> reportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
-		Join<Event, User> responsibleUser = event.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
+
+		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
+
+		EventJoins<Event> eventJoins = (EventJoins<Event>) eventQueryContext.getJoins();
+
+		Join<Event, Location> location = eventJoins.getLocation();
+		Join<Location, Region> region = eventJoins.getRegion();
+		Join<Location, District> district = eventJoins.getDistrict();
+		Join<Location, Community> community = eventJoins.getCommunity();
+		Join<Event, User> reportingUser = eventJoins.getReportingUser();
+		Join<Event, User> responsibleUser = eventJoins.getResponsibleUser();
 
 		cq.multiselect(
 			event.get(Event.ID),
@@ -320,6 +325,7 @@ public class EventFacadeEjb implements EventFacade {
 			responsibleUser.get(User.UUID),
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
+			JurisdictionHelper.booleanSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)),
 			event.get(Event.CHANGE_DATE));
 
 		Predicate filter = null;
@@ -329,7 +335,7 @@ public class EventFacadeEjb implements EventFacade {
 				filter = eventService.createUserFilter(cb, cq, event);
 			}
 
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, eventQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -557,12 +563,14 @@ public class EventFacadeEjb implements EventFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventExportDto> cq = cb.createQuery(EventExportDto.class);
 		Root<Event> event = cq.from(Event.class);
-		Join<Event, Location> location = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
-		Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
-		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
-		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
-		Join<Event, User> reportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
-		Join<Event, User> responsibleUser = event.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
+		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
+		EventJoins<Event> eventJoins = (EventJoins<Event>) eventQueryContext.getJoins();
+		Join<Event, Location> location = eventJoins.getLocation();
+		Join<Location, Region> region = eventJoins.getRegion();
+		Join<Location, District> district = eventJoins.getDistrict();
+		Join<Location, Community> community = eventJoins.getCommunity();
+		Join<Event, User> reportingUser = eventJoins.getReportingUser();
+		Join<Event, User> responsibleUser = eventJoins.getResponsibleUser();
 
 		cq.multiselect(
 			event.get(Event.UUID),
@@ -612,12 +620,13 @@ public class EventFacadeEjb implements EventFacade {
 			responsibleUser.get(User.UUID),
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
+			JurisdictionHelper.booleanSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)),
 			event.get(Event.EVENT_MANAGEMENT_STATUS));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
 		if (eventCriteria != null) {
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, eventQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -999,7 +1008,7 @@ public class EventFacadeEjb implements EventFacade {
 
 	private void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
-			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(event);
+			boolean inJurisdiction = eventService.inJurisdictionOrOwned(event);
 
 			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, (e) -> {
 				pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
@@ -1009,7 +1018,7 @@ public class EventFacadeEjb implements EventFacade {
 
 	private void restorePseudonymizedDto(EventDto dto, Event existingEvent, EventDto existingDto, Pseudonymizer pseudonymizer) {
 		if (existingDto != null) {
-			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(existingEvent);
+			boolean inJurisdiction = eventService.inJurisdictionOrOwned(existingEvent);
 			pseudonymizer.restorePseudonymizedValues(EventDto.class, dto, existingDto, inJurisdiction);
 			pseudonymizer.restoreUser(existingEvent.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
 		}

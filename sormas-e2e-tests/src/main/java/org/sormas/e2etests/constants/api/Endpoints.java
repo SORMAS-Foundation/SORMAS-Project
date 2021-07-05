@@ -18,10 +18,13 @@
 package org.sormas.e2etests.constants.api;
 
 public interface Endpoints {
-  String PERSONS = "persons/";
-  String CONTACTS = "contacts/";
-  String CASES = "cases/";
-  String EVENTS = "events/";
-  String SAMPLES = "samples/";
-  String TASKS = "tasks/";
+  String PERSONS_PATH = "persons/";
+  String CASES_PATH = "cases/";
+  String COMMUNITIES_PATH = "communities/";
+  String COUNTRIES_PATH = "countries/";
+  String FACILITIES_PATH = "facilities/";
+  String CONTACTS_PATH = "contacts/";
+  String EVENTS_PATH = "events/";
+  String SAMPLES_PATH = "samples/";
+  String TASKS_PATH = "tasks/";
 }

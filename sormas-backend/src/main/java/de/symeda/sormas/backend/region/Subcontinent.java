@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.region;
 
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,10 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
-import de.symeda.sormas.api.i18n.Countries;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
-
-import java.util.List;
 
 @Entity
 public class Subcontinent extends InfrastructureAdo {

@@ -183,7 +183,7 @@ public class MainScreen extends HorizontalLayout {
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
-			&& FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()) {
+			&& FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
 			ControllerProvider.getSormasToSormasController().registerViews(navigator);
 			menu.addView(
 				ShareRequestsView.class,

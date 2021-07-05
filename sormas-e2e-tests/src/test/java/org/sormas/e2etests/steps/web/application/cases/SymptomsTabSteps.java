@@ -18,7 +18,9 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.*;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.DISEASE_COLUMNS;
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
@@ -26,6 +28,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pojo.web.Symptoms;
@@ -42,9 +45,11 @@ public class SymptomsTabSteps implements En {
   public SymptomsTabSteps(
       WebDriverHelpers webDriverHelpers,
       SymptomService symptomService,
+      final SoftAssertions softly,
       ApiState apiState,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
+    String firstSymptom = "Sore throat/pharyngitis";
 
     When(
         "I check the created data is correctly displayed on Symptoms tab page",
@@ -95,6 +100,26 @@ public class SymptomsTabSteps implements En {
           selectFistSymptom(symptoms.getFirstSymptom());
           fillDateOfSymptom(symptoms.getDateOfSymptom());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    And(
+        "I check Yes Option for Soar Throat on Symptoms tab page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SORE_THROAT_YES_OPTION));
+
+    And(
+        "I select sore throat option",
+        () -> {
+          webDriverHelpers.scrollToElement(FIRST_SYMPTOM_COMBOBOX);
+          selectFistSymptom(firstSymptom);
+        });
+
+    And("I click on save button", () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON));
+
+    When(
+        "I am checking that the case classification is changed to Suspect Case",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COLUMNS);
+          softly.assertThat(firstSymptom).isEqualTo(getCaseClassificationColumn());
         });
   }
 
@@ -269,5 +294,9 @@ public class SymptomsTabSteps implements En {
 
   public void fillDateOfSymptom(LocalDate dateOfSymptom) {
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_INPUT, DATE_FORMATTER.format(dateOfSymptom));
+  }
+
+  public String getCaseClassificationColumn() {
+    return webDriverHelpers.getValueOfListElement(CASE_CLASSIFICATION_COLUMNS, 0);
   }
 }
