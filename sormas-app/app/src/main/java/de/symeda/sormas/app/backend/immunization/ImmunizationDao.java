@@ -20,6 +20,8 @@ package de.symeda.sormas.app.backend.immunization;
 
 import com.j256.ormlite.dao.Dao;
 
+import java.sql.SQLException;
+
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 
 public class ImmunizationDao extends AbstractAdoDao<Immunization> {
@@ -36,4 +38,17 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
     public String getTableName() {
         return Immunization.TABLE_NAME;
     }
+
+    public void deleteImmunizationAndAllDependingEntities(String immunizationUuid) throws SQLException {
+        Immunization immunization = queryUuidWithEmbedded(immunizationUuid);
+
+        // Cancel if not in local database
+        if (immunization == null) {
+            return;
+        }
+
+        // Delete case
+        deleteCascade(immunization);
+    }
+
 }

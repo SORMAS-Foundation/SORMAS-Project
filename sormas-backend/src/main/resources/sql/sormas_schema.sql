@@ -7501,6 +7501,7 @@ CREATE TABLE immunization (
                         positivetestresultdate timestamp not null,
                         recoverydate timestamp not null,
                         relatedcase_id bigint,
+                        deleted boolean DEFAULT false,
                         sys_period tstzrange not null,
                         primary key(id));
 ALTER TABLE immunization OWNER TO sormas_user;
@@ -7512,6 +7513,8 @@ ALTER TABLE immunization ADD CONSTRAINT fk_immunization_responsibledistrict_id F
 ALTER TABLE immunization ADD CONSTRAINT fk_immunization_responsiblecommunity_id FOREIGN KEY (responsiblecommunity_id) REFERENCES community(id);
 ALTER TABLE immunization ADD CONSTRAINT fk_immunization_country_id FOREIGN KEY (country_id) REFERENCES country(id);
 ALTER TABLE immunization ADD CONSTRAINT fk_immunization_relatedcase_id FOREIGN KEY (relatedcase_id) REFERENCES cases(id);
+
+CREATE INDEX IF NOT EXISTS idx_immunization_deleted ON immunization (deleted);
 
 CREATE TABLE immunization_history (LIKE immunization);
 CREATE TRIGGER versioning_trigger

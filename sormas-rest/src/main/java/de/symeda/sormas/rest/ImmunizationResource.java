@@ -42,7 +42,7 @@ public class ImmunizationResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<ImmunizationDto> getAllPersons(@PathParam("since") long since) {
+	public List<ImmunizationDto> getAllAfter(@PathParam("since") long since) {
 		return FacadeProvider.getImmunizationFacade().getAllAfter(new Date(since));
 	}
 

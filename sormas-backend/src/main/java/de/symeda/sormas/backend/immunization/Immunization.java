@@ -277,6 +277,7 @@ public class Immunization extends CoreAdo {
 		this.relatedCase = relatedCase;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public MeansOfImmunization getMeansOfImmunization() {
 		return meansOfImmunization;
 	}
@@ -285,6 +286,7 @@ public class Immunization extends CoreAdo {
 		this.meansOfImmunization = meansOfImmunization;
 	}
 
+	@Enumerated(EnumType.STRING)
 	public ImmunizationManagementStatus getImmunizationManagementStatus() {
 		return immunizationManagementStatus;
 	}
@@ -293,6 +295,7 @@ public class Immunization extends CoreAdo {
 		this.immunizationManagementStatus = immunizationManagementStatus;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getMeansOfImmunizationDetails() {
 		return meansOfImmunizationDetails;
 	}

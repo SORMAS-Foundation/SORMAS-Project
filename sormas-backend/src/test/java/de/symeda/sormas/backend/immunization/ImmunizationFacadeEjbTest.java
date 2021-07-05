@@ -17,6 +17,10 @@ package de.symeda.sormas.backend.immunization;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Date;
+import java.util.List;
+
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -65,6 +69,31 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		ImmunizationDto actual = getImmunizationFacade().getByUuid(immunizationDto.getUuid());
 		assertEquals(immunizationDto.getUuid(), actual.getUuid());
 		assertEquals(immunizationDto.getPerson(), actual.getPerson());
+	}
+
+	@Test
+	public void testGetAllSince() {
+		loginWith(nationalUser);
+
+		PersonDto person = creator.createPerson("John", "Doe");
+		creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf);
+		creator.createImmunization(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf);
+		List<ImmunizationDto> allAfter = getImmunizationFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
+		assertEquals(2, allAfter.size());
 	}
 
 }

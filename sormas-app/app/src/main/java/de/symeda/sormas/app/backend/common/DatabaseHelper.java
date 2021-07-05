@@ -170,7 +170,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 305;
+	public static final int DATABASE_VERSION = 306;
 
 	private static DatabaseHelper instance = null;
 
@@ -2610,6 +2610,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							" responsibleDistrict_id = reportingDistrict_id," +
 							" reportingDistrict_id = null"+
 							" WHERE responsibleRegion_id IS NULL AND reportingDistrict_id IS NOT NULL");
+
 				case 304:
 					currentVersion = 304;
 					getDao(Immunization.class).executeRaw("CREATE TABLE immunization (" +
@@ -2640,6 +2641,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							" recoverydate timestamp not null," +
 							" relatedcase_id bigint)");
 
+				case 305:
+					currentVersion = 305;
+					getDao(Immunization.class).executeRaw("ALTER TABLE immunization ADD COLUMN pseudonymized boolean;");
 
 				// ATTENTION: break should only be done after last version
 				break;
@@ -3061,7 +3065,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 				if (type.equals(Case.class)) {
 					dao = (AbstractAdoDao<ADO>) new CaseDao((Dao<Case, Long>) innerDao);
-				}if (type.equals(Immunization.class)) {
+				} else if (type.equals(Immunization.class)) {
 					dao = (AbstractAdoDao<ADO>) new ImmunizationDao((Dao<Immunization, Long>) innerDao);
 				} else if (type.equals(Therapy.class)) {
 					dao = (AbstractAdoDao<ADO>) new TherapyDao((Dao<Therapy, Long>) innerDao);

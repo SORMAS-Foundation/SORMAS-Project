@@ -495,6 +495,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
 			}
 
+			// Immunization
+			List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+			for (String immunizationUuid : immunizationUuids) {
+				DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
+			}
+
 			// Events
 			List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
 			for (String eventUuid : eventUuids) {

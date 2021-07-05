@@ -288,4 +288,9 @@ public class Immunization extends PseudonymizableAdo {
     public void setCountry(Country country) {
         this.country = country;
     }
+
+    @Override
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
+    }
 }
