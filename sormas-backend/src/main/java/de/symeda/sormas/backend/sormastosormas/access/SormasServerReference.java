@@ -4,18 +4,18 @@ import java.util.Objects;
 
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 
-public class OrganizationServerAccessData {
+public class SormasServerReference {
 
 	private String id;
 	private String name;
 	private String hostName;
 
-	public OrganizationServerAccessData(String id, String name) {
+	public SormasServerReference(String id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 
-	public OrganizationServerAccessData(String id, String name, String hostName) {
+	public SormasServerReference(String id, String name, String hostName) {
 		this.id = id;
 		this.name = name;
 		this.hostName = hostName;
@@ -55,7 +55,7 @@ public class OrganizationServerAccessData {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		OrganizationServerAccessData that = (OrganizationServerAccessData) o;
+		SormasServerReference that = (SormasServerReference) o;
 		return Objects.equals(id, that.id) && Objects.equals(hostName, that.hostName) && Objects.equals(name, that.name);
 	}
 

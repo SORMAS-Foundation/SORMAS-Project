@@ -56,7 +56,7 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 				MockProducer.getSormasToSormasClient()
 					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.thenAnswer(invocation -> {
-				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ACCESS_ID));
+				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ID));
 				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/labmessages"));
 
 				List<LabMessageDto> postBody = invocation.getArgument(2, List.class);
@@ -70,7 +70,7 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 			});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_ID));
+		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ID));
 
 		getSormasToSormasLabMessageFacade().sendLabMessages(Collections.singletonList(labMessage.getUuid()), options);
 

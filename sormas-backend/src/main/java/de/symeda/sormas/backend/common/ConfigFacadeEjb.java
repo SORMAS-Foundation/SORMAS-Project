@@ -123,29 +123,30 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String GEOCODING_LATITUDE_JSON_PATH = "geocodingLatitudeJsonPath";
 	private static final String GEOCODING_EPSG4326_WKT = "geocodingEPSG4326_WKT";
 
+	private static final String CENTRAL_OIDC_URL = "central.oidc.url";
+	private static final String CENTRAL_REDIS_HOST = "central.redis.host";
+	private static final String CENTRAL_REDIS_KEYSTORE_PATH = "central.redis.keystorePath";
+	private static final String CENTRAL_REDIS_KEYSTORE_PASSWORD = "central.redis.keystorePassword";
+	private static final String CENTRAL_REDIS_TRUSTSTORE_PATH = "central.redis.truststorePath";
+	private static final String CENTRAL_REDIS_TRUSTSTORE_PASSWORD = "central.redis.truststorePassword";
+
 	private static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
+	private static final String SORMAS2SORMAS_ID = "sormas2sormas.id";
 	private static final String SORMAS2SORMAS_KEYSTORE_NAME = "sormas2sormas.keystoreName";
 	private static final String SORMAS2SORMAS_KEYSTORE_PASSWORD = "sormas2sormas.keystorePass";
 	private static final String SORMAS2SORMAS_ROOT_CA_ALIAS = "sormas2sormas.rootCaAlias";
 	private static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
 	private static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
-	private static final String SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN = "sormas2sormas.retainCaseExternalToken";
-	private static final String SORMAS2SORMAS_ID = "sormas2sormas.id";
-	private static final String SORMAS2SORMAS_REDIS_CLIENT_NAME = "sormas2sormas.redis.clientName";
-	private static final String SORMAS2SORMAS_REDIS_CLIENT_PASSWORD = "sormas2sormas.redis.clientPassword";
-	private static final String SORMAS2SORMAS_REDIS_KEY_PREFIX = "sormas2sormas.redis.keyPrefix";
-	private static final String SORMAS2SORMAS_OIDC_SERVER = "sormas2sormas.oidc.server";
+
 	private static final String SORMAS2SORMAS_OIDC_REALM = "sormas2sormas.oidc.realm";
 	private static final String SORMAS2SORMAS_OIDC_CLIENT_ID = "sormas2sormas.oidc.clientId";
 	private static final String SORMAS2SORMAS_OIDC_CLIENT_SECRET = "sormas2sormas.oidc.clientSecret";
 
-	private static final String SORMAS_TO_SORMAS_USER_PASSWORD = "sormasToSormasUserPassword";
+	private static final String SORMAS2SORMAS_REDIS_CLIENT_NAME = "sormas2sormas.redis.clientName";
+	private static final String SORMAS2SORMAS_REDIS_CLIENT_PASSWORD = "sormas2sormas.redis.clientPassword";
+	private static final String SORMAS2SORMAS_REDIS_KEY_PREFIX = "sormas2sormas.redis.keyPrefix";
 
-	private static final String KV_REDIS_HOST = "kv.redis.host";
-	private static final String KV_REDIS_KEYSTORE_PATH = "kv.redis.keystorePath";
-	private static final String KV_REDIS_KEYSTORE_PASSWORD = "kv.redis.keystorePassword";
-	private static final String KV_REDIS_TRUSTSTORE_PATH = "kv.redis.truststorePath";
-	private static final String KV_REDIS_TRUSTSTORE_PASSWORD = "kv.redis.truststorePassword";
+	private static final String SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN = "sormas2sormas.retainCaseExternalToken";
 
 	private static final String EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL = "survnet.url";
 
@@ -501,17 +502,12 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setId(getProperty(SORMAS2SORMAS_ID, null));
 		config.setRedisClientName(getProperty(SORMAS2SORMAS_REDIS_CLIENT_NAME, null));
 		config.setRedisClientPassword(getProperty(SORMAS2SORMAS_REDIS_CLIENT_PASSWORD, null));
-		config.setOidcServer(getProperty(SORMAS2SORMAS_OIDC_SERVER, null));
+		config.setOidcServer(getProperty(CENTRAL_OIDC_URL, null));
 		config.setOidcRealm(getProperty(SORMAS2SORMAS_OIDC_REALM, null));
 		config.setOidcClientId(getProperty(SORMAS2SORMAS_OIDC_CLIENT_ID, null));
 		config.setOidcClientSecret(getProperty(SORMAS2SORMAS_OIDC_CLIENT_SECRET, null));
 		config.setKeyPrefix(getProperty(SORMAS2SORMAS_REDIS_KEY_PREFIX, null));
 		return config;
-	}
-
-	@Override
-	public String getSormasToSormasUserPassword() {
-		return getProperty(SORMAS_TO_SORMAS_USER_PASSWORD, null);
 	}
 
 	@Override
@@ -627,24 +623,24 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(DOCGENERATION_NULL_REPLACEMENT, "./.");
 	}
 
-	public String getKvRedisHost() {
-		return getProperty(KV_REDIS_HOST, null);
+	public String getCentralRedisHost() {
+		return getProperty(CENTRAL_REDIS_HOST, null);
 	}
 
-	public String getKvRedisKeystorePath() {
-		return getProperty(KV_REDIS_KEYSTORE_PATH, null);
+	public String getCentralRedisKeystorePath() {
+		return getProperty(CENTRAL_REDIS_KEYSTORE_PATH, null);
 	}
 
-	public String getKvRedisKeystorePasswor() {
-		return getProperty(KV_REDIS_KEYSTORE_PASSWORD, null);
+	public String getCentralRedisKeystorePassword() {
+		return getProperty(CENTRAL_REDIS_KEYSTORE_PASSWORD, null);
 	}
 
-	public String getKvRedisTruststorePath() {
-		return getProperty(KV_REDIS_TRUSTSTORE_PATH, null);
+	public String getCentralRedisTruststorePath() {
+		return getProperty(CENTRAL_REDIS_TRUSTSTORE_PATH, null);
 	}
 
-	public String getKvRedisTruststorePassword() {
-		return getProperty(KV_REDIS_TRUSTSTORE_PASSWORD, null);
+	public String getCentralRedisTruststorePassword() {
+		return getProperty(CENTRAL_REDIS_TRUSTSTORE_PASSWORD, null);
 	}
 
 	@Override

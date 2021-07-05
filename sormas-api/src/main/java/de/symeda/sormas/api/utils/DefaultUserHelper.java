@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
-import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,14 +41,6 @@ public class DefaultUserHelper {
 	public static final DataHelper.Pair<String, String> COMM_OFF_USERNAME_AND_PASSWORD = new DataHelper.Pair<>("CommOff", "CommOff");
 	public static final DataHelper.Pair<String, String> POE_INF_USERNAME_AND_PASSWORD = new DataHelper.Pair<>("PoeInf", "PoeInf");
 	public static final String SORMAS_TO_SORMAS_USER_NAME = "Sormas2Sormas";
-	public static final String SORMAS_TO_SORMAS_PASSWORD = genS2Spassword();
-
-	private static String genS2Spassword() {
-		byte[] pwd = new byte[32];
-		SecureRandom rnd = new SecureRandom();
-		rnd.nextBytes(pwd);
-		return new String(pwd);
-	}
 
 	private static final Map<String, String> defaultUsersWithPassword = new HashMap<>();
 

@@ -1,18 +1,18 @@
 package de.symeda.sormas.backend.sormastosormas.access;
 
+import javax.enterprise.inject.Produces;
+
 import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 
-import javax.enterprise.inject.Produces;
-
-public class ServerAccessDataServiceProducer {
+public class SormasToSormasDiscoveryServiceProducer {
 
 	@Produces
-	public ServerAccessDataService serverAccessDataService(
+	public SormasToSormasDiscoveryService sormasToSormasDiscoveryService(
 		SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
 		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb,
 		SormasToSormasConfig sormasToSormasConfig) {
-		return new ServerAccessDataService(sormasToSormasFacadeEjb, configFacadeEjb, sormasToSormasConfig);
+		return new SormasToSormasDiscoveryService(sormasToSormasFacadeEjb, configFacadeEjb, sormasToSormasConfig);
 	}
 }

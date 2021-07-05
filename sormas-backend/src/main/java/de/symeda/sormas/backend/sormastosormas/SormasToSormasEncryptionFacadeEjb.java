@@ -38,9 +38,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import de.symeda.sormas.backend.sormastosormas.access.OrganizationServerAccessData;
-import de.symeda.sormas.backend.sormastosormas.access.ServerAccessDataService;
-import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import org.bouncycastle.cms.CMSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +56,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.backend.crypt.CmsCreator;
 import de.symeda.sormas.backend.crypt.CmsReader;
+import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 
 @Stateless(name = "SormasToSormasEncryptionFacade")
 public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncryptionFacade {
@@ -70,9 +68,6 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 
 	@Inject
 	SormasToSormasRestClient restClient;
-
-	@Inject
-	protected ServerAccessDataService serverAccessDataService;
 
 	private final ObjectMapper objectMapper;
 
@@ -104,7 +99,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	@Override
 	public X509Certificate getOwnCertificate()
 		throws SormasToSormasException, CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException {
-		String ownId = getOrganizationId();
+		String ownId = sormasToSormasConfig.getId();
 		KeyStore keystore = getKeystore();
 		return (X509Certificate) keystore.getCertificate(ownId);
 	}
@@ -138,7 +133,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	private byte[] cipher(Mode mode, byte[] data, String otherId)
 		throws SormasToSormasException, CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException,
 		CMSException {
-		String ownId = getOrganizationId();
+		String ownId = sormasToSormasConfig.getId();
 		KeyStore keystore = getKeystore();
 		X509Certificate ownCert = getOwnCertificate();
 
@@ -162,9 +157,8 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	@Override
 	public SormasToSormasEncryptedDataDto signAndEncrypt(Object entities, String recipientId) throws SormasToSormasException {
 		try {
-			OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerAccessData();
 			byte[] encryptedData = cipher(Mode.ENCRYPTION, objectMapper.writeValueAsBytes(entities), recipientId);
-			return new SormasToSormasEncryptedDataDto(serverAccessData.getId(), encryptedData);
+			return new SormasToSormasEncryptedDataDto(sormasToSormasConfig.getId(), encryptedData);
 		} catch (Exception e) {
 			LOGGER.error("Could not sign and encrypt data", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasEncrypt));
@@ -174,16 +168,12 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	@Override
 	public <T> T decryptAndVerify(SormasToSormasEncryptedDataDto encryptedData, Class<T> dataType) throws SormasToSormasException {
 		try {
-			byte[] decryptedData = cipher(Mode.DECRYPTION, encryptedData.getData(), encryptedData.getOrganizationId());
+			byte[] decryptedData = cipher(Mode.DECRYPTION, encryptedData.getData(), encryptedData.getSenderId());
 			return objectMapper.readValue(decryptedData, dataType);
 		} catch (Exception e) {
 			LOGGER.error("Could not decrypt and verify data", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDecrypt));
 		}
-	}
-
-	private String getOrganizationId() {
-		return serverAccessDataService.getServerAccessData().getId();
 	}
 
 	@LocalBean

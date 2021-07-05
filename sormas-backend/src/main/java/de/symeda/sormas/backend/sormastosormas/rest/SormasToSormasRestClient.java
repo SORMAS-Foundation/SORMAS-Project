@@ -31,9 +31,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import de.symeda.sormas.api.SormasToSormasConfig;
-import de.symeda.sormas.backend.sormastosormas.access.OrganizationServerAccessData;
-import de.symeda.sormas.backend.sormastosormas.access.ServerAccessDataService;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +40,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
@@ -50,6 +48,8 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.access.SormasServerReference;
+import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.rest.auth.Oidc;
 import de.symeda.sormas.backend.util.ClientHelper;
 
@@ -58,17 +58,17 @@ public class SormasToSormasRestClient {
 	public static final String SORMAS_REST_URL_TEMPLATE = "https://%s" + SORMAS_REST_PATH + "%s";
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasRestClient.class);
 
-	private final ServerAccessDataService serverAccessDataService;
+	private final SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 	private final SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb;
 	private final SormasToSormasConfig sormasToSormasConfig;
 
 	private final ObjectMapper mapper;
 
 	public SormasToSormasRestClient(
-		ServerAccessDataService serverAccessDataService,
+		SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
 		SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
 		SormasToSormasConfig sormasToSormasConfig) {
-		this.serverAccessDataService = serverAccessDataService;
+		this.sormasToSormasDiscoveryService = sormasToSormasDiscoveryService;
 		this.sormasToSormasEncryptionEjb = sormasToSormasEncryptionEjb;
 		this.sormasToSormasConfig = sormasToSormasConfig;
 
@@ -108,7 +108,7 @@ public class SormasToSormasRestClient {
 	}
 
 	private Invocation.Builder buildRestClient(String receiverId, String endpoint) throws SormasToSormasException {
-		OrganizationServerAccessData targetServerAccessData = serverAccessDataService.getServerListItemById(receiverId)
+		SormasServerReference targetServerAccessData = sormasToSormasDiscoveryService.getSormasServerReferenceById(receiverId)
 			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 
 		String host = targetServerAccessData.getHostName();
@@ -129,10 +129,10 @@ public class SormasToSormasRestClient {
 				entity = Entity.entity(mapper.writeValueAsString(encryptedBody), MediaType.APPLICATION_JSON_TYPE);
 			} else {
 				// no sender org id in the encrypted DTP, therefore, we pass it as query parameter
-				String onwOrgId = this.serverAccessDataService.getServerAccessData().getId();
+				String ownId = sormasToSormasConfig.getId();
 
 				// safely append the parameter
-				endpoint = UriBuilder.fromUri(endpoint).queryParam(SormasToSormasConfig.ORG_ID_REQUEST_PARAM, onwOrgId).build().toString();
+				endpoint = UriBuilder.fromUri(endpoint).queryParam(SormasToSormasConfig.ORG_ID_REQUEST_PARAM, ownId).build().toString();
 			}
 
 			Invocation.Builder invocation = buildRestClient(receiverId, endpoint);

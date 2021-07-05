@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -507,10 +508,15 @@ public class StartupShutdownService {
 
 	private void createOrUpdateSormasToSormasUser() {
 		if (sormasToSormasFacadeEjb.isFeatureConfigured()) {
+			// password is never used, just to prevent login as this user
+			byte[] pwd = new byte[64];
+			SecureRandom rnd = new SecureRandom();
+			rnd.nextBytes(pwd);
+
 			createOrUpdateDefaultUser(
 				Collections.singleton(UserRole.SORMAS_TO_SORMAS_CLIENT),
 				DefaultUserHelper.SORMAS_TO_SORMAS_USER_NAME,
-				DefaultUserHelper.SORMAS_TO_SORMAS_PASSWORD,
+				new String(pwd),
 				"Sormas to Sormas",
 				"Client");
 		}

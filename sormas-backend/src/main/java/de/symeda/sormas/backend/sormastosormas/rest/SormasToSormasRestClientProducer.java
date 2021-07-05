@@ -15,19 +15,19 @@
 
 package de.symeda.sormas.backend.sormastosormas.rest;
 
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import javax.enterprise.inject.Produces;
 
 import de.symeda.sormas.api.SormasToSormasConfig;
-import de.symeda.sormas.backend.sormastosormas.access.ServerAccessDataService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 
 public class SormasToSormasRestClientProducer {
 
 	@Produces
 	public SormasToSormasRestClient sormasToSormasClient(
-		ServerAccessDataService serverAccessDataService,
+		SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
 		SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
 		SormasToSormasConfig sormasToSormasConfig) {
-		return new SormasToSormasRestClient(serverAccessDataService, sormasToSormasEncryptionEjb, sormasToSormasConfig);
+		return new SormasToSormasRestClient(sormasToSormasDiscoveryService, sormasToSormasEncryptionEjb, sormasToSormasConfig);
 	}
 }

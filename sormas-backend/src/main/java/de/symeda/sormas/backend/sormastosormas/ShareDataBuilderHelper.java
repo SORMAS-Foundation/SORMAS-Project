@@ -23,6 +23,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -49,8 +50,6 @@ import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.access.OrganizationServerAccessData;
-import de.symeda.sormas.backend.sormastosormas.access.ServerAccessDataService;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -64,7 +63,7 @@ public class ShareDataBuilderHelper {
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@Inject
-	private ServerAccessDataService serverAccessDataService;
+	private SormasToSormasConfig sormasToSormasConfig;
 	@EJB
 	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
 	@EJB
@@ -116,9 +115,8 @@ public class ShareDataBuilderHelper {
 	}
 
 	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, SormasToSormasOptionsDto options) {
-		OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerAccessData();
 		SormasToSormasOriginInfoDto sormasToSormasOriginInfo = new SormasToSormasOriginInfoDto();
-		sormasToSormasOriginInfo.setOrganizationId(serverAccessData.getId());
+		sormasToSormasOriginInfo.setOrganizationId(sormasToSormasConfig.getId());
 		sormasToSormasOriginInfo.setSenderName(String.format("%s %s", user.getFirstName(), user.getLastName()));
 		sormasToSormasOriginInfo.setSenderEmail(user.getUserEmail());
 		sormasToSormasOriginInfo.setSenderPhoneNumber(user.getPhone());

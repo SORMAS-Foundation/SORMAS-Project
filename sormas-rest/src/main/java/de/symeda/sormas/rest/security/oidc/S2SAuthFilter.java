@@ -53,11 +53,9 @@ public class S2SAuthFilter implements ContainerRequestFilter {
 			ContainerRequest cr = (ContainerRequest) requestContext;
 			cr.bufferEntity();
 			SormasToSormasEncryptedDataDto dto = cr.readEntity(SormasToSormasEncryptedDataDto.class);
-			orgIdSender = dto.getOrganizationId();
+			orgIdSender = dto.getSenderId();
 		} else {
-			orgIdSender = requestContext.getUriInfo()
-				.getQueryParameters()
-				.getFirst(SormasToSormasConfig.ORG_ID_REQUEST_PARAM);
+			orgIdSender = requestContext.getUriInfo().getQueryParameters().getFirst(SormasToSormasConfig.ORG_ID_REQUEST_PARAM);
 		}
 		try {
 			if (!isValidToken(token, orgIdSender)) {

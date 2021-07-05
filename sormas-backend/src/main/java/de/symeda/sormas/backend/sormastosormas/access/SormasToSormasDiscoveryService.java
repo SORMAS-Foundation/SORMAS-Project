@@ -38,15 +38,15 @@ import io.lettuce.core.SslOptions;
 import io.lettuce.core.SslVerifyMode;
 import io.lettuce.core.api.sync.RedisCommands;
 
-public class ServerAccessDataService {
+public class SormasToSormasDiscoveryService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServerAccessDataService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasDiscoveryService.class);
 
 	private final SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
 	private final ConfigFacadeEjbLocal configFacadeEjb;
 	private final SormasToSormasConfig sormasToSormasConfig;
 
-	public ServerAccessDataService(
+	public SormasToSormasDiscoveryService(
 		SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
 		ConfigFacadeEjbLocal configFacadeEjb,
 		SormasToSormasConfig sormasToSormasConfig) {
@@ -56,7 +56,7 @@ public class ServerAccessDataService {
 	}
 
 	private RedisCommands<String, String> createRedisConnection() {
-		String[] redis = configFacadeEjb.getKvRedisHost().split(":");
+		String[] redis = configFacadeEjb.getCentralRedisHost().split(":");
 
 		RedisURI uri = RedisURI.Builder.redis(redis[0], Integer.parseInt(redis[1]))
 			.withAuthentication(sormasToSormasConfig.getRedisClientName(), sormasToSormasConfig.getRedisClientPassword())
@@ -69,9 +69,9 @@ public class ServerAccessDataService {
 			sslOptions = SslOptions.builder()
 				.jdkSslProvider()
 				.keystore(
-					Paths.get(configFacadeEjb.getKvRedisKeystorePath()).toUri().toURL(),
-					configFacadeEjb.getKvRedisKeystorePasswor().toCharArray())
-				.truststore(Paths.get(configFacadeEjb.getKvRedisTruststorePath()).toUri().toURL(), configFacadeEjb.getKvRedisTruststorePassword())
+					Paths.get(configFacadeEjb.getCentralRedisKeystorePath()).toUri().toURL(),
+					configFacadeEjb.getCentralRedisKeystorePassword().toCharArray())
+				.truststore(Paths.get(configFacadeEjb.getCentralRedisTruststorePath()).toUri().toURL(), configFacadeEjb.getCentralRedisTruststorePassword())
 				.build();
 		} catch (MalformedURLException e) {
 			LOGGER.error(String.format("Could not load key material to connect to redis: %s", e));
@@ -84,41 +84,35 @@ public class ServerAccessDataService {
 		return redisClient.connect().sync();
 	}
 
-	public OrganizationServerAccessData getServerAccessData() {
+	private SormasServerReference buildSormasServerReference(String id, Map<String, String> entry) {
+		return new SormasServerReference(id, entry.get("name"), entry.get("hostName"));
+	}
+
+	public Optional<SormasServerReference> getSormasServerReferenceById(String id) {
 		if (!sormasToSormasFacadeEjb.isFeatureConfigured()) {
 			LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
-			return null;
+			return Optional.empty();
 		}
 
 		try {
 			RedisCommands<String, String> redis = createRedisConnection();
 			if (redis == null) {
 				LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
-				return null;
+				return Optional.empty();
 			}
 
-			Map<String, String> serverAccess =
-				redis.hgetall(String.format(sormasToSormasConfig.getKeyPrefixTemplate(), sormasToSormasConfig.getId()));
-			return buildServerAccessData(sormasToSormasConfig.getId(), serverAccess);
+			Map<String, String> serverAccess = redis.hgetall(String.format(sormasToSormasConfig.getKeyPrefixTemplate(), id));
+			return Optional.of(buildSormasServerReference(id, serverAccess));
 
 		} catch (Exception e) {
 			LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 			LOGGER.error("Unexpected error while reading sormas to sormas server access data", e);
-			return null;
+			return Optional.empty();
 		}
 	}
 
-	public Optional<OrganizationServerAccessData> getServerListItemById(String id) {
-		return getOrganizationList().stream().filter(i -> i.getId().equals(id)).findFirst();
-	}
-
-	private OrganizationServerAccessData buildServerAccessData(String id, Map<String, String> entry) {
-		return new OrganizationServerAccessData(id, entry.get("name"), entry.get("hostName"));
-	}
-
-	public List<OrganizationServerAccessData> getOrganizationList() {
-		String ownOrganizationId = getServerAccessData().getId();
-		if (ownOrganizationId == null) {
+	public List<SormasServerReference> getOtherSormasServerReferences() {
+		if (sormasToSormasConfig.getId() == null) {
 			return Collections.emptyList();
 		}
 
@@ -134,12 +128,12 @@ public class ServerAccessDataService {
 			// remove own Id from the set
 			keys.remove(String.format(sormasToSormasConfig.getKeyPrefixTemplate(), sormasToSormasConfig.getId()));
 
-			List<OrganizationServerAccessData> list = new ArrayList<>();
-			for (String key : keys) {
+			List<SormasServerReference> list = new ArrayList<>();
+			keys.forEach(key -> {
 				Map<String, String> hgetAll = redis.hgetall(key);
-				OrganizationServerAccessData organizationServerAccessData = buildServerAccessData(key.split(":")[1], hgetAll);
-				list.add(organizationServerAccessData);
-			}
+				SormasServerReference sormasServerReference = buildSormasServerReference(key.split(":")[1], hgetAll);
+				list.add(sormasServerReference);
+			});
 			return list;
 		} catch (Exception e) {
 			LOGGER.error("Unexpected error while reading sormas to sormas server list", e);
