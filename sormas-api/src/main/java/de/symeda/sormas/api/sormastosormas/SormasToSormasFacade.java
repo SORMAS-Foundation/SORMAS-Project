@@ -20,6 +20,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 
 @Remote
 public interface SormasToSormasFacade {

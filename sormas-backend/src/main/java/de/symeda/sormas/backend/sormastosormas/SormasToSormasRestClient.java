@@ -22,7 +22,6 @@ import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.ws.rs.HttpMethod;
@@ -47,7 +46,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.ValidationErrors;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.common.StartupShutdownService;
 import de.symeda.sormas.backend.util.ClientHelper;
 
@@ -137,24 +136,29 @@ public class SormasToSormasRestClient {
 		int statusCode = response.getStatus();
 		if (statusCode != HttpStatus.SC_NO_CONTENT && statusCode != HttpStatus.SC_OK) {
 			String errorMessage = response.readEntity(String.class);
-			String errorProperty = null;
+			String errorI18nTag = null;
 			List<ValidationErrors> errors = null;
+			Object[] args = null;
 
 			try {
 				SormasToSormasErrorResponse errorResponse = mapper.readValue(errorMessage, SormasToSormasErrorResponse.class);
-				errorMessage = Optional.ofNullable(errorResponse.getI18nTag()).orElse(I18nProperties.getString(Strings.errorSormasToSormasShare));
-				errorProperty = Optional.ofNullable(errorResponse.getI18nTag()).orElse(Strings.errorSormasToSormasShare);
+
+				errorMessage = Optional.ofNullable(errorResponse.getMessage()).orElse(I18nProperties.getString(Strings.errorSormasToSormasShare));
+				errorI18nTag = Optional.ofNullable(errorResponse.getI18nTag()).orElse(Strings.errorSormasToSormasShare);
 				errors = errorResponse.getErrors();
+				args = errorResponse.getArgs();
 			} catch (IOException e) {
 				// do nothing, keep the unparsed response as error message
 			}
+
 
 			if (statusCode != HttpStatus.SC_BAD_REQUEST) {
 				// don't log validation errors, will be displayed on the UI
 				LOGGER.error("Share request failed: {}; {}", statusCode, errorMessage);
 			}
-			throw new SormasToSormasException(errorMessage, errorProperty, errors);
+			throw new SormasToSormasException(errorMessage, errorI18nTag, errors, args);
 		}
 		return responseType != null ? response.readEntity(responseType) : null;
+
 	}
 }

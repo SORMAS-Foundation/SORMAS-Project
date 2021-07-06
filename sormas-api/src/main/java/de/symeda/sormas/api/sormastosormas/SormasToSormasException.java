@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.sormastosormas;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,9 +39,9 @@ public class SormasToSormasException extends Exception implements SormasToSormas
 		this.args = args;
 	}
 
-	public SormasToSormasException(String message, String languageKey, List<ValidationErrors> errors, Object... args) {
+	public SormasToSormasException(String message, String i18nTag, List<ValidationErrors> errors, Object... args) {
 		super(message);
-		this.i18nTag = languageKey;
+		this.i18nTag = i18nTag;
 		this.args = args;
 		this.errors = errors;
 	}

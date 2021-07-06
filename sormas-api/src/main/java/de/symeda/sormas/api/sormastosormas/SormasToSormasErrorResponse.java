@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+
 import java.io.Serializable;
 import java.util.List;
 

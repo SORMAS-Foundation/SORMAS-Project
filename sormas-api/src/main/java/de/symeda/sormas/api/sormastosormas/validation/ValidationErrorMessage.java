@@ -16,10 +16,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas;
+package de.symeda.sormas.api.sormastosormas.validation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasI18nMessage;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.Serializable;
