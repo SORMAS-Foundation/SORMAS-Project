@@ -551,12 +551,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	private void updateFacility() {
-		final DistrictReferenceDto district;
-		final CommunityReferenceDto community;
 
 		if (UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles()) == JurisdictionLevel.HEALTH_FACILITY) {
 			return;
 		}
+
+		final DistrictReferenceDto district;
+		final CommunityReferenceDto community;
 
 		if (Boolean.TRUE.equals(differentPlaceOfStayJurisdiction.getValue())) {
 			district = (DistrictReferenceDto) districtCombo.getValue();
