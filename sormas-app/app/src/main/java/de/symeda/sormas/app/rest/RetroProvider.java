@@ -15,10 +15,12 @@
 
 package de.symeda.sormas.app.rest;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,12 +29,10 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
-
-import androidx.fragment.app.FragmentActivity;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
@@ -86,6 +86,7 @@ public final class RetroProvider {
 
 	private InfoFacadeRetro infoFacadeRetro;
 	private CaseFacadeRetro caseFacadeRetro;
+	private ImmunizationFacadeRetro immunizationFacadeRetro;
 	private PersonFacadeRetro personFacadeRetro;
 	private CommunityFacadeRetro communityFacadeRetro;
 	private DistrictFacadeRetro districtFacadeRetro;
@@ -476,6 +477,19 @@ public final class RetroProvider {
 			}
 		}
 		return instance.caseFacadeRetro;
+	}
+
+	public static ImmunizationFacadeRetro getImmunizationFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.immunizationFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.immunizationFacadeRetro == null) {
+					instance.immunizationFacadeRetro = instance.retrofit.create(ImmunizationFacadeRetro.class);
+				}
+			}
+		}
+		return instance.immunizationFacadeRetro;
 	}
 
 	public static PersonFacadeRetro getPersonFacade() throws NoConnectionException {

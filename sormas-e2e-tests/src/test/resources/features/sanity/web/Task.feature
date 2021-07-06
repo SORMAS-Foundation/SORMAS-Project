@@ -1,4 +1,4 @@
-@Sanity @Task
+@UI @Sanity @Task
 Feature: Tasks functionalities
 
   Scenario: Check the edit of task from Case

@@ -170,10 +170,10 @@ public class EditEventSteps implements En {
     When(
         "^I am checking event group name and id is correctly displayed$",
         () -> {
-          final String eventGroupUuid = groupEvent.getUuid();
-          final String eventGroupName = groupEvent.getName();
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventGroupUuid));
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getGroupEventName(eventGroupName));
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              getByEventUuid(groupEvent.getUuid()));
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              getGroupEventName(groupEvent.getName()));
         });
 
     When(

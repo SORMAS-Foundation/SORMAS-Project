@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -107,9 +108,19 @@ public class GeocodingService {
 
 		Client client = ClientHelper.newBuilderWithProxy().connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).build();
 		WebTarget target = client.target(targetUrl);
-		Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
-		String responseText = readResponseAsText(response);
+		Response response = null;
 
+		// prevent timeouts on invalid addresses from causing errors
+		try {
+			response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
+		} catch (ProcessingException exception) {
+			if (logger.isWarnEnabled()) {
+				logger.warn("geosearch query '{}' threw Exception with cause {}", query, exception.getCause().toString());
+			}
+			return null;
+		}
+
+		String responseText = readResponseAsText(response);
 		if (response.getStatusInfo().getFamily() != Family.SUCCESSFUL) {
 			if (logger.isErrorEnabled()) {
 				logger.error("geosearch query '{}' returned {} - {}:\n{}", query, response.getStatus(), response.getStatusInfo(), responseText);

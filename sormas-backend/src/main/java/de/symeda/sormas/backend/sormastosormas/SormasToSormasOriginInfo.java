@@ -59,6 +59,12 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private boolean ownershipHandedOver;
 
+	private boolean withAssociatedContacts;
+
+	private boolean withSamples;
+
+	private boolean withEventParticipants;
+
 	private String comment;
 
 	private SormasToSormasShareRequest request;
@@ -114,6 +120,33 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
+	@Column
+	public boolean isWithAssociatedContacts() {
+		return withAssociatedContacts;
+	}
+
+	public void setWithAssociatedContacts(boolean withContacts) {
+		this.withAssociatedContacts = withContacts;
+	}
+
+	@Column
+	public boolean isWithSamples() {
+		return withSamples;
+	}
+
+	public void setWithSamples(boolean withSamples) {
+		this.withSamples = withSamples;
+	}
+
+	@Column
+	public boolean isWithEventParticipants() {
+		return withEventParticipants;
+	}
+
+	public void setWithEventParticipants(boolean withEventParticipants) {
+		this.withEventParticipants = withEventParticipants;
 	}
 
 	@OneToOne(mappedBy = "originInfo")

@@ -58,6 +58,9 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+		target.setWithAssociatedContacts(source.isWithAssociatedContacts());
+		target.setWithSamples(source.isWithSamples());
+		target.setWithEventParticipants(source.isWithEventParticipants());
 		target.setComment(source.getComment());
 
 		return target;
@@ -77,6 +80,9 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
+		target.setWithAssociatedContacts(source.isWithAssociatedContacts());
+		target.setWithSamples(source.isWithSamples());
+		target.setWithEventParticipants(source.isWithEventParticipants());
 		target.setComment(source.getComment());
 
 		return target;

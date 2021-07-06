@@ -22,6 +22,17 @@ import org.openqa.selenium.By;
 
 public class CaseDirectoryPage {
   public static final By NEW_CASE_BUTTON = By.cssSelector("div#caseNewCase");
+  public static final By CASE_DIRECTORY_DETAILED_RADIOBUTTON =
+      By.cssSelector("div#casesViewSwitcher span:nth-child(2) > label");
+  public static final By CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT =
+      By.cssSelector("input#nameUuidEpidNumberLike");
+  public static final By CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON =
+      By.cssSelector("div#actionApplyFilters");
+  public static final By CASE_DETAILED_TABLE_DATA = By.tagName("td");
+  public static final By CASE_DETAILED_COLUMN_HEADERS =
+      By.cssSelector("thead .v-grid-column-default-header-content");
+  public static final By CASE_DETAILED_TABLE_ROWS =
+      By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By FIRST_CASE_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT =
       By.cssSelector("input#nameUuidEpidNumberLike");
@@ -48,4 +59,6 @@ public class CaseDirectoryPage {
       By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(13)");
   public static final By GRID_RESULTS_DATE_OF_REPORT =
       By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(15)");
+  public static final By CASE_CLASSIFICATION_COLUMNS =
+      By.cssSelector("[role=rowgroup] tr>td:nth-child(7)");
 }

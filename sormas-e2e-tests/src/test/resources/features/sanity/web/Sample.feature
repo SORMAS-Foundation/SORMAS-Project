@@ -1,4 +1,4 @@
-@Sanity @Sample
+@UI @Sanity @Sample
 Feature: Sample Functionalities
 
   Scenario: Edit a new Sample

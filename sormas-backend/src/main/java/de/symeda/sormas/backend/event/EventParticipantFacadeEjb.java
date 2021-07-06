@@ -352,7 +352,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		final CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
 		final Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		final EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
-		EventParticipantJoins<EventParticipant> joins = new EventParticipantJoins<>(eventParticipant);
+		EventParticipantJoins<EventParticipant> joins = (EventParticipantJoins<EventParticipant>) queryContext.getJoins();
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
@@ -384,6 +384,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			inJurisdictionSelector,
 			inJurisdictionOrOwnedSelector);
 		cq.groupBy(
+			eventParticipant.get(EventParticipant.ID),
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.UUID),
 			resultingCase.get(Case.UUID),
@@ -395,6 +396,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
 			vaccinationInfoJoin.get(VaccinationInfo.VACCINATION),
+			joins.getEventParticipantReportingUser().get(User.ID),
 			joins.getEventParticipantReportingUser().get(User.UUID),
 			inJurisdictionSelector,
 			inJurisdictionOrOwnedSelector);
