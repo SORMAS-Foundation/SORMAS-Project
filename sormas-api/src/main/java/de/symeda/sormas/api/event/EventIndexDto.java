@@ -105,7 +105,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private UserReferenceDto reportingUser;
 	private UserReferenceDto responsibleUser;
 	private String regionUuid;
-	private boolean isInJurisdiction;
+	private boolean isInJurisdictionOrOwned;
 	private EventGroupsIndexDto eventGroups;
 
 	private Date surveillanceToolLastShareDate;
@@ -151,7 +151,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String responsibleUserUuid,
 		String responsibleUserFirstName,
 		String responsibleUserLastName,
-		boolean isInJurisdiction,
+		boolean isInJurisdictionOrOwned,
 		Date changeDate) {
 
 		this.id = id;
@@ -179,7 +179,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.reportDateTime = reportDateTime;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
 		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null);
-		this.isInJurisdiction = isInJurisdiction;
+		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
 		this.regionUuid = regionUuid;
 	}
 
@@ -495,8 +495,8 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		return result;
 	}
 
-	public boolean getInJurisdiction() {
-		return isInJurisdiction;
+	public boolean getInJurisdictionOrOwned() {
+		return isInJurisdictionOrOwned;
 	}
 
 	public static class EventIndexLocation implements Serializable {

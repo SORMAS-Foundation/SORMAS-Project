@@ -98,6 +98,19 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		sample.setReferredTo(referredSample.toReference());
 		creator.createAdditionalTest(sample.toReference());
 		creator.createAdditionalTest(sample.toReference());
+		creator.createPathogenTest(sample.toReference(), caze);
+		PathogenTestDto test = creator.createPathogenTest(
+			sample.toReference(),
+			PathogenTestType.CQ_VALUE_DETECTION,
+			caze.getDisease(),
+			new Date(),
+			rdcf.facility,
+			caze.getReportingUser(),
+			PathogenTestResultType.PENDING,
+			"",
+			false);
+		test.setCqValue(1.5F);
+		getPathogenTestFacade().savePathogenTest(test);
 
 		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null);
 
@@ -105,6 +118,9 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		// First sample should have an additional test
 		assertEquals(AdditionalTestingStatus.PERFORMED, sampleIndexDtos.get(1).getAdditionalTestingStatus());
+
+		assertEquals(PathogenTestType.CQ_VALUE_DETECTION, sampleIndexDtos.get(1).getTypeOfLastTest());
+		assertTrue(sampleIndexDtos.get(1).getLastTestCqValue().equals(1.5F));
 	}
 
 	@Test
@@ -272,8 +288,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		creator.createAdditionalTest(sample.toReference());
 
 		CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact);
-		caseDataDto.setRegion(new RegionReferenceDto(rdcf.region.getUuid(), null, null));
-		caseDataDto.setDistrict(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
+		caseDataDto.setResponsibleRegion(new RegionReferenceDto(rdcf.region.getUuid(), null, null));
+		caseDataDto.setResponsibleDistrict(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		caseDataDto.setFacilityType(rdcf.facility.getType());
 		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid(), null, null));
 		caseDataDto.setReportingUser(user.toReference());
@@ -400,41 +416,41 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator
-				.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		PersonDto secondCazePerson = creator.createPerson("SecondCase", "SecondPerson");
 		CaseDataDto secondCaze = creator.createCase(
-				user.toReference(),
-				secondCazePerson.toReference(),
-				Disease.ACUTE_VIRAL_HEPATITIS,
-				CaseClassification.NOT_CLASSIFIED,
-				InvestigationStatus.PENDING,
-				new Date(),
-				rdcf);
+			user.toReference(),
+			secondCazePerson.toReference(),
+			Disease.ACUTE_VIRAL_HEPATITIS,
+			CaseClassification.NOT_CLASSIFIED,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
 		SampleDto thirdSample =
-				creator.createSample(secondCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+			creator.createSample(secondCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 		SampleDto forthSample =
-				creator.createSample(secondCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+			creator.createSample(secondCaze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 		PathogenTestDto secondSamplePathogenTest = creator.createPathogenTest(
-				thirdSample.toReference(),
-				PathogenTestType.RAPID_TEST,
-				secondCaze.getDisease(),
-				new Date(),
-				rdcf.facility,
-				user.toReference(),
-				PathogenTestResultType.INDETERMINATE,
-				"Indeterminate",
-				true);
+			thirdSample.toReference(),
+			PathogenTestType.RAPID_TEST,
+			secondCaze.getDisease(),
+			new Date(),
+			rdcf.facility,
+			user.toReference(),
+			PathogenTestResultType.INDETERMINATE,
+			"Indeterminate",
+			true);
 		PathogenTestDto thirdSamplePathogenTest = creator.createPathogenTest(
-				forthSample.toReference(),
-				PathogenTestType.CQ_VALUE_DETECTION,
-				secondCaze.getDisease(),
-				new Date(),
-				rdcf.facility,
-				user.toReference(),
-				PathogenTestResultType.NOT_DONE,
-				"Not done",
-				true);
+			forthSample.toReference(),
+			PathogenTestType.CQ_VALUE_DETECTION,
+			secondCaze.getDisease(),
+			new Date(),
+			rdcf.facility,
+			user.toReference(),
+			PathogenTestResultType.NOT_DONE,
+			"Not done",
+			true);
 		AdditionalTestDto secondSampleAdditionalTest = creator.createAdditionalTest(thirdSample.toReference());
 		AdditionalTestDto thirdSampleAdditionalTest = creator.createAdditionalTest(forthSample.toReference());
 

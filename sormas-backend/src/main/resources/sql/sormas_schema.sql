@@ -7434,6 +7434,105 @@ ALTER TABLE cases_history ADD COLUMN dontsharewithreportingtool boolean DEFAULT 
 
 INSERT INTO schema_version (version_number, comment) VALUES (377, 'Add a checkbox to avoid sending this case to SurvNet #5324');
 
+-- 2021-06-22 Set contact with source case known for all existing cases #5841
+UPDATE epidata SET contactwithsourcecaseknown = 'YES' FROM cases WHERE cases.epidata_id = epidata.id AND exists (SELECT 1 FROM contact WHERE contact.resultingcase_id = cases.id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (378, 'Set contact with source case known for all existing cases #5841');
+
+-- 2021-06-22 Refine the split of jurisdiction and place of stay #5852
+DO $$
+    DECLARE _case RECORD;
+    BEGIN
+        FOR _case IN SELECT * FROM cases WHERE responsibleregion_id IS NULL
+                                           AND (reportingdistrict_id IS NULL OR reportingdistrict_id = district_id)
+            LOOP
+                UPDATE cases
+                    SET responsibleregion_id = _case.region_id,
+                        responsibledistrict_id = _case.district_id,
+                        responsiblecommunity_id = _case.community_id,
+                        region_id = null,
+                        district_id = null,
+                        community_id = null,
+                        reportingdistrict_id = null
+                where id = _case.id;
+            END LOOP;
+
+        FOR _case IN SELECT * FROM cases WHERE responsibleregion_id IS NULL AND reportingdistrict_id IS NOT NULL
+            LOOP
+                UPDATE cases
+                SET responsibleregion_id = (SELECT region_id from district where id = _case.reportingdistrict_id),
+                    responsibledistrict_id = _case.reportingdistrict_id,
+                    reportingdistrict_id = null
+                where id = _case.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE cases DROP COLUMN reportingdistrict_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (379, 'Refine the split of jurisdiction and place of stay #5852');
+
+-- 2021-06-25 [Sormas2Sormas] Returning cases without contacts or samples leaves contacts and samples disabled in both instances #5562
+ALTER TABLE sormastosormasorigininfo
+    ADD COLUMN withassociatedcontacts boolean DEFAULT false,
+    ADD COLUMN withsamples boolean DEFAULT false,
+    ADD COLUMN witheventparticipants boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (380, '[Sormas2Sormas] Returning cases without contacts or samples leaves contacts and samples disabled in both instances #5562');
+
+-- 2021-06-29 Immunizations I: Entities, DTOs and backend logic #4756
+CREATE TABLE immunization (
+                        id bigint not null,
+                        uuid varchar(36) not null unique,
+                        changedate timestamp not null,
+                        creationdate timestamp not null,
+                        disease varchar(255) not null,
+                        person_id bigint not null,
+                        reportdate timestamp not null,
+                        reportinguser_id bigint not null,
+                        archived boolean DEFAULT false,
+                        immunizationstatus varchar(255) not null,
+                        meansofimmunization varchar(255) not null,
+                        meansOfImmunizationDetails varchar(512),
+                        immunizationmanagementstatus varchar(255) not null,
+                        externalid varchar(255) not null,
+                        responsibleregion_id bigint,
+                        responsibledistrict_id bigint,
+                        responsiblecommunity_id bigint,
+                        country_id bigint,
+                        startdate timestamp,
+                        enddate timestamp,
+                        numberofdoses int,
+                        previousinfection varchar(255),
+                        lastinfectiondate timestamp,
+                        additionaldetails varchar(512),
+                        positivetestresultdate timestamp not null,
+                        recoverydate timestamp not null,
+                        relatedcase_id bigint,
+                        deleted boolean DEFAULT false,
+                        sys_period tstzrange not null,
+                        primary key(id));
+ALTER TABLE immunization OWNER TO sormas_user;
+
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_person_id FOREIGN KEY (person_id) REFERENCES person(id);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_responsibleregion_id FOREIGN KEY (responsibleregion_id) REFERENCES region(id);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_responsibledistrict_id FOREIGN KEY (responsibledistrict_id) REFERENCES district(id);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_responsiblecommunity_id FOREIGN KEY (responsiblecommunity_id) REFERENCES community(id);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_country_id FOREIGN KEY (country_id) REFERENCES country(id);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_relatedcase_id FOREIGN KEY (relatedcase_id) REFERENCES cases(id);
+
+CREATE INDEX IF NOT EXISTS idx_immunization_deleted ON immunization (deleted);
+
+CREATE TABLE immunization_history (LIKE immunization);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON immunization
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'immunization_history', true);
+ALTER TABLE immunization_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (381, 'Immunizations I: Entities, DTOs and backend logic #4756');
+
+-- 2021-06-25 [DEMIS2SORMAS] Handle New Profile: Allow LabMessages to lead to several PathogenTestResults
 ALTER TABLE labmessage RENAME COLUMN testlabname TO labname;
 ALTER TABLE labmessage RENAME COLUMN testlabexternalid TO labexternalid;
 ALTER TABLE labmessage RENAME COLUMN testlabpostalcode TO labpostalcode;
@@ -7500,7 +7599,6 @@ ALTER TABLE labmessage_history
     DROP COLUMN testresultverified,
     DROP COLUMN testresulttext;
 
-INSERT INTO schema_version (version_number, comment) VALUES (378, 'Introduce testreport entity #5539');
-
+INSERT INTO schema_version (version_number, comment) VALUES (382, 'Introduce testreport entity #5539');
 
 -- *** Insert new sql commands BEFORE this line ***

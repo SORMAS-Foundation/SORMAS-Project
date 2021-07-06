@@ -274,7 +274,11 @@ public class EventFacadeEjb implements EventFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventIndexDto> cq = cb.createQuery(EventIndexDto.class);
 		Root<Event> event = cq.from(Event.class);
-		EventJoins<Event> eventJoins = new EventJoins<>(event);
+
+		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
+
+		EventJoins<Event> eventJoins = (EventJoins<Event>) eventQueryContext.getJoins();
+
 		Join<Event, Location> location = eventJoins.getLocation();
 		Join<Location, Region> region = eventJoins.getRegion();
 		Join<Location, District> district = eventJoins.getDistrict();
@@ -321,7 +325,7 @@ public class EventFacadeEjb implements EventFacade {
 			responsibleUser.get(User.UUID),
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
-			JurisdictionHelper.jurisdictionSelector(cb, eventService.inJurisdictionOrOwned(cb, eventJoins)),
+			JurisdictionHelper.booleanSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)),
 			event.get(Event.CHANGE_DATE));
 
 		Predicate filter = null;
@@ -331,7 +335,7 @@ public class EventFacadeEjb implements EventFacade {
 				filter = eventService.createUserFilter(cb, cq, event);
 			}
 
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, eventQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -559,7 +563,8 @@ public class EventFacadeEjb implements EventFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventExportDto> cq = cb.createQuery(EventExportDto.class);
 		Root<Event> event = cq.from(Event.class);
-		EventJoins<Event> eventJoins = new EventJoins<>(event);
+		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
+		EventJoins<Event> eventJoins = (EventJoins<Event>) eventQueryContext.getJoins();
 		Join<Event, Location> location = eventJoins.getLocation();
 		Join<Location, Region> region = eventJoins.getRegion();
 		Join<Location, District> district = eventJoins.getDistrict();
@@ -615,13 +620,13 @@ public class EventFacadeEjb implements EventFacade {
 			responsibleUser.get(User.UUID),
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
-			JurisdictionHelper.jurisdictionSelector(cb, eventService.inJurisdictionOrOwned(cb, eventJoins)),
+			JurisdictionHelper.booleanSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)),
 			event.get(Event.EVENT_MANAGEMENT_STATUS));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
 		if (eventCriteria != null) {
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, eventQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 

@@ -26,6 +26,9 @@ public class SormasToSormasOriginInfoDto extends EntityDto {
 	private String senderEmail;
 	private String senderPhoneNumber;
 	private boolean ownershipHandedOver;
+	private boolean withAssociatedContacts;
+	private boolean withSamples;
+	private boolean withEventParticipants;
 	private String comment;
 
 	public SormasToSormasOriginInfoDto() {
@@ -69,6 +72,30 @@ public class SormasToSormasOriginInfoDto extends EntityDto {
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
+	public boolean isWithAssociatedContacts() {
+		return withAssociatedContacts;
+	}
+
+	public void setWithAssociatedContacts(boolean withAssociatedContacts) {
+		this.withAssociatedContacts = withAssociatedContacts;
+	}
+
+	public boolean isWithSamples() {
+		return withSamples;
+	}
+
+	public void setWithSamples(boolean withSamples) {
+		this.withSamples = withSamples;
+	}
+
+	public boolean isWithEventParticipants() {
+		return withEventParticipants;
+	}
+
+	public void setWithEventParticipants(boolean withEventParticipants) {
+		this.withEventParticipants = withEventParticipants;
 	}
 
 	public String getComment() {

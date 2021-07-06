@@ -24,6 +24,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,10 +39,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -61,6 +67,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
@@ -351,7 +358,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		final Root<Sample> sample = cq.from(Sample.class);
 
-		SampleJoins<Sample> joins = new SampleJoins<>(sample);
+
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
+		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
 
 		final Join<Sample, Case> caze = joins.getCaze();
 		final Join<Case, District> caseDistrict = joins.getCaseDistrict();
@@ -381,7 +390,7 @@ public class SampleFacadeEjb implements SampleFacade {
 							.otherwise(eventDistrict.get(District.NAME))));
 
 		cq.distinct(true);
-		
+
 		List<Selection<?>> selections = new ArrayList<>(
 				Arrays.asList(sample.get(Sample.UUID),
 				caze.get(Case.EPID_NUMBER),
@@ -415,7 +424,16 @@ public class SampleFacadeEjb implements SampleFacade {
 				districtSelect,
 				joins.getLab().get(Facility.UUID)));
 
-		selections.addAll(sampleService.getJurisdictionSelections(cb, joins));
+		// Tests count subquery
+		Subquery<Long> testCountSq = cq.subquery(Long.class);
+		Root<PathogenTest> testCountRoot = testCountSq.from(PathogenTest.class);
+		testCountSq.where(
+			cb.equal(testCountRoot.join(PathogenTest.SAMPLE, JoinType.LEFT).get(Sample.ID), sample.get(Sample.ID)),
+			cb.isFalse(testCountRoot.get(PathogenTest.DELETED)));
+		testCountSq.select(cb.countDistinct(testCountRoot.get(PathogenTest.ID)));
+		selections.add(testCountSq.getSelection());
+
+		selections.addAll(sampleService.getJurisdictionSelections(sampleQueryContext));
 		cq.multiselect(selections);
 
 		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
@@ -492,6 +510,36 @@ public class SampleFacadeEjb implements SampleFacade {
 			samples = em.createQuery(cq).getResultList();
 		}
 
+		if (!samples.isEmpty()) {
+			CriteriaQuery<Object[]> testCq = cb.createQuery(Object[].class);
+			Root<PathogenTest> testRoot = testCq.from(PathogenTest.class);
+			Expression<String> sampleIdExpr = testRoot.get(PathogenTest.SAMPLE).get(Sample.UUID);
+
+			Path<Long> testType = testRoot.get(PathogenTest.TEST_TYPE);
+			Path<Date> cqValue = testRoot.get(PathogenTest.CQ_VALUE);
+			testCq.select(cb.array(testType, cqValue, sampleIdExpr));
+
+			testCq.where(
+				cb.isFalse(testRoot.get(PathogenTest.DELETED)),
+				sampleIdExpr.in(samples.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList())));
+			testCq.orderBy(cb.desc(testRoot.get(PathogenTest.CHANGE_DATE)));
+
+			List<Object[]> testList = em.createQuery(testCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+
+			Map<String, Object[]> tests = testList.stream()
+				.filter(distinctByKey(pathogenTest -> pathogenTest[2]))
+				.collect(Collectors.toMap(pathogenTest -> pathogenTest[2].toString(), Function.identity()));
+
+			if (tests != null) {
+				for (SampleIndexDto indexDto : samples) {
+					Optional.ofNullable(tests.get(indexDto.getUuid())).ifPresent(test -> {
+						indexDto.setTypeOfLastTest((PathogenTestType) test[0]);
+						indexDto.setLastTestCqValue((Float) test[1]);
+					});
+				}
+			}
+		}
+
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		Pseudonymizer emptyValuePseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		pseudonymizer
@@ -529,6 +577,11 @@ public class SampleFacadeEjb implements SampleFacade {
 			}, true);
 
 		return samples;
+	}
+
+	public <T> java.util.function.Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+		Set<Object> seen = ConcurrentHashMap.newKeySet();
+		return t -> seen.add(keyExtractor.apply(t));
 	}
 
 	public Page<SampleIndexDto> getIndexPage(SampleCriteria sampleCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
@@ -607,7 +660,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
 		Root<Sample> sampleRoot = cq.from(Sample.class);
 
-		SampleJoins<Sample> joins = new SampleJoins<>(sampleRoot);
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sampleRoot);
+
+		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
 
 		cq.distinct(true);
 
@@ -705,7 +760,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			joins.getLab().get(Facility.UUID),
 			joins.getCaseFacility().get(Facility.UUID)));
 
-		selections.addAll(sampleService.getJurisdictionSelections(cb, joins));
+		selections.addAll(sampleService.getJurisdictionSelections(sampleQueryContext));
 
 		cq.multiselect(selections);
 

@@ -185,12 +185,12 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	}
 
 	@Override
-	public void save(ContinentDto dto) {
-		save(dto, false);
+	public ContinentDto save(ContinentDto dto) {
+		return save(dto, false);
 	}
 
 	@Override
-	public void save(ContinentDto dto, boolean allowMerge) {
+	public ContinentDto save(ContinentDto dto, boolean allowMerge) {
 
 		Continent continent = continentService.getByUuid(dto.getUuid());
 
@@ -209,6 +209,8 @@ public class ContinentFacadeEjb implements ContinentFacade {
 
 		continent = fillOrBuildEntity(dto, continent, true);
 		continentService.ensurePersisted(continent);
+
+		return toDto(continent);
 	}
 
 	@Override

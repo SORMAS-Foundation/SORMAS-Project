@@ -65,6 +65,10 @@ import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
@@ -106,10 +110,8 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -368,13 +370,12 @@ public class TestDataCreator {
 		caze.getSymptoms().setOnsetDate(reportAndOnsetDate);
 		caze.setCaseClassification(caseClassification);
 		caze.setInvestigationStatus(investigationStatus);
-		caze.setRegion(rdcf.region);
-		caze.setDistrict(rdcf.district);
-		caze.setCommunity(rdcf.community);
+		caze.setResponsibleRegion(rdcf.region);
+		caze.setResponsibleDistrict(rdcf.district);
+		caze.setResponsibleCommunity(rdcf.community);
 		caze.setFacilityType(beanTest.getFacilityFacade().getByUuid(rdcf.facility.getUuid()).getType());
 		caze.setHealthFacility(rdcf.facility);
 		caze.setPointOfEntry(rdcf.pointOfEntry);
-		caze.setOutcomeDate(DateHelper.addWeeks(reportAndOnsetDate, 2));
 
 		if (setCustomFields != null) {
 			setCustomFields.accept(caze);
@@ -383,6 +384,32 @@ public class TestDataCreator {
 		caze = beanTest.getCaseFacade().saveCase(caze);
 
 		return caze;
+	}
+
+
+	public ImmunizationDto createImmunization(
+		Disease disease,
+		PersonReferenceDto person,
+		UserReferenceDto reportingUser,
+		ImmunizationStatus immunizationStatus,
+		MeansOfImmunization meansOfImmunization,
+		ImmunizationManagementStatus immunizationManagementStatus,
+		RDCF rdcf) {
+		ImmunizationDto immunization = new ImmunizationDto();
+		immunization.setUuid(DataHelper.createUuid());
+		immunization.setDisease(disease);
+		immunization.setPerson(person);
+		immunization.setReportingUser(reportingUser);
+		immunization.setImmunizationStatus(immunizationStatus);
+		immunization.setMeansOfImmunization(meansOfImmunization);
+		immunization.setImmunizationManagementStatus(immunizationManagementStatus);
+		immunization.setResponsibleRegion(rdcf.region);
+		immunization.setResponsibleDistrict(rdcf.district);
+		immunization.setResponsibleCommunity(rdcf.community);
+
+		immunization.setReportDate(new Date());
+
+		return beanTest.getImmunizationFacade().save(immunization);
 	}
 
 	public ClinicalVisitDto createClinicalVisit(CaseDataDto caze) {

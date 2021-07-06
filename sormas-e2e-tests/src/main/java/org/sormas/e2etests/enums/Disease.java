@@ -49,4 +49,9 @@ public enum Disease {
     Random random = new Random();
     return String.valueOf(Disease.values()[random.nextInt(values().length)]);
   }
+
+  public static String getRandomDiseaseValue() {
+    Random random = new Random();
+    return String.valueOf(Disease.values()[random.nextInt(values().length)].disease);
+  }
 }

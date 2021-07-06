@@ -22,14 +22,14 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
-import de.symeda.sormas.backend.contact.ContactJoins;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.event.EventJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventJoins;
+import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
 public class TaskJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
@@ -42,13 +42,18 @@ public class TaskJurisdictionPredicateValidator extends PredicateJurisdictionVal
         this.currentUser = currentUser;
     }
 
-	public static TaskJurisdictionPredicateValidator of(CriteriaBuilder cb, TaskJoins joins, User currentUser) {
+	public static TaskJurisdictionPredicateValidator of(TaskQueryContext qc, User currentUser) {
 		final List<PredicateJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
 
-		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(cb, new CaseJoins<>(joins.getCaze()), currentUser));
-		associatedJurisdictionValidators.add(ContactJurisdictionPredicateValidator.of(cb, new ContactJoins<>(joins.getContact()), currentUser));
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+		final TaskJoins joins = (TaskJoins) qc.getJoins();
+
 		associatedJurisdictionValidators
-			.add(EventJurisdictionPredicateValidator.of(cb, new EventJoins<>(joins.getEvent()), currentUser));
+			.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze()), currentUser));
+		associatedJurisdictionValidators
+			.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, qc.getQuery(), joins.getContact()), currentUser));
+		associatedJurisdictionValidators
+			.add(EventJurisdictionPredicateValidator.of(new EventQueryContext(cb, qc.getQuery(), joins.getEvent()), currentUser));
 
 		return new TaskJurisdictionPredicateValidator(cb, joins, currentUser, associatedJurisdictionValidators);
 	}

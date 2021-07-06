@@ -94,8 +94,9 @@ public class EditContactPage {
       By.cssSelector(".v-verticallayout [location='contactOfficer'] [role='combobox'] div");
   public static final By GENERAL_COMMENT_TEXT = By.id("additionalDetails");
   public static final By SAVE_EDIT_BUTTON = By.id("commit");
+  public static final By FOLLOW_UP_VISITS = By.id("tab-contacts-visits");
   public static final By CHOOSE_SOURCE_CASE_BUTTON = By.id("contactChooseSourceCase");
-  public static final By DISCARD_POPUP_YES_BUTTON = By.id("actionConfirm");
+  public static final By POPUP_YES_BUTTON = By.id("actionConfirm");
   public static final By SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON = By.id("caseSearchCase");
   public static final By SOURCE_CASE_WINDOW_CASE_INPUT = By.cssSelector(".v-window-wrap input");
   public static final By SOURCE_CASE_WINDOW_CONFIRM_BUTTON =
@@ -113,4 +114,7 @@ public class EditContactPage {
   public static final By CASE_CLASSIFICATION_LABEL =
       By.xpath(
           "//span[contains(text(), 'Case classification')]/ancestor::div[@class='v-caption']/following-sibling::div");
+  public static final By REMOVE_CASE_CTA_LINK = By.id("contactRemoveCase");
+  public static final By CASE_CHANGE_POPUP_SUCCESS_MESSAGE =
+      By.xpath("//p[text()='The source case of the contact has been changed']");
 }

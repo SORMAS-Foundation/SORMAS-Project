@@ -265,7 +265,7 @@ public interface Captions {
 	String CaseData_contactTracingFirstContactDate = "CaseData.contactTracingFirstContactDate";
 	String CaseData_contactTracingFirstContactType = "CaseData.contactTracingFirstContactType";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
-	String CaseData_differentJurisdiction = "CaseData.differentJurisdiction";
+	String CaseData_differentPlaceOfStayJurisdiction = "CaseData.differentPlaceOfStayJurisdiction";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
 	String CaseData_diseaseVariant = "CaseData.diseaseVariant";
 	String CaseData_district = "CaseData.district";
@@ -365,6 +365,7 @@ public interface Captions {
 	String CaseData_reportLon = "CaseData.reportLon";
 	String CaseData_responsibleCommunity = "CaseData.responsibleCommunity";
 	String CaseData_responsibleDistrict = "CaseData.responsibleDistrict";
+	String CaseData_responsibleDistrictName = "CaseData.responsibleDistrictName";
 	String CaseData_responsibleRegion = "CaseData.responsibleRegion";
 	String CaseData_screeningType = "CaseData.screeningType";
 	String CaseData_sequelae = "CaseData.sequelae";
@@ -525,6 +526,7 @@ public interface Captions {
 	String clinicalVisitNewClinicalVisit = "clinicalVisitNewClinicalVisit";
 	String columnAdditionalTests = "columnAdditionalTests";
 	String columnDiseaseShort = "columnDiseaseShort";
+	String columnLastPathogenTest = "columnLastPathogenTest";
 	String columnNumberOfPendingTasks = "columnNumberOfPendingTasks";
 	String community = "community";
 	String Community_archived = "Community.archived";
@@ -1305,6 +1307,7 @@ public interface Captions {
 	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
 	String lastName = "lastName";
+	String latestPathogenTest = "latestPathogenTest";
 	String lineListing = "lineListing";
 	String lineListingAddLine = "lineListingAddLine";
 	String lineListingDisableAll = "lineListingDisableAll";
@@ -1637,6 +1640,7 @@ public interface Captions {
 	String Sample_labUser = "Sample.labUser";
 	String Sample_noTestPossibleReason = "Sample.noTestPossibleReason";
 	String Sample_otherLab = "Sample.otherLab";
+	String Sample_pathogenTestCount = "Sample.pathogenTestCount";
 	String Sample_pathogenTestingRequested = "Sample.pathogenTestingRequested";
 	String Sample_pathogenTestResult = "Sample.pathogenTestResult";
 	String Sample_received = "Sample.received";
