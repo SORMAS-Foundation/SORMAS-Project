@@ -169,10 +169,20 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> personFrom) {
-		final Join<Object, Case> caseJoin = personFrom.join(Person.CASES, JoinType.LEFT);
-		final Join<Object, Contact> contactJoin = personFrom.join(Person.CONTACTS, JoinType.LEFT);
-		final Join<Object, EventParticipant> eventParticipantJoin = personFrom.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> from) {
+		return null;
+	}
+
+	public Predicate createUserFilter(PersonQueryContext personQueryContext) {
+
+		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
+		final CriteriaQuery cq = personQueryContext.getQuery();
+
+		final PersonJoins joins = (PersonJoins) personQueryContext.getJoins();
+
+		final Join<Object, Case> caseJoin = joins.getCaze();
+		final Join<Object, Contact> contactJoin = joins.getContact();
+		final Join<Object, EventParticipant> eventParticipantJoin = joins.getEventParticipant();
 
 		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, caseJoin);
 		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, contactJoin);

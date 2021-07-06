@@ -1164,7 +1164,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			person.get(Person.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, personService.inJurisdictionOrOwned(personQueryContext)));
 
-		Predicate filter = personService.createUserFilter(cb, cq, person);
+		Predicate filter = personService.createUserFilter(personQueryContext);
 		if (criteria != null) {
 			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
