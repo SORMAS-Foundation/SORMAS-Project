@@ -317,9 +317,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					FacadeProvider.getFacilityFacade()
 						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityType.getValue(), true, false));
 			}
-			FieldHelper.updateItems(
-				cbPointOfEntry,
-				districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), true) : null);
+
+			updatePOEs();
 		});
 		communityCombo.addValueChangeListener(e -> {
 			if (!TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
@@ -456,6 +455,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			if (differentPlaceOfStay == null || Boolean.FALSE.equals(differentPlaceOfStay)) {
 				updateFacility();
 			}
+
+			updatePOEs();
 		});
 		responsibleCommunityCombo.addValueChangeListener((e) -> {
 			Boolean differentPlaceOfStay = differentPlaceOfStayJurisdiction.getValue();
@@ -466,6 +467,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		differentPlaceOfStayJurisdiction.addValueChangeListener(e -> {
 			updateFacility();
+			updatePOEs();
 		});
 
 		// Set initial visibilities & accesses
@@ -568,6 +570,18 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 						.getActiveFacilitiesByDistrictAndType(district, (FacilityType) facilityType.getValue(), true, false));
 			}
 		}
+	}
+
+	private void updatePOEs() {
+
+		DistrictReferenceDto districtDto = differentPlaceOfStayJurisdiction.getValue()
+			? (DistrictReferenceDto) districtCombo.getValue()
+			: (DistrictReferenceDto) responsibleDistrictCombo.getValue();
+
+		List<PointOfEntryReferenceDto> POEs = districtDto == null
+			? Collections.emptyList()
+			: FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), true);
+		FieldHelper.updateItems((ComboBox) getField(CaseDataDto.POINT_OF_ENTRY), POEs);
 	}
 
 	private void updateListOfDays(Integer selectedYear, Integer selectedMonth) {
