@@ -34,7 +34,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.app.BaseLandingFragment;
 import de.symeda.sormas.app.LocaleManager;
@@ -307,15 +306,8 @@ public class SettingsFragment extends BaseLandingFragment {
 		}
 	}
 
-	public void saveLbdsDebugUrl() {
-		if (isLbdsAppInstalled() && isShowDevOptions()) {
-			String debugUrl = binding.settingsLbdsDebugUrl.getValue();
-			ConfigProvider.setServerLbdsDebugUrl(debugUrl);
-		}
-	}
-
-	private void resetFields(PersonDto personDto) {
-		//TODO: reset all fields except uuid, firstname, lastname, sex, changedate?
+	public String getLbdsDebugUrl() {
+		return (isLbdsAppInstalled() && isShowDevOptions()) ? binding.settingsLbdsDebugUrl.getValue() : null;
 	}
 
 	@Override

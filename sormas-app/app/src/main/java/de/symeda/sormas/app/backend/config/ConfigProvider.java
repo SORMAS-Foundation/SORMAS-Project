@@ -124,7 +124,7 @@ public final class ConfigProvider {
 	private Boolean initialSyncRequired;
 
 	private String lbdsSormasPrivateKeyAesSecret;
-	private PrivateKey lbdsSormasPrivateKey;
+	private String lbdsSormasPrivateKeyPKCS8;
 	private PublicKey lbdsSormasPublicKey;
 	private PublicKey lbdsServicePublicKey;
 	private String lbdsAesSecret;
@@ -786,15 +786,14 @@ public final class ConfigProvider {
 		try {
 			KeyPair rsa = KeyPairGenerator.getInstance("RSA").genKeyPair();
 			instance.lbdsSormasPublicKey = rsa.getPublic();
-			instance.lbdsSormasPrivateKey = rsa.getPrivate();
+			PrivateKey lbdsSormasPrivateKey = rsa.getPrivate();
 
 			String aesKey = LbdsKeyHelper.generateAESKey();
-			String lbdsSormasPrivateKeyEncoded =
-				LbdsKeyHelper.encryptAES(LbdsKeyHelper.getPKCS8FromPrivateKey(instance.lbdsSormasPrivateKey), aesKey);
+			instance.lbdsSormasPrivateKeyPKCS8 = LbdsKeyHelper.encryptAES(LbdsKeyHelper.getPKCS8FromPrivateKey(lbdsSormasPrivateKey), aesKey);
 
 			instance.lbdsSormasPrivateKeyAesSecret = instance.encodeCredential(aesKey, LBDS_KEYSTORE_ALIAS_SORMAS_PRIVATE_KEY_AES_SECRET);
 			DatabaseHelper.getConfigDao().createOrUpdate(new Config(LBDS_SORMAS_PRIVATE_KEY_AES_SECRET, instance.lbdsSormasPrivateKeyAesSecret));
-			DatabaseHelper.getConfigDao().createOrUpdate(new Config(LBDS_SORMAS_PRIVATE_KEY, lbdsSormasPrivateKeyEncoded));
+			DatabaseHelper.getConfigDao().createOrUpdate(new Config(LBDS_SORMAS_PRIVATE_KEY, instance.lbdsSormasPrivateKeyPKCS8));
 			DatabaseHelper.getConfigDao()
 				.createOrUpdate(new Config(LBDS_SORMAS_PUBLIC_KEY, LbdsKeyHelper.getX509FromPublicKey(instance.lbdsSormasPublicKey)));
 		} catch (GeneralSecurityException e) {
@@ -813,21 +812,21 @@ public final class ConfigProvider {
 	}
 
 	public static PrivateKey getLbdsSormasPrivateKey() {
-		if (instance.lbdsSormasPrivateKey == null) {
+		if (instance.lbdsSormasPrivateKeyPKCS8 == null) {
 			Config config = DatabaseHelper.getConfigDao().queryForId(LBDS_SORMAS_PRIVATE_KEY);
 			if (config != null) {
-				try {
-					String aesKey = getLbdsSormasPrivateKeyAesSecret();
-					String lbdsSormasPrivateKeyPKCS8 = LbdsKeyHelper.decryptAES(config.getValue(), aesKey);
-					instance.lbdsSormasPrivateKey = LbdsKeyHelper.getPrivateKeyFromPKCS8(lbdsSormasPrivateKeyPKCS8);
-				} catch (GeneralSecurityException e) {
-					throw new RuntimeException(e);
-				}
+				instance.lbdsSormasPrivateKeyPKCS8 = config.getValue();
 			} else {
 				resetLbdsSormasKeys();
 			}
 		}
-		return instance.lbdsSormasPrivateKey;
+		try {
+			String aesKey = getLbdsSormasPrivateKeyAesSecret();
+			String lbdsSormasPrivateKeyPKCS8 = LbdsKeyHelper.decryptAES(instance.lbdsSormasPrivateKeyPKCS8, aesKey);
+			return LbdsKeyHelper.getPrivateKeyFromPKCS8(lbdsSormasPrivateKeyPKCS8);
+		} catch (GeneralSecurityException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static PublicKey getLbdsSormasPublicKey() {

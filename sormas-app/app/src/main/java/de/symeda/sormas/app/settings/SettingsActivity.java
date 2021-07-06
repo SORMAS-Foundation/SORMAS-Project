@@ -82,7 +82,8 @@ public class SettingsActivity extends BaseLandingActivity {
 			String serverUrl = getActiveFragment().getServerUrl();
 			ConfigProvider.setServerRestUrl(serverUrl);
 
-			getActiveFragment().saveLbdsDebugUrl();
+			String lbdsDebugUrl = getActiveFragment().getLbdsDebugUrl();
+			ConfigProvider.setServerLbdsDebugUrl(lbdsDebugUrl);
 
 			onBackPressed(); // Settings don't have a parent -> go back instead of up
 

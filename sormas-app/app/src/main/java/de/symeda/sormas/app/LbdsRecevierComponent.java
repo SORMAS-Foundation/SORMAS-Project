@@ -40,7 +40,6 @@ public class LbdsRecevierComponent extends IntentService {
 	 */
 	public LbdsRecevierComponent() {
 		super("LbdsRecevierComponent");
-		// super(SormasRelated.SORMAS_RECEIVER_COMPONENT);
 	}
 
 	@Override
