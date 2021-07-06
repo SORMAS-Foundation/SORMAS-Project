@@ -63,12 +63,8 @@ public class EventResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postEvents(@Valid List<EventDto> dtos, @QueryParam("createShareInfo") boolean createShareInfo) {
-		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventFacade()::saveEvent);
-		if (createShareInfo) {
-			FacadeProvider.getExternalSurveillanceToolFacade().createEventShareInfo(dtos);
-		}
-		return result;
+	public List<PushResult> postEvents(@Valid List<EventDto> dtos) {
+		return savePushedDto(dtos, FacadeProvider.getEventFacade()::saveEvent);
 	}
 
 	@GET
