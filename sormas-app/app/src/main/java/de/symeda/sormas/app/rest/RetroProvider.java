@@ -133,6 +133,50 @@ public final class RetroProvider {
 			throw new ServerConnectionException(404);
 		}
 
+		retrofit = buildRetrofit(serverUrl);
+
+		checkCompatibility();
+
+		updateLocale();
+		updateCountryName();
+	}
+
+	public static Retrofit buildRetrofit(String serverUrl) {
+		Gson gson = initGson();
+
+		// Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit
+
+		String authToken = Credentials.basic(ConfigProvider.getUsername(), ConfigProvider.getPassword());
+		AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
+
+		OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+		httpClient.connectTimeout(20, TimeUnit.SECONDS);
+		httpClient.readTimeout(240, TimeUnit.SECONDS); // for infrastructure data
+		httpClient.writeTimeout(60, TimeUnit.SECONDS);
+
+		// adds "Accept-Encoding: gzip" by default
+		httpClient.addInterceptor(interceptor);
+
+		// header for logging purposes
+		httpClient.addInterceptor(chain -> {
+
+			Request original = chain.request();
+			Request.Builder builder = original.newBuilder();
+
+			User user = ConfigProvider.getUser();
+			if (user != null) {
+				builder.header("User", DataHelper.getShortUuid(user.getUuid()));
+				builder.header("Connection", String.valueOf(lastConnectionId)); // not sure if this is a good solution
+			}
+
+			builder.method(original.method(), original.body());
+			return chain.proceed(builder.build());
+		});
+
+		return new Retrofit.Builder().baseUrl(serverUrl).addConverterFactory(GsonConverterFactory.create(gson)).client(httpClient.build()).build();
+	}
+
+	public static Gson initGson() {
 		RuntimeTypeAdapterFactory<ClassificationCriteriaDto> classificationCriteriaFactory =
 			RuntimeTypeAdapterFactory.of(ClassificationCriteriaDto.class, "type")
 				.registerSubtype(ClassificationAllOfCriteriaDto.class, "ClassificationAllOfCriteriaDto")
@@ -157,7 +201,7 @@ public final class RetroProvider {
 				.registerSubtype(ClassificationAllSymptomsCriteriaDto.class, "ClassificationAllSymptomsCriteriaDto");
 
 
-		Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
+		return new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
 			if (json.isJsonNull()) {
 				return null;
 			}
@@ -169,43 +213,6 @@ public final class RetroProvider {
 			}
 			return new JsonPrimitive(src.getTime());
 		}).registerTypeAdapterFactory(classificationCriteriaFactory).create();
-
-		// Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit
-
-		String authToken = Credentials.basic(ConfigProvider.getUsername(), ConfigProvider.getPassword());
-		AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
-
-		OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-		httpClient.connectTimeout(20, TimeUnit.SECONDS);
-		httpClient.readTimeout(1800, TimeUnit.SECONDS); // for infrastructure data
-		httpClient.writeTimeout(60, TimeUnit.SECONDS);
-
-		// adds "Accept-Encoding: gzip" by default
-		httpClient.addInterceptor(interceptor);
-
-		// header for logging purposes
-		httpClient.addInterceptor(chain -> {
-
-			Request original = chain.request();
-			Request.Builder builder = original.newBuilder();
-
-			User user = ConfigProvider.getUser();
-			if (user != null) {
-				builder.header("User", DataHelper.getShortUuid(user.getUuid()));
-				builder.header("Connection", String.valueOf(lastConnectionId)); // not sure if this is a good solution
-			}
-
-			builder.method(original.method(), original.body());
-			return chain.proceed(builder.build());
-		});
-
-		retrofit =
-			new Retrofit.Builder().baseUrl(serverUrl).addConverterFactory(GsonConverterFactory.create(gson)).client(httpClient.build()).build();
-
-		checkCompatibility();
-
-		updateLocale();
-		updateCountryName();
 	}
 
 	public static int getLastConnectionId() {

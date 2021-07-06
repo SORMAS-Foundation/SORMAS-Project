@@ -90,6 +90,40 @@
                 app:rounded="true" />
 
             <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/kex_lbds"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/buttonControlMarginBottom"
+                android:text="@string/action_kex_lbds"
+                app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
+                app:rounded="true" />
+
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/sync_person_lbds"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/buttonControlMarginBottom"
+                android:text="@string/action_sync_person_lbds"
+                app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
+                app:rounded="true" />
+
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/sync_case_lbds"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/buttonControlMarginBottom"
+                android:text="@string/action_sync_case_lbds"
+                app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
+                app:rounded="true" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/settings_lbds_debug_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:caption="@string/caption_settings_debug_url_lbds"
+                app:hint="@string/hint_settings_debug_url_lbds"/>
+
+            <de.symeda.sormas.app.component.controls.ControlButton
                 android:id="@+id/logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
