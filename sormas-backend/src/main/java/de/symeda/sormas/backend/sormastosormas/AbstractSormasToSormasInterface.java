@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -166,14 +165,14 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	public void saveShareRequest(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
 		ShareRequestData<PREVIEW> shareData = encryptionService.decryptAndVerify(encryptedData, previewType);
 
-		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 		List<PREVIEW> previews = shareData.getPreviews();
 		List<PREVIEW> previewsToSave = new ArrayList<>(previews.size());
 
 		SormasToSormasOriginInfoDto originInfo = shareData.getOriginInfo();
 		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, entityCaptionTag);
 		if (originInfoErrors.hasError()) {
-			validationErrors.put(new ValidationErrorGroup(entityCaptionTag), originInfoErrors);
+			validationErrors.add(new ValidationErrors(new ValidationErrorGroup(entityCaptionTag), originInfoErrors));
 		}
 
 		for (PREVIEW preview : previews) {
@@ -181,13 +180,13 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 				ValidationErrors caseErrors = validateSharedPreview(preview);
 
 				if (caseErrors.hasError()) {
-					validationErrors.put(buildEntityValidationGroupName(preview), caseErrors);
+					validationErrors.add(new ValidationErrors(buildEntityValidationGroupName(preview), caseErrors));
 				} else {
 					PREVIEW processedData = getReceivedDataProcessor().processReceivedPreview(preview);
 					previewsToSave.add(processedData);
 				}
 			} catch (SormasToSormasValidationException validationException) {
-				validationErrors.putAll(validationException.getErrors());
+				validationErrors.addAll(validationException.getErrors());
 			}
 		}
 
@@ -368,7 +367,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		S[] receivedS2SEntities = encryptionService.decryptAndVerify(encryptedData, getShareDataClass());
 
-		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 		List<PROCESSED> entitiesToPersist = new ArrayList<>(receivedS2SEntities.length);
 		List<DTO> existingEntities =
 			loadExistingEntities(Arrays.stream(receivedS2SEntities).map(e -> e.getEntity().getUuid()).collect(Collectors.toList()));
@@ -389,7 +388,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 				}
 
 				if (validationError.hasError()) {
-					validationErrors.put(buildEntityValidationGroupName(receivedEntity), validationError);
+					validationErrors.add(new ValidationErrors(buildEntityValidationGroupName(receivedEntity), validationError));
 				} else {
 					DTO existingEntity = existingEntitiesMap.get(receivedEntity.getUuid());
 					PROCESSED processedData = getReceivedDataProcessor().processReceivedData(receivedS2SEntity, existingEntity);
@@ -402,7 +401,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 					entitiesToPersist.add(processedData);
 				}
 			} catch (SormasToSormasValidationException validationException) {
-				validationErrors.putAll(validationException.getErrors());
+				validationErrors.addAll(validationException.getErrors());
 			}
 		}
 

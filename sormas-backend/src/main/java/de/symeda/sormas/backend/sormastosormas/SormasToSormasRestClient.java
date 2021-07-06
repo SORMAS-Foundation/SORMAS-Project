@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,7 +33,6 @@ import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.sormastosormas.ValidationErrorGroup;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,12 +138,12 @@ public class SormasToSormasRestClient {
 		if (statusCode != HttpStatus.SC_NO_CONTENT && statusCode != HttpStatus.SC_OK) {
 			String errorMessage = response.readEntity(String.class);
 			String errorProperty = null;
-			Map<ValidationErrorGroup, ValidationErrors> errors = null;
+			List<ValidationErrors> errors = null;
 
 			try {
 				SormasToSormasErrorResponse errorResponse = mapper.readValue(errorMessage, SormasToSormasErrorResponse.class);
-				errorMessage = Optional.ofNullable(errorResponse.getProperty()).orElse(I18nProperties.getString(Strings.errorSormasToSormasShare));
-				errorProperty = Optional.ofNullable(errorResponse.getProperty()).orElse(Strings.errorSormasToSormasShare);
+				errorMessage = Optional.ofNullable(errorResponse.getI18nTag()).orElse(I18nProperties.getString(Strings.errorSormasToSormasShare));
+				errorProperty = Optional.ofNullable(errorResponse.getI18nTag()).orElse(Strings.errorSormasToSormasShare);
 				errors = errorResponse.getErrors();
 			} catch (IOException e) {
 				// do nothing, keep the unparsed response as error message

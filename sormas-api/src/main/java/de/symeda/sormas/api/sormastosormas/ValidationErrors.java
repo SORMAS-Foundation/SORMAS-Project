@@ -17,47 +17,73 @@ package de.symeda.sormas.api.sormastosormas;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ValidationErrors implements Serializable {
 
 	private static final long serialVersionUID = 1635651082132555214L;
 
-	private final Map<ValidationErrorGroup, List<ValidationErrorMessage>> errors;
+	private ValidationErrorGroup group;
+
+	private List<ValidationErrorGroup> subGroups = new ArrayList<>();
 
 	public ValidationErrors() {
-		errors = new HashMap<>();
 	}
 
-	public void add(ValidationErrorGroup group, ValidationErrorMessage validationErrorMessage) {
-		List<ValidationErrorMessage> groupErrors;
+	public ValidationErrors(ValidationErrorGroup group) {
+		this.group = group;
+	}
 
-		if (errors.containsKey(group)) {
-			groupErrors = errors.get(group);
+	public ValidationErrors(ValidationErrorGroup group, List<ValidationErrorGroup> subGroups) {
+		this.group = group;
+		this.subGroups = subGroups;
+	}
+
+	public ValidationErrors(ValidationErrorGroup group, ValidationErrors errors) {
+		this.group = group;
+		addAll(errors);
+	}
+
+	public void add(ValidationErrorGroup subGroup, ValidationErrorMessage message) {
+
+		ValidationErrorGroup subGroupToAdd;
+
+		if (subGroups.contains(subGroup)) {
+			subGroupToAdd = subGroups.get(subGroups.indexOf(subGroup));
 		} else {
-			groupErrors = new ArrayList<>();
-			errors.put(group, groupErrors);
+			subGroupToAdd = new ValidationErrorGroup(subGroup.getI18nTag(), subGroup.getUuid());
+			subGroups.add(subGroupToAdd);
 		}
 
-		groupErrors.add(validationErrorMessage);
+		subGroupToAdd.getMessages().add(message);
 	}
 
 	public void addAll(ValidationErrors errors) {
-		for (Map.Entry<ValidationErrorGroup, List<ValidationErrorMessage>> error : errors.errors.entrySet()) {
-			for (ValidationErrorMessage message : error.getValue()) {
-				add(error.getKey(), message);
+		for (ValidationErrorGroup subGroup : errors.getSubGroups()) {
+			for (ValidationErrorMessage message : subGroup.getMessages()) {
+				add(subGroup, message);
 			}
 		}
 	}
 
-	public Map<ValidationErrorGroup, List<ValidationErrorMessage>> getErrors() {
-		return errors;
+	public ValidationErrorGroup getGroup() {
+		return group;
+	}
+
+	public void setGroup(ValidationErrorGroup group) {
+		this.group = group;
+	}
+
+	public List<ValidationErrorGroup> getSubGroups() {
+		return subGroups;
+	}
+
+	public void setSubGroups(List<ValidationErrorGroup> subGroups) {
+		this.subGroups = subGroups;
 	}
 
 	public boolean hasError() {
-		return errors.size() > 0;
+		return subGroups.size() > 0;
 	}
 
 	public static ValidationErrors create(ValidationErrorGroup group, ValidationErrorMessage message) {
