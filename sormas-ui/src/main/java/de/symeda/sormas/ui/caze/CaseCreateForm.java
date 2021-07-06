@@ -253,6 +253,21 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		communityCombo = addInfrastructureField(CaseDataDto.COMMUNITY);
 		communityCombo.setNullSelectionAllowed(true);
 
+		// jurisdictionfields
+		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingCaseResponsibleJurisidction));
+		jurisdictionHeadingLabel.addStyleName(H3);
+		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
+
+		ComboBox responsibleRegion = addField(CaseDataDto.RESPONSIBLE_REGION);
+		responsibleRegion.setRequired(true);
+		responsibleDistrictCombo = addField(CaseDataDto.RESPONSIBLE_DISTRICT);
+		responsibleDistrictCombo.setRequired(true);
+		responsibleCommunityCombo = addField(CaseDataDto.RESPONSIBLE_COMMUNITY);
+		responsibleCommunityCombo.setNullSelectionAllowed(true);
+		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
+
+		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrictCombo, responsibleCommunityCombo);
+
 		FieldHelper.setVisibleWhen(
 			differentPlaceOfStayJurisdiction,
 			Arrays.asList(region, districtCombo, communityCombo),
@@ -402,8 +417,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			districtCombo.setReadOnly(true);
 		} else if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			region.setReadOnly(true);
+			responsibleRegion.setReadOnly(true);
 			districtCombo.setReadOnly(true);
+			responsibleDistrictCombo.setReadOnly(true);
 			communityCombo.setReadOnly(true);
+			responsibleCommunityCombo.setReadOnly(true);
+			differentPlaceOfStayJurisdiction.setVisible(false);
+			differentPlaceOfStayJurisdiction.setEnabled(false);
 
 			facilityOrHome.setImmediate(true);
 			facilityOrHome.setValue(Sets.newHashSet(TypeOfPlace.FACILITY)); // [FACILITY]
@@ -435,21 +455,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			});
 		}
 
-		// jurisdiction fields
-		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingCaseResponsibleJurisidction));
-		jurisdictionHeadingLabel.addStyleName(H3);
-		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
-
-		ComboBox responsibleRegion = addField(CaseDataDto.RESPONSIBLE_REGION);
-		responsibleRegion.setRequired(true);
-		responsibleDistrictCombo = addField(CaseDataDto.RESPONSIBLE_DISTRICT);
-		responsibleDistrictCombo.setRequired(true);
-		responsibleCommunityCombo = addField(CaseDataDto.RESPONSIBLE_COMMUNITY);
-		responsibleCommunityCombo.setNullSelectionAllowed(true);
-		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
-
-		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrictCombo, responsibleCommunityCombo);
-
+		// jurisdiction field valuechangelisteners
 		responsibleDistrictCombo.addValueChangeListener(e -> {
 			Boolean differentPlaceOfStay = differentPlaceOfStayJurisdiction.getValue();
 			if (differentPlaceOfStay == null || Boolean.FALSE.equals(differentPlaceOfStay)) {
@@ -545,6 +551,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	private void updateFacility() {
+
+		if (UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles()) == JurisdictionLevel.HEALTH_FACILITY) {
+			return;
+		}
+
 		final DistrictReferenceDto district;
 		final CommunityReferenceDto community;
 
