@@ -1,4 +1,4 @@
-@Sanity @Users
+@UI @Sanity @Users
 Feature: Create user
 
   @User

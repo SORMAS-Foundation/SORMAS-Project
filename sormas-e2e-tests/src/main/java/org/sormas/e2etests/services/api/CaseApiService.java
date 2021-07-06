@@ -38,6 +38,8 @@ public class CaseApiService {
         .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())
         .district(District.builder().uuid("SZ75BK-5OUMFU-V2DTKG-5BYACHFE").build())
         .region(Region.builder().uuid("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY").build())
+        .responsibleDistrict(District.builder().uuid("SZ75BK-5OUMFU-V2DTKG-5BYACHFE").build())
+        .responsibleRegion(Region.builder().uuid("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY").build())
         .community(Community.builder().uuid("QWK33J-XYN3DE-5CSXFJ-MMFOKNKM").build())
         .followUpStatus("FOLLOW_UP")
         .person(person)

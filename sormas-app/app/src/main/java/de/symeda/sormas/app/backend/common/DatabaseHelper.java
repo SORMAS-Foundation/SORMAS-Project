@@ -170,7 +170,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 306;
+	public static final int DATABASE_VERSION = 307;
 
 	private static DatabaseHelper instance = null;
 
@@ -2105,7 +2105,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ "		UNIQUE (snapshot ASC, uuid ASC)"
 					+ ");"
 				);
-				
+
 				getDao(EpiData.class).executeRaw(
 					"INSERT INTO epidata(exposureDetailsKnown, contactWithSourceCaseKnown, areaInfectedAnimals, changeDate, creationDate, "
 						+ "id, lastOpenedDate, localChangeDate, modified, snapshot, uuid, pseudonymized) "
@@ -2355,7 +2355,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ "		UNIQUE (snapshot ASC, uuid ASC)"
 					+ ");"
 				);
-				
+
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN activityAsCaseDetailsKnown varchar(255);");
 
 				getDao(Case.class).executeRaw("UPDATE cases SET changeDate = 0 WHERE changeDate IS NOT NULL;");
@@ -2613,6 +2613,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 				case 304:
 					currentVersion = 304;
+					getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withAssociatedContacts boolean;");
+					getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withSamples boolean;");
+					getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withEventParticipants boolean;");
+
+				case 305:
+					currentVersion = 305;
 					getDao(Immunization.class).executeRaw("CREATE TABLE immunization (" +
 							" id integer primary key autoincrement, uuid varchar(36) not null unique," +
 							" changeDate timestamp not null, creationDate timestamp not null, lastOpenedDate timestamp, localChangeDate timestamp not null," +
@@ -2641,8 +2647,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							" recoverydate timestamp not null," +
 							" relatedcase_id bigint)");
 
-				case 305:
-					currentVersion = 305;
+				case 306:
+					currentVersion = 306;
 					getDao(Immunization.class).executeRaw("ALTER TABLE immunization ADD COLUMN pseudonymized boolean;");
 
 				// ATTENTION: break should only be done after last version

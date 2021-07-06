@@ -49,7 +49,8 @@ public class PersonDirectorySteps implements En {
     When(
         "I search for specific person in person directory",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEARCH_PERSON_BY_FREE_TEXT);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SEARCH_PERSON_BY_FREE_TEXT, 90);
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_PERSON_BY_FREE_TEXT, personUuid);
         });
