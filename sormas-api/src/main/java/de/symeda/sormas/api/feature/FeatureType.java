@@ -160,7 +160,8 @@ public enum FeatureType {
 	TASK_GENERATION_GENERAL(true,
 		true,
 		new FeatureType[] {
-			TASK_MANAGEMENT });
+			TASK_MANAGEMENT }),
+	IMMUNIZATION_MANAGEMENT(true, false, null);
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system
