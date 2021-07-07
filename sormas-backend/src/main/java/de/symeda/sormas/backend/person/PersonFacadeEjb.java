@@ -885,7 +885,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
 
-		Predicate filter = personService.createUserFilter(cb, cq, person);
+		Predicate filter = personService.createUserFilter(personQueryContext);
 		if (criteria != null) {
 			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
@@ -1083,15 +1083,17 @@ public class PersonFacadeEjb implements PersonFacade {
 		final CriteriaQuery<String> cq = cb.createQuery(String.class);
 		final Root<Person> person = cq.from(Person.class);
 
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+
 		cq.select(person.get(Person.UUID));
 		if (!allowPersonsWithCoordinates) {
 			// filter persons by those which have no latitude or longitude given
 			final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 			Predicate noLatitude = cb.isNull(location.get(Location.LATITUDE));
 			Predicate noLongitude = cb.isNull(location.get(Location.LONGITUDE));
-			cq.where(cb.and(personService.createUserFilter(cb, cq, person), cb.or(noLatitude, noLongitude)));
+			cq.where(cb.and(personService.createUserFilter(personQueryContext), cb.or(noLatitude, noLongitude)));
 		} else {
-			cq.where(personService.createUserFilter(cb, cq, person));
+			cq.where(personService.createUserFilter(personQueryContext));
 		}
 		cq.orderBy(cb.desc(person.get(Person.UUID)));
 

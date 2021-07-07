@@ -169,8 +169,9 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	}
 
 	@Override
+	@Deprecated
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> from) {
-		return null;
+		throw new UnsupportedOperationException("Should not be called -> obsolete!");
 	}
 
 	public Predicate createUserFilter(PersonQueryContext personQueryContext) {
