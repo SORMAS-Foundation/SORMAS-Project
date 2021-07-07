@@ -17,13 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -43,6 +37,11 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.*;
+import de.symeda.sormas.api.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,22 +59,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.messaging.MessageType;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleExportDto;
-import de.symeda.sormas.api.sample.SampleFacade;
-import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
-import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -870,6 +855,99 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Override
 	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
 		return sampleService.getNewTestResultCountByResultType(caseIds);
+	}
+
+	@Override
+	public Map<SampleCountType, Long> getSampleCount(
+			RegionReferenceDto regionRef,
+			DistrictReferenceDto districtRef,
+			Disease disease,
+			Date from,
+			Date to) {
+		long total =
+				count((new SampleCriteria()).region(regionRef).district(districtRef).disease(disease).reportDateBetween(from, to, DateFilterOption.DATE));
+
+		long indeterminateCount = pathogenTestFacade.count(
+				(new SampleCriteria()).region(regionRef)
+						.district(districtRef)
+						.disease(disease)
+						.reportDateBetween(from, to, DateFilterOption.DATE)
+						.pathogenTestResult(PathogenTestResultType.INDETERMINATE));
+		long pendingCount = pathogenTestFacade.count(
+				(new SampleCriteria()).region(regionRef)
+						.district(districtRef)
+						.disease(disease)
+						.reportDateBetween(from, to, DateFilterOption.DATE)
+						.pathogenTestResult(PathogenTestResultType.PENDING));
+		long negativeCount = pathogenTestFacade.count(
+				(new SampleCriteria()).region(regionRef)
+						.district(districtRef)
+						.disease(disease)
+						.reportDateBetween(from, to, DateFilterOption.DATE)
+						.pathogenTestResult(PathogenTestResultType.NEGATIVE));
+		long positiveCount = pathogenTestFacade.count(
+				(new SampleCriteria()).region(regionRef)
+						.district(districtRef)
+						.disease(disease)
+						.reportDateBetween(from, to, DateFilterOption.DATE)
+						.pathogenTestResult(PathogenTestResultType.POSITIVE));
+
+		long adequateCount = count(
+				(new SampleCriteria()).region(regionRef)
+						.district(districtRef)
+						.disease(disease)
+						.reportDateBetween(from, to, DateFilterOption.DATE)
+						.specimenCondition(SpecimenCondition.ADEQUATE));
+		long inadequateCount = count(
+				(new SampleCriteria()).region(regionRef)
+						.district(districtRef)
+						.disease(disease)
+						.reportDateBetween(from, to, DateFilterOption.DATE)
+						.specimenCondition(SpecimenCondition.NOT_ADEQUATE));
+
+		long shippedCount = count(
+				(new SampleCriteria()).region(regionRef)
+						.district(districtRef)
+						.disease(disease)
+						.reportDateBetween(from, to, DateFilterOption.DATE)
+						.shipped(true)
+						.samplePurpose(SamplePurpose.EXTERNAL));
+		long notShippedCount = count(
+				(new SampleCriteria()).region(regionRef)
+						.district(districtRef)
+						.disease(disease)
+						.reportDateBetween(from, to, DateFilterOption.DATE)
+						.shipped(false)
+						.samplePurpose(SamplePurpose.EXTERNAL));
+		long receivedCount = count(
+				(new SampleCriteria()).region(regionRef)
+						.district(districtRef)
+						.disease(disease)
+						.reportDateBetween(from, to, DateFilterOption.DATE)
+						.received(true)
+						.samplePurpose(SamplePurpose.EXTERNAL));
+		long notReceivedCount = count(
+				(new SampleCriteria()).region(regionRef)
+						.district(districtRef)
+						.disease(disease)
+						.reportDateBetween(from, to, DateFilterOption.DATE)
+						.received(false)
+						.samplePurpose(SamplePurpose.EXTERNAL));
+
+		Map<SampleCountType, Long> map = new HashMap<SampleCountType, Long>();
+		map.put(SampleCountType.TOTAL, total);
+		map.put(SampleCountType.INDETERMINATE, indeterminateCount);
+		map.put(SampleCountType.PENDING, pendingCount);
+		map.put(SampleCountType.POSITIVE, positiveCount);
+		map.put(SampleCountType.NEGATIVE, negativeCount);
+		map.put(SampleCountType.ADEQUATE, adequateCount);
+		map.put(SampleCountType.INADEQUATE, inadequateCount);
+		map.put(SampleCountType.SHIPPED, shippedCount);
+		map.put(SampleCountType.NOT_SHIPED, notShippedCount);
+		map.put(SampleCountType.RECEIVED, receivedCount);
+		map.put(SampleCountType.NOT_RECEIVED, notReceivedCount);
+
+		return map;
 	}
 
 	public Sample fromDto(@NotNull SampleDto source, boolean checkChangeDate) {
