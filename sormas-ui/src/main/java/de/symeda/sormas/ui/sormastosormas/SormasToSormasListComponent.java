@@ -40,7 +40,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
@@ -243,7 +243,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			infoLayout.setMargin(false);
 			infoLayout.setSpacing(false);
 
-			Label targetLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith) + " " + shareInfo.getTarget());
+			Label targetLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith) + " " + shareInfo.getTargetServerDescriptor());
 			targetLabel.addStyleName(CssStyles.LABEL_BOLD);
 			infoLayout.addComponent(targetLabel);
 
@@ -300,8 +300,8 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		infoLayout.setSpacing(false);
 		infoLayout.setStyleName(CssStyles.VSPACE_3);
 
-		ServerAccessDataReferenceDto serverAccessDataRef =
-			FacadeProvider.getSormasToSormasFacade().getOrganizationRef(originInfo.getOrganizationId());
+		SormasServerDescriptor serverAccessDataRef =
+			FacadeProvider.getSormasToSormasFacade().getSormasServerReferenceById(originInfo.getOrganizationId());
 
 		Label senderOrganizationLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSentFrom) + " " + serverAccessDataRef);
 		senderOrganizationLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_WHITE_SPACE_NORMAL);

@@ -25,9 +25,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
-
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -36,7 +34,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -69,7 +66,6 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.sormastosormas.access.SormasServerIdentifier;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
@@ -77,9 +73,9 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 
 	// values are set in server-list.csv located in serveraccessdefault and serveraccesssecond
 	public static final String DEFAULT_SERVER_ID = "2.sormas.id.sormas_a";
-	public static final SormasServerIdentifier DEFAULT_SERVER = new SormasServerIdentifier("2.sormas.id.sormas_a", "sormas_a", "sormas_a:6048");
+	public static final SormasServerDescriptor DEFAULT_SERVER = new SormasServerDescriptor("2.sormas.id.sormas_a", "sormas_a", "sormas_a:6048");
 	public static final String SECOND_SERVER_ID = "2.sormas.id.sormas_b";
-	public static final SormasServerIdentifier SECOND_SERVER = new SormasServerIdentifier("2.sormas.id.sormas_b", "sormas_b", "sormas_b:6048");
+	public static final SormasServerDescriptor SECOND_SERVER = new SormasServerDescriptor("2.sormas.id.sormas_b", "sormas_b", "sormas_b:6048");
 	private ObjectMapper objectMapper;
 
 	@Override

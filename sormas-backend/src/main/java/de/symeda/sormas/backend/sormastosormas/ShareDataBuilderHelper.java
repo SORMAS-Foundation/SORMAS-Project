@@ -27,7 +27,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
@@ -180,7 +180,7 @@ public class ShareDataBuilderHelper {
 	private SormasToSormasOptionsDto createOptionsFormShareInfo(SormasToSormasShareInfo shareInfo) {
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 
-		options.setOrganization(new ServerAccessDataReferenceDto(shareInfo.getOrganizationId()));
+		options.setSormasServerDescriptor(new SormasServerDescriptor(shareInfo.getOrganizationId()));
 		options.setHandOverOwnership(shareInfo.isOwnershipHandedOver());
 		options.setWithAssociatedContacts(shareInfo.isWithAssociatedContacts());
 		options.setWithSamples(shareInfo.isWithSamples());

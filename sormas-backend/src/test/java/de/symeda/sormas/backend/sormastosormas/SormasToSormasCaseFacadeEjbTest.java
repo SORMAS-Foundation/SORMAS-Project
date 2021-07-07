@@ -60,7 +60,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
@@ -113,7 +113,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ID));
+		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any(), Matchers.any()))
@@ -148,7 +148,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), 0, 100);
 
 		assertThat(shareInfoList.size(), is(1));
-		assertThat(shareInfoList.get(0).getTarget().getUuid(), is(SECOND_SERVER_ID));
+		assertThat(shareInfoList.get(0).getTargetServerDescriptor().getId(), is(SECOND_SERVER_ID));
 		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
 	}
@@ -170,7 +170,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		ContactDto contact = creator.createContact(officer, creator.createPerson().toReference(), caze);
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ID));
+		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 		options.setWithAssociatedContacts(true);
 
@@ -193,7 +193,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().contact(contact.toReference()), 0, 100);
 
 		SormasToSormasShareInfoDto contactShareInfo = shareInfoList.get(0);
-		assertThat(contactShareInfo.getTarget().getUuid(), is(SECOND_SERVER_ID));
+		assertThat(contactShareInfo.getTargetServerDescriptor().getId(), is(SECOND_SERVER_ID));
 		assertThat(contactShareInfo.getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(contactShareInfo.getComment(), is("Test comment"));
 	}
@@ -231,7 +231,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		creator.createAdditionalTest(contactSampleSample.toReference());
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ID));
+		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 		options.setWithSamples(true);
 		options.setWithAssociatedContacts(true);
@@ -268,7 +268,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().sample(caseSample.toReference()), 0, 100);
 
 		SormasToSormasShareInfoDto contactShareInfo = shareInfoList.get(0);
-		assertThat(contactShareInfo.getTarget().getUuid(), is(SECOND_SERVER_ID));
+		assertThat(contactShareInfo.getTargetServerDescriptor().getId(), is(SECOND_SERVER_ID));
 		assertThat(contactShareInfo.getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(contactShareInfo.getComment(), is("Test comment"));
 	}
@@ -500,7 +500,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ID));
+		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setPseudonymizePersonalData(true);
 
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any(), Matchers.any()))
@@ -539,7 +539,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ID));
+		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setPseudonymizeSensitiveData(true);
 
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any(), Matchers.any()))
@@ -599,7 +599,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		SampleDto newSample = creator.createSample(caze.toReference(), officer, rdcf.facility);
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ID));
+		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setHandOverOwnership(true);
 		options.setWithAssociatedContacts(true);
 		options.setWithSamples(true);
@@ -888,7 +888,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ID));
+		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any(), Matchers.any()))
@@ -928,7 +928,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), 0, 100);
 
 		assertThat(shareInfoList.size(), is(1));
-		assertThat(shareInfoList.get(0).getTarget().getUuid(), is(SECOND_SERVER_ID));
+		assertThat(shareInfoList.get(0).getTargetServerDescriptor().getId(), is(SECOND_SERVER_ID));
 		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
 		assertThat(shareInfoList.get(0).getRequestStatus(), is(ShareRequestStatus.PENDING));

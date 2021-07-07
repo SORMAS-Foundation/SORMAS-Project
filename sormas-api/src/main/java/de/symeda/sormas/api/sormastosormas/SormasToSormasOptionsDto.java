@@ -31,7 +31,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 	public static final String WITH_SAMPLES = "withSamples";
 	public static final String WITH_EVENT_PARTICIPANTS = "withEventParticipants";
 
-	private ServerAccessDataReferenceDto organization;
+	private SormasServerDescriptor sormasServerDescriptor;
 
 	private boolean handOverOwnership;
 
@@ -47,12 +47,12 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	private boolean withEventParticipants;
 
-	public ServerAccessDataReferenceDto getOrganization() {
-		return organization;
+	public SormasServerDescriptor getSormasServerDescriptor() {
+		return sormasServerDescriptor;
 	}
 
-	public void setOrganization(ServerAccessDataReferenceDto organization) {
-		this.organization = organization;
+	public void setSormasServerDescriptor(SormasServerDescriptor sormasServerDescriptor) {
+		this.sormasServerDescriptor = sormasServerDescriptor;
 	}
 
 	public boolean isHandOverOwnership() {

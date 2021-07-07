@@ -24,9 +24,9 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 @Remote
 public interface SormasToSormasFacade {
 
-	List<ServerAccessDataReferenceDto> getAvailableOrganizations();
+	List<SormasServerDescriptor> getAllAvailableServers();
 
-	ServerAccessDataReferenceDto getOrganizationRef(String id);
+	SormasServerDescriptor getSormasServerReferenceById(String id);
 
 	List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
 

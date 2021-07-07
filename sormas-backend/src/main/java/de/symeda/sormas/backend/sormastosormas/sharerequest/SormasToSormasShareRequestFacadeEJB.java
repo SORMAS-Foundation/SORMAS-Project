@@ -36,6 +36,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
@@ -44,7 +45,6 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.access.SormasServerIdentifier;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -143,13 +143,13 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		}
 
 		if (!requests.isEmpty()) {
-			Map<String, SormasServerIdentifier> identifiers = sormasToSormasDiscoveryService.getOtherSormasServerIdentifiers()
+			Map<String, SormasServerDescriptor> identifiers = sormasToSormasDiscoveryService.getAllAvailableServers()
 				.stream()
-				.collect(Collectors.toMap(SormasServerIdentifier::getId, Function.identity()));
+				.collect(Collectors.toMap(SormasServerDescriptor::getId, Function.identity()));
 
 			requests.forEach(request -> {
 				String organizationId = request.getOrganizationId();
-				SormasServerIdentifier sormasIdentifier = identifiers.get(organizationId);
+				SormasServerDescriptor sormasIdentifier = identifiers.get(organizationId);
 
 				request.setOrganizationName(sormasIdentifier != null ? sormasIdentifier.getName() : organizationId);
 			});

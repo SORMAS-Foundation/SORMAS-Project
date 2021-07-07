@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,11 +85,11 @@ public class SormasToSormasDiscoveryService {
 		return redisClient.connect().sync();
 	}
 
-	private SormasServerIdentifier buildSormasServerIdentifier(String id, Map<String, String> entry) {
-		return new SormasServerIdentifier(id, entry.get("name"), entry.get("hostName"));
+	private SormasServerDescriptor buildSormasServerDescriptor(String id, Map<String, String> entry) {
+		return new SormasServerDescriptor(id, entry.get("name"), entry.get("hostName"));
 	}
 
-	public Optional<SormasServerIdentifier> getSormasIdentifierById(String id) {
+	public Optional<SormasServerDescriptor> getSormasServerDescriptorById(String id) {
 		if (!sormasToSormasFacadeEjb.isFeatureConfigured()) {
 			LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 			return Optional.empty();
@@ -102,7 +103,7 @@ public class SormasToSormasDiscoveryService {
 			}
 
 			Map<String, String> serverAccess = redis.hgetall(String.format(configFacadeEjb.getS2SConfig().getKeyPrefixTemplate(), id));
-			return Optional.of(buildSormasServerIdentifier(id, serverAccess));
+			return Optional.of(buildSormasServerDescriptor(id, serverAccess));
 
 		} catch (Exception e) {
 			LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
@@ -111,7 +112,7 @@ public class SormasToSormasDiscoveryService {
 		}
 	}
 
-	public List<SormasServerIdentifier> getOtherSormasServerIdentifiers() {
+	public List<SormasServerDescriptor> getAllAvailableServers() {
 		SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
 		if (sormasToSormasConfig.getId() == null) {
 			return Collections.emptyList();
@@ -129,11 +130,11 @@ public class SormasToSormasDiscoveryService {
 			// remove own Id from the set
 			keys.remove(String.format(sormasToSormasConfig.getKeyPrefixTemplate(), sormasToSormasConfig.getId()));
 
-			List<SormasServerIdentifier> list = new ArrayList<>();
+			List<SormasServerDescriptor> list = new ArrayList<>();
 			keys.forEach(key -> {
 				Map<String, String> hgetAll = redis.hgetall(key);
-				SormasServerIdentifier sormasServerIdentifier = buildSormasServerIdentifier(key.split(":")[1], hgetAll);
-				list.add(sormasServerIdentifier);
+				SormasServerDescriptor sormasServerDescriptor = buildSormasServerDescriptor(key.split(":")[1], hgetAll);
+				list.add(sormasServerDescriptor);
 			});
 			return list;
 		} catch (Exception e) {

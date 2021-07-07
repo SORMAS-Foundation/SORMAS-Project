@@ -153,12 +153,14 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			associatedEntities.addAll(shareData.getAssociatedEntities());
 		}
 
-		SormasToSormasOriginInfoDto originInfo =
-			dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options);
+		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options);
 		String requestUuid = DataHelper.createUuid();
 
-		sormasToSormasRestClient
-			.post(options.getOrganization().getUuid(), requestEndpoint, new ShareRequestData<>(requestUuid, previewsToSend, originInfo), null);
+		sormasToSormasRestClient.post(
+			options.getSormasServerDescriptor().getId(),
+			requestEndpoint,
+			new ShareRequestData<>(requestUuid, previewsToSend, originInfo),
+			null);
 
 		saveNewShareInfo(currentUser.toReference(), options, requestUuid, ShareRequestStatus.PENDING, entities, associatedEntities);
 	}
@@ -228,8 +230,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
 
-		SormasToSormasEncryptedDataDto encryptedData = sormasToSormasRestClient
-			.post(organizationId, requestAcceptEndpoint, uuid, SormasToSormasEncryptedDataDto.class);
+		SormasToSormasEncryptedDataDto encryptedData =
+			sormasToSormasRestClient.post(organizationId, requestAcceptEndpoint, uuid, SormasToSormasEncryptedDataDto.class);
 
 		saveSharedEntities(encryptedData, shareRequest.getOriginInfo());
 
@@ -274,7 +276,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			associatedEntities.addAll(shareData.getAssociatedEntities());
 		}
 
-		sormasToSormasRestClient.post(options.getOrganization().getUuid(), saveEndpoint, entitiesToSend, null);
+		sormasToSormasRestClient.post(options.getSormasServerDescriptor().getId(), saveEndpoint, entitiesToSend, null);
 		saveNewShareInfo(currentUser.toReference(), options, DataHelper.createUuid(), ShareRequestStatus.ACCEPTED, entities, associatedEntities);
 	}
 
@@ -306,7 +308,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		ShareData<ADO, S> shareData = getShareDataBuilder().buildShareData(entity, currentUser, options);
 
-		sormasToSormasRestClient.put(options.getOrganization().getUuid(), saveEndpoint, Collections.singletonList(shareData.getDto()), null);
+		sormasToSormasRestClient.put(options.getSormasServerDescriptor().getId(), saveEndpoint, Collections.singletonList(shareData.getDto()), null);
 
 		originInfo.setOwnershipHandedOver(false);
 		originInfoService.persist(originInfo);
@@ -340,9 +342,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		ShareData<ADO, S> shareData = getShareDataBuilder().buildShareData(entity, currentUser, options);
 
-		sormasToSormasRestClient.post(options.getOrganization().getUuid(), syncEndpoint, Collections.singletonList(shareData.getDto()), null);
+		final String receiverId = options.getSormasServerDescriptor().getId();
+		sormasToSormasRestClient.post(receiverId, syncEndpoint, Collections.singletonList(shareData.getDto()), null);
 
-		SormasToSormasShareInfo shareInfo = getShareInfoByEntityAndOrganization(entity.getUuid(), options.getOrganization().getUuid());
+		SormasToSormasShareInfo shareInfo = getShareInfoByEntityAndOrganization(entity.getUuid(), receiverId);
 		List<AssociatedEntityWrapper<?>> additionalAssociatedObjects = shareData.getAssociatedEntities()
 			.stream()
 			.filter(entityWrapper -> !entityWrapper.isAddedToShareInfo(shareInfo))
@@ -442,7 +445,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	protected abstract void addEntityToShareInfo(SormasToSormasShareInfo sormasToSormasShareInfo, List<ADO> entities);
 
-	protected abstract SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String organizationId);
+	protected abstract SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String receiverId);
 
 	protected abstract List<DTO> loadExistingEntities(List<String> uuids);
 
@@ -469,7 +472,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		shareInfo.setUuid(DataHelper.createUuid());
 		shareInfo.setCreationDate(new Timestamp(new Date().getTime()));
-		shareInfo.setOrganizationId(options.getOrganization().getUuid());
+		shareInfo.setOrganizationId(options.getSormasServerDescriptor().getId());
 		shareInfo.setSender(userService.getByReferenceDto(sender));
 		shareInfo.setRequestUuid(requestUuid);
 		shareInfo.setRequestStatus(requestStatus);

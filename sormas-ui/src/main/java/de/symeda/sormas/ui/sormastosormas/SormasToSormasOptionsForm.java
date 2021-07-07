@@ -28,7 +28,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -112,8 +112,8 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 	protected void addFields() {
 		ComboBox organizationField = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
 		organizationField.setRequired(true);
-		List<ServerAccessDataReferenceDto> organizations = FacadeProvider.getSormasToSormasFacade().getAvailableOrganizations();
-		organizationField.addItems(organizations.stream().filter(o -> !excludedOrganizationIds.contains(o.getUuid())).collect(Collectors.toList()));
+		List<SormasServerDescriptor> availableServers = FacadeProvider.getSormasToSormasFacade().getAllAvailableServers();
+		organizationField.addItems(availableServers.stream().filter(o -> !excludedOrganizationIds.contains(o.getId())).collect(Collectors.toList()));
 
 		if (hasOptions) {
 			addFields(customOptions);
