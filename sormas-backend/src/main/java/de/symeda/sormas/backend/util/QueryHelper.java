@@ -5,6 +5,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 
 import org.apache.commons.lang3.StringUtils;
@@ -110,5 +112,71 @@ public final class QueryHelper {
 
 		List<T> resultList = getResultList(em, cq, first, max);
 		return resultList.stream().map(converter).collect(Collectors.toList());
+	}
+
+	/**
+	 * Fetches no or one entry that matches the given query.
+	 * 
+	 * @param <T>
+	 *            Return value type of the {@code cq}.
+	 * @param em
+	 *            The {@link EntityManager} to be invoked.
+	 * @param cq
+	 *            The {@link CriteriaQuery} to be executed.
+	 * @return {@code null} if no entry matches the query.
+	 * @throws NonUniqueResultException
+	 *             If more than one entry was found.
+	 */
+	public static <T> T getSingleResult(EntityManager em, CriteriaQuery<T> cq) {
+
+		return getSingleResult(em.createQuery(cq));
+	}
+
+	/**
+	 * Fetches no or one entry that matches the given query.
+	 * 
+	 * @param <T>
+	 *            Entity, DTO or simple type for the fetched object.
+	 * @param <U>
+	 *            Return value type.
+	 * @param em
+	 *            The {@link EntityManager} to be invoked.
+	 * @param cq
+	 *            The {@link CriteriaQuery} to be executed.
+	 * @param converter
+	 *            Converts the queried object to another type before returning it.
+	 * @return {@code null} if no entry matches the query.
+	 * @throws NonUniqueResultException
+	 *             If more than one entry was found.
+	 */
+	public static <T, U> U getSingleResult(EntityManager em, CriteriaQuery<T> cq, Function<T, U> converter) {
+
+		return converter.apply(getSingleResult(em, cq));
+	}
+
+	/**
+	 * Fetches no or one entry that matches the given query.
+	 * 
+	 * @param <T>
+	 *            Return value type of the {@code typedQuery}.
+	 * @param typedQuery
+	 *            The {@link TypedQuery} to be executed.
+	 * @return {@code null} if no entry matches the query.
+	 * @throws NonUniqueResultException
+	 *             If more than one entry was found.
+	 */
+	public static <T> T getSingleResult(TypedQuery<T> typedQuery) {
+
+		// Query loads maximum two entries to distinguish that the query does not return a unique result.
+		final int maxResults = 2;
+		List<T> list = typedQuery.setMaxResults(maxResults).getResultList();
+		switch (list.size()) {
+		case 0:
+			return null;
+		case 1:
+			return list.get(0);
+		default:
+			throw new NonUniqueResultException("More than one Entity found. Query was: '" + typedQuery + "'.");
+		}
 	}
 }

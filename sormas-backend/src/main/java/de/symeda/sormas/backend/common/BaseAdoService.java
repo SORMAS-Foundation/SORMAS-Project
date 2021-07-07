@@ -53,6 +53,7 @@ import de.symeda.sormas.backend.user.CurrentUser;
 import de.symeda.sormas.backend.user.CurrentUserQualifier;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoService<ADO> {
 
@@ -130,11 +131,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		Root<ADO> from = cq.from(getElementClass());
 		Path<Timestamp> changeDatePath = from.get(AbstractDomainObject.CHANGE_DATE);
 		cq.select(cb.greatest(changeDatePath));
-		try {
-			return em.createQuery(cq).getSingleResult();
-		} catch (NoResultException ex) {
-			return null;
-		}
+		return QueryHelper.getSingleResult(em, cq);
 	}
 
 	@Override

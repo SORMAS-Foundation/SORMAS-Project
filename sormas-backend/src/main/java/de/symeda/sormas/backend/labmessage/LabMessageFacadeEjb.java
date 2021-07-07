@@ -15,7 +15,6 @@ import javax.naming.CannotProceedException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -240,11 +239,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		cq.where(filter);
 		cq.select(cb.equal(from.get(LabMessage.STATUS), LabMessageStatus.PROCESSED));
 
-		try {
-			return em.createQuery(cq).getSingleResult();
-		} catch (NoResultException nre) {
-			return null;
-		}
+		return QueryHelper.getSingleResult(em, cq);
 	}
 
 	@Override
