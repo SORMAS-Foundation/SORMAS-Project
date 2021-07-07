@@ -4,13 +4,14 @@ import static org.sormas.e2etests.constants.api.JsonResourcesLocations.POST_PERS
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.state.BodyResources;
 import org.sormas.e2etests.utils.JsonUtils;
 
+@Slf4j
 public class PostPersonBodyService {
   private JsonUtils jsonUtils;
   private BodyResources bodyResources;
@@ -37,8 +38,8 @@ public class PostPersonBodyService {
       postBody =
           new ObjectMapper().writer().withDefaultPrettyPrinter().writeValueAsString(postBodyJson);
 
-    } catch (IOException ioe) {
-      System.out.println(ioe.getMessage());
+    } catch (Exception e) {
+      log.error("Couldn't generate person body for POST request: " + e.getMessage());
     }
     return postBody;
   }

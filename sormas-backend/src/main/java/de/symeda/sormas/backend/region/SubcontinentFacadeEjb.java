@@ -204,12 +204,12 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 	}
 
 	@Override
-	public void save(SubcontinentDto dto) {
-		save(dto, false);
+	public SubcontinentDto save(SubcontinentDto dto) {
+		return save(dto, false);
 	}
 
 	@Override
-	public void save(SubcontinentDto dto, boolean allowMerge) {
+	public SubcontinentDto save(SubcontinentDto dto, boolean allowMerge) {
 
 		Subcontinent subcontinent = subcontinentService.getByUuid(dto.getUuid());
 
@@ -229,6 +229,8 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 		subcontinent = fillOrBuildEntity(dto, subcontinent, true);
 		subcontinentService.ensurePersisted(subcontinent);
+
+		return toDto(subcontinent);
 	}
 
 	@Override

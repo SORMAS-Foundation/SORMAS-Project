@@ -32,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.PrescriptionIndexDto;
@@ -71,7 +72,7 @@ public class PrescriptionResource extends EntityDtoResource {
 
 	@POST
 	@Path("/indexList")
-	public List<PrescriptionIndexDto> getIndexList(@RequestBody PrescriptionCriteria prescriptionCriteria) {
-		return FacadeProvider.getPrescriptionFacade().getIndexList(prescriptionCriteria);
+	public List<PrescriptionIndexDto> getIndexList(@RequestBody CriteriaWithSorting<PrescriptionCriteria> criteriaWithSorting) {
+		return FacadeProvider.getPrescriptionFacade().getIndexList(criteriaWithSorting.getCriteria());
 	}
 }

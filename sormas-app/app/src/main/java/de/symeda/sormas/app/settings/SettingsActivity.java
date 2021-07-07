@@ -82,6 +82,9 @@ public class SettingsActivity extends BaseLandingActivity {
 			String serverUrl = getActiveFragment().getServerUrl();
 			ConfigProvider.setServerRestUrl(serverUrl);
 
+			String lbdsDebugUrl = getActiveFragment().getLbdsDebugUrl();
+			ConfigProvider.setServerLbdsDebugUrl(lbdsDebugUrl);
+
 			onBackPressed(); // Settings don't have a parent -> go back instead of up
 
 			NotificationHelper.showNotification(this, NotificationPosition.BOTTOM, NotificationType.SUCCESS, R.string.message_settings_saved);

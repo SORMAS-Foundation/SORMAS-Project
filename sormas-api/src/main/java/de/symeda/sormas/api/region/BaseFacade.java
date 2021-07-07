@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.region;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
-public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends EntityDto, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria> {
+public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria> {
 
 	DTO getByUuid(String uuid);
 
@@ -16,7 +17,7 @@ public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends EntityDto, 
 
 	long count(CRITERIA criteria);
 
-	void save(DTO dto);
+	DTO save(DTO dto);
 
 	void archive(String uuid);
 
@@ -28,5 +29,4 @@ public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends EntityDto, 
 
 	List<String> getAllUuids();
 
-	List<REF_DTO> getAllActiveAsReference();
 }

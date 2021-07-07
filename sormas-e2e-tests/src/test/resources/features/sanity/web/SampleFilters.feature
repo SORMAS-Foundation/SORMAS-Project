@@ -1,4 +1,4 @@
-@Sanity @Sample
+@UI @Sanity @Sample
 Feature: Sample filter functionality
 
   Scenario: Check Filters on Sample page work as expected

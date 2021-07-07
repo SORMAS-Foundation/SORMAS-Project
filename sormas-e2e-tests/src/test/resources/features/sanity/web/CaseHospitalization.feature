@@ -1,4 +1,4 @@
-@Sanity @Case @Hospitalization
+@UI @Sanity @Case @Hospitalization
 Feature: Case hospitalization tab e2e test cases
 
   Scenario: Edit all fields from Hospitalization tab
