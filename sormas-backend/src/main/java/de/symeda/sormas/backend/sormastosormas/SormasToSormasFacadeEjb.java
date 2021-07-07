@@ -35,6 +35,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.SormasToSormasConfig;
@@ -90,7 +91,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@EJB
 	private SormasToSormasEncryptionFacadeEjbLocal encryptionService;
 	@Inject
-	private SormasToSormasConfig sormasToSormasConfig;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
 	@Override
 	public List<ServerAccessDataReferenceDto> getAvailableOrganizations() {
@@ -168,7 +169,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	public boolean isFeatureConfigured() {
-		return !StringUtils.isEmpty(sormasToSormasConfig.getPath());
+		return !StringUtils.isEmpty(configFacadeEjb.getS2SConfig().getPath());
 	}
 
 	public SormasToSormasShareInfoDto toSormasToSormasShareInfoDto(SormasToSormasShareInfo source) {

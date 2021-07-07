@@ -11,8 +11,7 @@ public class SormasToSormasDiscoveryServiceProducer {
 	@Produces
 	public SormasToSormasDiscoveryService sormasToSormasDiscoveryService(
 		SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb,
-		SormasToSormasConfig sormasToSormasConfig) {
-		return new SormasToSormasDiscoveryService(sormasToSormasFacadeEjb, configFacadeEjb, sormasToSormasConfig);
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
+		return new SormasToSormasDiscoveryService(sormasToSormasFacadeEjb, configFacadeEjb);
 	}
 }

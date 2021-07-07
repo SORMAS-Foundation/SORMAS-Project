@@ -31,6 +31,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,11 @@ import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoverySer
 import de.symeda.sormas.backend.sormastosormas.rest.auth.Oidc;
 import de.symeda.sormas.backend.util.ClientHelper;
 
+/**
+ * Meant to be instantiated using SormasToSormasRestClientProducer.
+ * We are not using a LocalBean here, because we need to be able to mock this class for unit testing.
+ * Alternatively, we could use Apache DeltaSpike: https://deltaspike.apache.org/documentation/test-control.html#MockFrameworks
+ */
 public class SormasToSormasRestClient {
 
 	public static final String SORMAS_REST_URL_TEMPLATE = "https://%s" + SORMAS_REST_PATH + "%s";
@@ -60,17 +66,17 @@ public class SormasToSormasRestClient {
 
 	private final SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 	private final SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb;
-	private final SormasToSormasConfig sormasToSormasConfig;
+	private final ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
 	private final ObjectMapper mapper;
 
 	public SormasToSormasRestClient(
 		SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
 		SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
-		SormasToSormasConfig sormasToSormasConfig) {
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
 		this.sormasToSormasDiscoveryService = sormasToSormasDiscoveryService;
 		this.sormasToSormasEncryptionEjb = sormasToSormasEncryptionEjb;
-		this.sormasToSormasConfig = sormasToSormasConfig;
+		this.configFacadeEjb = configFacadeEjb;
 
 		mapper = new ObjectMapper();
 		mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
@@ -94,6 +100,7 @@ public class SormasToSormasRestClient {
 		String scope = String.format("s2s-%s", targetId);
 		String authToken;
 		try {
+			SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
 			authToken = Oidc.requestAccessToken(
 				sormasToSormasConfig.getOidcRealmTokenEndoint(),
 				sormasToSormasConfig.getOidcClientId(),
@@ -129,7 +136,7 @@ public class SormasToSormasRestClient {
 				entity = Entity.entity(mapper.writeValueAsString(encryptedBody), MediaType.APPLICATION_JSON_TYPE);
 			} else {
 				// no sender org id in the encrypted DTP, therefore, we pass it as query parameter
-				String ownId = sormasToSormasConfig.getId();
+				String ownId = configFacadeEjb.getS2SConfig().getId();
 
 				// safely append the parameter
 				endpoint = UriBuilder.fromUri(endpoint).queryParam(SormasToSormasConfig.SENDER_SERVER_ID, ownId).build().toString();

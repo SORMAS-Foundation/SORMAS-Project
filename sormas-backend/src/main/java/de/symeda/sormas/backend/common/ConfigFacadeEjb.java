@@ -130,13 +130,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String CENTRAL_REDIS_TRUSTSTORE_PATH = "central.redis.truststorePath";
 	private static final String CENTRAL_REDIS_TRUSTSTORE_PASSWORD = "central.redis.truststorePassword";
 
-	private static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
-	private static final String SORMAS2SORMAS_ID = "sormas2sormas.id";
-	private static final String SORMAS2SORMAS_KEYSTORE_NAME = "sormas2sormas.keystoreName";
-	private static final String SORMAS2SORMAS_KEYSTORE_PASSWORD = "sormas2sormas.keystorePass";
-	private static final String SORMAS2SORMAS_ROOT_CA_ALIAS = "sormas2sormas.rootCaAlias";
-	private static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
-	private static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
+	public static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
+	public static final String SORMAS2SORMAS_ID = "sormas2sormas.id";
+	public static final String SORMAS2SORMAS_KEYSTORE_NAME = "sormas2sormas.keystoreName";
+	public static final String SORMAS2SORMAS_KEYSTORE_PASSWORD = "sormas2sormas.keystorePass";
+	public static final String SORMAS2SORMAS_ROOT_CA_ALIAS = "sormas2sormas.rootCaAlias";
+	public static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
+	public static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
 
 	private static final String SORMAS2SORMAS_OIDC_REALM = "sormas2sormas.oidc.realm";
 	private static final String SORMAS2SORMAS_OIDC_CLIENT_ID = "sormas2sormas.oidc.clientId";
@@ -490,7 +490,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public SormasToSormasConfig getSormasToSormasConfig() {
+	public SormasToSormasConfig getS2SConfig() {
 		SormasToSormasConfig config = new SormasToSormasConfig();
 		config.setPath(getProperty(SORMAS2SORMAS_FILES_PATH, null));
 		config.setKeystoreName(getProperty(SORMAS2SORMAS_KEYSTORE_NAME, null));
@@ -525,7 +525,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getPatientDiaryConfig().getProbandsUrl(),
 			getPatientDiaryConfig().getAuthUrl());
 
-		SormasToSormasConfig s2sConfig = getSormasToSormasConfig();
+		SormasToSormasConfig s2sConfig = getS2SConfig();
 
 		if (s2sConfig.getOidcServer() != null && s2sConfig.getOidcRealm() != null) {
 			urls.add(s2sConfig.getOidcRealmCertEndoint());

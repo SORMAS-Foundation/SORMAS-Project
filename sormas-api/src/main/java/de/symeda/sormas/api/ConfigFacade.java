@@ -111,7 +111,7 @@ public interface ConfigFacade {
 
 	void validateExternalUrls();
 
-	SormasToSormasConfig getSormasToSormasConfig();
+	SormasToSormasConfig getS2SConfig();
 
 	String getExternalSurveillanceToolGatewayUrl();
 

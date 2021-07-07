@@ -76,7 +76,7 @@ public class S2SAuthFilter implements ContainerRequestFilter {
 
 		TokenVerifier<AccessToken> tokenVerifier = TokenVerifier.create(token, AccessToken.class);
 
-		SormasToSormasConfig sormasToSormasConfig = FacadeProvider.getConfigFacade().getSormasToSormasConfig();
+		SormasToSormasConfig sormasToSormasConfig = FacadeProvider.getConfigFacade().getS2SConfig();
 
 		// We assert the following:
 		// 1. The token was issued by the realm we are trusting
@@ -110,7 +110,7 @@ public class S2SAuthFilter implements ContainerRequestFilter {
 	}
 
 	private PublicKey fetchPublicKey() throws VerificationException {
-		SormasToSormasConfig sormasToSormasConfig = FacadeProvider.getConfigFacade().getSormasToSormasConfig();
+		SormasToSormasConfig sormasToSormasConfig = FacadeProvider.getConfigFacade().getS2SConfig();
 
 		ObjectMapper mapper = new ObjectMapper();
 		JSONWebKeySet jwks;

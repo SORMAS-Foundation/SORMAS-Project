@@ -166,7 +166,7 @@ public class MockProducer {
 		public SormasToSormasRestClient sormasToSormasClient(
 			SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
 			SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
-			SormasToSormasConfig sormasToSormasConfig) {
+			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
 			return SORMAS_TO_SORMAS_REST_CLIENT;
 		}
 	}
@@ -184,8 +184,7 @@ public class MockProducer {
 		@Produces
 		public SormasToSormasDiscoveryService sormasToSormasDiscoveryService(
 			SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb,
-			SormasToSormasConfig sormasToSormasConfig) {
+			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
 			return S2S_ACCESS_DATA_SERVICE;
 		}
 

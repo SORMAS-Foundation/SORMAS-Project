@@ -5,8 +5,7 @@ import java.util.Objects;
 
 import javax.enterprise.inject.Alternative;
 
-@Alternative
-public class SormasToSormasConfig implements Serializable, Cloneable {
+public class SormasToSormasConfig implements Serializable {
 
 	private static final long serialVersionUID = -7981351672462016280L;
 

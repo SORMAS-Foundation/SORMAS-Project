@@ -34,10 +34,12 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.bouncycastle.cms.CMSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,12 +65,10 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasEncryptionFacadeEjb.class);
 
-	@Inject
-	protected SormasToSormasConfig sormasToSormasConfig;
-
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 	@Inject
 	SormasToSormasRestClient restClient;
-
 	private final ObjectMapper objectMapper;
 
 	public SormasToSormasEncryptionFacadeEjb() {
@@ -78,15 +78,17 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	}
 
 	private KeyStore getKeystore() throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException {
+		SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
 		return loadStore(sormasToSormasConfig.getKeystoreName(), sormasToSormasConfig.getKeystorePass());
 	}
 
 	private KeyStore getTruststore() throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException {
+		SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
 		return loadStore(sormasToSormasConfig.getTruststoreName(), sormasToSormasConfig.getTruststorePass());
 	}
 
 	private KeyStore loadStore(String name, String password) throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
-		String filePath = sormasToSormasConfig.getPath();
+		String filePath = configFacadeEjb.getS2SConfig().getPath();
 		Path storePath = Paths.get(filePath, name);
 		KeyStore store = KeyStore.getInstance("pkcs12");
 		try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(storePath))) {
@@ -99,7 +101,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	@Override
 	public X509Certificate getOwnCertificate()
 		throws SormasToSormasException, CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException {
-		String ownId = sormasToSormasConfig.getId();
+		String ownId = configFacadeEjb.getS2SConfig().getId();
 		KeyStore keystore = getKeystore();
 		return (X509Certificate) keystore.getCertificate(ownId);
 	}
@@ -113,7 +115,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 		CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
 		X509Certificate receivedCert = (X509Certificate) certificateFactory.generateCertificate(certStream);
 
-		X509Certificate rootCA = (X509Certificate) getTruststore().getCertificate(sormasToSormasConfig.getRootCaAlias());
+		X509Certificate rootCA = (X509Certificate) getTruststore().getCertificate(configFacadeEjb.getS2SConfig().getRootCaAlias());
 
 		try {
 			receivedCert.verify(rootCA.getPublicKey());
@@ -133,6 +135,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	private byte[] cipher(Mode mode, byte[] data, String otherId)
 		throws SormasToSormasException, CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException,
 		CMSException {
+		SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
 		String ownId = sormasToSormasConfig.getId();
 		KeyStore keystore = getKeystore();
 		X509Certificate ownCert = getOwnCertificate();
@@ -158,7 +161,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	public SormasToSormasEncryptedDataDto signAndEncrypt(Object entities, String recipientId) throws SormasToSormasException {
 		try {
 			byte[] encryptedData = cipher(Mode.ENCRYPTION, objectMapper.writeValueAsBytes(entities), recipientId);
-			return new SormasToSormasEncryptedDataDto(sormasToSormasConfig.getId(), encryptedData);
+			return new SormasToSormasEncryptedDataDto(configFacadeEjb.getS2SConfig().getId(), encryptedData);
 		} catch (Exception e) {
 			LOGGER.error("Could not sign and encrypt data", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasEncrypt));

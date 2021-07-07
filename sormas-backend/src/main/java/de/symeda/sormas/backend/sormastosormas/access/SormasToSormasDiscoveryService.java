@@ -44,20 +44,17 @@ public class SormasToSormasDiscoveryService {
 
 	private final SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
 	private final ConfigFacadeEjbLocal configFacadeEjb;
-	private final SormasToSormasConfig sormasToSormasConfig;
 
 	public SormasToSormasDiscoveryService(
-		SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-		ConfigFacadeEjbLocal configFacadeEjb,
-		SormasToSormasConfig sormasToSormasConfig) {
-		this.sormasToSormasFacadeEjb = sormasToSormasFacadeEjb;
-		this.configFacadeEjb = configFacadeEjb;
-		this.sormasToSormasConfig = sormasToSormasConfig;
-	}
+            SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
+            ConfigFacadeEjbLocal configFacadeEjb) {
+        this.sormasToSormasFacadeEjb = sormasToSormasFacadeEjb;
+        this.configFacadeEjb = configFacadeEjb;
+    }
 
 	private RedisCommands<String, String> createRedisConnection() {
 		String[] redis = configFacadeEjb.getCentralRedisHost().split(":");
-
+		SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
 		RedisURI uri = RedisURI.Builder.redis(redis[0], Integer.parseInt(redis[1]))
 			.withAuthentication(sormasToSormasConfig.getRedisClientName(), sormasToSormasConfig.getRedisClientPassword())
 			.withSsl(true)
@@ -71,7 +68,9 @@ public class SormasToSormasDiscoveryService {
 				.keystore(
 					Paths.get(configFacadeEjb.getCentralRedisKeystorePath()).toUri().toURL(),
 					configFacadeEjb.getCentralRedisKeystorePassword().toCharArray())
-				.truststore(Paths.get(configFacadeEjb.getCentralRedisTruststorePath()).toUri().toURL(), configFacadeEjb.getCentralRedisTruststorePassword())
+				.truststore(
+					Paths.get(configFacadeEjb.getCentralRedisTruststorePath()).toUri().toURL(),
+					configFacadeEjb.getCentralRedisTruststorePassword())
 				.build();
 		} catch (MalformedURLException e) {
 			LOGGER.error(String.format("Could not load key material to connect to redis: %s", e));
@@ -101,7 +100,7 @@ public class SormasToSormasDiscoveryService {
 				return Optional.empty();
 			}
 
-			Map<String, String> serverAccess = redis.hgetall(String.format(sormasToSormasConfig.getKeyPrefixTemplate(), id));
+			Map<String, String> serverAccess = redis.hgetall(String.format(configFacadeEjb.getS2SConfig().getKeyPrefixTemplate(), id));
 			return Optional.of(buildSormasServerIdentifier(id, serverAccess));
 
 		} catch (Exception e) {
@@ -112,6 +111,7 @@ public class SormasToSormasDiscoveryService {
 	}
 
 	public List<SormasServerIdentifier> getOtherSormasServerIdentifiers() {
+		SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
 		if (sormasToSormasConfig.getId() == null) {
 			return Collections.emptyList();
 		}
