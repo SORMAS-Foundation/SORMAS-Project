@@ -1623,6 +1623,7 @@ public interface Captions {
 	String remove = "remove";
 	String reportingUser = "reportingUser";
 	String Sample = "Sample";
+	String Sample_name = "Sample.name";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
 	String Sample_additionalTestingStatus = "Sample.additionalTestingStatus";
 	String Sample_associatedCase = "Sample.associatedCase";
@@ -1661,6 +1662,7 @@ public interface Captions {
 	String Sample_sampleMaterialText = "Sample.sampleMaterialText";
 	String Sample_samplePurpose = "Sample.samplePurpose";
 	String Sample_sampleSource = "Sample.sampleSource";
+	String Sample_shipment = "Sample.shipment";
 	String Sample_samplingReason = "Sample.samplingReason";
 	String Sample_samplingReasonDetails = "Sample.samplingReasonDetails";
 	String Sample_shipmentDate = "Sample.shipmentDate";

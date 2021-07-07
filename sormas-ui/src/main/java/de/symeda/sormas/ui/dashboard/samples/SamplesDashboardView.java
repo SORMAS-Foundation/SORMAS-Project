@@ -17,10 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.samples;
 
+import com.vaadin.navigator.ViewChangeListener;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
-import de.symeda.sormas.ui.dashboard.DashboardFilterLayout;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 
 @SuppressWarnings("serial")
@@ -29,14 +31,28 @@ public class SamplesDashboardView extends AbstractDashboardView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/samples";
 
 	protected CountsTileViewLayout countsTileViewLayout;
+	protected SampleFilterLayout filterLayout;
+	protected DashboardDataProvider dashboardDataProvider;
 
 	public SamplesDashboardView() {
-		super(VIEW_NAME, DashboardType.SAMPLES);
+		super(VIEW_NAME);
 
-//		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoSampleDashboard));
-		filterLayout = new DashboardFilterLayout(this, dashboardDataProvider);
+		dashboardDataProvider = new DashboardDataProvider();
+		if (dashboardDataProvider.getDashboardType() == null) {
+			dashboardDataProvider.setDashboardType(DashboardType.SAMPLES);
+		}
+		if (DashboardType.SAMPLES.equals(dashboardDataProvider.getDashboardType())) {
+			dashboardDataProvider.setDisease(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
+		}
+
+		filterLayout = new SampleFilterLayout(this, dashboardDataProvider);
 		dashboardLayout.addComponent(filterLayout);
-//		addComponent(dashboardLayout);
+
+		dashboardSwitcher.setValue(DashboardType.SAMPLES);
+		dashboardSwitcher.addValueChangeListener(e -> {
+			dashboardDataProvider.setDashboardType((DashboardType) e.getProperty().getValue());
+			navigateToDashboardView(e);
+		});
 
 		//add samples
 		countsTileViewLayout = new CountsTileViewLayout(dashboardDataProvider);
@@ -44,8 +60,13 @@ public class SamplesDashboardView extends AbstractDashboardView {
 		dashboardLayout.setExpandRatio(countsTileViewLayout, 1);
 	}
 
+	@Override
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
+		refreshDashboard();
+	}
+
 	public void refreshDashboard() {
-		super.refreshDashboard();
+		dashboardDataProvider.refreshData();
 
 		// Update counts
 		if (countsTileViewLayout != null)
