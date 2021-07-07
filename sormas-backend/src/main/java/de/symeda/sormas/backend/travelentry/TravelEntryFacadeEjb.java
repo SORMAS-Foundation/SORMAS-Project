@@ -4,25 +4,15 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
-import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
-import de.symeda.sormas.backend.immunization.Immunization;
-import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "TravelEntryFacade")
 public class TravelEntryFacadeEjb implements TravelEntryFacade {
@@ -83,6 +73,12 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 	@Override
 	public void validate(TravelEntryDto travelEntryDto) {
+
+	}
+
+	@LocalBean
+	@Stateless
+	public static class TravelEntryFacadeEjbLocal extends TravelEntryFacadeEjb {
 
 	}
 }
