@@ -42,8 +42,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
     @EJB
     private UserService userService;
-    @EJB
-    private PersonService personService;
 
     public ImmunizationService() {
         super(Immunization.class);
@@ -66,7 +64,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> immunizationPath) {
-//		return personService.createUserFilter(cb, cq, immunizationPath.join(Immunization.PERSON, JoinType.LEFT));
 		return inJurisdictionOrOwned(new ImmunizationQueryContext(cb, cq, immunizationPath));
 	}
 
