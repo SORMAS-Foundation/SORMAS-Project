@@ -135,10 +135,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 			@Override
 			public void onChange(ControlPropertyField f) {
-				if (this.currentDisease != null && contentBinding.eventDisease.getValue() != currentDisease) {
-					updateDiseaseVariantsField(contentBinding);
-				} else if (this.currentDisease == null) {
-					// It means the disease were already changed
+				if (this.currentDisease == null || contentBinding.eventDisease.getValue() != currentDisease) {
 					updateDiseaseVariantsField(contentBinding);
 				}
 			}
