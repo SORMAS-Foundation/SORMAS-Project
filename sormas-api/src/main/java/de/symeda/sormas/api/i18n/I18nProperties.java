@@ -339,20 +339,20 @@ public final class I18nProperties {
 
 	public static String getContinentName(String defaultName) {
 		String name = getInstance(userLanguage.get()).continentProperties
-			.getString("continent." + getContinentPropertynameFromDefaultname(defaultName) + ".name");
+			.getString("continent." + cleanContinentOrSubcontinentDefaultName(defaultName) + ".name");
 		return name != null ? name : defaultName;
 	}
 
 	public static String getSubcontinentName(String defaultName) {
 		String name = getInstance(userLanguage.get()).subcontinentProperties
-			.getString("subcontinent." + getContinentPropertynameFromDefaultname(defaultName) + ".name");
+			.getString("subcontinent." + cleanContinentOrSubcontinentDefaultName(defaultName) + ".name");
 		return name != null ? name : defaultName;
 	}
 
 	/**
 	 * remove spaces und everything in brackets following (e.g. "Australia (Continent)" => "AUSTRALIA") for use with i18n-files
 	 */
-	private static String getContinentPropertynameFromDefaultname(String defaultName) {
+	private static String cleanContinentOrSubcontinentDefaultName(String defaultName) {
 		return defaultName.substring(0, defaultName.contains("(") ? defaultName.indexOf("(") : defaultName.length())
 			.trim()
 			.replace(" ", "_")
