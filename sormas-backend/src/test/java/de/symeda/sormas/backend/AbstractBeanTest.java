@@ -533,7 +533,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SormasToSormasShareInfoService.class);
 	}
 
-	public SormasToSormasEncryptionFacade getSormasToSormasEncryptionEjb() {
+	public SormasToSormasEncryptionFacade getSormasToSormasEncryptionFacade() {
 		return getBean(SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal.class);
 	}
 

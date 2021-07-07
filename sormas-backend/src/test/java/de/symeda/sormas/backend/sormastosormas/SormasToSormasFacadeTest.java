@@ -171,7 +171,7 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 		mockS2Snetwork();
 		mockDefaultServerAccess();
 
-		SormasToSormasEncryptedDataDto encryptedData = getSormasToSormasEncryptionEjb().signAndEncrypt(shareData, SECOND_SERVER_ID);
+		SormasToSormasEncryptedDataDto encryptedData = getSormasToSormasEncryptionFacade().signAndEncrypt(shareData, SECOND_SERVER_ID);
 
 		mockSecondServerAccess();
 
@@ -181,7 +181,7 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 	protected <T> T decryptSharesData(byte[] data, Class<T> dataType) throws SormasToSormasException {
 		mockSecondServerAccess();
 
-		T decryptData = getSormasToSormasEncryptionEjb().decryptAndVerify(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ID, data), dataType);
+		T decryptData = getSormasToSormasEncryptionFacade().decryptAndVerify(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ID, data), dataType);
 
 		mockDefaultServerAccess();
 
@@ -197,7 +197,7 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 				} else {
 					mockSecondServerAccess();
 				}
-				X509Certificate cert = getSormasToSormasEncryptionEjb().getOwnCertificate();
+				X509Certificate cert = getSormasToSormasEncryptionFacade().getOwnCertificate();
 				if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ID)) {
 					mockSecondServerAccess();
 				} else {

@@ -13,7 +13,7 @@ public class SormasToSormasConfig implements Serializable, Cloneable {
 	// We normally just send encrypted data DTOs between instances which already carry the org id of the sender, however,
 	// this does not work for GET request. Therefore we include a query parameter in this case. This variable cannot
 	// resort in the REST client, as it needs to be shared between REST client and sormas-rest.
-	public static final String ORG_ID_REQUEST_PARAM = "orgIdSender";
+	public static final String SENDER_SERVER_ID = "senderServerId";
 
 	private String id;
 	private String path;

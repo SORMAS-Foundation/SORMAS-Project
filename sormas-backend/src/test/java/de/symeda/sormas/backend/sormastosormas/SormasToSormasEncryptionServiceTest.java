@@ -59,7 +59,7 @@ public class SormasToSormasEncryptionServiceTest extends SormasToSormasFacadeTes
 
 		// encrypt
 		mockDefaultServerAccess();
-		SormasToSormasEncryptedDataDto encryptedBody = getSormasToSormasEncryptionEjb().signAndEncrypt(bodyToEncrypt, SECOND_SERVER_ID);
+		SormasToSormasEncryptedDataDto encryptedBody = getSormasToSormasEncryptionFacade().signAndEncrypt(bodyToEncrypt, SECOND_SERVER_ID);
 		mockSecondServerAccess();
 
 		assertThat(encryptedBody.getSenderId(), is(DEFAULT_SERVER_ID));
@@ -67,7 +67,7 @@ public class SormasToSormasEncryptionServiceTest extends SormasToSormasFacadeTes
 
 		// decrypt
 		mockSecondServerAccess();
-		SormasToSormasCaseDto[] decryptedBody = getSormasToSormasEncryptionEjb().decryptAndVerify(encryptedBody, SormasToSormasCaseDto[].class);
+		SormasToSormasCaseDto[] decryptedBody = getSormasToSormasEncryptionFacade().decryptAndVerify(encryptedBody, SormasToSormasCaseDto[].class);
 		mockDefaultServerAccess();
 
 		assertThat(decryptedBody.length, is(1));

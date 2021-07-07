@@ -132,7 +132,7 @@ public class SormasToSormasRestClient {
 				String ownId = sormasToSormasConfig.getId();
 
 				// safely append the parameter
-				endpoint = UriBuilder.fromUri(endpoint).queryParam(SormasToSormasConfig.ORG_ID_REQUEST_PARAM, ownId).build().toString();
+				endpoint = UriBuilder.fromUri(endpoint).queryParam(SormasToSormasConfig.SENDER_SERVER_ID, ownId).build().toString();
 			}
 
 			Invocation.Builder invocation = buildRestClient(receiverId, endpoint);
