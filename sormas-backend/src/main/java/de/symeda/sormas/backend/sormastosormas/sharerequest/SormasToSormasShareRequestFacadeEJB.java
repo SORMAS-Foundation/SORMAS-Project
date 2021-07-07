@@ -143,15 +143,15 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		}
 
 		if (!requests.isEmpty()) {
-			Map<String, SormasServerDescriptor> identifiers = sormasToSormasDiscoveryService.getAllAvailableServers()
+			Map<String, SormasServerDescriptor> serverDescriptorMap = sormasToSormasDiscoveryService.getAllAvailableServers()
 				.stream()
 				.collect(Collectors.toMap(SormasServerDescriptor::getId, Function.identity()));
 
 			requests.forEach(request -> {
 				String organizationId = request.getOrganizationId();
-				SormasServerDescriptor sormasIdentifier = identifiers.get(organizationId);
+				SormasServerDescriptor serverDescriptor = serverDescriptorMap.get(organizationId);
 
-				request.setOrganizationName(sormasIdentifier != null ? sormasIdentifier.getName() : organizationId);
+				request.setOrganizationName(serverDescriptor != null ? serverDescriptor.getName() : organizationId);
 			});
 		}
 

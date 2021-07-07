@@ -300,10 +300,10 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		infoLayout.setSpacing(false);
 		infoLayout.setStyleName(CssStyles.VSPACE_3);
 
-		SormasServerDescriptor serverAccessDataRef =
+		SormasServerDescriptor serverDescriptor =
 			FacadeProvider.getSormasToSormasFacade().getSormasServerDescriptorById(originInfo.getOrganizationId());
 
-		Label senderOrganizationLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSentFrom) + " " + serverAccessDataRef);
+		Label senderOrganizationLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSentFrom) + " " + serverDescriptor);
 		senderOrganizationLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_WHITE_SPACE_NORMAL);
 		infoLayout.addComponent(senderOrganizationLabel);
 		infoLayout.addComponent(new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + originInfo.getSenderName()));
