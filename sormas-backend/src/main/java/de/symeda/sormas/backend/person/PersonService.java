@@ -183,7 +183,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, caseJoin);
 		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, contactJoin);
 		final Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantJoin);
-		final Predicate immunizationUserFilter = immunizationService.inJurisdictionOrOwned(new ImmunizationQueryContext(cb, cq, immunizationJoin));
+		final Predicate immunizationUserFilter = immunizationService.createUserFilter(cb, cq, immunizationJoin);
 
 		final Predicate caseNotDeleted = caseService.createDefaultFilter(cb, caseJoin);
 		final Predicate contactNotDeleted = contactService.createDefaultFilter(cb, contactJoin);
@@ -280,6 +280,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	}
 
 	@Override
+	// todo refactor this to use the create user filter form persons
 	public List<Person> getAllAfter(Date date, User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -360,7 +361,27 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		eventPersonsQuery.distinct(true);
 		List<Person> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
 
-		return Stream.of(lgaResultList, casePersonsResultList, contactPersonsResultList, eventPersonsResultList)
+		// persons by immunization
+		CriteriaQuery<Person> immunizationPersonsQuery = cb.createQuery(Person.class);
+		Root<Immunization> immunizationPersonsRoot = immunizationPersonsQuery.from(Immunization.class);
+		Join<Immunization, Person> immunizationPersonsSelect = immunizationPersonsRoot.join(Immunization.PERSON);
+		immunizationPersonsSelect.fetch(Person.ADDRESS);
+		immunizationPersonsQuery.select(immunizationPersonsSelect);
+		Predicate immunizationPersonsFilter = immunizationService.createUserFilter(cb, immunizationPersonsQuery, immunizationPersonsRoot);
+		// date range
+		if (date != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, immunizationPersonsSelect, DateHelper.toTimestampUpper(date));
+			Predicate immunizationDateFilter =
+					immunizationService.createChangeDateFilter(cb, immunizationPersonsRoot, DateHelper.toTimestampUpper(date));
+			immunizationPersonsFilter = and(cb, immunizationPersonsFilter, cb.or(dateFilter, immunizationDateFilter));
+		}
+		if (immunizationPersonsFilter != null) {
+			immunizationPersonsQuery.where(immunizationPersonsFilter);
+		}
+		immunizationPersonsQuery.distinct(true);
+		List<Person> immunizationPersonsResultList = em.createQuery(immunizationPersonsQuery).getResultList();
+
+		return Stream.of(lgaResultList, casePersonsResultList, contactPersonsResultList, eventPersonsResultList, immunizationPersonsResultList)
 			.flatMap(List<Person>::stream)
 			.distinct()
 			.sorted(Comparator.comparing(Person::getChangeDate))

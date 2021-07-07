@@ -15,14 +15,11 @@
 
 package de.symeda.sormas.backend.immunization;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -61,10 +58,10 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			UserRole.NATIONAL_USER);
 
 		districtUser1 = creator
-				.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
 
 		districtUser2 = creator
-				.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
 	}
 
 	@Test
@@ -108,30 +105,33 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			rdcf1);
 		List<ImmunizationDto> allAfter = getImmunizationFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
 		assertEquals(2, allAfter.size());
+		List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(new DateTime(new Date()).minusDays(1).toDate());
+		assertEquals(1, allPersonsAfter.size());
 	}
 
 	@Test
-	public void testCanSeeByResponsibleJurisdiction() {
+	public void testJurisdictionFiltering() {
 		loginWith(nationalUser);
 
-		PersonDto person = creator.createPerson("John", "Doe");
+		PersonDto person1 = creator.createPerson("John", "Doe");
+		PersonDto person2 = creator.createPerson("John2", "Doe2");
 
-		ImmunizationDto seenImmunization = creator.createImmunization(
-				Disease.DENGUE,
-				person.toReference(),
-				nationalUser.toReference(),
-				ImmunizationStatus.ACQUIRED,
-				MeansOfImmunization.VACCINATION,
-				ImmunizationManagementStatus.COMPLETED,
-				rdcf2);
 		ImmunizationDto nonSeenImmunization = creator.createImmunization(
-				Disease.DENGUE,
-				person.toReference(),
-				nationalUser.toReference(),
-				ImmunizationStatus.ACQUIRED,
-				MeansOfImmunization.VACCINATION,
-				ImmunizationManagementStatus.COMPLETED,
-				rdcf1);
+			Disease.DENGUE,
+			person1.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		ImmunizationDto seenImmunization = creator.createImmunization(
+			Disease.DENGUE,
+			person2.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf2);
 
 		loginWith(districtUser2);
 		List<ImmunizationDto> allAfter = getImmunizationFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
@@ -140,6 +140,20 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(seenImmunization.getUuid(), immunizationDto.getUuid());
 		assertEquals(seenImmunization.getPerson().getFirstName(), immunizationDto.getPerson().getFirstName());
 		assertEquals(seenImmunization.getPerson().getLastName(), immunizationDto.getPerson().getLastName());
+
+		// assert getting non seen immunization in grid is pseudonymized
+		ImmunizationDto byUuid = getImmunizationFacade().getByUuid(nonSeenImmunization.getUuid());
+		assertEquals(nonSeenImmunization.getUuid(), byUuid.getUuid());
+		assertEquals("Confidential", byUuid.getPerson().getLastName());
+		assertEquals("Confidential", byUuid.getPerson().getFirstName());
+
+		List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(new DateTime(new Date()).minusDays(1).toDate());
+		assertEquals(1, allPersonsAfter.size());
+		PersonDto personDto = allPersonsAfter.get(0);
+		assertEquals(person2.getUuid(), personDto.getUuid());
+
+		loginWith(nationalUser);
+		assertEquals(2, getPersonFacade().getPersonsAfter(new DateTime(new Date()).minusDays(1).toDate()).size());
 	}
 
 }
