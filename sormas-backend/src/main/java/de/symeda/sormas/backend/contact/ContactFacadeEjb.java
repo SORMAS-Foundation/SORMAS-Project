@@ -178,6 +178,7 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb.VaccinationInfoFacadeEjbLocal;
@@ -593,7 +594,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)), cb.desc(contact.get(Contact.ID)));
 
-		List<ContactExportDto> exportContacts = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<ContactExportDto> exportContacts = QueryHelper.getResultList(em, cq, first, max);
 		List<String> resultContactsUuids = exportContacts.stream().map(ContactExportDto::getUuid).collect(Collectors.toList());
 
 		if (!exportContacts.isEmpty()) {
@@ -754,7 +755,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		cq.where(filter);
 		cq.orderBy(cb.asc(contactRoot.get(Contact.REPORT_DATE_TIME)));
 
-		List<VisitSummaryExportDto> visitSummaries = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<VisitSummaryExportDto> visitSummaries = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!visitSummaries.isEmpty()) {
 			List<String> visitSummaryUuids = visitSummaries.stream().map(e -> e.getUuid()).collect(Collectors.toList());
@@ -927,7 +928,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			cq.orderBy(cb.desc(contact.get(Contact.CHANGE_DATE)));
 		}
 
-		List<ContactFollowUpDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<ContactFollowUpDto> resultList = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!resultList.isEmpty()) {
 
@@ -993,13 +994,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	public List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaQuery<ContactIndexDto> query = listCriteriaBuilder.buildIndexCriteria(contactCriteria, sortProperties);
-
-		final List<ContactIndexDto> dtos;
-		if (first != null && max != null) {
-			dtos = em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			dtos = em.createQuery(query).getResultList();
-		}
+		List<ContactIndexDto> dtos = QueryHelper.getResultList(em, query, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(ContactIndexDto.class, dtos, c -> c.getInJurisdiction(), (c, isInJurisdiction) -> {
@@ -1019,13 +1014,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		List<SortProperty> sortProperties) {
 
 		CriteriaQuery<ContactIndexDetailedDto> query = listCriteriaBuilder.buildIndexDetailedCriteria(contactCriteria, sortProperties);
-
-		List<ContactIndexDetailedDto> dtos;
-		if (first != null && max != null) {
-			dtos = em.createQuery(query).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			dtos = em.createQuery(query).getResultList();
-		}
+		List<ContactIndexDetailedDto> dtos = QueryHelper.getResultList(em, query, first, max);
 
 		// Load event count and latest events info per contact
 		Map<String, List<ContactEventSummaryDetails>> eventSummaries =

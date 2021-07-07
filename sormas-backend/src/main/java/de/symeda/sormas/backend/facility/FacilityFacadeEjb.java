@@ -70,6 +70,7 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "FacilityFacade")
 public class FacilityFacadeEjb implements FacilityFacade {
@@ -492,9 +493,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			facility.get(Facility.LONGITUDE),
 			facility.get(Facility.EXTERNAL_ID));
 
-		return first != null && max != null
-			? em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList()
-			: em.createQuery(cq).getResultList();
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	@Override
@@ -543,9 +542,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			cb.asc(community.get(Community.NAME)),
 			cb.asc(facility.get(Facility.NAME)));
 
-		return first != null && max != null
-			? em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList()
-			: em.createQuery(cq).getResultList();
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	@Override
