@@ -3421,6 +3421,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		cq.multiselect(
 			caze.get(Case.UUID),
+			caze.get(Case.CHANGE_DATE),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			caze.get(Case.REPORT_DATE),
@@ -3436,6 +3437,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
+
+		cq.distinct(true);
 
 		if (sortProperties != null && !sortProperties.isEmpty()) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
