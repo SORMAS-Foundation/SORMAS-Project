@@ -239,6 +239,21 @@ public class AboutView extends VerticalLayout implements View {
 
 	private VerticalLayout createCustomHtmlSection(String caption, String fileName) {
 
+		String htmlContentString = "";
+
+		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getCustomFilesPath());
+		Path customFilePath = customHtmlDirectory.resolve(fileName);
+
+		try {
+			byte[] encoded = Files.readAllBytes(customFilePath);
+			htmlContentString = HtmlHelper.cleanHtmlRelaxed(new String(encoded, StandardCharsets.UTF_8));
+			if (htmlContentString.isEmpty()) {
+				return null;
+			}
+		} catch (IOException e) {
+			return null;
+		}
+
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSpacing(false);
 		layout.setMargin(new MarginInfo(true, false, false, false));
@@ -249,22 +264,11 @@ public class AboutView extends VerticalLayout implements View {
 		layout.addComponent(headerLabel);
 
 		// Label, loaded from custom file
-		Label htmlContent = new Label();
+		Label htmlContent = new Label(htmlContentString);
 		htmlContent.setContentMode(ContentMode.HTML);
-
-		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getCustomFilesPath());
-		Path customFilePath = customHtmlDirectory.resolve(fileName);
-
-		try {
-			byte[] encoded = Files.readAllBytes(customFilePath);
-			htmlContent.setValue(HtmlHelper.cleanHtmlRelaxed(new String(encoded, StandardCharsets.UTF_8)));
-		} catch (IOException e) {
-			htmlContent.setValue("");
-		}
-
 		layout.addComponent(htmlContent);
 
-		return htmlContent.getValue().equals("") ? null : layout;
+		return layout;
 	}
 
 	private boolean shouldShowDocumentsSection() {
