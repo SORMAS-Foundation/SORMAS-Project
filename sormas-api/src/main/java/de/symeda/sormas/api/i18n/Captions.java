@@ -1362,6 +1362,7 @@ public interface Captions {
 	String mainMenuConfiguration = "mainMenuConfiguration";
 	String mainMenuContacts = "mainMenuContacts";
 	String mainMenuDashboard = "mainMenuDashboard";
+	String mainMenuEntries = "mainMenuEntries";
 	String mainMenuEvents = "mainMenuEvents";
 	String mainMenuPersons = "mainMenuPersons";
 	String mainMenuReports = "mainMenuReports";
