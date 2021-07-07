@@ -26,7 +26,7 @@ public interface SormasToSormasFacade {
 
 	List<SormasServerDescriptor> getAllAvailableServers();
 
-	SormasServerDescriptor getSormasServerReferenceById(String id);
+	SormasServerDescriptor getSormasServerDescriptorById(String id);
 
 	List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
 

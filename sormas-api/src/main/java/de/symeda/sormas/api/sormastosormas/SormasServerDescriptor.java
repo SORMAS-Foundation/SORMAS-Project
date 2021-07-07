@@ -1,8 +1,11 @@
 package de.symeda.sormas.api.sormastosormas;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class SormasServerDescriptor {
+public class SormasServerDescriptor implements Serializable {
+
+	private static final long serialVersionUID = 42341345234L;
 
 	private final String id;
 	private String name;
@@ -52,7 +55,11 @@ public class SormasServerDescriptor {
 
 	@Override
 	public String toString() {
-		return "ServerAccessDataDto{" + "id='" + getId() + '\'' + ", hostName='" + hostName + '\'' + ", organizationName='" + getName() + '\'' + '}';
+		if (name != null) {
+			return name;
+		} else {
+			return id;
+		}
 	}
 
 }

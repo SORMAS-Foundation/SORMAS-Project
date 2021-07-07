@@ -21,6 +21,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	public static final String I18N_PREFIX = "SormasToSormasOptions";
 
+	// Fixme this should be renamed
 	public static final String ORGANIZATION = "organization";
 	public static final String HAND_OVER_OWNERSHIP = "handOverOwnership";
 	public static final String PSEUDONYMIZE_PERSONAL_DATA = "pseudonymizePersonalData";
@@ -31,7 +32,8 @@ public class SormasToSormasOptionsDto implements Serializable {
 	public static final String WITH_SAMPLES = "withSamples";
 	public static final String WITH_EVENT_PARTICIPANTS = "withEventParticipants";
 
-	private SormasServerDescriptor sormasServerDescriptor;
+	// Fixme this should be renamed but it has strange side effects with the UI
+	private SormasServerDescriptor organization;
 
 	private boolean handOverOwnership;
 
@@ -47,12 +49,22 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	private boolean withEventParticipants;
 
-	public SormasServerDescriptor getSormasServerDescriptor() {
-		return sormasServerDescriptor;
+	// Fixme this should be removed
+	public SormasServerDescriptor getOrganization() {
+		return organization;
 	}
 
-	public void setSormasServerDescriptor(SormasServerDescriptor sormasServerDescriptor) {
-		this.sormasServerDescriptor = sormasServerDescriptor;
+	public SormasServerDescriptor getSormasServerDescriptor() {
+		return organization;
+	}
+
+	// Fixme this should be removed
+	public void setOrganization(SormasServerDescriptor organization) {
+		this.organization = organization;
+	}
+
+	public void setSormasServerDescriptor(SormasServerDescriptor organization) {
+		this.organization = organization;
 	}
 
 	public boolean isHandOverOwnership() {

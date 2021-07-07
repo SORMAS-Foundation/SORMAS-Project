@@ -97,8 +97,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	@Override
-	public SormasServerDescriptor getSormasServerReferenceById(String id) {
-		return sormasToSormasDiscoveryService.getSormasServerDescriptorById(id).orElseGet(null);
+	public SormasServerDescriptor getSormasServerDescriptorById(String id) {
+		return sormasToSormasDiscoveryService.getSormasServerDescriptorById(id);
 	}
 
 	@Override
@@ -173,8 +173,11 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		DtoHelper.fillDto(target, source);
 
 		final String senderId = source.getOrganizationId();
-		SormasServerDescriptor serverDescriptor =
-			sormasToSormasDiscoveryService.getSormasServerDescriptorById(senderId).orElseGet(() -> new SormasServerDescriptor(senderId, senderId));
+		SormasServerDescriptor serverDescriptor = sormasToSormasDiscoveryService.getSormasServerDescriptorById(senderId);
+		if (serverDescriptor == null) {
+			serverDescriptor = new SormasServerDescriptor(senderId, senderId);
+		}
+
 		target.setTargetDescriptor(serverDescriptor);
 
 		target.setRequestStatus(source.getRequestStatus());

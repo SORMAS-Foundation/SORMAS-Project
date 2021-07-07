@@ -115,8 +115,10 @@ public class SormasToSormasRestClient {
 	}
 
 	private Invocation.Builder buildRestClient(String receiverId, String endpoint) throws SormasToSormasException {
-		SormasServerDescriptor targetServerDescriptor = sormasToSormasDiscoveryService.getSormasServerDescriptorById(receiverId)
-			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
+		SormasServerDescriptor targetServerDescriptor = sormasToSormasDiscoveryService.getSormasServerDescriptorById(receiverId);
+		if (targetServerDescriptor == null) {
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess));
+		}
 
 		String host = targetServerDescriptor.getHostName();
 		String authToken = buildAuthToken(targetServerDescriptor.getId());

@@ -110,10 +110,10 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	@Override
 	protected void addFields() {
-		ComboBox organizationField = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
-		organizationField.setRequired(true);
+		ComboBox availableServersBox = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
+		availableServersBox.setRequired(true);
 		List<SormasServerDescriptor> availableServers = FacadeProvider.getSormasToSormasFacade().getAllAvailableServers();
-		organizationField.addItems(availableServers.stream().filter(o -> !excludedOrganizationIds.contains(o.getId())).collect(Collectors.toList()));
+		availableServersBox.addItems(availableServers.stream().filter(o -> !excludedOrganizationIds.contains(o.getId())).collect(Collectors.toList()));
 
 		if (hasOptions) {
 			addFields(customOptions);

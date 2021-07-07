@@ -89,26 +89,26 @@ public class SormasToSormasDiscoveryService {
 		return new SormasServerDescriptor(id, entry.get("name"), entry.get("hostName"));
 	}
 
-	public Optional<SormasServerDescriptor> getSormasServerDescriptorById(String id) {
+	public SormasServerDescriptor getSormasServerDescriptorById(String id) {
 		if (!sormasToSormasFacadeEjb.isFeatureConfigured()) {
 			LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
-			return Optional.empty();
+			return null;
 		}
 
 		try {
 			RedisCommands<String, String> redis = createRedisConnection();
 			if (redis == null) {
 				LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
-				return Optional.empty();
+				return null;
 			}
 
 			Map<String, String> serverAccess = redis.hgetall(String.format(configFacadeEjb.getS2SConfig().getKeyPrefixTemplate(), id));
-			return Optional.of(buildSormasServerDescriptor(id, serverAccess));
+			return buildSormasServerDescriptor(id, serverAccess);
 
 		} catch (Exception e) {
 			LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 			LOGGER.error("Unexpected error while reading sormas to sormas server access data", e);
-			return Optional.empty();
+			return null;
 		}
 	}
 
