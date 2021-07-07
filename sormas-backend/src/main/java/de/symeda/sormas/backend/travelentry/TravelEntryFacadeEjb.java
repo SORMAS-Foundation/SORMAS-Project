@@ -4,14 +4,13 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
-import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -211,5 +210,11 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
 
 		return target;
+	}
+
+	@LocalBean
+	@Stateless
+	public static class TravelEntryFacadeEjbLocal extends TravelEntryFacadeEjb {
+
 	}
 }
