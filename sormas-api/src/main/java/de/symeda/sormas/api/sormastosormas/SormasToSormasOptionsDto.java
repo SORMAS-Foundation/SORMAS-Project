@@ -50,6 +50,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 	private boolean withEventParticipants;
 
 	// Fixme this should be removed
+	@Deprecated
 	public SormasServerDescriptor getOrganization() {
 		return organization;
 	}
@@ -59,6 +60,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 	}
 
 	// Fixme this should be removed
+	@Deprecated
 	public void setOrganization(SormasServerDescriptor organization) {
 		this.organization = organization;
 	}
