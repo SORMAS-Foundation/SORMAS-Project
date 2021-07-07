@@ -338,22 +338,25 @@ public final class I18nProperties {
 	}
 
 	public static String getContinentName(String defaultName) {
-		// remove spaces und everything in brackets following (e.g. "Australia (Continent)" => "AUSTRALIA")
-		defaultName = defaultName.substring(0, defaultName.contains("(") ? defaultName.indexOf("(") : defaultName.length())
-			.trim()
-			.replace(" ", "_")
-			.toUpperCase();
-		String name = getInstance(userLanguage.get()).continentProperties.getString("continent." + defaultName + ".name");
+		String name = getInstance(userLanguage.get()).continentProperties
+			.getString("continent." + getContinentPropertynameFromDefaultname(defaultName) + ".name");
 		return name != null ? name : defaultName;
 	}
 
 	public static String getSubcontinentName(String defaultName) {
-		defaultName = defaultName.substring(0, defaultName.contains("(") ? defaultName.indexOf("(") : defaultName.length())
+		String name = getInstance(userLanguage.get()).subcontinentProperties
+			.getString("subcontinent." + getContinentPropertynameFromDefaultname(defaultName) + ".name");
+		return name != null ? name : defaultName;
+	}
+
+	/**
+	 * remove spaces und everything in brackets following (e.g. "Australia (Continent)" => "AUSTRALIA") for use with i18n-files
+	 */
+	private static String getContinentPropertynameFromDefaultname(String defaultName) {
+		return defaultName.substring(0, defaultName.contains("(") ? defaultName.indexOf("(") : defaultName.length())
 			.trim()
 			.replace(" ", "_")
 			.toUpperCase();
-		String name = getInstance(userLanguage.get()).subcontinentProperties.getString("subcontinent." + defaultName + ".name");
-		return name != null ? name : defaultName;
 	}
 
 	public static ResourceBundle loadProperties(String propertiesGroup, Locale locale) {
