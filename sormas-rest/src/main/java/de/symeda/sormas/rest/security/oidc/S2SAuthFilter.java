@@ -44,21 +44,22 @@ public class S2SAuthFilter implements ContainerRequestFilter {
 
 		if (!validHeader) {
 			requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED.getStatusCode(), "Invalid header").build());
+			return;
 		}
 
 		String token = authorizationHeader.substring(BEARER.length()).trim();
-		String orgIdSender = "";
+		String senderId = "";
 
 		if (requestContext.getMethod().equals(HttpMethod.GET)) {
-			orgIdSender = requestContext.getUriInfo().getQueryParameters().getFirst(SormasToSormasConfig.SENDER_SERVER_ID);
+			senderId = requestContext.getUriInfo().getQueryParameters().getFirst(SormasToSormasConfig.SENDER_SERVER_ID);
 		} else {
 			ContainerRequest cr = (ContainerRequest) requestContext;
 			cr.bufferEntity();
 			SormasToSormasEncryptedDataDto dto = cr.readEntity(SormasToSormasEncryptedDataDto.class);
-			orgIdSender = dto.getSenderId();
+			senderId = dto.getSenderId();
 		}
 		try {
-			if (!isValidToken(token, orgIdSender)) {
+			if (!isValidToken(token, senderId)) {
 				requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED.getStatusCode(), "Invalid token").build());
 			}
 		} catch (Exception e) {

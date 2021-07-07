@@ -107,7 +107,7 @@ public class SormasToSormasRestClient {
 				sormasToSormasConfig.getOidcClientSecret(),
 				Collections.singletonList(scope));
 		} catch (Exception e) {
-			LOGGER.info(String.format("Could not requested access token for %s: %s", targetId, e));
+			LOGGER.info("Could not requested access token for {}: {}", targetId, e);
 			throw new SormasToSormasException(e.getMessage());
 		}
 		LOGGER.info(String.format("Successfully requested access token for %s", targetId));
