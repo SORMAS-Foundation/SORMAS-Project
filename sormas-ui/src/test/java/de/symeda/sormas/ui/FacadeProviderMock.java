@@ -30,6 +30,7 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
+import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
@@ -63,6 +64,7 @@ import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
 import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb.EventImportFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.importexport.ExportFacadeEjb.ExportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
@@ -152,6 +154,8 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) bm.getBean(EventImportFacadeEjbLocal.class);
 		} else if (DocumentFacade.class == clazz) {
 			return (P) bm.getBean(DocumentFacadeEjbLocal.class);
+		}else if (ImmunizationFacade.class == clazz) {
+			return (P) bm.getBean(ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal.class);
 		}
 
 		return null;

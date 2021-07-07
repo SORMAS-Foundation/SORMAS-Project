@@ -25,6 +25,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import org.apache.commons.collections.CollectionUtils;
 
 public class UserReferenceDto extends ReferenceDto {
 
