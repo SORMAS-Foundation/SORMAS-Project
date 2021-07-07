@@ -84,11 +84,11 @@ public class SormasToSormasDiscoveryService {
 		return redisClient.connect().sync();
 	}
 
-	private SormasServerReference buildSormasServerReference(String id, Map<String, String> entry) {
-		return new SormasServerReference(id, entry.get("name"), entry.get("hostName"));
+	private SormasServerIdentifier buildSormasServerIdentifier(String id, Map<String, String> entry) {
+		return new SormasServerIdentifier(id, entry.get("name"), entry.get("hostName"));
 	}
 
-	public Optional<SormasServerReference> getSormasServerReferenceById(String id) {
+	public Optional<SormasServerIdentifier> getSormasIdentifierById(String id) {
 		if (!sormasToSormasFacadeEjb.isFeatureConfigured()) {
 			LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 			return Optional.empty();
@@ -102,7 +102,7 @@ public class SormasToSormasDiscoveryService {
 			}
 
 			Map<String, String> serverAccess = redis.hgetall(String.format(sormasToSormasConfig.getKeyPrefixTemplate(), id));
-			return Optional.of(buildSormasServerReference(id, serverAccess));
+			return Optional.of(buildSormasServerIdentifier(id, serverAccess));
 
 		} catch (Exception e) {
 			LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
@@ -111,7 +111,7 @@ public class SormasToSormasDiscoveryService {
 		}
 	}
 
-	public List<SormasServerReference> getOtherSormasServerReferences() {
+	public List<SormasServerIdentifier> getOtherSormasServerIdentifiers() {
 		if (sormasToSormasConfig.getId() == null) {
 			return Collections.emptyList();
 		}
@@ -128,11 +128,11 @@ public class SormasToSormasDiscoveryService {
 			// remove own Id from the set
 			keys.remove(String.format(sormasToSormasConfig.getKeyPrefixTemplate(), sormasToSormasConfig.getId()));
 
-			List<SormasServerReference> list = new ArrayList<>();
+			List<SormasServerIdentifier> list = new ArrayList<>();
 			keys.forEach(key -> {
 				Map<String, String> hgetAll = redis.hgetall(key);
-				SormasServerReference sormasServerReference = buildSormasServerReference(key.split(":")[1], hgetAll);
-				list.add(sormasServerReference);
+				SormasServerIdentifier sormasServerIdentifier = buildSormasServerIdentifier(key.split(":")[1], hgetAll);
+				list.add(sormasServerIdentifier);
 			});
 			return list;
 		} catch (Exception e) {

@@ -52,7 +52,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.access.SormasServerReference;
+import de.symeda.sormas.backend.sormastosormas.access.SormasServerIdentifier;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
@@ -94,15 +94,15 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	public List<ServerAccessDataReferenceDto> getAvailableOrganizations() {
-		return sormasToSormasDiscoveryService.getOtherSormasServerReferences()
+		return sormasToSormasDiscoveryService.getOtherSormasServerIdentifiers()
 			.stream()
-			.map(SormasServerReference::toReference)
+			.map(SormasServerIdentifier::toReference)
 			.collect(Collectors.toList());
 	}
 
 	@Override
 	public ServerAccessDataReferenceDto getOrganizationRef(String id) {
-		return sormasToSormasDiscoveryService.getSormasServerReferenceById(id).map(SormasServerReference::toReference).orElseGet(null);
+		return sormasToSormasDiscoveryService.getSormasIdentifierById(id).map(SormasServerIdentifier::toReference).orElseGet(null);
 	}
 
 	@Override
@@ -176,9 +176,9 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		DtoHelper.fillDto(target, source);
 
-		SormasServerReference serverAccessData = sormasToSormasDiscoveryService.getSormasServerReferenceById(source.getOrganizationId())
-			.orElseGet(() -> new SormasServerReference(source.getOrganizationId(), source.getOrganizationId()));
-		target.setTarget(serverAccessData.toReference());
+		SormasServerIdentifier serverIdentifier = sormasToSormasDiscoveryService.getSormasIdentifierById(source.getOrganizationId())
+			.orElseGet(() -> new SormasServerIdentifier(source.getOrganizationId(), source.getOrganizationId()));
+		target.setTarget(serverIdentifier.toReference());
 
 		target.setRequestStatus(source.getRequestStatus());
 		target.setSender(source.getSender().toReference());

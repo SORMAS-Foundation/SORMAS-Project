@@ -48,7 +48,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.access.SormasServerReference;
+import de.symeda.sormas.backend.sormastosormas.access.SormasServerIdentifier;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.rest.auth.Oidc;
 import de.symeda.sormas.backend.util.ClientHelper;
@@ -108,7 +108,7 @@ public class SormasToSormasRestClient {
 	}
 
 	private Invocation.Builder buildRestClient(String receiverId, String endpoint) throws SormasToSormasException {
-		SormasServerReference targetServerAccessData = sormasToSormasDiscoveryService.getSormasServerReferenceById(receiverId)
+		SormasServerIdentifier targetServerAccessData = sormasToSormasDiscoveryService.getSormasIdentifierById(receiverId)
 			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 
 		String host = targetServerAccessData.getHostName();

@@ -68,7 +68,7 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.sormastosormas.access.SormasServerReference;
+import de.symeda.sormas.backend.sormastosormas.access.SormasServerIdentifier;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
@@ -76,11 +76,11 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 
 	// values are set in server-list.csv located in serveraccessdefault and serveraccesssecond
 	public static final String DEFAULT_SERVER_ID = "2.sormas.id.sormas_a";
-	public static final SormasServerReference DEFAULT_SERVER_REFERENCE =
-		new SormasServerReference("2.sormas.id.sormas_a", "sormas_a", "sormas_a:6048");
+	public static final SormasServerIdentifier DEFAULT_SERVER =
+		new SormasServerIdentifier("2.sormas.id.sormas_a", "sormas_a", "sormas_a:6048");
 	public static final String SECOND_SERVER_ID = "2.sormas.id.sormas_b";
-	public static final SormasServerReference SECOND_SERVER_REFERENCE =
-		new SormasServerReference("2.sormas.id.sormas_b", "sormas_b", "sormas_b:6048");
+	public static final SormasServerIdentifier SECOND_SERVER =
+		new SormasServerIdentifier("2.sormas.id.sormas_b", "sormas_b", "sormas_b:6048");
 	private ObjectMapper objectMapper;
 
 	@Override
