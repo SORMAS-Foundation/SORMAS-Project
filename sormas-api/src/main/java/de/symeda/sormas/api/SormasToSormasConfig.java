@@ -3,7 +3,6 @@ package de.symeda.sormas.api;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.enterprise.inject.Alternative;
 
 public class SormasToSormasConfig implements Serializable {
 
@@ -161,7 +160,7 @@ public class SormasToSormasConfig implements Serializable {
 	 *
 	 * @return The complete URL to our S2S realm's token URL.
 	 */
-	public String getOidcRealmTokenEndoint() {
+	public String getOidcRealmTokenEndpoint() {
 		return getOidcRealmUrl() + "/protocol/openid-connect/token";
 	}
 
@@ -186,7 +185,7 @@ public class SormasToSormasConfig implements Serializable {
 	 *
 	 * @return The complete URL to our S2S realm's certificate URL.
 	 */
-	public String getOidcRealmCertEndoint() {
+	public String getOidcRealmCertEndpoint() {
 		return getOidcRealmUrl() + "/protocol/openid-connect/certs";
 	}
 

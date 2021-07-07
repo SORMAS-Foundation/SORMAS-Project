@@ -528,8 +528,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		SormasToSormasConfig s2sConfig = getS2SConfig();
 
 		if (s2sConfig.getOidcServer() != null && s2sConfig.getOidcRealm() != null) {
-			urls.add(s2sConfig.getOidcRealmCertEndoint());
-			urls.add(s2sConfig.getOidcRealmTokenEndoint());
+			urls.add(s2sConfig.getOidcRealmCertEndpoint());
+			urls.add(s2sConfig.getOidcRealmTokenEndpoint());
 			urls.add(s2sConfig.getOidcRealmUrl());
 			urls.add(s2sConfig.getOidcServer());
 		}

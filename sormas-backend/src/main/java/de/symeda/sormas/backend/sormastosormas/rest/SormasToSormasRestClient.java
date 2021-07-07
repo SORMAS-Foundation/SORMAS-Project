@@ -102,7 +102,7 @@ public class SormasToSormasRestClient {
 		try {
 			SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
 			authToken = Oidc.requestAccessToken(
-				sormasToSormasConfig.getOidcRealmTokenEndoint(),
+				sormasToSormasConfig.getOidcRealmTokenEndpoint(),
 				sormasToSormasConfig.getOidcClientId(),
 				sormasToSormasConfig.getOidcClientSecret(),
 				Collections.singletonList(scope));

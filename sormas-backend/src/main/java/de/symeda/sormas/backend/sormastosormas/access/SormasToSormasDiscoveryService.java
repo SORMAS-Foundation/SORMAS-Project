@@ -38,19 +38,20 @@ import io.lettuce.core.SslOptions;
 import io.lettuce.core.SslVerifyMode;
 import io.lettuce.core.api.sync.RedisCommands;
 
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
+@Stateless
+@LocalBean
 public class SormasToSormasDiscoveryService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasDiscoveryService.class);
 
-	private final SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
-	private final ConfigFacadeEjbLocal configFacadeEjb;
-
-	public SormasToSormasDiscoveryService(
-            SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-            ConfigFacadeEjbLocal configFacadeEjb) {
-        this.sormasToSormasFacadeEjb = sormasToSormasFacadeEjb;
-        this.configFacadeEjb = configFacadeEjb;
-    }
+	@EJB
+	private SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
+	@EJB
+	private ConfigFacadeEjbLocal configFacadeEjb;
 
 	private RedisCommands<String, String> createRedisConnection() {
 		String[] redis = configFacadeEjb.getCentralRedisHost().split(":");

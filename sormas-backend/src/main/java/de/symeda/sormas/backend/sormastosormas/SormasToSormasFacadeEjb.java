@@ -76,7 +76,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private SormasToSormasShareInfoService shareInfoService;
 	@EJB
 	private UserService userService;
-	@Inject
+	@EJB
 	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 	@Inject
 	private SormasToSormasRestClient sormasToSormasRestClient;

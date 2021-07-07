@@ -49,13 +49,13 @@ public class S2SAuthFilter implements ContainerRequestFilter {
 		String token = authorizationHeader.substring(BEARER.length()).trim();
 		String orgIdSender = "";
 
-		if (!requestContext.getMethod().equals(HttpMethod.GET)) {
+		if (requestContext.getMethod().equals(HttpMethod.GET)) {
+			orgIdSender = requestContext.getUriInfo().getQueryParameters().getFirst(SormasToSormasConfig.SENDER_SERVER_ID);
+		} else {
 			ContainerRequest cr = (ContainerRequest) requestContext;
 			cr.bufferEntity();
 			SormasToSormasEncryptedDataDto dto = cr.readEntity(SormasToSormasEncryptedDataDto.class);
 			orgIdSender = dto.getSenderId();
-		} else {
-			orgIdSender = requestContext.getUriInfo().getQueryParameters().getFirst(SormasToSormasConfig.SENDER_SERVER_ID);
 		}
 		try {
 			if (!isValidToken(token, orgIdSender)) {
@@ -115,7 +115,7 @@ public class S2SAuthFilter implements ContainerRequestFilter {
 		ObjectMapper mapper = new ObjectMapper();
 		JSONWebKeySet jwks;
 		try {
-			String certEndpoint = sormasToSormasConfig.getOidcRealmCertEndoint();
+			String certEndpoint = sormasToSormasConfig.getOidcRealmCertEndpoint();
 			jwks = mapper.readValue(new URL(certEndpoint).openStream(), JSONWebKeySet.class);
 		} catch (IOException e) {
 			LOGGER.error(String.format("Could not fetch public key for realm: %s", e));

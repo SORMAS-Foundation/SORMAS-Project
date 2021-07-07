@@ -37,13 +37,10 @@ import javax.jms.Topic;
 import javax.mail.Session;
 import javax.transaction.UserTransaction;
 
-import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
-import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryServiceProducer;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProducer;
 
@@ -169,25 +166,6 @@ public class MockProducer {
 			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
 			return SORMAS_TO_SORMAS_REST_CLIENT;
 		}
-	}
-
-	public static SormasToSormasDiscoveryService getServerAccessDataService() {
-		return MockSormasToSormasDiscoveryServiceProducer.S2S_ACCESS_DATA_SERVICE;
-	}
-
-	@Specializes
-	public static class MockSormasToSormasDiscoveryServiceProducer extends SormasToSormasDiscoveryServiceProducer {
-
-		public static final SormasToSormasDiscoveryService S2S_ACCESS_DATA_SERVICE = mock(SormasToSormasDiscoveryService.class);
-
-		@Override
-		@Produces
-		public SormasToSormasDiscoveryService sormasToSormasDiscoveryService(
-			SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb,
-			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
-			return S2S_ACCESS_DATA_SERVICE;
-		}
-
 	}
 
 	@Produces
