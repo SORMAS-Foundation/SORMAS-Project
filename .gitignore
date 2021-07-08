@@ -33,10 +33,6 @@ bin
 /sormas-cargoserver/custom.env
 /sormas-cargoserver/custom.properties
 
-sormas-e2e-ui-tests/gradle/
-sormas-e2e-ui-tests/gradlew
-sormas-e2e-ui-tests/gradlew.bat
-
 /sormas-e2e-tests/allureReports/
 /sormas-e2e-tests/allure-results
 /sormas-e2e-tests/build/
@@ -47,5 +43,5 @@ sormas-e2e-ui-tests/gradlew.bat
 /sormas-e2e-tests/.gradle
 /sormas-e2e-tests/.DS_Store
 /sormas-e2e-tests/logs
-/sormas-e2e-ui-tests/settings
+
 .DS_Store
