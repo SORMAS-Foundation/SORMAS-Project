@@ -22,6 +22,8 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class TravelEntryDto extends PseudonymizableDto {
 
+	public static final String I18N_PREFIX = "TravelEntry";
+
 	@Required
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
