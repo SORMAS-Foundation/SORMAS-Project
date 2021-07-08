@@ -2041,6 +2041,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Case completenessUpdateResult2 = getCaseService().getByUuid(caseWithCompleteness.getUuid());
 
 		MatcherAssert.assertThat(completenessUpdateResult.getCompleteness(), notNullValue());
+		MatcherAssert.assertThat(completenessUpdateResult.getChangeDate(), equalTo(caseNoCompleteness.getChangeDate()));
 		MatcherAssert.assertThat(completenessUpdateResult2.getCompleteness(), is(0.7f));
 		MatcherAssert.assertThat(changedCases, is(1));
 

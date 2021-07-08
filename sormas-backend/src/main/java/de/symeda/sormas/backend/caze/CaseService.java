@@ -1318,8 +1318,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public void updateCompleteness(Case caze) {
-		caze.setCompleteness(calculateCompleteness(caze));
-		ensurePersisted(caze);
+
+		float completeness = calculateCompleteness(caze);
+
+		/*
+		 * Set the calculated value without updating the changeDate:
+		 * 1. Do not trigger sync mechanisms that compare changeDates
+		 * 2. Avoid optimistic locking problem with parallel running logic like batch imports
+		 * Side effect: No AuditLogEntry is created triggered
+		 */
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+		Root<Case> root = cu.from(Case.class);
+		cu.set(root.get(Case.COMPLETENESS), completeness);
+		cu.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
+		em.createQuery(cu).executeUpdate();
 	}
 
 	private float calculateCompleteness(Case caze) {
