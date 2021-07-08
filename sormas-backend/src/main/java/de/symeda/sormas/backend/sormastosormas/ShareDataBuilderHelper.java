@@ -180,7 +180,7 @@ public class ShareDataBuilderHelper {
 	private SormasToSormasOptionsDto createOptionsFormShareInfo(SormasToSormasShareInfo shareInfo) {
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 
-		options.setSormasServerDescriptor(new SormasServerDescriptor(shareInfo.getOrganizationId()));
+		options.setOrganization(new SormasServerDescriptor(shareInfo.getOrganizationId()));
 		options.setHandOverOwnership(shareInfo.isOwnershipHandedOver());
 		options.setWithAssociatedContacts(shareInfo.isWithAssociatedContacts());
 		options.setWithSamples(shareInfo.isWithSamples());

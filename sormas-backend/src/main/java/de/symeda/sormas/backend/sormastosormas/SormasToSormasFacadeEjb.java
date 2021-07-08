@@ -178,7 +178,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			serverDescriptor = new SormasServerDescriptor(senderId, senderId);
 		}
 
-		target.setTargetDescriptor(serverDescriptor);
+		target.setOrganization(serverDescriptor);
 
 		target.setRequestStatus(source.getRequestStatus());
 		target.setSender(source.getSender().toReference());

@@ -255,7 +255,7 @@ public class SormasToSormasController {
 		SormasToSormasOptionsForm optionsForm,
 		SormasToSormasOriginInfoDto originInfo) {
 		SormasToSormasOptionsDto defaultOptions = new SormasToSormasOptionsDto();
-		defaultOptions.setSormasServerDescriptor(new SormasServerDescriptor(originInfo.getOrganizationId()));
+		defaultOptions.setOrganization(new SormasServerDescriptor(originInfo.getOrganizationId()));
 		defaultOptions.setHandOverOwnership(true);
 		defaultOptions.setWithAssociatedContacts(originInfo.isWithAssociatedContacts());
 		defaultOptions.setWithSamples(originInfo.isWithSamples());
@@ -277,7 +277,7 @@ public class SormasToSormasController {
 		SormasToSormasOptionsForm optionsForm,
 		SormasToSormasShareInfoDto shareInfoDto) {
 		SormasToSormasOptionsDto defaultOptions = new SormasToSormasOptionsDto();
-		defaultOptions.setSormasServerDescriptor(shareInfoDto.getTargetServerDescriptor());
+		defaultOptions.setOrganization(shareInfoDto.getOrganization());
 		defaultOptions.setWithAssociatedContacts(shareInfoDto.isWithAssociatedContacts());
 		defaultOptions.setWithSamples(shareInfoDto.isWithSamples());
 		defaultOptions.setWithEventParticipants(shareInfoDto.isWithEvenParticipants());
@@ -362,7 +362,7 @@ public class SormasToSormasController {
 		List<SormasToSormasShareInfoDto> shares = FacadeProvider.getSormasToSormasFacade()
 			.getShareInfoIndexList(criteria.requestStatuses(Arrays.asList(ShareRequestStatus.PENDING, ShareRequestStatus.ACCEPTED)), null, null);
 
-		organizationIds.addAll(shares.stream().map(s -> s.getTargetServerDescriptor().getId()).collect(Collectors.toList()));
+		organizationIds.addAll(shares.stream().map(s -> s.getOrganization().getId()).collect(Collectors.toList()));
 
 		return organizationIds;
 	}

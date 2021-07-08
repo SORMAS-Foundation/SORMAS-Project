@@ -68,7 +68,7 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 	public void sendLabMessages(List<String> uuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		List<LabMessage> labMessages = labMessageService.getByUuids(uuids);
 		List<LabMessageDto> dtos = labMessages.stream().map(labMessageFacade::toDto).collect(Collectors.toList());
-		sormasToSormasRestClient.post(options.getSormasServerDescriptor().getId(), SAVE_SHARED_LAB_MESSAGE_ENDPOINT, dtos, null);
+		sormasToSormasRestClient.post(options.getOrganization().getId(), SAVE_SHARED_LAB_MESSAGE_ENDPOINT, dtos, null);
 
 		labMessages.forEach(labMessage -> {
 			labMessage.setStatus(LabMessageStatus.FORWARDED);

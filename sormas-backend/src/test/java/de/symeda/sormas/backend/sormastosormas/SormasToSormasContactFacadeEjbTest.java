@@ -86,7 +86,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any(), Matchers.any()))
@@ -120,7 +120,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().contact(contact.toReference()), 0, 100);
 		assertThat(shareInfoList.size(), is(1));
-		assertThat(shareInfoList.get(0).getTargetServerDescriptor().getId(), is(SECOND_SERVER_ID));
+		assertThat(shareInfoList.get(0).getOrganization().getId(), is(SECOND_SERVER_ID));
 		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
 	}
@@ -155,7 +155,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		creator.createAdditionalTest(sample.toReference());
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 		options.setWithSamples(true);
 
@@ -183,7 +183,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().sample(sample.toReference()), 0, 100);
 
 		SormasToSormasShareInfoDto sampleShareInfoList = shareInfoList.get(0);
-		assertThat(sampleShareInfoList.getTargetServerDescriptor().getId(), is(SECOND_SERVER_ID));
+		assertThat(sampleShareInfoList.getOrganization().getId(), is(SECOND_SERVER_ID));
 		assertThat(sampleShareInfoList.getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(sampleShareInfoList.getComment(), is("Test comment"));
 	}
@@ -281,7 +281,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		SampleDto newSample = creator.createSample(contact.toReference(), officer, rdcf.facility, null);
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setHandOverOwnership(true);
 		options.setWithSamples(true);
 		options.setComment("Test comment");

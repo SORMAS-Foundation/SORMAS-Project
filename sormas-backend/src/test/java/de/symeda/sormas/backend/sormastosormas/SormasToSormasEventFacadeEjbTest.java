@@ -108,7 +108,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 			});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setComment("Test comment");
 
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any(), Matchers.any()))
@@ -147,7 +147,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().event(event.toReference()), 0, 100);
 		assertThat(shareInfoList.size(), is(1));
-		assertThat(shareInfoList.get(0).getTargetServerDescriptor().getId(), is(SECOND_SERVER_ID));
+		assertThat(shareInfoList.get(0).getOrganization().getId(), is(SECOND_SERVER_ID));
 		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
 	}
@@ -190,7 +190,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		AdditionalTestDto additionalTest = creator.createAdditionalTest(sample.toReference());
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setWithEventParticipants(true);
 		options.setWithSamples(true);
 		options.setComment("Test comment");
@@ -221,7 +221,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		List<SormasToSormasShareInfoDto> shareInfoList =
 			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().event(event.toReference()), 0, 100);
 		assertThat(shareInfoList.size(), is(1));
-		assertThat(shareInfoList.get(0).getTargetServerDescriptor().getId(), is(SECOND_SERVER_ID));
+		assertThat(shareInfoList.get(0).getOrganization().getId(), is(SECOND_SERVER_ID));
 		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
 		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
 	}
@@ -389,7 +389,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		EventParticipantDto newEventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer);
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setHandOverOwnership(true);
 		options.setWithEventParticipants(true);
 		options.setComment("Test comment");
@@ -505,7 +505,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 		EventParticipantDto newEventParticipant = creator.createEventParticipant(event.toReference(), person, "Involved", officer);
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 		options.setHandOverOwnership(true);
 		options.setWithEventParticipants(true);
 		options.setComment("Test comment");

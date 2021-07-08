@@ -243,7 +243,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			infoLayout.setMargin(false);
 			infoLayout.setSpacing(false);
 
-			Label targetLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith) + " " + shareInfo.getTargetServerDescriptor().getName());
+			Label targetLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith) + " " + shareInfo.getOrganization().getName());
 			targetLabel.addStyleName(CssStyles.LABEL_BOLD);
 			infoLayout.addComponent(targetLabel);
 

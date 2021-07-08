@@ -70,7 +70,7 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 			});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setSormasServerDescriptor(new SormasServerDescriptor(SECOND_SERVER_ID));
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 
 		getSormasToSormasLabMessageFacade().sendLabMessages(Collections.singletonList(labMessage.getUuid()), options);
 

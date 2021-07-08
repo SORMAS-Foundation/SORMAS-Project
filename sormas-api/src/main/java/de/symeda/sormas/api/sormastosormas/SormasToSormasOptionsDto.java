@@ -49,23 +49,12 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	private boolean withEventParticipants;
 
-	// Fixme this should be removed
-	@Deprecated
+	// FIXME(#6101): This should be renamed as it is the target of the operation
 	public SormasServerDescriptor getOrganization() {
 		return organization;
 	}
 
-	public SormasServerDescriptor getSormasServerDescriptor() {
-		return organization;
-	}
-
-	// Fixme this should be removed
-	@Deprecated
 	public void setOrganization(SormasServerDescriptor organization) {
-		this.organization = organization;
-	}
-
-	public void setSormasServerDescriptor(SormasServerDescriptor organization) {
 		this.organization = organization;
 	}
 
