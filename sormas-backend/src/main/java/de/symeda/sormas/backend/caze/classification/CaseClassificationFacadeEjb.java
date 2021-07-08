@@ -462,7 +462,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				PathogenTestType.PCR_RT_PCR,
 				PathogenTestType.ANTIGEN_DETECTION,
 				PathogenTestType.ISOLATION,
-				PathogenTestType.SEQUENCING));
+				PathogenTestType.SEQUENCING,
+				PathogenTestType.RAPID_TEST));
 
 		confirmedNoSymptoms = allOf(
 			positiveTestResult(
@@ -470,7 +471,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				PathogenTestType.PCR_RT_PCR,
 				PathogenTestType.ANTIGEN_DETECTION,
 				PathogenTestType.ISOLATION,
-				PathogenTestType.SEQUENCING),
+				PathogenTestType.SEQUENCING,
+				PathogenTestType.RAPID_TEST),
 			xOf(
 				1,
 				allOfSymptoms(SymptomState.NO, Disease.CORONAVIRUS),
@@ -490,7 +492,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				PathogenTestType.PCR_RT_PCR,
 				PathogenTestType.ANTIGEN_DETECTION,
 				PathogenTestType.ISOLATION,
-				PathogenTestType.SEQUENCING),
+				PathogenTestType.SEQUENCING,
+				PathogenTestType.RAPID_TEST),
 			xOf(1, allOfSymptoms(null, Disease.CORONAVIRUS), allOfSymptoms(SymptomState.UNKNOWN, Disease.CORONAVIRUS)));
 
 		addCriteria(
