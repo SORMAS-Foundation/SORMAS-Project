@@ -72,8 +72,8 @@ The project consists of the following modules:
 - **sormas-base:** Base project that also contains build scripts
 - **sormas-base/dependencies:** Dependencies to be deployed with the payara server
 - **sormas-cargoserver:** Setup for a local dev server using maven-cargo
-- **sormas-e2e-rest-tests:** Automated tests addressing the ReST interface
-- **sormas-e2e-ui-tests:** Automated frontend tests addressing sormas-ui
+- **sormas-e2e-performance-tests:** Automated performance tests addressing the ReST interface (sormas-rest)
+- **sormas-e2e-tests:** Automated frontend tests addressing sormas-ui **and** API tests against sormas-rest. The API steps are partly used to prepare data for UI tests.
 - **sormas-ear:** The ear needed to build the application
 - **sormas-keycloak-service-provider:** Custom Keycloak SPI for SORMAS
 - **sormas-rest:** The REST interface; see [`sormas-rest/README.md`](sormas-rest/README.md)
