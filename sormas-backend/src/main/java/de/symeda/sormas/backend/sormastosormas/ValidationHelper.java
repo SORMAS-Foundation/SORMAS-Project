@@ -33,7 +33,11 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 public class ValidationHelper {
 
 	public static String buildValidationGroupName(String captionTag, HasUuid hasUuid) {
-		return String.format("%s %s", I18nProperties.getCaption(captionTag), DataHelper.getShortUuid(hasUuid.getUuid()));
+		return buildValidationGroupName(captionTag, hasUuid.getUuid());
+	}
+
+	public static String buildValidationGroupName(String captionTag, String uuid) {
+		return String.format("%s %s", I18nProperties.getCaption(captionTag), DataHelper.getShortUuid(uuid));
 	}
 
 	public static String buildCaseValidationGroupName(HasUuid caze) {

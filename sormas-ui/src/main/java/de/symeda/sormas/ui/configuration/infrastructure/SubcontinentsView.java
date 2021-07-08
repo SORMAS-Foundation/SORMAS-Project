@@ -187,7 +187,7 @@ public class SubcontinentsView extends AbstractConfigurationView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
 				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);

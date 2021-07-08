@@ -22,4 +22,14 @@ import org.openqa.selenium.By;
 
 public class ContactDirectoryPage {
   public static final By NEW_CONTACT_BUTTON = By.id("contactNewContact");
+  public static final By LINE_LISTING = By.cssSelector("[id='lineListing']");
+  public static final By MULTIPLE_OPTIONS_SEARCH_INPUT = By.cssSelector("#nameUuidCaseLike");
+  public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
+  public static final String CONTACT_RESULTS_UUID_LOCATOR = "[title = '%s']";
+  public static final By CONTACT_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
+  public static final By DISEASE_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(5)");
+  public static final By FIRST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(8)");
+  public static final By LAST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(9)");
+  public static final By TYPE_OF_CONTACT_COLUMNS =
+      By.cssSelector("[role=rowgroup] tr>td:nth-child(11)");
 }

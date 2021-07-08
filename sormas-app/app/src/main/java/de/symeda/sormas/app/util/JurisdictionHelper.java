@@ -1,25 +1,28 @@
 package de.symeda.sormas.app.util;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
-import de.symeda.sormas.api.event.EventJurisdictionDto;
-import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
-import de.symeda.sormas.api.sample.SampleJurisdictionDto;
-import de.symeda.sormas.api.task.TaskJurisdictionDto;
-import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseJurisdictionDto;
+import de.symeda.sormas.app.backend.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactJurisdictionDto;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventJurisdictionDto;
 import de.symeda.sormas.app.backend.event.EventParticipant;
+import de.symeda.sormas.app.backend.event.EventParticipantJurisdictionDto;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleJurisdictionDto;
 import de.symeda.sormas.app.backend.task.Task;
+import de.symeda.sormas.app.backend.task.TaskJurisdictionDto;
 import de.symeda.sormas.app.backend.user.User;
 
 public class JurisdictionHelper {
@@ -44,6 +47,8 @@ public class JurisdictionHelper {
 		if (user.getPointOfEntry() != null) {
 			jurisdiction.setPointOfEntryUuid(user.getPointOfEntry().getUuid());
 		}
+
+		jurisdiction.setJurisdictionLevel(UserRole.getJurisdictionLevel(user.getUserRoles()));
 
 		return jurisdiction;
 	}
@@ -74,6 +79,10 @@ public class JurisdictionHelper {
 		}
 		if (caze.getPointOfEntry() != null) {
 			dto.setPointOfEntryUuid(caze.getPointOfEntry().getUuid());
+		}
+		List<Sample> samples = DatabaseHelper.getSampleDao().queryByCase(caze);
+		if (!samples.isEmpty()) {
+			dto.setSampleLabUuids(samples.stream().map(sample -> sample.getLab().getUuid()).collect(Collectors.toList()));
 		}
 
 		return dto;
@@ -144,6 +153,20 @@ public class JurisdictionHelper {
 
 		if (eventParticipant.getReportingUser() != null) {
 			jurisdiction.setReportingUserUuid(eventParticipant.getReportingUser().getUuid());
+		}
+
+		// todo https://github.com/hzi-braunschweig/SORMAS-Project/issues/5903
+		// if (eventParticipant.getRegion() != null) {
+		// 	jurisdiction.setRegionUuid(eventParticipant.getRegion().getUuid());
+		// }
+		//
+		// if (eventParticipant.getDistrict() != null) {
+		// 	jurisdiction.setDistrictUuid(eventParticipant.getDistrict().getUuid());
+		// }
+
+		Event event = eventParticipant.getEvent();
+		if (event != null) {
+			jurisdiction.setEventJurisdictionDto(JurisdictionHelper.createEventJurisdictionDto(event));
 		}
 
 		return jurisdiction;

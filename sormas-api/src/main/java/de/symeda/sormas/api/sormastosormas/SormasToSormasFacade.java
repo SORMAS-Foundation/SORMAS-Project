@@ -19,6 +19,8 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+
 @Remote
 public interface SormasToSormasFacade {
 
@@ -28,5 +30,15 @@ public interface SormasToSormasFacade {
 
 	List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
 
-	boolean isFeatureEnabled();
+	void rejectShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException;
+
+	void acceptShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException, SormasToSormasValidationException;
+
+	void revokeShare(String shareInfoUuid) throws SormasToSormasException;
+
+	void revokeRequests(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
+
+	boolean isFeatureEnabledForUser();
+
+	boolean isFeatureConfigured();
 }

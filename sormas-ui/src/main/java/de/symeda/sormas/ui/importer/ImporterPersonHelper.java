@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.importer;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -17,38 +16,14 @@ public final class ImporterPersonHelper {
 
 	public static RegionReferenceDto getRegionBasedOnDistrict(
 		String propertyName,
-		CaseDataDto caze,
 		ContactDto contact,
 		PersonDto person,
 		Object currentElement) {
 
-		if (currentElement instanceof CaseDataDto) {
-			return caze.getRegion();
-		} else if (currentElement instanceof ContactDto) {
+		if (currentElement instanceof ContactDto) {
 			return contact.getRegion();
 		} else {
 			return getPersonRegion(propertyName, person);
-		}
-	}
-
-	public static DistrictReferenceDto getDistrictBasedOnCommunity(String propertyName, CaseDataDto caze, PersonDto person, Object currentElement) {
-		if (currentElement instanceof CaseDataDto) {
-			return caze.getDistrict();
-		} else {
-			return getPersonDistrict(propertyName, person);
-		}
-	}
-
-	public static Pair<DistrictReferenceDto, CommunityReferenceDto> getDistrictAndCommunityBasedOnFacility(
-		String propertyName,
-		CaseDataDto caze,
-		PersonDto person,
-		Object currentElement) {
-
-		if (currentElement instanceof CaseDataDto) {
-			return Pair.createPair(caze.getDistrict(), caze.getCommunity());
-		} else {
-			return getPersonDistrictAndCommunity(propertyName, person);
 		}
 	}
 

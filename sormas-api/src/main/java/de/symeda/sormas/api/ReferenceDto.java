@@ -17,13 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.utils.Required;
-
 import java.io.Serializable;
+
+import javax.validation.constraints.Pattern;
 
 import org.apache.commons.lang3.ObjectUtils;
 
-import javax.validation.constraints.Pattern;
+import de.symeda.sormas.api.utils.Required;
 
 @SuppressWarnings("serial")
 public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<ReferenceDto> {

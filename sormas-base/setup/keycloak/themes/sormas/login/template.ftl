@@ -167,7 +167,7 @@
         <div class="sidebar-branding">
             <h1>${msg("LoginSidebar.poweredBy")}</h1>
             <img src="${url.resourcesPath}/img/hzi-logo.png" alt="HZI">
-            <img src="${url.resourcesPath}/img/symeda-logo.png" alt="Symeda">
+            <img src="${url.resourcesPath}/img/vitagroup-logo.png" alt="Vitagroup">
             <img src="${url.resourcesPath}/img/giz-logo.png" alt="GIZ">
         </div>
     </div>

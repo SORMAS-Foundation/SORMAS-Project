@@ -1,8 +1,8 @@
 package de.symeda.sormas.api.visit;
 
-import de.symeda.sormas.api.VisitOrigin;
-
 import java.io.Serializable;
+
+import de.symeda.sormas.api.VisitOrigin;
 
 public class VisitResultDto implements Serializable {
 

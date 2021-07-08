@@ -42,8 +42,10 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
+import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
@@ -266,6 +268,39 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertPseudonymizedDataNotUpdated(caze, rdcf2, user2);
 	}
 
+	@Test
+	public void testPseudonymizeGetFollowupList() {
+		CaseDataDto caze1 = createCase(rdcf1, user1);
+
+		ContactDto contact1 = createContact(user2, caze1, rdcf1);
+		ContactDto contact2 = createContact(user2, caze1, rdcf1);
+		assertThat(contact1.getUuid(), not(is(contact2.getUuid())));
+		// case in other jurisdiction, but visible since linked via contacts reported by user
+		// --> should be pseudonymized
+
+		CaseDataDto caze2 = createCase(rdcf2, user2);
+
+		CaseDataDto caze3 = createCase(rdcf2, user1);
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
+
+		List<CaseFollowUpDto> caseFollowUpList = getCaseFacade().getCaseFollowUpList(caseCriteria, new Date(), 10, 0, 100, Collections.emptyList());
+		assertThat(caseFollowUpList.size(), is(3));
+
+		CaseFollowUpDto followup1 = caseFollowUpList.stream().filter(c -> c.getUuid().equals(caze1.getUuid())).findFirst().get();
+		assertThat(followup1.getFirstName(), is("Confidential"));
+		assertThat(followup1.getLastName(), is("Confidential"));
+
+		CaseFollowUpDto followup2 = caseFollowUpList.stream().filter(c -> c.getUuid().equals(caze2.getUuid())).findFirst().get();
+		assertThat(followup2.getFirstName(), is("James"));
+		assertThat(followup2.getLastName(), is("Smith"));
+
+		CaseFollowUpDto followup3 = caseFollowUpList.stream().filter(c -> c.getUuid().equals(caze3.getUuid())).findFirst().get();
+		assertThat(followup3.getFirstName(), is("James"));
+		assertThat(followup3.getLastName(), is("Smith"));
+	}
+
 	private CaseDataDto createCase(TestDataCreator.RDCF rdcf, UserDto reportingUser) {
 		return createCase(rdcf, createPerson().toReference(), reportingUser);
 	}
@@ -281,12 +316,34 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			new Date(),
 			rdcf,
 			(c) -> {
+				c.setRegion(rdcf.region);
+				c.setDistrict(rdcf.district);
+				c.setCommunity(rdcf.community);
 				c.setReportingUser(reportingUser.toReference());
 				c.setClassificationUser(reportingUser.toReference());
 				c.setSurveillanceOfficer(reportingUser.toReference());
 
 				c.setHealthFacilityDetails("Test Facility details");
 				c.setPointOfEntryDetails("Test point of entry details");
+
+				c.setReportLat(46.432);
+				c.setReportLon(23.234);
+				c.setReportLatLonAccuracy(10F);
+			});
+	}
+
+	private ContactDto createContact(UserDto reportingUser, CaseDataDto caze, TestDataCreator.RDCF rdcf) {
+		return creator.createContact(
+			reportingUser.toReference(),
+			reportingUser.toReference(),
+			createPerson().toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf,
+			c -> {
+				c.setResultingCaseUser(reportingUser.toReference());
 
 				c.setReportLat(46.432);
 				c.setReportLon(23.234);
@@ -320,6 +377,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private void assertNotPseudonymized(CaseDataDto caze) {
 		assertThat(caze.isPseudonymized(), is(false));
+		assertThat(caze.getResponsibleRegion(), is(rdcf2.region));
+		assertThat(caze.getResponsibleDistrict(), is(rdcf2.district));
+		assertThat(caze.getResponsibleCommunity(), is(rdcf2.community));
 		assertThat(caze.getRegion(), is(rdcf2.region));
 		assertThat(caze.getDistrict(), is(rdcf2.district));
 		assertThat(caze.getCommunity(), is(rdcf2.community));
@@ -342,6 +402,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private void assertPseudonymized(CaseDataDto caze) {
 		assertThat(caze.isPseudonymized(), is(true));
+		assertThat(caze.getResponsibleRegion(), is(rdcf1.region));
+		assertThat(caze.getResponsibleDistrict(), is(rdcf1.district));
+		assertThat(caze.getResponsibleCommunity(), is(nullValue()));
 		assertThat(caze.getRegion(), is(rdcf1.region));
 		assertThat(caze.getDistrict(), is(rdcf1.district));
 		assertThat(caze.getCommunity(), is(nullValue()));

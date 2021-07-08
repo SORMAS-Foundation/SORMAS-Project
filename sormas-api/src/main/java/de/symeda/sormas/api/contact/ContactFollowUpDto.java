@@ -3,8 +3,6 @@ package de.symeda.sormas.api.contact;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -23,36 +21,21 @@ public class ContactFollowUpDto extends FollowUpDto {
 	private UserReferenceDto contactOfficer;
 	private Date lastContactDate;
 
-	private ContactJurisdictionDto jurisdiction;
+	private Boolean isInJurisdiction;
 	private SymptomJournalStatus symptomJournalStatus;
 
 	//@formatter:off
-	public ContactFollowUpDto(String uuid, String personFirstName, String personLastName,
+	public ContactFollowUpDto(String uuid, Date changeDate, String personFirstName, String personLastName,
 							  String contactOfficerUuid, String contactOfficerFirstName, String contactOfficerLastName,
 							  Date lastContactDate, Date reportDate, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Disease disease,
-							  String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
-							  String caseReportingUserUuid,
-							  String caseResponsibleRegionUuid, String caseResponsibleDistrictUid, String caseResponsibleCommunityUid,
-							  String caseRegionUuid, String caseDistrictUuid, String caseCommunityUud, String caseHealthFacilityUuid, String casePointOfEntryUuid
-	) {
+							  boolean isInJurisdiction) {
 	//formatter:on
 
 		super(uuid, personFirstName, personLastName, reportDate, followUpUntil, disease);
 		this.contactOfficer = new UserReferenceDto(contactOfficerUuid, contactOfficerFirstName, contactOfficerLastName, null);
 		this.lastContactDate = lastContactDate;
 		this.symptomJournalStatus = symptomJournalStatus;
-
-		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid == null
-			? null
-			: new CaseJurisdictionDto(
-				caseReportingUserUuid,
-				ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
-				caseRegionUuid,
-				caseDistrictUuid,
-				caseCommunityUud,
-				caseHealthFacilityUuid,
-				casePointOfEntryUuid);
-		jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public UserReferenceDto getContactOfficer() {
@@ -71,8 +54,8 @@ public class ContactFollowUpDto extends FollowUpDto {
 		this.lastContactDate = lastContactDate;
 	}
 
-	public ContactJurisdictionDto getJurisdiction() {
-		return jurisdiction;
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 
 	public SymptomJournalStatus getSymptomJournalStatus() {

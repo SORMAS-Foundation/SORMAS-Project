@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.60.1</version>
+	<version>1.61.1-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -26,7 +26,7 @@
 		<slf4j.version>1.7.30</slf4j.version>
 		<logback.version>1.1.7</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
-		<vaadin.version>8.12.3</vaadin.version>
+		<vaadin.version>8.13.1</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<swagger.version>2.1.6</swagger.version>
 		<bouncycastle.version>1.67</bouncycastle.version>

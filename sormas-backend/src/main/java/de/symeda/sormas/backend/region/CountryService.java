@@ -123,4 +123,19 @@ public class CountryService extends AbstractInfrastructureAdoService<Country> {
 		}
 		return filter;
 	}
+
+	public List<Country> getByExternalId(String externalId, boolean includeArchived) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Country> cq = cb.createQuery(getElementClass());
+		Root<Country> from = cq.from(getElementClass());
+
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(Country.EXTERNAL_ID), externalId.trim());
+		if (!includeArchived) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
+
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultList();
+	}
 }

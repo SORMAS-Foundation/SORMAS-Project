@@ -28,6 +28,7 @@ import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.util.DateHelper8;
@@ -44,7 +45,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.setApproximateAge(30);
 		cazePerson.setApproximateAgeReferenceDate(new Date());
 		cazePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
-		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
@@ -53,7 +54,8 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
-		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		caze.setOutcomeDate(DateHelper.addWeeks(caze.getReportDate(), 2));
+		caze = getCaseFacade().saveCase(caze);
 
 		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
 		int year = DateHelper8.toLocalDate(caze.getSymptoms().getOnsetDate()).getYear();
@@ -90,7 +92,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.setApproximateAge(30);
 		cazePerson.setApproximateAgeReferenceDate(new Date());
 		cazePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
-		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
@@ -124,7 +126,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		cazePerson.setApproximateAge(30);
 		cazePerson.setApproximateAgeReferenceDate(new Date());
 		cazePerson.setApproximateAgeType(ApproximateAgeType.YEARS);
-		cazePerson = getPersonFacade().savePersonAndNotifyExternalJournal(cazePerson);
+		cazePerson = getPersonFacade().savePerson(cazePerson);
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),

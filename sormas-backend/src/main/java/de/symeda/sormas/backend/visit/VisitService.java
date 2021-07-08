@@ -31,6 +31,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
@@ -45,15 +46,20 @@ import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -66,6 +72,29 @@ public class VisitService extends BaseAdoService<Visit> {
 
 	public VisitService() {
 		super(Visit.class);
+	}
+
+	public boolean inJurisdiction(Visit visit) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Visit> root = cq.from(Visit.class);
+		Expression<Object> objectExpression = JurisdictionHelper.booleanSelector(cb, cb.and(
+				cb.equal(root.get(AbstractDomainObject.ID), visit.getId()),
+				inJurisdiction(cq, cb, root.join(Visit.CAZE, JoinType.LEFT), root.join(Visit.CONTACTS, JoinType.LEFT))));
+		cq.multiselect(objectExpression);
+		cq.where(cb.equal(root.get(Visit.UUID), visit.getUuid()));
+		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+	}
+
+	private Predicate inJurisdiction(
+		CriteriaQuery cq,
+		CriteriaBuilder cb,
+		Join<Visit, Case> caseJoin,
+		Join<Visit, Contact> contactJoin) {
+		return cb.or(
+			caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, caseJoin)),
+			contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, contactJoin)));
 	}
 
 	public List<String> getAllActiveUuids(User user) {

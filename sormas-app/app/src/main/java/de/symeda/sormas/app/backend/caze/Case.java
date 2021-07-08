@@ -99,6 +99,7 @@ public class Case extends PseudonymizableAdo {
 	public static final String OUTCOME = "outcome";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String CASE_ORIGIN = "caseOrigin";
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String REGION = "region";
 	public static final String COMPLETENESS = "completeness";
 
@@ -330,6 +331,9 @@ public class Case extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalToken;
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String internalToken;
+
 	@Enumerated(EnumType.STRING)
 	private QuarantineType quarantine;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -400,9 +404,6 @@ public class Case extends PseudonymizableAdo {
 	private YesNoUnknown reInfection;
 	@DatabaseField
 	private Date previousInfectionDate;
-
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private District reportingDistrict;
 
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown bloodOrganOrTissueDonated;
@@ -1090,6 +1091,14 @@ public class Case extends PseudonymizableAdo {
 		this.externalToken = externalToken;
 	}
 
+	public String getInternalToken() {
+		return internalToken;
+	}
+
+	public void setInternalToken(String internalToken) {
+		this.internalToken = internalToken;
+	}
+
 	public QuarantineType getQuarantine() {
 		return quarantine;
 	}
@@ -1368,14 +1377,6 @@ public class Case extends PseudonymizableAdo {
 
 	public void setPreviousInfectionDate(Date previousInfectionDate) {
 		this.previousInfectionDate = previousInfectionDate;
-	}
-
-	public District getReportingDistrict() {
-		return reportingDistrict;
-	}
-
-	public void setReportingDistrict(District reportingDistrict) {
-		this.reportingDistrict = reportingDistrict;
 	}
 
 	public YesNoUnknown getBloodOrganOrTissueDonated() {

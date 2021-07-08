@@ -20,8 +20,6 @@ package de.symeda.sormas.api.therapy;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.caze.ResponsibleJurisdictionDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -49,7 +47,7 @@ public class TreatmentExportDto implements Serializable {
 	@SensitiveData
 	private String additionalNotes;
 
-	private CaseJurisdictionDto caseJurisdiction;
+	private Boolean isInJurisdiction;
 
 	public TreatmentExportDto(
 		String caseUuid,
@@ -64,15 +62,7 @@ public class TreatmentExportDto implements Serializable {
 		TreatmentRoute route,
 		String routeDetails,
 		String additionalNotes,
-		String caseReportingUserUuid,
-		String caseResponsibleRegionUuid,
-		String caseResponsibleDistrictUid,
-		String caseResponsibleCommunityUid,
-		String caseRegionUuid,
-		String caseDistrictUuid,
-		String caseCommunityUuid,
-		String caseHealthFacilityUuid,
-		String casePointOfEntryUuid) {
+		boolean isInJurisdiction) {
 
 		this.caseUuid = caseUuid;
 		this.caseName = PersonDto.buildCaption(caseFirstName, caseLastName);
@@ -85,15 +75,7 @@ public class TreatmentExportDto implements Serializable {
 		this.route = route;
 		this.routeDetails = routeDetails;
 		this.additionalNotes = additionalNotes;
-
-		this.caseJurisdiction = new CaseJurisdictionDto(
-			caseReportingUserUuid,
-			ResponsibleJurisdictionDto.of(caseResponsibleRegionUuid, caseResponsibleDistrictUid, caseResponsibleCommunityUid),
-			caseRegionUuid,
-			caseDistrictUuid,
-			caseCommunityUuid,
-			caseHealthFacilityUuid,
-			casePointOfEntryUuid);
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	@Order(0)
@@ -195,7 +177,7 @@ public class TreatmentExportDto implements Serializable {
 		this.additionalNotes = additionalNotes;
 	}
 
-	public CaseJurisdictionDto getCaseJurisdiction() {
-		return caseJurisdiction;
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 }

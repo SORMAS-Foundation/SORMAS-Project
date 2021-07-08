@@ -23,6 +23,11 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.user.CurrentUser;
+import de.symeda.sormas.backend.user.CurrentUserService;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -76,6 +81,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
 import de.symeda.sormas.api.task.TaskFacade;
@@ -157,11 +163,13 @@ import de.symeda.sormas.backend.share.ExternalShareInfoFacadeEjb.ExternalShareIn
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.labmessage.SormasToSormasLabMessageFacadeEjb.SormasToSormasLabMessageFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
+import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
@@ -216,6 +224,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery = em.createNativeQuery("CREATE ALIAS set_limit FOR \"de.symeda.sormas.backend.H2Function.set_limit\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.backend.H2Function.date\"");
+		nativeQuery.executeUpdate();
+		nativeQuery = em.createNativeQuery("CREATE TYPE \"JSONB\" AS other;");
 		nativeQuery.executeUpdate();
 		em.getTransaction().commit();
 	}
@@ -280,6 +290,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public EventParticipantService getEventParticipantService() {
 		return getBean(EventParticipantService.class);
+	}
+
+	public SurveillanceReportFacade getSurveillanceReportFacade() {
+		return getBean(SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal.class);
+	}
+
+	public SurveillanceReportService getSurveillanceReportService() {
+		return getBean(SurveillanceReportService.class);
 	}
 
 	public ActionFacade getActionFacade() {
@@ -522,6 +540,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(GeocodingService.class);
 	}
 
+	public CurrentUserService getCurrentUserService() {
+		return getBean(CurrentUserService.class);
+	}
+
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
 		if (rdcf == null) {
 			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -555,6 +577,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	protected void loginWith(UserDto user) {
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+		final CurrentUser currentUser = getCurrentUserService().getCurrentUser();
+		getUserService().setCurrentUser(currentUser.getUser());
 	}
 
 	public PathogenTestService getPathogenTestService() {
@@ -611,5 +635,13 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public UserRightsFacade getUserRightsFacade() {
 		return getBean(UserRightsFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasShareRequestFacade getSormasToSormasShareRequestFacade() {
+		return getBean(SormasToSormasShareRequestFacadeEJBLocal.class);
+	}
+
+	public SormasToSormasShareRequestService getSormasToSormasShareRequestService() {
+		return getBean(SormasToSormasShareRequestService.class);
 	}
 }

@@ -278,10 +278,10 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 					Calendar calendar = Calendar.getInstance();
 					String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
 					caseToSave.setEpidNumber(
-						caseToSave.getRegion().getEpidCode() != null
-							? caseToSave.getRegion().getEpidCode()
-							: "" + "-" + caseToSave.getDistrict().getEpidCode() != null
-								? caseToSave.getDistrict().getEpidCode()
+						caseToSave.getResponsibleRegion().getEpidCode() != null
+							? caseToSave.getResponsibleRegion().getEpidCode()
+							: "" + "-" + caseToSave.getResponsibleDistrict().getEpidCode() != null
+								? caseToSave.getResponsibleDistrict().getEpidCode()
 								: "" + "-" + year + "-");
 				}
 

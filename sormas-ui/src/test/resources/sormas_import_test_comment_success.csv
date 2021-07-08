@@ -3,7 +3,7 @@
 ## This is a comment line with a , inside
 CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData
 ## This is a comment line after the headers
-disease,person.firstName,person.lastName,person.sex,person.approximateAge,person.approximateAgeType,person.presentCondition,person.phone,person.address.city,epidNumber,reportDate,region,district,community,healthFacility,hospitalization.admittedToHealthFacility,symptoms.fever,epiData.contactWithSourceCaseKnown,facilityType
+disease,person.firstName,person.lastName,person.sex,person.approximateAge,person.approximateAgeType,person.presentCondition,person.phone,person.address.city,epidNumber,reportDate,responsibleRegion,responsibleDistrict,responsibleCommunity,healthFacility,hospitalization.admittedToHealthFacility,symptoms.fever,epiData.contactWithSourceCaseKnown,facilityType
 EVD,New Import Test,One,MALE,18,YEARS,ALIVE,123456,One City,ABC-DEF-GHI-20-1,09/15/2020,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL
 EVD,New Import Test,Two,MALE,19,YEARS,ALIVE,123456,One City,ABC-DEF-GHI-20-2,09/16/2020,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,HOSPITAL
 ## This is a comment line between data rows
