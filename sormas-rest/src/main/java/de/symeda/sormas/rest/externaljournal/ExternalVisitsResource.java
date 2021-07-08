@@ -37,7 +37,7 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@Path("/person/{personUuid}")
 	@Operation(summary = "Get person information", description = "Get some personal data for a specific person")
 	@ApiResponse(
-		description = "A selection of personal data, including first and last name, e-mail, phone number and birth date if available for that person."
+		description = "A selection of personal data, including first and last name, e-mail, phone number and birth date if available for that person. "
 			+ "Regarding the e-mail and phone number: in SORMAS it is possible to store several e-mail addresses and phone numbers for a person. "
 			+ "It is tried to provide one e-mail address and/or phone number via the external visits API in any feasible way.<br>"
 			+ "if there is just one e-mail and/or phone number for a person, this is transmitted.<br>"
@@ -45,19 +45,20 @@ public class ExternalVisitsResource extends EntityDtoResource {
 			+ "If there are several e-mail addresses or phone numbers without any marked as primary, SORMAS will request the user to mark one before registration.<br>"
 			+ "Regarding the latestFollowUpEndDate: this is the latest follow up end date of any contact (or case, if the case follow up feature is enabled) "
 			+ "related to the person. The contacts (and cases) considered are not filtered by disease.<br>"
-			+ "Note that Null value fields may not be returned. If you get an unexpected result, it might help to verify"
+			+ "Note that Null value fields may not be returned. If you get an unexpected result, it might help to verify "
 			+ "if the personUuid is existing in your system via the isValid controller.<br>"
 			+ "If you get \"pseudonymized\": true, the user the request was authorized with probably lacks the user role REST_EXTERNAL_VISITS_USER.")
 	//@formatter:off
-	public JournalPersonDto getPersonByUuid(@PathParam("personUuid") String personUuid) { 
+	public JournalPersonDto getPersonByUuid(@PathParam("personUuid") String personUuid) {
 		return FacadeProvider.getPersonFacade().getPersonForJournal(personUuid);
 	}
 
 	@GET
 	@Path("/person/{personUuid}/isValid")
 	@Operation(summary = "Check person validity", description = "Check if a the Uuid given as parameter exists in SORMAS.",
-		responses = 
-			@ApiResponse(description = "true a person with the given Uuid exists in SORMAS, false otherwise.", content = @Content(schema = @Schema(example = "true"))))
+		responses =
+			@ApiResponse(description = "true a person with the given Uuid exists in SORMAS, false otherwise.",
+					content = @Content(schema = @Schema(example = "true"))))
 	public Boolean isValidPersonUuid(@PathParam("personUuid") String personUuid) {
 		return FacadeProvider.getPersonFacade().isValidPersonUuid(personUuid);
 	}
@@ -66,8 +67,8 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@POST
 	@Path("/person/{personUuid}/status")
 	@Operation(summary = "Save symptom journal status",
-		responses = 
-			@ApiResponse(description = "true if the status was set succesfully, false otherwise.",
+		responses =
+			@ApiResponse(description = "true if the status was set successfully, false otherwise.",
 					content = @Content(schema = @Schema(example = "true"))))
 	@RequestBody(
 		//@formatter:off
@@ -112,7 +113,7 @@ public class ExternalVisitsResource extends EntityDtoResource {
 			+ "Note: Only returns values for persons who have their symptom journal status set to ACCEPTED! "
 			+ "Only returns values changed after {since}, which is interpreted as a UNIX timestamp.")
 	//@formatter:off
-	@ApiResponse(description = "List of personUuids and their latest follow up end dates as UNIX timestamps.", 
+	@ApiResponse(description = "List of personUuids and their latest follow up end dates as UNIX timestamps.",
 			content = @Content(schema = @Schema(example = "[\n" +
 			"  {\n" +
 			"    \"personUuid\": \"Q56VFD-G3TXKT-R2DBIW-FTWIKAMI\",\n" +
