@@ -50,7 +50,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -2949,8 +2948,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			query.setParameter(regexReplacement, ""); // Replace all non-digits with empty string
 			query.setParameter(regexFlags, "g"); // Global search
 		}
-		query.setMaxResults(1);
-		return !query.getResultList().isEmpty();
+		return QueryHelper.getFirstResult(query) != null;
 	}
 
 	@Override
@@ -3595,11 +3593,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				cb.and(caseRoot.get(Case.UUID).in(caseUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)))));
 		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));
 
-		try {
-			return em.createQuery(cq).setMaxResults(1).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getFirstResult(em, cq);
 	}
 
 	/**

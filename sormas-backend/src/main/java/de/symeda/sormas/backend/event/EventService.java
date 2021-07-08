@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -90,6 +89,7 @@ import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.utils.EventJoins;
 
 @Stateless
@@ -789,11 +789,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		cq.orderBy(cb.desc(root.get(Event.REPORT_DATE_TIME)));
 		cq.select(root.get(Event.UUID));
 
-		try {
-			return em.createQuery(cq).setMaxResults(1).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getFirstResult(em, cq);
 	}
 
 	public List<EventSummaryDetails> getEventSummaryDetailsByCases(List<Long> casesId) {

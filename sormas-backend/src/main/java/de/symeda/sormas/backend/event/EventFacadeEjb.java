@@ -38,7 +38,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -847,11 +846,7 @@ public class EventFacadeEjb implements EventFacade {
 		cq.where(cb.and(eventRoot.get(Event.UUID).in(eventUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
 		cq.orderBy(cb.asc(eventRoot.get(AbstractDomainObject.CREATION_DATE)));
 
-		try {
-			return em.createQuery(cq).setMaxResults(1).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getFirstResult(em, cq);
 	}
 
 	@Override

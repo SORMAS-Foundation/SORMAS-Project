@@ -99,7 +99,7 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 		cq.select(root.get(Subcontinent.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	@Override

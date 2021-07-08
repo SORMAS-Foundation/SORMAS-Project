@@ -31,7 +31,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -251,14 +250,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 		cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
 
-		CampaignFormData resultEntity;
-		try {
-			resultEntity = em.createQuery(cq).setMaxResults(1).getSingleResult();
-		} catch (NoResultException e) {
-			resultEntity = null;
-		}
-
-		return resultEntity != null ? toDto(resultEntity) : null;
+		return QueryHelper.getFirstResult(em, cq, this::toDto);
 	}
 
 	@Override

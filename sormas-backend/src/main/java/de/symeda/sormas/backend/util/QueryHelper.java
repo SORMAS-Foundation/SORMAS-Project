@@ -61,6 +61,61 @@ public final class QueryHelper {
 	}
 
 	/**
+	 * Fetches the first entry of the given query.
+	 * 
+	 * @param <T>
+	 *            Return value type of the {@code typedQuery}.
+	 * @param em
+	 *            The {@link EntityManager} to be invoked.
+	 * @param cq
+	 *            The {@link CriteriaQuery} to be executed.
+	 * @return {@code null} if no entry matches the query.
+	 */
+	public static <T> T getFirstResult(EntityManager em, CriteriaQuery<T> cq) {
+
+		return getFirstResult(em.createQuery(cq));
+	}
+
+	/**
+	 * Fetches the first entry of the given query.
+	 * 
+	 * @param <T>
+	 *            Entity, DTO or simple type for the fetched object.
+	 * @param <U>
+	 *            Return value type.
+	 * @param em
+	 *            The {@link EntityManager} to be invoked.
+	 * @param cq
+	 *            The {@link CriteriaQuery} to be executed.
+	 * @param converter
+	 *            Converts the queried object to another type before returning it.
+	 * @return {@code null} if no entry matches the query.
+	 */
+	public static <T, U> U getFirstResult(EntityManager em, CriteriaQuery<T> cq, Function<T, U> converter) {
+
+		return converter.apply(getFirstResult(em.createQuery(cq)));
+	}
+
+	/**
+	 * Fetches the first entry of the given query.
+	 * 
+	 * @param <T>
+	 *            Return value type of the {@code typedQuery}.
+	 * @param query
+	 * @return {@code null} if no entry matches the query.
+	 */
+	public static <T> T getFirstResult(TypedQuery<T> typedQuery) {
+
+		List<T> list = typedQuery.setMaxResults(1).getResultList();
+		switch (list.size()) {
+		case 0:
+			return null;
+		default:
+			return list.get(0);
+		}
+	}
+
+	/**
 	 * Executes a query and returns the result. Can be selected down to a definite batch
 	 * starting at {@code first} and limited by {@code max}.
 	 * 
@@ -179,4 +234,5 @@ public final class QueryHelper {
 			throw new NonUniqueResultException("More than one Entity found. Query was: '" + typedQuery + "'.");
 		}
 	}
+
 }

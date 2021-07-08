@@ -366,7 +366,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 		cq.select(root.get(Facility.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	public static FacilityReferenceDto toReferenceDto(Facility entity) {

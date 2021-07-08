@@ -27,7 +27,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -70,6 +69,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PathogenTestFacade")
 public class PathogenTestFacadeEjb implements PathogenTestFacade {
@@ -150,7 +150,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		cq.orderBy(cb.desc(pathogenTestRoot.get(PathogenTest.CREATION_DATE)));
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return convertToDto(em.createQuery(cq).setMaxResults(1).getSingleResult(), pseudonymizer);
+		return QueryHelper.getFirstResult(em, cq, t -> convertToDto(t, pseudonymizer));
 	}
 
 	@Override
@@ -286,11 +286,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		cq.orderBy(cb.desc(pathogenTestRoot.get(PathogenTest.TEST_DATE_TIME)));
 		cq.select(pathogenTestRoot.get(PathogenTest.TEST_DATE_TIME));
 
-		try {
-			return em.createQuery(cq).setMaxResults(1).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getFirstResult(em, cq);
 	}
 
 	public List<PathogenTestDto> getPositiveOrLatest(List<String> sampleUuids) {

@@ -370,7 +370,7 @@ public class CountryFacadeEjb implements CountryFacade {
 
 		cq.select(root.get(Country.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	// Need to be in the same order as in the constructor

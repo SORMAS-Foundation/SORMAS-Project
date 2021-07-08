@@ -334,7 +334,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 		cq.select(root.get(Community.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	public static CommunityReferenceDto toReferenceDto(Community entity) {

@@ -353,7 +353,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		cq.select(root.get(District.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	public static DistrictReferenceDto toReferenceDto(District entity) {
