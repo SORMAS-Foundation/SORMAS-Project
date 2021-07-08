@@ -15,8 +15,12 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
@@ -28,22 +32,19 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
+import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
+import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -56,13 +57,14 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 	private static final long serialVersionUID = -7189942121987530912L;
 
-	private SormasToSormasList sormasToSormasList;
+	private Label shareListLabel;
+	private final SormasToSormasList sormasToSormasList;
+
+	private ShareDataLoader loadShares;
 
 	public SormasToSormasListComponent(CaseDataDto caze, boolean shareEnabled) {
-		CaseReferenceDto caseRef = caze.toReference();
 
 		sormasToSormasList = new SormasToSormasList(
-			new SormasToSormasShareInfoCriteria().caze(caseRef),
 			caze.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasCaseNotShared,
 			(i) -> ControllerProvider.getSormasToSormasController().syncCase(caze, i),
@@ -70,16 +72,13 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 		initLayout(
 			caze.getSormasToSormasOriginInfo(),
-			sormasToSormasList,
+			() -> FacadeProvider.getSormasToSormasCaseFacade().getAllShares(caze.getUuid()),
 			shareEnabled ? e -> ControllerProvider.getSormasToSormasController().shareCaseFromDetailsPage(caze, this) : null,
 			(e) -> ControllerProvider.getSormasToSormasController().returnCase(caze));
 	}
 
 	public SormasToSormasListComponent(ContactDto contact, boolean shareEnabled) {
-		ContactReferenceDto contactRef = contact.toReference();
-
 		sormasToSormasList = new SormasToSormasList(
-			new SormasToSormasShareInfoCriteria().contact(contactRef),
 			contact.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasContactNotShared,
 			(i) -> ControllerProvider.getSormasToSormasController().syncContact(contact, i),
@@ -87,29 +86,28 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 		initLayout(
 			contact.getSormasToSormasOriginInfo(),
-			sormasToSormasList,
+			() -> FacadeProvider.getSormasToSormasContactFacade().getAllShares(contact.getUuid()),
 			shareEnabled ? e -> ControllerProvider.getSormasToSormasController().shareContactFromDetailsPage(contact, this) : null,
 			(e) -> ControllerProvider.getSormasToSormasController().returnContact(contact));
 	}
 
 	public SormasToSormasListComponent(SampleDto sample) {
-		SampleReferenceDto sampleRef = sample.toReference();
+		sormasToSormasList = new SormasToSormasList(sample.getSormasToSormasOriginInfo() == null, Captions.sormasToSormasSampleNotShared, null, null);
 
-		sormasToSormasList = new SormasToSormasList(
-			new SormasToSormasShareInfoCriteria().sample(sampleRef),
-			sample.getSormasToSormasOriginInfo() == null,
-			Captions.sormasToSormasSampleNotShared,
+		initLayout(
+			sample.getSormasToSormasOriginInfo(),
+			() -> FacadeProvider.getSormasToSormasShareInfoFacade()
+				.getIndexList(new SormasToSormasShareInfoCriteria().sample(sample.toReference()), null, null)
+				.stream()
+				.map(s -> new SormasToSormasShareTree(s, Collections.emptyList()))
+				.collect(Collectors.toList()),
 			null,
 			null);
-
-		initLayout(sample.getSormasToSormasOriginInfo(), sormasToSormasList, null, null);
 	}
 
 	public SormasToSormasListComponent(EventDto event, boolean shareEnabled) {
-		EventReferenceDto eventRef = event.toReference();
 
 		sormasToSormasList = new SormasToSormasList(
-			new SormasToSormasShareInfoCriteria().event(eventRef),
 			event.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasEventNotShared,
 			(i) -> ControllerProvider.getSormasToSormasController().syncEvent(event, i),
@@ -117,29 +115,32 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 		initLayout(
 			event.getSormasToSormasOriginInfo(),
-			sormasToSormasList,
+			() -> FacadeProvider.getSormasToSormasEventFacade().getAllShares(event.getUuid()),
 			shareEnabled ? e -> ControllerProvider.getSormasToSormasController().shareEventFromDetailsPage(event, this) : null,
 			(e) -> ControllerProvider.getSormasToSormasController().returnEvent(event));
 	}
 
 	public SormasToSormasListComponent(EventParticipantDto eventParticipant, boolean shareEnabled) {
-		EventParticipantReferenceDto eventParticipantRef = eventParticipant.toReference();
-
 		sormasToSormasList = new SormasToSormasList(
-			new SormasToSormasShareInfoCriteria().eventParticipant(eventParticipantRef),
 			eventParticipant.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasEventParticipantNotShared,
 			null,
 			null);
 
-		initLayout(eventParticipant.getSormasToSormasOriginInfo(), sormasToSormasList, null, null);
+		initLayout(
+			eventParticipant.getSormasToSormasOriginInfo(),
+			() -> FacadeProvider.getSormasToSormasEventFacade().getAllShares(eventParticipant.getEvent().getUuid()),
+			null,
+			null);
 	}
 
 	private void initLayout(
 		SormasToSormasOriginInfoDto originInfo,
-		SormasToSormasList sormasToSormasList,
+		ShareDataLoader loadShares,
 		Button.ClickListener shareButtonClickListener,
 		Button.ClickListener returnButtonClickListener) {
+		this.loadShares = loadShares;
+
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -154,8 +155,12 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			addComponent(buildSormasOriginInfo(originInfo, returnButtonClickListener));
 		}
 
+		shareListLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith));
+		shareListLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.VSPACE_4);
+		addComponent(shareListLabel);
+
 		addComponent(sormasToSormasList);
-		sormasToSormasList.reload();
+		reloadList();
 
 		Label header = new Label(I18nProperties.getCaption(Captions.sormasToSormasListTitle));
 		header.addStyleName(CssStyles.H3);
@@ -171,29 +176,142 @@ public class SormasToSormasListComponent extends VerticalLayout {
 	}
 
 	public void reloadList() {
-		sormasToSormasList.reload();
+		List<SormasToSormasShareTree> shareInfos;
+		try {
+			shareInfos = loadShares.load();
+
+			List<SormasToSormasShareInfoDto> shareInfoList = getShareInfoList(shareInfos);
+			SormasToSormasShareInfoDto ownerShare = getOwnerShare(shareInfos);
+
+			if (ownerShare != null) {
+				VerticalLayout ownerShareLayout = buildOwnerShareLayout(ownerShare);
+				ownerShareLayout.addStyleName(CssStyles.VSPACE_3);
+
+				addComponent(ownerShareLayout, getComponentIndex(shareListLabel));
+
+				shareInfoList = shareInfoList.stream().filter(s -> !s.getUuid().equals(ownerShare.getUuid())).collect(Collectors.toList());
+			}
+
+			sormasToSormasList.setData(shareInfoList);
+
+		} catch (SormasToSormasException e) {
+			sormasToSormasList.showPlaceholder("Failed to load shares");
+		}
+
 	}
 
+	private List<SormasToSormasShareInfoDto> getShareInfoList(List<SormasToSormasShareTree> shareInfos) {
+		return shareInfos.stream()
+			.map((s -> Stream.concat(Stream.of(s.getShare()), getShareInfoList(s.getReShares()).stream())))
+			.reduce(Stream.empty(), Stream::concat)
+			.collect(Collectors.toList());
+	}
+
+	private SormasToSormasShareInfoDto getOwnerShare(List<SormasToSormasShareTree> shareInfos) {
+		Optional<SormasToSormasShareTree> sharedWithOwnership = shareInfos.stream().filter(s -> s.getShare().isOwnershipHandedOver()).findFirst();
+		if (sharedWithOwnership.isPresent()) {
+			SormasToSormasShareTree ownerTree = sharedWithOwnership.get();
+			SormasToSormasShareInfoDto ownerShare = getOwnerShare(ownerTree.getReShares());
+
+			return ownerShare == null ? ownerTree.getShare() : ownerShare;
+		}
+
+		return null;
+	}
+
+	private HorizontalLayout buildSormasOriginInfo(SormasToSormasOriginInfoDto originInfo, Button.ClickListener returnButtonClickListener) {
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.setMargin(false);
+		layout.setWidthFull();
+
+		VerticalLayout infoLayout = new VerticalLayout();
+		infoLayout.setMargin(false);
+		infoLayout.setSpacing(false);
+		infoLayout.setStyleName(CssStyles.VSPACE_3);
+
+		ServerAccessDataReferenceDto serverAccessDataRef =
+			FacadeProvider.getSormasToSormasFacade().getOrganizationRef(originInfo.getOrganizationId());
+
+		Label senderOrganizationLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSentFrom) + " " + serverAccessDataRef);
+		senderOrganizationLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		infoLayout.addComponent(senderOrganizationLabel);
+
+		infoLayout.addComponent(new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + originInfo.getSenderName()));
+
+		if (originInfo.getSenderEmail() != null) {
+			infoLayout.addComponent(new Label(originInfo.getSenderEmail()));
+		}
+
+		if (originInfo.getSenderPhoneNumber() != null) {
+			infoLayout.addComponent(new Label(originInfo.getSenderPhoneNumber()));
+		}
+
+		Label shareDateLabel = new Label(
+			I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(originInfo.getCreationDate()));
+		infoLayout.addComponent(shareDateLabel);
+
+		if (!DataHelper.isNullOrEmpty(originInfo.getComment())) {
+			infoLayout.addComponent(new Label(originInfo.getComment()));
+		}
+
+		layout.addComponent(infoLayout);
+		layout.setExpandRatio(infoLayout, 1);
+
+		if (originInfo.isOwnershipHandedOver() && returnButtonClickListener != null) {
+			layout.addComponent(ButtonHelper.createIconButton(Captions.sormasToSormasReturn, VaadinIcons.REPLY, returnButtonClickListener));
+		}
+
+		return layout;
+	}
+
+	private VerticalLayout buildOwnerShareLayout(SormasToSormasShareInfoDto shareInfo) {
+		VerticalLayout infoLayout = new VerticalLayout();
+		infoLayout.setWidth(100, Unit.PERCENTAGE);
+		infoLayout.setMargin(false);
+		infoLayout.setSpacing(false);
+		infoLayout.addStyleName(CssStyles.SORMAS_LIST_ENTRY);
+
+		Label targetLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasOwnedBy) + " " + shareInfo.getTarget());
+		targetLabel.addStyleName(CssStyles.LABEL_BOLD);
+		infoLayout.addComponent(targetLabel);
+
+		Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getCaption());
+		infoLayout.addComponent(senderLabel);
+
+		Label shareDateLabel =
+			new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(shareInfo.getCreationDate()));
+		infoLayout.addComponent(shareDateLabel);
+
+		if (!DataHelper.isNullOrEmpty(shareInfo.getComment())) {
+			infoLayout.addComponent(new Label(shareInfo.getComment()));
+		}
+
+		return infoLayout;
+	}
+
+	private interface ShareDataLoader {
+
+		List<SormasToSormasShareTree> load() throws SormasToSormasException;
+
+	}
 	private static class SormasToSormasList extends PaginationList<SormasToSormasShareInfoDto> {
 
 		private static final long serialVersionUID = -4659924105492791566L;
-
-		private final SormasToSormasShareInfoCriteria criteria;
+		private String defaultPlaceHolderText;
 		private final Label placeholderLabel;
 		private final Consumer<SormasToSormasShareInfoDto> syncListener;
+
 		private final Consumer<SormasToSormasShareInfoDto> revokeListener;
 
 		public SormasToSormasList(
-			SormasToSormasShareInfoCriteria criteria,
 			boolean showPlaceholder,
 			String placeholderCaptionTag,
 			Consumer<SormasToSormasShareInfoDto> syncListener,
 			Consumer<SormasToSormasShareInfoDto> revokeListener) {
 			super(5);
 
-			this.criteria = criteria;
-
-			this.placeholderLabel = new Label(placeholderCaptionTag != null ? I18nProperties.getCaption(placeholderCaptionTag) : null);
+			this.defaultPlaceHolderText = placeholderCaptionTag != null ? I18nProperties.getCaption(placeholderCaptionTag) : null;
+			this.placeholderLabel = new Label(defaultPlaceHolderText);
 			this.placeholderLabel.setVisible(showPlaceholder);
 			this.syncListener = syncListener;
 			this.revokeListener = revokeListener;
@@ -201,30 +319,41 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 		@Override
 		public void reload() {
-			List<SormasToSormasShareInfoDto> shareInfos =
-				FacadeProvider.getSormasToSormasFacade().getShareInfoIndexList(criteria, 0, maxDisplayedEntries * 20);
+		}
 
-			setEntries(shareInfos);
-			if (shareInfos.isEmpty()) {
-				updatePaginationLayout();
-				listLayout.addComponent(placeholderLabel);
+		public void setData(List<SormasToSormasShareInfoDto> data) {
+			setEntries(data);
+			if (data.isEmpty()) {
+				showPlaceholder(null);
 			} else {
 				listLayout.removeComponent(placeholderLabel);
 				showPage(1);
 			}
 		}
 
+		public void showPlaceholder(String placeholderText) {
+			setEntries(Collections.emptyList());
+			updatePaginationLayout();
+
+			placeholderLabel.setValue(placeholderText == null ? defaultPlaceHolderText : placeholderText);
+			listLayout.addComponent(placeholderLabel);
+		}
+
 		@Override
 		protected void drawDisplayedEntries() {
 			List<SormasToSormasShareInfoDto> displayedEntries = getDisplayedEntries();
 
-			for (SormasToSormasShareInfoDto shareInfo : displayedEntries) {
+			for (int i = 0; i < displayedEntries.size(); i++) {
+				SormasToSormasShareInfoDto shareInfo = displayedEntries.get(i);
 				SormasToSormasShareListEntry listEntry = new SormasToSormasShareListEntry(shareInfo, syncListener, revokeListener::accept);
+				if (i == 0) {
+					listEntry.addStyleName(CssStyles.SORMAS_LIST_ENTRY_NO_BORDER);
+				}
 				listLayout.addComponent(listEntry);
 			}
 		}
-	}
 
+	}
 	private static class SormasToSormasShareListEntry extends HorizontalLayout {
 
 		private static final long serialVersionUID = 7462585357530141263L;
@@ -243,7 +372,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			infoLayout.setMargin(false);
 			infoLayout.setSpacing(false);
 
-			Label targetLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith) + " " + shareInfo.getTarget());
+			Label targetLabel = new Label(shareInfo.getTarget().getCaption());
 			targetLabel.addStyleName(CssStyles.LABEL_BOLD);
 			infoLayout.addComponent(targetLabel);
 
@@ -251,11 +380,6 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			infoLayout.addComponent(senderLabel);
 
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)) {
-				if (shareInfo.isOwnershipHandedOver()) {
-					Label ownershipLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasOwnershipHandedOver));
-					infoLayout.addComponent(ownershipLabel);
-				}
-
 				Label statusLabel =
 					new Label(I18nProperties.getCaption(Captions.SormasToSormasShareRequest_status) + ": " + shareInfo.getRequestStatus());
 				infoLayout.addComponent(statusLabel);
@@ -288,49 +412,6 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			}
 
 		}
-	}
 
-	private HorizontalLayout buildSormasOriginInfo(SormasToSormasOriginInfoDto originInfo, Button.ClickListener returnButtonClickListener) {
-		HorizontalLayout layout = new HorizontalLayout();
-		layout.setMargin(false);
-		layout.setWidthFull();
-
-		VerticalLayout infoLayout = new VerticalLayout();
-		infoLayout.setMargin(false);
-		infoLayout.setSpacing(false);
-		infoLayout.setStyleName(CssStyles.VSPACE_3);
-
-		ServerAccessDataReferenceDto serverAccessDataRef =
-			FacadeProvider.getSormasToSormasFacade().getOrganizationRef(originInfo.getOrganizationId());
-
-		Label senderOrganizationLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSentFrom) + " " + serverAccessDataRef);
-		senderOrganizationLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_WHITE_SPACE_NORMAL);
-		infoLayout.addComponent(senderOrganizationLabel);
-		infoLayout.addComponent(new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + originInfo.getSenderName()));
-
-		if (originInfo.getSenderEmail() != null) {
-			infoLayout.addComponent(new Label(originInfo.getSenderEmail()));
-		}
-
-		if (originInfo.getSenderPhoneNumber() != null) {
-			infoLayout.addComponent(new Label(originInfo.getSenderPhoneNumber()));
-		}
-
-		Label shareDateLabel = new Label(
-			I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(originInfo.getCreationDate()));
-		infoLayout.addComponent(shareDateLabel);
-
-		if (!DataHelper.isNullOrEmpty(originInfo.getComment())) {
-			infoLayout.addComponent(new Label(originInfo.getComment()));
-		}
-
-		layout.addComponent(infoLayout);
-		layout.setExpandRatio(infoLayout, 1);
-
-		if (originInfo.isOwnershipHandedOver() && returnButtonClickListener != null) {
-			layout.addComponent(ButtonHelper.createIconButton(Captions.sormasToSormasReturn, VaadinIcons.REPLY, returnButtonClickListener));
-		}
-
-		return layout;
 	}
 }

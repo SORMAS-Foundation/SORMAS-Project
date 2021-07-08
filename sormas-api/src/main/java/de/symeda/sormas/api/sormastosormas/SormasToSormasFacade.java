@@ -28,8 +28,6 @@ public interface SormasToSormasFacade {
 
 	ServerAccessDataReferenceDto getOrganizationRef(String id);
 
-	List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
-
 	void rejectShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException;
 
 	void acceptShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException, SormasToSormasValidationException;

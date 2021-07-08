@@ -28,12 +28,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -44,8 +38,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
@@ -57,16 +49,12 @@ import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "SormasToSormasFacade")
 public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	private static final String REVOKE_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.REVOKE_REQUESTS_ENDPOINT;
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 	@EJB
@@ -96,29 +84,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Override
 	public ServerAccessDataReferenceDto getOrganizationRef(String id) {
 		return serverAccessDataService.getServerListItemById(id).map(OrganizationServerAccessData::toReference).orElseGet(null);
-	}
-
-	@Override
-	public List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
-		Root<SormasToSormasShareInfo> root = cq.from(SormasToSormasShareInfo.class);
-
-		Predicate filter = shareInfoService.buildCriteriaFilter(criteria, cb, root);
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.distinct(true);
-
-		List<SormasToSormasShareInfo> resultList;
-		if (first != null && max != null) {
-			resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			resultList = em.createQuery(cq).getResultList();
-		}
-
-		return resultList.stream().map(this::toSormasToSormasShareInfoDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -162,28 +127,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Override
 	public boolean isFeatureConfigured() {
 		return !StringUtils.isEmpty(sormasToSormasConfig.getPath());
-	}
-
-	public SormasToSormasShareInfoDto toSormasToSormasShareInfoDto(SormasToSormasShareInfo source) {
-		SormasToSormasShareInfoDto target = new SormasToSormasShareInfoDto();
-
-		DtoHelper.fillDto(target, source);
-
-		OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerListItemById(source.getOrganizationId())
-			.orElseGet(() -> new OrganizationServerAccessData(source.getOrganizationId(), source.getOrganizationId()));
-		target.setTarget(serverAccessData.toReference());
-
-		target.setRequestStatus(source.getRequestStatus());
-		target.setSender(source.getSender().toReference());
-		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
-		target.setWithAssociatedContacts(source.isWithAssociatedContacts());
-		target.setWithSamples(source.isWithSamples());
-		target.setWithEvenParticipants(source.isWithEventParticipants());
-		target.setPseudonymizedPersonalData(source.isPseudonymizedPersonalData());
-		target.setPseudonymizedSensitiveData(source.isPseudonymizedSensitiveData());
-		target.setComment(source.getComment());
-
-		return target;
 	}
 
 	private SormasToSormasEntityInterface getEntityInterface(ShareRequestDataType dataType) {
