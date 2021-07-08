@@ -198,11 +198,9 @@ paths:
             application/json; charset=UTF-8:
               schema:
                 type: string
-                example:
-                - personUuid: Q56VFD-G3TXKT-R2DBIW-FTWIKAMI
-                  latestFollowUpEndDate: 1599602400000
-                - personUuid: TEYCIW-BHWHMH-MH2QIW-KBP72JMU
-                  latestFollowUpEndDate: 1593727200000
+                example: "[\n {\n  \"personUuid\" : \"Q56VFD-G3TXKT-R2DBIW-FTWIKAMI\",\n\
+                  \"latestFollowUpEndDate\" : 1599602400000\n}, {\n  \"personUuid\" : \
+                  \"TEYCIW-BHWHMH-MH2QIW-KBP72JMU\",\n  \"latestFollowUpEndDate\" : 1593727200000\n} ]"
   /visits-external/person/{personUuid}:
     get:
       summary: Get person information
@@ -270,7 +268,7 @@ paths:
             application/json; charset=UTF-8:
               schema:
                 type: string
-                example: true
+                example: "true"
   /visits-external:
     post:
       summary: Save visits
@@ -325,7 +323,7 @@ paths:
             application/json; charset=UTF-8:
               schema:
                 type: string
-                example: true
+                example: "true"
 components:
   schemas:
     PersonFollowUpEndDto:
