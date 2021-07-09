@@ -198,9 +198,11 @@ paths:
             application/json; charset=UTF-8:
               schema:
                 type: string
-                example: "[\n {\n  \"personUuid\" : \"Q56VFD-G3TXKT-R2DBIW-FTWIKAMI\",\n\
-                  \"latestFollowUpEndDate\" : 1599602400000\n}, {\n  \"personUuid\" : \
-                  \"TEYCIW-BHWHMH-MH2QIW-KBP72JMU\",\n  \"latestFollowUpEndDate\" : 1593727200000\n} ]"
+                example:
+                - personUuid: Q56VFD-G3TXKT-R2DBIW-FTWIKAMI
+                  latestFollowUpEndDate: 1599602400000
+                - personUuid: TEYCIW-BHWHMH-MH2QIW-KBP72JMU
+                  latestFollowUpEndDate: 1593727200000
   /visits-external/person/{personUuid}:
     get:
       summary: Get person information
@@ -228,9 +230,9 @@ paths:
             \ any contact (or case, if the case follow up feature is enabled) related\
             \ to the person. The contacts (and cases) considered are not filtered\
             \ by disease.<br>Note that Null value fields may not be returned. If you\
-            \ get an unexpected result, it might help to verify if the personUuid is\
-            \ existing in your system via the isValid controller.<br>If you get \"\
-            pseudonymized\": true, the user the request was authorized with probably\
+            \ get an unexpected result, it might help to verify if the personUuid\
+            \ is existing in your system via the isValid controller.<br>If you get\
+            \ \"pseudonymized\": true, the user the request was authorized with probably\
             \ lacks the user role REST_EXTERNAL_VISITS_USER."
           content:
             application/json; charset=UTF-8:
@@ -268,7 +270,7 @@ paths:
             application/json; charset=UTF-8:
               schema:
                 type: string
-                example: "true"
+                example: true
   /visits-external:
     post:
       summary: Save visits
@@ -323,7 +325,7 @@ paths:
             application/json; charset=UTF-8:
               schema:
                 type: string
-                example: "true"
+                example: true
 components:
   schemas:
     PersonFollowUpEndDto:
