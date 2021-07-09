@@ -822,29 +822,6 @@
 			</dependency>
 			<!-- *** Test dependencies END *** -->
 
-			<dependency>
-				<groupId>io.lettuce</groupId>
-				<artifactId>lettuce-core</artifactId>
-				<version>6.1.2.RELEASE</version>
-			</dependency>
-
-			<!-- OIDC for S2S -->
-			<dependency>
-				<groupId>com.google.oauth-client</groupId>
-				<artifactId>google-oauth-client</artifactId>
-				<version>1.31.5</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.http-client</groupId>
-				<artifactId>google-http-client</artifactId>
-				<version>1.39.2</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.http-client</groupId>
-				<artifactId>google-http-client-gson</artifactId>
-				<version>1.39.2</version>
-			</dependency>
-
 		</dependencies>
 	</dependencyManagement>
 

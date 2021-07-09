@@ -15,37 +15,20 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import java.io.Serializable;
+import de.symeda.sormas.api.ReferenceDto;
 
-public class SormasToSormasEncryptedDataDto implements Serializable {
+public class ServerAccessDataReferenceDto extends ReferenceDto {
 
-	private static final long serialVersionUID = 8658507076136806951L;
+	private static final long serialVersionUID = 807898485681272418L;
 
-	private String organizationId;
-
-	private byte[] data;
-
-	public SormasToSormasEncryptedDataDto() {
+	public ServerAccessDataReferenceDto() {
 	}
 
-	public SormasToSormasEncryptedDataDto(String organizationId, byte[] data) {
-		this.organizationId = organizationId;
-		this.data = data;
+	public ServerAccessDataReferenceDto(String uuid) {
+		super(uuid);
 	}
 
-	public String getOrganizationId() {
-		return organizationId;
-	}
-
-	public void setOrganizationId(String organizationId) {
-		this.organizationId = organizationId;
-	}
-
-	public byte[] getData() {
-		return data;
-	}
-
-	public void setData(byte[] data) {
-		this.data = data;
+	public ServerAccessDataReferenceDto(String uuid, String caption) {
+		super(uuid, caption);
 	}
 }

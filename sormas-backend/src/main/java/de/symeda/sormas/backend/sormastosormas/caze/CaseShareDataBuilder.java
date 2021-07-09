@@ -40,7 +40,6 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPre
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -72,8 +71,8 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 	private SampleService sampleService;
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
-	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
+	@Inject
+	private SormasToSormasConfig sormasToSormasConfig;
 
 	public ShareData<Case, SormasToSormasCaseDto> buildShareData(Case caze, User user, SormasToSormasOptionsDto options)
 		throws SormasToSormasException {
@@ -162,7 +161,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		// external tokens ("Aktenzeichen") are not globally unique in Germany due to SurvNet, therefore, do not
 		// transmit the token to other GAs, but let them generate their own token based on their local, configurable
 		// format
-		if (!configFacadeEjb.getS2SConfig().getRetainCaseExternalToken()) {
+		if (!sormasToSormasConfig.getRetainCaseExternalToken()) {
 			cazeDto.setExternalToken(null);
 		}
 
