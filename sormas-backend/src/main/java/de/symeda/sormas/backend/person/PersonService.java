@@ -189,8 +189,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, caseJoin);
 		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, contactJoin);
 		final Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantJoin);
-		final Predicate immunizationUserFilter = immunizationService.inJurisdictionOrOwned(new ImmunizationQueryContext(cb, cq, immunizationJoin));
-		final Predicate travelEntryUserFilter = travelEntryService.injurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, travelEntryJoin));
+		final Predicate travelEntryUserFilter = travelEntryService.createUserFilter(cb, cq, travelEntryJoin);
 		final Predicate immunizationUserFilter = immunizationService.createUserFilter(cb, cq, immunizationJoin);
 
 		final Predicate caseNotDeleted = caseService.createDefaultFilter(cb, caseJoin);
