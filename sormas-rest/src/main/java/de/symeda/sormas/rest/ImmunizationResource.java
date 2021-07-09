@@ -65,6 +65,18 @@ public class ImmunizationResource extends EntityDtoResource {
 	}
 
 	@GET
+	@Path("/archived/{since}")
+	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getImmunizationFacade().getArchivedUuidsSince(new Date(since));
+	}
+
+	@GET
+	@Path("/deleted/{since}")
+	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getImmunizationFacade().getDeletedUuidsSince(new Date(since));
+	}
+
+	@GET
 	@Path("/{uuid}")
 	public ImmunizationDto getByUuid(@PathParam("uuid") String uuid) {
 		return FacadeProvider.getImmunizationFacade().getByUuid(uuid);
