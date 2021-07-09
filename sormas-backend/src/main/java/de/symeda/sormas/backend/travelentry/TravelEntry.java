@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.travelentry;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -11,7 +12,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -20,10 +20,9 @@ import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.EndOfIsolationReason;
-import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -34,10 +33,13 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Entity(name = "travelentry")
 @Audited
 public class TravelEntry extends CoreAdo {
+
+	private static final long serialVersionUID = 8415313365918535184L;
 
 	public static final String TABLE_NAME = "travelentry";
 
@@ -76,7 +78,7 @@ public class TravelEntry extends CoreAdo {
 	private boolean recovered;
 	private boolean vaccinated;
 	private boolean testedNegative;
-	private String deaContent;
+	private List<DeaContentEntry> deaContent;
 
 	private QuarantineType quarantine;
 	private String quarantineTypeDetails;
@@ -96,13 +98,7 @@ public class TravelEntry extends CoreAdo {
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
 
-	private YesNoUnknown wasInQuarantineBeforeIsolation;
-	private QuarantineReason quarantineReasonBeforeIsolation;
-	private String quarantineReasonBeforeIsolationDetails;
-	private EndOfIsolationReason endOfIsolationReason;
-	private String endOfIsolationReasonDetails;
-
-	@ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(nullable = false)
 	public Person getPerson() {
 		return person;
@@ -122,7 +118,7 @@ public class TravelEntry extends CoreAdo {
 		this.reportDate = reportDate;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
@@ -179,7 +175,7 @@ public class TravelEntry extends CoreAdo {
 		this.diseaseVariant = diseaseVariant;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public Region getResponsibleRegion() {
 		return responsibleRegion;
 	}
@@ -188,7 +184,7 @@ public class TravelEntry extends CoreAdo {
 		this.responsibleRegion = responsibleRegion;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public District getResponsibleDistrict() {
 		return responsibleDistrict;
 	}
@@ -197,7 +193,7 @@ public class TravelEntry extends CoreAdo {
 		this.responsibleDistrict = responsibleDistrict;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public Community getResponsibleCommunity() {
 		return responsibleCommunity;
 	}
@@ -206,7 +202,7 @@ public class TravelEntry extends CoreAdo {
 		this.responsibleCommunity = responsibleCommunity;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public Region getPointOfEntryRegion() {
 		return pointOfEntryRegion;
 	}
@@ -215,7 +211,7 @@ public class TravelEntry extends CoreAdo {
 		this.pointOfEntryRegion = pointOfEntryRegion;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public District getPointOfEntryDistrict() {
 		return pointOfEntryDistrict;
 	}
@@ -224,7 +220,7 @@ public class TravelEntry extends CoreAdo {
 		this.pointOfEntryDistrict = pointOfEntryDistrict;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public PointOfEntry getPointOfEntry() {
 		return pointOfEntry;
 	}
@@ -242,7 +238,7 @@ public class TravelEntry extends CoreAdo {
 		this.pointOfEntryDetails = pointOfEntryDetails;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	@JoinColumn
 	public Case getResultingCase() {
 		return resultingCase;
@@ -288,13 +284,13 @@ public class TravelEntry extends CoreAdo {
 		this.testedNegative = testedNegative;
 	}
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	public String getDeaContent() {
+	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
+	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
+	public List<DeaContentEntry> getDeaContent() {
 		return deaContent;
 	}
 
-	public void setDeaContent(String deaContent) {
+	public void setDeaContent(List<DeaContentEntry> deaContent) {
 		this.deaContent = deaContent;
 	}
 
@@ -451,48 +447,4 @@ public class TravelEntry extends CoreAdo {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 	}
 
-	@Enumerated(EnumType.STRING)
-	public YesNoUnknown getWasInQuarantineBeforeIsolation() {
-		return wasInQuarantineBeforeIsolation;
-	}
-
-	public void setWasInQuarantineBeforeIsolation(YesNoUnknown wasInQuarantineBeforeIsolation) {
-		this.wasInQuarantineBeforeIsolation = wasInQuarantineBeforeIsolation;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public QuarantineReason getQuarantineReasonBeforeIsolation() {
-		return quarantineReasonBeforeIsolation;
-	}
-
-	public void setQuarantineReasonBeforeIsolation(QuarantineReason quarantineReasonBeforeIsolation) {
-		this.quarantineReasonBeforeIsolation = quarantineReasonBeforeIsolation;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getQuarantineReasonBeforeIsolationDetails() {
-		return quarantineReasonBeforeIsolationDetails;
-	}
-
-	public void setQuarantineReasonBeforeIsolationDetails(String quarantineReasonBeforeIsolationDetails) {
-		this.quarantineReasonBeforeIsolationDetails = quarantineReasonBeforeIsolationDetails;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public EndOfIsolationReason getEndOfIsolationReason() {
-		return endOfIsolationReason;
-	}
-
-	public void setEndOfIsolationReason(EndOfIsolationReason endOfIsolationReason) {
-		this.endOfIsolationReason = endOfIsolationReason;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getEndOfIsolationReasonDetails() {
-		return endOfIsolationReasonDetails;
-	}
-
-	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
-		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
-	}
 }

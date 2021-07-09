@@ -1,11 +1,10 @@
 package de.symeda.sormas.api.travelentry;
 
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.EndOfIsolationReason;
-import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
@@ -21,6 +20,8 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class TravelEntryDto extends PseudonymizableDto {
+
+	private static final long serialVersionUID = 4503438472222204446L;
 
 	@Required
 	@EmbeddedPersonalData
@@ -47,8 +48,7 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private boolean recovered;
 	private boolean vaccinated;
 	private boolean testedNegative;
-	@SensitiveData
-	private String deaContent;
+	private List<DeaContentEntry> deaContent;
 
 	private QuarantineType quarantine;
 	@SensitiveData
@@ -71,14 +71,6 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private boolean quarantineReduced;
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
-
-	private YesNoUnknown wasInQuarantineBeforeIsolation;
-	private QuarantineReason quarantineReasonBeforeIsolation;
-	@SensitiveData
-	private String quarantineReasonBeforeIsolationDetails;
-	private EndOfIsolationReason endOfIsolationReason;
-	@SensitiveData
-	private String endOfIsolationReasonDetails;
 
 	public PersonReferenceDto getPerson() {
 		return person;
@@ -240,11 +232,11 @@ public class TravelEntryDto extends PseudonymizableDto {
 		this.testedNegative = testedNegative;
 	}
 
-	public String getDeaContent() {
+	public List<DeaContentEntry> getDeaContent() {
 		return deaContent;
 	}
 
-	public void setDeaContent(String deaContent) {
+	public void setDeaContent(List<DeaContentEntry> deaContent) {
 		this.deaContent = deaContent;
 	}
 
@@ -384,43 +376,4 @@ public class TravelEntryDto extends PseudonymizableDto {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 	}
 
-	public YesNoUnknown getWasInQuarantineBeforeIsolation() {
-		return wasInQuarantineBeforeIsolation;
-	}
-
-	public void setWasInQuarantineBeforeIsolation(YesNoUnknown wasInQuarantineBeforeIsolation) {
-		this.wasInQuarantineBeforeIsolation = wasInQuarantineBeforeIsolation;
-	}
-
-	public QuarantineReason getQuarantineReasonBeforeIsolation() {
-		return quarantineReasonBeforeIsolation;
-	}
-
-	public void setQuarantineReasonBeforeIsolation(QuarantineReason quarantineReasonBeforeIsolation) {
-		this.quarantineReasonBeforeIsolation = quarantineReasonBeforeIsolation;
-	}
-
-	public String getQuarantineReasonBeforeIsolationDetails() {
-		return quarantineReasonBeforeIsolationDetails;
-	}
-
-	public void setQuarantineReasonBeforeIsolationDetails(String quarantineReasonBeforeIsolationDetails) {
-		this.quarantineReasonBeforeIsolationDetails = quarantineReasonBeforeIsolationDetails;
-	}
-
-	public EndOfIsolationReason getEndOfIsolationReason() {
-		return endOfIsolationReason;
-	}
-
-	public void setEndOfIsolationReason(EndOfIsolationReason endOfIsolationReason) {
-		this.endOfIsolationReason = endOfIsolationReason;
-	}
-
-	public String getEndOfIsolationReasonDetails() {
-		return endOfIsolationReasonDetails;
-	}
-
-	public void setEndOfIsolationReasonDetails(String endOfIsolationReasonDetails) {
-		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
-	}
 }

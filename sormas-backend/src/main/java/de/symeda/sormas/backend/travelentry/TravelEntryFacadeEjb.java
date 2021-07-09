@@ -217,12 +217,6 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		dto.setQuarantineOfficialOrderSent(entity.isQuarantineOfficialOrderSent());
 		dto.setQuarantineOfficialOrderSentDate(entity.getQuarantineOfficialOrderSentDate());
 
-		dto.setWasInQuarantineBeforeIsolation(entity.getWasInQuarantineBeforeIsolation());
-		dto.setQuarantineReasonBeforeIsolation(entity.getQuarantineReasonBeforeIsolation());
-		dto.setQuarantineReasonBeforeIsolationDetails(entity.getQuarantineReasonBeforeIsolationDetails());
-		dto.setEndOfIsolationReason(entity.getEndOfIsolationReason());
-		dto.setEndOfIsolationReasonDetails(entity.getEndOfIsolationReasonDetails());
-
 		return dto;
 	}
 
@@ -268,12 +262,6 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-
-		target.setWasInQuarantineBeforeIsolation(source.getWasInQuarantineBeforeIsolation());
-		target.setQuarantineReasonBeforeIsolation(source.getQuarantineReasonBeforeIsolation());
-		target.setQuarantineReasonBeforeIsolationDetails(source.getQuarantineReasonBeforeIsolationDetails());
-		target.setEndOfIsolationReason(source.getEndOfIsolationReason());
-		target.setEndOfIsolationReasonDetails(source.getEndOfIsolationReasonDetails());
 
 		return target;
 	}

@@ -51,12 +51,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.backend.immunization.Immunization;
-import de.symeda.sormas.backend.immunization.ImmunizationQueryContext;
-import de.symeda.sormas.backend.immunization.ImmunizationService;
-import de.symeda.sormas.backend.travelentry.TravelEntry;
-import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
-import de.symeda.sormas.backend.travelentry.TravelEntryService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -83,10 +77,14 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.geocoding.GeocodingService;
+import de.symeda.sormas.backend.immunization.Immunization;
+import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
@@ -184,7 +182,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Join<Object, Contact> contactJoin = personFrom.join(Person.CONTACTS, JoinType.LEFT);
 		final Join<Object, EventParticipant> eventParticipantJoin = personFrom.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);
 		final Join<Object, Immunization> immunizationJoin = personFrom.join(Person.IMMUNIZATIONS, JoinType.LEFT);
-		final Join<Object, TravelEntry> travelEntryJoin = personFrom.join(Person.TRAVEL_ENTRY, JoinType.LEFT);
+		final Join<Object, TravelEntry> travelEntryJoin = personFrom.join(Person.TRAVEL_ENTRIES, JoinType.LEFT);
 
 		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, caseJoin);
 		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, contactJoin);
@@ -204,19 +202,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Predicate immunizationFilter = CriteriaBuilderHelper.and(cb, immunizationUserFilter, immunizationNotDeleted);
 		final Predicate travelEntryFilter = CriteriaBuilderHelper.and(cb, travelEntryUserFilter, travelEntryNotDeleted);
 
-		return CriteriaBuilderHelper.or(
-			cb,
-			caseFilter,
-			contactFilter,
-			eventParticipantFilter,
-			immunizationFilter,
-			travelEntryFilter,
-			cb.and(
-				cb.isNull(caseJoin),
-				cb.isNull(contactJoin),
-				cb.isNull(eventParticipantJoin),
-				cb.isNull(immunizationJoin),
-				cb.isNull(travelEntryJoin)));
+		return CriteriaBuilderHelper.or(cb, caseFilter, contactFilter, eventParticipantFilter, immunizationFilter, travelEntryFilter);
 	}
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, PersonQueryContext personQueryContext) {
@@ -387,7 +373,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, immunizationPersonsSelect, DateHelper.toTimestampUpper(date));
 			Predicate immunizationDateFilter =
-					immunizationService.createChangeDateFilter(cb, immunizationPersonsRoot, DateHelper.toTimestampUpper(date));
+				immunizationService.createChangeDateFilter(cb, immunizationPersonsRoot, DateHelper.toTimestampUpper(date));
 			immunizationPersonsFilter = and(cb, immunizationPersonsFilter, cb.or(dateFilter, immunizationDateFilter));
 		}
 		if (immunizationPersonsFilter != null) {

@@ -7559,7 +7559,6 @@ CREATE TABLE travelentry(
     vaccinated boolean,
     testednegative boolean,
     deacontent varchar(512),
-
     quarantine varchar(255),
     quarantinetypedetails varchar(512),
     quarantinefrom timestamp,
@@ -7577,15 +7576,9 @@ CREATE TABLE travelentry(
     quarantinereduced boolean DEFAULT false,
     quarantineofficialordersent boolean DEFAULT false,
     quarantineofficialordersentdate timestamp,
-
-    wasInQuarantineBeforeIsolation varchar(255),
-    quarantinereasonbeforeisolation varchar(255),
-    quarantinereasonbeforeisolationdetails varchar(512),
-    endofisolationreason varchar(255),
-    endofisolationreasondetails varchar(512),
-
     sys_period tstzrange not null,
     primary key(id));
+
 ALTER TABLE travelentry OWNER TO sormas_user;
 
 ALTER TABLE travelentry ADD CONSTRAINT fk_travelentry_person_id FOREIGN KEY (person_id) REFERENCES person(id);

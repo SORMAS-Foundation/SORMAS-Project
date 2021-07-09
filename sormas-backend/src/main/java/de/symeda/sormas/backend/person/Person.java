@@ -136,7 +136,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 	public static final String IMMUNIZATIONS = "immunizations";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
-	public static final String TRAVEL_ENTRY = "travelEntries";
+	public static final String TRAVEL_ENTRIES = "travelEntries";
 
 	private String firstName;
 	private String lastName;
