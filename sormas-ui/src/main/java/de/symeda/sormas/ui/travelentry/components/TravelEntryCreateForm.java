@@ -38,6 +38,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
@@ -58,10 +59,8 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 	private static final String DIFFERENT_POINT_OF_ENTRY_JURISDICTION = "differentPointOfEntryJurisdiction";
 	private static final String POINT_OF_ENTRY_HEADING_LOC = "pointOfEntryHeadingLoc";
 
-	private ComboBox responsibleDistrictCombo;
-	private ComboBox responsibleCommunityCombo;
-	private CheckBox differentPointOfEntryJurisdiction;
 	private ComboBox districtCombo;
+	private ComboBox cbPointOfEntry;
 
 	private ComboBox birthDateDay;
 
@@ -118,15 +117,15 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 
 		ComboBox responsibleRegion = addField(TravelEntryDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
-		responsibleDistrictCombo = addField(TravelEntryDto.RESPONSIBLE_DISTRICT);
+		ComboBox responsibleDistrictCombo = addField(TravelEntryDto.RESPONSIBLE_DISTRICT);
 		responsibleDistrictCombo.setRequired(true);
-		responsibleCommunityCombo = addField(TravelEntryDto.RESPONSIBLE_COMMUNITY);
+		ComboBox responsibleCommunityCombo = addField(TravelEntryDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunityCombo.setNullSelectionAllowed(true);
 		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrictCombo, responsibleCommunityCombo);
 
-		differentPointOfEntryJurisdiction = addCustomField(DIFFERENT_POINT_OF_ENTRY_JURISDICTION, Boolean.class, CheckBox.class);
+		CheckBox differentPointOfEntryJurisdiction = addCustomField(DIFFERENT_POINT_OF_ENTRY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPointOfEntryJurisdiction.addStyleName(VSPACE_3);
 
 		Label placeOfStayHeadingLabel = new Label(I18nProperties.getCaption(Captions.travelEntryPointOfEntry));
@@ -136,7 +135,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		ComboBox regionCombo = addInfrastructureField(TravelEntryDto.REGION);
 		districtCombo = addInfrastructureField(TravelEntryDto.DISTRICT);
 
-		ComboBox cbPointOfEntry = addInfrastructureField(TravelEntryDto.POINT_OF_ENTRY);
+		cbPointOfEntry = addInfrastructureField(TravelEntryDto.POINT_OF_ENTRY);
 		cbPointOfEntry.setImmediate(true);
 		TextField tfPointOfEntryDetails = addField(TravelEntryDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 		tfPointOfEntryDetails.setVisible(false);
@@ -217,8 +216,14 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			FieldHelper
 				.updateItems(districtCombo, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
+		districtCombo.addValueChangeListener(e -> {
+			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+			getPointsOfEntryForDistrict(districtDto);
+		});
 
-		JurisdictionLevel userJurisditionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		UserProvider currentUserProvider = UserProvider.getCurrent();
+		JurisdictionLevel userJurisditionLevel =
+			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : JurisdictionLevel.NONE;
 		if (userJurisditionLevel == JurisdictionLevel.COMMUNITY) {
 			regionCombo.setReadOnly(true);
 			districtCombo.setReadOnly(true);
@@ -230,20 +235,28 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(true, TravelEntryDto.REPORT_DATE, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, TravelEntryDto.DISEASE, PersonDto.SEX);
+		setRequired(
+			true,
+			TravelEntryDto.REPORT_DATE,
+			TravelEntryDto.POINT_OF_ENTRY,
+			PersonDto.FIRST_NAME,
+			PersonDto.LAST_NAME,
+			TravelEntryDto.DISEASE,
+			PersonDto.SEX);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Arrays.asList(TravelEntryDto.DISEASE_DETAILS),
+			Collections.singletonList(TravelEntryDto.DISEASE_DETAILS),
 			TravelEntryDto.DISEASE,
-			Arrays.asList(Disease.OTHER),
+			Collections.singletonList(Disease.OTHER),
 			true);
-		FieldHelper
-			.setRequiredWhen(getFieldGroup(), TravelEntryDto.DISEASE, Arrays.asList(TravelEntryDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			TravelEntryDto.DISEASE,
+			Collections.singletonList(TravelEntryDto.DISEASE_DETAILS),
+			Collections.singletonList(Disease.OTHER));
 
-		cbPointOfEntry.addValueChangeListener(e -> {
-			updatePointOfEntryFields(cbPointOfEntry, tfPointOfEntryDetails);
-		});
+		cbPointOfEntry.addValueChangeListener(e -> updatePointOfEntryFields(cbPointOfEntry, tfPointOfEntryDetails));
 
 		FieldHelper.setVisibleWhen(
 			differentPointOfEntryJurisdiction,
@@ -258,6 +271,11 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			false,
 			null);
 
+		responsibleDistrictCombo.addValueChangeListener(e -> {
+			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+			getPointsOfEntryForDistrict(districtDto);
+		});
+
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
 			List<DiseaseVariant> diseaseVariants =
@@ -266,6 +284,12 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			diseaseVariantField
 				.setVisible(disease != null && isVisibleAllowed(TravelEntryDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 		});
+	}
+
+	private void getPointsOfEntryForDistrict(DistrictReferenceDto districtDto) {
+		FieldHelper.updateItems(
+			cbPointOfEntry,
+			districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), true) : null);
 	}
 
 	private void setItemCaptionsForMonths(AbstractSelect months) {
