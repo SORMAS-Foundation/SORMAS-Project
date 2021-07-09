@@ -9,7 +9,7 @@ import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
-import de.symeda.sormas.backend.contact.ContactJoins;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -21,7 +21,6 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 
 	private final TravelEntryJoins<?> joins;
 	private final User currentUser;
-	private final CriteriaQuery<?> cq;
 
 	private TravelEntryJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
@@ -32,7 +31,6 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 		super(cb, associatedJurisdictionValidators);
 		this.joins = joins;
 		this.currentUser = currentUser;
-		this.cq = cq;
 	}
 
 	public static TravelEntryJurisdictionPredicateValidator of(TravelEntryQueryContext qc, User currentUser) {
@@ -71,12 +69,18 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 
 	@Override
 	protected Predicate whenRegionalLevel() {
-		return cb.equal(joins.getResponsibleRegion().get(Region.ID), currentUser.getRegion().getId());
+		return CriteriaBuilderHelper.or(
+			cb,
+			cb.equal(joins.getResponsibleRegion().get(Region.ID), currentUser.getRegion().getId()),
+			cb.equal(joins.getPointOfEntryRegion().get(Region.ID), currentUser.getRegion().getId()));
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
-		return cb.equal(joins.getResponsibleDistrict().get(District.ID), currentUser.getDistrict().getId());
+		return CriteriaBuilderHelper.or(
+			cb,
+			cb.equal(joins.getResponsibleDistrict().get(District.ID), currentUser.getDistrict().getId()),
+			cb.equal(joins.getPointOfEntryDistrict().get(District.ID), currentUser.getDistrict().getId()));
 	}
 
 	@Override

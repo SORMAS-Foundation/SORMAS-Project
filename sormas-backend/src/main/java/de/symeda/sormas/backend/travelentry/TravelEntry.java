@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend.travelentry;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-
 import java.util.Date;
 import java.util.List;
 
@@ -156,7 +154,7 @@ public class TravelEntry extends CoreAdo {
 		this.disease = disease;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
@@ -229,7 +227,7 @@ public class TravelEntry extends CoreAdo {
 		this.pointOfEntry = pointOfEntry;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getPointOfEntryDetails() {
 		return pointOfEntryDetails;
 	}
@@ -248,7 +246,7 @@ public class TravelEntry extends CoreAdo {
 		this.resultingCase = resultingCase;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getExternalId() {
 		return externalId;
 	}
@@ -303,7 +301,7 @@ public class TravelEntry extends CoreAdo {
 		this.quarantine = quarantine;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getQuarantineTypeDetails() {
 		return quarantineTypeDetails;
 	}
@@ -330,7 +328,7 @@ public class TravelEntry extends CoreAdo {
 		this.quarantineTo = quarantineTo;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
@@ -384,7 +382,7 @@ public class TravelEntry extends CoreAdo {
 		this.quarantineHomePossible = quarantineHomePossible;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getQuarantineHomePossibleComment() {
 		return quarantineHomePossibleComment;
 	}
@@ -402,7 +400,7 @@ public class TravelEntry extends CoreAdo {
 		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(columnDefinition = "text")
 	public String getQuarantineHomeSupplyEnsuredComment() {
 		return quarantineHomeSupplyEnsuredComment;
 	}

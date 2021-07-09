@@ -382,7 +382,33 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		immunizationPersonsQuery.distinct(true);
 		List<Person> immunizationPersonsResultList = em.createQuery(immunizationPersonsQuery).getResultList();
 
-		return Stream.of(lgaResultList, casePersonsResultList, contactPersonsResultList, eventPersonsResultList, immunizationPersonsResultList)
+		// persons by travel entries
+		CriteriaQuery<Person> tepQuery = cb.createQuery(Person.class);
+		Root<TravelEntry> tepRoot = tepQuery.from(TravelEntry.class);
+		Join<TravelEntry, Person> tepSelect = tepRoot.join(TravelEntry.PERSON);
+		tepSelect.fetch(Person.ADDRESS);
+		tepQuery.select(tepSelect);
+		Predicate tepFilter = travelEntryService.createUserFilter(cb, tepQuery, tepRoot);
+		// date range
+		if (date != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, tepSelect, DateHelper.toTimestampUpper(date));
+			Predicate travelEntryDateFilter = travelEntryService.createChangeDateFilter(cb, tepRoot, DateHelper.toTimestampUpper(date));
+			tepFilter = and(cb, tepFilter, cb.or(dateFilter, travelEntryDateFilter));
+		}
+		if (tepFilter != null) {
+			tepQuery.where(tepFilter);
+		}
+		tepQuery.distinct(true);
+		List<Person> travelEntryPersonsResultList = em.createQuery(tepQuery).getResultList();
+
+		return Stream
+			.of(
+				lgaResultList,
+				casePersonsResultList,
+				contactPersonsResultList,
+				eventPersonsResultList,
+				immunizationPersonsResultList,
+				travelEntryPersonsResultList)
 			.flatMap(List<Person>::stream)
 			.distinct()
 			.sorted(Comparator.comparing(Person::getChangeDate))
