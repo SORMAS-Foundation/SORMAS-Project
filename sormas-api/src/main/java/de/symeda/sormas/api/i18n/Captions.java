@@ -2082,6 +2082,7 @@ public interface Captions {
 	String to = "to";
 	String total = "total";
 	String travelEntryNewEntry = "travelEntryNewEntry";
+	String travelEntryPointOfEntry = "travelEntryPointOfEntry";
 	String Treatment_additionalNotes = "Treatment.additionalNotes";
 	String Treatment_dose = "Treatment.dose";
 	String Treatment_drugIntakeDetails = "Treatment.drugIntakeDetails";

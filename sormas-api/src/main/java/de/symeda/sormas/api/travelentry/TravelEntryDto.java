@@ -25,6 +25,22 @@ public class TravelEntryDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "TravelEntry";
 
+	public static final String REPORT_DATE = "reportDate";
+	public static final String EXTERNAL_ID = "externalId";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
+
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
+	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
+
+	public static final String REGION = "pointOfEntryRegion";
+	public static final String DISTRICT = "pointOfEntryDistrict";
+
+	public static final String POINT_OF_ENTRY = "pointOfEntry";
+	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
+
 	@Required
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
