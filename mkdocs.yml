@@ -18,7 +18,7 @@ plugins:
       separator: '[\s]+'
 
 nav:
-  - Offical Website: "https://sormas.org"
+  - Official Website: "https://sormas.org"
   - Home: index.md
   - Contributing: CONTRIBUTING.md
   - Demo App: DEMO_APP.md
@@ -29,7 +29,7 @@ nav:
   - Keycloak Service Provider: sormas-keycloak-service-provider/README.md
   - I18n: I18N.md
   - Security: SECURITY.md
-  - Custimization: SERVER_CUSTOMIZATION.md
+  - Customization: SERVER_CUSTOMIZATION.md
   - Development Setup: SERVER_DEV_SETUP.md
   - Setup: SERVER_SETUP.md
   - Update: SERVER_UPDATE.md
