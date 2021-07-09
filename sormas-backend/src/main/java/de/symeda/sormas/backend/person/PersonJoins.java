@@ -22,6 +22,7 @@ import javax.persistence.criteria.JoinType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.immunization.Immunization;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
 public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
@@ -29,6 +30,7 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 	private Join<Person, Case> caze;
 	private Join<Person, Contact> contact;
 	private Join<Person, EventParticipant> eventParticipant;
+	private Join<Person, Immunization> immunization;
 
 	public PersonJoins(From<T, Person> root) {
 		super(root);
@@ -56,5 +58,13 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 
 	private void setEventParticipant(Join<Person, EventParticipant> eventParticipant) {
 		this.eventParticipant = eventParticipant;
+	}
+
+	public Join<Person, Immunization> getImmunization() {
+		return getOrCreate(immunization, Person.IMMUNIZATIONS, JoinType.LEFT, this::setImmunization);
+	}
+
+	public void setImmunization(Join<Person, Immunization> immunization) {
+		this.immunization = immunization;
 	}
 }
