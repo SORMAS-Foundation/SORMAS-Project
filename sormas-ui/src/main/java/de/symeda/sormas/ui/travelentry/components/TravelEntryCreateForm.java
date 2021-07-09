@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.validator.EmailValidator;
@@ -284,6 +285,33 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			diseaseVariantField
 				.setVisible(disease != null && isVisibleAllowed(TravelEntryDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 		});
+	}
+
+	public PersonDto getPerson() {
+		PersonDto person = PersonDto.build();
+
+		person.setFirstName((String) getField(PersonDto.FIRST_NAME).getValue());
+		person.setLastName((String) getField(PersonDto.LAST_NAME).getValue());
+		person.setBirthdateDD((Integer) getField(PersonDto.BIRTH_DATE_DD).getValue());
+		person.setBirthdateMM((Integer) getField(PersonDto.BIRTH_DATE_MM).getValue());
+		person.setBirthdateYYYY((Integer) getField(PersonDto.BIRTH_DATE_YYYY).getValue());
+		person.setSex((Sex) getField(PersonDto.SEX).getValue());
+		person.setPresentCondition((PresentCondition) getField(PersonDto.PRESENT_CONDITION).getValue());
+
+		String phone = (String) getField(PersonDto.PHONE).getValue();
+		if (StringUtils.isNotEmpty(phone)) {
+			person.setPhone(phone);
+		}
+
+		String emailAddress = (String) getField(PersonDto.EMAIL_ADDRESS).getValue();
+		if (StringUtils.isNotEmpty(emailAddress)) {
+			person.setEmailAddress(emailAddress);
+		}
+
+		person.setNationalHealthId((String) getField(PersonDto.NATIONAL_HEALTH_ID).getValue());
+		person.setPassportNumber((String) getField(PersonDto.PASSPORT_NUMBER).getValue());
+
+		return person;
 	}
 
 	private void getPointsOfEntryForDistrict(DistrictReferenceDto districtDto) {
