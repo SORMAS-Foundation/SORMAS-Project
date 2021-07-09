@@ -12,6 +12,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.backend.immunization.Immunization;
 import de.symeda.sormas.backend.user.User;
 
 public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject> extends BaseAdoService<ADO> {
@@ -81,6 +82,64 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 		}
 
 		cq.select(from.get(AbstractDomainObject.ID));
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<String> getArchivedUuidsSince(Date since) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<ADO> from = cq.from(getElementClass());
+
+		Predicate filter = createUserFilter(cb, cq, from);
+		if (since != null) {
+			Predicate dateFilter = cb.greaterThanOrEqualTo(from.get(Immunization.CHANGE_DATE), since);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
+		}
+
+		Predicate archivedFilter = cb.equal(from.get(Immunization.ARCHIVED), true);
+		if (filter != null) {
+			filter = cb.and(filter, archivedFilter);
+		} else {
+			filter = archivedFilter;
+		}
+
+		cq.where(filter);
+		cq.select(from.get(Immunization.UUID));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<String> getDeletedUuidsSince(Date since) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<ADO> from = cq.from(getElementClass());
+
+		Predicate filter = createUserFilter(cb, cq, from);
+		if (since != null) {
+			Predicate dateFilter = cb.greaterThanOrEqualTo(from.get(Immunization.CHANGE_DATE), since);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
+		}
+
+		Predicate deletedFilter = cb.equal(from.get(Immunization.DELETED), true);
+		if (filter != null) {
+			filter = cb.and(filter, deletedFilter);
+		} else {
+			filter = deletedFilter;
+		}
+
+		cq.where(filter);
+		cq.select(from.get(Immunization.UUID));
+
 		return em.createQuery(cq).getResultList();
 	}
 
