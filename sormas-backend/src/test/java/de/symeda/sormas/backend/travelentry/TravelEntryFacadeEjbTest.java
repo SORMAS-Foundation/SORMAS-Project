@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.travelentry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
@@ -64,24 +65,24 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
 	}
 
-    @Test
-    public void testSaveAndGetByUuid() {
-        loginWith(nationalUser);
+	@Test
+	public void testSaveAndGetByUuid() {
+		loginWith(nationalUser);
 
-        PersonDto person = creator.createPerson("John", "Doe");
+		PersonDto person = creator.createPerson("John", "Doe");
 
 		TravelEntryDto travelEntry = creator.createTravelEntry(
-				person.toReference(),
-				nationalUser.toReference(),
-				Disease.CORONAVIRUS,
-				rdcf1.region,
-				rdcf1.district,
-				rdcf1.pointOfEntry);
+			person.toReference(),
+			nationalUser.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf1.region,
+			rdcf1.district,
+			rdcf1.pointOfEntry);
 		TravelEntryDto travelEntryByUuid = getTravelEntryFacade().getByUuid(travelEntry.getUuid());
 		assertEquals(travelEntry.getUuid(), travelEntryByUuid.getUuid());
-        assertEquals(travelEntry.getPerson(), travelEntry.getPerson());
-        assertEquals(travelEntry.getDisease(), travelEntry.getDisease());
-    }
+		assertEquals(travelEntry.getPerson(), travelEntry.getPerson());
+		assertEquals(travelEntry.getDisease(), travelEntry.getDisease());
+	}
 
 	@Test
 	public void testGetAllSince() {
@@ -89,20 +90,14 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 
 		PersonDto person = creator.createPerson("John", "Doe");
 		creator.createTravelEntry(
-				person.toReference(),
-				nationalUser.toReference(),
-				Disease.CORONAVIRUS,
-				rdcf1.region,
-				rdcf1.district,
-				rdcf1.pointOfEntry);
-		creator.createTravelEntry(
-				person.toReference(),
-				nationalUser.toReference(),
-				Disease.DENGUE,
-				rdcf2.region,
-				rdcf2.district,
-				rdcf2.pointOfEntry);
-		List<ImmunizationDto> allAfter = getImmunizationFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
+			person.toReference(),
+			nationalUser.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf1.region,
+			rdcf1.district,
+			rdcf1.pointOfEntry);
+		creator.createTravelEntry(person.toReference(), nationalUser.toReference(), Disease.DENGUE, rdcf2.region, rdcf2.district, rdcf2.pointOfEntry);
+		List<TravelEntryDto> allAfter = getTravelEntryFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
 		assertEquals(2, allAfter.size());
 	}
 
@@ -113,32 +108,27 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson("John", "Doe");
 
 		TravelEntryDto seenTravelEntry = creator.createTravelEntry(
-				person.toReference(),
-				nationalUser.toReference(),
-				Disease.CORONAVIRUS,
-				rdcf1.region,
-				rdcf1.district,
-				rdcf1.pointOfEntry);
-		TravelEntryDto notSeenTravelEntry = creator.createTravelEntry(
-				person.toReference(),
-				nationalUser.toReference(),
-				Disease.DENGUE,
-				rdcf2.region,
-				rdcf2.district,
-				rdcf2.pointOfEntry);
+			person.toReference(),
+			nationalUser.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf1.region,
+			rdcf1.district,
+			rdcf1.pointOfEntry);
+		TravelEntryDto notSeenTravelEntry = creator
+			.createTravelEntry(person.toReference(), nationalUser.toReference(), Disease.DENGUE, rdcf2.region, rdcf2.district, rdcf2.pointOfEntry);
 
-		loginWith(districtUser2);
-		List<ImmunizationDto> allAfter = getImmunizationFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
+		loginWith(districtUser1);
+		List<TravelEntryDto> allAfter = getTravelEntryFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
 		assertEquals(1, allAfter.size());
-		ImmunizationDto immunizationDto = allAfter.get(0);
-		assertEquals(seenTravelEntry.getUuid(), immunizationDto.getUuid());
-		assertEquals(seenTravelEntry.getPerson().getFirstName(), immunizationDto.getPerson().getFirstName());
-		assertEquals(seenTravelEntry.getPerson().getLastName(), immunizationDto.getPerson().getLastName());
+		TravelEntryDto travelEntryDto = allAfter.get(0);
+		assertEquals(seenTravelEntry.getUuid(), travelEntryDto.getUuid());
+		assertEquals(seenTravelEntry.getPerson().getFirstName(), travelEntryDto.getPerson().getFirstName());
+		assertEquals(seenTravelEntry.getPerson().getLastName(), travelEntryDto.getPerson().getLastName());
 
 		TravelEntryDto notInJurisdictionTravelEntry = getTravelEntryFacade().getByUuid(notSeenTravelEntry.getUuid());
 		assertEquals(notInJurisdictionTravelEntry.getUuid(), notSeenTravelEntry.getUuid());
-		assertThat(notInJurisdictionTravelEntry.getPerson().getLastName(), is("Confidential"));
-		assertThat(notInJurisdictionTravelEntry.getPerson().getFirstName(), is("Confidential"));
+		assertThat(notInJurisdictionTravelEntry.getPerson().getLastName(), is(isEmptyString()));
+		assertThat(notInJurisdictionTravelEntry.getPerson().getFirstName(), is(isEmptyString()));
 		assertEquals(notInJurisdictionTravelEntry.getDisease(), notSeenTravelEntry.getDisease());
 	}
 

@@ -14,17 +14,23 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class TravelEntryDto extends PseudonymizableDto {
 
+	@Required
+	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
 	private boolean archived;
 	private boolean deleted;
 	private Disease disease;
+	@SensitiveData
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
 	private RegionReferenceDto responsibleRegion;
@@ -33,26 +39,33 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private RegionReferenceDto pointOfEntryRegion;
 	private DistrictReferenceDto pointOfEntryDistrict;
 	private PointOfEntryReferenceDto pointOfEntry;
+	@SensitiveData
 	private String pointOfEntryDetails;
+	@EmbeddedPersonalData
 	private CaseReferenceDto resultingCase;
 	private String externalId;
 	private boolean recovered;
 	private boolean vaccinated;
 	private boolean testedNegative;
+	@SensitiveData
 	private String deaContent;
 
 	private QuarantineType quarantine;
+	@SensitiveData
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	@SensitiveData
 	private String quarantineHelpNeeded;
 	private boolean quarantineOrderedVerbally;
 	private boolean quarantineOrderedOfficialDocument;
 	private Date quarantineOrderedVerballyDate;
 	private Date quarantineOrderedOfficialDocumentDate;
 	private YesNoUnknown quarantineHomePossible;
+	@SensitiveData
 	private String quarantineHomePossibleComment;
 	private YesNoUnknown quarantineHomeSupplyEnsured;
+	@SensitiveData
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
 	private boolean quarantineReduced;
@@ -61,8 +74,10 @@ public class TravelEntryDto extends PseudonymizableDto {
 
 	private YesNoUnknown wasInQuarantineBeforeIsolation;
 	private QuarantineReason quarantineReasonBeforeIsolation;
+	@SensitiveData
 	private String quarantineReasonBeforeIsolationDetails;
 	private EndOfIsolationReason endOfIsolationReason;
+	@SensitiveData
 	private String endOfIsolationReasonDetails;
 
 	public PersonReferenceDto getPerson() {

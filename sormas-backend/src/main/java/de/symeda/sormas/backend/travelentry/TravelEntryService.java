@@ -30,23 +30,23 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		super(TravelEntry.class);
 	}
 
-	public boolean isInjurisdictionOrOwned(TravelEntry travelEntry) {
+	public boolean injurisdictionOrOwned(TravelEntry travelEntry) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<TravelEntry> root = cq.from(TravelEntry.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, isInjurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, root))));
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, injurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, root))));
 		cq.where(cb.equal(root.get(TravelEntry.UUID), travelEntry.getUuid()));
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public Predicate isInjurisdictionOrOwned(TravelEntryQueryContext qc) {
+	public Predicate injurisdictionOrOwned(TravelEntryQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
 		return TravelEntryJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 	}
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> travelEntryPath) {
-		return isInjurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, travelEntryPath));
+		return injurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, travelEntryPath));
 	}
 
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {

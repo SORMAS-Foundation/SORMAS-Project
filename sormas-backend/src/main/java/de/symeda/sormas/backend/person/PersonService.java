@@ -54,6 +54,9 @@ import javax.transaction.Transactional;
 import de.symeda.sormas.backend.immunization.Immunization;
 import de.symeda.sormas.backend.immunization.ImmunizationQueryContext;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
+import de.symeda.sormas.backend.travelentry.TravelEntryService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -104,6 +107,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private ImmunizationService immunizationService;
+	@EJB
+	private TravelEntryService travelEntryService;
 	@EJB
 	private GeocodingService geocodingService;
 	@EJB
@@ -179,21 +184,25 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Join<Object, Contact> contactJoin = personFrom.join(Person.CONTACTS, JoinType.LEFT);
 		final Join<Object, EventParticipant> eventParticipantJoin = personFrom.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);
 		final Join<Object, Immunization> immunizationJoin = personFrom.join(Person.IMMUNIZATIONS, JoinType.LEFT);
+		final Join<Object, TravelEntry> travelEntryJoin = personFrom.join(Person.TRAVEL_ENTRY, JoinType.LEFT);
 
 		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, caseJoin);
 		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, contactJoin);
 		final Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantJoin);
 		final Predicate immunizationUserFilter = immunizationService.inJurisdictionOrOwned(new ImmunizationQueryContext(cb, cq, immunizationJoin));
+		final Predicate travelEntryUserFilter = travelEntryService.injurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, travelEntryJoin));
 
 		final Predicate caseNotDeleted = caseService.createDefaultFilter(cb, caseJoin);
 		final Predicate contactNotDeleted = contactService.createDefaultFilter(cb, contactJoin);
 		final Predicate eventParticipantNotDeleted = eventParticipantService.createDefaultFilter(cb, eventParticipantJoin);
 		final Predicate immunizationNotDeleted = immunizationService.createDefaultFilter(cb, immunizationJoin);
+		final Predicate travelEntryNotDeleted = travelEntryService.createDefaultFilter(cb, travelEntryJoin);
 
 		final Predicate caseFilter = CriteriaBuilderHelper.and(cb, caseUserFilter, caseNotDeleted);
 		final Predicate contactFilter = CriteriaBuilderHelper.and(cb, contactUserFilter, contactNotDeleted);
 		final Predicate eventParticipantFilter = CriteriaBuilderHelper.and(cb, eventParticipantUserFilter, eventParticipantNotDeleted);
 		final Predicate immunizationFilter = CriteriaBuilderHelper.and(cb, immunizationUserFilter, immunizationNotDeleted);
+		final Predicate travelEntryFilter = CriteriaBuilderHelper.and(cb, travelEntryUserFilter, travelEntryNotDeleted);
 
 		return CriteriaBuilderHelper.or(
 			cb,
@@ -201,7 +210,13 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			contactFilter,
 			eventParticipantFilter,
 			immunizationFilter,
-			cb.and(cb.isNull(caseJoin), cb.isNull(contactJoin), cb.isNull(eventParticipantJoin), cb.isNull(immunizationJoin)));
+			travelEntryFilter,
+			cb.and(
+				cb.isNull(caseJoin),
+				cb.isNull(contactJoin),
+				cb.isNull(eventParticipantJoin),
+				cb.isNull(immunizationJoin),
+				cb.isNull(travelEntryJoin)));
 	}
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, PersonQueryContext personQueryContext) {
@@ -380,7 +395,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		final Predicate isFromSelectedPersons =
 			cb.in(personRoot.get(Person.ID)).value(selectedEntities.stream().map(Person::getId).collect(Collectors.toList()));
-		inJurisdictionQuery.where(cb.and(isFromSelectedPersons, inJurisdictionOrOwned(new PersonQueryContext(cb,inJurisdictionQuery, personRoot))));
+		inJurisdictionQuery.where(cb.and(isFromSelectedPersons, inJurisdictionOrOwned(new PersonQueryContext(cb, inJurisdictionQuery, personRoot))));
 
 		return em.createQuery(inJurisdictionQuery).getResultList();
 	}

@@ -2,17 +2,21 @@ package de.symeda.sormas.backend.travelentry;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
@@ -25,8 +29,10 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "TravelEntryFacade")
 public class TravelEntryFacadeEjb implements TravelEntryFacade {
@@ -50,7 +56,8 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 	@Override
 	public TravelEntryDto getByUuid(String uuid) {
-		return null;
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return convertToDto(travelEntryService.getByUuid(uuid), pseudonymizer);
 	}
 
 	@Override
@@ -64,32 +71,74 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 	@Override
 	public void dearchive(String uuid) {
-		//to be implemented
+		TravelEntry travelEntry = travelEntryService.getByUuid(uuid);
+		if (travelEntry != null) {
+			travelEntry.setArchived(false);
+			travelEntryService.ensurePersisted(travelEntry);
+		}
 	}
 
 	@Override
 	public List<TravelEntryDto> getAllAfter(Date date) {
-		return null;
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return travelEntryService.getAllActiveAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<TravelEntryDto> getByUuids(List<String> uuids) {
-		return null;
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return travelEntryService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<String> getAllUuids() {
-		return null;
+		return travelEntryService.getAllUuids();
 	}
 
 	@Override
 	public long count(TravelEntryCriteria criteria) {
-		return 0;
+		return travelEntryService.count((cb, root) -> travelEntryService.buildCriteriaFilter(criteria, cb, root));
 	}
 
 	@Override
 	public TravelEntryDto save(TravelEntryDto dto) {
-		return null;
+		TravelEntry existingTravelEntry = dto.getUuid() != null ? travelEntryService.getByUuid(dto.getUuid()) : null;
+		TravelEntryDto existingDto = toDto(existingTravelEntry);
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		restorePseudonymizedDto(dto, existingDto, existingTravelEntry, pseudonymizer);
+
+		validate(dto);
+
+		existingTravelEntry = fillOrBuildEntity(dto, existingTravelEntry, true);
+		travelEntryService.ensurePersisted(existingTravelEntry);
+
+		return convertToDto(existingTravelEntry, pseudonymizer);
+	}
+
+	public TravelEntryDto convertToDto(TravelEntry source, Pseudonymizer pseudonymizer) {
+		TravelEntryDto dto = toDto(source);
+		pseudonomyzeDto(source, dto, pseudonymizer);
+		return dto;
+	}
+
+	private void pseudonomyzeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer) {
+		if (dto != null) {
+			boolean inJurisdiction = travelEntryService.injurisdictionOrOwned(source);
+			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
+				User currentUser = userService.getCurrentUser();
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+			});
+		}
+	}
+
+	private void restorePseudonymizedDto(TravelEntryDto dto, TravelEntryDto existingDto, TravelEntry travelEntry, Pseudonymizer pseudonymizer) {
+		if (existingDto != null) {
+			final boolean inJurisdiction = travelEntryService.injurisdictionOrOwned(travelEntry);
+			final User currentUser = userService.getCurrentUser();
+			pseudonymizer.restoreUser(travelEntry.getReportingUser(), currentUser, dto, dto::setReportingUser);
+			pseudonymizer.restorePseudonymizedValues(TravelEntryDto.class, dto, existingDto, inJurisdiction);
+		}
 	}
 
 	@Override
@@ -99,11 +148,29 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 	@Override
 	public void validate(TravelEntryDto travelEntryDto) {
+		if (travelEntryDto.getPerson() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
+		}
 
+		if (travelEntryDto.getReportDate() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
+		}
+
+		if (travelEntryDto.getResponsibleRegion() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
+		}
+
+		if (travelEntryDto.getResponsibleDistrict() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
+		}
+
+		if (travelEntryDto.getPointOfEntry() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPointOfEntry));
+		}
 	}
 
 	public TravelEntryDto toDto(TravelEntry entity) {
-		if (entity != null) {
+		if (entity == null) {
 			return null;
 		}
 
@@ -214,6 +281,5 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	@LocalBean
 	@Stateless
 	public static class TravelEntryFacadeEjbLocal extends TravelEntryFacadeEjb {
-
 	}
 }

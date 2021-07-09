@@ -1,11 +1,15 @@
 package de.symeda.sormas.backend.travelentry;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -37,7 +41,10 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 			qc.getCriteriaBuilder(),
 			(TravelEntryJoins<?>) qc.getJoins(),
 			currentUser,
-			null);
+			Collections.singletonList(
+				CaseJurisdictionPredicateValidator.of(
+					new CaseQueryContext<>(qc.getCriteriaBuilder(), qc.getQuery(), ((TravelEntryJoins) qc.getJoins()).getResultingCase()),
+					currentUser)));
 	}
 
 	@Override
