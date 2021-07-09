@@ -99,7 +99,7 @@ public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
 
 		if (filter != null && currentUser.getLimitedDisease() != null) {
 			filter = cb
-				.and(filter, cb.or(cb.equal(eventPath.get(Event.DISEASE), currentUser.getLimitedDisease()), cb.isNull(eventGroupPath.get(Event.DISEASE))));
+				.and(filter, cb.or(cb.equal(eventPath.get(Event.DISEASE), currentUser.getLimitedDisease()), cb.isNull(eventPath.get(Event.DISEASE))));
 		}
 
 		Predicate filterResponsible = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), currentUser);
@@ -142,23 +142,23 @@ public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
 			Root<EventParticipant> epRoot = eventParticipantSubquery.from(EventParticipant.class);
 
 			switch (jurisdictionLevel) {
-				case REGION:
-					if (currentUser.getRegion() != null) {
-						eventParticipantSubquery.where(
-							cb.and(
-								cb.equal(epRoot.get(EventParticipant.EVENT).get(Event.ID), eventPath.get(Event.ID)),
-								cb.equal(epRoot.get(EventParticipant.REGION).get(Region.ID), currentUser.getRegion().getId())));
-					}
-					break;
-				case DISTRICT:
-					if (currentUser.getDistrict() != null) {
-						eventParticipantSubquery.where(
-							cb.and(
-								cb.equal(epRoot.get(EventParticipant.EVENT).get(Event.ID), eventPath.get(Event.ID)),
-								cb.equal(epRoot.get(EventParticipant.DISTRICT).get(District.ID), currentUser.getDistrict().getId())));
-					}
-					break;
-				default:
+			case REGION:
+				if (currentUser.getRegion() != null) {
+					eventParticipantSubquery.where(
+						cb.and(
+							cb.equal(epRoot.get(EventParticipant.EVENT).get(Event.ID), eventPath.get(Event.ID)),
+							cb.equal(epRoot.get(EventParticipant.REGION).get(Region.ID), currentUser.getRegion().getId())));
+				}
+				break;
+			case DISTRICT:
+				if (currentUser.getDistrict() != null) {
+					eventParticipantSubquery.where(
+						cb.and(
+							cb.equal(epRoot.get(EventParticipant.EVENT).get(Event.ID), eventPath.get(Event.ID)),
+							cb.equal(epRoot.get(EventParticipant.DISTRICT).get(District.ID), currentUser.getDistrict().getId())));
+				}
+				break;
+			default:
 			}
 
 			eventParticipantSubquery.select(epRoot.get(EventParticipant.ID));
@@ -176,7 +176,8 @@ public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
 
 		if (eventGroupCriteria.getRelevanceStatus() != null) {
 			if (eventGroupCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(EventGroup.ARCHIVED), false), cb.isNull(from.get(EventGroup.ARCHIVED))));
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(from.get(EventGroup.ARCHIVED), false), cb.isNull(from.get(EventGroup.ARCHIVED))));
 			} else if (eventGroupCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(EventGroup.ARCHIVED), true));
 			}
@@ -235,7 +236,9 @@ public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
 				cb,
 				filter,
 				cb.or(
-					cb.and(cb.isNull(eventJoin.get(Event.END_DATE)), cb.lessThanOrEqualTo(eventJoin.get(Event.START_DATE), eventGroupCriteria.getEventDateTo())),
+					cb.and(
+						cb.isNull(eventJoin.get(Event.END_DATE)),
+						cb.lessThanOrEqualTo(eventJoin.get(Event.START_DATE), eventGroupCriteria.getEventDateTo())),
 					cb.lessThanOrEqualTo(eventJoin.get(Event.END_DATE), eventGroupCriteria.getEventDateTo())));
 		}
 		if (StringUtils.isNotEmpty(eventGroupCriteria.getFreeText())) {

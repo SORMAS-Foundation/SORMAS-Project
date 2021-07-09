@@ -554,20 +554,20 @@ public class CaseController {
 		caze.setReportingUser(userReference);
 
 		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
-			caze.setRegion(user.getRegion());
-			caze.setDistrict(user.getDistrict());
+			caze.setResponsibleRegion(user.getRegion());
+			caze.setResponsibleDistrict(user.getDistrict());
 			caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
 			caze.setDisease(Disease.UNDEFINED);
 		} else if (user.getHealthFacility() != null) {
 			FacilityDto healthFacility = FacadeProvider.getFacilityFacade().getByUuid(user.getHealthFacility().getUuid());
-			caze.setRegion(healthFacility.getRegion());
-			caze.setDistrict(healthFacility.getDistrict());
-			caze.setCommunity(healthFacility.getCommunity());
+			caze.setResponsibleRegion(healthFacility.getRegion());
+			caze.setResponsibleDistrict(healthFacility.getDistrict());
+			caze.setResponsibleCommunity(healthFacility.getCommunity());
 			caze.setHealthFacility(healthFacility.toReference());
 		} else {
-			caze.setRegion(user.getRegion());
-			caze.setDistrict(user.getDistrict());
-			caze.setCommunity(user.getCommunity());
+			caze.setResponsibleRegion(user.getRegion());
+			caze.setResponsibleDistrict(user.getDistrict());
+			caze.setResponsibleCommunity(user.getCommunity());
 		}
 
 		createForm.setValue(caze);
