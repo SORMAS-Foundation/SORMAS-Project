@@ -36,16 +36,16 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.sormastosormas.OrganizationServerAccessData;
-import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -62,7 +62,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@EJB
-	private ServerAccessDataService serverAccessDataService;
+	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 
 	@Override
 	public SormasToSormasShareRequestDto saveShareRequest(@Valid SormasToSormasShareRequestDto dto) {
@@ -143,15 +143,15 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		}
 
 		if (!requests.isEmpty()) {
-			Map<String, OrganizationServerAccessData> organizations = serverAccessDataService.getOrganizationList()
+			Map<String, SormasServerDescriptor> serverDescriptorMap = sormasToSormasDiscoveryService.getAllAvailableServers()
 				.stream()
-				.collect(Collectors.toMap(OrganizationServerAccessData::getId, Function.identity()));
+				.collect(Collectors.toMap(SormasServerDescriptor::getId, Function.identity()));
 
 			requests.forEach(request -> {
 				String organizationId = request.getOrganizationId();
-				OrganizationServerAccessData organizationAccessData = organizations.get(organizationId);
+				SormasServerDescriptor serverDescriptor = serverDescriptorMap.get(organizationId);
 
-				request.setOrganizationName(organizationAccessData != null ? organizationAccessData.getName() : organizationId);
+				request.setOrganizationName(serverDescriptor != null ? serverDescriptor.getName() : organizationId);
 			});
 		}
 

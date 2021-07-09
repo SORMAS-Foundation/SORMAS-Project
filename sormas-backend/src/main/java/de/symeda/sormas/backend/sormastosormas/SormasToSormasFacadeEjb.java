@@ -35,10 +35,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.SormasToSormasConfig;
-import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
@@ -51,8 +51,11 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
@@ -72,7 +75,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@EJB
 	private UserService userService;
 	@EJB
-	private ServerAccessDataService serverAccessDataService;
+	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 	@Inject
 	private SormasToSormasRestClient sormasToSormasRestClient;
 	@EJB
@@ -84,18 +87,18 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@EJB
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
-	private SormasToSormasEncryptionService encryptionService;
+	private SormasToSormasEncryptionFacadeEjbLocal encryptionService;
 	@Inject
-	private SormasToSormasConfig sormasToSormasConfig;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
 	@Override
-	public List<ServerAccessDataReferenceDto> getAvailableOrganizations() {
-		return serverAccessDataService.getOrganizationList().stream().map(OrganizationServerAccessData::toReference).collect(Collectors.toList());
+	public List<SormasServerDescriptor> getAllAvailableServers() {
+		return sormasToSormasDiscoveryService.getAllAvailableServers();
 	}
 
 	@Override
-	public ServerAccessDataReferenceDto getOrganizationRef(String id) {
-		return serverAccessDataService.getServerListItemById(id).map(OrganizationServerAccessData::toReference).orElseGet(null);
+	public SormasServerDescriptor getSormasServerDescriptorById(String id) {
+		return sormasToSormasDiscoveryService.getSormasServerDescriptorById(id);
 	}
 
 	@Override
@@ -161,7 +164,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	public boolean isFeatureConfigured() {
-		return !StringUtils.isEmpty(sormasToSormasConfig.getPath());
+		return !StringUtils.isEmpty(configFacadeEjb.getS2SConfig().getPath());
 	}
 
 	public SormasToSormasShareInfoDto toSormasToSormasShareInfoDto(SormasToSormasShareInfo source) {
@@ -169,9 +172,13 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		DtoHelper.fillDto(target, source);
 
-		OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerListItemById(source.getOrganizationId())
-			.orElseGet(() -> new OrganizationServerAccessData(source.getOrganizationId(), source.getOrganizationId()));
-		target.setTarget(serverAccessData.toReference());
+		final String senderId = source.getOrganizationId();
+		SormasServerDescriptor serverDescriptor = sormasToSormasDiscoveryService.getSormasServerDescriptorById(senderId);
+		if (serverDescriptor == null) {
+			serverDescriptor = new SormasServerDescriptor(senderId, senderId);
+		}
+
+		target.setOrganization(serverDescriptor);
 
 		target.setRequestStatus(source.getRequestStatus());
 		target.setSender(source.getSender().toReference());

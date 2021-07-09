@@ -23,7 +23,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	private static final long serialVersionUID = -1478467237560439811L;
 
-	private ServerAccessDataReferenceDto target;
+	private SormasServerDescriptor organization;
 	private UserReferenceDto sender;
 	private boolean ownershipHandedOver;
 	private boolean withAssociatedContacts;
@@ -34,12 +34,19 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private String comment;
 	private ShareRequestStatus requestStatus;
 
-	public ServerAccessDataReferenceDto getTarget() {
-		return target;
+	/**
+	 * @return Get the target server of the share operation.
+	 */
+	public SormasServerDescriptor getOrganization() {
+		return organization;
 	}
 
-	public void setTarget(ServerAccessDataReferenceDto target) {
-		this.target = target;
+	/**
+	 * @param organization
+	 *            The target server of the share operation.
+	 */
+	public void setOrganization(SormasServerDescriptor organization) {
+		this.organization = organization;
 	}
 
 	public UserReferenceDto getSender() {
