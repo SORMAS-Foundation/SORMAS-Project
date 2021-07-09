@@ -721,7 +721,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 						(Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
 						textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
-					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Case.INTERNAL_TOKEN), textFilter)));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
@@ -745,6 +746,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					Predicate likeFilters = cb.or(
 						CriteriaBuilderHelper.unaccentedIlike(cb, event.get(Event.EVENT_DESC), textFilter),
 						CriteriaBuilderHelper.unaccentedIlike(cb, event.get(Event.EVENT_TITLE), textFilter),
+						CriteriaBuilderHelper.unaccentedIlike(cb, event.get(Event.INTERNAL_TOKEN), textFilter),
 						CriteriaBuilderHelper.ilike(cb, event.get(Event.UUID), textFilter));
 					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters, cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
 				}
@@ -1021,11 +1023,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			if (userFilterCriteria == null
 				|| (!userFilterCriteria.isExcludeCasesFromContacts()
 					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
-				Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
-				Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
-				contactCaseSubquery.where(contactService.createUserFilterWithoutCase(new ContactQueryContext(cb, cq, contactRoot)));
-				contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
+				filter = CriteriaBuilderHelper.or(
+					cb,
+					filter,
+					contactService.createUserFilterWithoutCase(new ContactQueryContext(cb, cq, casePath.join(Case.CONTACTS, JoinType.LEFT))));
 			}
 
 			// users can only be assigned to a task when they have also access to the case
@@ -1317,8 +1318,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public void updateCompleteness(Case caze) {
-		caze.setCompleteness(calculateCompleteness(caze));
-		ensurePersisted(caze);
+
+		float completeness = calculateCompleteness(caze);
+
+		/*
+		 * Set the calculated value without updating the changeDate:
+		 * 1. Do not trigger sync mechanisms that compare changeDates
+		 * 2. Avoid optimistic locking problem with parallel running logic like batch imports
+		 * Side effect: No AuditLogEntry is created triggered
+		 */
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+		Root<Case> root = cu.from(Case.class);
+		cu.set(root.get(Case.COMPLETENESS), completeness);
+		cu.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
+		em.createQuery(cu).executeUpdate();
 	}
 
 	private float calculateCompleteness(Case caze) {

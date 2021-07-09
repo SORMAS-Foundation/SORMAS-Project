@@ -46,7 +46,7 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 		return getOrCreate(contact, Person.CONTACTS, JoinType.LEFT, this::setContact);
 	}
 
-	public void setContact(Join<Person, Contact> contact) {
+	private void setContact(Join<Person, Contact> contact) {
 		this.contact = contact;
 	}
 
@@ -54,7 +54,7 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 		return getOrCreate(eventParticipant, Person.EVENT_PARTICIPANTS, JoinType.LEFT, this::setEventParticipant);
 	}
 
-	public void setEventParticipant(Join<Person, EventParticipant> eventParticipant) {
+	private void setEventParticipant(Join<Person, EventParticipant> eventParticipant) {
 		this.eventParticipant = eventParticipant;
 	}
 }
