@@ -13,39 +13,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas;
 
-import java.io.Serializable;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.enterprise.inject.Produces;
 
-public class SormasToSormasEncryptedDataDto implements Serializable {
+import de.symeda.sormas.api.SormasToSormasConfig;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
-	private static final long serialVersionUID = 8658507076136806951L;
+@LocalBean
+public class SormasToSormasConfigProducer {
 
-	private String organizationId;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
-	private byte[] data;
-
-	public SormasToSormasEncryptedDataDto() {
-	}
-
-	public SormasToSormasEncryptedDataDto(String organizationId, byte[] data) {
-		this.organizationId = organizationId;
-		this.data = data;
-	}
-
-	public String getOrganizationId() {
-		return organizationId;
-	}
-
-	public void setOrganizationId(String organizationId) {
-		this.organizationId = organizationId;
-	}
-
-	public byte[] getData() {
-		return data;
-	}
-
-	public void setData(byte[] data) {
-		this.data = data;
+	@Produces
+	public SormasToSormasConfig sormas2SormasConfig() {
+		return configFacade.getSormasToSormasConfig();
 	}
 }

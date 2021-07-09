@@ -127,8 +127,8 @@ public class SormasToSormasEventFacadeEjb
 	}
 
 	@Override
-	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String receiverId) {
-		return shareInfoService.getByEventAndOrganization(entityUuid, receiverId);
+	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String organizationId) {
+		return shareInfoService.getByEventAndOrganization(entityUuid, organizationId);
 	}
 
 	@Override

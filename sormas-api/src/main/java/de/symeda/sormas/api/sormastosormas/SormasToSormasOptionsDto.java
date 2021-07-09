@@ -21,7 +21,6 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	public static final String I18N_PREFIX = "SormasToSormasOptions";
 
-	// Fixme this should be renamed
 	public static final String ORGANIZATION = "organization";
 	public static final String HAND_OVER_OWNERSHIP = "handOverOwnership";
 	public static final String PSEUDONYMIZE_PERSONAL_DATA = "pseudonymizePersonalData";
@@ -32,8 +31,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 	public static final String WITH_SAMPLES = "withSamples";
 	public static final String WITH_EVENT_PARTICIPANTS = "withEventParticipants";
 
-	// Fixme this should be renamed but it has strange side effects with the UI
-	private SormasServerDescriptor organization;
+	private ServerAccessDataReferenceDto organization;
 
 	private boolean handOverOwnership;
 
@@ -49,12 +47,11 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	private boolean withEventParticipants;
 
-	// FIXME(#6101): This should be renamed as it is the target of the operation
-	public SormasServerDescriptor getOrganization() {
+	public ServerAccessDataReferenceDto getOrganization() {
 		return organization;
 	}
 
-	public void setOrganization(SormasServerDescriptor organization) {
+	public void setOrganization(ServerAccessDataReferenceDto organization) {
 		this.organization = organization;
 	}
 
