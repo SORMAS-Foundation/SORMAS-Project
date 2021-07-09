@@ -169,7 +169,7 @@ public class AboutView extends VerticalLayout implements View {
 
 				new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
 					try {
-						String documentPath = FacadeProvider.getInfoFacae().generateDataDictionary();
+						String documentPath = FacadeProvider.getInfoFacade().generateDataDictionary();
 						IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
 					} catch (IOException e) {
 						LoggerFactory.getLogger(AboutView.class).error("Failed to generate data dictionary", e);
