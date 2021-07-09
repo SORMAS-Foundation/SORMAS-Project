@@ -552,6 +552,7 @@ public interface Strings {
 	String headingRemoveCaseFromContact = "headingRemoveCaseFromContact";
 	String headingRequestedAdditionalTests = "headingRequestedAdditionalTests";
 	String headingRequestedPathogenTests = "headingRequestedPathogenTests";
+	String headingResponsibleJurisdiction = "headingResponsibleJurisdiction";
 	String headingResults = "headingResults";
 	String headingRevokeSormasToSormasShareRequest = "headingRevokeSormasToSormasShareRequest";
 	String headingSamplesDeleted = "headingSamplesDeleted";
