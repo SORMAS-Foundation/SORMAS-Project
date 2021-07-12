@@ -411,6 +411,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			Collections.singletonList(EventDto.DISEASE_DETAILS),
 			Collections.singletonList(Disease.OTHER));
 
+		// default to invisible; visibility will be recomputed when diseaseField's value change
+		diseaseVariantField.setVisible(false);
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
 			List<DiseaseVariant> diseaseVariants =

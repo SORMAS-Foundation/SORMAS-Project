@@ -129,17 +129,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 			contentBinding.eventEvolutionComment.setCaption(String.format(I18nProperties.getCaption(EVOLUTION_COMMENT_WITH_STATUS), statusCaption));
 		});
 
-		contentBinding.eventDisease.addValueChangedListener(new ValueChangeListener() {
-
-			Disease currentDisease = record.getDisease();
-
-			@Override
-			public void onChange(ControlPropertyField f) {
-				if (this.currentDisease == null || contentBinding.eventDisease.getValue() != currentDisease) {
-					updateDiseaseVariantsField(contentBinding);
-				}
-			}
-		});
+		contentBinding.eventDisease.addValueChangedListener(f -> updateDiseaseVariantsField(contentBinding));
 	}
 
 	private void openAddressPopup(final FragmentEventEditLayoutBinding contentBinding) {
