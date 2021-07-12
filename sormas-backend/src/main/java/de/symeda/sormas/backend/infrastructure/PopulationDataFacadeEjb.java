@@ -79,11 +79,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		cq.where(filter);
 		cq.select(root.get(PopulationData.POPULATION));
 
-		try {
-			return em.createQuery(cq).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getSingleResult(em, cq);
 	}
 
 	@Override
@@ -130,11 +126,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		cq.where(filter);
 		cq.select(root.get(PopulationData.POPULATION));
 
-		try {
-			return em.createQuery(cq).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getSingleResult(em, cq);
 	}
 
 	@Override

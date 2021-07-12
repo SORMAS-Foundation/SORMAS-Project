@@ -204,6 +204,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String VISITS = "visits";
 	public static final String FACILITY_TYPE = "facilityType";
+	public static final String CONTACTS = "contacts";
 	public static final String CONVERTED_FROM_CONTACT = "convertedContact";
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 	public static final String SHARE_INFO_CASES = "shareInfoCases";
@@ -367,6 +368,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	private Set<Sample> samples = new HashSet<>();
 	private Set<Visit> visits = new HashSet<>();
 	private Set<EventParticipant> eventParticipants;
+	private List<Contact> contacts;
 	private List<Contact> convertedContact;
 
 	private Integer caseIdIsm;
@@ -830,6 +832,15 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 
 	public void setPortHealthInfo(PortHealthInfo portHealthInfo) {
 		this.portHealthInfo = portHealthInfo;
+	}
+
+	@OneToMany(mappedBy = Contact.CAZE, fetch = FetchType.LAZY)
+	public List<Contact> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(List<Contact> contacts) {
+		this.contacts = contacts;
 	}
 
 	@OneToMany(mappedBy = Contact.RESULTING_CASE, fetch = FetchType.LAZY)

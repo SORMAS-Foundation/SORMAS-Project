@@ -52,6 +52,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -186,14 +187,8 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		}
 
 		cq.orderBy(cb.desc(action.get(Action.DATE)));
-		List<Action> actions;
-		if (first != null && max != null) {
-			actions = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			actions = em.createQuery(cq).getResultList();
-		}
 
-		return actions;
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	/**
@@ -378,14 +373,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			cq.orderBy(cb.desc(event.get(Event.CHANGE_DATE)));
 		}
 
-		List<EventActionIndexDto> actions;
-		if (first != null && max != null) {
-			actions = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			actions = em.createQuery(cq).getResultList();
-		}
-
-		return actions;
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	public List<EventActionExportDto> getEventActionExportList(EventCriteria criteria, Integer first, Integer max) {
@@ -448,14 +436,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		cq.orderBy(cb.desc(event.get(Event.CHANGE_DATE)));
 
-		List<EventActionExportDto> actions;
-		if (first != null && max != null) {
-			actions = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			actions = em.createQuery(cq).getResultList();
-		}
-
-		return actions;
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	public long countEventActions(EventCriteria criteria) {

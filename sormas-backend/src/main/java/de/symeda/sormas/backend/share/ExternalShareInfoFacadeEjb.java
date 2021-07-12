@@ -38,6 +38,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "ExternalShareInfoFacade")
 public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
@@ -70,12 +71,7 @@ public class ExternalShareInfoFacadeEjb implements ExternalShareInfoFacade {
 
 		cq.orderBy(cb.desc(shareInfo.get(ExternalShareInfo.CREATION_DATE)));
 
-		List<ExternalShareInfo> shareInfoList;
-		if (first != null && max != null) {
-			shareInfoList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			shareInfoList = em.createQuery(cq).getResultList();
-		}
+		List<ExternalShareInfo> shareInfoList = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		return shareInfoList.stream().map(i -> convertToDto(i, pseudonymizer)).collect(Collectors.toList());

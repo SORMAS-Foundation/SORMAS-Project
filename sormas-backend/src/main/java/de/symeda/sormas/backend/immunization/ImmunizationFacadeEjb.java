@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.immunization;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +25,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
@@ -128,6 +128,25 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return immunizationService.getArchivedUuidsSince(since);
+	}
+
+	@Override
+	public List<String> getDeletedUuidsSince(Date since) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+		return immunizationService.getDeletedUuidsSince(since);
+	}
+
+	@Override
 	public ImmunizationDto save(ImmunizationDto dto) {
 		Immunization existingImmunization = dto.getUuid() != null ? immunizationService.getByUuid(dto.getUuid()) : null;
 		ImmunizationDto existingDto = toDto(existingImmunization);
@@ -163,7 +182,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		}
 	}
 
-	private void restorePseudonymizedDto(ImmunizationDto dto, ImmunizationDto existingDto,  Immunization immunization, Pseudonymizer pseudonymizer) {
+	private void restorePseudonymizedDto(ImmunizationDto dto, ImmunizationDto existingDto, Immunization immunization, Pseudonymizer pseudonymizer) {
 		if (existingDto != null) {
 			final boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(immunization);
 			final User currentUser = userService.getCurrentUser();
