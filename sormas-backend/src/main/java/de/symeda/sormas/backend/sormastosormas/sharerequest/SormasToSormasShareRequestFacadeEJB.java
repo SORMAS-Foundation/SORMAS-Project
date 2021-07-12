@@ -48,6 +48,7 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SormasToSormasShareRequestFacade")
 public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareRequestFacade {
@@ -135,12 +136,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 
 		cq.orderBy(order);
 
-		List<SormasToSormasShareRequestIndexDto> requests;
-		if (first != null && max != null) {
-			requests = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			requests = em.createQuery(cq).getResultList();
-		}
+		List<SormasToSormasShareRequestIndexDto> requests = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!requests.isEmpty()) {
 			Map<String, OrganizationServerAccessData> organizations = serverAccessDataService.getOrganizationList()

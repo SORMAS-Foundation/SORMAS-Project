@@ -48,6 +48,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SurveillanceReportFacade")
 public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
@@ -127,13 +128,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 
 		cq.orderBy(cb.desc(root.get(SurveillanceReport.CREATION_DATE)));
 
-		List<SurveillanceReport> resultList;
-		if (first != null && max != null) {
-			resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			resultList = em.createQuery(cq).getResultList();
-		}
-
+		List<SurveillanceReport> resultList = QueryHelper.getResultList(em, cq, first, max);
 		List<SurveillanceReportDto> reports = resultList.stream().map(SurveillanceReportFacadeEjb::toDto).collect(Collectors.toList());
 
 		User currentUser = userService.getCurrentUser();

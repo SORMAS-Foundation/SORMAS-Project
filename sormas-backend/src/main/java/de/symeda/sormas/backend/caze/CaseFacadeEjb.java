@@ -50,7 +50,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -292,6 +291,7 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -511,14 +511,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		CriteriaQuery<CaseIndexDto> cq = listQueryBuilder.buildIndexCriteria(caseCriteria, sortProperties);
 
-		List<CaseIndexDto> cases;
-		if (first != null && max != null) {
-			TypedQuery<CaseIndexDto> query = em.createQuery(cq);
-			cases = query.setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			cases = em.createQuery(cq).getResultList();
-		}
-
+		List<CaseIndexDto> cases = QueryHelper.getResultList(em, cq, first, max);
 		List<Long> caseIds = cases.stream().map(CaseIndexDto::getId).collect(Collectors.toList());
 
 		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
@@ -554,12 +547,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		CriteriaQuery<CaseIndexDetailedDto> cq = listQueryBuilder.buildIndexDetailedCriteria(caseCriteria, sortProperties);
 
-		List<CaseIndexDetailedDto> cases;
-		if (first != null && max != null) {
-			cases = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			cases = em.createQuery(cq).getResultList();
-		}
+		List<CaseIndexDetailedDto> cases = QueryHelper.getResultList(em, cq, first, max);
 
 		// Load latest events info
 		// Adding a second query here is not perfect, but selecting the last event with a criteria query
@@ -747,8 +735,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		 */
 		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)), cb.desc(caseRoot.get(Case.ID)));
 
-		List<CaseExportDto> resultList =
-			em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).setFirstResult(first).setMaxResults(max).getResultList();
+		List<CaseExportDto> resultList = QueryHelper.getResultList(em, cq, first, max);
 		List<Long> resultCaseIds = resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList());
 
 		if (!resultList.isEmpty()) {
@@ -2961,8 +2948,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			query.setParameter(regexReplacement, ""); // Replace all non-digits with empty string
 			query.setParameter(regexFlags, "g"); // Global search
 		}
-		query.setMaxResults(1);
-		return !query.getResultList().isEmpty();
+		return QueryHelper.getFirstResult(query) != null;
 	}
 
 	@Override
@@ -3471,8 +3457,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
 		}
 
-		List<CaseFollowUpDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-
+		List<CaseFollowUpDto> resultList = QueryHelper.getResultList(em, cq, first, max);
 		if (!resultList.isEmpty()) {
 
 			List<String> caseUuids = resultList.stream().map(FollowUpDto::getUuid).collect(Collectors.toList());
@@ -3611,11 +3596,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				cb.and(caseRoot.get(Case.UUID).in(caseUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)))));
 		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));
 
-		try {
-			return em.createQuery(cq).setMaxResults(1).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getFirstResult(em, cq);
 	}
 
 	/**

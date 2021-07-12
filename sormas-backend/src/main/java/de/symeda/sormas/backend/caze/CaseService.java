@@ -32,7 +32,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -128,6 +127,7 @@ import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.utils.CaseJoins;
@@ -377,40 +377,35 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	public String getHighestEpidNumber(String epidNumberPrefix, String caseUuid, Disease caseDisease) {
 
-		try {
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<String> cq = cb.createQuery(String.class);
-			Root<Case> caze = cq.from(Case.class);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caze = cq.from(Case.class);
 
-			Predicate filter = cb.and(cb.equal(caze.get(Case.DELETED), false), cb.equal(caze.get(Case.DISEASE), caseDisease));
-			if (!DataHelper.isNullOrEmpty(caseUuid)) {
-				filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
-			}
-			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), epidNumberPrefix + "%"));
-			cq.where(filter);
-
-			ParameterExpression<String> regexPattern = cb.parameter(String.class);
-			ParameterExpression<String> regexReplacement = cb.parameter(String.class);
-			ParameterExpression<String> regexFlags = cb.parameter(String.class);
-			Expression<String> epidNumberSuffixClean = cb.function(
-				"regexp_replace",
-				String.class,
-				cb.substring(caze.get(Case.EPID_NUMBER), epidNumberPrefix.length() + 1),
-				regexPattern,
-				regexReplacement,
-				regexFlags);
-			cq.orderBy(cb.desc(cb.concat("0", epidNumberSuffixClean).as(Integer.class)));
-			cq.select(caze.get(Case.EPID_NUMBER));
-			TypedQuery<String> query = em.createQuery(cq);
-			query.setParameter(regexPattern, "\\D"); // Non-digits
-			query.setParameter(regexReplacement, ""); // Replace all non-digits with empty string
-			query.setParameter(regexFlags, "g"); // Global search
-			query.setMaxResults(1);
-			return query.getSingleResult();
-
-		} catch (NoResultException e) {
-			return null;
+		Predicate filter = cb.and(cb.equal(caze.get(Case.DELETED), false), cb.equal(caze.get(Case.DISEASE), caseDisease));
+		if (!DataHelper.isNullOrEmpty(caseUuid)) {
+			filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
 		}
+		filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), epidNumberPrefix + "%"));
+		cq.where(filter);
+
+		ParameterExpression<String> regexPattern = cb.parameter(String.class);
+		ParameterExpression<String> regexReplacement = cb.parameter(String.class);
+		ParameterExpression<String> regexFlags = cb.parameter(String.class);
+		Expression<String> epidNumberSuffixClean = cb.function(
+			"regexp_replace",
+			String.class,
+			cb.substring(caze.get(Case.EPID_NUMBER), epidNumberPrefix.length() + 1),
+			regexPattern,
+			regexReplacement,
+			regexFlags);
+		cq.orderBy(cb.desc(cb.concat("0", epidNumberSuffixClean).as(Integer.class)));
+		cq.select(caze.get(Case.EPID_NUMBER));
+		TypedQuery<String> query = em.createQuery(cq);
+		query.setParameter(regexPattern, "\\D"); // Non-digits
+		query.setParameter(regexReplacement, ""); // Replace all non-digits with empty string
+		query.setParameter(regexFlags, "g"); // Global search
+
+		return QueryHelper.getFirstResult(query);
 	}
 
 	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
@@ -434,11 +429,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cq.orderBy(cb.desc(root.get(Case.REPORT_DATE)));
 		cq.select(root.get(Case.UUID));
 
-		try {
-			return em.createQuery(cq).setMaxResults(1).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getFirstResult(em, cq);
 	}
 
 	public List<String> getArchivedUuidsSince(Date since) {
