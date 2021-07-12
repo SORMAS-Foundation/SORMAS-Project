@@ -181,7 +181,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Person> from) {
 		throw new UnsupportedOperationException("Should not be called -> obsolete!");
 	}
-		final Join<Object, TravelEntry> travelEntryJoin = personFrom.join(Person.TRAVEL_ENTRIES, JoinType.LEFT);
 
 	public Predicate createUserFilter(PersonQueryContext personQueryContext) {
 
@@ -194,6 +193,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Join<Object, Contact> contactJoin = joins.getContact();
 		final Join<Object, EventParticipant> eventParticipantJoin = joins.getEventParticipant();
 		final Join<Object, Immunization> immunizationJoin = joins.getImmunization();
+		final Join<Object, TravelEntry> travelEntryJoin = joins.getTravelEntry();
 
 		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, caseJoin);
 		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, contactJoin);
