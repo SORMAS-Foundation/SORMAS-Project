@@ -871,6 +871,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		cq.multiselect(
 			contact.get(Contact.UUID),
+			contact.get(Contact.CHANGE_DATE),
 			joins.getPerson().get(Person.FIRST_NAME),
 			joins.getPerson().get(Person.LAST_NAME),
 			joins.getContactOfficer().get(User.UUID),
@@ -889,6 +890,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
+
+		cq.distinct(true);
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());

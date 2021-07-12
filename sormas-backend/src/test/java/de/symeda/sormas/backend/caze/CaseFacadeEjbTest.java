@@ -1537,6 +1537,56 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testSearchCasesFreetext() {
+		RDCF rdcf = creator.createRDCF();
+		CaseDataDto caze =
+			creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference(), rdcf);
+		caze.setInternalToken("internalToken");
+		caze.setExternalToken("externalToken");
+		caze.setExternalID("externalID");
+		getCaseFacade().saveCase(caze);
+
+		CaseDataDto secondCaze =
+			creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference(), rdcf);
+		secondCaze.setInternalToken("internalToken2");
+		getCaseFacade().saveCase(secondCaze);
+
+		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, Collections.emptyList());
+
+		// test several freetext variations
+		assertEquals(2, indexList.size());
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+
+		caseCriteria.setNameUuidEpidNumberLike("internal");
+		List<CaseIndexDto> indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
+		assertEquals(2, indexListFiltered.size());
+
+		caseCriteria.setNameUuidEpidNumberLike("Token");
+		indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
+		assertEquals(2, indexListFiltered.size());
+
+		caseCriteria.setNameUuidEpidNumberLike("externalToken");
+		indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
+		assertEquals(1, indexListFiltered.size());
+		assertThat(indexListFiltered.get(0).getUuid(), is(caze.getUuid()));
+
+		caseCriteria.setNameUuidEpidNumberLike("externalID");
+		indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
+		assertEquals(1, indexListFiltered.size());
+		assertThat(indexListFiltered.get(0).getUuid(), is(caze.getUuid()));
+
+		caseCriteria.setNameUuidEpidNumberLike("unmatchableString");
+		indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
+		assertEquals(0, indexListFiltered.size());
+
+		caseCriteria.setNameUuidEpidNumberLike(caze.getUuid());
+		indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
+		assertEquals(1, indexListFiltered.size());
+		assertThat(indexListFiltered.get(0).getUuid(), is(caze.getUuid()));
+	}
+
+	@Test
 	public void testSearchCasesWithExtendedQuarantine() {
 		RDCF rdcf = creator.createRDCF();
 		CaseDataDto caze =
@@ -1991,6 +2041,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Case completenessUpdateResult2 = getCaseService().getByUuid(caseWithCompleteness.getUuid());
 
 		MatcherAssert.assertThat(completenessUpdateResult.getCompleteness(), notNullValue());
+		MatcherAssert.assertThat(completenessUpdateResult.getChangeDate(), equalTo(caseNoCompleteness.getChangeDate()));
 		MatcherAssert.assertThat(completenessUpdateResult2.getCompleteness(), is(0.7f));
 		MatcherAssert.assertThat(changedCases, is(1));
 
