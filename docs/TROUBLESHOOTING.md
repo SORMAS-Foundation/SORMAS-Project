@@ -7,36 +7,6 @@ Please consult this collection of solutions to common problems if you have any i
 **Q:** I don't see a logout option anywhere in the mobile app. How can I change my user?  
 **A:** The logout option is hidden by default because users in the field often don't know their own passwords, but their devices are instead set up by a supervisor. If you want to change your user, go to the Settings screen and tap the version number five times to bring up additional options, including the logout option.
 
-## IDE Troubleshooting: Android Studio
-
-If for some reason the Android App is not building correctly (for example due to unexpected `ClassNotFoundExceptions`), here is what you should try:
-- Clean the Project (Build -> Clean Project)
-- Invalidate Caches (File -> Invalidate Caches / Restart...)
-- Wipe your Android VM (AVD Manager -> Wipe Data)
-
-If you get this exception: `Unable to load class 'javax.xml.bind.JAXBException'`, the reason is most likely a faulty JDK version. For the androidapp, you need Java JDK 8. To change the JDK, go to File -> Project Structure -> JDK Location and select a valid JDK (on Linux, check the folder `/usr/lib/jvm` and/or install if necessary: `sudo apt install openjdk-8-jdk`)
-
-## IDE Troubleshooting: eclipse
-
-### Deployment Problems
-
-Unfortunately, when using eclipse together with the Payara Tools, there are a number of deployment problems that you might run into. Examples of these include:
-
-* ClassDefNotFoundExceptions after deploying the artifacts and logging in to the web app
-* Error messages in eclipse telling you that the deployment failed
-
-There are a couple of things you can do to fix these problems:
-
-* Do a Maven update for all projects
-* Stop and restart the server
-* Re-deploy the server artifacts
-
-If the problem occurred right after you've pulled new code from GitHub, your safest bet is probably to start with the Maven update. For most other problems, a simple re-deployment or, if necessary, server restart should suffice.
-
-### News Feeds Polling
-
-When running eclipse with JDK 11, you might encounter the following error message: `An internal error occurred during: "Polling news feeds".  javax/xml/bind/JAXBContext`. To fix it, disable `Window --> Preferences --> General --> News --> "Enable automatic news polling"`.
-
 ## Debugging Performance Problems
 
 Performance logging can be used to find out which part of the code or system might be responsible for long-running functions in the application. This helps the developers to identify the source of the problems quicker and find out whether there are several problems at once or performance problems that manifest in Java execution time instead of slow SQL queries.
@@ -57,7 +27,7 @@ You can enable the logging of slow SQL queries in your PostgreSQL server in `pos
 
 2. Restart the PostgreSQL service or reload the config.
 
-### Run analysis of aN SQL Query (SORMAS-Docker)
+### Run analysis of a SQL Query (SORMAS-Docker)
 
 You can provide an analysis of a slow running query to help the developers to see where the query is getting slow and how to fix it.
 
@@ -87,3 +57,33 @@ psql -XqAt -d sormas -f explain.sql > analyze.json
 4. Copy the output to your home dir on the VM (not inside the Docker container) to be able to copy it from the VM to your local system: `mv analyze.json /home/user.name/`
 
 5. Create a visual report at <https://explain.dalibo.com/> in order to share the analysis.
+
+## IDE Troubleshooting: Android Studio
+
+If for some reason the Android App is not building correctly (for example due to unexpected `ClassNotFoundExceptions`), here is what you should try:
+- Clean the Project (Build -> Clean Project)
+- Invalidate Caches (File -> Invalidate Caches / Restart...)
+- Wipe your Android VM (AVD Manager -> Wipe Data)
+
+If you get this exception: `Unable to load class 'javax.xml.bind.JAXBException'`, the reason is most likely a faulty JDK version. For the androidapp, you need Java JDK 8. To change the JDK, go to File -> Project Structure -> JDK Location and select a valid JDK (on Linux, check the folder `/usr/lib/jvm` and/or install if necessary: `sudo apt install openjdk-8-jdk`)
+
+## IDE Troubleshooting: eclipse
+
+### Deployment Problems
+
+Unfortunately, when using eclipse together with the Payara Tools, there are a number of deployment problems that you might run into. Examples of these include:
+
+* ClassDefNotFoundExceptions after deploying the artifacts and logging in to the web app
+* Error messages in eclipse telling you that the deployment failed
+
+There are a couple of things you can do to fix these problems:
+
+* Do a Maven update for all projects
+* Stop and restart the server
+* Re-deploy the server artifacts
+
+If the problem occurred right after you've pulled new code from GitHub, your safest bet is probably to start with the Maven update. For most other problems, a simple re-deployment or, if necessary, server restart should suffice.
+
+### News Feeds Polling
+
+When running eclipse with JDK 11, you might encounter the following error message: `An internal error occurred during: "Polling news feeds".  javax/xml/bind/JAXBContext`. To fix it, disable `Window --> Preferences --> General --> News --> "Enable automatic news polling"`.
