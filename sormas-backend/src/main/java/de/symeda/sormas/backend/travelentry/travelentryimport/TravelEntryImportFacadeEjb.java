@@ -54,7 +54,6 @@ import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportEntit
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb;
 import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.importexport.ImportCellData;
 import de.symeda.sormas.backend.importexport.ImportErrorException;
@@ -70,7 +69,7 @@ import de.symeda.sormas.backend.user.UserService;
 @Stateless(name = "TravelEntryImportFacade")
 public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(CaseImportFacadeEjb.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(TravelEntryImportFacadeEjb.class);
 
 	protected static final String ERROR_COLUMN_NAME = I18nProperties.getCaption(Captions.importErrorDescription);
 
