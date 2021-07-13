@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -297,6 +297,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			event.get(Event.EVENT_MANAGEMENT_STATUS),
 			event.get(Event.DISEASE),
+			event.get(Event.DISEASE_VARIANT),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
@@ -357,6 +358,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:
 				case EventIndexDto.EVENT_MANAGEMENT_STATUS:
 				case EventIndexDto.DISEASE:
+				case EventIndexDto.DISEASE_VARIANT:
 				case EventIndexDto.DISEASE_DETAILS:
 				case EventIndexDto.START_DATE:
 				case EventIndexDto.EVOLUTION_DATE:
@@ -576,6 +578,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			event.get(Event.DISEASE),
+			event.get(Event.DISEASE_VARIANT),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
@@ -953,6 +956,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcMediaName(source.getSrcMediaName());
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
@@ -1055,6 +1059,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcMediaName(source.getSrcMediaName());
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
