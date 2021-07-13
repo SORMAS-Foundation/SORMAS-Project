@@ -464,13 +464,15 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		boolean activeEntriesOnly = configFacade.isDuplicateChecksExcludePersonsOfArchivedEntries();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		Predicate caseContactEventParticipantLinkPredicate;
+		Predicate finalPredicate;
 
 		CriteriaQuery<PersonNameDto> personQuery = cb.createQuery(PersonNameDto.class);
 		Root<Person> personRoot = personQuery.from(Person.class);
 		Join<Person, Case> personCaseJoin = personRoot.join(Person.CASES, JoinType.LEFT);
 		Join<Person, Contact> personContactJoin = personRoot.join(Person.CONTACTS, JoinType.LEFT);
 		Join<Person, EventParticipant> personEventParticipantJoin = personRoot.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);
+		Join<Person, Immunization> personImmunizationJoin = personRoot.join(Person.IMMUNIZATIONS, JoinType.LEFT);
+		Join<Person, TravelEntry> personTravelEntryJoin = personRoot.join(Person.TRAVEL_ENTRIES, JoinType.LEFT);
 
 		personQuery.multiselect(personRoot.get(Person.FIRST_NAME), personRoot.get(Person.LAST_NAME), personRoot.get(Person.UUID));
 
@@ -492,10 +494,27 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Predicate personEventParticipantPredicate =
 			and(cb, personEventParticipantJoin.get(EventParticipant.ID).isNotNull(), activeEventParticipantsFilter, eventParticipantUserFilter);
 
-		caseContactEventParticipantLinkPredicate =
-			CriteriaBuilderHelper.or(cb, personCasePredicate, personContactPredicate, personEventParticipantPredicate);
+		// Persons of active immunizations
+		Predicate activeImmunizationsFilter = activeEntriesOnly ? immunizationService.createDefaultFilter(cb, personImmunizationJoin) : null;
+		Predicate immunizationUserFilter = immunizationService.createUserFilter(cb, personQuery, personImmunizationJoin);
+		Predicate personImmunizationPredicate =
+			and(cb, personImmunizationJoin.get(Immunization.ID).isNotNull(), immunizationUserFilter, activeImmunizationsFilter);
 
-		personQuery.where(and(cb, personSimilarityFilter, caseContactEventParticipantLinkPredicate));
+		// Persons of active travel entries
+		Predicate activeTravelEntriesFilter = activeEntriesOnly ? travelEntryService.createDefaultFilter(cb, personTravelEntryJoin) : null;
+		Predicate travelEntryUserFilter = travelEntryService.createUserFilter(cb, personQuery, personTravelEntryJoin);
+		Predicate personTravelEntryPredicate =
+			and(cb, personTravelEntryJoin.get(TravelEntry.ID).isNotNull(), travelEntryUserFilter, activeTravelEntriesFilter);
+
+		finalPredicate = CriteriaBuilderHelper.or(
+			cb,
+			personCasePredicate,
+			personContactPredicate,
+			personEventParticipantPredicate,
+			personImmunizationPredicate,
+			personTravelEntryPredicate);
+
+		personQuery.where(and(cb, personSimilarityFilter, finalPredicate));
 		personQuery.distinct(true);
 
 		TypedQuery<PersonNameDto> query = em.createQuery(personQuery);

@@ -66,7 +66,6 @@ import de.symeda.sormas.backend.importexport.ImportHelper;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "EventImportFacade")
@@ -86,8 +85,6 @@ public class EventImportFacadeEjb implements EventImportFacade {
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 	@EJB
 	private EventGroupFacadeEjbLocal eventGroupFacade;
-	@EJB
-	private UserFacadeEjbLocal userFacade;
 	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
@@ -309,7 +306,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 
 					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 					// according to the types of the case or person fields
-					if (importFacade.executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
+					if (importFacade.executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath, true)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(EventReferenceDto.class)) {
 						EventDto referencedDto = eventFacade.getEventByUuid(entry);
@@ -442,7 +439,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 
 					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 					// according to the types of the sample or pathogen test fields
-					if (importFacade.executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
+					if (importFacade.executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath, true)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 						List<DistrictReferenceDto> district = districtFacade.getByName(
