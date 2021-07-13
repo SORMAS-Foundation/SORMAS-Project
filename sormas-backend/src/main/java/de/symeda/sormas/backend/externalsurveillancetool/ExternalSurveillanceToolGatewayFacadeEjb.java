@@ -27,7 +27,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.EntityDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
