@@ -25,6 +25,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -64,6 +65,7 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	private RiskLevel riskLevel;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Disease disease;
+	private DiseaseVariant diseaseVariant;
 	private UserRole reportingUserRole;
 	private Boolean deleted = Boolean.FALSE;
 	private RegionReferenceDto region;
@@ -158,6 +160,14 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	public EventCriteria disease(Disease disease) {
 		setDisease(disease);
 		return this;
+	}
+
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 
 	public CaseReferenceDto getCaze() {

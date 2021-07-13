@@ -108,6 +108,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 
 		target.setReportLat(source.getReportLat());
@@ -193,6 +194,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 
 		if (source.getResponsibleUser() != null) {

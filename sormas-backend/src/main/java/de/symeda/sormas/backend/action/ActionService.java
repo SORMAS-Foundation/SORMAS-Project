@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -270,6 +270,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EVENT_TITLE),
+			event.get(Event.DISEASE),
+			event.get(Event.DISEASE_VARIANT),
+			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.EVENT_IDENTIFICATION_SOURCE),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
@@ -307,6 +310,12 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 					break;
 				case EventActionIndexDto.EVENT_TITLE:
 					expression = cb.lower(event.get(Event.EVENT_TITLE));
+					break;
+				case EventActionIndexDto.EVENT_DISEASE:
+					expression = event.get(Event.DISEASE);
+					break;
+				case EventActionIndexDto.EVENT_DISEASE_VARIANT:
+					expression = event.get(Event.DISEASE_VARIANT);
 					break;
 				case EventActionIndexDto.EVENT_IDENTIFICATION_SOURCE:
 					expression = event.get(Event.EVENT_IDENTIFICATION_SOURCE);
@@ -399,6 +408,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EVENT_TITLE),
+			event.get(Event.DISEASE),
+			event.get(Event.DISEASE_VARIANT),
+			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.EVENT_DESC),
 			event.get(Event.EVENT_IDENTIFICATION_SOURCE),
 			event.get(Event.START_DATE),

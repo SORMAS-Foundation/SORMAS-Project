@@ -958,6 +958,7 @@ public interface Captions {
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
 	String Event_diseaseTransmissionMode = "Event.diseaseTransmissionMode";
+	String Event_diseaseVariant = "Event.diseaseVariant";
 	String Event_endDate = "Event.endDate";
 	String Event_epidemiologicalEvidence = "Event.epidemiologicalEvidence";
 	String Event_eventActions = "Event.eventActions";
@@ -1020,6 +1021,9 @@ public interface Captions {
 	String EventAction_actionPriority = "EventAction.actionPriority";
 	String EventAction_actionStatus = "EventAction.actionStatus";
 	String EventAction_actionTitle = "EventAction.actionTitle";
+	String EventAction_eventDisease = "EventAction.eventDisease";
+	String EventAction_eventDiseaseDetails = "EventAction.eventDiseaseDetails";
+	String EventAction_eventDiseaseVariant = "EventAction.eventDiseaseVariant";
 	String EventAction_eventEvolutionComment = "EventAction.eventEvolutionComment";
 	String EventAction_eventEvolutionDate = "EventAction.eventEvolutionDate";
 	String EventAction_eventIdentificationSource = "EventAction.eventIdentificationSource";

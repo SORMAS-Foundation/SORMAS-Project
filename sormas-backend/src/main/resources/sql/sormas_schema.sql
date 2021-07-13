@@ -7601,6 +7601,12 @@ ALTER TABLE travelentry_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (382, 'DEA TravelEntry entity and backend logic #6022');
 
+-- 2021-07-12 Add disease variant to event #5525
+ALTER TABLE events ADD COLUMN diseasevariant text;
+ALTER TABLE events_history ADD COLUMN diseasevariant text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (383, 'Add disease variant to event #5525');
+
 -- 2021-07-13 Event identification source (#5526)
 ALTER TABLE events ADD COLUMN eventidentificationsource varchar(255);
 ALTER TABLE events_history ADD COLUMN eventidentificationsource varchar(255);

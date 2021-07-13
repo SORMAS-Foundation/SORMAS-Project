@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -42,6 +43,7 @@ import org.hibernate.annotations.Type;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EpidemiologicalEvidenceDetail;
 import de.symeda.sormas.api.event.EventIdentificationSource;
@@ -63,6 +65,7 @@ import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
@@ -120,6 +123,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	public static final String SRC_MEDIA_NAME = "srcMediaName";
 	public static final String SRC_MEDIA_DETAILS = "srcMediaDetails";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
@@ -178,6 +182,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	private String srcMediaName;
 	private String srcMediaDetails;
 	private Disease disease;
+	private DiseaseVariant diseaseVariant;
 	private String diseaseDetails;
 	private User responsibleUser;
 	private String typeOfPlaceText;
@@ -526,6 +531,16 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	@Column
+	@Convert(converter = DiseaseVariantConverter.class)
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)

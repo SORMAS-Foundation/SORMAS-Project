@@ -125,6 +125,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				createEventDateColumn(this),
 				createEventEvolutionDateColumn(this),
 				DISEASE_SHORT,
+				EventIndexDto.DISEASE_VARIANT,
 				EventIndexDto.EVENT_TITLE));
 
 		if (eventGroupsFeatureEnabled) {
