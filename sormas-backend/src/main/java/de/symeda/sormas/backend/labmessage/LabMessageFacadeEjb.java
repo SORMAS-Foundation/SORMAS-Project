@@ -15,7 +15,6 @@ import javax.naming.CannotProceedException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -54,6 +53,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "LabMessageFacade")
 public class LabMessageFacadeEjb implements LabMessageFacade {
@@ -239,11 +239,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		cq.where(filter);
 		cq.select(cb.equal(from.get(LabMessage.STATUS), LabMessageStatus.PROCESSED));
 
-		try {
-			return em.createQuery(cq).getSingleResult();
-		} catch (NoResultException nre) {
-			return null;
-		}
+		return QueryHelper.getSingleResult(em, cq);
 	}
 
 	@Override
@@ -304,14 +300,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		order.add(cb.desc(labMessage.get(LabMessage.MESSAGE_DATE_TIME)));
 		cq.orderBy(order);
-		List<LabMessageIndexDto> labMessages;
-		if (first != null && max != null) {
-			labMessages = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			labMessages = em.createQuery(cq).getResultList();
-		}
 
-		return labMessages;
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	@Override

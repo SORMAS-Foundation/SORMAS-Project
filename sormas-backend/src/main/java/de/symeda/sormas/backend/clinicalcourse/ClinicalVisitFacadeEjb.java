@@ -58,7 +58,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "ClinicalVisitFacade")
 public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
@@ -159,13 +159,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			cq.orderBy(cb.desc(visit.get(ClinicalVisit.VISIT_DATE_TIME)));
 		}
 
-		List<ClinicalVisitIndexDto> results;
-		if (first != null && max != null) {
-
-			results = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			results = em.createQuery(cq).getResultList();
-		}
+		List<ClinicalVisitIndexDto> results = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(ClinicalVisitIndexDto.class, results, v -> v.getInJurisdiction(), null);
@@ -326,7 +320,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME)));
 
-		List<ClinicalVisitExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<ClinicalVisitExportDto> resultList = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		for (ClinicalVisitExportDto exportDto : resultList) {

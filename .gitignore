@@ -6,6 +6,8 @@
 *.recommenders
 *.idea
 *.iml
+.vscode
+
 /sormas-backend/bin
 /sormas-rest/bin
 /sormas-surveillance-ui/bin
