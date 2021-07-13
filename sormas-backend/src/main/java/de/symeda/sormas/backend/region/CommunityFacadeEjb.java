@@ -42,6 +42,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityCriteria;
@@ -55,6 +56,7 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CommunityFacade")
 public class CommunityFacadeEjb implements CommunityFacade {
@@ -141,7 +143,10 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		Join<Community, District> district = community.join(Community.DISTRICT, JoinType.LEFT);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 
-		Predicate filter = communityService.buildCriteriaFilter(criteria, cb, community);
+		Predicate filter = null;
+		if (criteria != null) {
+			filter = communityService.buildCriteriaFilter(criteria, cb, community);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -180,17 +185,13 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		//				region.get(Region.UUID), region.get(Region.NAME),
 		//				district.get(District.UUID), district.get(District.NAME));
 
-		if (first != null && max != null) {
-			return em.createQuery(cq)
-				.setFirstResult(first)
-				.setMaxResults(max)
-				.getResultList()
-				.stream()
-				.map(f -> toDto(f))
-				.collect(Collectors.toList());
-		} else {
-			return em.createQuery(cq).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
-		}
+		return QueryHelper.getResultList(em, cq, first, max, this::toDto);
+	}
+
+	public Page<CommunityDto> getIndexPage(CommunityCriteria communityCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<CommunityDto> communityList = getIndexList(communityCriteria, offset, size, sortProperties);
+		long totalElementCount = count(communityCriteria);
+		return new Page<>(communityList, offset, size, totalElementCount);
 	}
 
 	@Override
@@ -200,7 +201,11 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Community> root = cq.from(Community.class);
 
-		Predicate filter = communityService.buildCriteriaFilter(criteria, cb, root);
+		Predicate filter = null;
+
+		if (criteria != null) {
+			filter = communityService.buildCriteriaFilter(criteria, cb, root);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -329,7 +334,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 		cq.select(root.get(Community.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	public static CommunityReferenceDto toReferenceDto(Community entity) {

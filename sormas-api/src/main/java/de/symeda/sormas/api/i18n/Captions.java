@@ -11,9 +11,11 @@ public interface Captions {
 	 */
 
 	String about = "about";
+	String aboutAdditionalInfo = "aboutAdditionalInfo";
 	String aboutBrandedSormasVersion = "aboutBrandedSormasVersion";
 	String aboutCaseClassificationRules = "aboutCaseClassificationRules";
 	String aboutChangelog = "aboutChangelog";
+	String aboutCopyright = "aboutCopyright";
 	String aboutDataDictionary = "aboutDataDictionary";
 	String aboutDocuments = "aboutDocuments";
 	String aboutSormasVersion = "aboutSormasVersion";
@@ -527,6 +529,7 @@ public interface Captions {
 	String clinicalVisitNewClinicalVisit = "clinicalVisitNewClinicalVisit";
 	String columnAdditionalTests = "columnAdditionalTests";
 	String columnDiseaseShort = "columnDiseaseShort";
+	String columnLastPathogenTest = "columnLastPathogenTest";
 	String columnNumberOfPendingTasks = "columnNumberOfPendingTasks";
 	String community = "community";
 	String Community_archived = "Community.archived";
@@ -1310,6 +1313,7 @@ public interface Captions {
 	String labMessageNoNewMessages = "labMessageNoNewMessages";
 	String labMessageProcess = "labMessageProcess";
 	String lastName = "lastName";
+	String latestPathogenTest = "latestPathogenTest";
 	String lineListing = "lineListing";
 	String lineListingAddLine = "lineListingAddLine";
 	String lineListingDisableAll = "lineListingDisableAll";
@@ -1642,6 +1646,7 @@ public interface Captions {
 	String Sample_labUser = "Sample.labUser";
 	String Sample_noTestPossibleReason = "Sample.noTestPossibleReason";
 	String Sample_otherLab = "Sample.otherLab";
+	String Sample_pathogenTestCount = "Sample.pathogenTestCount";
 	String Sample_pathogenTestingRequested = "Sample.pathogenTestingRequested";
 	String Sample_pathogenTestResult = "Sample.pathogenTestResult";
 	String Sample_received = "Sample.received";

@@ -29,10 +29,12 @@ import javax.persistence.Query;
 
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
+import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import org.junit.Before;
 
 import de.symeda.sormas.api.Disease;
@@ -118,6 +120,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public CaseFacade getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
+	}
+
+	public ImmunizationFacade getImmunizationFacade() {
+		return getBean(ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal.class);
 	}
 
 	public ContactFacade getContactFacade() {

@@ -24,6 +24,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,10 +39,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -61,6 +67,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
@@ -88,7 +95,6 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
-import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -114,11 +120,9 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventParticipantJoins;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
@@ -383,7 +387,7 @@ public class SampleFacadeEjb implements SampleFacade {
 							.otherwise(eventDistrict.get(District.NAME))));
 
 		cq.distinct(true);
-		
+
 		List<Selection<?>> selections = new ArrayList<>(
 				Arrays.asList(sample.get(Sample.UUID),
 				caze.get(Case.EPID_NUMBER),
@@ -416,6 +420,15 @@ public class SampleFacadeEjb implements SampleFacade {
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
 				districtSelect,
 				joins.getLab().get(Facility.UUID)));
+
+		// Tests count subquery
+		Subquery<Long> testCountSq = cq.subquery(Long.class);
+		Root<PathogenTest> testCountRoot = testCountSq.from(PathogenTest.class);
+		testCountSq.where(
+			cb.equal(testCountRoot.join(PathogenTest.SAMPLE, JoinType.LEFT).get(Sample.ID), sample.get(Sample.ID)),
+			cb.isFalse(testCountRoot.get(PathogenTest.DELETED)));
+		testCountSq.select(cb.countDistinct(testCountRoot.get(PathogenTest.ID)));
+		selections.add(testCountSq.getSelection());
 
 		selections.addAll(sampleService.getJurisdictionSelections(sampleQueryContext));
 		cq.multiselect(selections);
@@ -487,11 +500,36 @@ public class SampleFacadeEjb implements SampleFacade {
 			cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
 		}
 
-		List<SampleIndexDto> samples;
-		if (first != null && max != null) {
-			samples = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			samples = em.createQuery(cq).getResultList();
+		List<SampleIndexDto> samples = QueryHelper.getResultList(em, cq, first, max);
+
+		if (!samples.isEmpty()) {
+			CriteriaQuery<Object[]> testCq = cb.createQuery(Object[].class);
+			Root<PathogenTest> testRoot = testCq.from(PathogenTest.class);
+			Expression<String> sampleIdExpr = testRoot.get(PathogenTest.SAMPLE).get(Sample.UUID);
+
+			Path<Long> testType = testRoot.get(PathogenTest.TEST_TYPE);
+			Path<Date> cqValue = testRoot.get(PathogenTest.CQ_VALUE);
+			testCq.select(cb.array(testType, cqValue, sampleIdExpr));
+
+			testCq.where(
+				cb.isFalse(testRoot.get(PathogenTest.DELETED)),
+				sampleIdExpr.in(samples.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList())));
+			testCq.orderBy(cb.desc(testRoot.get(PathogenTest.CHANGE_DATE)));
+
+			List<Object[]> testList = em.createQuery(testCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+
+			Map<String, Object[]> tests = testList.stream()
+				.filter(distinctByKey(pathogenTest -> pathogenTest[2]))
+				.collect(Collectors.toMap(pathogenTest -> pathogenTest[2].toString(), Function.identity()));
+
+			if (tests != null) {
+				for (SampleIndexDto indexDto : samples) {
+					Optional.ofNullable(tests.get(indexDto.getUuid())).ifPresent(test -> {
+						indexDto.setTypeOfLastTest((PathogenTestType) test[0]);
+						indexDto.setLastTestCqValue((Float) test[1]);
+					});
+				}
+			}
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
@@ -531,6 +569,11 @@ public class SampleFacadeEjb implements SampleFacade {
 			}, true);
 
 		return samples;
+	}
+
+	public <T> java.util.function.Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+		Set<Object> seen = ConcurrentHashMap.newKeySet();
+		return t -> seen.add(keyExtractor.apply(t));
 	}
 
 	public Page<SampleIndexDto> getIndexPage(SampleCriteria sampleCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
@@ -732,7 +775,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		cq.orderBy(cb.desc(sampleRoot.get(Sample.REPORT_DATE_TIME)), cb.desc(sampleRoot.get(Sample.ID)));
 
-		List<SampleExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<SampleExportDto> resultList = QueryHelper.getResultList(em, cq, first, max);
 
 		for (SampleExportDto exportDto : resultList) {
 			Sample sampleFromExportDto = sampleService.getById(exportDto.getId());

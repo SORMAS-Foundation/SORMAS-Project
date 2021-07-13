@@ -53,6 +53,10 @@ public class EditCaseSteps implements En {
         "I navigate to fallow-up tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_BUTTON));
 
+    And(
+        "I navigate to symptoms tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SYMPTOMS_BUTTON));
+
     When(
         "I check the created data is correctly displayed on Edit case page",
         () -> {

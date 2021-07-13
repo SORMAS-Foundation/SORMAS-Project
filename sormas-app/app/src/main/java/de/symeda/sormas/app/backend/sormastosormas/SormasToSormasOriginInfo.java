@@ -34,6 +34,15 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	@Column
 	private boolean ownershipHandedOver;
 
+	@Column
+	private boolean withAssociatedContacts;
+
+	@Column
+	private boolean withSamples;
+
+	@Column
+	private boolean withEventParticipants;
+
 	@Column(length = COLUMN_LENGTH_BIG)
 	private String comment;
 
@@ -80,6 +89,30 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
 		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
+	public boolean isWithAssociatedContacts() {
+		return withAssociatedContacts;
+	}
+
+	public void setWithAssociatedContacts(boolean withAssociatedContacts) {
+		this.withAssociatedContacts = withAssociatedContacts;
+	}
+
+	public boolean isWithSamples() {
+		return withSamples;
+	}
+
+	public void setWithSamples(boolean withSamples) {
+		this.withSamples = withSamples;
+	}
+
+	public boolean isWithEventParticipants() {
+		return withEventParticipants;
+	}
+
+	public void setWithEventParticipants(boolean withEventParticipants) {
+		this.withEventParticipants = withEventParticipants;
 	}
 
 	public String getComment() {

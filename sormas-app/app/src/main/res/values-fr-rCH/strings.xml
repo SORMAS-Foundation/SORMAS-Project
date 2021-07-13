@@ -113,6 +113,9 @@
     <string name="action_save_pathogen_test">Enregistrer le test d\'agent pathogène</string>
     <string name="action_edit_pathogen_test">Modifier le test de pathogène</string>
     <string name="action_submit_case_numbers">Soumettre les numéros de cas</string>
+    <string name="action_kex_lbds">LBDS Key Exchange</string>
+    <string name="action_sync_person_lbds">LBDS Sync Persons</string>
+    <string name="action_sync_case_lbds">LBDS Sync Cases</string>
     <string name="caption_address">Adresse</string>
     <string name="caption_age">Age</string>
     <string name="caption_attended_by">Participé par</string>
@@ -227,6 +230,7 @@
     <string name="caption_visit_time">Date de visite</string>
     <string name="caption_year">Année</string>
     <string name="caption_latest_submission">Dernière soumission: %1$s</string>
+    <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
     <string name="confirmation_action">Êtes-vous sûr de vouloir faire cela ?</string>
     <string name="confirmation_delete">Voulez-vous vraiment supprimer cet enregistrement ?</string>
     <string name="confirmation_pick_gps">Êtes-vous dans cet endroit maintenant?</string>
@@ -410,6 +414,7 @@
     <string name="hint_weekly_report_no_data">Aucune donnée disponible pour cette semaine Epi.</string>
     <string name="hint_case_numbers_not_submitted">Les numéros de cas n\'ont pas encore été soumis</string>
     <string name="hint_contact_text_filter">Contact ID or contact person name</string>
+    <string name="hint_settings_debug_url_lbds">e.g. https://localhost:6070/sormas-rest/</string>
     <string name="indicator_error">ERREUR</string>
     <string name="indicator_required">*</string>
     <string name="indicator_soft_required">*</string>
@@ -420,6 +425,10 @@
     <string name="info_create_event">Si vous ne trouvez<b>pas</b> l\'événement dans la liste ci-dessus, cliquez sur le bouton \"Créer\".</string>
     <string name="info_epidemiological_info">Veuillez indiquer si l\'un des éléments suivants est pertinent pour le patient pendant la période d\'incubation ou la maladie.</string>
     <string name="info_initial_synchronization">Synchronisation initiale avec le serveur SORMAS.\nL\'extraction des données d\'infrastructure prendra quelques minutes.</string>
+    <string name="info_lbds_key_exchange_started">LBDS Sync: Key Exchange started</string>
+    <string name="info_lbds_key_exchange_successful">LBDS Sync: Key Exchange successful</string>
+    <string name="info_lbds_no_case_to_transfer">LBDS Sync. No case to transfer</string>
+    <string name="info_lbds_no_person_to_transfer">LBDS Sync. No person to transfer</string>
     <string name="info_no_additional_test">Aucun test supplémentaire n\'a encore été effectué sur cet échantillon</string>
     <string name="info_no_sample_test">L\'échantillon n\'a pas encore été testé</string>
     <string name="info_pick_person">Please look through this list of persons. <b>If you feel certain</b> that the personal details you have entered belong to one of these persons, select that person by tapping on them and then click the \"Select\" button below.</string>

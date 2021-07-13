@@ -1,4 +1,4 @@
-@Sanity @Case
+@UI @Sanity @Case
 Feature: Create cases
 
   Background: Create a case via API

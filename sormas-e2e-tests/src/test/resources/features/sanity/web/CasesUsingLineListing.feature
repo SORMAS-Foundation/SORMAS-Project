@@ -1,4 +1,4 @@
-@Sanity @Case
+@UI @Sanity @Case
 Feature: Cases using Line Listing feature
 
   Scenario: Create cases using Line Listing feature and validate the entries
