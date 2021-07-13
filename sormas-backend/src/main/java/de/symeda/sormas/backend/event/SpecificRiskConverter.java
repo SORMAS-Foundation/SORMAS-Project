@@ -13,37 +13,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.customizableenum;
+package de.symeda.sormas.backend.event;
 
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.SpecificRisk;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumConverter;
 
-/**
- * An enum storing all enumerations that support customization.
- */
-public enum CustomizableEnumType {
+public class SpecificRiskConverter extends CustomizableEnumConverter<SpecificRisk> {
 
-	DISEASE_VARIANT(DiseaseVariant.class),
-	SPECIFIC_RISK(SpecificRisk.class);
-
-	private final Class<? extends CustomizableEnum> enumClass;
-
-	CustomizableEnumType(Class<? extends CustomizableEnum> enumClass) {
-		this.enumClass = enumClass;
+	public SpecificRiskConverter() {
+		super(SpecificRisk.class);
 	}
-
-	public static CustomizableEnumType getByEnumClass(Class<? extends CustomizableEnum> enumClass) {
-		for (CustomizableEnumType enumType : values()) {
-			if (enumType.getEnumClass() == enumClass) {
-				return enumType;
-			}
-		}
-
-		return null;
-	}
-
-	public Class<? extends CustomizableEnum> getEnumClass() {
-		return enumClass;
-	}
-
 }

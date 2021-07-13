@@ -60,6 +60,7 @@ import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.MedicallyAssociatedTransmissionMode;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.RiskLevel;
+import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.externaldata.HasExternalData;
@@ -89,6 +90,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
+	public static final String SPECIFIC_RISK = "specificRisk";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
@@ -149,6 +151,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
+	private SpecificRisk specificRisk;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Date eventInvestigationStartDate;
 	private Date eventInvestigationEndDate;
@@ -231,6 +234,16 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 
 	public void setRiskLevel(RiskLevel riskLevel) {
 		this.riskLevel = riskLevel;
+	}
+
+	@Column
+	@Convert(converter = SpecificRiskConverter.class)
+	public SpecificRisk getSpecificRisk() {
+		return specificRisk;
+	}
+
+	public void setSpecificRisk(SpecificRisk specificRisk) {
+		this.specificRisk = specificRisk;
 	}
 
 	@Enumerated(EnumType.STRING)

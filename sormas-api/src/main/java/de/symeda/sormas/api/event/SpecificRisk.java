@@ -13,37 +13,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.customizableenum;
+package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.event.SpecificRisk;
+import java.io.Serializable;
+import java.util.Map;
+
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 
 /**
- * An enum storing all enumerations that support customization.
+ * A customizable enum containing specific risks different than the one specified in {@link RiskLevel}.
  */
-public enum CustomizableEnumType {
+public class SpecificRisk extends CustomizableEnum implements Serializable {
 
-	DISEASE_VARIANT(DiseaseVariant.class),
-	SPECIFIC_RISK(SpecificRisk.class);
+	private static final long serialVersionUID = 7727639877710862924L;
 
-	private final Class<? extends CustomizableEnum> enumClass;
-
-	CustomizableEnumType(Class<? extends CustomizableEnum> enumClass) {
-		this.enumClass = enumClass;
+	@Override
+	public void setProperties(Map<String, Object> properties) {
+		// No properties
 	}
-
-	public static CustomizableEnumType getByEnumClass(Class<? extends CustomizableEnum> enumClass) {
-		for (CustomizableEnumType enumType : values()) {
-			if (enumType.getEnumClass() == enumClass) {
-				return enumType;
-			}
-		}
-
-		return null;
-	}
-
-	public Class<? extends CustomizableEnum> getEnumClass() {
-		return enumClass;
-	}
-
 }

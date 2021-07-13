@@ -926,6 +926,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
+		target.setSpecificRisk(source.getSpecificRisk());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
@@ -1031,6 +1032,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
+		target.setSpecificRisk(source.getSpecificRisk());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());

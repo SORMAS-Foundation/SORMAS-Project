@@ -42,6 +42,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String RISK_LEVEL = "riskLevel";
+	public static final String SPECIFIC_RISK = "specificRisk";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
 	public static final String EVENT_PERSONS = "eventPersons";
@@ -106,6 +107,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	@Required
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
+	private SpecificRisk specificRisk;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Date eventInvestigationStartDate;
 	private Date eventInvestigationEndDate;
@@ -208,6 +210,14 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 
 	public void setRiskLevel(RiskLevel riskLevel) {
 		this.riskLevel = riskLevel;
+	}
+
+	public SpecificRisk getSpecificRisk() {
+		return specificRisk;
+	}
+
+	public void setSpecificRisk(SpecificRisk specificRisk) {
+		this.specificRisk = specificRisk;
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {

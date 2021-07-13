@@ -7678,4 +7678,11 @@ ALTER TABLE travelentry_history ALTER COLUMN deacontent TYPE json USING deaconte
 
 INSERT INTO schema_version (version_number, comment) VALUES (386, 'DEA Travel entry form #6025 - Change dea content column type to JSON');
 
+-- 2017-01-10 Update events #63
+
+ALTER TABLE events ADD COLUMN specificrisk TEXT;
+ALTER TABLE events_history ADD COLUMN specificrisk TEXT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (387, 'Add SpecificRisk field into events #5940');
+
 -- *** Insert new sql commands BEFORE this line ***
