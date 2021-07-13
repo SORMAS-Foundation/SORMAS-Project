@@ -1,4 +1,4 @@
-@Contacts @Epidata
+@UI @Contacts @Epidata
 Feature: Cover Epidemiological data Tab from Contacts
 
 Scenario: Cover Epidemiological data Tab from Contacts

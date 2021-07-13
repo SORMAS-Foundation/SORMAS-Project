@@ -13,7 +13,8 @@ repositories {
 
 dependencies {
 	implementation("io.qameta.allure:allure-cucumber4-jvm:$allureCucumber4JvmVersion")
-	testImplementation("io.qameta.allure:allure-java-commons:$allureJavaCommonsVersion")
+    implementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+    testImplementation("io.qameta.allure:allure-java-commons:$allureJavaCommonsVersion")
 	testImplementation("io.qameta.allure:allure-rest-assured:$allureRestAssureVersion")
 	testImplementation("ru.yandex.qatools.allure:allure-java-adaptor-api:$allureVersion")
 
@@ -58,6 +59,11 @@ dependencies {
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonDatatypeJdk8")
 	implementation("com.fasterxml.jackson.core:jackson-core:$jacksonDatatypeJdk8")
 	implementation group: 'org.assertj', name: 'assertj-core', version: assertjCore
+
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.8'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.8.8'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.8'
+
 }
 
 task format(type: GoogleJavaFormat) {

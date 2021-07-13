@@ -33,6 +33,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "ContinentFacade")
 public class ContinentFacadeEjb implements ContinentFacade {
@@ -126,17 +127,7 @@ public class ContinentFacadeEjb implements ContinentFacade {
 
 		cq.select(continent);
 
-		if (first != null && max != null) {
-			return em.createQuery(cq)
-				.setFirstResult(first)
-				.setMaxResults(max)
-				.getResultList()
-				.stream()
-				.map(this::toIndexDto)
-				.collect(Collectors.toList());
-		} else {
-			return em.createQuery(cq).getResultList().stream().map(this::toIndexDto).collect(Collectors.toList());
-		}
+		return QueryHelper.getResultList(em, cq, first, max, this::toIndexDto);
 	}
 
 	@Override
@@ -185,12 +176,12 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	}
 
 	@Override
-	public void save(ContinentDto dto) {
-		save(dto, false);
+	public ContinentDto save(ContinentDto dto) {
+		return save(dto, false);
 	}
 
 	@Override
-	public void save(ContinentDto dto, boolean allowMerge) {
+	public ContinentDto save(ContinentDto dto, boolean allowMerge) {
 
 		Continent continent = continentService.getByUuid(dto.getUuid());
 
@@ -209,6 +200,8 @@ public class ContinentFacadeEjb implements ContinentFacade {
 
 		continent = fillOrBuildEntity(dto, continent, true);
 		continentService.ensurePersisted(continent);
+
+		return toDto(continent);
 	}
 
 	@Override

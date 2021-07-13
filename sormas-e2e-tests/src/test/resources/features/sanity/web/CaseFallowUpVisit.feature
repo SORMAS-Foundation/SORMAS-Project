@@ -1,4 +1,4 @@
-@Sanity @Case @Visit
+@UI @Sanity @Case @Visit
 Feature: Fallow-up new visit functionality
 
   Scenario: Create a new visit from case fallow-up

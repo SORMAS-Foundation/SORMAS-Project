@@ -77,6 +77,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "EventGroupFacade")
 public class EventGroupFacadeEjb implements EventGroupFacade {
@@ -209,15 +210,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		cq.distinct(true);
 
-		List<EventGroupIndexDto> indexList;
-		if (first != null && max != null) {
-			indexList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			indexList = em.createQuery(cq).getResultList();
-		}
-
-		return indexList;
-
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	@Override

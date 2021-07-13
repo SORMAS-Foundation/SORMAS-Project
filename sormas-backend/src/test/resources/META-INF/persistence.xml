@@ -57,6 +57,7 @@
 		<class>de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition</class>
 		<class>de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo</class>
 		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo</class>
+		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEntity</class>
 		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase</class>
 		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact</class>
 		<class>de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoSample</class>
@@ -76,6 +77,8 @@
 		<class>de.symeda.sormas.backend.region.Subcontinent</class>
 		<class>de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequest</class>
 		<class>de.symeda.sormas.backend.customizableenum.CustomizableEnumValue</class>
+		<class>de.symeda.sormas.backend.immunization.Immunization</class>
+		<class>de.symeda.sormas.backend.travelentry.TravelEntry</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

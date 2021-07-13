@@ -27,9 +27,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import org.sormas.e2etests.enums.SourceOfTemperature;
 import org.sormas.e2etests.pojo.web.*;
+import org.sormas.e2etests.pojo.web.FollowUpVisit;
 
 public class FollowUpVisitService {
   private final Faker faker;
+  private long currentTimeMillis = System.currentTimeMillis();
 
   @Inject
   public FollowUpVisitService(Faker faker) {
@@ -51,6 +53,50 @@ public class FollowUpVisitService {
         .comments(faker.book().title())
         .firstSymptom("Fever")
         .dateOfSymptom(LocalDate.now().minusDays(2))
+        .build();
+  }
+
+  public FollowUpVisit buildGeneratedFollowUpVisit() {
+    return FollowUpVisit.builder()
+        .personAvailableAndCooperative(AVAILABLE_AND_COOPERATIVE.getAvailable())
+        .dateOfVisit(LocalDate.now())
+        .timeOfVisit(LocalTime.now())
+        .visitRemarks(faker.book().title())
+        .currentBodyTemperature("35")
+        .sourceOfBodyTemperature("oral")
+        .chillsOrSweats(YES.toString())
+        .feelingIll(YES.toString())
+        .fever(YES.toString())
+        .headache(NO.toString())
+        .musclePain(NO.toString())
+        .shivering(NO.toString())
+        .acuteRespiratoryDistressSyndrome(NO.toString())
+        .cough(NO.toString())
+        .difficultyBreathing(NO.toString())
+        .oxygenSaturation94(UNKNOW.toString())
+        .pneumoniaClinicalRadiologic(UNKNOW.toString())
+        .rapidBreathing(UNKNOW.toString())
+        .respiratoryDiseaseRequiringVentilation(UNKNOW.toString())
+        .runnyNose(UNKNOW.toString())
+        .soreThroatPharyngitis(UNKNOW.toString())
+        .fastHeartRate(NO.toString())
+        .diarrhea(YES.toString())
+        .nausea(NO.toString())
+        .newLossOfSmell(YES.toString())
+        .newLossOfTaste(NO.toString())
+        .otherClinicalSymptoms(UNKNOW.toString())
+        .comments("Automated -comment" + LocalTime.now())
+        .firstSymptom("Diarrhea")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .build();
+  }
+
+  public FollowUpVisit buildEditFollowUpVisit() {
+    return FollowUpVisit.builder()
+        .personAvailableAndCooperative(UNAVAILABLE.getAvailable())
+        .dateOfVisit(LocalDate.now())
+        .timeOfVisit(LocalTime.now())
+        .visitRemarks("Automated changed - visit remark" + currentTimeMillis)
         .build();
   }
 }
