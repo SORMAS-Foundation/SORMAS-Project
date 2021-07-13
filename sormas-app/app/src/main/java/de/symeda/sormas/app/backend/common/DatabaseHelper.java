@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -172,7 +172,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 308;
+	public static final int DATABASE_VERSION = 309;
 
 	private static DatabaseHelper instance = null;
 
@@ -2664,6 +2664,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							"sentUuid varchar(36) primary key," +
 							"lastSendDate timestamp," +
 							"lastReceivedDate timestamp);");
+
+			case 308:
+				currentVersion = 308;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventIdentificationSource text;");
 
 				// ATTENTION: break should only be done after last version
 				break;

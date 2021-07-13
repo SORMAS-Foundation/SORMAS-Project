@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,6 +28,7 @@ import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
+import de.symeda.sormas.api.event.EventIdentificationSource;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -63,6 +64,7 @@ public class Event extends PseudonymizableAdo {
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
+	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
@@ -228,6 +230,9 @@ public class Event extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private EventManagementStatus eventManagementStatus;
+
+	@Enumerated(EnumType.STRING)
+	private EventIdentificationSource eventIdentificationSource;
 
 	@Enumerated(EnumType.STRING)
 	private InfectionPathCertainty infectionPathCertainty;
@@ -617,6 +622,14 @@ public class Event extends PseudonymizableAdo {
 
 	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
 		this.eventManagementStatus = eventManagementStatus;
+	}
+
+	public EventIdentificationSource getEventIdentificationSource() {
+		return eventIdentificationSource;
+	}
+
+	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 
 	public InfectionPathCertainty getInfectionPathCertainty() {

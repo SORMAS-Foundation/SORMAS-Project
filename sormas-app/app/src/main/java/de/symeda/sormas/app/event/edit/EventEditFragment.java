@@ -24,6 +24,7 @@ import android.view.View;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventIdentificationSource;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventSourceType;
@@ -192,6 +193,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.setEventInvestigationStatusClass(EventInvestigationStatus.class);
 		contentBinding.setRiskLevelClass(RiskLevel.class);
 		contentBinding.setEventManagementStatusClass(EventManagementStatus.class);
+		contentBinding.setEventIdentificationSourceClass(EventIdentificationSource.class);
 		contentBinding.setIsMultiDayEvent(isMultiDayEvent);
 
 		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventEndDate);
