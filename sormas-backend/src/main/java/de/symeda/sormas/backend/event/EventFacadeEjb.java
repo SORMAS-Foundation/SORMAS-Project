@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -53,7 +52,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -108,8 +106,10 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.utils.EventJoins;
 
 @Stateless(name = "EventFacade")
@@ -297,6 +297,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			event.get(Event.EVENT_MANAGEMENT_STATUS),
 			event.get(Event.DISEASE),
+			event.get(Event.DISEASE_VARIANT),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
@@ -357,6 +358,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:
 				case EventIndexDto.EVENT_MANAGEMENT_STATUS:
 				case EventIndexDto.DISEASE:
+				case EventIndexDto.DISEASE_VARIANT:
 				case EventIndexDto.DISEASE_DETAILS:
 				case EventIndexDto.START_DATE:
 				case EventIndexDto.EVOLUTION_DATE:
@@ -415,12 +417,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		cq.distinct(true);
 
-		List<EventIndexDto> indexList;
-		if (first != null && max != null) {
-			indexList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			indexList = em.createQuery(cq).getResultList();
-		}
+		List<EventIndexDto> indexList = QueryHelper.getResultList(em, cq, first, max);
 
 		Map<String, Long> participantCounts = new HashMap<>();
 		Map<String, Long> caseCounts = new HashMap<>();
@@ -581,6 +578,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			event.get(Event.DISEASE),
+			event.get(Event.DISEASE_VARIANT),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
@@ -637,13 +635,7 @@ public class EventFacadeEjb implements EventFacade {
 		cq.where(filter);
 		cq.orderBy(cb.desc(event.get(Event.REPORT_DATE_TIME)));
 
-		List<EventExportDto> exportList;
-		if (first != null && max != null) {
-			exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-
-		} else {
-			exportList = em.createQuery(cq).getResultList();
-		}
+		List<EventExportDto> exportList = QueryHelper.getResultList(em, cq, first, max);
 
 		Map<String, Long> participantCounts = new HashMap<>();
 		Map<String, Long> caseCounts = new HashMap<>();
@@ -857,11 +849,7 @@ public class EventFacadeEjb implements EventFacade {
 		cq.where(cb.and(eventRoot.get(Event.UUID).in(eventUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
 		cq.orderBy(cb.asc(eventRoot.get(AbstractDomainObject.CREATION_DATE)));
 
-		try {
-			return em.createQuery(cq).setMaxResults(1).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getFirstResult(em, cq);
 	}
 
 	@Override
@@ -968,6 +956,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcMediaName(source.getSrcMediaName());
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
@@ -1070,6 +1059,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcMediaName(source.getSrcMediaName());
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());

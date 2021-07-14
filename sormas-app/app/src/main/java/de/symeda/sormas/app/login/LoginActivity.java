@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.login;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -25,8 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
-
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -84,7 +84,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 	protected void onResume() {
 		super.onResume();
 
-			checkLoginAndDoUpdateAndInitialSync();
+		checkLoginAndDoUpdateAndInitialSync();
 
 		if (ConfigProvider.getUser() != null) {
 			binding.signInLayout.setVisibility(View.GONE);
@@ -117,6 +117,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 			// Do nothing if the installation was successful
 			case Activity.RESULT_OK:
 			case Activity.RESULT_CANCELED:
+			case Activity.RESULT_FIRST_USER:
 				break;
 			// Everything else probably is an error
 			default:
@@ -270,13 +271,12 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 
 		User user = ConfigProvider.getUser();
 
-
 		boolean caseSuveillance = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CASE_SURVEILANCE);
 		boolean campaigns = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS);
 
 		if (caseSuveillance) {
 			if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)
-					&& (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)
+				&& (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)
 					|| user.hasUserRole(UserRole.CASE_OFFICER)
 					|| user.hasUserRole(UserRole.POE_INFORMANT)
 					|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)

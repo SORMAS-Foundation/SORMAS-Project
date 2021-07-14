@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.travelentry.TravelEntryFacade;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -261,6 +263,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public ImmunizationFacade getImmunizationFacade() {
 		return getBean(ImmunizationFacadeEjbLocal.class);
+	}
+
+	public TravelEntryFacade getTravelEntryFacade() {
+		return getBean(TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal.class);
 	}
 
 	public CaseStatisticsFacade getCaseStatisticsFacade() {
