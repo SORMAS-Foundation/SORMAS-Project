@@ -108,14 +108,13 @@ public class PatchHelper {
 				throw new RuntimeException(
 					"Cannot access field " + existingObjectField.getName() + " on the object of type: " + existingObject.getClass().getName());
 			}
-			Collection existingElementList = tempNewElementList;
 			if (existingObjectFieldInstance != null) {
-				existingElementList = (Collection) existingObjectFieldInstance;
+				Collection existingElementList = (Collection) existingObjectFieldInstance;
 				existingElementList.clear();
 				existingElementList.addAll(tempNewElementList);
 			} else {
 				try {
-					existingObjectField.set(existingObject, existingElementList);
+					existingObjectField.set(existingObject, tempNewElementList);
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 					throw new RuntimeException(
