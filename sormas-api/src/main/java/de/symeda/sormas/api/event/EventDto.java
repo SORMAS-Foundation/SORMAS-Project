@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.event;
 
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import java.util.Date;
 import java.util.Map;
 
@@ -78,6 +79,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String SRC_MEDIA_DETAILS = "srcMediaDetails";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String REPORT_LAT = "reportLat";
@@ -143,6 +145,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	private String srcMediaDetails;
 	private Disease disease;
 	private String diseaseDetails;
+	private DiseaseVariant diseaseVariant;
 	@SensitiveData
 	private UserReferenceDto responsibleUser;
 	private String typeOfPlaceText;
@@ -474,6 +477,14 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 
 	public UserReferenceDto getResponsibleUser() {

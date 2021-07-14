@@ -96,7 +96,7 @@ public class TravelEntry extends CoreAdo {
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne()
 	@JoinColumn(nullable = false)
 	public Person getPerson() {
 		return person;

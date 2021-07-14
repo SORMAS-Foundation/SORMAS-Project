@@ -61,7 +61,7 @@ public class SormasToSormasCaseFacadeEjb
 
 	public static final String CASE_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_ENDPOINT;
 	public static final String CASE_REQUEST_REJECT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_REJECT_ENDPOINT;
-	public static final String CASE_REQUEST_ACCEPT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_ACCEPT_ENDPOINT;
+	public static final String CASE_REQUEST_GET_DATA_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_GET_DATA_ENDPOINT;
 	public static final String SAVE_SHARED_CASE_ENDPOINT = RESOURCE_PATH + CASE_ENDPOINT;
 	public static final String SYNC_CASE_ENDPOINT = RESOURCE_PATH + CASE_SYNC_ENDPOINT;
 
@@ -82,7 +82,7 @@ public class SormasToSormasCaseFacadeEjb
 		super(
 			CASE_REQUEST_ENDPOINT,
 			CASE_REQUEST_REJECT_ENDPOINT,
-			CASE_REQUEST_ACCEPT_ENDPOINT,
+			CASE_REQUEST_GET_DATA_ENDPOINT,
 			SAVE_SHARED_CASE_ENDPOINT,
 			SYNC_CASE_ENDPOINT,
 			Captions.CaseData,
@@ -126,9 +126,9 @@ public class SormasToSormasCaseFacadeEjb
 			}
 			if (handOverOwnership && caze.getPerson().isEnrolledInExternalJournal()) {
 				validationErrors.put(
-						buildCaseValidationGroupName(caze),
-						ValidationErrors
-								.create(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getString(Strings.errorSormasToSormasPersonEnrolled)));
+					buildCaseValidationGroupName(caze),
+					ValidationErrors
+						.create(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getString(Strings.errorSormasToSormasPersonEnrolled)));
 			}
 		}
 

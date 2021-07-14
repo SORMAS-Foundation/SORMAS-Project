@@ -19,14 +19,23 @@ import java.util.Map;
 
 public class SormasToSormasException extends Exception {
 
+	private static final long serialVersionUID = 4013844430248862005L;
+
 	private Map<String, ValidationErrors> errors;
 
+	private final boolean warning;
+
 	public SormasToSormasException(String message) {
+		this(message, false);
+	}
+
+	public SormasToSormasException(String message, boolean warning) {
 		super(message);
+		this.warning = warning;
 	}
 
 	public SormasToSormasException(String message, Map<String, ValidationErrors> errors) {
-		super(message);
+		this(message);
 		this.errors = errors;
 	}
 
@@ -36,5 +45,9 @@ public class SormasToSormasException extends Exception {
 
 	public void setErrors(Map<String, ValidationErrors> errors) {
 		this.errors = errors;
+	}
+
+	public boolean isWarning() {
+		return warning;
 	}
 }

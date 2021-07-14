@@ -38,7 +38,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "TreatmentFacade")
 public class TreatmentFacadeEjb implements TreatmentFacade {
@@ -181,7 +181,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(treatment.get(Treatment.TREATMENT_DATE_TIME)));
 
-		List<TreatmentExportDto> exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<TreatmentExportDto> exportList = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(TreatmentExportDto.class, exportList, t -> t.getInJurisdiction(), null);

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,6 +14,9 @@
  */
 
 package de.symeda.sormas.app.event.read;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 import android.os.Bundle;
 import android.view.View;
@@ -122,7 +125,9 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 					ParenteralTransmissionMode.MEDICALLY_ASSOCIATED);
 		}
 
-
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventDiseaseVariant)) {
+			contentBinding.eventDiseaseVariant.setVisibility(record.getDiseaseVariant() != null ? VISIBLE : GONE);
+		}
 	}
 
 	@Override
