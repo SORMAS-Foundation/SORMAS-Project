@@ -77,13 +77,18 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private SormasToSormasConfig sormasToSormasConfig;
 
 	@Override
+	public String getOrganizationId() {
+		return serverAccessDataService.getServerAccessData().getId();
+	}
+
+	@Override
 	public List<ServerAccessDataReferenceDto> getAvailableOrganizations() {
 		return serverAccessDataService.getOrganizationList().stream().map(OrganizationServerAccessData::toReference).collect(Collectors.toList());
 	}
 
 	@Override
 	public ServerAccessDataReferenceDto getOrganizationRef(String id) {
-		return serverAccessDataService.getServerListItemById(id).map(OrganizationServerAccessData::toReference).orElseGet(null);
+		return serverAccessDataService.getServerListItemById(id).map(OrganizationServerAccessData::toReference).orElse(null);
 	}
 
 	@Override

@@ -111,11 +111,11 @@ public class SormasToSormasController {
 			caze.getSormasToSormasOriginInfo());
 	}
 
-	public void syncCase(CaseDataDto caze, SormasToSormasShareInfoDto shareInfo) {
+	public void syncCase(CaseDataDto caze, String shareInfoUuid) {
 		handleSync(
 			options -> FacadeProvider.getSormasToSormasCaseFacade().syncEntity(caze.getUuid(), options),
 			SormasToSormasOptionsForm.forCase(null),
-			shareInfo);
+			shareInfoUuid);
 	}
 
 	public void returnContact(ContactDto contact) {
@@ -125,11 +125,11 @@ public class SormasToSormasController {
 			contact.getSormasToSormasOriginInfo());
 	}
 
-	public void syncContact(ContactDto contact, SormasToSormasShareInfoDto shareInfo) {
+	public void syncContact(ContactDto contact, String shareInfoUuid) {
 		handleSync(
 			options -> FacadeProvider.getSormasToSormasContactFacade().syncEntity(contact.getUuid(), options),
 			SormasToSormasOptionsForm.forContact(null),
-			shareInfo);
+			shareInfoUuid);
 	}
 
 	public void returnEvent(EventDto event) {
@@ -139,11 +139,11 @@ public class SormasToSormasController {
 			event.getSormasToSormasOriginInfo());
 	}
 
-	public void syncEvent(EventDto event, SormasToSormasShareInfoDto shareInfo) {
+	public void syncEvent(EventDto event, String shareInfoUuid) {
 		handleSync(
 			options -> FacadeProvider.getSormasToSormasEventFacade().syncEntity(event.getUuid(), options),
 			SormasToSormasOptionsForm.forEvent(null),
-			shareInfo);
+			shareInfoUuid);
 	}
 
 	public void shareLabMessage(LabMessageDto labMessage, Runnable callback) {
@@ -179,7 +179,7 @@ public class SormasToSormasController {
 		callback.run();
 	}
 
-	public void revokeShare(SormasToSormasShareInfoDto shareInfo, Runnable callback) {
+	public void revokeShare(String shareInfoUuid, Runnable callback) {
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingRevokeSormasToSormasShareRequest),
 			new Label(I18nProperties.getString(Strings.confirmationRevokeSormasToSormasShareRequest)),
@@ -189,7 +189,7 @@ public class SormasToSormasController {
 			confirmed -> {
 				if (confirmed) {
 					handleSormasToSormasRequest(() -> {
-						FacadeProvider.getSormasToSormasFacade().revokeShare(shareInfo.getUuid());
+						FacadeProvider.getSormasToSormasFacade().revokeShare(shareInfoUuid);
 					});
 					callback.run();
 				}
@@ -275,15 +275,17 @@ public class SormasToSormasController {
 	private void handleSync(
 		HandleShareWithOptions handleShareWithOptions,
 		SormasToSormasOptionsForm optionsForm,
-		SormasToSormasShareInfoDto shareInfoDto) {
+		String shareInfoUuid) {
+		SormasToSormasShareInfoDto shareInfo = FacadeProvider.getSormasToSormasShareInfoFacade().getShareInfoByUuid(shareInfoUuid);
+
 		SormasToSormasOptionsDto defaultOptions = new SormasToSormasOptionsDto();
-		defaultOptions.setOrganization(new ServerAccessDataReferenceDto(shareInfoDto.getTarget().getUuid()));
-		defaultOptions.setWithAssociatedContacts(shareInfoDto.isWithAssociatedContacts());
-		defaultOptions.setWithSamples(shareInfoDto.isWithSamples());
-		defaultOptions.setWithEventParticipants(shareInfoDto.isWithEvenParticipants());
-		defaultOptions.setPseudonymizePersonalData(shareInfoDto.isPseudonymizedPersonalData());
-		defaultOptions.setPseudonymizeSensitiveData(shareInfoDto.isPseudonymizedSensitiveData());
-		defaultOptions.setPseudonymizeSensitiveData(shareInfoDto.isPseudonymizedSensitiveData());
+		defaultOptions.setOrganization(new ServerAccessDataReferenceDto(shareInfo.getTarget().getUuid()));
+		defaultOptions.setWithAssociatedContacts(shareInfo.isWithAssociatedContacts());
+		defaultOptions.setWithSamples(shareInfo.isWithSamples());
+		defaultOptions.setWithEventParticipants(shareInfo.isWithEvenParticipants());
+		defaultOptions.setPseudonymizePersonalData(shareInfo.isPseudonymizedPersonalData());
+		defaultOptions.setPseudonymizeSensitiveData(shareInfo.isPseudonymizedSensitiveData());
+		defaultOptions.setPseudonymizeSensitiveData(shareInfo.isPseudonymizedSensitiveData());
 
 		optionsForm.disableOrganization();
 

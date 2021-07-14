@@ -7532,4 +7532,13 @@ ALTER TABLE immunization_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (381, 'Immunizations I: Entities, DTOs and backend logic #4756');
 
+ALTER TABLE sormastosormassharerequest ALTER COLUMN cases TYPE json USING cases::json;
+ALTER TABLE sormastosormassharerequest ALTER COLUMN contacts TYPE json USING contacts::json;
+ALTER TABLE sormastosormassharerequest ALTER COLUMN events TYPE json USING events::json;
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN cases TYPE json USING cases::json;
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN contacts TYPE json USING contacts::json;
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN events TYPE json USING events::json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (382, '[Sormas2Sormas] View share chain for each case shared/received trough S2S #6033');
+
 -- *** Insert new sql commands BEFORE this line ***

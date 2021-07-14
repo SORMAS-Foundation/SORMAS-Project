@@ -51,5 +51,5 @@ public interface SormasToSormasEntityInterface {
 
 	List<SormasToSormasShareTree> getAllShares(String uuid) throws SormasToSormasException;
 
-	SormasToSormasEncryptedDataDto getReShares(SormasToSormasEncryptedDataDto encryptedUuid) throws SormasToSormasException;
+	SormasToSormasEncryptedDataDto getShareTrees(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException;
 }

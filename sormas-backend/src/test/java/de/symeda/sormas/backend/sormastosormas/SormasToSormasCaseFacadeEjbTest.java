@@ -967,7 +967,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 				shareInfo.setOwnershipHandedOver(true);
 				shareInfo.setComment("re-shared");
 
-				return encryptShareDataAsArray(new SormasToSormasShareTree(shareInfo, Collections.emptyList()));
+				return encryptShareDataAsArray(new SormasToSormasShareTree(null, shareInfo, Collections.emptyList()));
 			});
 
 		List<SormasToSormasShareTree> shares = getSormasToSormasCaseFacade().getAllShares(caze.getUuid());
@@ -1003,20 +1003,29 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 			c.setSormasToSormasOriginInfo(originInfo);
 		});
 
-		SormasToSormasShareInfoDto shareToMiddle = createShareInfoDto(officer, SECOND_SERVER_ACCESS_ID, true);
+		// initial share by the creator of case
+		SormasToSormasShareInfoDto shareToSecond = createShareInfoDto(officer, SECOND_SERVER_ACCESS_ID, true);
+		// another share by the creator
+		SormasToSormasShareInfoDto anotherShareFromDefault = createShareInfoDto(officer, "anotherShareFromDefault", false);
 
-		SormasToSormasShareInfoDto anotherShareFromBase = createShareInfoDto(officer, "anotherShareFromBase", true);
-
+		// forwarded by the second system
 		User officerUser = getUserService().getByReferenceDto(officer);
-		SormasToSormasShareInfo shareFromMiddle = createShareInfo(
+		SormasToSormasShareInfo shareFromSecond = createShareInfo(
 			officerUser,
-			"shareFromMiddle",
-			true,
+			"shareFromSecond",
+			false,
 			i -> i.getCases().add(new ShareInfoCase(i, getCaseService().getByReferenceDto(caze.toReference()))));
-		getSormasToSormasShareInfoService().persist(shareFromMiddle);
-		SormasToSormasShareInfoDto shareDtoFromMiddle = getSormasToSormasShareInfoFacade().getShareInfoByUuid(shareFromMiddle.getUuid());
+		getSormasToSormasShareInfoService().persist(shareFromSecond);
 
-		// when checking shares based on origin info
+		// The share tree for the above code is:
+		// |- default
+		//   |- second
+		//     |- shareFromSecond
+		//   |- another from default
+
+		mockSecondServerAccess();
+
+		// mock share tree on the case creator system
 		Mockito
 			.when(
 				MockProducer.getSormasToSormasClient()
@@ -1024,48 +1033,46 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 			.thenAnswer(invocation -> {
 
 				List<SormasToSormasShareTree> shareTrees = new ArrayList<>();
-				shareTrees.add(
-					new SormasToSormasShareTree(
-						shareToMiddle,
-						Collections.singletonList(new SormasToSormasShareTree(shareDtoFromMiddle, Collections.emptyList()))));
-				shareTrees.add(new SormasToSormasShareTree(anotherShareFromBase, Collections.emptyList()));
+				shareTrees.add(new SormasToSormasShareTree(null, shareToSecond, Collections.emptyList()));
+				shareTrees.add(new SormasToSormasShareTree(null, anotherShareFromDefault, Collections.emptyList()));
 
 				return encryptShareData(shareTrees);
 			});
 
+		// Mock shares from "anotherShareFromDefault" -> no more shares
 		Mockito
 			.when(
 				MockProducer.getSormasToSormasClient()
-					.post(eq("anotherShareFromBase"), eq("/sormasToSormas/cases/shares"), Matchers.any(), Matchers.any()))
+					.post(eq("anotherShareFromDefault"), eq("/sormasToSormas/cases/shares"), Matchers.any(), Matchers.any()))
 			.thenAnswer(invocation -> encryptShareData(Collections.emptyList()));
 
-		// when checking shares from middle level
+		// Mock shares from "shareFromSecond" server -> no more shares
 		Mockito.when(
-			MockProducer.getSormasToSormasClient().post(eq("shareFromMiddle"), eq("/sormasToSormas/cases/shares"), Matchers.any(), Matchers.any()))
-			.thenAnswer(invocation -> encryptShareDataAsArray(new SormasToSormasShareTree(shareDtoFromMiddle, Collections.emptyList())));
+			MockProducer.getSormasToSormasClient().post(eq("shareFromSecond"), eq("/sormasToSormas/cases/shares"), Matchers.any(), Matchers.any()))
+			.thenAnswer(invocation -> encryptShareData(Collections.emptyList()));
 
 		List<SormasToSormasShareTree> shares = getSormasToSormasCaseFacade().getAllShares(caze.getUuid());
 
-		assertThat(shares, hasSize(1));
+		assertThat(shares, hasSize(2));
 		SormasToSormasShareInfoDto fistShare = shares.get(0).getShare();
 
-		assertThat(fistShare.getTarget().getUuid(), is("dummy SORMAS"));
+		assertThat(fistShare.getTarget().getUuid(), is(SECOND_SERVER_ACCESS_ID));
 		assertThat(fistShare.isOwnershipHandedOver(), is(true));
-		assertThat(fistShare.getComment(), is("first share"));
 
 		List<SormasToSormasShareTree> reShares = shares.get(0).getReShares();
-		assertThat(reShares, hasSize(2));
+		assertThat(reShares, hasSize(1));
 
 		SormasToSormasShareInfoDto reShare = reShares.get(0).getShare();
-		assertThat(reShare.getTarget().getUuid(), is(SECOND_SERVER_ACCESS_ID));
-		assertThat(reShare.isOwnershipHandedOver(), is(true));
+		assertThat(reShare.getTarget().getUuid(), is("shareFromSecond"));
+		assertThat(reShare.isOwnershipHandedOver(), is(false));
 
-		SormasToSormasShareTree secondReShare = reShares.get(0).getReShares().get(0);
-		assertThat(secondReShare.getShare().getTarget().getUuid(), is("dummy SORMAS reshare"));
-		assertThat(secondReShare.getShare().isOwnershipHandedOver(), is(true));
-		assertThat(secondReShare.getShare().getComment(), is("re-shared"));
+		assertThat(reShares.get(0).getReShares(), hasSize(0));
 
-		assertThat(secondReShare.getReShares(), hasSize(0));
+		SormasToSormasShareTree secondReShareFromDefault = shares.get(1);
+		assertThat(secondReShareFromDefault.getShare().getTarget().getUuid(), is("anotherShareFromDefault"));
+		assertThat(secondReShareFromDefault.getShare().isOwnershipHandedOver(), is(false));
+
+		assertThat(secondReShareFromDefault.getReShares(), hasSize(0));
 	}
 
 	@Test
@@ -1095,16 +1102,16 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 				shareInfo.setOwnershipHandedOver(false);
 				shareInfo.setComment("re-shared");
 
-				return encryptShareDataAsArray(new SormasToSormasShareTree(shareInfo, Collections.emptyList()));
+				return encryptShareDataAsArray(new SormasToSormasShareTree(null, shareInfo, Collections.emptyList()));
 			});
 
 		Mockito
 			.when(MockProducer.getSormasToSormasClient().post(eq("dummy SORMAS"), eq("/sormasToSormas/cases/shares"), Matchers.any(), Matchers.any()))
 			.thenAnswer(invocation -> encryptShareData(Collections.emptyList()));
 
-		SormasToSormasEncryptedDataDto encryptedUuid = encryptShareData(caze.getUuid());
+		SormasToSormasEncryptedDataDto encryptedCriteria = encryptShareData(new ShareTreeCriteria(caze.getUuid(), null, false));
 
-		SormasToSormasEncryptedDataDto encryptedShares = getSormasToSormasCaseFacade().getReShares(encryptedUuid);
+		SormasToSormasEncryptedDataDto encryptedShares = getSormasToSormasCaseFacade().getShareTrees(encryptedCriteria);
 
 		mockDefaultServerAccess();
 

@@ -161,19 +161,19 @@ public class SormasToSormasResource {
 	@POST
 	@Path(SormasToSormasApiConstants.CASE_SHARES_ENDPOINT)
 	public Response getCaseReShares(SormasToSormasEncryptedDataDto caseUuid) {
-		return handleRequestWithReturnData(() -> FacadeProvider.getSormasToSormasCaseFacade().getReShares(caseUuid));
+		return handleRequestWithReturnData(() -> FacadeProvider.getSormasToSormasCaseFacade().getShareTrees(caseUuid));
 	}
 
 	@POST
 	@Path(SormasToSormasApiConstants.CONTACT_SHARES_ENDPOINT)
 	public Response getContactReShares(SormasToSormasEncryptedDataDto contactUuid) {
-		return handleRequestWithReturnData(() -> FacadeProvider.getSormasToSormasContactFacade().getReShares(contactUuid));
+		return handleRequestWithReturnData(() -> FacadeProvider.getSormasToSormasContactFacade().getShareTrees(contactUuid));
 	}
 
 	@POST
 	@Path(SormasToSormasApiConstants.EVENT_SHARES_ENDPOINT)
 	public Response getEventReShares(SormasToSormasEncryptedDataDto eventUuid) {
-		return handleRequestWithReturnData(() -> FacadeProvider.getSormasToSormasEventFacade().getReShares(eventUuid));
+		return handleRequestWithReturnData(() -> FacadeProvider.getSormasToSormasEventFacade().getShareTrees(eventUuid));
 	}
 
 	private Response handleVoidRequest(VoidFacadeCall facadeCall) {

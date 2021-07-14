@@ -24,6 +24,8 @@ public class SormasToSormasShareTree implements Serializable {
 
 	private static final long serialVersionUID = -6310301421124024550L;
 
+	private SormasToSormasOriginInfoDto origin;
+
 	private SormasToSormasShareInfoDto share;
 
 	private List<SormasToSormasShareTree> reShares;
@@ -31,9 +33,14 @@ public class SormasToSormasShareTree implements Serializable {
 	public SormasToSormasShareTree() {
 	}
 
-	public SormasToSormasShareTree(SormasToSormasShareInfoDto share, List<SormasToSormasShareTree> reShares) {
+	public SormasToSormasShareTree(SormasToSormasOriginInfoDto origin, SormasToSormasShareInfoDto share, List<SormasToSormasShareTree> reShares) {
+		this.origin = origin;
 		this.share = share;
 		this.reShares = reShares;
+	}
+
+	public SormasToSormasOriginInfoDto getOrigin() {
+		return origin;
 	}
 
 	public SormasToSormasShareInfoDto getShare() {
@@ -42,5 +49,9 @@ public class SormasToSormasShareTree implements Serializable {
 
 	public List<SormasToSormasShareTree> getReShares() {
 		return reShares;
+	}
+
+	public void setReShares(List<SormasToSormasShareTree> reShares) {
+		this.reShares = reShares;
 	}
 }
