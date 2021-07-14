@@ -368,6 +368,9 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasFacadeTest {
 
 		EventDto event =
 			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, (e) -> {
+				e.getEventLocation().setRegion(rdcf.region);
+				e.getEventLocation().setDistrict(rdcf.district);
+
 				SormasToSormasOriginInfoDto originInfo = new SormasToSormasOriginInfoDto();
 				originInfo.setSenderName("Test Name");
 				originInfo.setSenderEmail("test@email.com");
