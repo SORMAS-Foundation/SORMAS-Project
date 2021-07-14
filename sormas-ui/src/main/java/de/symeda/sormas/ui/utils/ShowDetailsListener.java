@@ -48,7 +48,8 @@ public class ShowDetailsListener<T> implements ItemClickListener<T> {
 		this.detailsColumnId = detailsColumnId;
 		this.showOnDoubleClick = showOnDoubleClick;
 		this.itemHandler = itemHandler;
-		this.lastHandlingTimestamp = LocalDateTime.now().minusSeconds(1); // make sure the columns are clickable from the beginning
+		// make sure the columns are clickable from the beginning
+		this.lastHandlingTimestamp = LocalDateTime.now().minusSeconds(1);
 	}
 
 	/**
