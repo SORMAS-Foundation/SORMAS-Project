@@ -350,48 +350,38 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		Predicate filter = null;
+		final EventJoins eventJoins = new EventJoins(eventPath);
 
 		switch (jurisdictionLevel) {
 		case REGION:
 			if (currentUser.getRegion() != null) {
-				filter = CriteriaBuilderHelper
-					.or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), currentUser.getRegion()));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
 			}
 			break;
 		case DISTRICT:
 			if (currentUser.getDistrict() != null) {
-				filter = CriteriaBuilderHelper
-					.or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), currentUser.getDistrict()));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getDistrict()));
 			}
 			break;
 		case COMMUNITY:
 			if (currentUser.getCommunity() != null) {
-				filter = CriteriaBuilderHelper.or(
-					cb,
-					filter,
-					cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.COMMUNITY), currentUser.getCommunity()));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.COMMUNITY), currentUser.getCommunity()));
 			}
 			break;
 		case HEALTH_FACILITY:
 			if (currentUser.getHealthFacility() != null && currentUser.getHealthFacility().getDistrict() != null) {
-				filter = CriteriaBuilderHelper.or(
-					cb,
-					filter,
-					cb.equal(
-						eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT),
-						currentUser.getHealthFacility().getDistrict()));
+				filter = CriteriaBuilderHelper
+					.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getHealthFacility().getDistrict()));
 			}
 		case LABORATORY:
-
-			final EventJoins eventJoins = new EventJoins(eventPath);
-
 			final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
 			final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
 			final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
 			final Join eventParticipant = sampleJoins.getEventParticipant();
 			SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
-					SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
-			sampleSubQuery.where(cb.and(cb.equal(eventParticipant, eventJoins.getEventParticipants()), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
+				SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
+			sampleSubQuery.where(
+				cb.and(cb.equal(eventParticipant, eventJoins.getEventParticipants()), sampleJurisdictionPredicateValidator.inJurisdictionOrOwned()));
 			sampleSubQuery.select(sampleRoot.get(Sample.ID));
 			filter = CriteriaBuilderHelper.or(cb, cb.exists(sampleSubQuery));
 			break;
@@ -412,7 +402,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		if (eventUserFilterCriteria != null && eventUserFilterCriteria.isForceRegionJurisdiction()) {
 			filter = CriteriaBuilderHelper
-				.or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), currentUser.getRegion()));
+				.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.REGION), currentUser.getRegion()));
 		}
 
 		if (filter != null) {
