@@ -1,22 +1,23 @@
 /*
- *  SORMAS® - Surveillance Outbreak Response Management & Analysis System
- *  Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.api.immunization;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -31,223 +32,234 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import de.symeda.sormas.api.vaccination.VaccinationEntityDto;
 
 public class ImmunizationDto extends PseudonymizableDto {
 
-    @Outbreaks
-    @Required
-    private Disease disease;
-    @Required
-    @EmbeddedPersonalData
-    private PersonReferenceDto person;
-    private Date reportDate;
-    private UserReferenceDto reportingUser;
-    private boolean archived;
-    private ImmunizationStatus immunizationStatus;
-    private MeansOfImmunization meansOfImmunization;
-    private String meansOfImmunizationDetails;
-    private ImmunizationManagementStatus immunizationManagementStatus;
-    private String externalId;
+	@Outbreaks
+	@Required
+	private Disease disease;
+	@Required
+	@EmbeddedPersonalData
+	private PersonReferenceDto person;
+	private Date reportDate;
+	private UserReferenceDto reportingUser;
+	private boolean archived;
+	private ImmunizationStatus immunizationStatus;
+	private MeansOfImmunization meansOfImmunization;
+	private String meansOfImmunizationDetails;
+	private ImmunizationManagementStatus immunizationManagementStatus;
+	private String externalId;
 
-    private RegionReferenceDto responsibleRegion;
-    private DistrictReferenceDto responsibleDistrict;
-    private CommunityReferenceDto responsibleCommunity;
-    private CountryReferenceDto country;
+	private RegionReferenceDto responsibleRegion;
+	private DistrictReferenceDto responsibleDistrict;
+	private CommunityReferenceDto responsibleCommunity;
+	private CountryReferenceDto country;
 
-    private Date startDate;
-    private Date endDate;
-    private Integer numberOfDoses;
-    private YesNoUnknown previousInfection;
+	private Date startDate;
+	private Date endDate;
+	private Integer numberOfDoses;
+	private YesNoUnknown previousInfection;
 
-    private Date lastInfectionDate;
-    private String additionalDetails;
+	private Date lastInfectionDate;
+	private String additionalDetails;
 
-    private Date positiveTestResultDate;
-    private Date recoveryDate;
+	private Date positiveTestResultDate;
+	private Date recoveryDate;
 
-    private CaseReferenceDto relatedCase;
+	private CaseReferenceDto relatedCase;
 
-    public Disease getDisease() {
-        return disease;
-    }
+	private List<VaccinationEntityDto> vaccinations = new ArrayList<>();
 
-    public void setDisease(Disease disease) {
-        this.disease = disease;
-    }
+	public Disease getDisease() {
+		return disease;
+	}
 
-    public PersonReferenceDto getPerson() {
-        return person;
-    }
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
 
-    public void setPerson(PersonReferenceDto person) {
-        this.person = person;
-    }
+	public PersonReferenceDto getPerson() {
+		return person;
+	}
 
-    public Date getReportDate() {
-        return reportDate;
-    }
+	public void setPerson(PersonReferenceDto person) {
+		this.person = person;
+	}
 
-    public void setReportDate(Date reportDate) {
-        this.reportDate = reportDate;
-    }
+	public Date getReportDate() {
+		return reportDate;
+	}
 
-    public UserReferenceDto getReportingUser() {
-        return reportingUser;
-    }
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
 
-    public void setReportingUser(UserReferenceDto reportingUser) {
-        this.reportingUser = reportingUser;
-    }
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
 
-    public boolean isArchived() {
-        return archived;
-    }
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
+	}
 
-    public void setArchived(boolean archived) {
-        this.archived = archived;
-    }
+	public boolean isArchived() {
+		return archived;
+	}
 
-    public ImmunizationStatus getImmunizationStatus() {
-        return immunizationStatus;
-    }
+	public void setArchived(boolean archived) {
+		this.archived = archived;
+	}
 
-    public void setImmunizationStatus(ImmunizationStatus immunizationStatus) {
-        this.immunizationStatus = immunizationStatus;
-    }
+	public ImmunizationStatus getImmunizationStatus() {
+		return immunizationStatus;
+	}
 
-    public String getExternalId() {
-        return externalId;
-    }
+	public void setImmunizationStatus(ImmunizationStatus immunizationStatus) {
+		this.immunizationStatus = immunizationStatus;
+	}
 
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
-    }
+	public String getExternalId() {
+		return externalId;
+	}
 
-    public RegionReferenceDto getResponsibleRegion() {
-        return responsibleRegion;
-    }
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
 
-    public void setResponsibleRegion(RegionReferenceDto responsibleRegion) {
-        this.responsibleRegion = responsibleRegion;
-    }
+	public RegionReferenceDto getResponsibleRegion() {
+		return responsibleRegion;
+	}
 
-    public DistrictReferenceDto getResponsibleDistrict() {
-        return responsibleDistrict;
-    }
+	public void setResponsibleRegion(RegionReferenceDto responsibleRegion) {
+		this.responsibleRegion = responsibleRegion;
+	}
 
-    public void setResponsibleDistrict(DistrictReferenceDto responsibleDistrict) {
-        this.responsibleDistrict = responsibleDistrict;
-    }
+	public DistrictReferenceDto getResponsibleDistrict() {
+		return responsibleDistrict;
+	}
 
-    public CommunityReferenceDto getResponsibleCommunity() {
-        return responsibleCommunity;
-    }
+	public void setResponsibleDistrict(DistrictReferenceDto responsibleDistrict) {
+		this.responsibleDistrict = responsibleDistrict;
+	}
 
-    public void setResponsibleCommunity(CommunityReferenceDto responsibleCommunity) {
-        this.responsibleCommunity = responsibleCommunity;
-    }
+	public CommunityReferenceDto getResponsibleCommunity() {
+		return responsibleCommunity;
+	}
 
-    public Date getStartDate() {
-        return startDate;
-    }
+	public void setResponsibleCommunity(CommunityReferenceDto responsibleCommunity) {
+		this.responsibleCommunity = responsibleCommunity;
+	}
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
+	public Date getStartDate() {
+		return startDate;
+	}
 
-    public Date getEndDate() {
-        return endDate;
-    }
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
+	public Date getEndDate() {
+		return endDate;
+	}
 
-    public Integer getNumberOfDoses() {
-        return numberOfDoses;
-    }
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
 
-    public void setNumberOfDoses(Integer numberOfDoses) {
-        this.numberOfDoses = numberOfDoses;
-    }
+	public Integer getNumberOfDoses() {
+		return numberOfDoses;
+	}
 
-    public YesNoUnknown getPreviousInfection() {
-        return previousInfection;
-    }
+	public void setNumberOfDoses(Integer numberOfDoses) {
+		this.numberOfDoses = numberOfDoses;
+	}
 
-    public void setPreviousInfection(YesNoUnknown previousInfection) {
-        this.previousInfection = previousInfection;
-    }
+	public YesNoUnknown getPreviousInfection() {
+		return previousInfection;
+	}
 
-    public Date getLastInfectionDate() {
-        return lastInfectionDate;
-    }
+	public void setPreviousInfection(YesNoUnknown previousInfection) {
+		this.previousInfection = previousInfection;
+	}
 
-    public void setLastInfectionDate(Date lastInfectionDate) {
-        this.lastInfectionDate = lastInfectionDate;
-    }
+	public Date getLastInfectionDate() {
+		return lastInfectionDate;
+	}
 
-    public String getAdditionalDetails() {
-        return additionalDetails;
-    }
+	public void setLastInfectionDate(Date lastInfectionDate) {
+		this.lastInfectionDate = lastInfectionDate;
+	}
 
-    public void setAdditionalDetails(String additionalDetails) {
-        this.additionalDetails = additionalDetails;
-    }
+	public String getAdditionalDetails() {
+		return additionalDetails;
+	}
 
-    public Date getPositiveTestResultDate() {
-        return positiveTestResultDate;
-    }
+	public void setAdditionalDetails(String additionalDetails) {
+		this.additionalDetails = additionalDetails;
+	}
 
-    public void setPositiveTestResultDate(Date positiveTestResultDate) {
-        this.positiveTestResultDate = positiveTestResultDate;
-    }
+	public Date getPositiveTestResultDate() {
+		return positiveTestResultDate;
+	}
 
-    public Date getRecoveryDate() {
-        return recoveryDate;
-    }
+	public void setPositiveTestResultDate(Date positiveTestResultDate) {
+		this.positiveTestResultDate = positiveTestResultDate;
+	}
 
-    public void setRecoveryDate(Date recoveryDate) {
-        this.recoveryDate = recoveryDate;
-    }
+	public Date getRecoveryDate() {
+		return recoveryDate;
+	}
 
-    public CaseReferenceDto getRelatedCase() {
-        return relatedCase;
-    }
+	public void setRecoveryDate(Date recoveryDate) {
+		this.recoveryDate = recoveryDate;
+	}
 
-    public void setRelatedCase(CaseReferenceDto relatedCase) {
-        this.relatedCase = relatedCase;
-    }
+	public CaseReferenceDto getRelatedCase() {
+		return relatedCase;
+	}
 
-    public MeansOfImmunization getMeansOfImmunization() {
-        return meansOfImmunization;
-    }
+	public void setRelatedCase(CaseReferenceDto relatedCase) {
+		this.relatedCase = relatedCase;
+	}
 
-    public void setMeansOfImmunization(MeansOfImmunization meansOfImmunization) {
-        this.meansOfImmunization = meansOfImmunization;
-    }
+	public MeansOfImmunization getMeansOfImmunization() {
+		return meansOfImmunization;
+	}
 
-    public ImmunizationManagementStatus getImmunizationManagementStatus() {
-        return immunizationManagementStatus;
-    }
+	public void setMeansOfImmunization(MeansOfImmunization meansOfImmunization) {
+		this.meansOfImmunization = meansOfImmunization;
+	}
 
-    public void setImmunizationManagementStatus(ImmunizationManagementStatus immunizationManagementStatus) {
-        this.immunizationManagementStatus = immunizationManagementStatus;
-    }
+	public ImmunizationManagementStatus getImmunizationManagementStatus() {
+		return immunizationManagementStatus;
+	}
 
-    public String getMeansOfImmunizationDetails() {
-        return meansOfImmunizationDetails;
-    }
+	public void setImmunizationManagementStatus(ImmunizationManagementStatus immunizationManagementStatus) {
+		this.immunizationManagementStatus = immunizationManagementStatus;
+	}
 
-    public void setMeansOfImmunizationDetails(String meansOfImmunizationDetails) {
-        this.meansOfImmunizationDetails = meansOfImmunizationDetails;
-    }
+	public String getMeansOfImmunizationDetails() {
+		return meansOfImmunizationDetails;
+	}
 
-    public CountryReferenceDto getCountry() {
-        return country;
-    }
+	public void setMeansOfImmunizationDetails(String meansOfImmunizationDetails) {
+		this.meansOfImmunizationDetails = meansOfImmunizationDetails;
+	}
 
-    public void setCountry(CountryReferenceDto country) {
-        this.country = country;
-    }
+	public CountryReferenceDto getCountry() {
+		return country;
+	}
+
+	public void setCountry(CountryReferenceDto country) {
+		this.country = country;
+	}
+
+	public List<VaccinationEntityDto> getVaccinations() {
+		return vaccinations;
+	}
+
+	public void setVaccinations(List<VaccinationEntityDto> vaccinations) {
+		this.vaccinations = vaccinations;
+	}
 }
