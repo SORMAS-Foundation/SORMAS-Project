@@ -485,6 +485,7 @@ public interface Strings {
 	String headingImportPopulationData = "headingImportPopulationData";
 	String headingImportRegions = "headingImportRegions";
 	String headingImportSubcontinents = "headingImportSubcontinents";
+	String headingImportTravelEntries = "headingImportTravelEntries";
 	String headingInformationSource = "headingInformationSource";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
@@ -721,11 +722,9 @@ public interface Strings {
 	String infoSelectOrCreateContactImport = "infoSelectOrCreateContactImport";
 	String infoSelectOrCreateEntry = "infoSelectOrCreateEntry";
 	String infoSelectOrCreatePersonForCase = "infoSelectOrCreatePersonForCase";
-	String infoSelectOrCreatePersonForCaseImport = "infoSelectOrCreatePersonForCaseImport";
 	String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
-	String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
-	String infoSelectOrCreatePersonForEventParticipantImport = "infoSelectOrCreatePersonForEventParticipantImport";
+	String infoSelectOrCreatePersonForImport = "infoSelectOrCreatePersonForImport";
 	String infoSelectOrCreatePersonForLabMessage = "infoSelectOrCreatePersonForLabMessage";
 	String infoSkipOrOverrideDuplicateCampaignFormDataImport = "infoSkipOrOverrideDuplicateCampaignFormDataImport";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";

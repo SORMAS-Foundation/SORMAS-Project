@@ -1,21 +1,21 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
-package de.symeda.sormas.ui.caze.importer;
+ */
+
+package de.symeda.sormas.ui.configuration;
+
+import static com.vaadin.ui.Notification.Type;
 
 import java.io.IOException;
 
@@ -23,7 +23,6 @@ import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -32,22 +31,24 @@ import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
-@SuppressWarnings("serial")
-public class CaseImportLayout extends AbstractImportLayout {
+public class TravelEntryImportLayout extends AbstractImportLayout {
 
-	public CaseImportLayout() {
+	private static final long serialVersionUID = 4034832956498126408L;
+
+	public TravelEntryImportLayout() {
 
 		super();
-
 		ImportFacade importFacade = FacadeProvider.getImportFacade();
 
-		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Import_Guide.pdf"), new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
-		addDownloadImportTemplateComponent(2, importFacade.getCaseImportTemplateFilePath(), importFacade.getCaseImportTemplateFileName());
-		addImportCsvComponent(3, new ImportReceiver("_case_import_", file -> {
-			resetDownloadErrorReportButton();
+		addDownloadResourcesComponent(
+			1,
+			new ClassResource("/SORMAS_Travel_Entry_Import_Guide.pdf"),
+			new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		addImportCsvComponent(2, new ImportReceiver("_travel_entry_import_", file -> {
 
+			resetDownloadErrorReportButton();
 			try {
-				CaseImporter importer = new CaseImporter(file, true, currentUser);
+				TravelEntryImporter importer = new TravelEntryImporter(file, false, currentUser);
 				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
@@ -57,6 +58,7 @@ public class CaseImportLayout extends AbstractImportLayout {
 					false).show(Page.getCurrent());
 			}
 		}));
-		addDownloadErrorReportComponent(4);
+		addDownloadErrorReportComponent(3);
 	}
+
 }
