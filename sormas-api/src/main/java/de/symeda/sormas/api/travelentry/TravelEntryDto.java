@@ -13,6 +13,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -89,6 +90,15 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private boolean quarantineReduced;
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
+
+	public static TravelEntryDto build(PersonReferenceDto person) {
+
+		final TravelEntryDto travelEntry = new TravelEntryDto();
+		travelEntry.setUuid(DataHelper.createUuid());
+		travelEntry.setPerson(person);
+		travelEntry.setReportDate(new Date());
+		return travelEntry;
+	}
 
 	public PersonReferenceDto getPerson() {
 		return person;

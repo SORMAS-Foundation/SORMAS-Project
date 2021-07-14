@@ -2088,7 +2088,16 @@ public interface Captions {
 	String taskOfficerTasks = "taskOfficerTasks";
 	String to = "to";
 	String total = "total";
-	String travelEntryNewEntry = "travelEntryNewEntry";
+	String TravelEntry_differentPointOfEntryJurisdiction = "TravelEntry.differentPointOfEntryJurisdiction";
+	String TravelEntry_diseaseVariant = "TravelEntry.diseaseVariant";
+	String TravelEntry_externalId = "TravelEntry.externalId";
+	String TravelEntry_pointOfEntryDistrict = "TravelEntry.pointOfEntryDistrict";
+	String TravelEntry_pointOfEntryRegion = "TravelEntry.pointOfEntryRegion";
+	String TravelEntry_reportDate = "TravelEntry.reportDate";
+	String TravelEntry_responsibleCommunity = "TravelEntry.responsibleCommunity";
+	String TravelEntry_responsibleDistrict = "TravelEntry.responsibleDistrict";
+	String TravelEntry_responsibleRegion = "TravelEntry.responsibleRegion";
+	String travelEntryNewTravelEntry = "travelEntryNewTravelEntry";
 	String travelEntryPointOfEntry = "travelEntryPointOfEntry";
 	String Treatment_additionalNotes = "Treatment.additionalNotes";
 	String Treatment_dose = "Treatment.dose";
@@ -2215,6 +2224,7 @@ public interface Captions {
 	String View_dashboard_campaigns = "View.dashboard.campaigns";
 	String View_dashboard_contacts = "View.dashboard.contacts";
 	String View_dashboard_surveillance = "View.dashboard.surveillance";
+	String View_entries = "View.entries";
 	String View_events = "View.events";
 	String View_events_archive = "View.events.archive";
 	String View_events_data = "View.events.data";

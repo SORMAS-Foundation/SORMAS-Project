@@ -56,13 +56,14 @@ import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
 public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 
+	private static final long serialVersionUID = 2160497736783946091L;
+
 	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
 	private static final String DIFFERENT_POINT_OF_ENTRY_JURISDICTION = "differentPointOfEntryJurisdiction";
 	private static final String POINT_OF_ENTRY_HEADING_LOC = "pointOfEntryHeadingLoc";
 
 	private ComboBox districtCombo;
 	private ComboBox cbPointOfEntry;
-
 	private ComboBox birthDateDay;
 
 	//@formatter:off

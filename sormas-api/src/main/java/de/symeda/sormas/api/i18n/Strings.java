@@ -377,7 +377,6 @@ public interface Strings {
 	String headingCreateNewClinicalVisit = "headingCreateNewClinicalVisit";
 	String headingCreateNewContact = "headingCreateNewContact";
 	String headingCreateNewContactIssue = "headingCreateNewContactIssue";
-	String headingCreateNewEntry = "headingCreateNewEntry";
 	String headingCreateNewEvent = "headingCreateNewEvent";
 	String headingCreateNewEventGroup = "headingCreateNewEventGroup";
 	String headingCreateNewEventParticipant = "headingCreateNewEventParticipant";
@@ -387,6 +386,7 @@ public interface Strings {
 	String headingCreateNewSample = "headingCreateNewSample";
 	String headingCreateNewTask = "headingCreateNewTask";
 	String headingCreateNewTaskQuestion = "headingCreateNewTaskQuestion";
+	String headingCreateNewTravelEntry = "headingCreateNewTravelEntry";
 	String headingCreateNewTreatment = "headingCreateNewTreatment";
 	String headingCreateNewUser = "headingCreateNewUser";
 	String headingCreateNewVisit = "headingCreateNewVisit";

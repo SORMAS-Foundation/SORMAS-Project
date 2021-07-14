@@ -22,38 +22,36 @@ public class TravelEntryController {
 
 	public void create() {
 		CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent = getTravelEntryCreateComponent();
-		if (travelEntryCreateComponent != null) {
-			VaadinUiUtil.showModalPopupWindow(travelEntryCreateComponent, I18nProperties.getString(Strings.headingCreateNewEntry));
-		}
+		VaadinUiUtil.showModalPopupWindow(travelEntryCreateComponent, I18nProperties.getString(Strings.headingCreateNewTravelEntry));
 	}
 
 	private CommitDiscardWrapperComponent<TravelEntryCreateForm> getTravelEntryCreateComponent() {
-		UserProvider currentUserProvider = UserProvider.getCurrent();
-		if (currentUserProvider != null) {
-			TravelEntryCreateForm createForm = new TravelEntryCreateForm();
-			final CommitDiscardWrapperComponent<TravelEntryCreateForm> editView = new CommitDiscardWrapperComponent<>(
-				createForm,
-				currentUserProvider.hasUserRight(UserRight.TRAVEL_ENTRY_CREATE),
-				createForm.getFieldGroup());
 
-			editView.addCommitListener(() -> {
-				if (!createForm.getFieldGroup().isModified()) {
-					final TravelEntryDto dto = createForm.getValue();
+		TravelEntryCreateForm createForm = new TravelEntryCreateForm();
+		TravelEntryDto travelEntry = TravelEntryDto.build(null);
+		travelEntry.setReportingUser(UserProvider.getCurrent().getUserReference());
+		createForm.setValue(travelEntry);
+		final CommitDiscardWrapperComponent<TravelEntryCreateForm> editView = new CommitDiscardWrapperComponent<>(
+			createForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_CREATE),
+			createForm.getFieldGroup());
 
-					final PersonDto duplicatePerson = createForm.getPerson();
+		editView.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
 
-					ControllerProvider.getPersonController()
-						.selectOrCreatePerson(duplicatePerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
-							if (selectedPerson != null) {
-								dto.setPerson(selectedPerson);
-								FacadeProvider.getTravelEntryFacade().save(dto);
-							}
-						}, true);
-				}
-			});
+				final TravelEntryDto dto = createForm.getValue();
+				final PersonDto person = createForm.getPerson();
+				ControllerProvider.getPersonController()
+					.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
+						if (selectedPerson != null) {
+							dto.setPerson(selectedPerson);
+							FacadeProvider.getTravelEntryFacade().save(dto);
+						}
+					}, true);
+			}
+		});
 
-			return editView;
-		}
-		return null;
+		return editView;
 	}
+
 }

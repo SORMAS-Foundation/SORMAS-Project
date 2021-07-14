@@ -19,7 +19,7 @@ public class TravelEntriesView extends AbstractView {
 		UserProvider currentUserProvider = UserProvider.getCurrent();
 		if (currentUserProvider != null && currentUserProvider.hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
 			final ExpandableButton createButton =
-				new ExpandableButton(Captions.travelEntryNewEntry).expand(e -> ControllerProvider.getTravelEntryController().create());
+				new ExpandableButton(Captions.travelEntryNewTravelEntry).expand(e -> ControllerProvider.getTravelEntryController().create());
 			addHeaderComponent(createButton);
 		}
 	}
