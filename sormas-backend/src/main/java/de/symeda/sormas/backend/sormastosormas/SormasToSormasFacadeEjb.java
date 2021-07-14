@@ -49,9 +49,6 @@ import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SormasToSormasFacade")
 public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
@@ -91,23 +88,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	public ServerAccessDataReferenceDto getOrganizationRef(String id) {
-		return serverAccessDataService.getServerListItemById(id).map(OrganizationServerAccessData::toReference).orElseGet(null);
-	}
-
-	@Override
-	public List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
-		Root<SormasToSormasShareInfo> root = cq.from(SormasToSormasShareInfo.class);
-
-		Predicate filter = shareInfoService.buildCriteriaFilter(criteria, cb, root);
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.distinct(true);
-
-		return QueryHelper.getResultList(em, cq, first, max, this::toSormasToSormasShareInfoDto);
+		return serverAccessDataService.getServerListItemById(id).map(OrganizationServerAccessData::toReference).orElse(null);
 	}
 
 	@Override

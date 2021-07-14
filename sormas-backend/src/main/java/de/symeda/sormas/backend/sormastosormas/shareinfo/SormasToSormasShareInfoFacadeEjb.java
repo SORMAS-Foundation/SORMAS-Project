@@ -16,7 +16,6 @@
 package de.symeda.sormas.backend.sormastosormas.shareinfo;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -35,6 +34,7 @@ import de.symeda.sormas.backend.sormastosormas.OrganizationServerAccessData;
 import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SormasToSormasShareInfoFacade")
 public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfoFacade {
@@ -61,14 +61,7 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 
 		cq.distinct(true);
 
-		List<SormasToSormasShareInfo> resultList;
-		if (first != null && max != null) {
-			resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			resultList = em.createQuery(cq).getResultList();
-		}
-
-		return resultList.stream().map(this::toDto).collect(Collectors.toList());
+		return QueryHelper.getResultList(em, cq, first, max, this::toDto);
 	}
 
 	public SormasToSormasShareInfoDto getShareInfoByUuid(String uuid) {
