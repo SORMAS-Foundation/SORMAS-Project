@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed({
 	"USER",
+	"ADMIN",
 	"REST_USER" })
 public class TreatmentResource extends EntityDtoResource {
 
