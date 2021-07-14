@@ -110,6 +110,18 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
+	public void createCaseShareInfo(List<String> caseUuids) {
+		caseService.getByUuids(caseUuids)
+				.forEach(caze -> shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.SHARED));
+	}
+
+	@Override
+	public void createEventShareInfo(List<String> eventUuids) {
+		eventService.getByUuids(eventUuids)
+				.forEach(event -> shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED));
+	}
+
+	@Override
 	public void deleteCases(List<CaseDataDto> cases) throws ExternalSurveillanceToolException {
 		DeleteParameters params = new DeleteParameters();
 		params.setCases(cases);

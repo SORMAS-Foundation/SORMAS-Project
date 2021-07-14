@@ -18,7 +18,6 @@ import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -27,6 +26,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -80,11 +80,7 @@ public class DocumentService extends AdoServiceWithUserFilter<Document> {
 		cq.where(filter);
 		cq.select(from.get(Document.UUID));
 
-		try {
-			return em.createQuery(cq).getSingleResult();
-		} catch (NoResultException nre) {
-			return null;
-		}
+		return QueryHelper.getSingleResult(em, cq);
 	}
 
 	public List<Document> getDocumentsMarkedForDeletion() {

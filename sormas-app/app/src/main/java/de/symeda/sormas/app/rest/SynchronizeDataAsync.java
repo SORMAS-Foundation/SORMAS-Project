@@ -15,18 +15,18 @@
 
 package de.symeda.sormas.app.rest;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.AddTrace;
 import com.google.firebase.perf.metrics.Trace;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
@@ -49,6 +49,7 @@ import de.symeda.sormas.app.backend.event.EventDtoHelper;
 import de.symeda.sormas.app.backend.event.EventParticipantDtoHelper;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.feature.FeatureConfigurationDtoHelper;
+import de.symeda.sormas.app.backend.immunization.ImmunizationDtoHelper;
 import de.symeda.sormas.app.backend.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDtoHelper;
 import de.symeda.sormas.app.backend.outbreak.OutbreakDtoHelper;
@@ -242,6 +243,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 	private void synchronizeChangedData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
 		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
 		CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+		ImmunizationDtoHelper immunizationDtoHelper = new ImmunizationDtoHelper();
 		EventDtoHelper eventDtoHelper = new EventDtoHelper();
 		EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
 		SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
@@ -264,6 +266,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		boolean personsNeedPull = personDtoHelper.pullAndPushEntities();
 		boolean casesNeedPull = caseDtoHelper.pullAndPushEntities();
+		boolean immunizationsNeedPull = immunizationDtoHelper.pullAndPushEntities();
 		boolean eventsNeedPull = eventDtoHelper.pullAndPushEntities();
 		boolean eventParticipantsNeedPull = eventParticipantDtoHelper.pullAndPushEntities();
 		boolean samplesNeedPull = sampleDtoHelper.pullAndPushEntities();
@@ -284,6 +287,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			personDtoHelper.pullEntities(true);
 		if (casesNeedPull)
 			caseDtoHelper.pullEntities(true);
+		if (immunizationsNeedPull)
+			immunizationDtoHelper.pullEntities(true);
 		if (eventsNeedPull)
 			eventDtoHelper.pullEntities(true);
 		if (eventParticipantsNeedPull)
@@ -323,6 +328,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 	private void repullData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
 		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
 		CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+		ImmunizationDtoHelper immunizationDtoHelper = new ImmunizationDtoHelper();
 		EventDtoHelper eventDtoHelper = new EventDtoHelper();
 		EventParticipantDtoHelper eventParticipantDtoHelper = new EventParticipantDtoHelper();
 		SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
@@ -348,6 +354,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new FeatureConfigurationDtoHelper().repullEntities();
 		personDtoHelper.repullEntities();
 		caseDtoHelper.repullEntities();
+		immunizationDtoHelper.repullEntities();
 		eventDtoHelper.repullEntities();
 		eventParticipantDtoHelper.repullEntities();
 		sampleDtoHelper.repullEntities();
@@ -488,6 +495,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
 			}
 
+			// Immunization
+			List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+			for (String immunizationUuid : immunizationUuids) {
+				DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
+			}
+
 			// Events
 			List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
 			for (String eventUuid : eventUuids) {
@@ -532,6 +545,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// Example: Case is created using an existing person, meanwhile user loses access to the person
 		new PersonDtoHelper().pushEntities(true);
 		new CaseDtoHelper().pushEntities(true);
+		new ImmunizationDtoHelper().pushEntities(true);
 		new EventDtoHelper().pushEntities(true);
 		new EventParticipantDtoHelper().pushEntities(true);
 		new SampleDtoHelper().pushEntities(true);
@@ -585,6 +599,9 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// clinical visits
 		List<String> clinicalVisitUuids = executeUuidCall(RetroProvider.getClinicalVisitFacade().pullUuids());
 		DatabaseHelper.getClinicalVisitDao().deleteInvalid(clinicalVisitUuids);
+		// immunizations
+		List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullUuids());
+		DatabaseHelper.getImmunizationDao().deleteInvalid(immunizationUuids);
 		// cases
 		List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullUuids());
 		DatabaseHelper.getCaseDao().deleteInvalid(caseUuids);
@@ -599,6 +616,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		new PersonDtoHelper().pullMissing(personUuids);
 		new CaseDtoHelper().pullMissing(caseUuids);
+		new ImmunizationDtoHelper().pullMissing(caseUuids);
 		new PrescriptionDtoHelper().pullMissing(prescriptionUuids);
 		new TreatmentDtoHelper().pullMissing(treatmentUuids);
 		new EventDtoHelper().pullMissing(eventUuids);

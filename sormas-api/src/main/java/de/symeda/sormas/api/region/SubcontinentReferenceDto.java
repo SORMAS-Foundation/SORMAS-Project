@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.region;
 
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 public class SubcontinentReferenceDto extends InfrastructureDataReferenceDto implements StatisticsGroupingKey {
@@ -14,6 +15,11 @@ public class SubcontinentReferenceDto extends InfrastructureDataReferenceDto imp
 
 	public SubcontinentReferenceDto(String uuid, String caption, String externalId) {
 		super(uuid, caption, externalId);
+	}
+
+	@Override
+	public String getCaption() {
+		return I18nProperties.getSubcontinentName(super.getCaption());
 	}
 
 	@Override
