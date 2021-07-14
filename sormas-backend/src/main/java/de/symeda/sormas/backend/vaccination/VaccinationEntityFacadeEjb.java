@@ -74,7 +74,6 @@ public class VaccinationEntityFacadeEjb implements VaccinationEntityFacade {
 			boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(source.getImmunization());
 			pseudonymizer.pseudonymizeDto(VaccinationEntityDto.class, dto, inJurisdiction, c -> {
 
-				// FIXME: Does the reportinguser need to be pseudonymized?
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 			});
