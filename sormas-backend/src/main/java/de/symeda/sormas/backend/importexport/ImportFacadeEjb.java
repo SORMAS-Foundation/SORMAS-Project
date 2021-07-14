@@ -889,7 +889,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		}
 		if (propertyType.isAssignableFrom(Date.class)) {
 			// If the string is smaller than the length of the expected date format, throw an exception
-			if (entry.length() < 10) {
+			if (entry.length() < 8) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(
 						Validations.importInvalidDate,
