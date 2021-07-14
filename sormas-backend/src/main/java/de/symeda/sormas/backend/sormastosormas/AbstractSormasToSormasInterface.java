@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildValidationGroupName;
 
 import java.sql.Timestamp;
@@ -37,10 +38,12 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
@@ -69,6 +72,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSormasToSormasInterface.class);
 
+	private static final String REQUEST_ACCEPTED_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.REQUEST_ACCEPTED_ENDPOINT;
+
 	@EJB
 	private UserService userService;
 	@Inject
@@ -90,7 +95,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	private final String requestEndpoint;
 	private final String requestRejectEndpoint;
-	private final String requestAcceptEndpoint;
+	private final String requestGetDataEndpoint;
 	private final String saveEndpoint;
 	private final String syncEndpoint;
 
@@ -106,7 +111,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	public AbstractSormasToSormasInterface(
 		String requestEndpoint,
 		String requestRejectEndpoint,
-		String requestAcceptEndpoint,
+		String requestGetDataEndpoint,
 		String saveEndpoint,
 		String syncEndpoint,
 		String entityCaptionTag,
@@ -114,7 +119,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		Class<? extends ShareRequestData<PREVIEW>> previewType) {
 		this.requestEndpoint = requestEndpoint;
 		this.requestRejectEndpoint = requestRejectEndpoint;
-		this.requestAcceptEndpoint = requestAcceptEndpoint;
+		this.requestGetDataEndpoint = requestGetDataEndpoint;
 		this.saveEndpoint = saveEndpoint;
 		this.syncEndpoint = syncEndpoint;
 		this.entityCaptionTag = entityCaptionTag;
@@ -151,8 +156,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			associatedEntities.addAll(shareData.getAssociatedEntities());
 		}
 
-		SormasToSormasOriginInfoDto originInfo =
-			dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options);
+		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options);
 		String requestUuid = DataHelper.createUuid();
 
 		sormasToSormasRestClient
@@ -221,15 +225,19 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = {
+		Exception.class })
 	public void acceptShareRequest(String uuid) throws SormasToSormasException, SormasToSormasValidationException {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
 
-		SormasToSormasEncryptedDataDto encryptedData = sormasToSormasRestClient
-			.post(organizationId, requestAcceptEndpoint, uuid, SormasToSormasEncryptedDataDto.class);
+		SormasToSormasEncryptedDataDto encryptedData =
+			sormasToSormasRestClient.post(organizationId, requestGetDataEndpoint, uuid, SormasToSormasEncryptedDataDto.class);
 
 		saveSharedEntities(encryptedData, shareRequest.getOriginInfo());
+
+		// notify the sender that the request has been accepted
+		sormasToSormasRestClient.post(organizationId, REQUEST_ACCEPTED_ENDPOINT, uuid, null);
 
 		shareRequest.setChangeDate(new Date());
 		shareRequest.setStatus(ShareRequestStatus.ACCEPTED);
@@ -247,12 +255,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		List<S> entitiesToSend = shareData.stream().map(ShareData::getDto).collect(Collectors.toList());
 		validateEntitiesBeforeShare(shareData.stream().map(ShareData::getEntity).collect(Collectors.toList()), shareInfo.isOwnershipHandedOver());
 
-		SormasToSormasEncryptedDataDto encrypted = encryptionService.signAndEncrypt(entitiesToSend, shareInfo.getOrganizationId());
-
-		shareInfo.setRequestStatus(ShareRequestStatus.ACCEPTED);
-		shareInfoService.ensurePersisted(shareInfo);
-
-		return encrypted;
+		return encryptionService.signAndEncrypt(entitiesToSend, shareInfo.getOrganizationId());
 	}
 
 	@Override
@@ -273,7 +276,16 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		}
 
 		sormasToSormasRestClient.post(options.getOrganization().getUuid(), saveEndpoint, entitiesToSend, null);
-		saveNewShareInfo(currentUser.toReference(), options, DataHelper.createUuid(), ShareRequestStatus.ACCEPTED, entities, associatedEntities);
+		SormasToSormasShareInfo shareInfo =
+			saveNewShareInfo(currentUser.toReference(), options, DataHelper.createUuid(), ShareRequestStatus.ACCEPTED, entities, associatedEntities);
+
+		try {
+			shareInfoService.handleOwnershipChangeInExternalSurvTool(shareInfo);
+		} catch (ExternalSurveillanceToolException e) {
+			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
+
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool), true);
+		}
 	}
 
 	@Override
@@ -314,7 +326,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			.filter(wrapper -> wrapper.getEntity().getSormasToSormasOriginInfo() == null)
 			.collect(Collectors.toList());
 
-		saveNewShareInfo(
+		SormasToSormasShareInfo shareInfo = saveNewShareInfo(
 			currentUser.toReference(),
 			options,
 			// if SORMAS_TO_SORMAS_ACCEPT_REJECT feature is not active then there is no request, so generate a random uuid in that case
@@ -322,6 +334,15 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			ShareRequestStatus.ACCEPTED,
 			Collections.emptyList(),
 			sharedAssociatedObjects);
+
+		try {
+			shareInfoService.handleOwnershipChangeInExternalSurvTool(originInfo);
+			shareInfoService.handleOwnershipChangeInExternalSurvTool(shareInfo);
+		} catch (ExternalSurveillanceToolException e) {
+			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
+
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool), true);
+		}
 	}
 
 	@Override
@@ -347,6 +368,14 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			.collect(Collectors.toList());
 
 		updateShareInfoOptions(shareInfo, additionalAssociatedObjects, options);
+
+		try {
+			shareInfoService.handleOwnershipChangeInExternalSurvTool(shareInfo);
+		} catch (ExternalSurveillanceToolException e) {
+			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
+
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool), true);
+		}
 	}
 
 	@Override
@@ -456,7 +485,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		return errors;
 	}
 
-	private void saveNewShareInfo(
+	private SormasToSormasShareInfo saveNewShareInfo(
 		UserReferenceDto sender,
 		SormasToSormasOptionsDto options,
 		String requestUuid,
@@ -480,6 +509,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		});
 
 		shareInfoService.ensurePersisted(shareInfo);
+
+		return shareInfo;
 	}
 
 	private void addOptionsToShareInfo(SormasToSormasOptionsDto options, SormasToSormasShareInfo shareInfo) {
