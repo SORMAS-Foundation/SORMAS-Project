@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import de.symeda.sormas.api.utils.Experimental;
 public class PatchHelper {
 
 	private static ObjectMapper objectMapper = new ObjectMapper();
+	private static Map<Class, List<Field>> classFieldsMap = new HashMap<Class, List<Field>>();
 
 	/**
 	 * This method is used to partially update an existing object. It updates an existingObject with the values received in the jsonObject.
@@ -62,7 +64,7 @@ public class PatchHelper {
 		while (jsonObjectFieldMap.hasNext()) {
 			Map.Entry<String, JsonNode> jsonObjectFieldMapEntry = jsonObjectFieldMap.next();
 			JsonNode jsonObjectFieldNode = jsonObjectFieldMapEntry.getValue();
-			Field existingObjectField = getFieldByName(jsonObjectFieldMapEntry.getKey(), existingObject.getClass());
+			Field existingObjectField = getClassFieldByName(jsonObjectFieldMapEntry.getKey(), existingObject.getClass());
 			existingObjectField.setAccessible(true);
 
 			if (jsonObjectFieldNode.isObject()) {
@@ -89,13 +91,16 @@ public class PatchHelper {
 	 */
 	private static <T extends HasUuid> void updateObjectList(T existingObject, JsonNode jsonObjectFieldNode, Field existingObjectField) {
 		Class listElementClass = getParameterizedType(existingObjectField);
-		ArrayList tempNewElementList = new ArrayList();
+		List tempNewElementList = new ArrayList();
 
 		for (JsonNode listElement : jsonObjectFieldNode) {
-			addOrReplaceListElement(existingObject, existingObjectField, listElementClass, tempNewElementList, listElement);
+			T updatedObjectList = addOrReplaceListElement(existingObject, existingObjectField, listElementClass, listElement);
+			if (updatedObjectList != null) {
+				tempNewElementList.add(updatedObjectList);
+			}
 		}
 
-		if (existingObjectField.getType().isAssignableFrom(Collection.class)) {
+		if (existingObjectField.getType().isAssignableFrom(List.class)) {
 			Object existingObjectFieldInstance = null;
 			try {
 				existingObjectFieldInstance = existingObjectField.get(existingObject);
@@ -169,28 +174,29 @@ public class PatchHelper {
 	 * @param existingObject
 	 * @param existingObjectField
 	 * @param listElementClass
-	 * @param tempNewElementList
 	 * @param listElement
 	 * @param <T>
 	 * @throws JsonProcessingException
 	 */
-	private static <T extends HasUuid> void addOrReplaceListElement(
+	private static <T extends HasUuid> T addOrReplaceListElement(
 		T existingObject,
 		Field existingObjectField,
 		Class listElementClass,
-		ArrayList tempNewElementList,
 		JsonNode listElement) {
 		if (HasUuid.class.isAssignableFrom(listElementClass) && listElement.hasNonNull(EntityDto.UUID)) {
 			T existingListElement = (T) getListElementByUuid(existingObject, existingObjectField, listElement.get(EntityDto.UUID).textValue());
 			if (existingListElement != null) {
 				postUpdate(listElement, existingListElement);
-				tempNewElementList.add(existingListElement);
+				//tempNewElementList.add(existingListElement);
+				return existingListElement;
 			} else {
-				addObjectToList(tempNewElementList, listElement, listElementClass);
+				//addObjectToList(tempNewElementList, listElement, listElementClass);
+				return (T) getObjectFromJsonNode(listElement, listElementClass);
 			}
 
 		} else {
-			addObjectToList(tempNewElementList, listElement, listElementClass);
+			//addObjectToList(tempNewElementList, listElement, listElementClass);
+			return (T) getObjectFromJsonNode(listElement, listElementClass);
 		}
 	}
 
@@ -258,24 +264,26 @@ public class PatchHelper {
 		}
 	}
 
-	/**
-	 * This method return the Field of a class or its superclasses that has the name specified by the fieldName parameter
-	 * 
-	 * @param fieldName
-	 *            - the name of the field
-	 * @param objectClass
-	 *            - the class where the field is searched
-	 * @return
-	 */
-	private static @NotNull Field getFieldByName(@NotNull String fieldName, @NotNull Class objectClass) {
-		Field field = Arrays.stream(objectClass.getDeclaredFields()).filter(fld -> fld.getName().equals(fieldName)).findFirst().orElse(null);
-		while (field == null && objectClass.getSuperclass() != null) {
-			field = getFieldByName(fieldName, objectClass.getSuperclass());
+	private static @NotNull Field getClassFieldByName(@NotNull String fieldName, @NotNull Class objectClass) {
+		if (classFieldsMap.get(objectClass) == null) {
+			getAllClassFields(objectClass);
 		}
-		if (field == null) {
+		Field requiredField = classFieldsMap.get(objectClass).stream().filter(field -> field.getName().equals(fieldName)).findAny().orElse(null);
+		if (requiredField == null) {
 			throw new RuntimeException("No such field exception! " + fieldName + " in the class:" + objectClass.getName());
 		}
-		return field;
+
+		return requiredField;
+	}
+
+	private static void getAllClassFields(@NotNull Class objectClass) {
+		Class<?> currentClass = objectClass;
+		List<Field> fieldList = new ArrayList<Field>();
+		while (currentClass.getSuperclass() != null) {
+			fieldList.addAll(Arrays.asList(currentClass.getDeclaredFields()));
+			currentClass = currentClass.getSuperclass();
+		}
+		classFieldsMap.put(objectClass, fieldList);
 	}
 
 	/**
@@ -309,21 +317,10 @@ public class PatchHelper {
 	 */
 	private static <T extends HasUuid> T getListElementByUuid(@NotNull Object obj, @NotNull Field arrayField, @NotNull String uuid) {
 		try {
-			return (T) ((Collection) arrayField.get(obj)).stream().filter(listElement -> {
-				return ((HasUuid) listElement).getUuid().equals(uuid);
-//				Field uuidField = 
-//						getFieldByName(EntityDto.UUID, listElement.getClass());
-//				if (uuidField == null) {
-//					throw new RuntimeException("No such field exception!" + EntityDto.UUID);
-//				}
-//				uuidField.setAccessible(true);
-//				try {
-//					return uuid.equals(uuidField.get(listElement));
-//				} catch (IllegalAccessException e) {
-//					e.printStackTrace();
-//					throw new RuntimeException(e);
-//				}
-			}).findFirst().orElse(null);
+			return (T) ((Collection) arrayField.get(obj)).stream()
+				.filter(listElement -> ((HasUuid) listElement).getUuid().equals(uuid))
+				.findFirst()
+				.orElse(null);
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
