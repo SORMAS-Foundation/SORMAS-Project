@@ -319,16 +319,9 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 				return;
 			}
 
-			PropertyDescriptor pd;
-			Class<?> propertyType;
-			try {
-				pd = new PropertyDescriptor(personProperty != null ? personProperty : propertyCaption, currentElement.getClass());
-				propertyType = pd.getPropertyType();
-			} catch (IntrospectionException e) {
-				// Add the property to the deaContent field of the travel entry
-				travelEntry.getDeaContent().add(new DeaContentEntry(propertyCaption, entry));
-				return;
-			}
+			String relevantProperty = personProperty != null ? personProperty : propertyCaption;
+			PropertyDescriptor pd = new PropertyDescriptor(relevantProperty, currentElement.getClass());
+			Class<?> propertyType = pd.getPropertyType();
 
 			// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 			// according to the types of the case or person fields
@@ -391,6 +384,9 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 				throw new UnsupportedOperationException(
 					I18nProperties.getValidationError(Validations.importPropertyTypeNotAllowed, propertyType.getName()));
 			}
+		} catch (IntrospectionException e) {
+			// Add the property to the deaContent field of the travel entry
+			travelEntry.getDeaContent().add(new DeaContentEntry(propertyCaption, entry));
 		} catch (InvocationTargetException | IllegalAccessException e) {
 			throw new ImportErrorException(I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));
 		} catch (IllegalArgumentException | EnumService.InvalidEnumCaptionException e) {
