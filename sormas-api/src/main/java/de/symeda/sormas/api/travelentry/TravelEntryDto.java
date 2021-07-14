@@ -1,6 +1,5 @@
 package de.symeda.sormas.api.travelentry;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -57,7 +56,7 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private boolean recovered;
 	private boolean vaccinated;
 	private boolean testedNegative;
-	private List<DeaContentEntry> deaContent = new ArrayList<>();
+	private List<DeaContentEntry> deaContent;
 
 	private QuarantineType quarantine;
 	@SensitiveData

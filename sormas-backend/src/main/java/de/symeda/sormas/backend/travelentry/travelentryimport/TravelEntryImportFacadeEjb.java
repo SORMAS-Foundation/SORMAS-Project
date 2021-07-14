@@ -386,6 +386,9 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 			}
 		} catch (IntrospectionException e) {
 			// Add the property to the deaContent field of the travel entry
+			if (travelEntry.getDeaContent() == null) {
+				travelEntry.setDeaContent(new ArrayList<>());
+			}
 			travelEntry.getDeaContent().add(new DeaContentEntry(propertyCaption, entry));
 		} catch (InvocationTargetException | IllegalAccessException e) {
 			throw new ImportErrorException(I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));

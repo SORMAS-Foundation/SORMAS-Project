@@ -7558,7 +7558,7 @@ CREATE TABLE travelentry(
     recovered boolean,
     vaccinated boolean,
     testednegative boolean,
-    deacontent text,
+    deacontent json,
     quarantine varchar(255),
     quarantinetypedetails text,
     quarantinefrom timestamp,
