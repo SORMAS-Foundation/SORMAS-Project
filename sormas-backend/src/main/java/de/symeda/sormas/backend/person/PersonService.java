@@ -464,7 +464,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		boolean activeEntriesOnly = configFacade.isDuplicateChecksExcludePersonsOfArchivedEntries();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		Predicate finalPredicate;
 
 		CriteriaQuery<PersonNameDto> personQuery = cb.createQuery(PersonNameDto.class);
 		Root<Person> personRoot = personQuery.from(Person.class);
@@ -506,7 +505,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Predicate personTravelEntryPredicate =
 			and(cb, personTravelEntryJoin.get(TravelEntry.ID).isNotNull(), travelEntryUserFilter, activeTravelEntriesFilter);
 
-		finalPredicate = CriteriaBuilderHelper.or(
+		Predicate finalPredicate = CriteriaBuilderHelper.or(
 			cb,
 			personCasePredicate,
 			personContactPredicate,

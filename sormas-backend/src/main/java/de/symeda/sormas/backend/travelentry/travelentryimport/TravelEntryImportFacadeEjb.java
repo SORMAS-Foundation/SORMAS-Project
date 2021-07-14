@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -48,6 +49,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportEntities;
@@ -55,15 +57,21 @@ import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacad
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.EnumService;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportCellData;
 import de.symeda.sormas.backend.importexport.ImportErrorException;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportHelper;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "TravelEntryImportFacade")
@@ -91,6 +99,10 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
+	@EJB
+	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+	@EJB
+	private EnumService enumService;
 
 	@Override
 	public ImportLineResultDto<TravelEntryImportEntities> importData(
@@ -106,6 +118,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		}
 
 		final TravelEntryImportEntities entities = new TravelEntryImportEntities(userService.getCurrentUser().toReference());
+		fillTravelEntryWithDefaultValues(entities.getTravelEntry());
 		ImportLineResultDto<TravelEntryImportEntities> importResult =
 			buildEntities(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, entities);
 		if (importResult.isError()) {
@@ -135,6 +148,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 
 		TravelEntryImportEntities entities =
 			new TravelEntryImportEntities(userService.getCurrentUser().toReference(), personFacade.getPersonByUuid(personUuid));
+		fillTravelEntryWithDefaultValues(entities.getTravelEntry());
 		ImportLineResultDto<TravelEntryImportEntities> importResult = buildEntities(values, entityClasses, entityPropertyPaths, true, entities);
 
 		if (importResult.isError()) {
@@ -142,6 +156,34 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		}
 
 		return saveImportedEntities(entities);
+	}
+
+	private void fillTravelEntryWithDefaultValues(TravelEntryDto travelEntry) {
+		User currentUser = userService.getCurrentUser();
+		Disease userDisease = currentUser.getLimitedDisease();
+		Region userRegion = currentUser.getRegion();
+		District userDistrict = currentUser.getDistrict();
+		Community userCommunity = currentUser.getCommunity();
+		PointOfEntry userPoe = currentUser.getPointOfEntry();
+
+		if (userDisease != null) {
+			travelEntry.setDisease(userDisease);
+		} else if (diseaseConfigurationFacade.getAllDiseases(true, true, true).size() == 1) {
+			travelEntry.setDisease(diseaseConfigurationFacade.getAllDiseases(true, true, true).get(0));
+		}
+
+		if (userRegion != null) {
+			travelEntry.setResponsibleRegion(new RegionReferenceDto(userRegion.getUuid()));
+			if (userDistrict != null) {
+				travelEntry.setResponsibleDistrict(new DistrictReferenceDto(userDistrict.getUuid()));
+				if (userCommunity != null) {
+					travelEntry.setResponsibleCommunity(new CommunityReferenceDto(userCommunity.getUuid()));
+				}
+				if (userPoe != null) {
+					travelEntry.setPointOfEntry(new PointOfEntryReferenceDto(userPoe.getUuid()));
+				}
+			}
+		}
 	}
 
 	@Override
@@ -252,7 +294,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		Object currentElement = personProperty != null ? person : travelEntry;
 		if (personProperty != null) {
 			// Map the entry to an expected SORMAS value if necessary
-			entry = getPersonValue(entry);
+			entry = getPersonValue(personProperty, entry);
 		}
 		Language language = I18nProperties.getUserLanguage();
 
@@ -290,7 +332,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 
 			// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 			// according to the types of the case or person fields
-			if (importFacade.executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath, false)) {
+			if (importFacade.executeDefaultInvoke(pd, currentElement, entry, entryHeaderPath, false)) {
 				// No action needed
 			} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 				List<DistrictReferenceDto> district = districtFacade
@@ -388,13 +430,13 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		}
 	}
 
-	private String getPersonValue(String value) {
-		switch (value.toLowerCase().trim()) {
-		case "männlich":
-			return Sex.MALE.toString();
-		case "weiblich":
-			return Sex.FEMALE.toString();
-		default:
+	private String getPersonValue(String personProperty, String value) {
+		try {
+			if (PersonDto.SEX.equals(personProperty)) {
+				return Sex.valueOf(value).toString();
+			}
+			return value;
+		} catch (IllegalArgumentException e) {
 			return value;
 		}
 	}

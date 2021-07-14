@@ -420,7 +420,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 
 					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 					// according to the types of the case or person fields
-					if (importFacade.executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath, false)) {
+					if (importFacade.executeDefaultInvoke(pd, currentElement, entry, entryHeaderPath, false)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 						List<DistrictReferenceDto> district = districtFacade
@@ -571,7 +571,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 
 					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 					// according to the types of the sample or pathogen test fields
-					if (importFacade.executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath, false)) {
+					if (importFacade.executeDefaultInvoke(pd, currentElement, entry, entryHeaderPath, false)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
 						List<FacilityReferenceDto> lab = facilityFacade.getLaboratoriesByName(entry, false);

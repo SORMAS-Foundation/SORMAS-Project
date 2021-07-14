@@ -306,7 +306,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 
 					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 					// according to the types of the case or person fields
-					if (importFacade.executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath, true)) {
+					if (importFacade.executeDefaultInvoke(pd, currentElement, entry, entryHeaderPath, true)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(EventReferenceDto.class)) {
 						EventDto referencedDto = eventFacade.getEventByUuid(entry);
@@ -439,7 +439,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 
 					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 					// according to the types of the sample or pathogen test fields
-					if (importFacade.executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath, true)) {
+					if (importFacade.executeDefaultInvoke(pd, currentElement, entry, entryHeaderPath, true)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 						List<DistrictReferenceDto> district = districtFacade.getByName(

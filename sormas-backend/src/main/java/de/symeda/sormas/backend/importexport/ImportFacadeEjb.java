@@ -856,7 +856,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		return true;
 	}
 
-	public boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath, boolean allowForeignRegions)
+	public boolean executeDefaultInvoke(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath, boolean allowForeignRegions)
 		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException, EnumService.InvalidEnumCaptionException {
 		Class<?> propertyType = pd.getPropertyType();
 
@@ -878,9 +878,9 @@ public class ImportFacadeEjb implements ImportFacade {
 		}
 		if (propertyType.getSuperclass() != null && propertyType.getSuperclass() == CustomizableEnum.class) {
 			try {
-				Object test = propertyType.newInstance();
-				((CustomizableEnum) test).setValue(entry);
-				pd.getWriteMethod().invoke(element, test);
+				Object customizableEnum = propertyType.newInstance();
+				((CustomizableEnum) customizableEnum).setValue(entry);
+				pd.getWriteMethod().invoke(element, customizableEnum);
 				return true;
 			} catch (InstantiationException e) {
 				throw new ImportErrorException(
