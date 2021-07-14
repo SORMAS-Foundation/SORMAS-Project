@@ -83,6 +83,8 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
@@ -103,6 +105,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private ImmunizationService immunizationService;
+	@EJB
+	private TravelEntryService travelEntryService;
 	@EJB
 	private GeocodingService geocodingService;
 	@EJB
@@ -189,23 +193,27 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Join<Object, Contact> contactJoin = joins.getContact();
 		final Join<Object, EventParticipant> eventParticipantJoin = joins.getEventParticipant();
 		final Join<Object, Immunization> immunizationJoin = joins.getImmunization();
+		final Join<Object, TravelEntry> travelEntryJoin = joins.getTravelEntry();
 
 		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, caseJoin);
 		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, contactJoin);
 		final Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantJoin);
+		final Predicate travelEntryUserFilter = travelEntryService.createUserFilter(cb, cq, travelEntryJoin);
 		final Predicate immunizationUserFilter = immunizationService.createUserFilter(cb, cq, immunizationJoin);
 
 		final Predicate caseNotDeleted = caseService.createDefaultFilter(cb, caseJoin);
 		final Predicate contactNotDeleted = contactService.createDefaultFilter(cb, contactJoin);
 		final Predicate eventParticipantNotDeleted = eventParticipantService.createDefaultFilter(cb, eventParticipantJoin);
 		final Predicate immunizationNotDeleted = immunizationService.createDefaultFilter(cb, immunizationJoin);
+		final Predicate travelEntryNotDeleted = travelEntryService.createDefaultFilter(cb, travelEntryJoin);
 
 		final Predicate caseFilter = CriteriaBuilderHelper.and(cb, caseUserFilter, caseNotDeleted);
 		final Predicate contactFilter = CriteriaBuilderHelper.and(cb, contactUserFilter, contactNotDeleted);
 		final Predicate eventParticipantFilter = CriteriaBuilderHelper.and(cb, eventParticipantUserFilter, eventParticipantNotDeleted);
 		final Predicate immunizationFilter = CriteriaBuilderHelper.and(cb, immunizationUserFilter, immunizationNotDeleted);
+		final Predicate travelEntryFilter = CriteriaBuilderHelper.and(cb, travelEntryUserFilter, travelEntryNotDeleted);
 
-		return CriteriaBuilderHelper.or(cb, caseFilter, contactFilter, eventParticipantFilter, immunizationFilter);
+		return CriteriaBuilderHelper.or(cb, caseFilter, contactFilter, eventParticipantFilter, immunizationFilter, travelEntryFilter);
 	}
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, PersonQueryContext personQueryContext) {
@@ -388,7 +396,33 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		immunizationPersonsQuery.distinct(true);
 		List<Person> immunizationPersonsResultList = em.createQuery(immunizationPersonsQuery).getResultList();
 
-		return Stream.of(lgaResultList, casePersonsResultList, contactPersonsResultList, eventPersonsResultList, immunizationPersonsResultList)
+		// persons by travel entries
+		CriteriaQuery<Person> tepQuery = cb.createQuery(Person.class);
+		Root<TravelEntry> tepRoot = tepQuery.from(TravelEntry.class);
+		Join<TravelEntry, Person> tepSelect = tepRoot.join(TravelEntry.PERSON);
+		tepSelect.fetch(Person.ADDRESS);
+		tepQuery.select(tepSelect);
+		Predicate tepFilter = travelEntryService.createUserFilter(cb, tepQuery, tepRoot);
+		// date range
+		if (date != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, tepSelect, DateHelper.toTimestampUpper(date));
+			Predicate travelEntryDateFilter = travelEntryService.createChangeDateFilter(cb, tepRoot, DateHelper.toTimestampUpper(date));
+			tepFilter = and(cb, tepFilter, cb.or(dateFilter, travelEntryDateFilter));
+		}
+		if (tepFilter != null) {
+			tepQuery.where(tepFilter);
+		}
+		tepQuery.distinct(true);
+		List<Person> travelEntryPersonsResultList = em.createQuery(tepQuery).getResultList();
+
+		return Stream
+			.of(
+				lgaResultList,
+				casePersonsResultList,
+				contactPersonsResultList,
+				eventPersonsResultList,
+				immunizationPersonsResultList,
+				travelEntryPersonsResultList)
 			.flatMap(List<Person>::stream)
 			.distinct()
 			.sorted(Comparator.comparing(Person::getChangeDate))

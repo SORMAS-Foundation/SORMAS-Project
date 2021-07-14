@@ -7532,4 +7532,79 @@ ALTER TABLE immunization_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (381, 'Immunizations I: Entities, DTOs and backend logic #4756');
 
+-- 2021-07-05 DEA TravelEntry entity and backend logic #6022
+CREATE TABLE travelentry(
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    person_id bigint not null,
+    reportdate timestamp not null,
+    reportinguser_id bigint not null,
+    archived boolean DEFAULT false,
+    deleted boolean DEFAULT false,
+    disease varchar(255) not null,
+    diseasedetails text,
+    diseasevariant text,
+    responsibleregion_id bigint not null,
+    responsibledistrict_id bigint not null,
+    responsiblecommunity_id bigint,
+    pointofentryregion_id bigint,
+    pointofentrydistrict_id bigint,
+    pointofentry_id bigint not null,
+    pointofentrydetails text,
+    resultingcase_id bigint,
+    externalid varchar(255),
+    recovered boolean,
+    vaccinated boolean,
+    testednegative boolean,
+    deacontent text,
+    quarantine varchar(255),
+    quarantinetypedetails text,
+    quarantinefrom timestamp,
+    quarantineto timestamp,
+    quarantinehelpneeded text,
+    quarantineorderedverbally boolean,
+    quarantineorderedofficialdocument boolean,
+    quarantineorderedverballydate timestamp,
+    quarantineorderedofficialdocumentdate timestamp,
+    quarantinehomepossible varchar(255),
+    quarantinehomepossiblecomment text,
+    quarantinehomesupplyensured varchar(255),
+    quarantinehomesupplyensuredcomment text,
+    quarantineextended boolean DEFAULT false,
+    quarantinereduced boolean DEFAULT false,
+    quarantineofficialordersent boolean DEFAULT false,
+    quarantineofficialordersentdate timestamp,
+    sys_period tstzrange not null,
+    primary key(id));
+
+ALTER TABLE travelentry OWNER TO sormas_user;
+
+ALTER TABLE travelentry ADD CONSTRAINT fk_travelentry_person_id FOREIGN KEY (person_id) REFERENCES person(id);
+ALTER TABLE travelentry ADD CONSTRAINT fk_travelentry_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+ALTER TABLE travelentry ADD CONSTRAINT fk_travelentry_responsibleregion_id FOREIGN KEY (responsibleregion_id) REFERENCES region(id);
+ALTER TABLE travelentry ADD CONSTRAINT fk_travelentry_responsibledistrict_id FOREIGN KEY (responsibledistrict_id) REFERENCES district(id);
+ALTER TABLE travelentry ADD CONSTRAINT fk_travelentry_responsiblecommunity_id FOREIGN KEY (responsiblecommunity_id) REFERENCES community(id);
+ALTER TABLE travelentry ADD CONSTRAINT fk_travelentry_pointofentryregion_id FOREIGN KEY (pointofentryregion_id) REFERENCES region(id);
+ALTER TABLE travelentry ADD CONSTRAINT fk_travelentry_pointofentrydistrict_id FOREIGN KEY (pointofentrydistrict_id) REFERENCES district(id);
+ALTER TABLE travelentry ADD CONSTRAINT fk_travelentry_pointofentry_id FOREIGN KEY (pointofentry_id) REFERENCES pointofentry(id);
+ALTER TABLE travelentry ADD CONSTRAINT fk_travelentry_resultingcase_id FOREIGN KEY (resultingcase_id) REFERENCES cases(id);
+
+CREATE INDEX IF NOT EXISTS idx_travelentry_deleted ON travelentry (deleted);
+
+CREATE TABLE travelentry_history (LIKE travelentry);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON travelentry
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'travelentry_history', true);
+ALTER TABLE travelentry_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (382, 'DEA TravelEntry entity and backend logic #6022');
+
+-- 2021-07-12 Add disease variant to event #5525
+ALTER TABLE events ADD COLUMN diseasevariant text;
+ALTER TABLE events_history ADD COLUMN diseasevariant text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (383, 'Add disease variant to event #5525');
+
 -- *** Insert new sql commands BEFORE this line ***

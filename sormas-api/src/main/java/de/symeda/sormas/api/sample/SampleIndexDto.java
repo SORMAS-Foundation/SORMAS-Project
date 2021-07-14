@@ -149,8 +149,10 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 		this.samplingReason = samplingReason;
 		this.samplingReasonDetails = samplingReasonDetails;
 		this.pathogenTestCount = pathogenTestCount;
-		this.typeOfLastTest = typeOfLastTest;
-		this.lastTestCqValue = lastTestCqValue;
+
+		// These attributes will be set later
+		this.typeOfLastTest = null;
+		this.lastTestCqValue = null;
 
 		this.sampleJurisdictionFlagsDto = new SampleJurisdictionFlagsDto(
 			isInJurisdiction,
