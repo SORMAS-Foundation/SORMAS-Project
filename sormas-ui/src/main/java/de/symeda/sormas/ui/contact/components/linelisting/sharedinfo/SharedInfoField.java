@@ -12,6 +12,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -32,17 +33,25 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 	private final ComboBox<RegionReferenceDto> region;
 	private final ComboBox<DistrictReferenceDto> district;
 
-	private final CaseDataDto caseDataDto;
+	private final Disease initialDiseaseValue;
 
-	public SharedInfoField(CaseDataDto caseDataDto) {
-		caseSelector = caseDataDto != null
-			? new CaseSelector(caseDataDto.toReference())
-			: new CaseSelector(I18nProperties.getString(Strings.infoNoSourceCaseSelectedLineListing));
+	public SharedInfoField(CaseReferenceDto caseReferenceDto, Disease initialDiseaseValue) {
+		caseSelector = caseReferenceDto != null
+				? new CaseSelector(caseReferenceDto)
+				: new CaseSelector(I18nProperties.getString(Strings.infoNoSourceCaseSelectedLineListing));
 		disease = new ComboBox<>(I18nProperties.getCaption(Captions.lineListingDiseaseOfSourceCase));
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
 		district = new ComboBox<>(I18nProperties.getCaption(Captions.district));
 
-		this.caseDataDto = caseDataDto;
+		this.initialDiseaseValue  = initialDiseaseValue;
+	}
+
+	public SharedInfoField(CaseDataDto caseDataDto) {
+		this(caseDataDto == null ? null : caseDataDto.toReference(), caseDataDto == null ? null : caseDataDto.getDisease());
+	}
+
+	public SharedInfoField(EventDto eventDto) {
+		this(null, eventDto == null ? null : eventDto.getDisease());
 	}
 
 	@Override
@@ -90,8 +99,8 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 			binder.getBinding(SharedInfoFieldDto.DISTRICT).get().setAsRequiredEnabled(caseReferenceDto == null);
 		});
 
-		if (caseDataDto != null) {
-			disease.setSelectedItem(caseDataDto.getDisease());
+		if (initialDiseaseValue != null) {
+			disease.setSelectedItem(initialDiseaseValue);
 			disease.setEnabled(false);
 		}
 
