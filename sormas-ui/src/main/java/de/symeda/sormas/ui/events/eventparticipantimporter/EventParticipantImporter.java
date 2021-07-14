@@ -170,7 +170,7 @@ public class EventParticipantImporter extends DataImporter {
 						newPerson,
 						result -> consumer.onImportResult(result, personSelectLock),
 						(person, similarityResultOption) -> new PersonImportSimilarityResult(person, similarityResultOption),
-						Strings.infoSelectOrCreatePersonForEventParticipantImport,
+						Strings.infoSelectOrCreatePersonForImport,
 						currentUI);
 
 					try {

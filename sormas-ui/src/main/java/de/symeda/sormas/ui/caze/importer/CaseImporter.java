@@ -132,7 +132,7 @@ public class CaseImporter extends DataImporter {
 					importPerson,
 					result -> consumer.onImportResult(result, personSelectLock),
 					(person, similarityResultOption) -> new CaseImportSimilarityResult(person, null, similarityResultOption),
-					Strings.infoSelectOrCreatePersonForCaseImport,
+					Strings.infoSelectOrCreatePersonForImport,
 					currentUI);
 
 				try {

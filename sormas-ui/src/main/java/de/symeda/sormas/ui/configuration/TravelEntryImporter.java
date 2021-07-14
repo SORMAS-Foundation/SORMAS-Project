@@ -84,7 +84,7 @@ public class TravelEntryImporter extends DataImporter {
 					importPerson,
 					consumer::onImportResult,
 					PersonImportSimilarityResult::new,
-					Strings.infoSelectOrCreatePersonForTravelEntryImport,
+					Strings.infoSelectOrCreatePersonForImport,
 					currentUI);
 
 				try {

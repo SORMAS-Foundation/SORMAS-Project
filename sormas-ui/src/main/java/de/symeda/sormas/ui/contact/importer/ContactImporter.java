@@ -172,7 +172,7 @@ public class ContactImporter extends DataImporter {
 						newPerson,
 						result -> consumer.onImportResult(result, personSelectLock),
 						(person, similarityResultOption) -> new ContactImportSimilarityResult(person, null, similarityResultOption),
-						Strings.infoSelectOrCreatePersonForContactImport,
+						Strings.infoSelectOrCreatePersonForImport,
 						currentUI);
 
 					try {
