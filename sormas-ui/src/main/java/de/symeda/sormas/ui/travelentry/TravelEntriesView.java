@@ -1,12 +1,22 @@
 package de.symeda.sormas.ui.travelentry;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.configuration.TravelEntryImportLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class TravelEntriesView extends AbstractView {
 
@@ -33,6 +43,13 @@ public class TravelEntriesView extends AbstractView {
 		gridLayout.setStyleName("crud-main-layout");
 
 		addComponent(gridLayout);
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
+			addHeaderComponent(ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.actionImport), VaadinIcons.UPLOAD, e -> {
+				Window popupWindow = VaadinUiUtil.showPopupWindow(new TravelEntryImportLayout());
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportTravelEntries));
+			}));
+		}
 	}
 
 	@Override
