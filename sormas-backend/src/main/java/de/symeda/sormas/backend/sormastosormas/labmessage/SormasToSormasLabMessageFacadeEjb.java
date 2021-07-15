@@ -21,9 +21,7 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildLabM
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -32,7 +30,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
@@ -40,8 +37,10 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
-import de.symeda.sormas.api.sormastosormas.ValidationErrors;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.labmessage.LabMessage;
 import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
@@ -80,13 +79,14 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 	public void saveLabMessages(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
 		LabMessageDto[] sharedLabMessages = encryptionService.decryptAndVerify(encryptedData, LabMessageDto[].class);
 
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 		List<LabMessageDto> labMessagesToSave = new ArrayList<>(sharedLabMessages.length);
 
 		for (LabMessageDto labMessage : sharedLabMessages) {
 			ValidationErrors errors = validateSharedLabMessage(labMessage);
 			if (errors.hasError()) {
-				validationErrors.put(buildLabMessageValidationGroupName(labMessage), errors);
+				errors.setGroup(buildLabMessageValidationGroupName(labMessage));
+				validationErrors.add(errors);
 			}
 
 			labMessagesToSave.add(labMessage);
@@ -105,7 +105,7 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 		ValidationErrors errors = new ValidationErrors();
 
 		if (labMessageFacade.exists(labMessage.getUuid())) {
-			errors.add(I18nProperties.getCaption(Captions.LabMessage), I18nProperties.getValidationError(Validations.sormasToSormasLabMessageExists));
+			errors.add(new ValidationErrorGroup(Captions.LabMessage), new ValidationErrorMessage(Validations.sormasToSormasLabMessageExists));
 		}
 
 		return errors;

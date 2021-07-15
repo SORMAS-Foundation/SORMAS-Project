@@ -130,16 +130,16 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(ImmunizationFacade.class);
 	}
 
+	public static TravelEntryFacade getTravelEntryFacade() {
+		return get().lookupEjbRemote(TravelEntryFacade.class);
+	}
+
 	public static CaseStatisticsFacade getCaseStatisticsFacade() {
 		return get().lookupEjbRemote(CaseStatisticsFacade.class);
 	}
 
 	public static CaseImportFacade getCaseImportFacade() {
 		return get().lookupEjbRemote(CaseImportFacade.class);
-	}
-
-	public static TravelEntryFacade getTravelEntryFacade() {
-		return get().lookupEjbRemote(TravelEntryFacade.class);
 	}
 
 	public static TravelEntryImportFacade getTravelEntryImportFacade() {
