@@ -20,9 +20,8 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CAS
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -117,24 +116,24 @@ public class SormasToSormasCaseFacadeEjb
 
 	@Override
 	protected void validateEntitiesBeforeShare(List<Case> entities, boolean handOverOwnership) throws SormasToSormasException {
-		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Case caze : entities) {
 			if (!caseService.isCaseEditAllowed(caze)) {
-				validationErrors.put(
+				validationErrors.add(new ValidationErrors(
 					buildCaseValidationGroupName(caze),
 					ValidationErrors
-						.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasNotEditable)));
+						.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
 			}
 			if (handOverOwnership && caze.getPerson().isEnrolledInExternalJournal()) {
-				validationErrors.put(
+				validationErrors.add(new ValidationErrors(
 					buildCaseValidationGroupName(caze),
 					ValidationErrors
-						.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled)));
+						.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
 			}
 		}
 
 		if (validationErrors.size() > 0) {
-			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasShare, validationErrors);
+			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
 		}
 	}
 

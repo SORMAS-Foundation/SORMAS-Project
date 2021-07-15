@@ -20,6 +20,7 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVE
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,18 +98,18 @@ public class SormasToSormasEventFacadeEjb
 
 	@Override
 	protected void validateEntitiesBeforeShare(List<Event> entities, boolean handOverOwnership) throws SormasToSormasException {
-		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Event event : entities) {
 			if (!eventService.isEventEditAllowed(event)) {
-				validationErrors.put(
-					buildEventValidationGroupName(event),
-					ValidationErrors
-						.create(new ValidationErrorGroup(Captions.Event), new ValidationErrorMessage(Validations.sormasToSormasNotEditable)));
+				validationErrors.add(new ValidationErrors(
+						buildEventValidationGroupName(event),
+						ValidationErrors
+								.create(new ValidationErrorGroup(Captions.Event), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
 			}
 		}
 
 		if (validationErrors.size() > 0) {
-			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasShare, validationErrors);
+			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
 		}
 	}
 

@@ -156,7 +156,7 @@ public class SormasToSormasRestClient {
 				// don't log validation errors, will be displayed on the UI
 				LOGGER.error("Share request failed: {}; {}", statusCode, errorMessage);
 			}
-			throw new SormasToSormasException(errorMessage, false, errorI18nTag, errors, args);
+			throw new SormasToSormasException(errorMessage, false, errors, errorI18nTag, args);
 		}
 		return responseType != null ? response.readEntity(responseType) : null;
 

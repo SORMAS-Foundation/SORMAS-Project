@@ -548,15 +548,13 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		List<String> notOwnedUuids = getUuidsWithPendingOwnershipHandedOver(entities);
 		if (notOwnedUuids.size() > 0) {
 
-			Map<ValidationErrorGroup, ValidationErrors> errors = notOwnedUuids.stream()
-				.collect(
-					Collectors.toMap(
-						this::buildEntityValidationGroupName,
-						(uuid) -> ValidationErrors.create(
+			List<ValidationErrors> errors = notOwnedUuids.stream()
+					.map(uuid -> new ValidationErrors(buildEntityValidationGroupName(uuid), ValidationErrors.create(
 							new ValidationErrorGroup(entityCaptionTag),
-							new ValidationErrorMessage(Strings.errorSormasToSormasOwnershipAlreadyHandedOver))));
+							new ValidationErrorMessage(Strings.errorSormasToSormasOwnershipAlreadyHandedOver))))
+				.collect(Collectors.toList());
 
-			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasShare, errors);
+			throw SormasToSormasException.fromStringProperty(errors, Strings.errorSormasToSormasShare);
 		}
 	}
 

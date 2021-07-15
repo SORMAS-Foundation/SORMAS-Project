@@ -20,9 +20,8 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CON
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -122,24 +121,23 @@ public class SormasToSormasContactFacadeEjb
 
 	@Override
 	protected void validateEntitiesBeforeShare(List<Contact> entities, boolean handOverOwnership) throws SormasToSormasException {
-		Map<ValidationErrorGroup, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Contact contact : entities) {
 			if (!contactService.isContactEditAllowed(contact)) {
-				validationErrors.put(
-					buildContactValidationGroupName(contact),
-					ValidationErrors
-						.create(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasNotEditable)));
+				validationErrors.add(new ValidationErrors(buildContactValidationGroupName(contact),
+						ValidationErrors
+								.create(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
 			}
 			if (handOverOwnership && contact.getPerson().isEnrolledInExternalJournal()) {
-				validationErrors.put(
-					buildContactValidationGroupName(contact),
-					ValidationErrors
-						.create(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled)));
+				validationErrors.add(new ValidationErrors(
+						buildContactValidationGroupName(contact),
+						ValidationErrors
+								.create(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
 			}
 		}
 
 		if (validationErrors.size() > 0) {
-			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasShare, validationErrors);
+			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
 		}
 	}
 
