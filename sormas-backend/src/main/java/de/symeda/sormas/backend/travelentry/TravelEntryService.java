@@ -9,12 +9,16 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -49,12 +53,53 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		return injurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, travelEntryPath));
 	}
 
+	public Predicate createUserFilter(TravelEntryQueryContext travelEntryQueryContext) {
+		return injurisdictionOrOwned(travelEntryQueryContext);
+	}
+
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
 		return cb.isFalse(root.get(TravelEntry.DELETED));
 	}
 
-	public Predicate buildCriteriaFilter(TravelEntryCriteria criteria, CriteriaBuilder cb, Root<TravelEntry> from) {
-		return cb.conjunction();
+	public Predicate buildCriteriaFilter(TravelEntryCriteria criteria, TravelEntryQueryContext travelEntryQueryContext) {
+
+		final TravelEntryJoins joins = (TravelEntryJoins) travelEntryQueryContext.getJoins();
+		final CriteriaBuilder cb = travelEntryQueryContext.getCriteriaBuilder();
+		final From<?, ?> from = travelEntryQueryContext.getRoot();
+		Join<TravelEntry, Person> person = joins.getPerson();
+
+		Predicate filter = null;
+
+		if (Boolean.TRUE.equals(criteria.getOnlyRecoveredEntries())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(from.get(TravelEntry.RECOVERED)));
+		}
+
+		if (Boolean.TRUE.equals(criteria.getOnlyVaccinatedEntries())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(from.get(TravelEntry.VACCINATED)));
+		}
+
+		if (Boolean.TRUE.equals(criteria.getOnlyEntriesTestedNegative())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(from.get(TravelEntry.TESTED_NEGATIVE)));
+		}
+
+		if (Boolean.TRUE.equals(criteria.getOnlyEntriesConvertedToCase())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(from.get(TravelEntry.RESULTING_CASE)));
+		}
+
+		if (!DataHelper.isNullOrEmpty(criteria.getNameUuidExternalIDLike())) {
+			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
+				cb,
+				criteria.getNameUuidExternalIDLike(),
+				textFilter -> cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(TravelEntry.UUID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(TravelEntry.EXTERNAL_ID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, person.get(Person.UUID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_ID), textFilter)));
+			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+		}
+		return filter;
 	}
 
 	public List<TravelEntry> getAllActiveAfter(Date date) {

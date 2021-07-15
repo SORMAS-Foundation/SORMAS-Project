@@ -2,11 +2,20 @@ package de.symeda.sormas.backend.travelentry;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -15,16 +24,22 @@ import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
@@ -32,10 +47,15 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "TravelEntryFacade")
 public class TravelEntryFacadeEjb implements TravelEntryFacade {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
 	@EJB
 	TravelEntryService travelEntryService;
@@ -58,6 +78,19 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	public TravelEntryDto getByUuid(String uuid) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return convertToDto(travelEntryService.getByUuid(uuid), pseudonymizer);
+	}
+
+	@Override
+	public TravelEntryReferenceDto getReferenceByUuid(String uuid) {
+		return Optional.of(uuid).map(u -> travelEntryService.getByUuid(u)).map(TravelEntryFacadeEjb::toReferenceDto).orElse(null);
+	}
+
+	public static TravelEntryReferenceDto toReferenceDto(TravelEntry entity) {
+
+		if (entity == null) {
+			return null;
+		}
+		return new TravelEntryReferenceDto(entity.getUuid(), entity.getPerson().getFirstName(), entity.getExternalId());
 	}
 
 	@Override
@@ -97,7 +130,24 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 	@Override
 	public long count(TravelEntryCriteria criteria) {
-		return travelEntryService.count((cb, root) -> travelEntryService.buildCriteriaFilter(criteria, cb, root));
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
+
+		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
+
+		Predicate filter = travelEntryService.createUserFilter(travelEntryQueryContext);
+		if (criteria != null) {
+			final Predicate criteriaFilter = travelEntryService.buildCriteriaFilter(criteria, travelEntryQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.count(travelEntry));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	@Override
@@ -142,8 +192,52 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	}
 
 	@Override
+	public boolean exists(String uuid) {
+		return travelEntryService.exists(uuid);
+	}
+
+	@Override
 	public List<TravelEntryIndexDto> getIndexList(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		return null;
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<TravelEntryIndexDto> cq = cb.createQuery(TravelEntryIndexDto.class);
+		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
+
+		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
+		TravelEntryJoins<TravelEntry> joins = (TravelEntryJoins<TravelEntry>) travelEntryQueryContext.getJoins();
+
+		final Join<TravelEntry, Person> person = joins.getPerson();
+		final Join<TravelEntry, PointOfEntry> pointOfEntry = joins.getPointOfEntry();
+
+		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+
+		cq.multiselect(
+			travelEntry.get(TravelEntry.UUID),
+			travelEntry.get(TravelEntry.EXTERNAL_ID),
+			person.get(Person.FIRST_NAME),
+			person.get(Person.LAST_NAME),
+			district.get(District.NAME),
+			pointOfEntry.get(PointOfEntry.NAME),
+			travelEntry.get(TravelEntry.RECOVERED),
+			travelEntry.get(TravelEntry.VACCINATED),
+			travelEntry.get(TravelEntry.TESTED_NEGATIVE),
+			travelEntry.get(TravelEntry.QUARANTINE_TO));
+
+		Predicate filter = travelEntryService.createUserFilter(travelEntryQueryContext);
+		if (criteria != null) {
+			final Predicate criteriaFilter = travelEntryService.buildCriteriaFilter(criteria, travelEntryQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.distinct(true);
+
+		List<TravelEntryIndexDto> travelEntries = QueryHelper.getResultList(em, cq, first, max);
+
+		return travelEntries;
+
 	}
 
 	@Override

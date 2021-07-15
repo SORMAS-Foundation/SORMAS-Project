@@ -23,6 +23,8 @@ public class TravelEntryDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 4503438472222204446L;
 
+	public static final String I18N_PREFIX = "TravelEntry";
+
 	@Required
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
