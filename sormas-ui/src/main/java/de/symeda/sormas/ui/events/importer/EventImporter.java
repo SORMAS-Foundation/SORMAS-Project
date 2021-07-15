@@ -171,7 +171,7 @@ public class EventImporter extends DataImporter {
 	protected void handlePersonSimilarity(PersonDto newPerson, Consumer<PersonImportSimilarityResult> resultConsumer) {
 		currentUI.accessSynchronously(() -> {
 			PersonSelectionField personSelect =
-				new PersonSelectionField(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipantImport));
+				new PersonSelectionField(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForImport));
 			personSelect.setWidth(1024, Unit.PIXELS);
 
 			if (personSelect.hasMatches()) {

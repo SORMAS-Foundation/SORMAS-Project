@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -46,6 +47,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String CONTACT_COUNT = "contactCount";
 	public static final String CONTACT_COUNT_SOURCE_IN_EVENT = "contactCountSourceInEvent";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
@@ -89,6 +91,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	 */
 	private long contactCountSourceInEvent;
 	private Disease disease;
+	private DiseaseVariant diseaseVariant;
 	private String diseaseDetails;
 	private Date startDate;
 	private Date endDate;
@@ -123,6 +126,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		EventInvestigationStatus eventInvestigationStatus,
 		EventManagementStatus eventManagementStatus,
 		Disease disease,
+		DiseaseVariant diseaseVariant,
 		String diseaseDetails,
 		Date startDate,
 		Date endDate,
@@ -164,6 +168,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.eventManagementStatus = eventManagementStatus;
 		this.disease = disease;
+		this.diseaseVariant = diseaseVariant;
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
 		this.endDate = endDate;
@@ -253,6 +258,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
 	}
 
 	public String getDiseaseDetails() {

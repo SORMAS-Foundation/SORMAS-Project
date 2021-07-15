@@ -36,6 +36,10 @@ import de.symeda.sormas.api.vaccination.VaccinationEntityDto;
 
 public class ImmunizationDto extends PseudonymizableDto {
 
+	private static final long serialVersionUID = -6538566879882613529L;
+
+	public static final String I18N_PREFIX = "Immunization";
+
 	@Outbreaks
 	@Required
 	private Disease disease;

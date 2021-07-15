@@ -42,8 +42,6 @@ public class ContactLineField extends CustomField<ContactLineFieldDto> {
 
 	@Override
 	protected Component initContent() {
-		setValue(new ContactLineFieldDto());
-
 		HorizontalLayout layout = new HorizontalLayout();
 
 		layout.setMargin(false);
@@ -108,5 +106,9 @@ public class ContactLineField extends CustomField<ContactLineFieldDto> {
 		relationToCase.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.RELATION_TO_CASE));
 		relationToCase.removeStyleName(CssStyles.CAPTION_HIDDEN);
 		person.showCaptions();
+	}
+
+	public void enablePersonField(boolean shouldEnable) {
+		person.setEnabled(shouldEnable);
 	}
 }

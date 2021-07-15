@@ -151,19 +151,18 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		if (travelEntryDto.getPerson() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
 		}
-
 		if (travelEntryDto.getReportDate() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
 		}
-
+		if (travelEntryDto.getDisease() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDisease));
+		}
 		if (travelEntryDto.getResponsibleRegion() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
 		}
-
 		if (travelEntryDto.getResponsibleDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
 		}
-
 		if (travelEntryDto.getPointOfEntry() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPointOfEntry));
 		}

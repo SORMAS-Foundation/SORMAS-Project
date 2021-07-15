@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -2398,6 +2398,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ " vaccinemanufacturerdetails text,\n" + " vaccineinn text,\n" + " vaccinebatchnumber text,\n" + " vaccineuniicode text,\n"
 						+ " vaccineatccode text,\n" + " vaccinationinfosource varchar(255),\n" + " pregnant varchar(255),\n"
 						+ " trimester varchar(255), pseudonymized boolean);");
+
+			case 308:
+				currentVersion = 308;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN diseaseVariant text;");
 
 				// ATTENTION: break should only be done after last version
 				break;

@@ -7601,6 +7601,13 @@ ALTER TABLE travelentry_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (382, 'DEA TravelEntry entity and backend logic #6022');
 
+-- 2021-07-12 Add disease variant to event #5525
+ALTER TABLE events ADD COLUMN diseasevariant text;
+ALTER TABLE events_history ADD COLUMN diseasevariant text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (383, 'Add disease variant to event #5525');
+
+
 -- 2021-07-13 Immunizations II: Vaccination Entity #4763
 CREATE TABLE vaccination (
                               id bigint not null,
@@ -7640,6 +7647,6 @@ CREATE TRIGGER versioning_trigger
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'vaccination_history', true);
 ALTER TABLE vaccination_history OWNER TO sormas_user;
 
-INSERT INTO schema_version (version_number, comment) VALUES (383, 'Immunizations II: Vaccination Entity #4763');
+INSERT INTO schema_version (version_number, comment) VALUES (384, 'Immunizations II: Vaccination Entity #4763');
 
 -- *** Insert new sql commands BEFORE this line ***

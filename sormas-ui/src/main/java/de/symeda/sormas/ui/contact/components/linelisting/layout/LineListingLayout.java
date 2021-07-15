@@ -1,8 +1,15 @@
 package de.symeda.sormas.ui.contact.components.linelisting.layout;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.BirthDateDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantIndexDto;
+import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -39,11 +46,12 @@ public class LineListingLayout extends VerticalLayout {
 
 	private final SharedInfoField sharedInfoField;
 	private final List<ContactLineLayout> lines;
+	private final LineListingSection lineComponent;
 
 	private final Window window;
 	private Consumer<List<ContactLineDto>> saveCallback;
 
-	public LineListingLayout(Window window, CaseDataDto caseReferenceDto) {
+	private LineListingLayout(Window window, SharedInfoField sharedInfoField) {
 
 		this.window = window;
 
@@ -51,20 +59,25 @@ public class LineListingLayout extends VerticalLayout {
 
 		LineListingSection sharedInformationComponent = new LineListingSection(Captions.lineListingSharedInformation);
 
-		sharedInfoField = new SharedInfoField(caseReferenceDto);
-		sharedInfoField.setId("lineListingSharedInfoField");
-		sharedInformationComponent.addComponent(sharedInfoField);
+		this.sharedInfoField = sharedInfoField;
+		this.sharedInfoField.setId("lineListingSharedInfoField");
+		sharedInformationComponent.addComponent(this.sharedInfoField);
 
 		addComponent(sharedInformationComponent);
 
-		LineListingSection lineComponent = new LineListingSection(Captions.lineListingNewContactsList);
+		lineComponent = new LineListingSection(Captions.lineListingNewContactsList);
 
 		lines = new ArrayList<>();
+
+		addComponent(lineComponent);
+	}
+
+	public LineListingLayout(Window window, CaseDataDto caseReferenceDto) {
+		this(window, new SharedInfoField(caseReferenceDto));
+
 		ContactLineLayout line = buildNewLine(lineComponent);
 		lines.add(line);
 		lineComponent.addComponent(line);
-
-		addComponent(lineComponent);
 
 		HorizontalLayout actionBar = new HorizontalLayout();
 		Button addLine = ButtonHelper.createIconButton(Captions.lineListingAddLine, VaadinIcons.PLUS, e -> {
@@ -79,6 +92,40 @@ public class LineListingLayout extends VerticalLayout {
 
 		addComponent(actionBar);
 
+		addButtons();
+	}
+
+	public LineListingLayout(Window window, EventDto eventDto, Iterable<EventParticipantDto> eventParticipantDtos) {
+		this(window, new SharedInfoField(eventDto));
+
+		for (EventParticipantDto eventParticipantDto : eventParticipantDtos) {
+			PersonFieldDto person = new PersonFieldDto();
+			person.setFirstName(eventParticipantDto.getPerson().getFirstName());
+			person.setLastName(eventParticipantDto.getPerson().getLastName());
+			person.setBirthDate(new BirthDateDto(
+					eventParticipantDto.getPerson().getBirthdateDD(),
+					eventParticipantDto.getPerson().getBirthdateMM(),
+					eventParticipantDto.getPerson().getBirthdateYYYY()));
+			person.setSex(eventParticipantDto.getPerson().getSex());
+
+			ContactLineLayoutDto newLineDto = new ContactLineLayoutDto();
+			newLineDto.lineField = new ContactLineFieldDto();
+			newLineDto.lineField.setPerson(person);
+
+			ContactLineLayout newLine = new ContactLineLayout(lines.size());
+			newLine.enableDelete(false);
+			newLine.enablePersonField(false);
+			newLine.setBean(newLineDto);
+			newLine.setPerson(eventParticipantDto.getPerson());
+
+			lines.add(newLine);
+			lineComponent.addComponent(newLine);
+		}
+
+		addButtons();
+	}
+
+	private void addButtons() {
 		HorizontalLayout buttonsPanel = new HorizontalLayout();
 		buttonsPanel.setMargin(false);
 		buttonsPanel.setSpacing(true);
@@ -106,7 +153,8 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	public void validate() throws ValidationRuntimeException {
-		boolean validationFailed = false;
+		boolean validationFailed = sharedInfoField.hasErrors();
+		// XXX: process each line unconditionally, as it will actually validate and display errors
 		for (ContactLineLayout line : lines) {
 			if (line.hasErrors()) {
 				validationFailed = true;
@@ -123,10 +171,10 @@ public class LineListingLayout extends VerticalLayout {
 			ContactLineDto result = new ContactLineDto();
 
 			final ContactDto contact = ContactDto.build();
-			contact.setCaze(layoutBean.getSharedInfoField().getCaze());
-			contact.setDisease(layoutBean.getSharedInfoField().getDisease());
-			contact.setRegion(layoutBean.getSharedInfoField().getRegion());
-			contact.setDistrict(layoutBean.getSharedInfoField().getDistrict());
+			contact.setCaze(sharedInfoField.getValue().getCaze());
+			contact.setDisease(sharedInfoField.getValue().getDisease());
+			contact.setRegion(sharedInfoField.getValue().getRegion());
+			contact.setDistrict(sharedInfoField.getValue().getDistrict());
 			contact.setReportDateTime(DateHelper8.toDate(layoutBean.getLineField().getDateOfReport()));
 			contact.setMultiDayContact(layoutBean.getLineField().getMultiDaySelector().isMultiDay());
 			contact.setFirstContactDate(DateHelper8.toDate(layoutBean.getLineField().getMultiDaySelector().getStartDate()));
@@ -136,14 +184,18 @@ public class LineListingLayout extends VerticalLayout {
 
 			result.setContact(contact);
 
-			final PersonDto person = PersonDto.build();
-			person.setFirstName(layoutBean.getLineField().getPerson().getFirstName());
-			person.setLastName(layoutBean.getLineField().getPerson().getLastName());
-			person.setBirthdateYYYY(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthYYYY());
-			person.setBirthdateMM(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthMM());
-			person.setBirthdateDD(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthDD());
-			person.setSex(layoutBean.getLineField().getPerson().getSex());
-
+			final PersonDto person;
+			if (line.getPerson() != null) {
+				person = line.getPerson();
+			} else {
+				person = PersonDto.build();
+				person.setFirstName(layoutBean.getLineField().getPerson().getFirstName());
+				person.setLastName(layoutBean.getLineField().getPerson().getLastName());
+				person.setBirthdateYYYY(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthYYYY());
+				person.setBirthdateMM(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthMM());
+				person.setBirthdateDD(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthDD());
+				person.setSex(layoutBean.getLineField().getPerson().getSex());
+			}
 			result.setPerson(person);
 
 			return result;
@@ -160,7 +212,6 @@ public class LineListingLayout extends VerticalLayout {
 
 		if (!lines.isEmpty()) {
 			ContactLineLayoutDto lastLineDto = lines.get(lines.size() - 1).getBean();
-			newLineDto.setSharedInfoField(lastLineDto.getSharedInfoField());
 			newLineDto.setLineField(lastLineDto.getLineField());
 		} else {
 			newLine.enableDelete(false);
@@ -183,13 +234,12 @@ public class LineListingLayout extends VerticalLayout {
 
 		private final ContactLineField contactLineField;
 		private final Button delete;
+		private PersonDto person;
 
 		public ContactLineLayout(int lineIndex) {
 
 			addStyleName(CssStyles.SPACING_SMALL);
 			setMargin(false);
-
-			binder.forField(sharedInfoField).bind(ContactLineLayoutDto.SHARED_INFO_FIELD);
 
 			contactLineField = new ContactLineField();
 			contactLineField.setId("lineListingContactLineField_" + lineIndex);
@@ -222,23 +272,25 @@ public class LineListingLayout extends VerticalLayout {
 		public void enableDelete(boolean shouldEnable) {
 			delete.setEnabled(shouldEnable);
 		}
+
+		public void enablePersonField(boolean shouldEnable) {
+			contactLineField.enablePersonField(shouldEnable);
+		}
+
+		public void setPerson(PersonDto person) {
+			this.person = person;
+		}
+
+		public PersonDto getPerson() {
+			return person;
+		}
 	}
 
 	public static class ContactLineLayoutDto implements Serializable {
 
-		public static final String SHARED_INFO_FIELD = "sharedInfoField";
 		public static final String LINE_FIELD = "lineField";
 
-		private SharedInfoFieldDto sharedInfoField;
 		private ContactLineFieldDto lineField;
-
-		public SharedInfoFieldDto getSharedInfoField() {
-			return sharedInfoField;
-		}
-
-		public void setSharedInfoField(SharedInfoFieldDto sharedInfoField) {
-			this.sharedInfoField = sharedInfoField;
-		}
 
 		public ContactLineFieldDto getLineField() {
 			return lineField;

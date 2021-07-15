@@ -40,7 +40,7 @@ import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.MockProducer;
 
 public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeTest {

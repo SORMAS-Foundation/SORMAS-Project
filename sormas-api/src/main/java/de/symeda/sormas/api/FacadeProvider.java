@@ -90,6 +90,7 @@ import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
+import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRightsFacade;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
@@ -139,6 +140,10 @@ public class FacadeProvider {
 
 	public static CaseImportFacade getCaseImportFacade() {
 		return get().lookupEjbRemote(CaseImportFacade.class);
+	}
+
+	public static TravelEntryImportFacade getTravelEntryImportFacade() {
+		return get().lookupEjbRemote(TravelEntryImportFacade.class);
 	}
 
 	public static ContactFacade getContactFacade() {

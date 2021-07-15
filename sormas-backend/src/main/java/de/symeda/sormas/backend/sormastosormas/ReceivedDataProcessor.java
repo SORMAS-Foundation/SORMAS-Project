@@ -16,7 +16,7 @@
 package de.symeda.sormas.backend.sormastosormas;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 
 public interface ReceivedDataProcessor<ENTITY extends SormasToSormasEntityDto, SHARED extends SormasToSormasDto<ENTITY>, PROCESED extends ProcessedData<ENTITY>, PREVIEW> {
