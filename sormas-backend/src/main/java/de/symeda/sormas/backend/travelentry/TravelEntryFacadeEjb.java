@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.travelentry;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -12,11 +13,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -146,7 +151,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 			cq.where(filter);
 		}
 
-		cq.select(cb.count(travelEntry));
+		cq.select(cb.countDistinct(travelEntry));
 		return em.createQuery(cq).getSingleResult();
 	}
 
@@ -174,7 +179,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 	private void pseudonomyzeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
-			boolean inJurisdiction = travelEntryService.injurisdictionOrOwned(source);
+			boolean inJurisdiction = travelEntryService.inJurisdictionOrOwned(source);
 			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
@@ -184,7 +189,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 	private void restorePseudonymizedDto(TravelEntryDto dto, TravelEntryDto existingDto, TravelEntry travelEntry, Pseudonymizer pseudonymizer) {
 		if (existingDto != null) {
-			final boolean inJurisdiction = travelEntryService.injurisdictionOrOwned(travelEntry);
+			final boolean inJurisdiction = travelEntryService.inJurisdictionOrOwned(travelEntry);
 			final User currentUser = userService.getCurrentUser();
 			pseudonymizer.restoreUser(travelEntry.getReportingUser(), currentUser, dto, dto::setReportingUser);
 			pseudonymizer.restorePseudonymizedValues(TravelEntryDto.class, dto, existingDto, inJurisdiction);
@@ -218,10 +223,12 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 			person.get(Person.LAST_NAME),
 			district.get(District.NAME),
 			pointOfEntry.get(PointOfEntry.NAME),
+			travelEntry.get(TravelEntry.POINT_OF_ENTRY_DETAILS),
 			travelEntry.get(TravelEntry.RECOVERED),
 			travelEntry.get(TravelEntry.VACCINATED),
 			travelEntry.get(TravelEntry.TESTED_NEGATIVE),
-			travelEntry.get(TravelEntry.QUARANTINE_TO));
+			travelEntry.get(TravelEntry.QUARANTINE_TO),
+			travelEntry.get(TravelEntry.CHANGE_DATE));
 
 		Predicate filter = travelEntryService.createUserFilter(travelEntryQueryContext);
 		if (criteria != null) {
@@ -232,12 +239,45 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
+
+		if (CollectionUtils.isNotEmpty(sortProperties)) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case TravelEntryIndexDto.UUID:
+				case TravelEntryIndexDto.EXTERNAL_ID:
+				case TravelEntryIndexDto.RECOVERED:
+				case TravelEntryIndexDto.VACCINATED:
+				case TravelEntryIndexDto.TESTED_NEGATIVE:
+				case TravelEntryIndexDto.QUARANTINE_TO:
+					expression = travelEntry.get(sortProperty.propertyName);
+					break;
+				case TravelEntryIndexDto.PERSON_FIRST_NAME:
+					expression = person.get(Person.FIRST_NAME);
+					break;
+				case TravelEntryIndexDto.PERSON_LAST_NAME:
+					expression = person.get(Person.LAST_NAME);
+					break;
+				case TravelEntryIndexDto.HOME_DISTRICT_NAME:
+					expression = district.get(District.NAME);
+					break;
+				case TravelEntryIndexDto.POINT_OF_ENTRY_NAME:
+					expression = pointOfEntry.get(PointOfEntry.NAME);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(travelEntry.get(TravelEntry.CHANGE_DATE)));
+		}
+
 		cq.distinct(true);
 
-		List<TravelEntryIndexDto> travelEntries = QueryHelper.getResultList(em, cq, first, max);
-
-		return travelEntries;
-
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	@Override

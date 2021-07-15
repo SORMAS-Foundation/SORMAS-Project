@@ -3,6 +3,8 @@ package de.symeda.sormas.api.travelentry;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
@@ -12,7 +14,7 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 	public static final String I18N_PREFIX = "TravelEntry";
 
 	public static final String UUID = "uuid";
-	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_ID = "externalId";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String HOME_DISTRICT_NAME = "homeDistrictName";
@@ -23,7 +25,7 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 	public static final String QUARANTINE_TO = "quarantineTo";
 
 	private String uuid;
-	private String externalID;
+	private String externalId;
 	@PersonalData
 	@SensitiveData
 	private String personFirstName;
@@ -41,21 +43,23 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 
 	public TravelEntryIndexDto(
 		String uuid,
-		String externalID,
+		String externalId,
 		String personFirstName,
 		String personLastName,
 		String homeDistrictName,
 		String pointOfEntryName,
+		String pointOfEntryDetails,
 		boolean recovered,
 		boolean vaccinated,
 		boolean testedNegative,
-		Date quarantineTo) {
+		Date quarantineTo,
+		Date changeDate) {
 		this.uuid = uuid;
-		this.externalID = externalID;
+		this.externalId = externalId;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.homeDistrictName = homeDistrictName;
-		this.pointOfEntryName = pointOfEntryName;
+		this.pointOfEntryName = StringUtils.isNotBlank(pointOfEntryDetails) ? pointOfEntryDetails : pointOfEntryName;
 		this.recovered = recovered;
 		this.vaccinated = vaccinated;
 		this.testedNegative = testedNegative;
@@ -70,12 +74,12 @@ public class TravelEntryIndexDto extends PseudonymizableIndexDto implements Seri
 		this.uuid = uuid;
 	}
 
-	public String getExternalID() {
-		return externalID;
+	public String getExternalId() {
+		return externalId;
 	}
 
-	public void setExternalID(String externalID) {
-		this.externalID = externalID;
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
 	public String getPersonFirstName() {
