@@ -13,6 +13,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.SormasUI;
 
 public class TravelEntryController {
 
@@ -54,4 +55,11 @@ public class TravelEntryController {
 		return editView;
 	}
 
+
+	}
+
+	public void navigateToTravelEntry(String uuid) {
+		final String navigationState = TravelEntryDataView.VIEW_NAME + "/" + uuid;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
 }
