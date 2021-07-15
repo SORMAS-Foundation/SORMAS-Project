@@ -36,7 +36,6 @@
 
         <variable name="data" type="de.symeda.sormas.app.backend.event.Event"/>
         <variable name="eventManagementStatusClass" type="Class" />
-        <variable name="eventIdentificationSourceClass" type="Class" />
         <variable name="eventStatusClass" type="Class" />
         <variable name="eventInvestigationStatusClass" type="Class" />
         <variable name="riskLevelClass" type="Class" />
@@ -106,10 +105,9 @@
                 app:enumClass="@{eventManagementStatusClass}"
                 app:value="@={data.eventManagementStatus}"/>
 
-            <de.symeda.sormas.app.component.controls.ControlSwitchField
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/event_eventIdentificationSource"
                 style="@style/ControlSingleColumnStyle"
-                app:enumClass="@{eventIdentificationSourceClass}"
                 app:value="@={data.eventIdentificationSource}"/>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
