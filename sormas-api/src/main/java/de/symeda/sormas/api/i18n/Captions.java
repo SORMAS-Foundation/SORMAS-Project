@@ -2088,6 +2088,7 @@ public interface Captions {
 	String taskOfficerTasks = "taskOfficerTasks";
 	String to = "to";
 	String total = "total";
+	String travelEntriesNoTravelEntriesForPerson = "travelEntriesNoTravelEntriesForPerson";
 	String TravelEntry_externalId = "TravelEntry.externalId";
 	String TravelEntry_homeDistrictName = "TravelEntry.homeDistrictName";
 	String TravelEntry_personFirstName = "TravelEntry.personFirstName";
@@ -2095,6 +2096,7 @@ public interface Captions {
 	String TravelEntry_pointOfEntryName = "TravelEntry.pointOfEntryName";
 	String TravelEntry_quarantineTo = "TravelEntry.quarantineTo";
 	String TravelEntry_recovered = "TravelEntry.recovered";
+	String TravelEntry_reportDate = "TravelEntry.reportDate";
 	String TravelEntry_testedNegative = "TravelEntry.testedNegative";
 	String TravelEntry_uuid = "TravelEntry.uuid";
 	String TravelEntry_vaccinated = "TravelEntry.vaccinated";

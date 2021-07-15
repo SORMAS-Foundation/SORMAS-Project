@@ -86,6 +86,10 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(from.get(TravelEntry.RESULTING_CASE)));
 		}
 
+		if (criteria.getPerson() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
+		}
+
 		if (!DataHelper.isNullOrEmpty(criteria.getNameUuidExternalIDLike())) {
 			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
 				cb,
