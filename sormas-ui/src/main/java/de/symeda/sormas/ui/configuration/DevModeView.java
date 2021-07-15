@@ -56,6 +56,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -108,6 +109,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateHelper8;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class DevModeView extends AbstractConfigurationView {
 
@@ -175,7 +177,14 @@ public class DevModeView extends AbstractConfigurationView {
 			FacadeProvider.getCustomizableEnumFacade().loadData();
 		});
 
+		// TODO: Move to travel entry directory
+		Button btnImportTravelEntries = ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.actionImport), VaadinIcons.UPLOAD, e -> {
+			Window popupWindow = VaadinUiUtil.showPopupWindow(new TravelEntryImportLayout());
+			popupWindow.setCaption(I18nProperties.getString(Strings.headingImportTravelEntries));
+		});
+
 		horizontalLayout.addComponent(btnResetEnumCache);
+		horizontalLayout.addComponent(btnImportTravelEntries);
 
 		return horizontalLayout;
 	}

@@ -7600,4 +7600,11 @@ CREATE TRIGGER versioning_trigger
 ALTER TABLE travelentry_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (382, 'DEA TravelEntry entity and backend logic #6022');
+
+-- 2021-07-12 Add disease variant to event #5525
+ALTER TABLE events ADD COLUMN diseasevariant text;
+ALTER TABLE events_history ADD COLUMN diseasevariant text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (383, 'Add disease variant to event #5525');
+
 -- *** Insert new sql commands BEFORE this line ***

@@ -25,7 +25,7 @@ public class ShowDetailsListenerTest {
 	@SuppressWarnings({
 		"rawtypes",
 		"unchecked" })
-	public void testItemClickDoesNotCallHandlerWhenItemIsNull() {
+	public void testItemClickDoesNotCallHandlerWhenItemIsNull() throws InterruptedException {
 
 		Consumer<ContactIndexDto> handler = mock(Consumer.class);
 		String detailsColumnId = ContactIndexDto.UUID;
@@ -56,6 +56,8 @@ public class ShowDetailsListenerTest {
 		verify(handler, never()).accept(null);
 
 		// 2b. DoubleClick doing it when item is set
+		// sleep to make sure the multi-click prevention doesn't prevent itemClick from being handled
+		Thread.sleep(1000);
 		when(event.getItem()).thenReturn(item);
 		cut.itemClick(event);
 		verify(handler).accept(item);

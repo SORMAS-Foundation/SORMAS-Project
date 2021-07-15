@@ -22,7 +22,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 
 public abstract class JurisdictionValidator<T> {
 
-	public List<? extends JurisdictionValidator<T>> associatedJurisdictionValidators;
+	private List<? extends JurisdictionValidator<T>> associatedJurisdictionValidators;
 
 	public JurisdictionValidator(List<? extends JurisdictionValidator<T>> associatedJurisdictionValidators) {
 		this.associatedJurisdictionValidators = associatedJurisdictionValidators;

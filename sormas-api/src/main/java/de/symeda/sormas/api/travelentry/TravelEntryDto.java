@@ -13,6 +13,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -24,6 +25,11 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private static final long serialVersionUID = 4503438472222204446L;
 
 	public static final String I18N_PREFIX = "TravelEntry";
+
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
+	public static final String POINT_OF_ENTRY_REGION = "pointOfEntryRegion";
+	public static final String POINT_OF_ENTRY_DISTRICT = "pointOfEntryDistrict";
 
 	@Required
 	@EmbeddedPersonalData
@@ -73,6 +79,15 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private boolean quarantineReduced;
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
+
+	public static TravelEntryDto build(PersonReferenceDto person) {
+
+		final TravelEntryDto travelEntry = new TravelEntryDto();
+		travelEntry.setUuid(DataHelper.createUuid());
+		travelEntry.setPerson(person);
+		travelEntry.setReportDate(new Date());
+		return travelEntry;
+	}
 
 	public PersonReferenceDto getPerson() {
 		return person;
