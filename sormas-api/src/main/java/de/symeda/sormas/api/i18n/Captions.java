@@ -2087,6 +2087,8 @@ public interface Captions {
 	String taskOfficerTasks = "taskOfficerTasks";
 	String to = "to";
 	String total = "total";
+	String travelEntriesNoTravelEntriesForPerson = "travelEntriesNoTravelEntriesForPerson";
+	String TravelEntry_reportDate = "TravelEntry.reportDate";
 	String Treatment_additionalNotes = "Treatment.additionalNotes";
 	String Treatment_dose = "Treatment.dose";
 	String Treatment_drugIntakeDetails = "Treatment.drugIntakeDetails";

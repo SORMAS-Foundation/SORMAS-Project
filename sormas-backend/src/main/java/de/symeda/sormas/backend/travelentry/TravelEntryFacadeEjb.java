@@ -7,6 +7,13 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -19,6 +26,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -32,10 +41,15 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "TravelEntryFacade")
 public class TravelEntryFacadeEjb implements TravelEntryFacade {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
 	@EJB
 	TravelEntryService travelEntryService;
@@ -97,7 +111,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 	@Override
 	public long count(TravelEntryCriteria criteria) {
-		return travelEntryService.count((cb, root) -> travelEntryService.buildCriteriaFilter(criteria, cb, root));
+		return travelEntryService.count((cb, root) -> travelEntryService.buildCriteriaFilter(criteria, cb, new TravelEntryJoins<>(root)));
 	}
 
 	@Override
@@ -143,7 +157,41 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 	@Override
 	public List<TravelEntryIndexDto> getIndexList(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		return null;
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<TravelEntryIndexDto> cq = cb.createQuery(TravelEntryIndexDto.class);
+		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
+
+		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
+		TravelEntryJoins<TravelEntry> joins = (TravelEntryJoins<TravelEntry>) travelEntryQueryContext.getJoins();
+
+		Join<TravelEntry, PointOfEntry> pointOfEntry = joins.getPointOfEntry();
+
+		cq.distinct(true);
+
+		cq.multiselect(
+			travelEntry.get(TravelEntry.UUID),
+			travelEntry.get(TravelEntry.REPORT_DATE),
+			travelEntry.get(TravelEntry.DISEASE),
+			travelEntry.get(TravelEntry.EXTERNAL_ID),
+			pointOfEntry.get(PointOfEntry.NAME));
+
+		Predicate filter = travelEntryService.createUserFilter(cb, cq, travelEntry);
+
+		if (criteria != null) {
+			Predicate criteriaFilter = travelEntryService.buildCriteriaFilter(criteria, cb, joins);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		// TODO #5834: Sorting
+		List<TravelEntryIndexDto> travelEntries = QueryHelper.getResultList(em, cq, first, max);
+
+		// TODO #5834: Pseudonymization
+		return travelEntries;
 	}
 
 	@Override

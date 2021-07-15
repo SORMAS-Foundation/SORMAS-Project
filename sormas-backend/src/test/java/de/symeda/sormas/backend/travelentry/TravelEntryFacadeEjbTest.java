@@ -27,9 +27,10 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
+import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -132,4 +133,36 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(notInJurisdictionTravelEntry.getDisease(), notSeenTravelEntry.getDisease());
 	}
 
+	@Test
+	public void testGetIndexList() {
+		loginWith(nationalUser);
+
+		PersonDto person1 = creator.createPerson("Peter", "Kruder");
+		PersonDto person2 = creator.createPerson("Richard", "Dorfmeister");
+
+		TravelEntryDto travelEntry1 = creator.createTravelEntry(
+			person1.toReference(),
+			nationalUser.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf1.region,
+			rdcf1.district,
+			rdcf1.pointOfEntry);
+
+		TravelEntryDto travelEntry2 = creator.createTravelEntry(
+			person2.toReference(),
+			nationalUser.toReference(),
+			Disease.YELLOW_FEVER,
+			rdcf1.region,
+			rdcf1.district,
+			rdcf1.pointOfEntry);
+
+		List<TravelEntryIndexDto> indexList =
+			getTravelEntryFacade().getIndexList(new TravelEntryCriteria().person(person1.toReference()), 0, 5, null);
+
+		assertEquals(1, indexList.size());
+		TravelEntryIndexDto indexDto = indexList.get(0);
+		assertEquals(travelEntry1.getUuid(), indexDto.getUuid());
+		assertEquals("Point of entry 1", indexDto.getPointOfEntryName());
+		assertEquals(Disease.CORONAVIRUS, indexDto.getDisease());
+	}
 }
