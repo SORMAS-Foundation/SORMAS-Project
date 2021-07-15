@@ -19,7 +19,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -27,9 +29,10 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
+import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -130,6 +133,38 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 		assertThat(notInJurisdictionTravelEntry.getPerson().getLastName(), is(isEmptyString()));
 		assertThat(notInJurisdictionTravelEntry.getPerson().getFirstName(), is(isEmptyString()));
 		assertEquals(notInJurisdictionTravelEntry.getDisease(), notSeenTravelEntry.getDisease());
+	}
+
+	@Test
+	public void testFilterByFreeTextFilter() {
+		loginWith(nationalUser);
+
+		PersonDto person = creator.createPerson("John", "Doe");
+		TravelEntryDto travelEntry = creator.createTravelEntry(
+			person.toReference(),
+			nationalUser.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf1.region,
+			rdcf1.district,
+			rdcf1.pointOfEntry);
+
+		PersonDto person2 = creator.createPerson("Sam", "Johnson");
+		TravelEntryDto travelEntry2 = creator.createTravelEntry(
+			person2.toReference(),
+			nationalUser.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf1.region,
+			rdcf1.district,
+			rdcf1.pointOfEntry);
+
+		TravelEntryCriteria criteria = new TravelEntryCriteria();
+		criteria.setNameUuidExternalIDLike("Doe");
+		List<TravelEntryIndexDto> indexList = getTravelEntryFacade().getIndexList(criteria, null, null, new ArrayList<>());
+
+		assertTrue(!indexList.isEmpty());
+		assertEquals(1, indexList.size());
+		assertEquals(person.getFirstName(), indexList.get(0).getPersonFirstName());
+		assertEquals(person.getLastName(), indexList.get(0).getPersonLastName());
 	}
 
 }
