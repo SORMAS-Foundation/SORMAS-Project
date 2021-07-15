@@ -319,7 +319,7 @@ public class Immunization extends CoreAdo {
 		this.country = country;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = VaccinationEntity.IMMUNIZATION)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = VaccinationEntity.IMMUNIZATION, fetch = FetchType.EAGER)
 	public List<VaccinationEntity> getVaccinations() {
 		return vaccinations;
 	}

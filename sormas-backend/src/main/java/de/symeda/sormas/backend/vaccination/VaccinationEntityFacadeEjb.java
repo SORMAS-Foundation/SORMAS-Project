@@ -163,6 +163,10 @@ public class VaccinationEntityFacadeEjb implements VaccinationEntityFacade {
 		return dto;
 	}
 
+	public VaccinationEntity fromDto(@NotNull VaccinationEntityDto source, boolean checkChangeDate) {
+		return fillOrBuildEntity(source, vaccinationService.getByUuid(source.getUuid()), checkChangeDate);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class VaccinationEntityFacadeEjbLocal extends VaccinationEntityFacadeEjb {
