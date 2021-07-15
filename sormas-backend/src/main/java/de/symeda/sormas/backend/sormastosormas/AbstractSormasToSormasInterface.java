@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -33,6 +32,8 @@ import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,6 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
@@ -50,8 +50,8 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
-import de.symeda.sormas.api.sormastosormas.ValidationErrors;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
@@ -169,14 +169,14 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	public void saveShareRequest(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
 		ShareRequestData<PREVIEW> shareData = encryptionService.decryptAndVerify(encryptedData, previewType);
 
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 		List<PREVIEW> previews = shareData.getPreviews();
 		List<PREVIEW> previewsToSave = new ArrayList<>(previews.size());
 
 		SormasToSormasOriginInfoDto originInfo = shareData.getOriginInfo();
 		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, entityCaptionTag);
 		if (originInfoErrors.hasError()) {
-			validationErrors.put(I18nProperties.getCaption(entityCaptionTag), originInfoErrors);
+			validationErrors.add(new ValidationErrors(new ValidationErrorGroup(entityCaptionTag), originInfoErrors));
 		}
 
 		for (PREVIEW preview : previews) {
@@ -184,13 +184,13 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 				ValidationErrors caseErrors = validateSharedPreview(preview);
 
 				if (caseErrors.hasError()) {
-					validationErrors.put(buildEntityValidationGroupName(preview), caseErrors);
+					validationErrors.add(new ValidationErrors(buildEntityValidationGroupName(preview), caseErrors));
 				} else {
 					PREVIEW processedData = getReceivedDataProcessor().processReceivedPreview(preview);
 					previewsToSave.add(processedData);
 				}
 			} catch (SormasToSormasValidationException validationException) {
-				validationErrors.putAll(validationException.getErrors());
+				validationErrors.addAll(validationException.getErrors());
 			}
 		}
 
@@ -284,7 +284,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		} catch (ExternalSurveillanceToolException e) {
 			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
 
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool), true);
+			throw SormasToSormasException.fromStringPropertyWithWarning(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool);
 		}
 	}
 
@@ -341,7 +341,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		} catch (ExternalSurveillanceToolException e) {
 			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
 
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool), true);
+			throw SormasToSormasException.fromStringPropertyWithWarning(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool);
 		}
 	}
 
@@ -374,7 +374,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		} catch (ExternalSurveillanceToolException e) {
 			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
 
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool), true);
+			throw SormasToSormasException.fromStringPropertyWithWarning(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool);
 		}
 	}
 
@@ -396,7 +396,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		S[] receivedS2SEntities = encryptionService.decryptAndVerify(encryptedData, getShareDataClass());
 
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 		List<PROCESSED> entitiesToPersist = new ArrayList<>(receivedS2SEntities.length);
 		List<DTO> existingEntities =
 			loadExistingEntities(Arrays.stream(receivedS2SEntities).map(e -> e.getEntity().getUuid()).collect(Collectors.toList()));
@@ -417,7 +417,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 				}
 
 				if (validationError.hasError()) {
-					validationErrors.put(buildEntityValidationGroupName(receivedEntity), validationError);
+					validationErrors.add(new ValidationErrors(buildEntityValidationGroupName(receivedEntity), validationError));
 				} else {
 					DTO existingEntity = existingEntitiesMap.get(receivedEntity.getUuid());
 					PROCESSED processedData = getReceivedDataProcessor().processReceivedData(receivedS2SEntity, existingEntity);
@@ -430,7 +430,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 					entitiesToPersist.add(processedData);
 				}
 			} catch (SormasToSormasValidationException validationException) {
-				validationErrors.putAll(validationException.getErrors());
+				validationErrors.addAll(validationException.getErrors());
 			}
 		}
 
@@ -443,11 +443,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		}
 	}
 
-	private String buildEntityValidationGroupName(HasUuid entity) {
+	private ValidationErrorGroup buildEntityValidationGroupName(HasUuid entity) {
 		return buildEntityValidationGroupName(entity.getUuid());
 	}
 
-	private String buildEntityValidationGroupName(String uuid) {
+	private ValidationErrorGroup buildEntityValidationGroupName(String uuid) {
 		return buildValidationGroupName(entityCaptionTag, uuid);
 	}
 
@@ -478,7 +478,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		if (existingEntities.stream().noneMatch(e -> e.getUuid().equals(entity.getUuid()))) {
 			errors
-				.add(I18nProperties.getCaption(entityCaptionTag), I18nProperties.getValidationError(Validations.sormasToSormasReturnEntityNotExists));
+				.add(new ValidationErrorGroup(entityCaptionTag), new ValidationErrorMessage(Validations.sormasToSormasReturnEntityNotExists));
 
 		}
 
@@ -504,9 +504,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		addOptionsToShareInfo(options, shareInfo);
 
 		addEntityToShareInfo(shareInfo, entities);
-		associatedEntities.forEach(e -> {
-			e.addEntityToShareInfo(shareInfo);
-		});
+		associatedEntities.forEach(e -> e.addEntityToShareInfo(shareInfo));
 
 		shareInfoService.ensurePersisted(shareInfo);
 
@@ -550,15 +548,13 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		List<String> notOwnedUuids = getUuidsWithPendingOwnershipHandedOver(entities);
 		if (notOwnedUuids.size() > 0) {
 
-			Map<String, ValidationErrors> errors = notOwnedUuids.stream()
-				.collect(
-					Collectors.toMap(
-						this::buildEntityValidationGroupName,
-						(uuid) -> ValidationErrors.create(
-							I18nProperties.getCaption(entityCaptionTag),
-							I18nProperties.getString(Strings.errorSormasToSormasOwnershipAlreadyHandedOver))));
+			List<ValidationErrors> errors = notOwnedUuids.stream()
+					.map(uuid -> new ValidationErrors(buildEntityValidationGroupName(uuid), ValidationErrors.create(
+							new ValidationErrorGroup(entityCaptionTag),
+							new ValidationErrorMessage(Strings.errorSormasToSormasOwnershipAlreadyHandedOver))))
+				.collect(Collectors.toList());
 
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasShare), errors);
+			throw SormasToSormasException.fromStringProperty(errors, Strings.errorSormasToSormasShare);
 		}
 	}
 
