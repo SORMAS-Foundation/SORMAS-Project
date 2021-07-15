@@ -189,6 +189,7 @@ import de.symeda.sormas.backend.user.UserRightsFacadeEjb.UserRightsFacadeEjbLoca
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.vaccination.VaccinationEntityFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationEntityService;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 import info.novatec.beantest.api.BaseBeanTest;
@@ -268,6 +269,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public VaccinationEntityFacade getVaccinationEntityFacade() {
 		return getBean(VaccinationEntityFacadeEjb.VaccinationEntityFacadeEjbLocal.class);
+	}
+
+	public VaccinationEntityService getVaccinationEntityService() {
+		return getBean(VaccinationEntityService.class);
 	}
 
 	public TravelEntryFacade getTravelEntryFacade() {
