@@ -417,16 +417,12 @@ public class TestDataCreator {
 		DistrictReferenceDto responsibleDistrict,
 		PointOfEntryReferenceDto pointOfEntry) {
 
-		TravelEntryDto travelEntry = new TravelEntryDto();
-		travelEntry.setUuid(DataHelper.createUuid());
+		TravelEntryDto travelEntry = TravelEntryDto.build(person);
 		travelEntry.setDisease(disease);
-		travelEntry.setPerson(person);
 		travelEntry.setReportingUser(reportingUser);
 		travelEntry.setResponsibleRegion(responsibleRegion);
 		travelEntry.setResponsibleDistrict(responsibleDistrict);
 		travelEntry.setPointOfEntry(pointOfEntry);
-
-		travelEntry.setReportDate(new Date());
 
 		return beanTest.getTravelEntryFacade().save(travelEntry);
 	}

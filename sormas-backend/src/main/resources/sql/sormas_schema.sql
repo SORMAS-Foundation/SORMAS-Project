@@ -7607,9 +7607,69 @@ ALTER TABLE events_history ADD COLUMN diseasevariant text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (383, 'Add disease variant to event #5525');
 
--- 2021-07-13 Event identification source (#5526)
+-- 2021-07-13 Add missing columns to history tables #6078
+ALTER TABLE cases_history ADD COLUMN classificationdate timestamp without time zone;
+ALTER TABLE cases_history ADD COLUMN classificationuser_id bigint;
+ALTER TABLE cases_history ADD COLUMN creationversion  varchar(32);
+ALTER TABLE cases_history ADD COLUMN denguefevertype character varying(255);
+ALTER TABLE cases_history RENAME COLUMN diseasevariant_id TO diseasevariant;
+ALTER TABLE cases_history ALTER COLUMN diseasevariant TYPE text USING diseasevariant::text;
+ALTER TABLE cases_history ADD COLUMN responsibledistrict_id BIGINT;
+ALTER TABLE cases_history ADD COLUMN responsibleregion_id BIGINT;
+ALTER TABLE cases_history DROP COLUMN covidtestreason;
+ALTER TABLE cases_history DROP COLUMN covidtestreasondetails;
+ALTER TABLE cases_history DROP COLUMN reportingtype;
+ALTER TABLE cases_history ADD COLUMN sormasToSormasOriginInfo_id bigint;
+
+ALTER TABLE contact_history ADD COLUMN vaccinationinfo_id bigint;
+ALTER TABLE contact_history ADD COLUMN sormasToSormasOriginInfo_id bigint;
+
+ALTER TABLE eventparticipant_history ADD COLUMN region_id bigint;
+ALTER TABLE eventparticipant_history ADD COLUMN district_id bigint;
+ALTER TABLE eventparticipant_history ADD COLUMN vaccinationinfo_id bigint;
+ALTER TABLE eventparticipant_history ADD COLUMN sormasToSormasOriginInfo_id bigint;
+
+ALTER TABLE samples_history ADD COLUMN sormasToSormasOriginInfo_id bigint;
+
+ALTER TABLE labmessage_history ADD COLUMN status varchar(255);
+
+ALTER TABLE events_history RENAME COLUMN eventdate TO startdate;
+ALTER TABLE events_history ADD COLUMN enddate timestamp;
+ALTER TABLE events_history ADD COLUMN externalId varchar(512);
+ALTER TABLE events_history ADD COLUMN nosocomial varchar(255);
+ALTER TABLE events_history ADD COLUMN srcType varchar(255);
+ALTER TABLE events_history ADD COLUMN srcMediaWebsite varchar(512);
+ALTER TABLE events_history ADD COLUMN srcMediaName varchar(512);
+ALTER TABLE events_history ADD COLUMN srcMediaDetails varchar(4096);
+ALTER TABLE events_history ADD COLUMN epidemiologicalevidence varchar(255);
+ALTER TABLE events_history ADD COLUMN epidemiologicalevidencedetails json;
+ALTER TABLE events_history ALTER COLUMN epidemiologicalevidencedetails set DATA TYPE jsonb using epidemiologicalevidencedetails::jsonb;
+ALTER TABLE events_history ADD COLUMN laboratorydiagnosticEvidence varchar(255);
+ALTER TABLE events_history ADD COLUMN laboratorydiagnosticEvidencedetails json;
+ALTER TABLE events_history ALTER COLUMN laboratorydiagnosticEvidencedetails set DATA TYPE jsonb using laboratorydiagnosticEvidencedetails::jsonb;
+ALTER TABLE events_history ADD COLUMN sormasToSormasOriginInfo_id bigint;
+
+ALTER TABLE person_history DROP COLUMN occupationregion_id, DROP COLUMN occupationdistrict_id, DROP COLUMN occupationcommunity_id, DROP COLUMN occupationfacilitytype, DROP COLUMN occupationfacility_id, DROP COLUMN occupationfacilitydetails;
+ALTER TABLE person_history DROP COLUMN phone;
+ALTER TABLE person_history DROP COLUMN phoneowner;
+ALTER TABLE person_history DROP COLUMN emailaddress;
+ALTER TABLE person_history DROP COLUMN generalpractitionerdetails;
+
+ALTER TABLE symptoms_history ADD COLUMN convulsion varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN backache varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN eyesbleeding varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN jaundice varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN darkurine varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN stomachbleeding varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN rapidbreathing varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN swollenglands varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (384, 'Add missing history columns #6078');
+
+-- 2021-07-15 Event identification source (#5526)
 ALTER TABLE events ADD COLUMN eventidentificationsource varchar(255);
 ALTER TABLE events_history ADD COLUMN eventidentificationsource varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (384, 'Event identification source (#5526)');
+INSERT INTO schema_version (version_number, comment) VALUES (385, 'Event identification source (#5526)');
+
 -- *** Insert new sql commands BEFORE this line ***

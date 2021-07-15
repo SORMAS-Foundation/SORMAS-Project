@@ -8,7 +8,6 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -54,7 +53,13 @@ public class TravelEntry extends CoreAdo {
 	public static final String POINT_OF_ENTRY_REGION = "pointOfEntryRegion";
 	public static final String POINT_OF_ENTRY_DISTRICT = "pointOfEntryDistrict";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
+	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String RESULTING_CASE = "resultingCase";
+	public static final String EXTERNAL_ID = "externalId";
+	public static final String RECOVERED = "recovered";
+	public static final String VACCINATED = "vaccinated";
+	public static final String TESTED_NEGATIVE = "testedNegative";
+	public static final String QUARANTINE_TO = "quarantineTo";
 
 	private Person person;
 	private Date reportDate;

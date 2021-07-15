@@ -183,6 +183,7 @@ public interface Captions {
 	String bulkDisease = "bulkDisease";
 	String bulkEdit = "bulkEdit";
 	String bulkEventInvestigationStatus = "bulkEventInvestigationStatus";
+	String bulkEventParticipantsToContacts = "bulkEventParticipantsToContacts";
 	String bulkEventStatus = "bulkEventStatus";
 	String bulkEventType = "bulkEventType";
 	String bulkFacility = "bulkFacility";
@@ -1370,6 +1371,7 @@ public interface Captions {
 	String mainMenuConfiguration = "mainMenuConfiguration";
 	String mainMenuContacts = "mainMenuContacts";
 	String mainMenuDashboard = "mainMenuDashboard";
+	String mainMenuEntries = "mainMenuEntries";
 	String mainMenuEvents = "mainMenuEvents";
 	String mainMenuPersons = "mainMenuPersons";
 	String mainMenuReports = "mainMenuReports";
@@ -2088,6 +2090,22 @@ public interface Captions {
 	String taskOfficerTasks = "taskOfficerTasks";
 	String to = "to";
 	String total = "total";
+	String travelEntriesNoTravelEntriesForPerson = "travelEntriesNoTravelEntriesForPerson";
+	String TravelEntry_externalId = "TravelEntry.externalId";
+	String TravelEntry_homeDistrictName = "TravelEntry.homeDistrictName";
+	String TravelEntry_personFirstName = "TravelEntry.personFirstName";
+	String TravelEntry_personLastName = "TravelEntry.personLastName";
+	String TravelEntry_pointOfEntryName = "TravelEntry.pointOfEntryName";
+	String TravelEntry_quarantineTo = "TravelEntry.quarantineTo";
+	String TravelEntry_recovered = "TravelEntry.recovered";
+	String TravelEntry_reportDate = "TravelEntry.reportDate";
+	String TravelEntry_testedNegative = "TravelEntry.testedNegative";
+	String TravelEntry_uuid = "TravelEntry.uuid";
+	String TravelEntry_vaccinated = "TravelEntry.vaccinated";
+	String travelEntryOnlyEntriesConvertedToCase = "travelEntryOnlyEntriesConvertedToCase";
+	String travelEntryOnlyEntriesTestedNegative = "travelEntryOnlyEntriesTestedNegative";
+	String travelEntryOnlyRecoveredEntries = "travelEntryOnlyRecoveredEntries";
+	String travelEntryOnlyVaccinatedEntries = "travelEntryOnlyVaccinatedEntries";
 	String Treatment_additionalNotes = "Treatment.additionalNotes";
 	String Treatment_dose = "Treatment.dose";
 	String Treatment_drugIntakeDetails = "Treatment.drugIntakeDetails";
@@ -2213,6 +2231,7 @@ public interface Captions {
 	String View_dashboard_campaigns = "View.dashboard.campaigns";
 	String View_dashboard_contacts = "View.dashboard.contacts";
 	String View_dashboard_surveillance = "View.dashboard.surveillance";
+	String View_entries = "View.entries";
 	String View_events = "View.events";
 	String View_events_archive = "View.events.archive";
 	String View_events_data = "View.events.data";
