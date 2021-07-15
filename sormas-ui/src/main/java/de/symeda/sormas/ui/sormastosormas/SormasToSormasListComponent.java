@@ -71,7 +71,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			caze.getSormasToSormasOriginInfo(),
 			sormasToSormasList,
-			shareEnabled ? e -> ControllerProvider.getSormasToSormasController().shareCaseFromDetailsPage(caze, this) : null,
+			shareEnabled ? e -> ControllerProvider.getSormasToSormasController().shareCaseFromDetailsPage(caze) : null,
 			(e) -> ControllerProvider.getSormasToSormasController().returnCase(caze));
 	}
 
@@ -88,7 +88,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			contact.getSormasToSormasOriginInfo(),
 			sormasToSormasList,
-			shareEnabled ? e -> ControllerProvider.getSormasToSormasController().shareContactFromDetailsPage(contact, this) : null,
+			shareEnabled ? e -> ControllerProvider.getSormasToSormasController().shareContactFromDetailsPage(contact) : null,
 			(e) -> ControllerProvider.getSormasToSormasController().returnContact(contact));
 	}
 
@@ -118,7 +118,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		initLayout(
 			event.getSormasToSormasOriginInfo(),
 			sormasToSormasList,
-			shareEnabled ? e -> ControllerProvider.getSormasToSormasController().shareEventFromDetailsPage(event, this) : null,
+			shareEnabled ? e -> ControllerProvider.getSormasToSormasController().shareEventFromDetailsPage(event) : null,
 			(e) -> ControllerProvider.getSormasToSormasController().returnEvent(event));
 	}
 

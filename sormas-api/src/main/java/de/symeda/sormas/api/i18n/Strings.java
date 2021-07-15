@@ -265,9 +265,11 @@ public interface Strings {
 	String errorReadingDocument = "errorReadingDocument";
 	String errorReadingTemplate = "errorReadingTemplate";
 	String errorSetFeverRequired = "errorSetFeverRequired";
+	String errorSormasToSormasAccept = "errorSormasToSormasAccept";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
+	String errorSormasToSormasDeleteFromExternalSurveillanceTool = "errorSormasToSormasDeleteFromExternalSurveillanceTool";
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
 	String errorSormasToSormasInvalidRequestMethod = "errorSormasToSormasInvalidRequestMethod";
 	String errorSormasToSormasOwnershipAlreadyHandedOver = "errorSormasToSormasOwnershipAlreadyHandedOver";
@@ -480,6 +482,7 @@ public interface Strings {
 	String headingImportPopulationData = "headingImportPopulationData";
 	String headingImportRegions = "headingImportRegions";
 	String headingImportSubcontinents = "headingImportSubcontinents";
+	String headingImportTravelEntries = "headingImportTravelEntries";
 	String headingInformationSource = "headingInformationSource";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
@@ -716,11 +719,9 @@ public interface Strings {
 	String infoSelectOrCreateContactImport = "infoSelectOrCreateContactImport";
 	String infoSelectOrCreateEntry = "infoSelectOrCreateEntry";
 	String infoSelectOrCreatePersonForCase = "infoSelectOrCreatePersonForCase";
-	String infoSelectOrCreatePersonForCaseImport = "infoSelectOrCreatePersonForCaseImport";
 	String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
-	String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
-	String infoSelectOrCreatePersonForEventParticipantImport = "infoSelectOrCreatePersonForEventParticipantImport";
+	String infoSelectOrCreatePersonForImport = "infoSelectOrCreatePersonForImport";
 	String infoSelectOrCreatePersonForLabMessage = "infoSelectOrCreatePersonForLabMessage";
 	String infoSkipOrOverrideDuplicateCampaignFormDataImport = "infoSkipOrOverrideDuplicateCampaignFormDataImport";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";

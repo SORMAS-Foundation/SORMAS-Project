@@ -42,6 +42,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CountryFacade")
 public class CountryFacadeEjb implements CountryFacade {
@@ -140,17 +141,7 @@ public class CountryFacadeEjb implements CountryFacade {
 
 		cq.select(country);
 
-		if (first != null && max != null) {
-			return em.createQuery(cq)
-				.setFirstResult(first)
-				.setMaxResults(max)
-				.getResultList()
-				.stream()
-				.map(this::toIndexDto)
-				.collect(Collectors.toList());
-		} else {
-			return em.createQuery(cq).getResultList().stream().map(this::toIndexDto).collect(Collectors.toList());
-		}
+		return QueryHelper.getResultList(em, cq, first, max, this::toIndexDto);
 	}
 
 	public Page<CountryIndexDto> getIndexPage(CountryCriteria countryCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
@@ -379,7 +370,7 @@ public class CountryFacadeEjb implements CountryFacade {
 
 		cq.select(root.get(Country.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	// Need to be in the same order as in the constructor

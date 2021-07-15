@@ -51,8 +51,8 @@ public class SormasToSormasResource {
 	}
 
 	@POST
-	@Path(SormasToSormasApiConstants.CASE_REQUEST_ACCEPT_ENDPOINT)
-	public Response acceptSharedCaseRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) {
+	@Path(SormasToSormasApiConstants.CASE_REQUEST_GET_DATA_ENDPOINT)
+	public Response getDataForCaseRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) {
 		return handleRequestWithReturnData(() -> FacadeProvider.getSormasToSormasCaseFacade().getDataForShareRequest(encryptedRequestUuid));
 	}
 
@@ -87,8 +87,8 @@ public class SormasToSormasResource {
 	}
 
 	@POST
-	@Path(SormasToSormasApiConstants.CONTACT_REQUEST_ACCEPT_ENDPOINT)
-	public Response acceptSharedContactRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) {
+	@Path(SormasToSormasApiConstants.CONTACT_REQUEST_GET_DATA_ENDPOINT)
+	public Response getDataForContactRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) {
 		return handleRequestWithReturnData(() -> FacadeProvider.getSormasToSormasContactFacade().getDataForShareRequest(encryptedRequestUuid));
 	}
 
@@ -123,8 +123,8 @@ public class SormasToSormasResource {
 	}
 
 	@POST
-	@Path(SormasToSormasApiConstants.EVENT_REQUEST_ACCEPT_ENDPOINT)
-	public Response acceptSharedEventRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) {
+	@Path(SormasToSormasApiConstants.EVENT_REQUEST_GET_DATA_ENDPOINT)
+	public Response getDataForEventRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) {
 		return handleRequestWithReturnData(() -> FacadeProvider.getSormasToSormasEventFacade().getDataForShareRequest(encryptedRequestUuid));
 	}
 
@@ -155,7 +155,13 @@ public class SormasToSormasResource {
 	@POST
 	@Path(SormasToSormasApiConstants.REVOKE_REQUESTS_ENDPOINT)
 	public Response revokeShareRequests(SormasToSormasEncryptedDataDto requestUuid) {
-		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasFacade().revokeRequests(requestUuid));
+		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasFacade().requestsRevoked(requestUuid));
+	}
+
+	@POST
+	@Path(SormasToSormasApiConstants.REQUEST_ACCEPTED_ENDPOINT)
+	public Response acceptedShareRequests(SormasToSormasEncryptedDataDto requestUuid) {
+		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasFacade().requestAccepted(requestUuid));
 	}
 
 	private Response handleVoidRequest(VoidFacadeCall facadeCall) {

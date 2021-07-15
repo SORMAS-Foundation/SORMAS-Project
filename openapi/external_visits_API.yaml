@@ -12,11 +12,11 @@ info:
     \ SORMAS-UI or the external visits journal API.<br><br><b>About persons, cases\
     \ and contacts:</b><br>This is a very basic concept that one needs to understand\
     \ when working with visits. In SORMAS, a person entity represents a phisically\
-    \ existing person. Cases and contacts represent epidemiological occurences. When\
+    \ existing person. Cases and contacts represent epidemiological occurrences. When\
     \ a person was in contact with an infectious environment, the person has a contact\
     \ in SORMAS. When the person was in contact with such environments twice, it gets\
     \ two contacts.When a person falls ill, it gets a case with the according disease.\
-    \ This means: In SORMAS, each contact and case relates to exaclty one person.\
+    \ This means: In SORMAS, each contact and case relates to exactly one person.\
     \ One person can have several contacts and cases, though. Follow up is done for\
     \ a contact (or a case, which can be enabled in the SORMAS feature configuration).\
     \ Contacts (or cases) initiate follow up. A person, though, either shows symptoms\
@@ -58,10 +58,10 @@ info:
     token\" : [token]<br>}<br>The token returned will be used to authenticate in other\
     \ requests.<br><br><li><b>Registration of a new person in the external journal</b></li><br>This\
     \ process involves several steps that are triggered via the REGISTER button a\
-    \ priviliged user can see in the top right corner when having opened a case or\
+    \ privileged user can see in the top right corner when having opened a case or\
     \ a contact.<br>To be able to see this button, the user must have at least one\
     \ of the following user roles: national user, contact supervisor, contact officer,\
-    \ communitiy officer,surveillance officer, surveillance supervisor, or admin supervisor.<br><br>First\
+    \ community officer,surveillance officer, surveillance supervisor, or admin supervisor.<br><br>First\
     \ comes a SORMAS-internal validation of contact details. The person to be registered\
     \ needs to have at least an email address or a phone number to pass this validation.Also,\
     \ when there are several email addresses or phone numbers, one of them has to\
@@ -100,7 +100,7 @@ info:
     \ contain (at least) the contact detail provided by SORMAS in the query.<br>-\
     \ endDate should hold the date after which follow up is supposed to be stopped\
     \ by the external journal.<br>``PatientDiaryIdatId``{<br>&emsp;email&emsp;&emsp;&emsp;string<br>&emsp;phone&emsp;&emsp;&emsp;``PatientDiaryPhone``<br>}<br>-\
-    \ email should hold the email adress for the person<br>- phone should hold the\
+    \ email should hold the email address for the person<br>- phone should hold the\
     \ phone number of that person:<br>``PatientDiaryPhone``{<br>&emsp;number&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;string<br>&emsp;internationalNumber&emsp;&emsp;&emsp;string<br>&emsp;nationalNumber&emsp;&emsp;&emsp;&emsp;string<br>&emsp;countryCode&emsp;&emsp;&emsp;&emsp;string<br>&emsp;dialCode&emsp;&emsp;&emsp;string<br>}<br>To\
     \ put this all together, here is an example PatientDiaryQueryResponse with one\
     \ person using the same contact detail:<br>{<br>&emsp;&emsp;\"total\" : 100,<br>&emsp;&emsp;\"\
@@ -133,14 +133,14 @@ info:
     \ API endpoint described below.<br><br><li><b>Synchronization of person data changed\
     \ in SORMAS</b></li><br>It may happen that person data (like a contact detail)\
     \ gets changed after a person is registered in an external journal. SORMAS notifies\
-    \ external journals about such a change whith first fetching an authentication\
+    \ external journals about such a change with first fetching an authentication\
     \ token as descriced in 1., and the using this token for this request:<br><tt>PUT\
     \ [interface.patientdiary.probandsurl]/external-data/[personUUID]</tt><br>The\
     \ external journal is expected to refetch the person data via the ``/visits-external/person/{personUuid}``\
     \ API endpoint described below and save the changes.</li><br>After refetching\
     \ the person data, the symptom journal does its own internal validation and responds\
     \ to SORMAS with the synchronization result, containing eventual validation errors.The\
-    \ expected reponse body:<br>{<br>&emsp;\"success\" : [boolean]<br>&emsp;\"message\"\
+    \ expected response body:<br>{<br>&emsp;\"success\" : [boolean]<br>&emsp;\"message\"\
     \ : [messageString]<br>&emsp;\"errors\" : [<br>&emsp;&emsp;{[errorKey]:[errorString]}<br>&emsp;]<br>}<br>If\
     \ the changes were done manually by a user from the person edit form, the synchronization\
     \ result is shown to the user in a popup window, so that the user can fix eventual\
@@ -217,7 +217,7 @@ paths:
       responses:
         default:
           description: "A selection of personal data, including first and last name,\
-            \ e-mail, phone number and birth date if available for that person.Regarding\
+            \ e-mail, phone number and birth date if available for that person. Regarding\
             \ the e-mail and phone number: in SORMAS it is possible to store several\
             \ e-mail addresses and phone numbers for a person. It is tried to provide\
             \ one e-mail address and/or phone number via the external visits API in\
@@ -230,9 +230,9 @@ paths:
             \ any contact (or case, if the case follow up feature is enabled) related\
             \ to the person. The contacts (and cases) considered are not filtered\
             \ by disease.<br>Note that Null value fields may not be returned. If you\
-            \ get an unexpected result, it might help to verifyif the personUuid is\
-            \ existing in your system via the isValid controller.<br>If you get \"\
-            pseudonymized\": true, the user the request was authorized with probably\
+            \ get an unexpected result, it might help to verify if the personUuid\
+            \ is existing in your system via the isValid controller.<br>If you get\
+            \ \"pseudonymized\": true, the user the request was authorized with probably\
             \ lacks the user role REST_EXTERNAL_VISITS_USER."
           content:
             application/json; charset=UTF-8:
@@ -320,7 +320,7 @@ paths:
                 \  }\n]"
       responses:
         default:
-          description: "true if the status was set succesfully, false otherwise."
+          description: "true if the status was set successfully, false otherwise."
           content:
             application/json; charset=UTF-8:
               schema:

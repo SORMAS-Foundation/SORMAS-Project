@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.immunization;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -86,7 +88,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public ImmunizationDto getByUuid(String uuid) {
-		return toDto(immunizationService.getByUuid(uuid));
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
+		return convertToDto(immunizationService.getByUuid(uuid), pseudonymizer);
 	}
 
 	@Override
@@ -109,17 +112,38 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public List<ImmunizationDto> getAllAfter(Date date) {
-		return immunizationService.getAllActiveAfter(date).stream().map(this::toDto).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
+		return immunizationService.getAllActiveAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<ImmunizationDto> getByUuids(List<String> uuids) {
-		return immunizationService.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
+		return immunizationService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<String> getAllUuids() {
 		return immunizationService.getAllUuids();
+	}
+
+	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return immunizationService.getArchivedUuidsSince(since);
+	}
+
+	@Override
+	public List<String> getDeletedUuidsSince(Date since) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+		return immunizationService.getDeletedUuidsSince(since);
 	}
 
 	@Override
@@ -153,11 +177,12 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 			pseudonymizer.pseudonymizeDto(ImmunizationDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), inJurisdiction, null);
 			});
 		}
 	}
 
-	private void restorePseudonymizedDto(ImmunizationDto dto, ImmunizationDto existingDto,  Immunization immunization, Pseudonymizer pseudonymizer) {
+	private void restorePseudonymizedDto(ImmunizationDto dto, ImmunizationDto existingDto, Immunization immunization, Pseudonymizer pseudonymizer) {
 		if (existingDto != null) {
 			final boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(immunization);
 			final User currentUser = userService.getCurrentUser();

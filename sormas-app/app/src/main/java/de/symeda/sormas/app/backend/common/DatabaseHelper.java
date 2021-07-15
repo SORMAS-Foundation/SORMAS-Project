@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -102,6 +102,8 @@ import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.immunization.ImmunizationDao;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntryDao;
+import de.symeda.sormas.app.backend.lbds.LbdsSync;
+import de.symeda.sormas.app.backend.lbds.LbdsSyncDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.location.LocationDao;
 import de.symeda.sormas.app.backend.outbreak.Outbreak;
@@ -170,7 +172,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 307;
+	public static final int DATABASE_VERSION = 309;
 
 	private static DatabaseHelper instance = null;
 
@@ -189,6 +191,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private final HashMap<Class<? extends AbstractDomainObject>, AbstractAdoDao<? extends AbstractDomainObject>> adoDaos = new HashMap<>();
 
 	private SyncLogDao syncLogDao = null;
+
+	private LbdsSyncDao lbdsSyncDao = null;
 
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);//, R.raw.ormlite_config);
@@ -239,6 +243,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, SyncLog.class);
 			TableUtils.clearTable(connectionSource, DiseaseClassificationCriteria.class);
 			TableUtils.clearTable(connectionSource, CampaignFormData.class);
+			TableUtils.clearTable(connectionSource, LbdsSync.class);
 			// TODO [vaccination info] integrate vaccination info
 //			TableUtils.clearTable(connectionSource, VaccinationInfo.class);
 
@@ -333,6 +338,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Campaign.class);
 			TableUtils.createTable(connectionSource, CampaignFormData.class);
 			TableUtils.createTable(connectionSource, CampaignFormMeta.class);
+			TableUtils.createTable(connectionSource, LbdsSync.class);
 			// TODO [vaccination info] integrate vaccination info
 //			TableUtils.createTable(connectionSource, VaccinationInfo.class);
 		} catch (SQLException e) {
@@ -2459,7 +2465,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ "		UNIQUE (snapshot ASC, uuid ASC)"
 					+ ");"
 				);
-				
+
 				migratePersonContactDetails();
 
 			case 289:
@@ -2486,7 +2492,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ "		UNIQUE (snapshot ASC, uuid ASC)"
 					+ ");"
 				);
-				
+
 				getDao(Subcontinent.class).executeRaw(
 					"CREATE TABLE IF NOT EXISTS subcontinent ("
 					+ "		continent_id BIGINT NOT NULL,"
@@ -2503,7 +2509,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ "		UNIQUE (snapshot ASC, uuid ASC)"
 					+ ");"
 				);
-				
+
 				getDao(Country.class).executeRaw("ALTER TABLE country ADD COLUMN subcontinent_id BIGINT REFERENCES subcontinent(id);");
 
 			case 291:
@@ -2650,6 +2656,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 306:
 					currentVersion = 306;
 					getDao(Immunization.class).executeRaw("ALTER TABLE immunization ADD COLUMN pseudonymized boolean;");
+
+				case 307:
+					currentVersion = 307;
+					getDao(LbdsSync.class).executeRaw(
+							"CREATE TABLE lbdsSync(" +
+							"sentUuid varchar(36) primary key," +
+							"lastSendDate timestamp," +
+							"lastReceivedDate timestamp);");
+
+			case 308:
+				currentVersion = 308;
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN diseaseVariant text;");
 
 				// ATTENTION: break should only be done after last version
 				break;
@@ -3044,6 +3062,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Campaign.class, true);
 			TableUtils.dropTable(connectionSource, CampaignFormMeta.class, true);
 			TableUtils.dropTable(connectionSource, CampaignFormData.class, true);
+			TableUtils.dropTable(connectionSource, LbdsSync.class, true);
 			// TODO [vaccination info] integrate vaccination info
 //			TableUtils.dropTable(connectionSource, VaccinationInfo.class, true);
 
@@ -3229,6 +3248,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			}
 		}
 		return instance.syncLogDao;
+	}
+
+	public static LbdsSyncDao getLbdsSyncDao() {
+		if (instance.lbdsSyncDao == null) {
+			synchronized (DatabaseHelper.class) {
+				if (instance.lbdsSyncDao == null) {
+					try {
+						instance.lbdsSyncDao = new LbdsSyncDao((Dao<LbdsSync, String>) instance.getDao(LbdsSync.class));
+					} catch (SQLException e) {
+						Log.e(DatabaseHelper.class.getName(), "Can't build SyncLogDao", e);
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}
+		return instance.lbdsSyncDao;
 	}
 
 	public static CaseDao getCaseDao() {

@@ -75,6 +75,10 @@ public class SormasToSormasException extends Exception implements SormasToSormas
 		this.errors = errors;
 	}
 
+	public boolean isWarning() {
+		return warning;
+	}
+
 	public static SormasToSormasException fromStringProperty(String i18nProperty, Object... args) {
 		return fromStringProperty(i18nProperty, null, args);
 	}

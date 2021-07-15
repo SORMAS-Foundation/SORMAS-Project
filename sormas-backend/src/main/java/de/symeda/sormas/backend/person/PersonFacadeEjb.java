@@ -133,6 +133,7 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
@@ -885,7 +886,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
 
-		Predicate filter = personService.createUserFilter(cb, cq, person);
+		Predicate filter = personService.createUserFilter(personQueryContext);
 		if (criteria != null) {
 			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
@@ -1083,31 +1084,33 @@ public class PersonFacadeEjb implements PersonFacade {
 		final CriteriaQuery<String> cq = cb.createQuery(String.class);
 		final Root<Person> person = cq.from(Person.class);
 
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+
 		cq.select(person.get(Person.UUID));
 		if (!allowPersonsWithCoordinates) {
 			// filter persons by those which have no latitude or longitude given
 			final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 			Predicate noLatitude = cb.isNull(location.get(Location.LATITUDE));
 			Predicate noLongitude = cb.isNull(location.get(Location.LONGITUDE));
-			cq.where(cb.and(personService.createUserFilter(cb, cq, person), cb.or(noLatitude, noLongitude)));
+			cq.where(cb.and(personService.createUserFilter(personQueryContext), cb.or(noLatitude, noLongitude)));
 		} else {
-			cq.where(personService.createUserFilter(cb, cq, person));
+			cq.where(personService.createUserFilter(personQueryContext));
 		}
 		cq.orderBy(cb.desc(person.get(Person.UUID)));
 
 		// repeat the query as often as necessary until all data is retrieved
-		final int BATCH_SIZE = batchSize == null ? 100 : batchSize;
+		final int max = batchSize == null ? 100 : batchSize;
 		int first = 0;
 		int sizeOfLastBatch = 0;
 		List<String> personUuids = new ArrayList<>();
 		do {
 			// By using LIMIT and OFFSET, timeouts and overflowing caches are somewhat prevented
-			List<String> newPersonUuids = em.createQuery(cq).setFirstResult(first).setMaxResults(BATCH_SIZE).getResultList();
+			List<String> newPersonUuids = QueryHelper.getResultList(em, cq, first, max);
 			sizeOfLastBatch = newPersonUuids.size();
 			first += sizeOfLastBatch;
 			personUuids = Stream.concat(personUuids.stream(), newPersonUuids.stream()).collect(Collectors.toList());
 		}
-		while (sizeOfLastBatch >= BATCH_SIZE);
+		while (sizeOfLastBatch >= max);
 
 		return personUuids;
 	}
@@ -1164,7 +1167,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			person.get(Person.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, personService.inJurisdictionOrOwned(personQueryContext)));
 
-		Predicate filter = personService.createUserFilter(cb, cq, person);
+		Predicate filter = personService.createUserFilter(personQueryContext);
 		if (criteria != null) {
 			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
@@ -1214,12 +1217,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			cq.orderBy(cb.desc(person.get(Person.CHANGE_DATE)));
 		}
 
-		List<PersonIndexDto> persons;
-		if (first != null && max != null) {
-			persons = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			persons = em.createQuery(cq).getResultList();
-		}
+		List<PersonIndexDto> persons = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(

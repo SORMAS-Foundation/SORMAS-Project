@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -22,10 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.server.Sizeable.Unit;
@@ -48,6 +42,7 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityInput;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
 import de.symeda.sormas.ui.importer.DataImporter;
@@ -72,8 +67,6 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  * was canceled)
  */
 public class CaseImporter extends DataImporter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(CaseImporter.class);
 
 	private UI currentUI;
 	private final CaseImportFacade caseImportFacade;
@@ -139,7 +132,7 @@ public class CaseImporter extends DataImporter {
 					importPerson,
 					result -> consumer.onImportResult(result, personSelectLock),
 					(person, similarityResultOption) -> new CaseImportSimilarityResult(person, null, similarityResultOption),
-					Strings.infoSelectOrCreatePersonForCaseImport,
+					Strings.infoSelectOrCreatePersonForImport,
 					currentUI);
 
 				try {
@@ -199,7 +192,9 @@ public class CaseImporter extends DataImporter {
 						}
 
 						// If the user chose to override an existing case with the imported case, insert the new data into the existing case and associate the imported samples with it
-						if (resultOption == ImportSimilarityResultOption.OVERRIDE && consumer.result != null &&  consumer.result.getMatchingCase() != null) {
+						if (resultOption == ImportSimilarityResultOption.OVERRIDE
+							&& consumer.result != null
+							&& consumer.result.getMatchingCase() != null) {
 							selectedCaseUuid = consumer.result.getMatchingCase().getUuid();
 						}
 					}
