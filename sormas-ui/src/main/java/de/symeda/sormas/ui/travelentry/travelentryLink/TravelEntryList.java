@@ -33,7 +33,9 @@ import de.symeda.sormas.ui.utils.PaginationList;
 
 public class TravelEntryList extends PaginationList<TravelEntryIndexDto> {
 
-	private TravelEntryCriteria travelEntryCriteria = new TravelEntryCriteria();
+	private static final long serialVersionUID = -534579406662710137L;
+
+	private final TravelEntryCriteria travelEntryCriteria = new TravelEntryCriteria();
 
 	public TravelEntryList(PersonReferenceDto personRef) {
 		super(5);
@@ -69,8 +71,8 @@ public class TravelEntryList extends PaginationList<TravelEntryIndexDto> {
 	private void addEditButton(TravelEntryListEntry listEntry) {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_EDIT)) {
 			listEntry.addEditListener(
-				// TODO #5834: use TravelEntryController when available
-				(Button.ClickListener) event -> ControllerProvider.getSampleController().navigateToData(listEntry.getTravelEntry().getUuid()));
+				(Button.ClickListener) event -> ControllerProvider.getTravelEntryController()
+					.navigateToTravelEntry(listEntry.getTravelEntry().getUuid()));
 		}
 	}
 }

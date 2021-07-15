@@ -10,7 +10,7 @@ public class TravelEntryController {
 
 	}
 
-	public void navigateToTavelEntry(String uuid) {
+	public void navigateToTravelEntry(String uuid) {
 		final String navigationState = TravelEntryDataView.VIEW_NAME + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
