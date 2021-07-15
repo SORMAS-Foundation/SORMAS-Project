@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
@@ -52,6 +53,7 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -173,11 +175,11 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 	public TravelEntryDto convertToDto(TravelEntry source, Pseudonymizer pseudonymizer) {
 		TravelEntryDto dto = toDto(source);
-		pseudonomyzeDto(source, dto, pseudonymizer);
+		pseudonimyzeDto(source, dto, pseudonymizer);
 		return dto;
 	}
 
-	private void pseudonomyzeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer) {
+	private void pseudonimyzeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
 			boolean inJurisdiction = travelEntryService.inJurisdictionOrOwned(source);
 			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
@@ -228,7 +230,8 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 			travelEntry.get(TravelEntry.VACCINATED),
 			travelEntry.get(TravelEntry.TESTED_NEGATIVE),
 			travelEntry.get(TravelEntry.QUARANTINE_TO),
-			travelEntry.get(TravelEntry.CHANGE_DATE));
+			travelEntry.get(TravelEntry.CHANGE_DATE),
+			JurisdictionHelper.booleanSelector(cb, travelEntryService.inJurisdictionOrOwned(travelEntryQueryContext)));
 
 		Predicate filter = travelEntryService.createUserFilter(travelEntryQueryContext);
 		if (criteria != null) {
@@ -277,7 +280,12 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 		cq.distinct(true);
 
-		return QueryHelper.getResultList(em, cq, first, max);
+		List<TravelEntryIndexDto> resultList = QueryHelper.getResultList(em, cq, first, max);
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(TravelEntryIndexDto.class, resultList, TravelEntryIndexDto::isInJurisdiction, null);
+
+		return resultList;
 	}
 
 	@Override
