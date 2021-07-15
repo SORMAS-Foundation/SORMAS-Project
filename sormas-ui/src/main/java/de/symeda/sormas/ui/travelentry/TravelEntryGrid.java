@@ -32,7 +32,7 @@ public class TravelEntryGrid extends FilteredGrid<TravelEntryIndexDto, TravelEnt
 		addItemClickListener(
 			new ShowDetailsListener<>(
 				TravelEntryIndexDto.UUID,
-				e -> ControllerProvider.getTravelEntryController().navigateToTavelEntry(e.getUuid())));
+				e -> ControllerProvider.getTravelEntryController().navigateToTravelEntry(e.getUuid())));
 	}
 
 	private void initColumns() {

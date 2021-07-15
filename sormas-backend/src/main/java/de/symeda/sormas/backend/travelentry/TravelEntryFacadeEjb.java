@@ -230,6 +230,8 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 			travelEntry.get(TravelEntry.VACCINATED),
 			travelEntry.get(TravelEntry.TESTED_NEGATIVE),
 			travelEntry.get(TravelEntry.QUARANTINE_TO),
+			travelEntry.get(TravelEntry.REPORT_DATE),
+			travelEntry.get(TravelEntry.DISEASE),
 			travelEntry.get(TravelEntry.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, travelEntryService.inJurisdictionOrOwned(travelEntryQueryContext)));
 

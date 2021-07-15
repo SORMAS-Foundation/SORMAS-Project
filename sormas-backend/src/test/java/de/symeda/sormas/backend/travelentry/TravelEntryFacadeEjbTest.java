@@ -167,4 +167,37 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(person.getLastName(), indexList.get(0).getPersonLastName());
 	}
 
+	@Test
+	public void testGetIndexList() {
+		loginWith(nationalUser);
+
+		PersonDto person1 = creator.createPerson("Peter", "Kruder");
+		PersonDto person2 = creator.createPerson("Richard", "Dorfmeister");
+
+		TravelEntryDto travelEntry1 = creator.createTravelEntry(
+			person1.toReference(),
+			nationalUser.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf1.region,
+			rdcf1.district,
+			rdcf1.pointOfEntry);
+
+		TravelEntryDto travelEntry2 = creator.createTravelEntry(
+			person2.toReference(),
+			nationalUser.toReference(),
+			Disease.YELLOW_FEVER,
+			rdcf1.region,
+			rdcf1.district,
+			rdcf1.pointOfEntry);
+
+		List<TravelEntryIndexDto> indexList =
+			getTravelEntryFacade().getIndexList(new TravelEntryCriteria().person(person1.toReference()), 0, 5, null);
+
+		assertEquals(1, indexList.size());
+		TravelEntryIndexDto indexDto = indexList.get(0);
+		assertEquals(travelEntry1.getUuid(), indexDto.getUuid());
+		assertEquals("Point of entry 1", indexDto.getPointOfEntryName());
+		assertEquals(Disease.CORONAVIRUS, indexDto.getDisease());
+	}
+
 }

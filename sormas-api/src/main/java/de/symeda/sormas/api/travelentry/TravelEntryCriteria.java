@@ -2,6 +2,7 @@ package de.symeda.sormas.api.travelentry;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class TravelEntryCriteria extends BaseCriteria implements Serializable, Cloneable {
@@ -17,6 +18,7 @@ public class TravelEntryCriteria extends BaseCriteria implements Serializable, C
 	private Boolean onlyVaccinatedEntries = Boolean.FALSE;
 	private Boolean onlyEntriesTestedNegative = Boolean.FALSE;
 	private Boolean onlyEntriesConvertedToCase = Boolean.FALSE;
+	private PersonReferenceDto person;
 
 	public String getNameUuidExternalIDLike() {
 		return nameUuidExternalIDLike;
@@ -57,4 +59,18 @@ public class TravelEntryCriteria extends BaseCriteria implements Serializable, C
 	public void setOnlyEntriesConvertedToCase(Boolean onlyEntriesConvertedToCase) {
 		this.onlyEntriesConvertedToCase = onlyEntriesConvertedToCase;
 	}
+
+	public PersonReferenceDto getPerson() {
+		return person;
+	}
+
+	public void setPerson(PersonReferenceDto person) {
+		this.person = person;
+	}
+
+	public TravelEntryCriteria person(PersonReferenceDto person) {
+		this.person = person;
+		return this;
+	}
+
 }

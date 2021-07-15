@@ -225,6 +225,7 @@ public interface Strings {
 	String entityTask = "entityTask";
 	String entityTasks = "entityTasks";
 	String entityTravel = "entityTravel";
+	String entityTravelEntries = "entityTravelEntries";
 	String entityTreatment = "entityTreatment";
 	String entityTreatments = "entityTreatments";
 	String entityUser = "entityUser";
