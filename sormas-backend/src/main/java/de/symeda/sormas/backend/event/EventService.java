@@ -414,51 +414,42 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return filter;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Predicate createCaseAndEventParticipantFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> eventPath) {
 
 		Join<Event, EventParticipant> eventParticipantJoin = eventPath.join(Event.EVENT_PERSONS, JoinType.LEFT);
 		Join<EventParticipant, Case> caseJoin = eventParticipantJoin.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 
-		Subquery<Long> caseSubquery = cq.subquery(Long.class);
-		Root<Case> caseRoot = caseSubquery.from(Case.class);
-		caseSubquery.where(caseService.createUserFilter(cb, cq, caseRoot));
-		caseSubquery.select(caseRoot.get(Case.ID));
-
-		Predicate filter = cb.in(caseJoin.get(Case.ID)).value(caseSubquery);
+		Predicate filter = caseService.createUserFilter(cb, cq, caseJoin);
 
 		final User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.REGION || jurisdictionLevel == JurisdictionLevel.DISTRICT) {
-			Subquery<Long> eventParticipantSubquery = cq.subquery(Long.class);
-			Root<EventParticipant> epRoot = eventParticipantSubquery.from(EventParticipant.class);
 
 			switch (jurisdictionLevel) {
 			case REGION:
 				if (currentUser.getRegion() != null) {
-					eventParticipantSubquery.where(
-						cb.and(
-							cb.equal(epRoot.get(EventParticipant.EVENT).get(Event.ID), eventPath.get(Event.ID)),
-							cb.equal(epRoot.get(EventParticipant.REGION).get(Region.ID), currentUser.getRegion().getId())));
+					filter = CriteriaBuilderHelper.or(
+						cb,
+						filter,
+						cb.equal(eventParticipantJoin.get(EventParticipant.REGION).get(Region.ID), currentUser.getRegion().getId()));
 				}
 				break;
 			case DISTRICT:
 				if (currentUser.getDistrict() != null) {
-					eventParticipantSubquery.where(
-						cb.and(
-							cb.equal(epRoot.get(EventParticipant.EVENT).get(Event.ID), eventPath.get(Event.ID)),
-							cb.equal(epRoot.get(EventParticipant.DISTRICT).get(District.ID), currentUser.getDistrict().getId())));
+					filter = CriteriaBuilderHelper.or(
+						cb,
+						filter,
+						cb.equal(eventParticipantJoin.get(EventParticipant.DISTRICT).get(District.ID), currentUser.getDistrict().getId()));
 				}
 				break;
+			//$CASES-OMITTED$
 			default:
+				break;
 			}
-
-			eventParticipantSubquery.select(epRoot.get(EventParticipant.ID));
-
-			filter = CriteriaBuilderHelper.or(cb, filter, cb.in(eventParticipantJoin.get(EventParticipant.ID)).value(eventParticipantSubquery));
 		}
 
 		return filter;
-
 	}
 
 	@Override
