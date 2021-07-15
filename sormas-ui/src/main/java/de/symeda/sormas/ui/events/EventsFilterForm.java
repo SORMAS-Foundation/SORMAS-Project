@@ -7,6 +7,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +27,13 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import org.apache.commons.collections.CollectionUtils;
+
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventDto;
@@ -119,6 +126,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			EventCriteria.EVENT_STATUS,
 			EventCriteria.RISK_LEVEL,
 			EventIndexDto.DISEASE,
+			EventIndexDto.DISEASE_VARIANT,
 			EventCriteria.REPORTING_USER_ROLE,
 			EventCriteria.RESPONSIBLE_USER,
 			EventCriteria.FREE_TEXT,
@@ -132,6 +140,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		addField(FieldConfiguration.pixelSized(EventCriteria.EVENT_STATUS, 140));
 		addField(FieldConfiguration.pixelSized(EventCriteria.RISK_LEVEL, 140));
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE, 140));
+		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE_VARIANT, 140), ComboBox.class);
+
 		addField(FieldConfiguration.withCaptionAndPixelSized(EventCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
 		addField(FieldConfiguration.pixelSized(EventCriteria.RESPONSIBLE_USER, 140));
 
@@ -415,6 +425,9 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		case EventDto.TYPE_OF_PLACE:
 			applyFacilityFieldsDependencies();
 			break;
+		case CaseDataDto.DISEASE:
+			Disease disease = (Disease) event.getProperty().getValue();
+			applyDiseaseFilterDependency(disease);
 		}
 	}
 
@@ -468,6 +481,23 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		applyFacilityFieldsDependencies(criteria.getTypeOfPlace(), criteria.getDistrict(), criteria.getCommunity());
 
 		updateResponsibleUserFieldItems(criteria.getDistrict(), criteria.getRegion());
+
+		ComboBox diseaseField = getField(CaseDataDto.DISEASE);
+		Disease disease = (Disease) diseaseField.getValue();
+		applyDiseaseFilterDependency(disease);
+	}
+
+	private void applyDiseaseFilterDependency(Disease disease) {
+		ComboBox diseaseVariantField = getField(CaseDataDto.DISEASE_VARIANT);
+		if (disease == null) {
+			FieldHelper.updateItems(diseaseVariantField, Collections.emptyList());
+			FieldHelper.setEnabled(false, diseaseVariantField);
+		} else {
+			List<DiseaseVariant> diseaseVariants =
+					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+			FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), diseaseVariantField);
+		}
 	}
 
 	private void applyDateDependencyOnNewValue(String componentId, DateFilterOption dateFilterOption, Date dateFrom, Date dateTo) {

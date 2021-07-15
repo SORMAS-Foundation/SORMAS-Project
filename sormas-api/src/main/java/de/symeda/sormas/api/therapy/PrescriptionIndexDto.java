@@ -138,6 +138,14 @@ public class PrescriptionIndexDto implements Serializable {
 			this.typeOfDrug = typeOfDrug;
 		}
 
+		public String getPrescriptionDetails() {
+			return prescriptionDetails;
+		}
+
+		public TypeOfDrug getTypeOfDrug() {
+			return typeOfDrug;
+		}
+
 		public String formatString() {
 			return TreatmentType.buildCaption(prescriptionType, prescriptionDetails, typeOfDrug);
 		}
@@ -148,6 +156,14 @@ public class PrescriptionIndexDto implements Serializable {
 		private TreatmentRoute route;
 		@SensitiveData
 		private String routeDetails;
+
+		public TreatmentRoute getRoute() {
+			return route;
+		}
+
+		public String getRouteDetails() {
+			return routeDetails;
+		}
 
 		public PrescriptionIndexRoute(TreatmentRoute route, String routeDetails) {
 			this.route = route;

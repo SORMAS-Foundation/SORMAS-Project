@@ -18,12 +18,19 @@ package de.symeda.sormas.api.travelentry;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class DeaContentEntry implements Serializable {
+import org.apache.commons.lang3.ObjectUtils;
+
+public class DeaContentEntry implements Serializable, Comparable<DeaContentEntry> {
 
 	private static final long serialVersionUID = -9182801671706246792L;
 
 	private String caption;
 	private String value;
+
+	public DeaContentEntry(String caption, String value) {
+		this.caption = caption;
+		this.value = value;
+	}
 
 	public String getCaption() {
 		return caption;
@@ -57,5 +64,14 @@ public class DeaContentEntry implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(caption, value);
+	}
+
+	@Override
+	public int compareTo(DeaContentEntry o) {
+		int result = ObjectUtils.compare(caption != null ? caption.toLowerCase() : null, o.caption != null ? o.caption.toLowerCase() : null);
+		if (result == 0) {
+			return ObjectUtils.compare(value != null ? value.toLowerCase() : null, o.value != null ? o.value.toLowerCase() : null);
+		}
+		return result;
 	}
 }

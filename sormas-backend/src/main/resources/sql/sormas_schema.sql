@@ -7601,8 +7601,13 @@ ALTER TABLE travelentry_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (382, 'DEA TravelEntry entity and backend logic #6022');
 
--- 2021-07-13 Add missing columns to history tables #6078
+-- 2021-07-12 Add disease variant to event #5525
+ALTER TABLE events ADD COLUMN diseasevariant text;
+ALTER TABLE events_history ADD COLUMN diseasevariant text;
 
+INSERT INTO schema_version (version_number, comment) VALUES (383, 'Add disease variant to event #5525');
+
+-- 2021-07-13 Add missing columns to history tables #6078
 ALTER TABLE cases_history ADD COLUMN classificationdate timestamp without time zone;
 ALTER TABLE cases_history ADD COLUMN classificationuser_id bigint;
 ALTER TABLE cases_history ADD COLUMN creationversion  varchar(32);
@@ -7659,6 +7664,6 @@ ALTER TABLE symptoms_history ADD COLUMN stomachbleeding varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN rapidbreathing varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN swollenglands varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (383, 'Add missing history columns #6078');
+INSERT INTO schema_version (version_number, comment) VALUES (384, 'Add missing history columns #6078');
 
--- *** Insert new sql commands BEFORE this line. Always remember to check corresponding _history-tables for differences! ***
+-- *** Insert new sql commands BEFORE this line ***

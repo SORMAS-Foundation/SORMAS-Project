@@ -41,6 +41,7 @@ import de.symeda.sormas.ui.sormastosormas.SormasToSormasController;
 import de.symeda.sormas.ui.statistics.StatisticsController;
 import de.symeda.sormas.ui.task.TaskController;
 import de.symeda.sormas.ui.therapy.TherapyController;
+import de.symeda.sormas.ui.travelentry.TravelEntryController;
 import de.symeda.sormas.ui.user.UserController;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
 import de.symeda.sormas.ui.visit.VisitController;
@@ -73,6 +74,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final LabMessageController labMessageController;
 	private final SurveillanceReportController surveillanceReportController;
 	private final DocGenerationController docGenerationController;
+	private final TravelEntryController travelEntryController;
 
 	public ControllerProvider() {
 		super();
@@ -103,6 +105,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		labMessageController = new LabMessageController();
 		surveillanceReportController = new SurveillanceReportController();
 		docGenerationController = new DocGenerationController();
+		travelEntryController = new TravelEntryController();
 	}
 
 	protected static ControllerProvider get() {
@@ -211,5 +214,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static DocGenerationController getDocGenerationController() {
 		return get().docGenerationController;
+	}
+
+	public static TravelEntryController getTravelEntryController() {
+		return get().travelEntryController;
 	}
 }
