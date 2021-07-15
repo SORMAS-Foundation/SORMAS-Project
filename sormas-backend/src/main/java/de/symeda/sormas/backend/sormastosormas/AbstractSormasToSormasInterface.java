@@ -284,7 +284,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		} catch (ExternalSurveillanceToolException e) {
 			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
 
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool), true);
+			throw SormasToSormasException.fromStringPropertyWithWarning(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool);
 		}
 	}
 
@@ -341,7 +341,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		} catch (ExternalSurveillanceToolException e) {
 			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
 
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool), true);
+			throw SormasToSormasException.fromStringPropertyWithWarning(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool);
 		}
 	}
 
@@ -374,7 +374,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		} catch (ExternalSurveillanceToolException e) {
 			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
 
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool), true);
+			throw SormasToSormasException.fromStringPropertyWithWarning(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool);
 		}
 	}
 
@@ -504,9 +504,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		addOptionsToShareInfo(options, shareInfo);
 
 		addEntityToShareInfo(shareInfo, entities);
-		associatedEntities.forEach(e -> {
-			e.addEntityToShareInfo(shareInfo);
-		});
+		associatedEntities.forEach(e -> e.addEntityToShareInfo(shareInfo));
 
 		shareInfoService.ensurePersisted(shareInfo);
 

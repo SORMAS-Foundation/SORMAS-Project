@@ -33,14 +33,18 @@ public class SormasToSormasException extends Exception implements SormasToSormas
 
 	private List<ValidationErrors> errors;
 
-	public SormasToSormasException(String message, String i18nProperty, Object... args) {
+	boolean warning;
+
+	public SormasToSormasException(String message, boolean warning, String i18nProperty, Object... args) {
 		super(message);
+		this.warning = warning;
 		this.i18nTag = i18nProperty;
 		this.args = args;
 	}
 
-	public SormasToSormasException(String message, String i18nTag, List<ValidationErrors> errors, Object... args) {
+	public SormasToSormasException(String message, boolean warning, String i18nTag, List<ValidationErrors> errors, Object... args) {
 		super(message);
+		this.warning = warning;
 		this.i18nTag = i18nTag;
 		this.args = args;
 		this.errors = errors;
@@ -60,7 +64,7 @@ public class SormasToSormasException extends Exception implements SormasToSormas
 	public String getHumanMessage() {
 		if (StringUtils.isNotBlank(i18nTag) && ArrayUtils.isNotEmpty(args)) {
 			return String.format(I18nProperties.getString(i18nTag), args);
-		} else if (StringUtils.isNotBlank(i18nTag)){
+		} else if (StringUtils.isNotBlank(i18nTag)) {
 			return I18nProperties.getString(i18nTag);
 		} else {
 			return getMessage();
@@ -79,11 +83,19 @@ public class SormasToSormasException extends Exception implements SormasToSormas
 		return warning;
 	}
 
-	public static SormasToSormasException fromStringProperty(String i18nProperty, Object... args) {
-		return fromStringProperty(i18nProperty, null, args);
+	public static SormasToSormasException fromStringPropertyWithWarning(String i18nProperty, Object... args) {
+		return fromStringProperty(true, i18nProperty, null, args);
 	}
 
-	public static SormasToSormasException fromStringProperty(String i18nTag, Map<String, ValidationErrors> errors, Object ... args) {
+	public static SormasToSormasException fromStringProperty(String i18nProperty, Object... args) {
+		return fromStringProperty(false, i18nProperty, null, args);
+	}
+
+	public static SormasToSormasException fromStringProperty(String i18nTag, Map<String, ValidationErrors> errors, Object... args) {
+		return fromStringProperty(false, i18nTag, errors, args);
+	}
+
+	private static SormasToSormasException fromStringProperty(boolean warning, String i18nTag, Map<String, ValidationErrors> errors, Object... args) {
 
 		String message;
 		if (ArrayUtils.isNotEmpty(args)) {
@@ -93,9 +105,9 @@ public class SormasToSormasException extends Exception implements SormasToSormas
 		}
 
 		if (errors == null) {
-			return new SormasToSormasException(message, i18nTag, args);
+			return new SormasToSormasException(message, warning, i18nTag, args);
 		} else {
-			return new SormasToSormasException(message, i18nTag, errors, args);
+			return new SormasToSormasException(message, warning, i18nTag, errors, args);
 		}
 	}
 }
