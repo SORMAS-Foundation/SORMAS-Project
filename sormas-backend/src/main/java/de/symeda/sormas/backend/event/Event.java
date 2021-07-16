@@ -46,6 +46,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EpidemiologicalEvidenceDetail;
+import de.symeda.sormas.api.event.EventIdentificationSource;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -134,6 +135,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
 	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
 	public static final String SUBORDINATE_EVENTS = "subordinateEvents";
+	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 
 	public static final String INFECTION_PATH_CERTAINTY = "infectionPathCertainty";
 	public static final String HUMAN_TRANSMISSION_MODE = "humanTransmissionMode";
@@ -209,6 +211,8 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	private List<EventGroup> eventGroups;
 
 	private String internalToken;
+
+	private EventIdentificationSource eventIdentificationSource;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -769,5 +773,14 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 
 	public void setEventGroups(List<EventGroup> eventGroups) {
 		this.eventGroups = eventGroups;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public EventIdentificationSource getEventIdentificationSource() {
+		return eventIdentificationSource;
+	}
+
+	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 }

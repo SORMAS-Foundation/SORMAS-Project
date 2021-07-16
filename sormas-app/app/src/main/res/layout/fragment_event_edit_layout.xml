@@ -105,6 +105,11 @@
                 app:enumClass="@{eventManagementStatusClass}"
                 app:value="@={data.eventManagementStatus}"/>
 
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/event_eventIdentificationSource"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.eventIdentificationSource}"/>
+
             <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/event_riskLevel"
                 style="@style/ControlSingleColumnStyle"
