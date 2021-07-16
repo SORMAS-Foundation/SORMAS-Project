@@ -67,10 +67,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventJoins;
 
 @Stateless
 @LocalBean
@@ -332,12 +329,17 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 				Predicate likeFilters = cb.or(
 					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCaze().get(Case.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getContact().get(Contact.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getContact().get(Contact.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getContactPerson().get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getContactPerson().get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getContactPerson().get(Person.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getEvent().get(Event.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getEvent().get(Event.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getEvent().get(Event.EVENT_TITLE), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
@@ -492,8 +494,11 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze())))),
-			JurisdictionHelper
-				.booleanSelector(cb, cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(new ContactQueryContext<>(cb, qc.getQuery(), joins.getContact())))),
+			JurisdictionHelper.booleanSelector(
+				cb,
+				cb.and(
+					cb.isNotNull(joins.getContact()),
+					contactService.inJurisdictionOrOwned(new ContactQueryContext<>(cb, qc.getQuery(), joins.getContact())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
@@ -502,7 +507,9 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), contactJoins.getCaze())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
-				cb.and(cb.isNotNull(joins.getEvent()), eventService.inJurisdictionOrOwned(new EventQueryContext<>(cb, qc.getQuery(), joins.getEvent())))));
+				cb.and(
+					cb.isNotNull(joins.getEvent()),
+					eventService.inJurisdictionOrOwned(new EventQueryContext<>(cb, qc.getQuery(), joins.getEvent())))));
 	}
 
 	public Predicate inJurisdictionOrOwned(TaskQueryContext qc) {

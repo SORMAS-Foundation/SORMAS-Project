@@ -19,7 +19,10 @@ import de.symeda.sormas.api.utils.pseudonymization.ValuePseudonymizer;
 
 public class LatitudePseudonymizer extends ValuePseudonymizer<Double> {
 
-	public static double RANDOMIZATION_DISTANCE_RAD = 5000 / 111300D; //5000 meters / about 111300 meters in one degree
+	/*
+	 * 5000 meters / about 111300 meters in one degree
+	 */
+	public static final double RANDOMIZATION_DISTANCE_RAD = 5000 / 111300D;
 
 	@Override
 	protected Double pseudonymizeValue(Double value) {

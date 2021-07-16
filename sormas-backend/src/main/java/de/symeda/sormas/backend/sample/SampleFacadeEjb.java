@@ -95,7 +95,6 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
-import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -121,11 +120,9 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventParticipantJoins;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
@@ -503,12 +500,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
 		}
 
-		List<SampleIndexDto> samples;
-		if (first != null && max != null) {
-			samples = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			samples = em.createQuery(cq).getResultList();
-		}
+		List<SampleIndexDto> samples = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!samples.isEmpty()) {
 			CriteriaQuery<Object[]> testCq = cb.createQuery(Object[].class);
@@ -783,7 +775,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		cq.orderBy(cb.desc(sampleRoot.get(Sample.REPORT_DATE_TIME)), cb.desc(sampleRoot.get(Sample.ID)));
 
-		List<SampleExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<SampleExportDto> resultList = QueryHelper.getResultList(em, cq, first, max);
 
 		for (SampleExportDto exportDto : resultList) {
 			Sample sampleFromExportDto = sampleService.getById(exportDto.getId());

@@ -132,6 +132,7 @@ public class SettingsActivity extends BaseLandingActivity {
 			// Do nothing if the installation was successful
 			case Activity.RESULT_OK:
 			case Activity.RESULT_CANCELED:
+			case Activity.RESULT_FIRST_USER:
 				break;
 			// Everything else probably is an error
 			default:
