@@ -80,6 +80,7 @@ public class AboutView extends VerticalLayout implements View {
 		HorizontalLayout aboutLayout = new HorizontalLayout();
 		{
 			VerticalLayout infoLayout = new VerticalLayout();
+			infoLayout.setMargin(new MarginInfo(true, false, false, false));
 			infoLayout.addComponent(createInfoSection());
 
 			// Documents section
