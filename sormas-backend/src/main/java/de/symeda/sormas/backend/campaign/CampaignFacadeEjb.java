@@ -51,6 +51,7 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CampaignFacade")
 public class CampaignFacadeEjb implements CampaignFacade {
@@ -108,11 +109,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 			cq.orderBy(cb.desc(campaign.get(Campaign.CHANGE_DATE)));
 		}
 
-		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			return em.createQuery(cq).getResultList();
-		}
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	@Override

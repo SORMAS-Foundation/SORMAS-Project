@@ -863,7 +863,7 @@ public class StartupShutdownService {
 		try {
 			importFacade.generateEventParticipantImportTemplateFile();
 		} catch (IOException e) {
-			logger.error("Could not create eventparticipant import template .csv file.");
+			logger.error("Could not create event participant import template .csv file.");
 		}
 	}
 

@@ -38,6 +38,8 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.bagexport.BAGExportCaseDto;
 import de.symeda.sormas.api.bagexport.BAGExportContactDto;
 import de.symeda.sormas.api.bagexport.BAGExportFacade;
@@ -55,8 +57,8 @@ import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.utils.CaseJoins;
-import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "BAGExportFacade")
 public class BAGExportFacadeEjb implements BAGExportFacade {
@@ -125,8 +127,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			cq.where(CriteriaBuilderHelper.andInValues(selectedRows, null, cb, caseRoot.get(Case.UUID)));
 		}
 
-		List<BAGExportCaseDto> exportList =
-			em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).setFirstResult(first).setMaxResults(max).getResultList();
+		List<BAGExportCaseDto> exportList = QueryHelper.getResultList(em, cq, first, max);
 
 		Map<Long, List<Location>> personAddresses = new HashMap<>();
 		Map<Long, List<Sample>> samples = new HashMap<>();
@@ -275,8 +276,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 			cq.where(CriteriaBuilderHelper.andInValues(selectedRows, null, cb, contactRoot.get(Contact.UUID)));
 		}
 
-		List<BAGExportContactDto> exportList =
-			em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).setFirstResult(first).setMaxResults(max).getResultList();
+		List<BAGExportContactDto> exportList = QueryHelper.getResultList(em, cq, first, max);
 
 		Map<Long, List<Location>> personAddresses = new HashMap<>();
 		Map<Long, List<Sample>> samples = new HashMap<>();

@@ -103,6 +103,7 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentType;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -383,7 +384,6 @@ public class TestDataCreator {
 		return caze;
 	}
 
-
 	public ImmunizationDto createImmunization(
 		Disease disease,
 		PersonReferenceDto person,
@@ -407,6 +407,24 @@ public class TestDataCreator {
 		immunization.setReportDate(new Date());
 
 		return beanTest.getImmunizationFacade().save(immunization);
+	}
+
+	public TravelEntryDto createTravelEntry(
+		PersonReferenceDto person,
+		UserReferenceDto reportingUser,
+		Disease disease,
+		RegionReferenceDto responsibleRegion,
+		DistrictReferenceDto responsibleDistrict,
+		PointOfEntryReferenceDto pointOfEntry) {
+
+		TravelEntryDto travelEntry = TravelEntryDto.build(person);
+		travelEntry.setDisease(disease);
+		travelEntry.setReportingUser(reportingUser);
+		travelEntry.setResponsibleRegion(responsibleRegion);
+		travelEntry.setResponsibleDistrict(responsibleDistrict);
+		travelEntry.setPointOfEntry(pointOfEntry);
+
+		return beanTest.getTravelEntryFacade().save(travelEntry);
 	}
 
 	public ClinicalVisitDto createClinicalVisit(CaseDataDto caze) {

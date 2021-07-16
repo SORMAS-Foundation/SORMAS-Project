@@ -81,14 +81,14 @@ public enum Disease
 	OTHER(true, true, true, true, 21, false, false, false),
 	UNDEFINED(true, true, true, true, 0, false, false, false);
 
-	private boolean defaultActive;
-	private boolean defaultPrimary;
-	private boolean defaultCaseBased;
-	private boolean defaultFollowUpEnabled;
-	private int defaultFollowUpDuration;
-	private boolean variantAllowed;
-	private boolean defaultExtendedClassification;
-	private boolean defaultExtendedClassificationMulti;
+	private final boolean defaultActive;
+	private final boolean defaultPrimary;
+	private final boolean defaultCaseBased;
+	private final boolean defaultFollowUpEnabled;
+	private final int defaultFollowUpDuration;
+	private final boolean variantAllowed;
+	private final boolean defaultExtendedClassification;
+	private final boolean defaultExtendedClassificationMulti;
 
 	Disease(
 		boolean defaultActive,
@@ -164,16 +164,8 @@ public enum Disease
 		return defaultExtendedClassification;
 	}
 
-	public void setDefaultExtendedClassification(boolean defaultExtendedClassification) {
-		this.defaultExtendedClassification = defaultExtendedClassification;
-	}
-
 	public boolean isDefaultExtendedClassificationMulti() {
 		return defaultExtendedClassificationMulti;
-	}
-
-	public void setDefaultExtendedClassificationMulti(boolean defaultExtendedClassificationMulti) {
-		this.defaultExtendedClassificationMulti = defaultExtendedClassificationMulti;
 	}
 
 	@Override

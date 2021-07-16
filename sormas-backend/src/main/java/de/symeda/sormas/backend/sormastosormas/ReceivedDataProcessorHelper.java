@@ -20,7 +20,6 @@ import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildSamp
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,8 +38,6 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
@@ -55,7 +52,9 @@ import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.ValidationErrors;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -101,22 +100,22 @@ public class ReceivedDataProcessorHelper {
 	public ValidationErrors processOriginInfo(SormasToSormasOriginInfoDto originInfo, String validationGroupCaption) {
 		if (originInfo == null) {
 			return ValidationErrors.create(
-				I18nProperties.getCaption(validationGroupCaption),
-				I18nProperties.getValidationError(Validations.sormasToSormasShareInfoMissing));
+				new ValidationErrorGroup(validationGroupCaption),
+				new ValidationErrorMessage(Validations.sormasToSormasShareInfoMissing));
 		}
 
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		if (originInfo.getOrganizationId() == null) {
 			validationErrors.add(
-				I18nProperties.getCaption(Captions.CaseData_sormasToSormasOriginInfo),
-				I18nProperties.getValidationError(Validations.sormasToSormasOrganizationIdMissing));
+				new ValidationErrorGroup(Captions.CaseData_sormasToSormasOriginInfo),
+				new ValidationErrorMessage(Validations.sormasToSormasOrganizationIdMissing));
 		}
 
 		if (DataHelper.isNullOrEmpty(originInfo.getSenderName())) {
 			validationErrors.add(
-				I18nProperties.getCaption(Captions.CaseData_sormasToSormasOriginInfo),
-				I18nProperties.getValidationError(Validations.sormasToSormasSenderNameMissing));
+				new ValidationErrorGroup(Captions.CaseData_sormasToSormasOriginInfo),
+				new ValidationErrorMessage(Validations.sormasToSormasSenderNameMissing));
 		}
 
 		originInfo.setUuid(DataHelper.createUuid());
@@ -154,20 +153,20 @@ public class ReceivedDataProcessorHelper {
 	private CountryReferenceDto processCountry(CountryReferenceDto country, String errorCaption, ValidationErrors validationErrors) {
 		CountryReferenceDto localCountry = loadLocalCountry(country);
 		if (country != null && localCountry == null) {
-			validationErrors.add(errorCaption, String.format(I18nProperties.getString(Strings.errorSormasToSormasCountry), country.getCaption()));
+			validationErrors.add(new ValidationErrorGroup(errorCaption), new ValidationErrorMessage(Validations.sormasToSormasCountry, country.getCaption()));
 		}
 		return localCountry;
 	}
 
-	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
+	public DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> loadLocalInfrastructure(
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		CommunityReferenceDto community) {
 		return loadLocalInfrastructure(region, district, community, null, null, null, null, null);
 	}
 
-	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(CaseDataDto caze) {
-		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = loadLocalInfrastructure(
+	public DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> loadLocalInfrastructure(CaseDataDto caze) {
+		DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors = loadLocalInfrastructure(
 			caze.getRegion(),
 			caze.getDistrict(),
 			caze.getCommunity(),
@@ -178,34 +177,30 @@ public class ReceivedDataProcessorHelper {
 			caze.getPointOfEntryDetails());
 
 		InfrastructureData infrastructureData = infrastructureAndErrors.getElement0();
-		List<String> unmatchedFields = infrastructureAndErrors.getElement1();
+		List<ValidationErrorMessage> unmatchedFields = infrastructureAndErrors.getElement1();
 
 		RegionReferenceDto responsibleRegion = caze.getResponsibleRegion();
 		infrastructureData.responsibleRegion = loadLocalRegion(responsibleRegion);
 		if (responsibleRegion != null && infrastructureData.responsibleRegion == null) {
-			unmatchedFields.add(
-				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_REGION) + ": " + responsibleRegion.getCaption());
+			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasResponsibleRegion, responsibleRegion.getCaption()));
 		}
 
 		DistrictReferenceDto responsibleDistrict = caze.getResponsibleDistrict();
 		infrastructureData.responsibleDistrict = loadLocalDistrict(responsibleDistrict);
 		if (responsibleDistrict != null && infrastructureData.responsibleDistrict == null) {
-			unmatchedFields.add(
-				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_DISTRICT) + ": " + responsibleDistrict.getCaption());
+			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasResponsibleDistrict, responsibleDistrict.getCaption()));
 		}
 
 		CommunityReferenceDto responsibleCommunity = caze.getResponsibleCommunity();
 		infrastructureData.responsibleCommunity = loadLocalCommunity(responsibleCommunity);
 		if (responsibleCommunity != null && infrastructureData.responsibleCommunity == null) {
-			unmatchedFields.add(
-				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.RESPONSIBLE_COMMUNITY) + ": "
-					+ responsibleCommunity.getCaption());
+			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasResponsibleCommunity, responsibleCommunity.getCaption()));
 		}
 
 		return infrastructureAndErrors;
 	}
 
-	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
+	public DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> loadLocalInfrastructure(
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		CommunityReferenceDto community,
@@ -228,7 +223,7 @@ public class ReceivedDataProcessorHelper {
 			pointOfEntryDetails);
 	}
 
-	public DataHelper.Pair<InfrastructureData, List<String>> loadLocalInfrastructure(
+	public DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> loadLocalInfrastructure(
 		ContinentReferenceDto continent,
 		SubcontinentReferenceDto subcontinent,
 		CountryReferenceDto country,
@@ -242,43 +237,43 @@ public class ReceivedDataProcessorHelper {
 		String pointOfEntryDetails) {
 
 		InfrastructureData infrastructureData = new InfrastructureData();
-		List<String> unmatchedFields = new ArrayList<>();
+		List<ValidationErrorMessage> unmatchedFields = new ArrayList<>();
 
 		infrastructureData.continent = loadLocalContinent(continent);
 		if (continent != null && infrastructureData.continent == null) {
-			unmatchedFields.add(I18nProperties.getCaption(Captions.continent) + ": " + continent.getCaption());
+			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasContinent, Captions.continent, continent.getCaption()));
 		}
 
 		infrastructureData.subcontinent = loadLocalSubcontinent(subcontinent);
 		if (subcontinent != null && infrastructureData.subcontinent == null) {
-			unmatchedFields.add(I18nProperties.getCaption(Captions.subcontinent) + ": " + subcontinent.getCaption());
+			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasSubcontinent, subcontinent.getCaption()));
 		}
 
 		infrastructureData.country = loadLocalCountry(country);
 		if (country != null && infrastructureData.country == null) {
-			unmatchedFields.add(I18nProperties.getCaption(Captions.country) + ": " + country.getCaption());
+			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasCountry, country.getCaption()));
 		}
 
 		infrastructureData.region = loadLocalRegion(region);
 		if (region != null && infrastructureData.region == null) {
-			unmatchedFields.add(I18nProperties.getCaption(Captions.region) + ": " + region.getCaption());
+			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasRegion, region.getCaption()));
 		}
 
 		infrastructureData.district = loadLocalDistrict(district);
 		if (district != null && infrastructureData.district == null) {
-			unmatchedFields.add(I18nProperties.getCaption(Captions.district) + ": " + district.getCaption());
+			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasDistrict, district.getCaption()));
 		}
 
 		infrastructureData.community = loadLocalCommunity(community);
 		if (community != null && infrastructureData.community == null) {
-			unmatchedFields.add(I18nProperties.getCaption(Captions.community) + ": " + community.getCaption());
+			unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasCommunity, community.getCaption()));
 		}
 
 		if (facility != null) {
 			WithDetails<FacilityReferenceDto> localFacility = loadLocalFacility(facility, facilityType, facilityDetails);
 
 			if (localFacility.entity == null) {
-				unmatchedFields.add(I18nProperties.getCaption(Captions.facility) + ": " + facility.getCaption());
+				unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasFacility, facility.getCaption()));
 			} else {
 				infrastructureData.facility = localFacility.entity;
 				infrastructureData.facilityDetails = localFacility.details;
@@ -289,35 +284,34 @@ public class ReceivedDataProcessorHelper {
 			WithDetails<PointOfEntryReferenceDto> localPointOfEntry = loadLocalPointOfEntry(pointOfEntry, pointOfEntryDetails);
 
 			if (localPointOfEntry.entity == null) {
-				unmatchedFields.add(I18nProperties.getCaption(Captions.pointOfEntry) + ": " + pointOfEntry.getCaption());
+				unmatchedFields.add(new ValidationErrorMessage(Validations.sormasToSormasPointOfEntry, pointOfEntry.getCaption()));
 			} else {
 				infrastructureData.pointOfEntry = localPointOfEntry.entity;
 				infrastructureData.pointOfEntryDetails = localPointOfEntry.details;
 			}
 		}
 
-		return new DataHelper.Pair(infrastructureData, unmatchedFields);
+		return new DataHelper.Pair<>(infrastructureData, unmatchedFields);
 	}
 
 	public void handleInfraStructure(
-		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors,
+		DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors,
 		String groupNameTag,
 		ValidationErrors validationErrors,
 		Consumer<InfrastructureData> onNoErrors) {
 
-		List<String> errors = infrastructureAndErrors.getElement1();
+		List<ValidationErrorMessage> errors = infrastructureAndErrors.getElement1();
 		if (errors.size() > 0) {
-			validationErrors.add(
-				I18nProperties.getCaption(groupNameTag),
-				String.format(I18nProperties.getString(Strings.errorSormasToSormasInfrastructure), String.join(",", errors)));
-
+			for(ValidationErrorMessage error: errors) {
+				validationErrors.add(new ValidationErrorGroup(groupNameTag), error);
+			}
 		} else {
 			onNoErrors.accept(infrastructureAndErrors.getElement0());
 		}
 	}
 
-	public Map<String, ValidationErrors> processSamples(List<SormasToSormasSampleDto> samples) {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+	public List<ValidationErrors> processSamples(List<SormasToSormasSampleDto> samples) {
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 
 		Map<String, SampleDto> existingSamplesMap =
 			sampleFacade.getByUuids(samples.stream().map(s -> s.getSample().getUuid()).collect(Collectors.toList()))
@@ -330,7 +324,7 @@ public class ReceivedDataProcessorHelper {
 
 			updateReportingUser(sample, existingSamplesMap.get(sample.getUuid()));
 
-			DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
+			DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
 				loadLocalInfrastructure(null, null, null, null, sample.getLab(), sample.getLabDetails(), null, null);
 
 			handleInfraStructure(infrastructureAndErrors, Captions.Sample_lab, sampleErrors, (infrastructureData -> {
@@ -339,11 +333,11 @@ public class ReceivedDataProcessorHelper {
 			}));
 
 			if (sampleErrors.hasError()) {
-				validationErrors.put(buildSampleValidationGroupName(sample), sampleErrors);
+				validationErrors.add(new ValidationErrors(buildSampleValidationGroupName(sample), sampleErrors));
 			}
 
 			sormasToSormasSample.getPathogenTests().forEach(pathogenTest -> {
-				DataHelper.Pair<InfrastructureData, List<String>> ptInfrastructureAndErrors = loadLocalInfrastructure(
+				DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> ptInfrastructureAndErrors = loadLocalInfrastructure(
 					null,
 					null,
 					null,
@@ -360,7 +354,7 @@ public class ReceivedDataProcessorHelper {
 				}));
 
 				if (pathogenTestErrors.hasError()) {
-					validationErrors.put(buildPathogenTestValidationGroupName(pathogenTest), pathogenTestErrors);
+					validationErrors.add(new ValidationErrors(buildPathogenTestValidationGroupName(pathogenTest), pathogenTestErrors));
 				}
 			});
 		});
@@ -377,7 +371,7 @@ public class ReceivedDataProcessorHelper {
 		contact.setPerson(person.toReference());
 		updateReportingUser(contact, existingContact);
 
-		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
+		DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
 			loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
 
 		handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
@@ -394,7 +388,7 @@ public class ReceivedDataProcessorHelper {
 	public ValidationErrors processContactPreview(SormasToSormasContactPreview contact) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors =
+		DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
 			loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
 
 		handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
@@ -430,7 +424,7 @@ public class ReceivedDataProcessorHelper {
 	}
 
 	public void processLocation(LocationDto address, String groupNameTag, ValidationErrors validationErrors) {
-		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = loadLocalInfrastructure(
+		DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors = loadLocalInfrastructure(
 			address.getContinent(),
 			address.getSubcontinent(),
 			address.getCountry(),
