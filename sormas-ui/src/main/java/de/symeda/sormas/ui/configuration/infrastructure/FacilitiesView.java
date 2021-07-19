@@ -92,6 +92,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 	protected Button createButton;
 	protected PopupButton exportPopupButton;
 	private MenuBar bulkOperationsDropdown;
+	private RowCount rowCount;
 
 	public FacilitiesView() {
 
@@ -108,7 +109,8 @@ public class FacilitiesView extends AbstractConfigurationView {
 		gridLayout = new VerticalLayout();
 		//		gridLayout.addComponent(createHeaderBar());
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfFacilities, grid.getItemCount()));
+		rowCount = new RowCount(Strings.labelNumberOfFacilities, grid.getItemCount());
+		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -122,6 +124,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 				window.setCaption(I18nProperties.getString(Strings.headingImportFacilities));
 				window.addCloseListener(c -> {
 					grid.reload();
+					rowCount.update(grid.getItemCount());
 				});
 			}, ValoTheme.BUTTON_PRIMARY);
 
@@ -387,6 +390,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		}
 		updateFilterComponents();
 		grid.reload();
+		rowCount.update(grid.getItemCount());
 	}
 
 	public void updateFilterComponents() {
