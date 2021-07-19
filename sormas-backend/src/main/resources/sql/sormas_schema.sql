@@ -7666,4 +7666,10 @@ ALTER TABLE symptoms_history ADD COLUMN swollenglands varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (384, 'Add missing history columns #6078');
 
+-- 2021-07-19 DEA Travel entry form #6025
+ALTER TABLE travelentry ALTER COLUMN deacontent TYPE json USING deacontent::json;
+ALTER TABLE travelentry_history ALTER COLUMN deacontent TYPE json USING deacontent::json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (385, 'DEA Travel entry form #6025');
+
 -- *** Insert new sql commands BEFORE this line ***

@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.vaadin.v7.data.util.converter.Converter;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Label;
@@ -59,23 +60,26 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 	private static final String DIFFERENT_POINT_OF_ENTRY_JURISDICTION = "differentPointOfEntryJurisdiction";
 	private static final String POINT_OF_ENTRY_HEADING_LOC = "pointOfEntryHeadingLoc";
 	private static final String TRAVEL_ENTRY_HEADING_LOC = "travelEntryHeadingLoc";
+	private static final String DEA_CONTENT_LOC = "DEAContentLoc";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(TRAVEL_ENTRY_HEADING_LOC) +
-					fluidRowLocs(4, de.symeda.sormas.api.travelentry.TravelEntryDto.UUID, 3, de.symeda.sormas.api.travelentry.TravelEntryDto.REPORT_DATE, 5, de.symeda.sormas.api.travelentry.TravelEntryDto.REPORTING_USER) +
-					fluidRowLocs(4, de.symeda.sormas.api.travelentry.TravelEntryDto.EXTERNAL_ID)
+					fluidRowLocs(4, TravelEntryDto.UUID, 3, de.symeda.sormas.api.travelentry.TravelEntryDto.REPORT_DATE, 5, de.symeda.sormas.api.travelentry.TravelEntryDto.REPORTING_USER) +
+					fluidRowLocs(4, TravelEntryDto.EXTERNAL_ID)
 			+ fluidRow(
-			fluidColumnLoc(6, 0, de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE),
-			fluidColumnLoc(6, 0, de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE_DETAILS),
-			fluidColumnLoc(6, 0, de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE_VARIANT)) +
-					fluidRowLocs(de.symeda.sormas.api.travelentry.TravelEntryDto.RECOVERED, de.symeda.sormas.api.travelentry.TravelEntryDto.VACCINATED, de.symeda.sormas.api.travelentry.TravelEntryDto.TESTED_NEGATIVE) +
+			fluidColumnLoc(6, 0, TravelEntryDto.DISEASE),
+			fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_DETAILS),
+			fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_VARIANT)) +
+					fluidRowLocs(TravelEntryDto.RECOVERED, TravelEntryDto.VACCINATED, TravelEntryDto.TESTED_NEGATIVE) +
 			fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
 			+ fluidRowLocs(de.symeda.sormas.api.travelentry.TravelEntryDto.RESPONSIBLE_REGION, de.symeda.sormas.api.travelentry.TravelEntryDto.RESPONSIBLE_DISTRICT, de.symeda.sormas.api.travelentry.TravelEntryDto.RESPONSIBLE_COMMUNITY)
 			+ fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
 			+ fluidRowLocs(POINT_OF_ENTRY_HEADING_LOC)
 			+ fluidRowLocs(de.symeda.sormas.api.travelentry.TravelEntryDto.REGION, de.symeda.sormas.api.travelentry.TravelEntryDto.DISTRICT)
-			+ fluidRowLocs(de.symeda.sormas.api.travelentry.TravelEntryDto.POINT_OF_ENTRY, de.symeda.sormas.api.travelentry.TravelEntryDto.POINT_OF_ENTRY_DETAILS)+
+			+ fluidRowLocs(de.symeda.sormas.api.travelentry.TravelEntryDto.POINT_OF_ENTRY, de.symeda.sormas.api.travelentry.TravelEntryDto.POINT_OF_ENTRY_DETAILS)
+
+			 + loc(DEA_CONTENT_LOC) +
 
 			fluidRowLocs(4, TravelEntryDto.QUARANTINE_HOME_POSSIBLE, 8, TravelEntryDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
 			fluidRowLocs(4, TravelEntryDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, TravelEntryDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
@@ -102,6 +106,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 	private CheckBox quarantineReduced;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
+	private DEAFormBuilder deaFormBuilder;
 
 	public TravelEntryDataForm(String travelEntryUuid, boolean isPseudonymized) {
 		super(
@@ -374,6 +379,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 					&& isVisibleAllowed(de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE_VARIANT)
 					&& CollectionUtils.isNotEmpty(diseaseVariants));
 		});
+
 	}
 
 	private void getPointsOfEntryForDistrict(DistrictReferenceDto districtDto) {
@@ -441,4 +447,26 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		}
 	}
 
+	@Override
+	public void setValue(TravelEntryDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+		buildDeaContent(newFieldValue);
+	}
+
+	private void buildDeaContent(TravelEntryDto newFieldValue) {
+		if (newFieldValue.getDeaContent() != null) {
+			deaFormBuilder = new DEAFormBuilder(newFieldValue.getDeaContent(), false);
+			deaFormBuilder.buildForm();
+			getContent().addComponent(deaFormBuilder.getLayout(), DEA_CONTENT_LOC);
+		}
+	}
+
+	@Override
+	public TravelEntryDto getValue() {
+		TravelEntryDto travelEntryDto = super.getValue();
+		if (deaFormBuilder != null) {
+			travelEntryDto.setDeaContent(deaFormBuilder.getDeaContentEntries());
+		}
+		return travelEntryDto;
+	}
 }
