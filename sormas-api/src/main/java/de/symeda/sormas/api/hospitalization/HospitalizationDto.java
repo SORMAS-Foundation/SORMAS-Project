@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -58,6 +59,7 @@ public class HospitalizationDto extends EntityDto {
 	private YesNoUnknown leftAgainstAdvice;
 
 	private YesNoUnknown hospitalizedPreviously;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
 	private YesNoUnknown intensiveCareUnit;
 	private Date intensiveCareUnitStart;
