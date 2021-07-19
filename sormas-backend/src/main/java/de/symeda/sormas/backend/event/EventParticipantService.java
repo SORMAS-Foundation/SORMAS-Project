@@ -252,7 +252,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
 		eventUserFilterCriteria.forceRegionJurisdiction(true);
 
-		return eventService.createUserFilter(cb, cq, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT), eventUserFilterCriteria);
+		return eventService.createUserFilter(cb, cq, null, eventParticipantPath, eventUserFilterCriteria);
 	}
 
 	public List<EventParticipant> getAllByPerson(Person person) {

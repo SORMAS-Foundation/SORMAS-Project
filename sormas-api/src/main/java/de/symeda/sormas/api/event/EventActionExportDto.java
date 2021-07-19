@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ public class EventActionExportDto implements Serializable {
 	private DiseaseVariant eventDiseaseVariant;
 	private String eventDiseaseDetails;
 	private String eventDesc;
+	private EventIdentificationSource eventIdentificationSource;
 	private String eventDate;
 	private Date eventEvolutionDate;
 	private String eventEvolutionComment;
@@ -63,6 +64,7 @@ public class EventActionExportDto implements Serializable {
 		DiseaseVariant eventDiseaseVariant,
 		String eventDiseaseDetails,
 		String eventDesc,
+		EventIdentificationSource eventIdentificationSource,
 		Date eventStartDate,
 		Date eventEndDate,
 		Date eventEvolutionDate,
@@ -95,6 +97,7 @@ public class EventActionExportDto implements Serializable {
 		this.eventDiseaseVariant = eventDiseaseVariant;
 		this.eventDiseaseDetails = eventDiseaseDetails;
 		this.eventDesc = eventDesc;
+		this.eventIdentificationSource = eventIdentificationSource;
 		this.eventDate = EventHelper.buildEventDateString(eventStartDate, eventEndDate);
 		this.eventEvolutionDate = eventEvolutionDate;
 		this.eventEvolutionComment = eventEvolutionComment;
@@ -145,76 +148,81 @@ public class EventActionExportDto implements Serializable {
 	}
 
 	@Order(6)
+	public EventIdentificationSource getEventIdentificationSource() {
+		return eventIdentificationSource;
+	}
+
+	@Order(7)
 	public String getEventDate() {
 		return eventDate;
 	}
 
-	@Order(7)
+	@Order(8)
 	public Date getEventEvolutionDate() {
 		return eventEvolutionDate;
 	}
 
-	@Order(8)
+	@Order(9)
 	public String getEventEvolutionComment() {
 		return eventEvolutionComment;
 	}
 
-	@Order(9)
+	@Order(10)
 	public EventStatus getEventStatus() {
 		return eventStatus;
 	}
 
-	@Order(10)
+	@Order(11)
 	public RiskLevel getEventRiskLevel() {
 		return eventRiskLevel;
 	}
 
-	@Order(11)
+	@Order(12)
 	public EventInvestigationStatus getEventInvestigationStatus() {
 		return eventInvestigationStatus;
 	}
 
-	@Order(12)
+	@Order(13)
 	public UserReferenceDto getEventReportingUser() {
 		return eventReportingUser;
 	}
 
-	@Order(13)
+	@Order(14)
 	public UserReferenceDto getEventResponsibleUser() {
 		return eventResponsibleUser;
 	}
 
-	@Order(14)
+	@Order(15)
 	public ActionMeasure getActionMeasure() {
 		return actionMeasure;
 	}
 
-	@Order(15)
+	@Order(16)
 	public String getActionTitle() {
 		return actionTitle;
 	}
 
-	@Order(16)
+	@Order(17)
 	public Date getActionCreationDate() {
 		return actionCreationDate;
 	}
 
-	@Order(17)
+	@Order(18)
 	public Date getActionChangeDate() {
 		return actionChangeDate;
 	}
 
-	@Order(18)
+	@Order(19)
 	public ActionStatus getActionStatus() {
 		return actionStatus;
 	}
 
-	@Order(19)
+	@Order(20)
 	public ActionPriority getActionPriority() {
 		return actionPriority;
 	}
 
-	@Order(20)
+	@Order(21)
 	public UserReferenceDto getActionLastModifiedBy() {
 		return actionLastModifiedBy;
 	}
