@@ -966,6 +966,7 @@ public interface Captions {
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventGroupCount = "Event.eventGroupCount";
 	String Event_eventGroups = "Event.eventGroups";
+	String Event_eventIdentificationSource = "Event.eventIdentificationSource";
 	String Event_eventInvestigationEndDate = "Event.eventInvestigationEndDate";
 	String Event_eventInvestigationStartDate = "Event.eventInvestigationStartDate";
 	String Event_eventInvestigationStatus = "Event.eventInvestigationStatus";
@@ -1026,6 +1027,7 @@ public interface Captions {
 	String EventAction_eventDiseaseVariant = "EventAction.eventDiseaseVariant";
 	String EventAction_eventEvolutionComment = "EventAction.eventEvolutionComment";
 	String EventAction_eventEvolutionDate = "EventAction.eventEvolutionDate";
+	String EventAction_eventIdentificationSource = "EventAction.eventIdentificationSource";
 	String EventAction_eventInvestigationStatus = "EventAction.eventInvestigationStatus";
 	String EventAction_eventReportingUser = "EventAction.eventReportingUser";
 	String EventAction_eventResponsibleUser = "EventAction.eventResponsibleUser";

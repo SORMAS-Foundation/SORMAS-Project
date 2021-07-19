@@ -7666,4 +7666,10 @@ ALTER TABLE symptoms_history ADD COLUMN swollenglands varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (384, 'Add missing history columns #6078');
 
+-- 2021-07-15 Event identification source (#5526)
+ALTER TABLE events ADD COLUMN eventidentificationsource varchar(255);
+ALTER TABLE events_history ADD COLUMN eventidentificationsource varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (385, 'Event identification source (#5526)');
+
 -- *** Insert new sql commands BEFORE this line ***

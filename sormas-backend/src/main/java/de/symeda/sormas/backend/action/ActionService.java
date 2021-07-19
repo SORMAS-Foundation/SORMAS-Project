@@ -273,6 +273,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_VARIANT),
 			event.get(Event.DISEASE_DETAILS),
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
 			event.get(Event.EVENT_STATUS),
@@ -315,6 +316,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 					break;
 				case EventActionIndexDto.EVENT_DISEASE_VARIANT:
 					expression = event.get(Event.DISEASE_VARIANT);
+					break;
+				case EventActionIndexDto.EVENT_IDENTIFICATION_SOURCE:
+					expression = event.get(Event.EVENT_IDENTIFICATION_SOURCE);
 					break;
 				case EventActionIndexDto.EVENT_START_DATE:
 					expression = event.get(Event.START_DATE);
@@ -408,6 +412,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			event.get(Event.DISEASE_VARIANT),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.EVENT_DESC),
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
 			event.get(Event.EVOLUTION_DATE),

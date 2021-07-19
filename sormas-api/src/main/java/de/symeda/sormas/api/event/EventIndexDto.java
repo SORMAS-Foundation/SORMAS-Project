@@ -69,6 +69,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String SURVEILLANCE_TOOL_LAST_SHARE_DATE = "surveillanceToolLastShareDate";
 	public static final String SURVEILLANCE_TOOL_SHARE_COUNT = "surveillanceToolShareCount";
 	public static final String SURVEILLANCE_TOOL_STATUS = "surveillanceToolStatus";
+	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 
 	private Long id;
 	private String uuid;
@@ -110,6 +111,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private String regionUuid;
 	private boolean isInJurisdictionOrOwned;
 	private EventGroupsIndexDto eventGroups;
+	private EventIdentificationSource eventIdentificationSource;
 
 	private Date surveillanceToolLastShareDate;
 	private Long surveillanceToolShareCount;
@@ -156,7 +158,8 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String responsibleUserFirstName,
 		String responsibleUserLastName,
 		boolean isInJurisdictionOrOwned,
-		Date changeDate) {
+		Date changeDate,
+		EventIdentificationSource eventIdentificationSource) {
 
 		this.id = id;
 		this.uuid = uuid;
@@ -186,6 +189,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.responsibleUser = new UserReferenceDto(responsibleUserUuid, responsibleUserFirstName, responsibleUserLastName, null);
 		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
 		this.regionUuid = regionUuid;
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 
 	public Long getId() {
@@ -478,6 +482,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setSurveillanceToolStatus(ExternalShareStatus surveillanceToolStatus) {
 		this.surveillanceToolStatus = surveillanceToolStatus;
+	}
+
+	public EventIdentificationSource getEventIdentificationSource() {
+		return eventIdentificationSource;
+	}
+
+	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 
 	public EventReferenceDto toReference() {

@@ -38,6 +38,7 @@ public class EventActionIndexDto implements Serializable {
 	public static final String EVENT_DISEASE = "eventDisease";
 	public static final String EVENT_DISEASE_VARIANT = "eventDiseaseVariant";
 	public static final String EVENT_DISEASE_DETAILS = "eventDiseaseDetails";
+	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 	public static final String EVENT_START_DATE = "eventStartDate";
 	public static final String EVENT_END_DATE = "eventEndDate";
 	public static final String EVENT_STATUS = "eventStatus";
@@ -60,6 +61,7 @@ public class EventActionIndexDto implements Serializable {
 	private Disease eventDisease;
 	private DiseaseVariant eventDiseaseVariant;
 	private String eventDiseaseDetails;
+	private EventIdentificationSource eventIdentificationSource;
 	private Date eventStartDate;
 	private Date eventEndDate;
 	private EventStatus eventStatus;
@@ -83,6 +85,7 @@ public class EventActionIndexDto implements Serializable {
 		Disease eventDisease,
 		DiseaseVariant eventDiseaseVariant,
 		String eventDiseaseDetails,
+		EventIdentificationSource eventIdentificationSource,
 		Date eventStartDate,
 		Date eventEndDate,
 		EventStatus eventStatus,
@@ -114,6 +117,7 @@ public class EventActionIndexDto implements Serializable {
 		this.eventDisease = eventDisease;
 		this.eventDiseaseVariant = eventDiseaseVariant;
 		this.eventDiseaseDetails = eventDiseaseDetails;
+		this.eventIdentificationSource = eventIdentificationSource;
 		this.eventStartDate = eventStartDate;
 		this.eventEndDate = eventEndDate;
 		this.eventStatus = eventStatus;
@@ -171,6 +175,14 @@ public class EventActionIndexDto implements Serializable {
 
 	public void setEventDiseaseDetails(String eventDiseaseDetails) {
 		this.eventDiseaseDetails = eventDiseaseDetails;
+	}
+
+	public EventIdentificationSource getEventIdentificationSource() {
+		return eventIdentificationSource;
+	}
+
+	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 
 	public Date getEventStartDate() {
