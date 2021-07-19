@@ -450,10 +450,6 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(InfoFacade.class);
 	}
 
-	public static TravelEntryFacade getTravelEntryFacade() {
-		return get().lookupEjbRemote(TravelEntryFacade.class);
-	}
-
 	@SuppressWarnings("unchecked")
 	public <P> P lookupEjbRemote(Class<P> clazz) {
 		try {

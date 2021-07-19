@@ -11,5 +11,15 @@ public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntr
 
 	void validate(TravelEntryDto travelEntryDto);
 
+	boolean isDeleted(String eventUuid);
+
+	boolean isArchived(String travelEntryUuid);
+
+	void archiveOrDearchiveTravelEntry(String travelEntryUuid, boolean archive);
+
+	Boolean isTravelEntryEditAllowed(String travelEntryUuid);
+
 	boolean exists(String uuid);
+
+	void deleteTravelEntry(String travelEntryUuid);
 }

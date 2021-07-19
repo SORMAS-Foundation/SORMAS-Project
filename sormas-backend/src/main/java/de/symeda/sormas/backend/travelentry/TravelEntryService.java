@@ -14,6 +14,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -131,5 +132,9 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public boolean isTravelEntryEditAllowed(TravelEntry travelEntry) {
+		return userService.hasRight(UserRight.TRAVEL_ENTRY_EDIT) && inJurisdictionOrOwned(travelEntry);
 	}
 }

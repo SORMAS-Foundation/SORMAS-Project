@@ -10,6 +10,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.TravelEntryImportLayout;
@@ -17,10 +18,11 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 public class TravelEntriesView extends AbstractView {
 
-	public static final String VIEW_NAME = "entries";
+	public static final String VIEW_NAME = "travelEntries";
 
 	private final TravelEntryCriteria criteria;
 	private final FilteredGrid<?, TravelEntryCriteria> grid;
@@ -49,6 +51,10 @@ public class TravelEntriesView extends AbstractView {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new TravelEntryImportLayout());
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportTravelEntries));
 			}));
+
+			final ExpandableButton createButton =
+				new ExpandableButton(Captions.travelEntryNewTravelEntry).expand(e -> ControllerProvider.getTravelEntryController().create());
+			addHeaderComponent(createButton);
 		}
 	}
 
