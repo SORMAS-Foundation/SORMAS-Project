@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.configuration;
+package de.symeda.sormas.ui.travelentry.importer;
 
 import java.io.File;
 import java.io.IOException;
