@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.ContinentCriteria;
 import de.symeda.sormas.api.region.ContinentDto;
 import de.symeda.sormas.api.region.SubcontinentCriteria;
@@ -43,14 +44,14 @@ public class ContinentFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, subcontinents.size());
 		final SubcontinentDto savedSubcontinentDto = getSubcontinentFacade().getByUuid(subcontinents.get(0).getUuid());
 		assertEquals("CENTRAL_EUROPE", savedSubcontinentDto.getDefaultName());
-		assertEquals("EUROPE", savedSubcontinentDto.getContinent().getCaption());
+		assertEquals(I18nProperties.getContinentName("EUROPE"), savedSubcontinentDto.getContinent().getCaption());
 
 		final List<SubcontinentIndexDto> indexList =
 			getSubcontinentFacade().getIndexList(new SubcontinentCriteria().continent(continent.toReference()), null, null, null);
 		assertEquals(1, indexList.size());
 		final SubcontinentIndexDto subcontinentIndexDto = indexList.get(0);
 		assertEquals("CENTRAL_EUROPE", subcontinentIndexDto.getDefaultName());
-		assertEquals("EUROPE", subcontinentIndexDto.getContinent().getCaption());
+		assertEquals(I18nProperties.getContinentName("EUROPE"), subcontinentIndexDto.getContinent().getCaption());
 		assertEquals("Central Europe", subcontinentIndexDto.getDisplayName());
 	}
 

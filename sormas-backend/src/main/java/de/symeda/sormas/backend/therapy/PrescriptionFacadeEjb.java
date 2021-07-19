@@ -39,7 +39,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PrescriptionFacade")
 public class PrescriptionFacadeEjb implements PrescriptionFacade {
@@ -196,7 +196,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(prescription.get(Prescription.PRESCRIPTION_DATE)));
 
-		List<PrescriptionExportDto> exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<PrescriptionExportDto> exportList = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(PrescriptionExportDto.class, exportList, p -> p.getInJurisdiction(), null);

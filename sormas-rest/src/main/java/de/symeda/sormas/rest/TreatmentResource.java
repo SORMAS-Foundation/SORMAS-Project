@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
@@ -54,7 +55,7 @@ public class TreatmentResource extends EntityDtoResource {
 
 	@POST
 	@Path("/indexList")
-	public List<TreatmentIndexDto> getIndexList(@RequestBody TreatmentCriteria treatmentCriteria) {
-		return FacadeProvider.getTreatmentFacade().getIndexList(treatmentCriteria);
+	public List<TreatmentIndexDto> getIndexList(@RequestBody CriteriaWithSorting<TreatmentCriteria> criteriaWithSorting) {
+		return FacadeProvider.getTreatmentFacade().getIndexList(criteriaWithSorting.getCriteria());
 	}
 }

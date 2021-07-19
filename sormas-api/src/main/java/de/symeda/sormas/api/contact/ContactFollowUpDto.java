@@ -25,7 +25,7 @@ public class ContactFollowUpDto extends FollowUpDto {
 	private SymptomJournalStatus symptomJournalStatus;
 
 	//@formatter:off
-	public ContactFollowUpDto(String uuid, String personFirstName, String personLastName,
+	public ContactFollowUpDto(String uuid, Date changeDate, String personFirstName, String personLastName,
 							  String contactOfficerUuid, String contactOfficerFirstName, String contactOfficerLastName,
 							  Date lastContactDate, Date reportDate, Date followUpUntil, SymptomJournalStatus symptomJournalStatus, Disease disease,
 							  boolean isInJurisdiction) {

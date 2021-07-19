@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.validation.constraints.NotNull;
 
@@ -18,11 +19,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.Experimental;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 public class PatchHelper {
 
 	private static ObjectMapper objectMapper = new ObjectMapper();
+	private static Map<Class, List<Field>> classFieldsMap = new ConcurrentHashMap<Class, List<Field>>();
 
 	/**
 	 * This method is used to partially update an existing object. It updates an existingObject with the values received in the jsonObject.
@@ -49,9 +54,10 @@ public class PatchHelper {
 	 */
 	@Experimental
 	public static <T extends HasUuid> void postUpdate(@NotNull JsonNode jsonObject, @NotNull T existingObject) {
-
-		if (!existingObject.getUuid().equals(jsonObject.get(EntityDto.UUID).textValue())) {
-			throw new RuntimeException("The updated object must have a Uuid");
+		String objectUUID = existingObject.getUuid();
+		String jsonObjectUUID = jsonObject.get(EntityDto.UUID).textValue();
+		if (!objectUUID.equals(jsonObjectUUID)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.patchWrongUuid, jsonObjectUUID, objectUUID));
 		}
 		postUpdateOrReplace(jsonObject, existingObject);
 	}
@@ -62,7 +68,7 @@ public class PatchHelper {
 		while (jsonObjectFieldMap.hasNext()) {
 			Map.Entry<String, JsonNode> jsonObjectFieldMapEntry = jsonObjectFieldMap.next();
 			JsonNode jsonObjectFieldNode = jsonObjectFieldMapEntry.getValue();
-			Field existingObjectField = getFieldByName(jsonObjectFieldMapEntry.getKey(), existingObject.getClass());
+			Field existingObjectField = getClassFieldByName(jsonObjectFieldMapEntry.getKey(), existingObject.getClass());
 			existingObjectField.setAccessible(true);
 
 			if (jsonObjectFieldNode.isObject()) {
@@ -89,46 +95,52 @@ public class PatchHelper {
 	 */
 	private static <T extends HasUuid> void updateObjectList(T existingObject, JsonNode jsonObjectFieldNode, Field existingObjectField) {
 		Class listElementClass = getParameterizedType(existingObjectField);
-		ArrayList tempNewElementList = new ArrayList();
+		List tempNewElementList = new ArrayList();
 
 		for (JsonNode listElement : jsonObjectFieldNode) {
-			addOrReplaceListElement(existingObject, existingObjectField, listElementClass, tempNewElementList, listElement);
+			T updatedObjectList = createOrUpdateElement(existingObject, existingObjectField, listElementClass, listElement);
+			if (updatedObjectList != null) {
+				tempNewElementList.add(updatedObjectList);
+			}
 		}
 
-		if (existingObjectField.getType().isAssignableFrom(Collection.class)) {
+		if (existingObjectField.getType().isAssignableFrom(List.class)) {
 			Object existingObjectFieldInstance = null;
 			try {
 				existingObjectFieldInstance = existingObjectField.get(existingObject);
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(
-					"Cannot access field " + existingObjectField.getName() + " on the object of type: " + existingObject.getClass().getName());
+					"Cannot access field " + existingObjectField.getName() + " on the object of type: " + existingObject.getClass().getSimpleName(),
+					e.getCause());
 			}
-			Collection existingElementList = tempNewElementList;
 			if (existingObjectFieldInstance != null) {
-				existingElementList = (Collection) existingObjectFieldInstance;
+				Collection existingElementList = (Collection) existingObjectFieldInstance;
 				existingElementList.clear();
 				existingElementList.addAll(tempNewElementList);
 			} else {
 				try {
-					existingObjectField.set(existingObject, existingElementList);
+					existingObjectField.set(existingObject, tempNewElementList);
 				} catch (IllegalAccessException e) {
-					e.printStackTrace();
 					throw new RuntimeException(
-						"Cannot access field " + existingObjectField.getName() + " on the object of type: " + existingObject.getClass().getName());
+						"Cannot access field " + existingObjectField.getName() + " on the object of type: "
+							+ existingObject.getClass().getSimpleName(),
+						e.getCause());
 				}
 			}
 		} else if (existingObjectField.getType().isArray()) {
 			try {
 				existingObjectField.set(existingObject, tempNewElementList.toArray());
 			} catch (IllegalAccessException e) {
-				e.printStackTrace();
 				throw new RuntimeException(
-					"Cannot access field " + existingObjectField.getName() + " on the object of type: " + existingObject.getClass().getName());
+					"Cannot access field " + existingObjectField.getName() + " on the object of type: " + existingObject.getClass().getSimpleName(),
+					e.getCause());
 			}
 		} else {
-			throw new RuntimeException(
-				"The list of objects expect to have a type that inherits from Collection or to be an array! The current list object field "
-					+ existingObjectField.getName() + " has a type of: " + existingObjectField.getType().getName());
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.patchUnsupportedCollectionFieldType,
+					existingObjectField.getName(),
+					existingObjectField.getType().getSimpleName()));
 		}
 	}
 
@@ -148,9 +160,9 @@ public class PatchHelper {
 		try {
 			existingFieldValue = (T) existingObjectField.get(existingObject);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
 			throw new RuntimeException(
-				"Cannot access field " + existingObjectField.getName() + " on the object of type: " + existingObject.getClass().getName());
+				"Cannot access field " + existingObjectField.getName() + " on the object of type: " + existingObject.getClass().getSimpleName(),
+				e.getCause());
 		}
 		if (existingFieldValue == null) {
 			setFieldValue(existingObject, existingObjectField, jsonObjectFieldNode);
@@ -169,28 +181,26 @@ public class PatchHelper {
 	 * @param existingObject
 	 * @param existingObjectField
 	 * @param listElementClass
-	 * @param tempNewElementList
 	 * @param listElement
 	 * @param <T>
 	 * @throws JsonProcessingException
 	 */
-	private static <T extends HasUuid> void addOrReplaceListElement(
+	private static <T extends HasUuid> T createOrUpdateElement(
 		T existingObject,
 		Field existingObjectField,
 		Class listElementClass,
-		ArrayList tempNewElementList,
 		JsonNode listElement) {
 		if (HasUuid.class.isAssignableFrom(listElementClass) && listElement.hasNonNull(EntityDto.UUID)) {
 			T existingListElement = (T) getListElementByUuid(existingObject, existingObjectField, listElement.get(EntityDto.UUID).textValue());
 			if (existingListElement != null) {
 				postUpdate(listElement, existingListElement);
-				tempNewElementList.add(existingListElement);
+				return existingListElement;
 			} else {
-				addObjectToList(tempNewElementList, listElement, listElementClass);
+				return (T) getObjectFromJsonNode(listElement, listElementClass);
 			}
 
 		} else {
-			addObjectToList(tempNewElementList, listElement, listElementClass);
+			return (T) getObjectFromJsonNode(listElement, listElementClass);
 		}
 	}
 
@@ -211,9 +221,9 @@ public class PatchHelper {
 		try {
 			existingField.set(existingObject, fieldValue);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
 			throw new RuntimeException(
-				"Cannot access field " + existingField.getName() + " on the object of type: " + existingObject.getClass().getName());
+				"Cannot access field " + existingField.getName() + " on the object of type: " + existingObject.getClass().getSimpleName(),
+				e.getCause());
 		}
 
 	}
@@ -236,8 +246,9 @@ public class PatchHelper {
 				try {
 					object = objectMapper.treeToValue(fieldJson, objectClass);
 				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-					throw new RuntimeException("Cannot covert JSon" + fieldJson.asText() + " to object of class: " + objectClass.getName());
+					throw new RuntimeException(
+						"Cannot covert JSon" + fieldJson.asText() + " to object of class: " + objectClass.getSimpleName(),
+						e.getCause());
 				}
 			}
 		}
@@ -258,24 +269,26 @@ public class PatchHelper {
 		}
 	}
 
-	/**
-	 * This method return the Field of a class or its superclasses that has the name specified by the fieldName parameter
-	 * 
-	 * @param fieldName
-	 *            - the name of the field
-	 * @param objectClass
-	 *            - the class where the field is searched
-	 * @return
-	 */
-	private static @NotNull Field getFieldByName(@NotNull String fieldName, @NotNull Class objectClass) {
-		Field field = Arrays.stream(objectClass.getDeclaredFields()).filter(fld -> fld.getName().equals(fieldName)).findFirst().orElse(null);
-		while (field == null && objectClass.getSuperclass() != null) {
-			field = getFieldByName(fieldName, objectClass.getSuperclass());
+	private static @NotNull Field getClassFieldByName(@NotNull String fieldName, @NotNull Class objectClass) {
+		if (classFieldsMap.get(objectClass) == null) {
+			getAllClassFields(objectClass);
 		}
-		if (field == null) {
-			throw new RuntimeException("No such field exception! " + fieldName + " in the class:" + objectClass.getName());
+		Field requiredField = classFieldsMap.get(objectClass).stream().filter(field -> field.getName().equals(fieldName)).findAny().orElse(null);
+		if (requiredField == null) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(Validations.patchUnsupportedCollectionFieldType, fieldName, objectClass.getSimpleName()));
 		}
-		return field;
+		return requiredField;
+	}
+
+	private static void getAllClassFields(@NotNull Class objectClass) {
+		Class<?> currentClass = objectClass;
+		List<Field> fieldList = new ArrayList<Field>();
+		while (currentClass.getSuperclass() != null) {
+			fieldList.addAll(Arrays.asList(currentClass.getDeclaredFields()));
+			currentClass = currentClass.getSuperclass();
+		}
+		classFieldsMap.put(objectClass, fieldList);
 	}
 
 	/**
@@ -309,24 +322,12 @@ public class PatchHelper {
 	 */
 	private static <T extends HasUuid> T getListElementByUuid(@NotNull Object obj, @NotNull Field arrayField, @NotNull String uuid) {
 		try {
-			return (T) ((Collection) arrayField.get(obj)).stream().filter(listElement -> {
-				return ((HasUuid) listElement).getUuid().equals(uuid);
-//				Field uuidField = 
-//						getFieldByName(EntityDto.UUID, listElement.getClass());
-//				if (uuidField == null) {
-//					throw new RuntimeException("No such field exception!" + EntityDto.UUID);
-//				}
-//				uuidField.setAccessible(true);
-//				try {
-//					return uuid.equals(uuidField.get(listElement));
-//				} catch (IllegalAccessException e) {
-//					e.printStackTrace();
-//					throw new RuntimeException(e);
-//				}
-			}).findFirst().orElse(null);
+			return (T) ((Collection) arrayField.get(obj)).stream()
+				.filter(listElement -> ((HasUuid) listElement).getUuid().equals(uuid))
+				.findFirst()
+				.orElse(null);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage(), e.getCause());
 		}
 
 	}
