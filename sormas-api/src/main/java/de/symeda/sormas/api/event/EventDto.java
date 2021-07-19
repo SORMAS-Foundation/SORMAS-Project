@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.event;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import java.util.Date;
 import java.util.Map;
@@ -175,6 +176,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	private Map<LaboratoryDiagnosticEvidenceDetail, Boolean> laboratoryDiagnosticEvidenceDetails;
 
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean ownershipHandedOver;
 
 	@HideForCountriesExcept

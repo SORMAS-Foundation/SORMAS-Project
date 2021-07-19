@@ -22,6 +22,7 @@ import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -182,6 +183,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	@SensitiveData
 	private String followUpComment;
 	private Date followUpUntil;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean overwriteFollowUpUntil;
 	@SensitiveData
 	private String description;
@@ -195,6 +197,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	private String externalToken;
 	private String internalToken;
 
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
 	@SensitiveData
@@ -223,10 +226,12 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineOrderedVerbally;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineOrderedOfficialDocument;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
@@ -246,11 +251,14 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	@HideForCountriesExcept
 	@SensitiveData
 	private String quarantineHomeSupplyEnsuredComment;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineExtended;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineReduced;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineOfficialOrderSent;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
@@ -261,6 +269,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	private EpiDataDto epiData;
 	private HealthConditionsDto healthConditions;
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean ownershipHandedOver;
 	private YesNoUnknown returningTraveler;
 

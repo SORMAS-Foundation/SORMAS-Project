@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -282,14 +283,18 @@ public class PersonDto extends PseudonymizableDto {
 	private String passportNumber;
 	@SensitiveData
 	private String nationalHealthId;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private List<LocationDto> addresses = new ArrayList<>();
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private List<PersonContactDetailDto> personContactDetails = new ArrayList<>();
 
 	@Diseases(Disease.CORONAVIRUS)
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean hasCovidApp;
 	@Diseases(Disease.CORONAVIRUS)
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean covidCodeDelivered;
 
 	private SymptomJournalStatus symptomJournalStatus;

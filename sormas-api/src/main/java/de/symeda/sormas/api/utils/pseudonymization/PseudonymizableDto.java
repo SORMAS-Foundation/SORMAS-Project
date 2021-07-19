@@ -14,12 +14,14 @@
  */
 package de.symeda.sormas.api.utils.pseudonymization;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.symeda.sormas.api.EntityDto;
 
 public abstract class PseudonymizableDto extends EntityDto implements Pseudonymizable {
 
 	private static final long serialVersionUID = 4181307802683421947L;
 
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean pseudonymized;
 
 	public boolean isPseudonymized() {

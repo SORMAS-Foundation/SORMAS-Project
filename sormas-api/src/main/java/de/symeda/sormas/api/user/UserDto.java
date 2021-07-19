@@ -19,6 +19,7 @@ package de.symeda.sormas.api.user;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.Language;
@@ -88,6 +89,7 @@ public class UserDto extends EntityDto {
 
 	private Language language;
 
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean hasConsentedToGdpr;
 
 	public static UserDto build() {

@@ -23,6 +23,7 @@ import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
@@ -505,8 +506,10 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private String externalID;
 	private String externalToken;
 	private String internalToken;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean sharedToCountry;
 	@HideForCountriesExcept
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean nosocomialOutbreak;
 	@HideForCountriesExcept
 	private InfectionSetting infectionSetting;
@@ -520,10 +523,12 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineOrderedVerbally;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineOrderedOfficialDocument;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
@@ -543,11 +548,14 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@HideForCountriesExcept
 	@SensitiveData
 	private String quarantineHomeSupplyEnsuredComment;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineExtended;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineReduced;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineOfficialOrderSent;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
@@ -558,8 +566,10 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private FollowUpStatus followUpStatus;
 	private String followUpComment;
 	private Date followUpUntil;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean overwriteFollowUpUntil;
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean ownershipHandedOver;
 
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
@@ -601,15 +611,19 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private YesNoUnknown bloodOrganOrTissueDonated;
 
 	@HideForCountriesExcept
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean notACaseReasonNegativeTest;
 
 	@HideForCountriesExcept
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean notACaseReasonPhysicianInformation;
 
 	@HideForCountriesExcept
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean notACaseReasonDifferentPathogen;
 
 	@HideForCountriesExcept
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean notACaseReasonOther;
 
 	@HideForCountriesExcept
@@ -617,6 +631,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private Date followUpStatusChangeDate;
 	private UserReferenceDto followUpStatusChangeUser;
 
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean dontShareWithReportingTool;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {

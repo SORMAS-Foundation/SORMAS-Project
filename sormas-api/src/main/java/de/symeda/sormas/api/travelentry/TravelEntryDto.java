@@ -3,6 +3,7 @@ package de.symeda.sormas.api.travelentry;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -53,8 +54,11 @@ public class TravelEntryDto extends PseudonymizableDto {
 	@EmbeddedPersonalData
 	private CaseReferenceDto resultingCase;
 	private String externalId;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean recovered;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean vaccinated;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean testedNegative;
 	private List<DeaContentEntry> deaContent;
 
@@ -65,7 +69,9 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private Date quarantineTo;
 	@SensitiveData
 	private String quarantineHelpNeeded;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineOrderedVerbally;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineOrderedOfficialDocument;
 	private Date quarantineOrderedVerballyDate;
 	private Date quarantineOrderedOfficialDocumentDate;
@@ -75,8 +81,11 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@SensitiveData
 	private String quarantineHomeSupplyEnsuredComment;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineExtended;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineReduced;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
 
