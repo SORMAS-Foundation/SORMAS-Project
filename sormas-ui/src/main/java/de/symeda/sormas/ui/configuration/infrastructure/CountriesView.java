@@ -90,14 +90,14 @@ public class CountriesView extends AbstractConfigurationView {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.COUNTRY));
 				window.setCaption(I18nProperties.getString(Strings.headingImportCountries));
-				window.addCloseListener(c -> grid.reload());
+				window.addCloseListener(c -> grid.reload(true));
 			}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(importButton);
 
 			importDefaultCountriesButton = ButtonHelper.createIconButton(Captions.actionImportAllCountries, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new ImportDefaultCountriesLayout());
 				window.setCaption(I18nProperties.getString(Strings.headingImportAllCountries));
-				window.addCloseListener(c -> grid.reload());
+				window.addCloseListener(c -> grid.reload(true));
 			}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(importDefaultCountriesButton);
 		}
