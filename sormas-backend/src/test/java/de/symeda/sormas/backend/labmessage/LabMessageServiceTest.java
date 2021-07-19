@@ -19,20 +19,21 @@ import de.symeda.sormas.api.labmessage.LabMessageStatus;
 @RunWith(MockitoJUnitRunner.class)
 public class LabMessageServiceTest {
 
-    @Mock
-    private CriteriaBuilder cb;
-    @Mock
-    private Root<LabMessage> labMessage;
-    @Mock
-    private LabMessageCriteria criteria;
-    @Mock
-    private Path<Object> objectPath;
-    @Mock
-    private Predicate predicate;
+	@Mock
+	private CriteriaBuilder cb;
+	@Mock
+	private Root<LabMessage> labMessage;
+	@Mock
+	private LabMessageCriteria criteria;
+	@Mock
+	private Path<Object> objectPath;
+	@Mock
+	private Predicate predicate;
 
-    @Test
-    public void buildCriteriaFilter() {
-        LabMessageService sut = new LabMessageService();
+	@Test
+	public void testBuildCriteriaFilter() {
+
+		LabMessageService sut = new LabMessageService();
 		LabMessageStatus status = LabMessageStatus.PROCESSED;
 
 		when(criteria.getLabMessageStatus()).thenReturn(status);
@@ -40,8 +41,8 @@ public class LabMessageServiceTest {
 
 		when(cb.equal(objectPath, status)).thenReturn(predicate);
 
-        Predicate result = sut.buildCriteriaFilter(cb, labMessage, criteria);
+		Predicate result = sut.buildCriteriaFilter(cb, labMessage, criteria);
 
-        assertEquals(predicate, result);
-    }
+		assertEquals(predicate, result);
+	}
 }

@@ -1,7 +1,15 @@
 package de.symeda.sormas.backend.labmessage;
 
+import static org.mockito.Mockito.when;
+
 import java.sql.Timestamp;
 import java.util.Date;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
@@ -11,23 +19,12 @@ import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.PathogenTestService;
-import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import junit.framework.TestCase;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import javax.xml.crypto.Data;
-
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LabMessageFacadeEjbMappingTest extends TestCase {
@@ -42,7 +39,8 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 	private LabMessageFacadeEjb sut;
 
 	@Test
-	public void testFromDto() {;
+	public void testFromDto() {
+
 		PathogenTest pathogenTest = new PathogenTest();
 		pathogenTest.setUuid(DataHelper.createUuid());
 		PathogenTestReferenceDto pathogenTestReference = pathogenTest.toReference();
@@ -120,6 +118,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 
 	@Test
 	public void testToDto() {
+
 		PathogenTest pathogenTest = new PathogenTest();
 		pathogenTest.setUuid(DataHelper.createUuid());
 
@@ -192,5 +191,4 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getLabMessageDetails(), result.getLabMessageDetails());
 		assertEquals(source.getPathogenTest().getUuid(), result.getPathogenTest().getUuid());
 	}
-
 }
