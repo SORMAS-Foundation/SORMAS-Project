@@ -27,6 +27,9 @@ public class DEAFormBuilder {
 	public DEAFormBuilder(List<DeaContentEntry> deaContentEntries, Boolean isCreate) {
 		this.deaContentEntries = deaContentEntries;
 		this.gridLayout = new GridLayout(2, (int) deaContentEntries.size() / 2);
+		this.gridLayout.setWidthFull();
+		this.gridLayout.setSpacing(true);
+		CssStyles.style(this.gridLayout, CssStyles.VSPACE_3);
 		this.isCreate = isCreate;
 		this.fields = new HashMap<>();
 	}
@@ -44,17 +47,18 @@ public class DEAFormBuilder {
 		SormasFieldGroupFieldFactory fieldFactory = new SormasFieldGroupFieldFactory(new FieldVisibilityCheckers(), UiFieldAccessCheckers.getNoop());
 
 		for (DeaContentEntry deaContentEntry : deaContentEntries) {
-			TextField textField = fieldFactory.createField(String.class, TextField.class);
-
+			final TextField textField = fieldFactory.createField(String.class, TextField.class);
+			final String caption = deaContentEntry.getCaption();
+			textField.setId(caption);
 			CssStyles.style(textField, CssStyles.TEXTFIELD_ROW);
 			Page.Styles styles = Page.getCurrent().getStyles();
-			styles.add("#" + textField.getCaption() + " { width: " + "100% !important; }");
-			textField.setCaption(deaContentEntry.getCaption());
+			styles.add("#" + caption + " { width: " + "100% !important; }");
+			textField.setCaption(caption);
 			if (!isCreate) {
 				textField.setValue(deaContentEntry.getValue());
 			}
 			gridLayout.addComponent(textField);
-			fields.put(deaContentEntry.getCaption(), textField);
+			fields.put(caption, textField);
 		}
 	}
 
