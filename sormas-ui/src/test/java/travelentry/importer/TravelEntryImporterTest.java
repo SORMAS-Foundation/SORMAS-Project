@@ -19,8 +19,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URISyntaxException;
 
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -46,11 +48,26 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 		UserDto user = creator.createPointOfEntryUser(rdp.region.getUuid(), rdp.district.getUuid(), rdp.pointOfEntry.getUuid());
 
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_test.csv").toURI());
-		TravelEntryImporter importer = new TravelEntryImporter(csvFile, false, user);
+		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user);
 		ImportResultStatus importResult = importer.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(1, getTravelEntryFacade().count(null));
+	}
+
+	public static class TravelEntryImporterExtension extends TravelEntryImporter {
+
+		public StringBuilder stringBuilder = new StringBuilder("");
+		public StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
+
+		public TravelEntryImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
+			super(inputFile, hasEntityClassRow, currentUser);
+		}
+
+		@Override
+		protected Writer createErrorReportWriter() {
+			return writer;
+		}
 	}
 
 }
