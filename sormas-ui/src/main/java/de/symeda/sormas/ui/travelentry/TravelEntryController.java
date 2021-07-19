@@ -48,6 +48,8 @@ public class TravelEntryController {
 
 		TravelEntryCreateForm createForm = new TravelEntryCreateForm();
 		TravelEntryDto travelEntry = TravelEntryDto.build(null);
+		travelEntry.setDeaContent(FacadeProvider.getTravelEntryFacade().getDeaContentOfLastTravelEntry());
+
 		travelEntry.setReportingUser(UserProvider.getCurrent().getUserReference());
 		createForm.setValue(travelEntry);
 		final CommitDiscardWrapperComponent<TravelEntryCreateForm> editView = new CommitDiscardWrapperComponent<>(

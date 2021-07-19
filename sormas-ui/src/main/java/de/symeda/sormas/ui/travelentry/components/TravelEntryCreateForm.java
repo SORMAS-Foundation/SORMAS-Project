@@ -9,6 +9,7 @@ import static de.symeda.sormas.ui.utils.CssStyles.style;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.time.Month;
 import java.util.Arrays;
@@ -16,6 +17,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.vaadin.v7.data.util.converter.Converter;
+import de.symeda.sormas.ui.travelentry.DEAFormBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -61,10 +64,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
 	private static final String DIFFERENT_POINT_OF_ENTRY_JURISDICTION = "differentPointOfEntryJurisdiction";
 	private static final String POINT_OF_ENTRY_HEADING_LOC = "pointOfEntryHeadingLoc";
-
-	private ComboBox districtCombo;
-	private ComboBox cbPointOfEntry;
-	private ComboBox birthDateDay;
+	private static final String DEA_CONTENT_LOC = "DEAContentLoc";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(TravelEntryDto.REPORT_DATE, TravelEntryDto.EXTERNAL_ID)
@@ -78,6 +78,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		+ fluidRowLocs(POINT_OF_ENTRY_HEADING_LOC)
 		+ fluidRowLocs(TravelEntryDto.REGION, TravelEntryDto.DISTRICT)
 		+ fluidRowLocs(TravelEntryDto.POINT_OF_ENTRY, TravelEntryDto.POINT_OF_ENTRY_DETAILS)
+			+ loc(DEA_CONTENT_LOC)
 		+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
 		+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 		fluidRowLocs(PersonDto.SEX))
@@ -85,6 +86,11 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
 		+ fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 	//@formatter:on
+
+	private ComboBox districtCombo;
+	private ComboBox cbPointOfEntry;
+	private ComboBox birthDateDay;
+	private DEAFormBuilder deaFormBuilder;
 
 	public TravelEntryCreateForm() {
 		super(
@@ -361,5 +367,28 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			tfPointOfEntryDetails.setRequired(false);
 			tfPointOfEntryDetails.clear();
 		}
+	}
+
+	private void buildDeaContent(TravelEntryDto newFieldValue) {
+		if (newFieldValue.getDeaContent() != null) {
+			deaFormBuilder = new DEAFormBuilder(newFieldValue.getDeaContent(), true);
+			deaFormBuilder.buildForm();
+			getContent().addComponent(deaFormBuilder.getLayout(), DEA_CONTENT_LOC);
+		}
+	}
+
+	@Override
+	public TravelEntryDto getValue() {
+		TravelEntryDto travelEntryDto = super.getValue();
+		if (deaFormBuilder != null) {
+			travelEntryDto.setDeaContent(deaFormBuilder.getDeaContentEntries());
+		}
+		return travelEntryDto;
+	}
+
+	@Override
+	public void setValue(TravelEntryDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+		buildDeaContent(newFieldValue);
 	}
 }
