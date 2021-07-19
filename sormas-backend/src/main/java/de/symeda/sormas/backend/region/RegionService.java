@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.region;
 
 import java.util.List;
@@ -49,13 +50,16 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		super(Region.class);
 	}
 
-	public List<Region> getByName(String name, boolean includeArchivedEntities) {
+	public List<Region> getByName(String name, Country country, boolean includeArchivedEntities) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
 		Root<Region> from = cq.from(getElementClass());
 
 		Predicate filter = CriteriaBuilderHelper.unaccentedIlikePrecise(cb, from.get(Region.NAME), name.trim());
+		if (country != null) {
+			filter = cb.and(filter, cb.equal(from.get(Region.COUNTRY), country));
+		}
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}

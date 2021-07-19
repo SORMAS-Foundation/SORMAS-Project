@@ -943,7 +943,7 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 		}
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<Region> regions = regionService.getByName(entry, false);
+			List<Region> regions = regionService.getByName(entry, null,false);
 			if (regions.isEmpty()) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));

@@ -1,3 +1,21 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.importer;
 
 import java.beans.IntrospectionException;
@@ -27,6 +45,8 @@ import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.SubcontinentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+
+import javax.ejb.EJBException;
 
 /**
  * Data importer that is used to import regions, districts, communities, facilities and points of entry.
@@ -110,37 +130,40 @@ public class InfrastructureImporter extends DataImporter {
 		if (!iHasImportError) {
 			try {
 				switch (type) {
-				case COMMUNITY:
-					FacadeProvider.getCommunityFacade().saveCommunity((CommunityDto) newEntityDto, allowOverwrite);
-					break;
-				case DISTRICT:
-					FacadeProvider.getDistrictFacade().saveDistrict((DistrictDto) newEntityDto, allowOverwrite);
-					break;
-				case FACILITY:
-					FacadeProvider.getFacilityFacade().saveFacility((FacilityDto) newEntityDto, allowOverwrite);
-					break;
-				case POINT_OF_ENTRY:
-					FacadeProvider.getPointOfEntryFacade().save((PointOfEntryDto) newEntityDto, allowOverwrite);
-					break;
-				case REGION:
-					FacadeProvider.getRegionFacade().saveRegion((RegionDto) newEntityDto, allowOverwrite);
-					break;
-				case AREA:
-					FacadeProvider.getAreaFacade().saveArea((AreaDto) newEntityDto, allowOverwrite);
-					break;
-				case SUBCONTINENT:
-					FacadeProvider.getSubcontinentFacade().save((SubcontinentDto) newEntityDto, allowOverwrite);
-					break;
-				case CONTINENT:
-					FacadeProvider.getContinentFacade().save((ContinentDto) newEntityDto, allowOverwrite);
-					break;
-				default:
-					throw new IllegalArgumentException(type.toString());
+					case COMMUNITY:
+						FacadeProvider.getCommunityFacade().saveCommunity((CommunityDto) newEntityDto, allowOverwrite);
+						break;
+					case DISTRICT:
+						FacadeProvider.getDistrictFacade().saveDistrict((DistrictDto) newEntityDto, allowOverwrite);
+						break;
+					case FACILITY:
+						FacadeProvider.getFacilityFacade().saveFacility((FacilityDto) newEntityDto, allowOverwrite);
+						break;
+					case POINT_OF_ENTRY:
+						FacadeProvider.getPointOfEntryFacade().save((PointOfEntryDto) newEntityDto, allowOverwrite);
+						break;
+					case REGION:
+						FacadeProvider.getRegionFacade().saveRegion((RegionDto) newEntityDto, allowOverwrite);
+						break;
+					case AREA:
+						FacadeProvider.getAreaFacade().saveArea((AreaDto) newEntityDto, allowOverwrite);
+						break;
+					case SUBCONTINENT:
+						FacadeProvider.getSubcontinentFacade().save((SubcontinentDto) newEntityDto, allowOverwrite);
+						break;
+					case CONTINENT:
+						FacadeProvider.getContinentFacade().save((ContinentDto) newEntityDto, allowOverwrite);
+						break;
+					default:
+						throw new IllegalArgumentException(type.toString());
 				}
 				return ImportLineResult.SUCCESS;
-			} catch (ValidationRuntimeException e) {
-				writeImportError(values, e.getMessage());
-				return ImportLineResult.ERROR;
+			}  catch (EJBException e) {
+				if (e.getCause() instanceof ValidationRuntimeException) {
+					writeImportError(values, e.getMessage());
+					return ImportLineResult.ERROR;
+				}
+				throw e;
 			}
 		} else {
 			return ImportLineResult.ERROR;

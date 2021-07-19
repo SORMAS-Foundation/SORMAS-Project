@@ -14,10 +14,10 @@ public class RegionServiceTest extends AbstractBeanTest {
 	public void testGetByName() {
 
 		creator.createRegion("Region");
-		assertThat(getRegionService().getByName("Region", true), hasSize(1));
-		assertThat(getRegionService().getByName(" Region ", true), hasSize(1));
-		assertThat(getRegionService().getByName("region", true), hasSize(1));
-		assertThat(getRegionService().getByName("REGION", true), hasSize(1));
-		assertThat(getRegionService().getByName("The Hinterlands", true), empty());
+		assertThat(getRegionService().getByName("Region", null, true), hasSize(1));
+		assertThat(getRegionService().getByName(" Region ", null, true), hasSize(1));
+		assertThat(getRegionService().getByName("region", null, true), hasSize(1));
+		assertThat(getRegionService().getByName("REGION", null, true), hasSize(1));
+		assertThat(getRegionService().getByName("The Hinterlands", null, true), empty());
 	}
 }

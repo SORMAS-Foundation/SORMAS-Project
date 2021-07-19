@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.region;
 
 import java.util.ArrayList;
@@ -347,7 +348,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		Region region = regionService.getByUuid(dto.getUuid());
 
 		if (region == null) {
-			List<Region> duplicates = regionService.getByName(dto.getName(), true);
+			List<Region> duplicates = regionService.getByName(dto.getName(), countryService.getByReferenceDto(dto.getCountry()), true);
 			if (!duplicates.isEmpty()) {
 				if (allowMerge) {
 					region = duplicates.get(0);
@@ -365,11 +366,11 @@ public class RegionFacadeEjb implements RegionFacade {
 
 	@Override
 	public List<RegionReferenceDto> getReferencesByName(String name, boolean includeArchivedEntities) {
-		return regionService.getByName(name, includeArchivedEntities).stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return regionService.getByName(name, null, includeArchivedEntities).stream().map(RegionFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	public List<RegionDto> getByName(String name, boolean includeArchivedEntities) {
-		return regionService.getByName(name, includeArchivedEntities).stream().map(this::toDto).collect(Collectors.toList());
+		return regionService.getByName(name, null, includeArchivedEntities).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
