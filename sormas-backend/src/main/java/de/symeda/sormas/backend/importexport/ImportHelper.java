@@ -25,6 +25,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class ImportHelper {
@@ -33,6 +34,7 @@ public class ImportHelper {
 		String propertyName,
 		CaseDataDto caze,
 		ContactDto contact,
+		TravelEntryDto travelEntry,
 		PersonDto person,
 		Object currentElement) {
 
@@ -40,6 +42,8 @@ public class ImportHelper {
 			return getCaseRegion(propertyName, caze);
 		} else if (currentElement instanceof ContactDto) {
 			return contact.getRegion();
+		} else if (currentElement instanceof TravelEntryDto) {
+			return getTravelEntryRegion(propertyName, travelEntry);
 		} else {
 			return getPersonRegion(propertyName, person);
 		}
@@ -103,6 +107,17 @@ public class ImportHelper {
 			return person.getPlaceOfBirthRegion();
 		case LocationDto.DISTRICT:
 			return person.getAddress().getRegion();
+		default:
+			throw new IllegalArgumentException(propertyName);
+		}
+	}
+
+	public static RegionReferenceDto getTravelEntryRegion(String propertyName, TravelEntryDto travelEntry) {
+		switch (propertyName) {
+		case TravelEntryDto.RESPONSIBLE_DISTRICT:
+			return travelEntry.getResponsibleRegion();
+		case TravelEntryDto.POINT_OF_ENTRY_DISTRICT:
+			return travelEntry.getPointOfEntryRegion();
 		default:
 			throw new IllegalArgumentException(propertyName);
 		}

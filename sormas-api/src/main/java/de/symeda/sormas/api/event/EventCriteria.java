@@ -55,6 +55,7 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	public static final String DISTRICT = "district";
 	public static final String REGION = "region";
 	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
+	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 	public static final String ONLY_ENTITIES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyEntitiesNotSharedWithExternalSurvTool";
 	public static final String ONLY_ENTITIES_SHARED_WITH_EXTERNAL_SURV_TOOL = "onlyEntitiesSharedWithExternalSurvTool";
 	public static final String ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL =
@@ -94,6 +95,7 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	private Set<String> excludedUuids;
 	private Boolean hasNoSuperordinateEvent;
 	private EventManagementStatus eventManagementStatus;
+	private EventIdentificationSource eventIdentificationSource;
 
 	// Actions criterias
 	private ActionStatus actionStatus;
@@ -604,6 +606,14 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 
 	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
 		this.eventManagementStatus = eventManagementStatus;
+	}
+
+	public EventIdentificationSource getEventIdentificationSource() {
+		return eventIdentificationSource;
+	}
+
+	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 
 	public Boolean getOnlyEntitiesNotSharedWithExternalSurvTool() {

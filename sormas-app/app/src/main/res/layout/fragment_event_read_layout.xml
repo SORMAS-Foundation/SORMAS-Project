@@ -73,6 +73,11 @@
                 app:value="@{data.eventManagementStatus}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_eventIdentificationSource"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.eventIdentificationSource}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_riskLevel"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@{data.riskLevel}" />

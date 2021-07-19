@@ -125,6 +125,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 
 		target.setPseudonymized(source.isPseudonymized());
 		target.setEventManagementStatus(source.getEventManagementStatus());
+		target.setEventIdentificationSource(source.getEventIdentificationSource());
 
 		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
 		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
@@ -220,6 +221,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setPseudonymized(source.isPseudonymized());
 
 		target.setEventManagementStatus(source.getEventManagementStatus());
+		target.setEventIdentificationSource(source.getEventIdentificationSource());
 
 		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
 		target.setHumanTransmissionMode(source.getHumanTransmissionMode());

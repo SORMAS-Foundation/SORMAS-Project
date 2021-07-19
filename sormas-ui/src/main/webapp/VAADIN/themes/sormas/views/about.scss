@@ -4,6 +4,10 @@
   .about-view {
     overflow: auto;
 
+    .v-horizontal > .v-spacing {
+      width: 80px;
+    }
+
     .about-content {
       @include valo-panel-style;
       max-width: 500px;
