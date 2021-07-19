@@ -20,6 +20,9 @@ package de.symeda.sormas.api;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
+import java.util.Arrays;
+import java.util.List;
+
 public enum Disease
 	implements
 	StatisticsGroupingKey {
@@ -181,4 +184,6 @@ public enum Disease
 
 		return this.toString().compareTo(o.toString());
 	}
+
+	public static List<Disease> IN_DISEASE_LIST = Arrays.asList(Disease.values());
 }

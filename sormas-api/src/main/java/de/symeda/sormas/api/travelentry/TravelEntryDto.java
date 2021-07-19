@@ -26,10 +26,47 @@ public class TravelEntryDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "TravelEntry";
 
+	public static final String PERSON = "person";
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
+	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
 	public static final String POINT_OF_ENTRY_REGION = "pointOfEntryRegion";
 	public static final String POINT_OF_ENTRY_DISTRICT = "pointOfEntryDistrict";
+
+	public static final String REPORT_DATE = "reportDate";
+	public static final String REPORTING_USER = "reportingUser";
+	public static final String EXTERNAL_ID = "externalId";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
+
+	public static final String RECOVERED = "recovered";
+	public static final String VACCINATED = "vaccinated";
+	public static final String TESTED_NEGATIVE = "testedNegative";
+
+	public static final String REGION = "pointOfEntryRegion";
+	public static final String DISTRICT = "pointOfEntryDistrict";
+
+	public static final String POINT_OF_ENTRY = "pointOfEntry";
+	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
+
+	public static final String QUARANTINE_HOME_POSSIBLE = "quarantineHomePossible";
+	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
+	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
+	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
+	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_FROM = "quarantineFrom";
+	public static final String QUARANTINE_TO = "quarantineTo";
+	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
+	public static final String QUARANTINE_REDUCED = "quarantineReduced";
+	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
+	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
+	public static final String QUARANTINE_ORDERED_VERBALLY_DATE = "quarantineOrderedVerballyDate";
+	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT = "quarantineOrderedOfficialDocument";
+	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE = "quarantineOrderedOfficialDocumentDate";
+	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
+	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
+	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
 
 	@Required
 	@EmbeddedPersonalData

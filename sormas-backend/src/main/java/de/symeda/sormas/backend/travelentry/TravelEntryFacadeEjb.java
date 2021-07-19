@@ -31,10 +31,12 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
@@ -80,6 +82,8 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	private PointOfEntryService pointOfEntryService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 
 	@Override
 	public TravelEntryDto getByUuid(String uuid) {
@@ -115,6 +119,57 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		if (travelEntry != null) {
 			travelEntry.setArchived(false);
 			travelEntryService.ensurePersisted(travelEntry);
+		}
+	}
+
+	@Override
+	public boolean isDeleted(String travelEntryUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<TravelEntry> from = cq.from(TravelEntry.class);
+
+		cq.where(cb.and(cb.isTrue(from.get(TravelEntry.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), travelEntryUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+
+	@Override
+	public boolean isArchived(String travelEntryUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<TravelEntry> from = cq.from(TravelEntry.class);
+
+		cq.where(cb.and(cb.equal(from.get(TravelEntry.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), travelEntryUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+
+	@Override
+	public void archiveOrDearchiveTravelEntry(String travelEntryUuid, boolean archive) {
+		TravelEntry travelEntry = travelEntryService.getByUuid(travelEntryUuid);
+		travelEntry.setArchived(archive);
+		travelEntryService.ensurePersisted(travelEntry);
+	}
+
+	@Override
+	public Boolean isTravelEntryEditAllowed(String travelEntryUuid) {
+		TravelEntry travelEntry = travelEntryService.getByUuid(travelEntryUuid);
+		return travelEntryService.isTravelEntryEditAllowed(travelEntry);
+	}
+
+	@Override
+	public void deleteTravelEntry(String travelEntryUuid) {
+		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete travel entries");
+		}
+
+		TravelEntry travelEntry = travelEntryService.getByUuid(travelEntryUuid);
+		travelEntryService.delete(travelEntry);
+
+		if (travelEntry.getResultingCase() != null) {
+			caseFacade.onCaseChanged(CaseFacadeEjb.CaseFacadeEjbLocal.toDto(travelEntry.getResultingCase()), travelEntry.getResultingCase());
 		}
 	}
 
