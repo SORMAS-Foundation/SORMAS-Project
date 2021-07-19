@@ -11,6 +11,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -21,6 +22,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.i18n.Captions;
@@ -63,11 +65,10 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless(name = "TravelEntryFacade")
 public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
 	@EJB
 	TravelEntryService travelEntryService;
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 	@EJB
 	private PersonService personService;
 	@EJB
@@ -85,6 +86,14 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 
+	public static TravelEntryReferenceDto toReferenceDto(TravelEntry entity) {
+
+		if (entity == null) {
+			return null;
+		}
+		return new TravelEntryReferenceDto(entity.getUuid(), entity.getPerson().getFirstName(), entity.getExternalId());
+	}
+
 	@Override
 	public TravelEntryDto getByUuid(String uuid) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
@@ -94,14 +103,6 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	@Override
 	public TravelEntryReferenceDto getReferenceByUuid(String uuid) {
 		return Optional.of(uuid).map(u -> travelEntryService.getByUuid(u)).map(TravelEntryFacadeEjb::toReferenceDto).orElse(null);
-	}
-
-	public static TravelEntryReferenceDto toReferenceDto(TravelEntry entity) {
-
-		if (entity == null) {
-			return null;
-		}
-		return new TravelEntryReferenceDto(entity.getUuid(), entity.getPerson().getFirstName(), entity.getExternalId());
 	}
 
 	@Override
@@ -188,6 +189,22 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	@Override
 	public List<String> getAllUuids() {
 		return travelEntryService.getAllUuids();
+	}
+
+	@Override
+	public List<DeaContentEntry> getDeaContentOfLastTravelEntry() {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<TravelEntry> query = cb.createQuery(TravelEntry.class);
+		final Root<TravelEntry> from = query.from(TravelEntry.class);
+		query.select(from);
+		query.where(cb.and(travelEntryService.createDefaultFilter(cb, from), cb.lessThanOrEqualTo(from.get(TravelEntry.CREATION_DATE), new Date())));
+		query.orderBy(cb.desc(from.get(TravelEntry.CREATION_DATE)));
+
+		final TypedQuery<TravelEntry> q = em.createQuery(query);
+		final TravelEntry lastTravelEntry = q.getResultList().stream().findFirst().orElse(null);
+
+		TravelEntryDto travelEntryDto = convertToDto(lastTravelEntry, Pseudonymizer.getDefault(userService::hasRight));
+		return travelEntryDto.getDeaContent();
 	}
 
 	@Override

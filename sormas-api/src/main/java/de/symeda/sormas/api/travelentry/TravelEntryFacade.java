@@ -4,6 +4,8 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.region.BaseFacade;
 
+import java.util.List;
+
 @Remote
 public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryCriteria> {
 
@@ -22,4 +24,6 @@ public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntr
 	boolean exists(String uuid);
 
 	void deleteTravelEntry(String travelEntryUuid);
+
+	List<DeaContentEntry> getDeaContentOfLastTravelEntry();
 }
