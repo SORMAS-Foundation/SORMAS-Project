@@ -93,7 +93,8 @@ public class SormasToSormasContactFacadeEjb
 			CONTACT_SHARES_ENDPOINT,
 			Captions.Contact,
 			ShareRequestDataType.CONTACT,
-			ContactShareRequestData.class);
+			ContactShareRequestData.class,
+			ContactSyncData.class);
 	}
 
 	@Override

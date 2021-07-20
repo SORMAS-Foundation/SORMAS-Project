@@ -13,11 +13,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.api.sormastosormas;
 
 import java.io.Serializable;
 
-class ShareTreeCriteria implements Serializable {
+public class ShareTreeCriteria implements Serializable {
 
 	private static final long serialVersionUID = 131837357088474316L;
 

@@ -88,7 +88,8 @@ public class SormasToSormasEventFacadeEjb
 			EVENT_SHARES_ENDPOINT,
 			Captions.Event,
 			ShareRequestDataType.EVENT,
-			EventShareRequestData.class);
+			EventShareRequestData.class,
+			EventSyncData.class);
 	}
 
 	@Override

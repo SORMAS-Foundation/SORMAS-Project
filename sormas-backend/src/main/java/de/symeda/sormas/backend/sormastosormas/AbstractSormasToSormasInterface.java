@@ -41,6 +41,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
@@ -106,6 +107,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	private final ShareRequestDataType shareRequestDataType;
 	private final Class<? extends ShareRequestData<PREVIEW>> previewType;
+	private final Class<? extends SyncDataDto<S>> syncDataType;
 
 	public AbstractSormasToSormasInterface() {
 		throw new RuntimeException("AbstractSormasToSormasInterface should not be instantiated");
@@ -120,16 +122,18 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		String sharesEndpoint,
 		String entityCaptionTag,
 		ShareRequestDataType shareRequestDataType,
-		Class<? extends ShareRequestData<PREVIEW>> previewType) {
+		Class<? extends ShareRequestData<PREVIEW>> previewType,
+		Class<? extends SyncDataDto<S>> syncDataType) {
 		this.requestEndpoint = requestEndpoint;
 		this.requestRejectEndpoint = requestRejectEndpoint;
 		this.requestAcceptEndpoint = requestAcceptEndpoint;
 		this.saveEndpoint = saveEndpoint;
 		this.syncEndpoint = syncEndpoint;
+		this.sharesEndpoint = sharesEndpoint;
 		this.entityCaptionTag = entityCaptionTag;
 		this.shareRequestDataType = shareRequestDataType;
 		this.previewType = previewType;
-		this.sharesEndpoint = sharesEndpoint;
+		this.syncDataType = syncDataType;
 	}
 
 	@Override
@@ -339,28 +343,38 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	}
 
 	@Override
-	public void syncEntity(String entityUuid, SormasToSormasOptionsDto options) throws SormasToSormasException {
-		User currentUser = userService.getCurrentUser();
-		ADO entity = getEntityService().getByUuid(entityUuid);
-
-		validateEntitiesBeforeShare(Collections.singletonList(entity), options.isHandOverOwnership());
-
-		ShareData<ADO, S> shareData = getShareDataBuilder().buildShareData(entity, currentUser, options);
-
-		sormasToSormasRestClient.post(options.getOrganization().getUuid(), syncEndpoint, Collections.singletonList(shareData.getDto()), null);
-
-		SormasToSormasShareInfo shareInfo = getShareInfoByEntityAndOrganization(entity.getUuid(), options.getOrganization().getUuid());
-		List<AssociatedEntityWrapper<?>> additionalAssociatedObjects = shareData.getAssociatedEntities()
-			.stream()
-			.filter(entityWrapper -> !entityWrapper.isAddedToShareInfo(shareInfo))
-			.collect(Collectors.toList());
-
-		updateShareInfoOptions(shareInfo, additionalAssociatedObjects, options);
+	public void syncShares(ShareTreeCriteria criteria) {
+		walkShareTree(
+			criteria,
+			(entity, originInfo, parentCriteria) -> {
+				// prevent stopping the iteration through the shares because of a failed sync operation
+				// sync with as much servers as possible
+				try {
+					syncEntity(entity, originInfo.getOrganizationId(), dataBuilderHelper.createOptionsFromOriginInfoDto(originInfo), parentCriteria);
+				} catch (Exception e) {
+					LOGGER.error("Failed to sync to [{}]", originInfo.getOrganizationId(), e);
+				}
+			},
+			((entity, shareInfo, reShareCriteria, isExcepted) -> {
+				if (!isExcepted) {
+					// prevent stopping the iteration through the shares because of a failed sync operation
+					// sync with as much servers as possible
+					try {
+						syncEntity(entity, shareInfo.getOrganizationId(), dataBuilderHelper.createOptionsFormShareInfo(shareInfo), reShareCriteria);
+					} catch (Exception e) {
+						LOGGER.error("Failed to sync to [{}]", shareInfo.getOrganizationId(), e);
+					}
+				}
+			}));
 	}
 
 	@Override
 	public void saveSyncedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
-		decryptAndPersist(encryptedData, data -> getProcessedDataPersister().persistSyncData(data), null);
+		SyncDataDto<S> syncData = encryptionService.decryptAndVerify(encryptedData, syncDataType);
+
+		perisist(Collections.singletonList(syncData.getShareData()), data -> {
+			getProcessedDataPersister().persistSyncData(data);
+		}, null);
 	}
 
 	@Override
@@ -390,10 +404,15 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		S[] receivedS2SEntities = encryptionService.decryptAndVerify(encryptedData, getShareDataClass());
 
+		perisist(Arrays.asList(receivedS2SEntities), persister, originInfo);
+	}
+
+	private void perisist(List<S> receivedS2SEntities, Persister<PROCESSED> persister, SormasToSormasOriginInfoDto originInfo)
+		throws SormasToSormasValidationException {
 		Map<String, ValidationErrors> validationErrors = new HashMap<>();
-		List<PROCESSED> entitiesToPersist = new ArrayList<>(receivedS2SEntities.length);
+		List<PROCESSED> entitiesToPersist = new ArrayList<>(receivedS2SEntities.size());
 		List<DTO> existingEntities =
-			loadExistingEntities(Arrays.stream(receivedS2SEntities).map(e -> e.getEntity().getUuid()).collect(Collectors.toList()));
+			loadExistingEntities(receivedS2SEntities.stream().map(e -> e.getEntity().getUuid()).collect(Collectors.toList()));
 		Map<String, DTO> existingEntitiesMap = existingEntities.stream().collect(Collectors.toMap(EntityDto::getUuid, Function.identity()));
 
 		for (S receivedS2SEntity : receivedS2SEntities) {
@@ -517,6 +536,25 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		shareInfo.setComment(options.getComment());
 	}
 
+	private void syncEntity(ADO entity, String targetOrganizationId, SormasToSormasOptionsDto options, ShareTreeCriteria criteria)
+		throws SormasToSormasException {
+		User currentUser = userService.getCurrentUser();
+
+		ShareData<ADO, S> shareData = getShareDataBuilder().buildShareData(entity, currentUser, options);
+
+		sormasToSormasRestClient.post(targetOrganizationId, syncEndpoint, new SyncDataDto<>(shareData.getDto(), criteria), null);
+
+		SormasToSormasShareInfo shareInfo = getShareInfoByEntityAndOrganization(entity.getUuid(), options.getOrganization().getUuid());
+		if (shareInfo != null) {
+			List<AssociatedEntityWrapper<?>> additionalAssociatedObjects = shareData.getAssociatedEntities()
+				.stream()
+				.filter(entityWrapper -> !entityWrapper.isAddedToShareInfo(shareInfo))
+				.collect(Collectors.toList());
+
+			updateShareInfoOptions(shareInfo, additionalAssociatedObjects, options);
+		}
+	}
+
 	private void updateShareInfoOptions(
 		SormasToSormasShareInfo shareInfo,
 		List<AssociatedEntityWrapper<?>> associatedObjects,
@@ -561,54 +599,88 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	protected abstract void setShareRequestPreviewData(SormasToSormasShareRequestDto request, List<PREVIEW> previews);
 
 	private List<SormasToSormasShareTree> getShareTrees(ShareTreeCriteria criteria) throws SormasToSormasException {
+		String ownOrganizationId = serverAccessDataService.getServerAccessData().getId();
 		List<SormasToSormasShareTree> shares = new ArrayList<>();
-		SormasToSormasShareTree parentShare = null;
+		List<SormasToSormasShareTree> reShareTrees = new ArrayList<>();
 
-		ADO entity = getEntityService().getByUuid(criteria.getEntityUuid());
+		walkShareTree(criteria, (entity, originInfo, parentCriteria) -> {
+			try {
+				SormasToSormasEncryptedDataDto encryptedShares = sormasToSormasRestClient
+					.post(originInfo.getOrganizationId(), sharesEndpoint, parentCriteria, SormasToSormasEncryptedDataDto.class);
 
-		if (!criteria.isForwardOnly()
-			&& entity.getSormasToSormasOriginInfo() != null) {
-			SormasToSormasShareRequest shareRequest = entity.getSormasToSormasOriginInfo().getRequest();
-
-			if (shareRequest == null || shareRequest.getStatus() == ShareRequestStatus.ACCEPTED) {
-				String ownOrganizationId = serverAccessDataService.getServerAccessData().getId();
-				SormasToSormasEncryptedDataDto encryptedShares = sormasToSormasRestClient.post(
-					entity.getSormasToSormasOriginInfo().getOrganizationId(),
-					sharesEndpoint,
-					new ShareTreeCriteria(criteria.getEntityUuid(), ownOrganizationId, false),
-					SormasToSormasEncryptedDataDto.class);
-
-				SormasToSormasShareTree[] originShares = encryptionService.decryptAndVerify(encryptedShares, SormasToSormasShareTree[].class);
-
-				shares.addAll(Arrays.asList(originShares));
-				parentShare = findParentShare(shares, ownOrganizationId);
+				shares.addAll(Arrays.asList(encryptionService.decryptAndVerify(encryptedShares, SormasToSormasShareTree[].class)));
+			} catch (SormasToSormasException e) {
+				// stop iteration and fail in case of error
+				throw new RuntimeException("Failed to get all shares form server [" + originInfo.getOrganizationId() + "]", e);
 			}
-		}
+		}, (entity, shareInfo, reShareCriteria, isExcepted) -> {
+			try {
+				List<SormasToSormasShareTree> reShares = Collections.emptyList();
+				if (!isExcepted) {
+					SormasToSormasEncryptedDataDto encryptedShares = sormasToSormasRestClient.post(
+						shareInfo.getOrganizationId(),
+						sharesEndpoint,
+						new ShareTreeCriteria(reShareCriteria.getEntityUuid(), reShareCriteria.getExceptedOrganizationId(), true),
+						SormasToSormasEncryptedDataDto.class);
 
-		List<SormasToSormasShareInfo> entityShares = getEntityShares(entity);
+					reShares = Arrays.asList(encryptionService.decryptAndVerify(encryptedShares, SormasToSormasShareTree[].class));
+				}
 
-		List<SormasToSormasShareTree> reShareTrees = new ArrayList<>(entityShares.size());
-		for (SormasToSormasShareInfo s : entityShares) {
-			List<SormasToSormasShareTree> reShares = Collections.emptyList();
-
-			if (s.getRequestStatus() == null
-				|| s.getRequestStatus() == ShareRequestStatus.ACCEPTED && !s.getOrganizationId().equals(criteria.getExceptedOrganizationId())) {
-				SormasToSormasEncryptedDataDto encryptedShares = sormasToSormasRestClient.post(
-					s.getOrganizationId(),
-					sharesEndpoint,
-					new ShareTreeCriteria(criteria.getEntityUuid(), criteria.getExceptedOrganizationId(), true),
-					SormasToSormasEncryptedDataDto.class);
-
-				reShares = Arrays.asList(encryptionService.decryptAndVerify(encryptedShares, SormasToSormasShareTree[].class));
+				reShareTrees.add(
+					new SormasToSormasShareTree(
+						SormasToSormasOriginInfoFacadeEjb.toDto(entity.getSormasToSormasOriginInfo()),
+						shareInfoFacade.toDto(shareInfo),
+						reShares));
+			} catch (SormasToSormasException e) {
+				// stop iteration and fail in case of error
+				throw new RuntimeException("Failed to get all shares form server [" + shareInfo.getOrganizationId() + "]", e);
 			}
+		});
+//		ADO entity = getEntityService().getByUuid(criteria.getEntityUuid());
+//
+//		if (!criteria.isForwardOnly() && entity.getSormasToSormasOriginInfo() != null) {
+//			SormasToSormasShareRequest shareRequest = entity.getSormasToSormasOriginInfo().getRequest();
+//
+//			if (shareRequest == null || shareRequest.getStatus() == ShareRequestStatus.ACCEPTED) {
+////				String ownOrganizationId = serverAccessDataService.getServerAccessData().getId();
+//				SormasToSormasEncryptedDataDto encryptedShares = sormasToSormasRestClient.post(
+//					entity.getSormasToSormasOriginInfo().getOrganizationId(),
+//					sharesEndpoint,
+//					new ShareTreeCriteria(criteria.getEntityUuid(), ownOrganizationId, false),
+//					SormasToSormasEncryptedDataDto.class);
+//
+//				SormasToSormasShareTree[] originShares = encryptionService.decryptAndVerify(encryptedShares, SormasToSormasShareTree[].class);
+//
+//				shares.addAll(Arrays.asList(originShares));
+////				parentShare = findParentShare(shares, ownOrganizationId);
+//			}
+//		}
+//
+//		List<SormasToSormasShareInfo> entityShares = getEntityShares(entity);
+//
+////		List<SormasToSormasShareTree> reShareTrees = new ArrayList<>(entityShares.size());
+//		for (SormasToSormasShareInfo s : entityShares) {
+//			List<SormasToSormasShareTree> reShares = Collections.emptyList();
+//
+//			if (s.getRequestStatus() == null
+//				|| s.getRequestStatus() == ShareRequestStatus.ACCEPTED && !s.getOrganizationId().equals(criteria.getExceptedOrganizationId())) {
+//				SormasToSormasEncryptedDataDto encryptedShares = sormasToSormasRestClient.post(
+//					s.getOrganizationId(),
+//					sharesEndpoint,
+//					new ShareTreeCriteria(criteria.getEntityUuid(), criteria.getExceptedOrganizationId(), true),
+//					SormasToSormasEncryptedDataDto.class);
+//
+//				reShares = Arrays.asList(encryptionService.decryptAndVerify(encryptedShares, SormasToSormasShareTree[].class));
+//			}
+//
+//			reShareTrees.add(
+//				new SormasToSormasShareTree(
+//					SormasToSormasOriginInfoFacadeEjb.toDto(entity.getSormasToSormasOriginInfo()),
+//					shareInfoFacade.toDto(s),
+//					reShares));
+//		}
 
-			reShareTrees.add(
-				new SormasToSormasShareTree(
-					SormasToSormasOriginInfoFacadeEjb.toDto(entity.getSormasToSormasOriginInfo()),
-					shareInfoFacade.toDto(s),
-					reShares));
-		}
-
+		SormasToSormasShareTree parentShare = findParentShare(shares, ownOrganizationId);
 		if (parentShare != null) {
 			parentShare.setReShares(reShareTrees);
 		} else {
@@ -616,6 +688,42 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		}
 
 		return shares;
+	}
+
+	private void walkShareTree(ShareTreeCriteria criteria, WalkParent<ADO> walkParent, WalkReShare<ADO> walkReShare) {
+		ADO entity = getEntityService().getByUuid(criteria.getEntityUuid());
+
+		if (!criteria.isForwardOnly() && entity.getSormasToSormasOriginInfo() != null) {
+			SormasToSormasShareRequest shareRequest = entity.getSormasToSormasOriginInfo().getRequest();
+			String ownOrganizationId = serverAccessDataService.getServerAccessData().getId();
+
+			if (shareRequest == null || shareRequest.getStatus() == ShareRequestStatus.ACCEPTED) {
+				walkParent
+					.walk(entity, entity.getSormasToSormasOriginInfo(), new ShareTreeCriteria(criteria.getEntityUuid(), ownOrganizationId, false));
+			}
+		}
+
+		List<SormasToSormasShareInfo> entityShares = getEntityShares(entity);
+
+		for (SormasToSormasShareInfo s : entityShares) {
+			if (s.getRequestStatus() == null || s.getRequestStatus() == ShareRequestStatus.ACCEPTED) {
+				walkReShare.walk(
+					entity,
+					s,
+					new ShareTreeCriteria(criteria.getEntityUuid(), criteria.getExceptedOrganizationId(), true),
+					s.getOrganizationId().equals(criteria.getExceptedOrganizationId()));
+			}
+		}
+	}
+
+	private interface WalkParent<ADO> {
+
+		void walk(ADO entity, SormasToSormasOriginInfo originInfo, ShareTreeCriteria criteria);
+	}
+
+	private interface WalkReShare<ADO> {
+
+		void walk(ADO entity, SormasToSormasShareInfo shareInfo, ShareTreeCriteria criteria, boolean isExcepted);
 	}
 
 	private SormasToSormasShareTree findParentShare(List<SormasToSormasShareTree> shares, String ownOrganizationId) {

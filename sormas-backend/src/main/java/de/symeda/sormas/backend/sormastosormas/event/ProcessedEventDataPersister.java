@@ -63,7 +63,7 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 	private SormasToSormasShareInfoService shareInfoService;
 
 	@EJB
-	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal oriInfoFacade;
+	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@Override
 	@Transactional(rollbackOn = {
@@ -103,11 +103,20 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 
 		persistProcessedData(processedData, (event) -> {
 			SormasToSormasOriginInfoDto eventOriginInfo = event.getSormasToSormasOriginInfo();
-			eventOriginInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
-			eventOriginInfo.setComment(originInfo.getComment());
+			if (eventOriginInfo != null) {
+				eventOriginInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
 
-			oriInfoFacade.saveOriginInfo(eventOriginInfo);
+				originInfoFacade.saveOriginInfo(eventOriginInfo);
+			} else {
+				SormasToSormasShareInfo shareInfo = shareInfoService.getByEventAndOrganization(event.getUuid(), originInfo.getOrganizationId());
+
+				shareInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
+
+				shareInfoService.ensurePersisted(shareInfo);
+			}
 		}, processedDataPersisterHelper::syncedAssociatedEntityCallback, processedDataPersisterHelper::syncedAssociatedEntityCallback);
+
+		eventFacade.syncSharesAsync(processedData.getEntity().getUuid());
 	}
 
 	private void persistProcessedData(
@@ -119,7 +128,7 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 		EventDto event = eventData.getEntity();
 
 		final EventDto savedEvent;
-		savedEvent = handleValidationError(() -> eventFacade.saveEvent(event, false), Captions.CaseData, buildCaseValidationGroupName(event));
+		savedEvent = handleValidationError(() -> eventFacade.saveEvent(event, false, false), Captions.CaseData, buildCaseValidationGroupName(event));
 		if (afterSaveEvent != null) {
 			afterSaveEvent.accept(savedEvent);
 		}

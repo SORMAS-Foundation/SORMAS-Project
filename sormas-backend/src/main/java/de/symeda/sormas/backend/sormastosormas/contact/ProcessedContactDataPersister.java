@@ -53,7 +53,7 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 	@EJB
-	private SormasToSormasOriginInfoFacadeEjbLocal oriInfoFacade;
+	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@Transactional(rollbackOn = {
 		Exception.class })
@@ -80,16 +80,27 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 	}
 
 	@Override
+	@Transactional(rollbackOn = {
+		Exception.class })
 	public void persistSyncData(ProcessedContactData processedData) throws SormasToSormasValidationException {
 		SormasToSormasOriginInfoDto originInfo = processedData.getOriginInfo();
 
 		persistProcessedData(processedData, (contact) -> {
 			SormasToSormasOriginInfoDto contactOriginInfo = contact.getSormasToSormasOriginInfo();
-			contactOriginInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
-			contactOriginInfo.setComment(originInfo.getComment());
+			if (contactOriginInfo != null) {
+				contactOriginInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
 
-			oriInfoFacade.saveOriginInfo(contactOriginInfo);
+				originInfoFacade.saveOriginInfo(contactOriginInfo);
+			} else {
+				SormasToSormasShareInfo shareInfo = shareInfoService.getByContactAndOrganization(contact.getUuid(), originInfo.getOrganizationId());
+
+				shareInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
+
+				shareInfoService.ensurePersisted(shareInfo);
+			}
 		}, dataPersisterHelper::syncedAssociatedEntityCallback, false);
+
+		contactFacade.syncSharesAsync(processedData.getEntity().getUuid());
 	}
 
 	private void persistProcessedData(
@@ -106,13 +117,13 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 			// save person first during creation
 			handleValidationError(() -> personFacade.savePerson(processedData.getPerson(), false), Captions.Person, contactValidationGroupName);
 			savedContact = handleValidationError(
-				() -> contactFacade.saveContact(processedData.getEntity(), true, true, false),
+				() -> contactFacade.saveContact(processedData.getEntity(), true, true, false, false),
 				Captions.Contact,
 				contactValidationGroupName);
 		} else {
 			//save contact first during update
 			savedContact = handleValidationError(
-				() -> contactFacade.saveContact(processedData.getEntity(), true, true, false),
+				() -> contactFacade.saveContact(processedData.getEntity(), true, true, false, false),
 				Captions.Contact,
 				contactValidationGroupName);
 			handleValidationError(() -> personFacade.savePerson(processedData.getPerson(), false), Captions.Person, contactValidationGroupName);
