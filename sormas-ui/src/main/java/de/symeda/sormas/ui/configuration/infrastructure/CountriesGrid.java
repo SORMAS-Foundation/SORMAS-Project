@@ -76,7 +76,7 @@ public class CountriesGrid extends FilteredGrid<CountryIndexDto, CountryCriteria
 	private Stream<CountryIndexDto> createFilteredStream() {
 
 		// get all filter properties
-		String nameCodeLike = getCriteria().getNameCodeLike();
+		String nameCodeLike = getCriteria().getNameCodeLike() != null ? getCriteria().getNameCodeLike().toLowerCase() : null;
 		String subcontinentUuid = getCriteria().getSubcontinent() != null ? getCriteria().getSubcontinent().getUuid() : null;
 		EntityRelevanceStatus relevanceStatus = getCriteria().getRelevanceStatus();
 
