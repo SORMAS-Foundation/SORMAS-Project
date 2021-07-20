@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.caze;
 
 import com.vaadin.ui.HorizontalLayout;
@@ -41,11 +39,17 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 
 	private final CaseDataDto caseDto;
+	private final boolean showDisease;
 
 	public CaseInfoLayout(CaseDataDto caseDto) {
+		this(caseDto, true);
+	}
+
+	public CaseInfoLayout(CaseDataDto caseDto, boolean showDisease) {
 		super(CaseDataDto.class, UiFieldAccessCheckers.getDefault(caseDto.isPseudonymized()));
 
 		this.caseDto = caseDto;
+		this.showDisease = showDisease;
 		setSpacing(true);
 		setMargin(false);
 		setWidth(100, Unit.PERCENTAGE);
@@ -77,10 +81,10 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 					caseDto.getExternalID(),
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EXTERNAL_ID)).setDescription(caseDto.getEpidNumber());
 				addDescLabel(
-						leftColumnLayout,
-						CaseDataDto.EXTERNAL_TOKEN,
-						caseDto.getExternalToken(),
-						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EXTERNAL_TOKEN)).setDescription(caseDto.getExternalToken());
+					leftColumnLayout,
+					CaseDataDto.EXTERNAL_TOKEN,
+					caseDto.getExternalToken(),
+					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EXTERNAL_TOKEN)).setDescription(caseDto.getExternalToken());
 			} else {
 				addDescLabel(
 					leftColumnLayout,
@@ -128,13 +132,17 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 		rightColumnLayout.setMargin(false);
 		rightColumnLayout.setSpacing(true);
 		{
-			addDescLabel(
-				rightColumnLayout,
-				CaseDataDto.DISEASE,
-				caseDto.getDisease() != Disease.OTHER
-					? DiseaseHelper.toString(caseDto.getDisease(), caseDto.getDiseaseDetails(), caseDto.getDiseaseVariant())
-					: DataHelper.toStringNullable(caseDto.getDiseaseDetails()),
-				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
+			if (showDisease) {
+				addDescLabel(
+					rightColumnLayout,
+					CaseDataDto.DISEASE,
+					caseDto.getDisease() != Disease.OTHER
+						? DiseaseHelper.toString(caseDto.getDisease(), caseDto.getDiseaseDetails(), caseDto.getDiseaseVariant())
+						: DataHelper.toStringNullable(caseDto.getDiseaseDetails()),
+					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
+			} else {
+				addDescLabel(rightColumnLayout, CaseDataDto.DISEASE, "", "");
+			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 				addDescLabel(
