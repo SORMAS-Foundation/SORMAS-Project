@@ -2130,6 +2130,7 @@ public interface Captions {
 	String travelEntryOnlyEntriesTestedNegative = "travelEntryOnlyEntriesTestedNegative";
 	String travelEntryOnlyRecoveredEntries = "travelEntryOnlyRecoveredEntries";
 	String travelEntryOnlyVaccinatedEntries = "travelEntryOnlyVaccinatedEntries";
+	String travelEntryOpenResultingCase = "travelEntryOpenResultingCase";
 	String travelEntryPointOfEntry = "travelEntryPointOfEntry";
 	String travelEntryTravelEntriesList = "travelEntryTravelEntriesList";
 	String Treatment_additionalNotes = "Treatment.additionalNotes";

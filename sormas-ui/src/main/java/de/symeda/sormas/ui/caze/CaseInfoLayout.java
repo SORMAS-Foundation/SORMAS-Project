@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.caze;
 
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -24,6 +25,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
@@ -32,6 +34,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.AbstractInfoLayout;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
@@ -39,17 +42,17 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 
 	private final CaseDataDto caseDto;
-	private final boolean showDisease;
+	private final boolean isTravelEntry;
 
 	public CaseInfoLayout(CaseDataDto caseDto) {
-		this(caseDto, true);
+		this(caseDto, false);
 	}
 
-	public CaseInfoLayout(CaseDataDto caseDto, boolean showDisease) {
+	public CaseInfoLayout(CaseDataDto caseDto, boolean isTravelEntry) {
 		super(CaseDataDto.class, UiFieldAccessCheckers.getDefault(caseDto.isPseudonymized()));
 
 		this.caseDto = caseDto;
-		this.showDisease = showDisease;
+		this.isTravelEntry = isTravelEntry;
 		setSpacing(true);
 		setMargin(false);
 		setWidth(100, Unit.PERCENTAGE);
@@ -65,6 +68,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 		VerticalLayout leftColumnLayout = new VerticalLayout();
 		leftColumnLayout.setMargin(false);
 		leftColumnLayout.setSpacing(true);
+		boolean hasUserRightCaseView = UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW);
 		{
 			final Label caseIdLabel = addDescLabel(
 				leftColumnLayout,
@@ -93,7 +97,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPID_NUMBER)).setDescription(caseDto.getEpidNumber());
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+			if (hasUserRightCaseView) {
 				addDescLabel(
 					leftColumnLayout,
 					CaseDataDto.PERSON,
@@ -125,6 +129,12 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 					caseDto.getClinicianName(),
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICIAN_NAME));
 			}
+			if (isTravelEntry && hasUserRightCaseView) {
+				Link linkToData = ControllerProvider.getCaseController()
+					.createLinkToData(caseDto.getUuid(), I18nProperties.getCaption(Captions.travelEntryOpenResultingCase));
+				leftColumnLayout.addComponent(linkToData);
+				linkToData.setWidthFull();
+			}
 		}
 		this.addComponent(leftColumnLayout);
 
@@ -132,7 +142,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 		rightColumnLayout.setMargin(false);
 		rightColumnLayout.setSpacing(true);
 		{
-			if (showDisease) {
+			if (!isTravelEntry) {
 				addDescLabel(
 					rightColumnLayout,
 					CaseDataDto.DISEASE,
@@ -144,7 +154,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 				addDescLabel(rightColumnLayout, CaseDataDto.DISEASE, "", "");
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+			if (hasUserRightCaseView) {
 				addDescLabel(
 					rightColumnLayout,
 					CaseDataDto.CASE_CLASSIFICATION,

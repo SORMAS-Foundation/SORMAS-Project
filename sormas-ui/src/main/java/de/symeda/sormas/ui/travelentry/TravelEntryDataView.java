@@ -70,7 +70,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {
 
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-		CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto, false);
+		CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto, true);
 		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 
 		return caseInfoLayout;
