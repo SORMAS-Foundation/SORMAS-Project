@@ -1,10 +1,13 @@
 package de.symeda.sormas.ui.travelentry;
 
+import java.util.List;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -52,9 +55,12 @@ public class TravelEntriesView extends AbstractView {
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportTravelEntries));
 			}));
 
-			final ExpandableButton createButton =
-				new ExpandableButton(Captions.travelEntryNewTravelEntry).expand(e -> ControllerProvider.getTravelEntryController().create());
-			addHeaderComponent(createButton);
+			List<String> travelEntries = FacadeProvider.getTravelEntryFacade().getAllUuids();
+			if (!travelEntries.isEmpty()) {
+				final ExpandableButton createButton =
+					new ExpandableButton(Captions.travelEntryNewTravelEntry).expand(e -> ControllerProvider.getTravelEntryController().create());
+				addHeaderComponent(createButton);
+			}
 		}
 	}
 

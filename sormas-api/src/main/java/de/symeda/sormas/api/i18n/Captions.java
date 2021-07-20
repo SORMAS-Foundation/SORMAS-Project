@@ -2091,10 +2091,12 @@ public interface Captions {
 	String to = "to";
 	String total = "total";
 	String travelEntriesNoTravelEntriesForPerson = "travelEntriesNoTravelEntriesForPerson";
+	String TravelEntry = "TravelEntry";
 	String TravelEntry_differentPointOfEntryJurisdiction = "TravelEntry.differentPointOfEntryJurisdiction";
 	String TravelEntry_diseaseVariant = "TravelEntry.diseaseVariant";
 	String TravelEntry_externalId = "TravelEntry.externalId";
 	String TravelEntry_homeDistrictName = "TravelEntry.homeDistrictName";
+	String TravelEntry_person = "TravelEntry.person";
 	String TravelEntry_personFirstName = "TravelEntry.personFirstName";
 	String TravelEntry_personLastName = "TravelEntry.personLastName";
 	String TravelEntry_pointOfEntryDistrict = "TravelEntry.pointOfEntryDistrict";
