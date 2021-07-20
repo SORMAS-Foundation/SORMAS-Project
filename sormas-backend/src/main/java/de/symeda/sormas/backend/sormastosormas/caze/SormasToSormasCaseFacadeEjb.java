@@ -89,7 +89,8 @@ public class SormasToSormasCaseFacadeEjb
 			CASE_SHARES_ENDPOINT,
 			Captions.CaseData,
 			ShareRequestDataType.CASE,
-			CaseShareRequestData.class);
+			CaseShareRequestData.class,
+			CaseSyncData.class);
 	}
 
 	@Override

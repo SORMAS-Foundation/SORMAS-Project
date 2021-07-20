@@ -40,15 +40,18 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -152,6 +155,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
@@ -263,8 +267,10 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
@@ -417,6 +423,12 @@ public class CaseFacadeEjb implements CaseFacade {
 	private SurveillanceReportService surveillanceReportService;
 	@EJB
 	private SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
+	@EJB
+	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	@EJB
+	private SormasToSormasCaseFacadeEjbLocal sormasToSormasCaseFacade;
+	@Resource
+	private ManagedScheduledExecutorService executorService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -1481,13 +1493,25 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges, boolean checkChangeDate) throws ValidationRuntimeException {
 
+		return saveCase(dto, handleChanges, checkChangeDate, true);
+	}
+
+	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean syncShares)
+		throws ValidationRuntimeException {
+
 		Case caze = caseService.getByUuid(dto.getUuid());
 		CaseDataDto existingCaseDto = handleChanges ? toDto(caze) : null;
 
-		return caseSave(dto, handleChanges, caze, existingCaseDto, checkChangeDate);
+		return caseSave(dto, handleChanges, caze, existingCaseDto, checkChangeDate, syncShares);
 	}
 
-	private CaseDataDto caseSave(CaseDataDto dto, boolean handleChanges, Case caze, CaseDataDto existingCaseDto, boolean checkChangeDate) {
+	private CaseDataDto caseSave(
+		CaseDataDto dto,
+		boolean handleChanges,
+		Case caze,
+		CaseDataDto existingCaseDto,
+		boolean checkChangeDate,
+		boolean syncShares) {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
 		restorePseudonymizedDto(dto, caze, existingCaseDto);
@@ -1505,7 +1529,21 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		doSave(caze, handleChanges, existingCaseDto);
 
+		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
+			syncSharesAsync(caze.getUuid());
+		}
+
 		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
+	}
+
+	public void syncSharesAsync(String entityUuid) {
+		executorService.schedule(() -> {
+			try {
+				sormasToSormasCaseFacade.syncShares(new ShareTreeCriteria(entityUuid, null, false));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}, 5, TimeUnit.SECONDS);
 	}
 
 	private void doSave(Case caze, boolean handleChanges, CaseDataDto existingCaseDto) {

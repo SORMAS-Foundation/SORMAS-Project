@@ -76,7 +76,6 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(
 			caze.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasCaseNotShared,
-			(i) -> ControllerProvider.getSormasToSormasController().syncCase(caze, i),
 			(i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadList));
 
 		initLayout(
@@ -90,7 +89,6 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(
 			contact.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasContactNotShared,
-			(i) -> ControllerProvider.getSormasToSormasController().syncContact(contact, i),
 			(i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadList));
 
 		initLayout(
@@ -101,7 +99,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 	}
 
 	public SormasToSormasListComponent(SampleDto sample) {
-		sormasToSormasList = new SormasToSormasList(sample.getSormasToSormasOriginInfo() == null, Captions.sormasToSormasSampleNotShared, null, null);
+		sormasToSormasList = new SormasToSormasList(sample.getSormasToSormasOriginInfo() == null, Captions.sormasToSormasSampleNotShared, null);
 
 		initLayout(
 			sample.getSormasToSormasOriginInfo(),
@@ -119,7 +117,6 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(
 			event.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasEventNotShared,
-			(i) -> ControllerProvider.getSormasToSormasController().syncEvent(event, i),
 			(i) -> ControllerProvider.getSormasToSormasController().revokeShare(i, this::reloadList));
 
 		initLayout(
@@ -133,7 +130,6 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		sormasToSormasList = new SormasToSormasList(
 			eventParticipant.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasEventParticipantNotShared,
-			null,
 			null);
 
 		initLayout(
@@ -200,7 +196,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 				String ownerOrganizationId = getOwnerOrganizationId(ownerShare, rootOrigin, currentServerOrgId);
 				boolean isOwnedByCurrentOrg = currentServerOrgId.equals(ownerOrganizationId);
-				boolean isOwnedByOrigin = originInfo.getOrganizationId().equals(ownerOrganizationId);
+				boolean isOwnedByOrigin = originInfo != null && originInfo.getOrganizationId().equals(ownerOrganizationId);
 				boolean isOwnedByRootOrg = rootOrigin != null && rootOrigin.getOrganizationId().equals(ownerOrganizationId);
 
 				currentUI.access(() -> {
@@ -463,20 +459,17 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		private static final long serialVersionUID = -4659924105492791566L;
 		private String defaultPlaceHolderText;
 		private final Label placeholderLabel;
-		private final Consumer<String> syncListener;
 		private final Consumer<String> revokeListener;
 
 		public SormasToSormasList(
 			boolean showPlaceholder,
 			String placeholderCaptionTag,
-			Consumer<String> syncListener,
 			Consumer<String> revokeListener) {
 			super(5);
 
 			this.defaultPlaceHolderText = placeholderCaptionTag != null ? I18nProperties.getCaption(placeholderCaptionTag) : null;
 			this.placeholderLabel = new Label(defaultPlaceHolderText);
 			this.placeholderLabel.setVisible(showPlaceholder);
-			this.syncListener = syncListener;
 			this.revokeListener = revokeListener;
 		}
 
@@ -507,7 +500,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 			for (int i = 0; i < displayedEntries.size(); i++) {
 				SormasToSormasShareListEntryData shareInfo = displayedEntries.get(i);
-				SormasToSormasShareListEntry listEntry = new SormasToSormasShareListEntry(shareInfo, syncListener, revokeListener);
+				SormasToSormasShareListEntry listEntry = new SormasToSormasShareListEntry(shareInfo, revokeListener);
 				if (i == 0) {
 					listEntry.addStyleName(CssStyles.SORMAS_LIST_ENTRY_NO_BORDER);
 				}
@@ -520,7 +513,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 		private static final long serialVersionUID = 7462585357530141263L;
 
-		public SormasToSormasShareListEntry(SormasToSormasShareListEntryData data, Consumer<String> syncListener, Consumer<String> revokeListener) {
+		public SormasToSormasShareListEntry(SormasToSormasShareListEntryData data, Consumer<String> revokeListener) {
 			setMargin(false);
 			setSpacing(true);
 			setWidth(100, Unit.PERCENTAGE);
@@ -553,12 +546,6 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 			addComponent(infoLayout);
 			setExpandRatio(infoLayout, 1);
-
-			if (syncListener != null && data.shareUuid != null && data.status == ShareRequestStatus.ACCEPTED && !data.ownershipHandedOver) {
-				addComponent(ButtonHelper.createIconButton(Captions.sormasToSormasSync, VaadinIcons.REFRESH, (e) -> {
-					syncListener.accept(data.shareUuid);
-				}));
-			}
 
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
 				&& revokeListener != null
