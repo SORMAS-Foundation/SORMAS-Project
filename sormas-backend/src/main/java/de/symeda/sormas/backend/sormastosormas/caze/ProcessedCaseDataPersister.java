@@ -31,9 +31,10 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -95,7 +96,7 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistSyncData(ProcessedCaseData processedData) throws SormasToSormasValidationException {
+	public void persistSyncData(ProcessedCaseData processedData, ShareTreeCriteria shareTreeCriteria) throws SormasToSormasValidationException {
 		SormasToSormasOriginInfoDto originInfo = processedData.getOriginInfo();
 
 		persistProcessedData(processedData, (caze) -> {
@@ -113,7 +114,7 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 			}
 		}, dataPersisterHelper::syncedAssociatedEntityCallback, dataPersisterHelper::syncedAssociatedEntityCallback, false);
 
-		caseFacade.syncSharesAsync(processedData.getEntity().getUuid());
+		caseFacade.syncSharesAsync(shareTreeCriteria);
 	}
 
 	private void persistProcessedData(

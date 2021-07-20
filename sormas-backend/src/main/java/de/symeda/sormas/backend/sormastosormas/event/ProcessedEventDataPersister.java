@@ -32,6 +32,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -98,7 +99,7 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistSyncData(ProcessedEventData processedData) throws SormasToSormasValidationException {
+	public void persistSyncData(ProcessedEventData processedData, ShareTreeCriteria shareTreeCriteria) throws SormasToSormasValidationException {
 		SormasToSormasOriginInfoDto originInfo = processedData.getOriginInfo();
 
 		persistProcessedData(processedData, (event) -> {
@@ -116,7 +117,7 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 			}
 		}, processedDataPersisterHelper::syncedAssociatedEntityCallback, processedDataPersisterHelper::syncedAssociatedEntityCallback);
 
-		eventFacade.syncSharesAsync(processedData.getEntity().getUuid());
+		eventFacade.syncSharesAsync(shareTreeCriteria);
 	}
 
 	private void persistProcessedData(

@@ -29,6 +29,7 @@ import javax.transaction.Transactional;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
@@ -83,7 +84,7 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistSyncData(ProcessedContactData processedData) throws SormasToSormasValidationException {
+	public void persistSyncData(ProcessedContactData processedData, ShareTreeCriteria shareTreeCriteria) throws SormasToSormasValidationException {
 		SormasToSormasOriginInfoDto originInfo = processedData.getOriginInfo();
 
 		persistProcessedData(processedData, (contact) -> {
@@ -101,7 +102,7 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 			}
 		}, dataPersisterHelper::syncedAssociatedEntityCallback, false);
 
-		contactFacade.syncSharesAsync(processedData.getEntity().getUuid());
+		contactFacade.syncSharesAsync(shareTreeCriteria);
 	}
 
 	private void persistProcessedData(

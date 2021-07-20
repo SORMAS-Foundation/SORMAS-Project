@@ -283,7 +283,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 							sormasToSormasList.showPlaceholder(null);
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error("Failed to load shares", e);
 						sormasToSormasList.showPlaceholder(I18nProperties.getString(Strings.errorSormasToSormasLoadShares));
 					} finally {
 						currentUI.setPollInterval(-1);

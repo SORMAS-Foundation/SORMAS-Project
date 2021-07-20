@@ -28,6 +28,10 @@ public class ShareTreeCriteria implements Serializable {
 	public ShareTreeCriteria() {
 	}
 
+	public ShareTreeCriteria(String entityUuid) {
+		this(entityUuid, null, false);
+	}
+
 	public ShareTreeCriteria(String entityUuid, String exceptedOrganizationId, boolean forwardOnly) {
 		this.entityUuid = entityUuid;
 		this.exceptedOrganizationId = exceptedOrganizationId;

@@ -386,15 +386,15 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
-			syncSharesAsync(entity.getUuid());
+			syncSharesAsync(new ShareTreeCriteria(entity.getUuid()));
 		}
 
 		return toDto(entity);
 	}
 
-	public void syncSharesAsync(String entityUuid) {
+	public void syncSharesAsync(ShareTreeCriteria criteria) {
 		executorService.schedule(() -> {
-			sormasToSormasContactFacade.syncShares(new ShareTreeCriteria(entityUuid, null, false));
+			sormasToSormasContactFacade.syncShares(criteria);
 		}, 5, TimeUnit.SECONDS);
 	}
 

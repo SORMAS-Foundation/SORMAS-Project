@@ -1530,15 +1530,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		doSave(caze, handleChanges, existingCaseDto);
 
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
-			syncSharesAsync(caze.getUuid());
+			syncSharesAsync(new ShareTreeCriteria(caze.getUuid()));
 		}
 
 		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
-	public void syncSharesAsync(String entityUuid) {
+	public void syncSharesAsync(ShareTreeCriteria criteria) {
 		executorService.schedule(() -> {
-			sormasToSormasCaseFacade.syncShares(new ShareTreeCriteria(entityUuid, null, false));
+			sormasToSormasCaseFacade.syncShares(criteria);
 		}, 5, TimeUnit.SECONDS);
 	}
 

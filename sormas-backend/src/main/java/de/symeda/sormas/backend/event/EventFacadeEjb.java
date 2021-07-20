@@ -235,15 +235,15 @@ public class EventFacadeEjb implements EventFacade {
 		eventService.ensurePersisted(event);
 
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
-			syncSharesAsync(event.getUuid());
+			syncSharesAsync(new ShareTreeCriteria(event.getUuid()));
 		}
 
 		return convertToDto(event, pseudonymizer);
 	}
 
-	public void syncSharesAsync(String entityUuid) {
+	public void syncSharesAsync(ShareTreeCriteria criteria) {
 		executorService.schedule(() -> {
-			sormasToSormasEventFacade.syncShares(new ShareTreeCriteria(entityUuid, null, false));
+			sormasToSormasEventFacade.syncShares(criteria);
 		}, 5, TimeUnit.SECONDS);
 	}
 

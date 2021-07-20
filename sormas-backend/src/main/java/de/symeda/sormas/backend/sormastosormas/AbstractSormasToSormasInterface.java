@@ -395,13 +395,13 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		SyncDataDto<S> syncData = encryptionService.decryptAndVerify(encryptedData, syncDataType);
 
 		perisist(Collections.singletonList(syncData.getShareData()), data -> {
-			getProcessedDataPersister().persistSyncData(data);
+			getProcessedDataPersister().persistSyncData(data, syncData.getCriteria());
 		}, null);
 	}
 
 	@Override
 	public List<SormasToSormasShareTree> getAllShares(String uuid) throws SormasToSormasException {
-		return getShareTrees(new ShareTreeCriteria(uuid, null, false));
+		return getShareTrees(new ShareTreeCriteria(uuid));
 	}
 
 	@Override
