@@ -34,6 +34,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -44,7 +45,23 @@ public class TravelEntryListComponent extends VerticalLayout {
 
 	private TravelEntryList travelEntryList;
 
-	public TravelEntryListComponent(TravelEntryCriteria travelEntryCriteria) {
+	private TravelEntryCriteria travelEntryCriteria;
+	private CaseReferenceDto caseReferenceDto;
+	private PersonReferenceDto personReferenceDto;
+
+	public TravelEntryListComponent(CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
+
+		this.caseReferenceDto = caseReferenceDto;
+		this.personReferenceDto = personReferenceDto;
+		travelEntryCriteria = new TravelEntryCriteria();
+
+		if (caseReferenceDto != null) {
+			travelEntryCriteria.caze(caseReferenceDto);
+		}
+		if (personReferenceDto != null) {
+			travelEntryCriteria.person(personReferenceDto);
+		}
+
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -63,25 +80,25 @@ public class TravelEntryListComponent extends VerticalLayout {
 		travelEntryHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(travelEntryHeader);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
+		if (caseReferenceDto != null && UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.travelEntryNewTravelEntry));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getTravelEntryController().create());
+			createButton.addClickListener(e -> ControllerProvider.getTravelEntryController().create(caseReferenceDto, SormasUI::refreshView));
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}
 	}
 
 	public static void addTravelEntryListComponent(CustomLayout layout, PersonReferenceDto personReferenceDto) {
-		addTravelEntryListComponent(layout, new TravelEntryCriteria().person(personReferenceDto));
+		addTravelEntryListComponent(layout, null, personReferenceDto);
 	}
 
 	public static void addTravelEntryListComponent(CustomLayout layout, CaseReferenceDto caseReferenceDto) {
-		addTravelEntryListComponent(layout, new TravelEntryCriteria().caze(caseReferenceDto));
+		addTravelEntryListComponent(layout, caseReferenceDto, null);
 	}
 
-	private static void addTravelEntryListComponent(CustomLayout layout, TravelEntryCriteria travelEntryCriteria) {
+	private static void addTravelEntryListComponent(CustomLayout layout, CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
 
@@ -89,7 +106,7 @@ public class TravelEntryListComponent extends VerticalLayout {
 			travelEntriesLayout.setMargin(false);
 			travelEntriesLayout.setSpacing(false);
 
-			TravelEntryListComponent travelEntryList = new TravelEntryListComponent(travelEntryCriteria);
+			TravelEntryListComponent travelEntryList = new TravelEntryListComponent(caseReferenceDto, personReferenceDto);
 			travelEntryList.addStyleName(CssStyles.SIDE_COMPONENT);
 			travelEntriesLayout.addComponent(travelEntryList);
 			layout.addComponent(travelEntriesLayout, TRAVEL_ENTRIES_LOC);
