@@ -1538,11 +1538,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	public void syncSharesAsync(String entityUuid) {
 		executorService.schedule(() -> {
-			try {
-				sormasToSormasCaseFacade.syncShares(new ShareTreeCriteria(entityUuid, null, false));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			sormasToSormasCaseFacade.syncShares(new ShareTreeCriteria(entityUuid, null, false));
 		}, 5, TimeUnit.SECONDS);
 	}
 

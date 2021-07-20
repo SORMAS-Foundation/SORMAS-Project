@@ -243,11 +243,7 @@ public class EventFacadeEjb implements EventFacade {
 
 	public void syncSharesAsync(String entityUuid) {
 		executorService.schedule(() -> {
-			try {
-				sormasToSormasEventFacade.syncShares(new ShareTreeCriteria(entityUuid, null, false));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			sormasToSormasEventFacade.syncShares(new ShareTreeCriteria(entityUuid, null, false));
 		}, 5, TimeUnit.SECONDS);
 	}
 

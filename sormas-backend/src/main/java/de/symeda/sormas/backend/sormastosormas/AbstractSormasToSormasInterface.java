@@ -353,7 +353,6 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 					syncEntity(entity, originInfo.getOrganizationId(), dataBuilderHelper.createOptionsFromOriginInfoDto(originInfo), parentCriteria);
 				} catch (Exception e) {
 					LOGGER.error("Failed to sync to [{}]", originInfo.getOrganizationId(), e);
-					e.printStackTrace();
 				}
 			},
 			((entity, shareInfo, reShareCriteria, isExcepted) -> {
@@ -364,7 +363,6 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 						syncEntity(entity, shareInfo.getOrganizationId(), dataBuilderHelper.createOptionsFormShareInfo(shareInfo), reShareCriteria);
 					} catch (Exception e) {
 						LOGGER.error("Failed to sync to [{}]", shareInfo.getOrganizationId(), e);
-						e.printStackTrace();
 					}
 				}
 			}));
