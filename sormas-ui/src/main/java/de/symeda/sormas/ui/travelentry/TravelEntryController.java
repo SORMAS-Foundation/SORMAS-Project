@@ -55,7 +55,7 @@ public class TravelEntryController {
 
 		TravelEntryCreateForm createForm = new TravelEntryCreateForm();
 		TravelEntryDto travelEntry = TravelEntryDto.build(null);
-		// travelEntry.setDeaContent(FacadeProvider.getTravelEntryFacade().getDeaContentOfLastTravelEntry());
+		travelEntry.setDeaContent(FacadeProvider.getTravelEntryFacade().getDeaContentOfLastTravelEntry());
 
 		PersonDto personDto = null;
 		if (caseReferenceDto != null) {
