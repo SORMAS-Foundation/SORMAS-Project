@@ -48,6 +48,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
@@ -685,6 +686,31 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		CaseDataDto caseData = CaseDataDto.build(eventParticipant.getPerson().toReference(), eventDisease);
 
 		if (person.getPresentCondition() != null && person.getPresentCondition().isDeceased() && eventDisease == person.getCauseOfDeathDisease()) {
+			caseData.setOutcome(CaseOutcome.DECEASED);
+			caseData.setOutcomeDate(new Date());
+		}
+
+		return caseData;
+	}
+
+	public static CaseDataDto buildFromTravelEntry(TravelEntryDto travelEntry, PersonDto person) {
+
+		CaseDataDto caseData = CaseDataDto.build(person.toReference(), travelEntry.getDisease());
+
+		caseData.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+		caseData.setResponsibleRegion(travelEntry.getResponsibleRegion());
+		caseData.setResponsibleDistrict(travelEntry.getResponsibleDistrict());
+		caseData.setResponsibleCommunity(travelEntry.getResponsibleCommunity());
+		caseData.setRegion(travelEntry.getResponsibleRegion());
+		caseData.setDistrict(travelEntry.getResponsibleDistrict());
+		caseData.setCommunity(travelEntry.getResponsibleCommunity());
+		caseData.setPointOfEntry(travelEntry.getPointOfEntry());
+		caseData.setPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+		caseData.setReportDate(travelEntry.getReportDate());
+
+		if (person.getPresentCondition() != null
+			&& person.getPresentCondition().isDeceased()
+			&& travelEntry.getDisease() == person.getCauseOfDeathDisease()) {
 			caseData.setOutcome(CaseOutcome.DECEASED);
 			caseData.setOutcomeDate(new Date());
 		}

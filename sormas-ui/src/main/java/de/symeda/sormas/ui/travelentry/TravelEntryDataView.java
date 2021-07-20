@@ -1,13 +1,17 @@
 package de.symeda.sormas.ui.travelentry;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -60,7 +64,14 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 		layout.addComponent(editComponent, TRAVEL_ENTRY_LOC);
 
 		CaseReferenceDto resultingCase = travelEntryDto.getResultingCase();
-		if (resultingCase != null) {
+		if (resultingCase == null) {
+			Button createCaseButton = ButtonHelper.createButton(
+				Captions.travelEntryCreateCase,
+				e -> ControllerProvider.getCaseController().createFromTravelEntry(travelEntryDto),
+				ValoTheme.BUTTON_PRIMARY,
+				CssStyles.VSPACE_2);
+			layout.addComponent(createCaseButton, CASE_LOC);
+		} else {
 			layout.addComponent(createCaseInfoLayout(resultingCase.getUuid()), CASE_LOC);
 		}
 
