@@ -273,9 +273,7 @@ public interface Strings {
 	String errorSormasToSormasDeleteFromExternalSurveillanceTool = "errorSormasToSormasDeleteFromExternalSurveillanceTool";
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
 	String errorSormasToSormasInvalidRequestMethod = "errorSormasToSormasInvalidRequestMethod";
-	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
 	String errorSormasToSormasLoadShares = "errorSormasToSormasLoadShares";
-	String errorSormasToSormasNotEditable = "errorSormasToSormasNotEditable";
 	String errorSormasToSormasOwnershipAlreadyHandedOver = "errorSormasToSormasOwnershipAlreadyHandedOver";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
 	String errorSormasToSormasSend = "errorSormasToSormasSend";

@@ -32,8 +32,6 @@ import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +41,8 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolExc
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
@@ -52,11 +50,13 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
-import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
@@ -388,14 +388,6 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 					}
 				}
 			}));
-
-		try {
-			shareInfoService.handleOwnershipChangeInExternalSurvTool(shareInfo);
-		} catch (ExternalSurveillanceToolException e) {
-			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
-
-			throw SormasToSormasException.fromStringPropertyWithWarning(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool);
-		}
 	}
 
 	@Override
@@ -440,7 +432,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	private void perisist(List<S> receivedS2SEntities, Persister<PROCESSED> persister, SormasToSormasOriginInfoDto originInfo)
 		throws SormasToSormasValidationException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
-		List<PROCESSED> entitiesToPersist = new ArrayList<>(receivedS2SEntities.length);
+		List<PROCESSED> entitiesToPersist = new ArrayList<>(receivedS2SEntities.size());
 		List<DTO> existingEntities =
 			loadExistingEntities(receivedS2SEntities.stream().map(e -> e.getEntity().getUuid()).collect(Collectors.toList()));
 		Map<String, DTO> existingEntitiesMap = existingEntities.stream().collect(Collectors.toMap(EntityDto::getUuid, Function.identity()));
@@ -582,6 +574,14 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 				.collect(Collectors.toList());
 
 			updateShareInfoOptions(shareInfo, additionalAssociatedObjects, options);
+
+			try {
+				shareInfoService.handleOwnershipChangeInExternalSurvTool(shareInfo);
+			} catch (ExternalSurveillanceToolException e) {
+				LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
+
+				throw SormasToSormasException.fromStringPropertyWithWarning(Strings.errorSormasToSormasDeleteFromExternalSurveillanceTool);
+			}
 		}
 	}
 
