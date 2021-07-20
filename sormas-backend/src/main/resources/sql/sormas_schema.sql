@@ -7672,4 +7672,10 @@ ALTER TABLE events_history ADD COLUMN eventidentificationsource varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (385, 'Event identification source (#5526)');
 
+-- 2021-07-19 DEA Travel entry form #6025
+ALTER TABLE travelentry ALTER COLUMN deacontent TYPE json USING deacontent::json;
+ALTER TABLE travelentry_history ALTER COLUMN deacontent TYPE json USING deacontent::json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (385, 'DEA Travel entry form #6025');
+
 -- *** Insert new sql commands BEFORE this line ***

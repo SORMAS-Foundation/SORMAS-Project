@@ -68,6 +68,8 @@ public class TravelEntryDto extends PseudonymizableDto {
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
 
+
+
 	@Required
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
