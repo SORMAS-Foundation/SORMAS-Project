@@ -22,12 +22,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
@@ -203,8 +203,13 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		final TypedQuery<TravelEntry> q = em.createQuery(query);
 		final TravelEntry lastTravelEntry = q.getResultList().stream().findFirst().orElse(null);
 
-		TravelEntryDto travelEntryDto = convertToDto(lastTravelEntry, Pseudonymizer.getDefault(userService::hasRight));
-		return travelEntryDto.getDeaContent();
+		if (lastTravelEntry != null) {
+			Pseudonymizer aDefault = Pseudonymizer.getDefault(userService::hasRight);
+			TravelEntryDto travelEntryDto = convertToDto(lastTravelEntry, aDefault);
+			return travelEntryDto.getDeaContent();
+		}
+
+		return null;
 	}
 
 	@Override
