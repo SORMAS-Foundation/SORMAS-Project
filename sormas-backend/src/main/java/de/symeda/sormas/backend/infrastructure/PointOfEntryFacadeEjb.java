@@ -45,6 +45,7 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PointOfEntryFacade")
 public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
@@ -278,17 +279,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 		cq.select(pointOfEntry);
 
-		if (first != null && max != null) {
-			return em.createQuery(cq)
-				.setFirstResult(first)
-				.setMaxResults(max)
-				.getResultList()
-				.stream()
-				.map(f -> toDto(f))
-				.collect(Collectors.toList());
-		} else {
-			return em.createQuery(cq).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
-		}
+		return QueryHelper.getResultList(em, cq, first, max, this::toDto);
 	}
 
 	@Override
@@ -351,7 +342,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 		cq.select(root.get(PointOfEntry.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	private PointOfEntry fillOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target, boolean checkChangeDate) {

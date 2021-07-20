@@ -31,7 +31,7 @@ import de.symeda.sormas.backend.user.User;
 public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit> {
 
 	@EJB
-	CaseService caseService;
+	private CaseService caseService;
 
 	public ClinicalVisitService() {
 		super(ClinicalVisit.class);
