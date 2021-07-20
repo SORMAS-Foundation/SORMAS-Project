@@ -24,6 +24,7 @@ public class TravelEntryJoins<T> extends AbstractDomainObjectJoins<T, TravelEntr
 	private Join<TravelEntry, District> pointOfEntryDistrict;
 	private Join<TravelEntry, PointOfEntry> pointOfEntry;
 	private Join<TravelEntry, Case> resultingCase;
+	private Join<Person, Case> samePersonCase;
 
 	public TravelEntryJoins(From<T, TravelEntry> root) {
 		super(root);
@@ -99,5 +100,13 @@ public class TravelEntryJoins<T> extends AbstractDomainObjectJoins<T, TravelEntr
 
 	private void setResultingCase(Join<TravelEntry, Case> resultingCase) {
 		this.resultingCase = resultingCase;
+	}
+
+	public Join<Person, Case> getSamePersonCase() {
+		return getOrCreate(samePersonCase, Person.CASES, JoinType.LEFT, getPerson(), this::setSamePersonCase);
+	}
+
+	private void setSamePersonCase(Join<Person, Case> samePersonCase) {
+		this.samePersonCase = samePersonCase;
 	}
 }

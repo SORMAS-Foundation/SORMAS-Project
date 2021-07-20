@@ -7676,6 +7676,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (385, 'Event identif
 ALTER TABLE travelentry ALTER COLUMN deacontent TYPE json USING deacontent::json;
 ALTER TABLE travelentry_history ALTER COLUMN deacontent TYPE json USING deacontent::json;
 
-INSERT INTO schema_version (version_number, comment) VALUES (385, 'DEA Travel entry form #6025');
+INSERT INTO schema_version (version_number, comment) VALUES (386, 'DEA Travel entry form #6025');
 
 -- *** Insert new sql commands BEFORE this line ***
