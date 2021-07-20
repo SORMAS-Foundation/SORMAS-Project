@@ -158,8 +158,8 @@ public class InfrastructureImporter extends DataImporter {
 						throw new IllegalArgumentException(type.toString());
 				}
 				return ImportLineResult.SUCCESS;
-			}  catch (EJBException e) {
-				if (e.getCause() instanceof ValidationRuntimeException) {
+			}  catch (Exception e) {
+				if (e instanceof ValidationRuntimeException || e.getCause() instanceof ValidationRuntimeException) {
 					writeImportError(values, e.getMessage());
 					return ImportLineResult.ERROR;
 				}
