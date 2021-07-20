@@ -69,9 +69,7 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		final CriteriaBuilder cb = travelEntryQueryContext.getCriteriaBuilder();
 		final From<?, ?> from = travelEntryQueryContext.getRoot();
 		Join<TravelEntry, Person> person = joins.getPerson();
-		// TODO #6026: resultingCase or same person?
-		// Join<TravelEntry, Case> resultingCase = joins.getResultingCase();
-		Join<Person, Case> samePersonCase = joins.getSamePersonCase();
+		Join<TravelEntry, Case> resultingCase = joins.getResultingCase();
 
 		Predicate filter = null;
 
@@ -96,9 +94,7 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		}
 
 		if (criteria.getCase() != null) {
-			// TODO #6026: resultingCase or same person?
-			// filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(resultingCase.get(Case.UUID), criteria.getCase().getUuid()));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(samePersonCase.get(Case.UUID), criteria.getCase().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(resultingCase.get(Case.UUID), criteria.getCase().getUuid()));
 		}
 
 		if (!DataHelper.isNullOrEmpty(criteria.getNameUuidExternalIDLike())) {
