@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+
 import java.util.List;
 
 import javax.ejb.Remote;

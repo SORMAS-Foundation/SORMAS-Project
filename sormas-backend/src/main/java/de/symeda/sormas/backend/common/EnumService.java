@@ -75,7 +75,8 @@ public class EnumService {
 		}
 
 		public Enum<?> getEnumByCaption(String caption) throws InvalidEnumCaptionException {
-			Optional<Enum<?>> enumItem = captions.entrySet().stream().filter(e -> e.getValue().equals(caption)).findFirst().map(Map.Entry::getKey);
+			Optional<Enum<?>> enumItem =
+				captions.entrySet().stream().filter(e -> e.getValue().equalsIgnoreCase(caption)).findFirst().map(Map.Entry::getKey);
 
 			if (!enumItem.isPresent()) {
 				throw new InvalidEnumCaptionException("Unknown enum value " + caption);

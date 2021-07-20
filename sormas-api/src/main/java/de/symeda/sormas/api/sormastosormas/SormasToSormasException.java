@@ -15,26 +15,98 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import java.util.Map;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
-public class SormasToSormasException extends Exception {
+import java.util.List;
 
-	private Map<String, ValidationErrors> errors;
+public class SormasToSormasException extends Exception implements SormasToSormasI18nMessage {
 
-	public SormasToSormasException(String message) {
+	private static final long serialVersionUID = 952700907523341584L;
+
+	private final String i18nTag;
+
+	private final Object[] args;
+
+	private List<ValidationErrors> errors;
+
+	boolean warning;
+
+	public SormasToSormasException(String message, boolean warning, String i18nProperty, Object... args) {
 		super(message);
+		this.warning = warning;
+		this.i18nTag = i18nProperty;
+		this.args = args;
 	}
 
-	public SormasToSormasException(String message, Map<String, ValidationErrors> errors) {
+	public SormasToSormasException(String message, boolean warning, List<ValidationErrors> errors, String i18nTag, Object... args) {
 		super(message);
+		this.warning = warning;
+		this.i18nTag = i18nTag;
+		this.args = args;
 		this.errors = errors;
 	}
 
-	public Map<String, ValidationErrors> getErrors() {
+	@Override
+	public String getI18nTag() {
+		return i18nTag;
+	}
+
+	@Override
+	public Object[] getArgs() {
+		return args;
+	}
+
+	@Override
+	public String getHumanMessage() {
+		if (StringUtils.isNotBlank(i18nTag) && ArrayUtils.isNotEmpty(args)) {
+			return String.format(I18nProperties.getString(i18nTag), args);
+		} else if (StringUtils.isNotBlank(i18nTag)) {
+			return I18nProperties.getString(i18nTag);
+		} else {
+			return getMessage();
+		}
+	}
+
+	public List<ValidationErrors> getErrors() {
 		return errors;
 	}
 
-	public void setErrors(Map<String, ValidationErrors> errors) {
+	public void setErrors(List<ValidationErrors> errors) {
 		this.errors = errors;
+	}
+
+	public boolean isWarning() {
+		return warning;
+	}
+
+	public static SormasToSormasException fromStringPropertyWithWarning(String i18nTag, Object... args) {
+		return fromStringProperty(true, null, i18nTag, args);
+	}
+
+	public static SormasToSormasException fromStringProperty(String i18nTag, Object... args) {
+		return fromStringProperty(false, null, i18nTag, args);
+	}
+
+	public static SormasToSormasException fromStringProperty(List<ValidationErrors> errors, String i18nTag, Object... args) {
+		return fromStringProperty(false, errors, i18nTag, args);
+	}
+
+	private static SormasToSormasException fromStringProperty(boolean warning, List<ValidationErrors> errors, String i18nTag, Object... args) {
+
+		String message;
+		if (ArrayUtils.isNotEmpty(args)) {
+			message = String.format(I18nProperties.getString(i18nTag), args);
+		} else {
+			message = I18nProperties.getString(i18nTag);
+		}
+
+		if (errors == null) {
+			return new SormasToSormasException(message, warning, i18nTag, args);
+		} else {
+			return new SormasToSormasException(message, warning, errors, i18nTag, args);
+		}
 	}
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 
 @Remote
 public interface SormasToSormasFacade {
@@ -36,9 +37,17 @@ public interface SormasToSormasFacade {
 
 	void revokeShare(String shareInfoUuid) throws SormasToSormasException;
 
-	void revokeRequests(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
+	void requestsRevoked(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
+
+	void requestAccepted(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 
 	boolean isFeatureEnabledForUser();
 
 	boolean isFeatureConfigured();
+
+	boolean isSharingCasesContactsAndSamplesEnabledForUser();
+
+	boolean isSharingEventsEnabledForUser();
+
+	boolean isSharingLabMessagesEnabledForUser();
 }

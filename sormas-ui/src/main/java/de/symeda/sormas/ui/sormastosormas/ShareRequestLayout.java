@@ -50,7 +50,9 @@ public class ShareRequestLayout extends VerticalLayout {
 			ContactsPreviewGrid contactsGrid = addContactsGrid(Collections.emptyList());
 			casesGrid.getSelectionModel().addSelectionListener(event -> {
 				event.getFirstSelectedItem().ifPresent(casePreview -> {
-					contactsGrid.setItems(casePreview.getContacts());
+					if (casePreview.getContacts() != null) {
+						contactsGrid.setItems(casePreview.getContacts());
+					}
 				});
 			});
 
@@ -77,7 +79,9 @@ public class ShareRequestLayout extends VerticalLayout {
 
 			eventsGrid.getSelectionModel().addSelectionListener(event -> {
 				event.getFirstSelectedItem().ifPresent(eventPreview -> {
-					eventParticipantsGrid.setItems(eventPreview.getEventParticipants());
+					if(eventPreview.getEventParticipants() != null) {
+						eventParticipantsGrid.setItems(eventPreview.getEventParticipants());
+					}
 				});
 			});
 

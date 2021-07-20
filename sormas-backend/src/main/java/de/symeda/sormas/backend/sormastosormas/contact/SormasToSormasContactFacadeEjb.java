@@ -20,9 +20,8 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CON
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -32,12 +31,13 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.ValidationErrors;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
@@ -63,7 +63,7 @@ public class SormasToSormasContactFacadeEjb
 
 	private static final String CONTACT_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_ENDPOINT;
 	private static final String CONTACT_REQUEST_REJECT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_REJECT_ENDPOINT;
-	private static final String CONTACT_REQUEST_ACCEPT_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_ACCEPT_ENDPOINT;
+	private static final String CONTACT_REQUEST_GET_DATA_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_GET_DATA_ENDPOINT;
 	private static final String SAVE_SHARED_CONTACT_ENDPOINT = RESOURCE_PATH + CONTACT_ENDPOINT;
 	public static final String SYNC_SHARED_CONTACT_ENDPOINT = RESOURCE_PATH + CONTACT_SYNC_ENDPOINT;
 	public static final String CONTACT_SHARES_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_SHARES_ENDPOINT;
@@ -87,7 +87,7 @@ public class SormasToSormasContactFacadeEjb
 		super(
 			CONTACT_REQUEST_ENDPOINT,
 			CONTACT_REQUEST_REJECT_ENDPOINT,
-			CONTACT_REQUEST_ACCEPT_ENDPOINT,
+			CONTACT_REQUEST_GET_DATA_ENDPOINT,
 			SAVE_SHARED_CONTACT_ENDPOINT,
 			SYNC_SHARED_CONTACT_ENDPOINT,
 			CONTACT_SHARES_ENDPOINT,
@@ -124,24 +124,23 @@ public class SormasToSormasContactFacadeEjb
 
 	@Override
 	protected void validateEntitiesBeforeShare(List<Contact> entities, boolean handOverOwnership) throws SormasToSormasException {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Contact contact : entities) {
 			if (!contactService.isContactEditAllowed(contact)) {
-				validationErrors.put(
-					buildContactValidationGroupName(contact),
-					ValidationErrors
-						.create(I18nProperties.getCaption(Captions.Contact), I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
+				validationErrors.add(new ValidationErrors(buildContactValidationGroupName(contact),
+						ValidationErrors
+								.create(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
 			}
 			if (handOverOwnership && contact.getPerson().isEnrolledInExternalJournal()) {
-				validationErrors.put(
-					buildContactValidationGroupName(contact),
-					ValidationErrors
-						.create(I18nProperties.getCaption(Captions.Contact), I18nProperties.getString(Strings.errorSormasToSormasPersonEnrolled)));
+				validationErrors.add(new ValidationErrors(
+						buildContactValidationGroupName(contact),
+						ValidationErrors
+								.create(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
 			}
 		}
 
 		if (validationErrors.size() > 0) {
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasShare), validationErrors);
+			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
 		}
 	}
 
@@ -184,12 +183,12 @@ public class SormasToSormasContactFacadeEjb
 		ValidationErrors errors = new ValidationErrors();
 
 		if (contactFacade.exists(uuid)) {
-			errors.add(I18nProperties.getCaption(Captions.Contact), I18nProperties.getValidationError(Validations.sormasToSormasContactExists));
+			errors.add(new ValidationErrorGroup(Captions.Contact), new ValidationErrorMessage(Validations.sormasToSormasContactExists));
 		}
 
 		if (caze != null && !caseFacade.exists(caze.getUuid())) {
 			errors
-				.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasContactCaseNotExists));
+				.add(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasContactCaseNotExists));
 		}
 
 		return errors;

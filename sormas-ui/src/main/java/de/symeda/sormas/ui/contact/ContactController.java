@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,10 @@ package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -55,6 +57,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -152,6 +155,58 @@ public class ContactController {
 						});
 					}
 				}, true);
+		}
+
+		lineListingForm.closeWindow();
+		ControllerProvider.getContactController().navigateToIndex();
+	}
+
+	public void openLineListingWindow(EventDto eventDto, Set<EventParticipantIndexDto> eventParticipantIndexDtos) {
+		if (eventParticipantIndexDtos == null || eventParticipantIndexDtos.isEmpty()) {
+			return;
+		}
+
+		Window window = new Window(I18nProperties.getString(Strings.headingLineListing));
+
+		List<String> uuids = eventParticipantIndexDtos.stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toList());
+		List<EventParticipantDto> eventParticipantDtos = FacadeProvider.getEventParticipantFacade().getByUuids(uuids);
+
+		LineListingLayout lineListingForm = new LineListingLayout(window, eventDto, eventParticipantDtos);
+		lineListingForm.setSaveCallback(contacts -> saveContactsFromEventParticipantsLineListing(lineListingForm, contacts));
+
+		lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
+
+		window.setContent(lineListingForm);
+		window.setModal(true);
+		window.setPositionX((int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - lineListingForm.getWidth())) / 2);
+		window.setPositionY(70);
+		window.setResizable(false);
+
+		UI.getCurrent().addWindow(window);
+	}
+
+	private void saveContactsFromEventParticipantsLineListing(LineListingLayout lineListingForm, List<LineListingLayout.ContactLineDto> contacts) {
+		try {
+			lineListingForm.validate();
+		} catch (ValidationRuntimeException e) {
+			Notification.show(I18nProperties.getString(Strings.errorFieldValidationFailed), "", Type.ERROR_MESSAGE);
+			return;
+		}
+
+		for (LineListingLayout.ContactLineDto contactLineDto : contacts) {
+			ContactDto newContact = contactLineDto.getContact();
+			if (UserProvider.getCurrent() != null) {
+				newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
+			}
+
+			newContact.setPerson(contactLineDto.getPerson().toReference());
+
+			selectOrCreateContact(newContact, contactLineDto.getPerson(), uuid -> {
+				if (uuid == null) {
+					FacadeProvider.getContactFacade().saveContact(newContact);
+					Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.ASSISTIVE_NOTIFICATION);
+				}
+			});
 		}
 
 		lineListingForm.closeWindow();

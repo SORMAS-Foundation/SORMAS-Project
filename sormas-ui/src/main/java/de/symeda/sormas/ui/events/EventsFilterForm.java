@@ -1,3 +1,17 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
@@ -86,7 +100,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		LocationDto.FACILITY_TYPE,
 		LocationDto.FACILITY,
 		EventDto.EVENT_INVESTIGATION_STATUS,
-		EventDto.EVENT_MANAGEMENT_STATUS)
+		EventDto.EVENT_MANAGEMENT_STATUS,
+		EventDto.EVENT_IDENTIFICATION_SOURCE)
 		+ filterLocsCss(
 			VSPACE_3,
 			EventCriteria.ONLY_ENTITIES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL,
@@ -173,7 +188,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			FieldConfiguration.pixelSized(EventDto.SRC_TYPE, 140),
 			FieldConfiguration.pixelSized(EventDto.TYPE_OF_PLACE, 140),
 			FieldConfiguration.pixelSized(EventDto.EVENT_INVESTIGATION_STATUS, 140),
-			FieldConfiguration.pixelSized(EventDto.EVENT_MANAGEMENT_STATUS, 140));
+			FieldConfiguration.pixelSized(EventDto.EVENT_MANAGEMENT_STATUS, 140),
+			FieldConfiguration.pixelSized(EventDto.EVENT_IDENTIFICATION_SOURCE, 140));
 
 		ComboBox regionField = addField(
 			moreFiltersContainer,
