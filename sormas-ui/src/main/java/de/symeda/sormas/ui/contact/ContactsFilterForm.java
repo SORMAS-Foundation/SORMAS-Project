@@ -49,6 +49,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -97,7 +98,10 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected ContactsFilterForm() {
-		super(ContactCriteria.class, ContactIndexDto.I18N_PREFIX);
+		super(
+			ContactCriteria.class,
+			ContactIndexDto.I18N_PREFIX,
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
 	@Override
