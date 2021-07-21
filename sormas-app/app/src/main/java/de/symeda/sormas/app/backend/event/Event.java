@@ -46,6 +46,7 @@ import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.MedicallyAssociatedTransmissionMode;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.RiskLevel;
+import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -111,6 +112,10 @@ public class Event extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private RiskLevel riskLevel;
+
+	@Column(name = "specificRisk")
+	private String specificRiskString;
+	private SpecificRisk specificRisk;
 
 	@Enumerated(EnumType.STRING)
 	private EventInvestigationStatus eventInvestigationStatus;
@@ -270,6 +275,32 @@ public class Event extends PseudonymizableAdo {
 
 	public void setRiskLevel(RiskLevel riskLevel) {
 		this.riskLevel = riskLevel;
+	}
+
+	public String getSpecificRiskString() {
+		return specificRiskString;
+	}
+
+	public void setSpecificRiskString(String specificRiskString) {
+		this.specificRiskString = specificRiskString;
+	}
+
+	@Transient
+	public SpecificRisk getSpecificRisk() {
+		if (StringUtils.isBlank(specificRiskString)) {
+			return null;
+		} else {
+			return DatabaseHelper.getCustomizableEnumValueDao().getEnumValue(CustomizableEnumType.SPECIFIC_RISK, specificRiskString);
+		}
+	}
+
+	public void setSpecificRisk(SpecificRisk specificRisk) {
+		this.specificRisk = specificRisk;
+		if (specificRisk == null) {
+			specificRiskString = null;
+		} else {
+			specificRiskString = specificRisk.getValue();
+		}
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {
