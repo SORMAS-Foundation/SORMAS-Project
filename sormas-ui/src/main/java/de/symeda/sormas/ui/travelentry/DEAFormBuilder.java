@@ -1,11 +1,8 @@
 package de.symeda.sormas.ui.travelentry;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.vaadin.server.Page;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.v7.ui.Field;
@@ -22,24 +19,24 @@ public class DEAFormBuilder {
 	private List<DeaContentEntry> deaContentEntries;
 	private GridLayout gridLayout;
 	private Boolean isCreate;
-	private Map<String, Field<?>> fields;
+	private List<Field<?>> fields;
 
 	public DEAFormBuilder(List<DeaContentEntry> deaContentEntries, Boolean isCreate) {
 		this.deaContentEntries = deaContentEntries;
-		this.gridLayout = new GridLayout(2, (int) deaContentEntries.size() / 2);
+		this.gridLayout = new GridLayout(2, deaContentEntries.size() / 2);
 		this.gridLayout.setWidthFull();
 		this.gridLayout.setSpacing(true);
 		CssStyles.style(this.gridLayout, CssStyles.VSPACE_3);
 		this.isCreate = isCreate;
-		this.fields = new HashMap<>();
+		this.fields = new ArrayList<>();
 	}
 
 	public List<DeaContentEntry> getDeaContentEntries() {
 		ArrayList<DeaContentEntry> deaContentValueEntries = new ArrayList<>(this.deaContentEntries);
-		deaContentValueEntries.forEach(deaContentEntry -> {
-			Field<?> field = fields.get(deaContentEntry.getCaption());
-			deaContentEntry.setValue((String) field.getValue());
-		});
+		for (int i = 0; i < deaContentValueEntries.size(); i++) {
+			Field<?> field = fields.get(i);
+			deaContentValueEntries.get(i).setValue((String) field.getValue());
+		}
 		return deaContentValueEntries;
 	}
 
@@ -48,17 +45,16 @@ public class DEAFormBuilder {
 
 		for (DeaContentEntry deaContentEntry : deaContentEntries) {
 			final TextField textField = fieldFactory.createField(String.class, TextField.class);
+			textField.setWidthFull();
 			final String caption = deaContentEntry.getCaption();
 			textField.setId(caption);
 			CssStyles.style(textField, CssStyles.TEXTFIELD_ROW);
-			Page.Styles styles = Page.getCurrent().getStyles();
-			styles.add("#" + caption + " { width: " + "100% !important; }");
 			textField.setCaption(caption);
 			if (!isCreate) {
 				textField.setValue(deaContentEntry.getValue());
 			}
 			gridLayout.addComponent(textField);
-			fields.put(caption, textField);
+			fields.add(textField);
 		}
 	}
 
