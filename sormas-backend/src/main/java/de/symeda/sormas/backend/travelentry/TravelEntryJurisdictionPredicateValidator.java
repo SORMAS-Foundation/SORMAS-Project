@@ -21,6 +21,7 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 
 	private final TravelEntryJoins<?> joins;
 	private final User currentUser;
+	private final CriteriaQuery<?> cq;
 
 	private TravelEntryJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
@@ -31,6 +32,7 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 		super(cb, associatedJurisdictionValidators);
 		this.joins = joins;
 		this.currentUser = currentUser;
+		this.cq = cq;
 	}
 
 	public static TravelEntryJurisdictionPredicateValidator of(TravelEntryQueryContext qc, User currentUser) {
