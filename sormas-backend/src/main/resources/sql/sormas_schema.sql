@@ -7672,4 +7672,10 @@ ALTER TABLE events_history ADD COLUMN eventidentificationsource varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (385, 'Event identification source (#5526)');
 
+-- 2021-07-21 SymptomJournalStatus default to UNREGISTERED
+
+UPDATE person SET symptomjournalstatus = 'UNREGISTERED' WHERE symptomjournalstatus IS NULL;
+ALTER TABLE person ALTER COLUMN symptomjournalstatus SET DEFAULT 'UNREGISTERED';
+
+INSERT INTO schema_version (version_number, comment) VALUES (386, 'symptonjournalstatus = UNREGISTERED as default #6146');
 -- *** Insert new sql commands BEFORE this line ***
