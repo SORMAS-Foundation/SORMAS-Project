@@ -205,6 +205,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 				searchField.setEnabled(false);
 				grid.setEagerDataProvider();
 				grid.reload();
+				rowCount.update(grid.getItemCount());
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(false);
@@ -239,6 +240,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		searchField.addTextChangeListener(e -> {
 			criteria.nameCityLike(e.getText());
 			grid.reload();
+			rowCount.update(grid.getItemCount());
 		});
 		filterLayout.addComponent(searchField);
 
@@ -266,6 +268,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		countryFilter = addCountryFilter(filterLayout, country -> {
 			criteria.country(country);
 			grid.reload();
+			rowCount.update(grid.getItemCount());
 		}, regionFilter);
 
 		regionFilter = ComboBoxHelper.createComboBoxV7();
