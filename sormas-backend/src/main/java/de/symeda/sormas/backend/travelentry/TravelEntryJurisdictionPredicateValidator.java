@@ -9,6 +9,7 @@ import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
@@ -52,8 +53,9 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
-		final Predicate reportedByCurrentUser =
-			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
+		final Predicate reportedByCurrentUser = cb.and(
+			cb.isNotNull(joins.getRoot().get(TravelEntry.REPORTING_USER)),
+			cb.equal(joins.getRoot().get(TravelEntry.REPORTING_USER).get(AbstractDomainObject.ID), currentUser.getId()));
 		return cb.or(reportedByCurrentUser, isInJurisdiction());
 	}
 
@@ -71,21 +73,21 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 	protected Predicate whenRegionalLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getResponsibleRegion().get(Region.ID), currentUser.getRegion().getId()),
-			cb.equal(joins.getPointOfEntryRegion().get(Region.ID), currentUser.getRegion().getId()));
+			cb.equal(joins.getRoot().get(TravelEntry.RESPONSIBLE_REGION).get(Region.ID), currentUser.getRegion().getId()),
+			cb.equal(joins.getRoot().get(TravelEntry.POINT_OF_ENTRY_REGION).get(Region.ID), currentUser.getRegion().getId()));
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getResponsibleDistrict().get(District.ID), currentUser.getDistrict().getId()),
-			cb.equal(joins.getPointOfEntryDistrict().get(District.ID), currentUser.getDistrict().getId()));
+			cb.equal(joins.getRoot().get(TravelEntry.RESPONSIBLE_DISTRICT).get(District.ID), currentUser.getDistrict().getId()),
+			cb.equal(joins.getRoot().get(TravelEntry.POINT_OF_ENTRY_DISTRICT).get(District.ID), currentUser.getDistrict().getId()));
 	}
 
 	@Override
 	protected Predicate whenCommunityLevel() {
-		return cb.equal(joins.getResponsibleCommunity().get(Community.ID), currentUser.getCommunity().getId());
+		return cb.equal(joins.getRoot().get(TravelEntry.RESPONSIBLE_COMMUNITY).get(Community.ID), currentUser.getCommunity().getId());
 	}
 
 	@Override
@@ -95,7 +97,7 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 
 	@Override
 	protected Predicate whenPointOfEntryLevel() {
-		return cb.equal(joins.getPointOfEntry().get(PointOfEntry.ID), currentUser.getPointOfEntry().getId());
+		return cb.equal(joins.getRoot().get(TravelEntry.POINT_OF_ENTRY).get(PointOfEntry.ID), currentUser.getPointOfEntry().getId());
 	}
 
 	@Override
