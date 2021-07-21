@@ -98,6 +98,8 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 		Exception.class })
 	public void persistSyncData(ProcessedCaseData processedData, ShareTreeCriteria shareTreeCriteria) throws SormasToSormasValidationException {
 		SormasToSormasOriginInfoDto originInfo = processedData.getOriginInfo();
+		ProcessedDataPersisterHelper.SyncedAssociatedEntityCallback associatedEntityCallback =
+			new ProcessedDataPersisterHelper.SyncedAssociatedEntityCallback(originInfo, originInfoFacade);
 
 		persistProcessedData(processedData, (caze) -> {
 			SormasToSormasOriginInfoDto caseOriginInfo = caze.getSormasToSormasOriginInfo();
@@ -108,11 +110,15 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 			} else {
 				SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), originInfo.getOrganizationId());
 
-				shareInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
+				shareInfo.setOwnershipHandedOver(!originInfo.isOwnershipHandedOver());
 
 				shareInfoService.ensurePersisted(shareInfo);
 			}
-		}, dataPersisterHelper::syncedAssociatedEntityCallback, dataPersisterHelper::syncedAssociatedEntityCallback, false);
+		}, (caze, contact) -> {
+			associatedEntityCallback.apply(contact, shareInfoService::getByEventParticipantAndOrganization);
+		}, (caze, sample) -> {
+			associatedEntityCallback.apply(sample, shareInfoService::getBySampleAndOrganization);
+		}, false);
 
 		caseFacade.syncSharesAsync(shareTreeCriteria);
 	}
@@ -129,14 +135,20 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 		final CaseDataDto savedCase;
 		if (isCreate) {
 			// save person first during creation
-			handleValidationError(() -> personFacade.savePerson(caseData.getPerson(), false), Captions.Person, buildCaseValidationGroupName(caze));
+			handleValidationError(
+				() -> personFacade.savePerson(caseData.getPerson(), false, false),
+				Captions.Person,
+				buildCaseValidationGroupName(caze));
 			savedCase =
 				handleValidationError(() -> caseFacade.saveCase(caze, true, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
 		} else {
 			//save case first during update
 			savedCase =
 				handleValidationError(() -> caseFacade.saveCase(caze, true, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
-			handleValidationError(() -> personFacade.savePerson(caseData.getPerson(), false), Captions.Person, buildCaseValidationGroupName(caze));
+			handleValidationError(
+				() -> personFacade.savePerson(caseData.getPerson(), false, false),
+				Captions.Person,
+				buildCaseValidationGroupName(caze));
 		}
 
 		if (afterSaveCase != null) {
@@ -154,7 +166,7 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 				if (isCreate || !contactFacade.exists(contact.getUuid())) {
 					// save person first during creation
 					handleValidationError(
-						() -> personFacade.savePerson(associatedContact.getPerson(), false),
+						() -> personFacade.savePerson(associatedContact.getPerson(), false, false),
 						Captions.Person,
 						buildContactValidationGroupName(contact));
 					handleValidationError(
@@ -168,7 +180,7 @@ public class ProcessedCaseDataPersister implements ProcessedDataPersister<Proces
 						Captions.Contact,
 						buildContactValidationGroupName(contact));
 					handleValidationError(
-						() -> personFacade.savePerson(associatedContact.getPerson(), false),
+						() -> personFacade.savePerson(associatedContact.getPerson(), false, false),
 						Captions.Person,
 						buildContactValidationGroupName(contact));
 

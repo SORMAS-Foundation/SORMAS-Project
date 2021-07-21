@@ -24,6 +24,7 @@ public class ShareTreeCriteria implements Serializable {
 	private String entityUuid;
 	private String exceptedOrganizationId;
 	private boolean forwardOnly;
+	private SormasToSormasOriginInfoDto originInfo;
 
 	public ShareTreeCriteria() {
 	}
@@ -60,5 +61,13 @@ public class ShareTreeCriteria implements Serializable {
 
 	public void setForwardOnly(boolean forwardOnly) {
 		this.forwardOnly = forwardOnly;
+	}
+
+	public SormasToSormasOriginInfoDto getOriginInfo() {
+		return originInfo;
+	}
+
+	public void setOriginInfo(SormasToSormasOriginInfoDto originInfo) {
+		this.originInfo = originInfo;
 	}
 }

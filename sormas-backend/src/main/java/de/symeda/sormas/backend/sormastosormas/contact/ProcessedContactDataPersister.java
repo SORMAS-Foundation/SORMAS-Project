@@ -87,6 +87,9 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 	public void persistSyncData(ProcessedContactData processedData, ShareTreeCriteria shareTreeCriteria) throws SormasToSormasValidationException {
 		SormasToSormasOriginInfoDto originInfo = processedData.getOriginInfo();
 
+		ProcessedDataPersisterHelper.SyncedAssociatedEntityCallback associatedEntityCallback =
+			new ProcessedDataPersisterHelper.SyncedAssociatedEntityCallback(originInfo, originInfoFacade);
+
 		persistProcessedData(processedData, (contact) -> {
 			SormasToSormasOriginInfoDto contactOriginInfo = contact.getSormasToSormasOriginInfo();
 			if (contactOriginInfo != null) {
@@ -96,11 +99,13 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 			} else {
 				SormasToSormasShareInfo shareInfo = shareInfoService.getByContactAndOrganization(contact.getUuid(), originInfo.getOrganizationId());
 
-				shareInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
+				shareInfo.setOwnershipHandedOver(!originInfo.isOwnershipHandedOver());
 
 				shareInfoService.ensurePersisted(shareInfo);
 			}
-		}, dataPersisterHelper::syncedAssociatedEntityCallback, false);
+		}, (contact, sample) -> {
+			associatedEntityCallback.apply(sample, shareInfoService::getBySampleAndOrganization);
+		}, false);
 
 		contactFacade.syncSharesAsync(shareTreeCriteria);
 	}
@@ -117,7 +122,10 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 		final ContactDto savedContact;
 		if (isCreate) {
 			// save person first during creation
-			handleValidationError(() -> personFacade.savePerson(processedData.getPerson(), false), Captions.Person, contactValidationGroupName);
+			handleValidationError(
+				() -> personFacade.savePerson(processedData.getPerson(), false, false),
+				Captions.Person,
+				contactValidationGroupName);
 			savedContact = handleValidationError(
 				() -> contactFacade.saveContact(processedData.getEntity(), true, true, false, false),
 				Captions.Contact,
@@ -128,7 +136,10 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 				() -> contactFacade.saveContact(processedData.getEntity(), true, true, false, false),
 				Captions.Contact,
 				contactValidationGroupName);
-			handleValidationError(() -> personFacade.savePerson(processedData.getPerson(), false), Captions.Person, contactValidationGroupName);
+			handleValidationError(
+				() -> personFacade.savePerson(processedData.getPerson(), false, false),
+				Captions.Person,
+				contactValidationGroupName);
 		}
 
 		if (afterSaveContact != null) {

@@ -336,6 +336,26 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return cb.isFalse(root.get(EventParticipant.DELETED));
 	}
 
+	public List<EventParticipant> findBy(EventParticipantCriteria criteria, User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipant> cq = cb.createQuery(getElementClass());
+		Root<EventParticipant> from = cq.from(getElementClass());
+		final EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, from);
+
+		Predicate filter = buildCriteriaFilter(criteria, queryContext);
+
+		if (user != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.asc(from.get(EventParticipant.CREATION_DATE)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	public Optional<EventParticipant> getFirst(EventParticipantCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

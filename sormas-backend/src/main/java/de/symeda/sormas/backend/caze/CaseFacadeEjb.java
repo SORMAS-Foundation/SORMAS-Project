@@ -1404,7 +1404,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				investigationStatusChange,
 				outcomeChange,
 				surveillanceOfficerChange);
-			doSave(caze, true, existingCaseDto);
+			doSave(caze, true, existingCaseDto, true);
 		}
 	}
 
@@ -1446,7 +1446,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.setHealthFacility(facilityService.getByUuid(updatedCaseBulkEditData.getHealthFacility().getUuid()));
 			caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 			CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
-			doSave(caze, true, existingCaseDto);
+			doSave(caze, true, existingCaseDto, true);
 		}
 	}
 
@@ -1527,11 +1527,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.setCreationVersion(InfoProvider.get().getVersion());
 		}
 
-		doSave(caze, handleChanges, existingCaseDto);
-
-		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
-			syncSharesAsync(new ShareTreeCriteria(caze.getUuid()));
-		}
+		doSave(caze, handleChanges, existingCaseDto, syncShares);
 
 		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
 	}
@@ -1542,13 +1538,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		}, 5, TimeUnit.SECONDS);
 	}
 
-	private void doSave(Case caze, boolean handleChanges, CaseDataDto existingCaseDto) {
+	private void doSave(Case caze, boolean handleChanges, CaseDataDto existingCaseDto, boolean syncShares) {
 		caseService.ensurePersisted(caze);
 		if (handleChanges) {
 			updateCaseVisitAssociations(existingCaseDto, caze);
 			caseService.updateFollowUpDetails(caze, existingCaseDto != null && caze.getFollowUpStatus() != existingCaseDto.getFollowUpStatus());
 
-			onCaseChanged(existingCaseDto, caze);
+			onCaseChanged(existingCaseDto, caze, syncShares);
 		}
 	}
 
@@ -1775,6 +1771,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * after a case has been created/saved
 	 */
 	public void onCaseChanged(CaseDataDto existingCase, Case newCase) {
+		onCaseChanged(existingCase, newCase, true);
+	}
+
+	public void onCaseChanged(CaseDataDto existingCase, Case newCase, boolean syncShares) {
 
 		// If its a new case and the case is new and the geo coordinates of the case's
 		// health facility are null, set its coordinates to the case's report
@@ -1966,6 +1966,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		if ((existingCase == null || !confirmedClassifications.contains(existingCase.getCaseClassification()))
 			&& confirmedClassifications.contains(newCase.getCaseClassification())) {
 			sendConfirmedCaseNotificationsForEvents(newCase);
+		}
+
+		if (existingCase != null && syncShares && sormasToSormasFacade.isFeatureConfigured()) {
+			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
 		}
 	}
 
@@ -3211,7 +3215,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), leadCase.toReference());
 				DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), cloning);
-				sampleFacade.saveSample(newSample, false, true);
+				sampleFacade.saveSample(newSample, false, true, true);
 
 				// 2.2.1 Pathogen Tests
 				for (PathogenTest pathogenTest : sample.getPathogenTests()) {

@@ -127,10 +127,8 @@ public class SormasToSormasListComponent extends VerticalLayout {
 	}
 
 	public SormasToSormasListComponent(EventParticipantDto eventParticipant, boolean shareEnabled) {
-		sormasToSormasList = new SormasToSormasList(
-			eventParticipant.getSormasToSormasOriginInfo() == null,
-			Captions.sormasToSormasEventParticipantNotShared,
-			null);
+		sormasToSormasList =
+			new SormasToSormasList(eventParticipant.getSormasToSormasOriginInfo() == null, Captions.sormasToSormasEventParticipantNotShared, null);
 
 		initLayout(
 			eventParticipant.getSormasToSormasOriginInfo(),
@@ -235,6 +233,10 @@ public class SormasToSormasListComponent extends VerticalLayout {
 								return false;
 							}
 
+							if (isOwnedByRootOrg && shareOrganizationId.equals(rootOrigin.getOrganizationId())) {
+								return false;
+							}
+
 							return !shareOrganizationId.equals(currentServerOrgId);
 						}).map(s -> {
 							SormasToSormasShareListEntryData entryData = new SormasToSormasShareListEntryData();
@@ -253,6 +255,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 						if (!isOwnedByRootOrg
 							&& rootOrigin != null
 							&& originInfo != null
+							&& !rootOrigin.getOrganizationId().equals(currentServerOrgId)
 							&& !rootOrigin.getOrganizationId().equals(originInfo.getOrganizationId())) {
 							ServerAccessDataReferenceDto serverAccessDataRef =
 								FacadeProvider.getSormasToSormasFacade().getOrganizationRef(rootOrigin.getOrganizationId());
@@ -461,10 +464,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		private final Label placeholderLabel;
 		private final Consumer<String> revokeListener;
 
-		public SormasToSormasList(
-			boolean showPlaceholder,
-			String placeholderCaptionTag,
-			Consumer<String> revokeListener) {
+		public SormasToSormasList(boolean showPlaceholder, String placeholderCaptionTag, Consumer<String> revokeListener) {
 			super(5);
 
 			this.defaultPlaceHolderText = placeholderCaptionTag != null ? I18nProperties.getCaption(placeholderCaptionTag) : null;

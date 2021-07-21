@@ -381,15 +381,19 @@ public class ContactFacadeEjb implements ContactFacade {
 			contactService.udpateContactStatus(entity);
 
 			if (handleCaseChanges && entity.getCaze() != null) {
-				caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze());
+				caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze(), syncShares);
 			}
-		}
 
-		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
-			syncSharesAsync(new ShareTreeCriteria(entity.getUuid()));
+			onContactChanged(toDto(entity), syncShares);
 		}
 
 		return toDto(entity);
+	}
+
+	public void onContactChanged(ContactDto contact, boolean syncShares) {
+		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
+			syncSharesAsync(new ShareTreeCriteria(contact.getUuid()));
+		}
 	}
 
 	public void syncSharesAsync(ShareTreeCriteria criteria) {

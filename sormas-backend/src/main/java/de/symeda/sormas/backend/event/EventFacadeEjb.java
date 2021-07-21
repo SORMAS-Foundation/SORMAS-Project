@@ -234,11 +234,15 @@ public class EventFacadeEjb implements EventFacade {
 		Event event = fromDto(dto, checkChangeDate);
 		eventService.ensurePersisted(event);
 
+		onEventChange(toDto(event), syncShares);
+
+		return convertToDto(event, pseudonymizer);
+	}
+
+	public void onEventChange(EventDto event, boolean syncShares) {
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(event.getUuid()));
 		}
-
-		return convertToDto(event, pseudonymizer);
 	}
 
 	public void syncSharesAsync(ShareTreeCriteria criteria) {
