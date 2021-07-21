@@ -272,6 +272,8 @@ public final class CssStyles {
 	public static final String TEXTFIELD_CAPTION_INLINE = "caption-inline";
 
 	public static final String FLOAT_RIGHT = "float-right";
+	public static final String D_FLEX = "d-flex";
+	public static final String FLEX_WRAP = "flex-wrap";
 
 	/**
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>
