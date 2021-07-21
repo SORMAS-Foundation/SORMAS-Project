@@ -113,6 +113,9 @@
     <string name="action_save_pathogen_test">Uložit test patogenu</string>
     <string name="action_edit_pathogen_test">Upravit test patogenu</string>
     <string name="action_submit_case_numbers">Odeslat čísla případů</string>
+    <string name="action_kex_lbds">LBDS Key Exchange</string>
+    <string name="action_sync_person_lbds">LBDS Sync Persons</string>
+    <string name="action_sync_case_lbds">LBDS Sync Cases</string>
     <string name="caption_address">Adresa</string>
     <string name="caption_age">Věk</string>
     <string name="caption_attended_by">Zúčastnil se</string>
@@ -227,6 +230,7 @@
     <string name="caption_visit_time">Čas návštěvy</string>
     <string name="caption_year">Rok</string>
     <string name="caption_latest_submission">Poslední příspěvek: %1$s</string>
+    <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
     <string name="confirmation_action">Opravdu to chcete udělat?</string>
     <string name="confirmation_delete">Opravdu chcete vymazat tento záznam?</string>
     <string name="confirmation_pick_gps">Jste právě na tomto místě?</string>
@@ -410,6 +414,7 @@
     <string name="hint_weekly_report_no_data">Pro tento týden epi nejsou k dispozici žádná data.</string>
     <string name="hint_case_numbers_not_submitted">Čísla případů ještě nebyla odeslána</string>
     <string name="hint_contact_text_filter">Číslo ID nebo jméno kontaktní osoby</string>
+    <string name="hint_settings_debug_url_lbds">např. https://localhost:6070/sormas-rest/</string>
     <string name="indicator_error">CHYBA</string>
     <string name="indicator_required">*</string>
     <string name="indicator_soft_required">*</string>
@@ -420,6 +425,10 @@
     <string name="info_create_event">Pokud <b>nemůžete</b> najít událost v seznamu výše, klikněte na tlačítko \"Vytvořit\".</string>
     <string name="info_epidemiological_info">Uveďte, zda je během inkubační doby nebo nemoci pro pacienta relevantní.</string>
     <string name="info_initial_synchronization">Počáteční synchronizace se serverem SORMAS.\nStahování dat infrastruktury bude trvat několik minut.</string>
+    <string name="info_lbds_key_exchange_started">LBDS Sync: Key Exchange started</string>
+    <string name="info_lbds_key_exchange_successful">LBDS Sync: Key Exchange successful</string>
+    <string name="info_lbds_no_case_to_transfer">LBDS Sync. No case to transfer</string>
+    <string name="info_lbds_no_person_to_transfer">LBDS Sync. No person to transfer</string>
     <string name="info_no_additional_test">Na tomto vzorku dosud nebyly provedeny žádné další zkoušky</string>
     <string name="info_no_sample_test">Vzorek ještě nebyl testován</string>
     <string name="info_pick_person">Prohlédněte si prosím tento seznam osob. <b>Pokud se domníváte, že jste zadali osobní údaje, patří jedné z těchto osob,</b> vyberte tuto osobu klepnutím na ni a poté klikněte na tlačítko „Select“ níže.</string>

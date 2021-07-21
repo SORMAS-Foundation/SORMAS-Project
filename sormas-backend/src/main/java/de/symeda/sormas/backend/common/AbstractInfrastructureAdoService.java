@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend.common;
 
-import de.symeda.sormas.api.EntityRelevanceStatus;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -11,6 +9,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 public abstract class AbstractInfrastructureAdoService<ADO extends InfrastructureAdo> extends AdoServiceWithUserFilter<ADO> {
 
@@ -75,7 +76,7 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 
 		cq.select(join.get(InfrastructureAdo.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	protected Predicate addRelevancePredicate(CriteriaBuilder cb, Root<?> from, Predicate filter, EntityRelevanceStatus relevanceStatus) {

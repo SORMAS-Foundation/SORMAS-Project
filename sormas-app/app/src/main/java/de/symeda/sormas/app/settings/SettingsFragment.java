@@ -19,7 +19,10 @@ import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 import java.util.List;
 
+import org.hzi.sormas.lbds.messaging.LbdsRelated;
+
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,6 +56,7 @@ import de.symeda.sormas.app.component.dialog.SyncLogDialog;
 import de.symeda.sormas.app.core.adapter.multiview.EnumMapDataBinderAdapter;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentSettingsLayoutBinding;
+import de.symeda.sormas.app.lbds.LbdsIntentSender;
 import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
@@ -88,12 +92,22 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.resynchronizeData.setOnClickListener(v -> repullData());
 		binding.showSyncLog.setOnClickListener(v -> openSyncLog());
 		binding.logout.setOnClickListener(v -> logout());
+		binding.kexLbds.setOnClickListener(v -> kexLbds());
+		binding.syncPersonLbds.setOnClickListener(v -> LbdsIntentSender.sendNewCasePersonsLbds(getContext()));
+		binding.syncCaseLbds.setOnClickListener(v -> LbdsIntentSender.sendNewCasesLbds(getContext()));
+		binding.settingsLbdsDebugUrl.setValue(ConfigProvider.getServerLbdsDebugUrl());
 
 		binding.sormasVersion.setText("SORMAS " + InfoProvider.get().getVersion());
 		binding.sormasVersion.setOnClickListener(v -> {
 			versionClickedCount++;
 			if (isShowDevOptions()) {
 				binding.settingsServerUrl.setVisibility(View.VISIBLE);
+				if (isLbdsAppInstalled()) {
+					binding.kexLbds.setVisibility(View.VISIBLE);
+					binding.syncPersonLbds.setVisibility(View.VISIBLE);
+					binding.syncCaseLbds.setVisibility(View.VISIBLE);
+					binding.settingsLbdsDebugUrl.setVisibility(View.VISIBLE);
+				}
 				if (ConfigProvider.getUser() != null) {
 					binding.logout.setVisibility(View.VISIBLE);
 				}
@@ -146,6 +160,11 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.resynchronizeData.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.showSyncLog.setVisibility(hasUser ? View.VISIBLE : View.GONE);
 		binding.logout.setVisibility(hasUser && isShowDevOptions() ? View.VISIBLE : View.GONE);
+		boolean showLbdsFeatures = isLbdsAppInstalled() && hasUser && isShowDevOptions();
+		binding.kexLbds.setVisibility(showLbdsFeatures ? View.VISIBLE : View.GONE);
+		binding.syncPersonLbds.setVisibility(showLbdsFeatures ? View.VISIBLE : View.GONE);
+		binding.syncCaseLbds.setVisibility(showLbdsFeatures ? View.VISIBLE : View.GONE);
+		binding.settingsLbdsDebugUrl.setVisibility(showLbdsFeatures ? View.VISIBLE : View.GONE);
 	}
 
 	@Override
@@ -271,6 +290,24 @@ public class SettingsFragment extends BaseLandingFragment {
 			Intent intent = new Intent(getActivity(), LoginActivity.class);
 			startActivity(intent);
 		}, "LOGOUT");
+	}
+
+	public void kexLbds() {
+		LbdsIntentSender.sendKexLbdsIntent(getContext());
+	}
+
+	private boolean isLbdsAppInstalled() {
+		PackageManager packageManager = getContext().getPackageManager();
+		try {
+			packageManager.getPackageInfo(LbdsRelated.LBDS_SERVICE_APP_PCKG, 0);
+			return true;
+		} catch (PackageManager.NameNotFoundException e) {
+			return false;
+		}
+	}
+
+	public String getLbdsDebugUrl() {
+		return (isLbdsAppInstalled() && isShowDevOptions()) ? binding.settingsLbdsDebugUrl.getValue() : null;
 	}
 
 	@Override

@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,6 +63,11 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 	public void setup() {
 		configureExternalSurvToolUrlForWireMock();
 		subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
+	}
+
+	@After
+	public void teardown() {
+		clearExternalSurvToolUrlForWireMock();
 	}
 
 	@Test
@@ -181,6 +187,10 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 
 	private void configureExternalSurvToolUrlForWireMock() {
 		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+	}
+
+	private void clearExternalSurvToolUrlForWireMock() {
+		MockProducer.getProperties().setProperty("survnet.url", "");
 	}
 
 	private EventDto createEventDto(
