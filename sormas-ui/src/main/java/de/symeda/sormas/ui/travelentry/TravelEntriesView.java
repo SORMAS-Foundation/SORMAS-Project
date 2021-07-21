@@ -70,6 +70,7 @@ public class TravelEntriesView extends AbstractView {
 			addHeaderComponent(ButtonHelper.createIconButton(I18nProperties.getCaption(Captions.actionImport), VaadinIcons.UPLOAD, e -> {
 				Window popupWindow = VaadinUiUtil.showPopupWindow(new TravelEntryImportLayout());
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportTravelEntries));
+				popupWindow.addCloseListener(c -> ((TravelEntryGrid) grid).reload());
 			}));
 
 			long countTravelEntries = FacadeProvider.getTravelEntryFacade().count(new TravelEntryCriteria());
@@ -94,6 +95,10 @@ public class TravelEntriesView extends AbstractView {
 	public void updateFilterComponents() {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
+
+		if (relevanceStatusFilter != null) {
+			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+		}
 
 		filterForm.setValue(criteria);
 
@@ -152,9 +157,10 @@ public class TravelEntriesView extends AbstractView {
 			relevanceStatusFilter.setWidth(140, Unit.PIXELS);
 			relevanceStatusFilter.setNullSelectionAllowed(false);
 			relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
-			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.caseActiveCases));
-			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.caseArchivedCases));
-			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.caseAllCases));
+			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.travelEntryActiveTravelEntries));
+			relevanceStatusFilter
+				.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.travelEntryArchivedTravelEntries));
+			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.travelEntryAllTravelEntries));
 			relevanceStatusFilter.addValueChangeListener(e -> {
 				relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 				criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());

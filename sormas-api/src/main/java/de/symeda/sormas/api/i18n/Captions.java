@@ -2127,6 +2127,9 @@ public interface Captions {
 	String TravelEntry_testedNegative = "TravelEntry.testedNegative";
 	String TravelEntry_uuid = "TravelEntry.uuid";
 	String TravelEntry_vaccinated = "TravelEntry.vaccinated";
+	String travelEntryActiveTravelEntries = "travelEntryActiveTravelEntries";
+	String travelEntryAllTravelEntries = "travelEntryAllTravelEntries";
+	String travelEntryArchivedTravelEntries = "travelEntryArchivedTravelEntries";
 	String travelEntryNewTravelEntry = "travelEntryNewTravelEntry";
 	String travelEntryOnlyEntriesConvertedToCase = "travelEntryOnlyEntriesConvertedToCase";
 	String travelEntryOnlyEntriesTestedNegative = "travelEntryOnlyEntriesTestedNegative";
