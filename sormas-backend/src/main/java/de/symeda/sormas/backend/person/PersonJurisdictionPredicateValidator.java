@@ -29,6 +29,8 @@ import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.event.EventParticipantJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.event.EventParticipantQueryContext;
+import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
@@ -50,6 +52,7 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 		associatedJurisdictionValidators.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext<>(cb, cq, joins.getContact()), currentUser));
 		associatedJurisdictionValidators
 			.add(EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext<>(cb, cq, joins.getEventParticipant()), currentUser));
+		associatedJurisdictionValidators.add(TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext(cb, cq, joins.getTravelEntry()), currentUser));
 
 		return new PersonJurisdictionPredicateValidator(cb, joins, currentUser, associatedJurisdictionValidators);
 	}
