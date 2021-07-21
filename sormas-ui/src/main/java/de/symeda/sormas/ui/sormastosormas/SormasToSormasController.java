@@ -41,7 +41,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -224,7 +224,7 @@ public class SormasToSormasController {
 		SormasToSormasOptionsForm optionsForm,
 		SormasToSormasOriginInfoDto originInfo) {
 		SormasToSormasOptionsDto defaultOptions = new SormasToSormasOptionsDto();
-		defaultOptions.setOrganization(new ServerAccessDataReferenceDto(originInfo.getOrganizationId()));
+		defaultOptions.setOrganization(new SormasServerDescriptor(originInfo.getOrganizationId()));
 		defaultOptions.setHandOverOwnership(true);
 		defaultOptions.setWithAssociatedContacts(originInfo.isWithAssociatedContacts());
 		defaultOptions.setWithSamples(originInfo.isWithSamples());
@@ -306,7 +306,7 @@ public class SormasToSormasController {
 		List<SormasToSormasShareInfoDto> shares = FacadeProvider.getSormasToSormasShareInfoFacade()
 			.getIndexList(criteria.requestStatuses(Arrays.asList(ShareRequestStatus.PENDING, ShareRequestStatus.ACCEPTED)), null, null);
 
-		organizationIds.addAll(shares.stream().map(s -> s.getTarget().getUuid()).collect(Collectors.toList()));
+		organizationIds.addAll(shares.stream().map(s -> s.getTargetDescriptor().getId()).collect(Collectors.toList()));
 
 		return organizationIds;
 	}

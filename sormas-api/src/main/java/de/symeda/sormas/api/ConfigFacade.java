@@ -111,11 +111,9 @@ public interface ConfigFacade {
 
 	PatientDiaryConfig getPatientDiaryConfig();
 
-	String getSormasToSormasUserPassword();
-
 	void validateExternalUrls();
 
-	SormasToSormasConfig getSormasToSormasConfig();
+	SormasToSormasConfig getS2SConfig();
 
 	String getExternalSurveillanceToolGatewayUrl();
 

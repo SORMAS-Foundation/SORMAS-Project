@@ -37,16 +37,12 @@ import javax.jms.Topic;
 import javax.mail.Session;
 import javax.transaction.UserTransaction;
 
-import org.mockito.Mockito;
-
-import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasConfigProducer;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClient;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClientProducer;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
+import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
+import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProducer;
 
 /**
  * Creates mocks for resources needed in bean test / external services.
@@ -165,8 +161,9 @@ public class MockProducer {
 		@Override
 		@Produces
 		public SormasToSormasRestClient sormasToSormasClient(
-			ServerAccessDataService serverAccessDataService,
-			SormasToSormasEncryptionService encryptionService) {
+			SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
+			SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
+			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
 			return SORMAS_TO_SORMAS_REST_CLIENT;
 		}
 	}
@@ -174,18 +171,6 @@ public class MockProducer {
 	@Produces
 	public static ManagedScheduledExecutorService getManagedScheduledExecutorService() {
 		return managedScheduledExecutorService;
-	}
-
-	@Specializes
-	public static class MockSormasToSormasConfigProducer extends SormasToSormasConfigProducer {
-
-		public static SormasToSormasConfig sormasToSormasConfig = Mockito.mock(SormasToSormasConfig.class);
-
-		@Override
-		@Produces
-		public SormasToSormasConfig sormasToSormasConfig() {
-			return sormasToSormasConfig;
-		}
 	}
 
 	public static void mockProperty(String property, String value) {

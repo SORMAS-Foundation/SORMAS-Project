@@ -282,6 +282,7 @@ public interface Strings {
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
 	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
 	String errorSormasToSormasShare = "errorSormasToSormasShare";
+	String errorSormasToSormasRequestToken= "errorSormasToSormasRequestToken";
 	String errorTemplateFileCorrupt = "errorTemplateFileCorrupt";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";

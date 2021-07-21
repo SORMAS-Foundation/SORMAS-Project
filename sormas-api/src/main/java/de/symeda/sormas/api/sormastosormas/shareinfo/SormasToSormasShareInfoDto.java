@@ -16,7 +16,7 @@
 package de.symeda.sormas.api.sormastosormas.shareinfo;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
@@ -24,7 +24,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	private static final long serialVersionUID = -1478467237560439811L;
 
-	private ServerAccessDataReferenceDto target;
+	private SormasServerDescriptor targetDescriptor;
 	private UserReferenceDto sender;
 	private boolean ownershipHandedOver;
 	private boolean withAssociatedContacts;
@@ -35,12 +35,19 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private String comment;
 	private ShareRequestStatus requestStatus;
 
-	public ServerAccessDataReferenceDto getTarget() {
-		return target;
+	/**
+	 * @return Get the target server of the share operation.
+	 */
+	public SormasServerDescriptor getTargetDescriptor() {
+		return targetDescriptor;
 	}
 
-	public void setTarget(ServerAccessDataReferenceDto target) {
-		this.target = target;
+	/**
+	 * @param targetDescriptor
+	 *            The target server of the share operation.
+	 */
+	public void setTargetDescriptor(SormasServerDescriptor targetDescriptor) {
+		this.targetDescriptor = targetDescriptor;
 	}
 
 	public UserReferenceDto getSender() {

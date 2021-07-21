@@ -29,15 +29,17 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityInterface;
@@ -49,9 +51,12 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareReque
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
@@ -69,7 +74,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@EJB
 	private UserService userService;
 	@EJB
-	private ServerAccessDataService serverAccessDataService;
+	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 	@Inject
 	private SormasToSormasRestClient sormasToSormasRestClient;
 	@EJB
@@ -81,25 +86,26 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@EJB
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
-	private SormasToSormasEncryptionService encryptionService;
+	private SormasToSormasEncryptionFacadeEjbLocal encryptionService;
 	@Inject
-	private SormasToSormasConfig sormasToSormasConfig;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
+
 	@Override
 	public String getOrganizationId() {
-		return serverAccessDataService.getServerAccessData().getId();
+		return configFacadeEjb.getS2SConfig().getId();
 	}
 
 	@Override
-	public List<ServerAccessDataReferenceDto> getAvailableOrganizations() {
-		return serverAccessDataService.getOrganizationList().stream().map(OrganizationServerAccessData::toReference).collect(Collectors.toList());
+	public List<SormasServerDescriptor> getAllAvailableServers() {
+		return sormasToSormasDiscoveryService.getAllAvailableServers();
 	}
 
 	@Override
-	public ServerAccessDataReferenceDto getOrganizationRef(String id) {
-		return serverAccessDataService.getServerListItemById(id).map(OrganizationServerAccessData::toReference).orElse(null);
+	public SormasServerDescriptor getSormasServerDescriptorById(String id) {
+		return sormasToSormasDiscoveryService.getSormasServerDescriptorById(id);
 	}
 
 	@Override
@@ -178,7 +184,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	public boolean isFeatureConfigured() {
-		return !StringUtils.isEmpty(sormasToSormasConfig.getPath());
+		return !StringUtils.isEmpty(configFacadeEjb.getS2SConfig().getPath());
 	}
 
 	@Override
