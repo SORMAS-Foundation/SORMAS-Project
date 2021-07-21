@@ -272,8 +272,8 @@ public class CaseController {
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 			} else {
 				TravelEntryDto updatedTravelEntry = FacadeProvider.getTravelEntryFacade().getByUuid(travelEntryDto.getUuid());
-				updatedTravelEntry.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
-				FacadeProvider.getTravelEntryFacade().save(travelEntryDto);
+				updatedTravelEntry.setResultingCase(FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid).toReference());
+				FacadeProvider.getTravelEntryFacade().save(updatedTravelEntry);
 				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 			}
 		});
@@ -697,6 +697,10 @@ public class CaseController {
 					// set resulting case on travel entry and save it
 					updatedTravelEntry.setResultingCase(dto.toReference());
 					FacadeProvider.getTravelEntryFacade().save(updatedTravelEntry);
+					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
+					if (!createdFromLabMessage) {
+						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+					}
 				} else if (createdFromLabMessage) {
 					PersonDto dbPerson = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
 					if (dbPerson == null) {
