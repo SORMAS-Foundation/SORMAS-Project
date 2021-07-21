@@ -46,6 +46,8 @@ import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
+import de.symeda.sormas.api.travelentry.TravelEntryFacade;
+import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.vaccination.VaccinationEntityFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
@@ -80,6 +82,8 @@ import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeE
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.travelentry.travelentryimport.TravelEntryImportFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.vaccination.VaccinationEntityFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -159,6 +163,10 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) bm.getBean(ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal.class);
 		} else if (VaccinationEntityFacade.class == clazz) {
 			return (P) bm.getBean(VaccinationEntityFacadeEjb.VaccinationEntityFacadeEjbLocal.class);
+		} else if (TravelEntryFacade.class == clazz) {
+			return (P) bm.getBean(TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal.class);
+		} else if (TravelEntryImportFacade.class == clazz) {
+			return (P) bm.getBean(TravelEntryImportFacadeEjb.TravelEntryImportFacadeEjbLocal.class);
 		}
 
 		return null;

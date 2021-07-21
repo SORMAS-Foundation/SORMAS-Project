@@ -70,6 +70,7 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 			EventActionIndexDto.EVENT_TITLE,
 			createDiseaseColumn(this),
 			EventActionIndexDto.EVENT_DISEASE_VARIANT,
+			EventActionIndexDto.EVENT_IDENTIFICATION_SOURCE,
 			createEventDateColumn(this),
 			createEventEvolutionDateColumn(this),
 			EventActionIndexDto.EVENT_STATUS,

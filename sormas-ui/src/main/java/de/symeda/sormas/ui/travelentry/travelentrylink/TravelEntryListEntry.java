@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.travelentry.travelentryLink;
+package de.symeda.sormas.ui.travelentry.travelentrylink;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;

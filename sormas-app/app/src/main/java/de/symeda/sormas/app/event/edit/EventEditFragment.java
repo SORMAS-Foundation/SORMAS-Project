@@ -28,6 +28,7 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventIdentificationSource;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventSourceType;
@@ -77,6 +78,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 	// Enum lists
 
+	private List<Item> eventIdentificationSourceList;
 	private List<Item> diseaseList;
 	private List<Item> diseaseVariantList;
 	private List<Item> typeOfPlaceList;
@@ -188,6 +190,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 			diseaseVariantList.add(DataUtils.toItem(record.getDiseaseVariant()));
 		}
 
+		eventIdentificationSourceList = DataUtils.getEnumItems(EventIdentificationSource.class, true);
 		typeOfPlaceList = DataUtils.getEnumItems(TypeOfPlace.class, true, getFieldVisibilityCheckers());
 		srcTypeList = DataUtils.getEnumItems(EventSourceType.class, true);
 		srcInstitutionalPartnerTypeList = DataUtils.getEnumItems(InstitutionalPartnerType.class, true);
@@ -218,6 +221,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	@Override
 	public void onAfterLayoutBinding(FragmentEventEditLayoutBinding contentBinding) {
 		// Initialize ControlSpinnerFields
+		contentBinding.eventEventIdentificationSource.initializeSpinner(eventIdentificationSourceList);
 		contentBinding.eventDisease.initializeSpinner(diseaseList);
 		contentBinding.eventDiseaseVariant.initializeSpinner(diseaseVariantList);
 		contentBinding.eventTypeOfPlace.initializeSpinner(typeOfPlaceList);

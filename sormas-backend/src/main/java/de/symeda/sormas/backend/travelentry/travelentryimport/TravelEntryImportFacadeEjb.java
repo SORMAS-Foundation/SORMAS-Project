@@ -432,10 +432,10 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 	private String getPersonValue(String personProperty, String value) {
 		try {
 			if (PersonDto.SEX.equals(personProperty)) {
-				return Sex.valueOf(value).toString();
+				return enumService.getEnumByCaption((Class<Enum>) (Class<?>) Sex.class, value).name();
 			}
 			return value;
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException | EnumService.InvalidEnumCaptionException e) {
 			return value;
 		}
 	}
