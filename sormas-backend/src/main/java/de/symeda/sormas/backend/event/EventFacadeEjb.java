@@ -579,6 +579,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.INTERNAL_TOKEN),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
+			event.get(Event.SPECIFIC_RISK),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_VARIANT),
