@@ -999,6 +999,7 @@ public interface Captions {
 	String Event_reportingUser = "Event.reportingUser";
 	String Event_responsibleUser = "Event.responsibleUser";
 	String Event_riskLevel = "Event.riskLevel";
+	String Event_specificRisk = "Event.specificRisk";
 	String Event_srcEmail = "Event.srcEmail";
 	String Event_srcFirstName = "Event.srcFirstName";
 	String Event_srcInstitutionalPartnerType = "Event.srcInstitutionalPartnerType";

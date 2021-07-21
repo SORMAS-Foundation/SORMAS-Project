@@ -47,6 +47,19 @@ public interface CustomizableEnumFacade {
 	<T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, String value);
 
 	/**
+	 * Retrieves the cached content of a specific enum type. The result is already internationalized based
+	 * on the user's language, or the server language as a fallback. If this specific value has not been requested yet,
+	 * the cache is extended with it on demand.
+	 *
+	 * @param type
+	 *            The type for which to retrieve the enum value
+	 * @param <T>
+	 *            The specific extension of {@link CustomizableEnum} for type safety
+	 * @return The enum instances related to the type in parameter, internationalized caption, and optional properties
+	 */
+	<T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type);
+
+	/**
 	 * Retrieves the cached contents of all enum value instances of the specified type. The results are already
 	 * internationalized based on the user's language, or the server language as a fallback. If the enum values for the
 	 * specified type and disease have not been requested yet, the cache is extended with them on demand.

@@ -100,11 +100,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		Language language = I18nProperties.getUserLanguage();
 		Class<T> enumClass = (Class<T>) type.getEnumClass();
 
-		// Build caches according to language with no disease association if they're not initialized
-		if (!CustomizableEnumFacadeEjb.enumValuesByLanguage.containsKey(enumClass)
-			|| !CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass).containsKey(language)) {
-			getEnumValues(type, null);
-		}
+		initCaches(type, language);
 
 		try {
 			T enumValue = enumClass.newInstance();
@@ -119,42 +115,38 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 
 	@Override
 	@SuppressWarnings("unchecked")
+	public <T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type) {
+		Language language = I18nProperties.getUserLanguage();
+		Class<T> enumClass = (Class<T>) type.getEnumClass();
+
+		initCaches(type, language);
+
+		return CustomizableEnumFacadeEjb.enumValuesByLanguage
+			.get(enumClass)
+			.get(language)
+			.entrySet()
+			.stream()
+			.map(entry -> {
+				try {
+					T enumValue = enumClass.newInstance();
+					enumValue.setValue(entry.getKey());
+					enumValue.setCaption(entry.getValue());
+					enumValue.setProperties(enumProperties.get(type).get(entry.getKey()));
+					return enumValue;
+				} catch (InstantiationException | IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+			})
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	public <T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease) {
 		Language language = I18nProperties.getUserLanguage();
 		Class<T> enumClass = (Class<T>) type.getEnumClass();
 
-		CustomizableEnumFacadeEjb.enumValuesByLanguage.putIfAbsent(enumClass, new HashMap<>());
-		CustomizableEnumFacadeEjb.enumValuesByDisease.putIfAbsent(enumClass, new HashMap<>());
-
-		if (!CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass).containsKey(language)) {
-			CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass).put(language, new HashMap<>());
-			for (CustomizableEnumValue customizableEnumValue : CustomizableEnumFacadeEjb.customizableEnumValueEntitiesByType.get(type)) {
-				if (StringUtils.equals(configFacade.getCountryLocale(), language.getLocale().toString())
-					|| CollectionUtils.isEmpty(customizableEnumValue.getTranslations())) {
-					// If the enum value does not have any translations or the user uses the server language,
-					// add the server language to the cache and use the default caption of the enum value
-					CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass)
-						.get(language)
-						.putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getCaption());
-				} else {
-					// Check whether the list of translations contains the user language; if yes, add that language 
-					// to the cache and use its translation; if not, fall back to the default caption of the enum value
-					Optional<CustomizableEnumTranslation> translation = customizableEnumValue.getTranslations()
-						.stream()
-						.filter(t -> t.getLanguageCode().equals(language.getLocale().toString()))
-						.findFirst();
-					if (translation.isPresent()) {
-						CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass)
-							.get(language)
-							.putIfAbsent(customizableEnumValue.getValue(), translation.get().getValue());
-					} else {
-						CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass)
-							.get(language)
-							.putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getCaption());
-					}
-				}
-			}
-		}
+		initCaches(type, language);
 
 		// Always add values for no disease because they are relevant in all cases
 		if (!CustomizableEnumFacadeEjb.enumValuesByDisease.get(enumClass).containsKey(null)) {
@@ -183,6 +175,49 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 				e -> CustomizableEnumFacadeEjb.enumValuesByDisease.get(enumClass).get(disease).contains(e.getValue())
 					|| CustomizableEnumFacadeEjb.enumValuesByDisease.get(enumClass).get(null).contains(e.getValue()))
 			.collect(Collectors.toList());
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends CustomizableEnum> void initCaches(CustomizableEnumType type, Language language) {
+		Class<T> enumClass = (Class<T>) type.getEnumClass();
+		if (CustomizableEnumFacadeEjb.enumValuesByLanguage.containsKey(enumClass)
+			&& CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass).containsKey(language)) {
+			return;
+		}
+
+		// Build caches according to language with no disease association if they're not initialized
+		CustomizableEnumFacadeEjb.enumValuesByLanguage.putIfAbsent(enumClass, new HashMap<>());
+		CustomizableEnumFacadeEjb.enumValuesByDisease.putIfAbsent(enumClass, new HashMap<>());
+
+		if (!CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass).containsKey(language)) {
+			CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass).put(language, new HashMap<>());
+			for (CustomizableEnumValue customizableEnumValue : CustomizableEnumFacadeEjb.customizableEnumValueEntitiesByType.get(type)) {
+				if (StringUtils.equals(configFacade.getCountryLocale(), language.getLocale().toString())
+					|| CollectionUtils.isEmpty(customizableEnumValue.getTranslations())) {
+					// If the enum value does not have any translations or the user uses the server language,
+					// add the server language to the cache and use the default caption of the enum value
+					CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass)
+						.get(language)
+						.putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getCaption());
+				} else {
+					// Check whether the list of translations contains the user language; if yes, add that language
+					// to the cache and use its translation; if not, fall back to the default caption of the enum value
+					Optional<CustomizableEnumTranslation> translation = customizableEnumValue.getTranslations()
+						.stream()
+						.filter(t -> t.getLanguageCode().equals(language.getLocale().toString()))
+						.findFirst();
+					if (translation.isPresent()) {
+						CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass)
+							.get(language)
+							.putIfAbsent(customizableEnumValue.getValue(), translation.get().getValue());
+					} else {
+						CustomizableEnumFacadeEjb.enumValuesByLanguage.get(enumClass)
+							.get(language)
+							.putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getCaption());
+					}
+				}
+			}
+		}
 	}
 
 	@PostConstruct
