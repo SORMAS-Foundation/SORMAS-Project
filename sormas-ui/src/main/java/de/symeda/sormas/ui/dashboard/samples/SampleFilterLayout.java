@@ -22,6 +22,8 @@ public class SampleFilterLayout extends DashboardFilterLayout{
 
 	public SampleFilterLayout(AbstractDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
 		super(dashboardView, dashboardDataProvider);
+		setStyleName(CssStyles.D_FLEX, true);
+		setStyleName(CssStyles.FLEX_WRAP, true);
 	}
 
 	@Override
