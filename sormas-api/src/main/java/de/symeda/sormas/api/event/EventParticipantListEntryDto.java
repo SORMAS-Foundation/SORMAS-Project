@@ -12,13 +12,15 @@ public class EventParticipantListEntryDto extends PseudonymizableIndexDto implem
 	private EventStatus eventStatus;
 	private Disease disease;
 	private String eventTitle;
+	private Boolean isInJurisdictionOrOwned;
 
-	public EventParticipantListEntryDto(String uuid, String eventUuid, EventStatus eventStatus, Disease disease, String eventTitle) {
+	public EventParticipantListEntryDto(String uuid, String eventUuid, EventStatus eventStatus, Disease disease, String eventTitle, boolean isInJurisdictionOrOwned) {
 		this.uuid = uuid;
 		this.eventUuid = eventUuid;
 		this.eventStatus = eventStatus;
 		this.disease = disease;
 		this.eventTitle = eventTitle;
+		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
 	}
 
 	public String getUuid() {
@@ -59,5 +61,9 @@ public class EventParticipantListEntryDto extends PseudonymizableIndexDto implem
 
 	public void setEventTitle(String eventTitle) {
 		this.eventTitle = eventTitle;
+	}
+
+	public Boolean getInJurisdiction() {
+		return isInJurisdictionOrOwned;
 	}
 }

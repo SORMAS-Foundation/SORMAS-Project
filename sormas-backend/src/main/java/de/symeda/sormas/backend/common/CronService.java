@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.sql.Timestamp;
 import java.util.Date;
 
 import javax.annotation.security.RunAs;
@@ -27,7 +26,6 @@ import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
 import de.symeda.sormas.api.utils.DateHelper;
-import org.jboss.resteasy.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

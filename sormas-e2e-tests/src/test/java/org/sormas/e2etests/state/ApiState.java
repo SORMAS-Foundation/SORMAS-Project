@@ -28,12 +28,16 @@ import org.sormas.e2etests.pojo.api.Event;
 import org.sormas.e2etests.pojo.api.Person;
 import org.sormas.e2etests.pojo.api.Sample;
 import org.sormas.e2etests.pojo.api.Task;
+import org.sormas.e2etests.pojo.web.Action;
 
 @ScenarioScoped
 @Getter
 @Setter
 public class ApiState {
   Response response;
+  String casesAllSince;
+  String communitiesAllSince;
+  String facilitiesFromRegion;
   Person editPerson;
   Case createdCase;
   List<Case> createdCases;
@@ -42,4 +46,5 @@ public class ApiState {
   Event createdEvent;
   Task createdTask;
   Sample createdSample;
+  Action createdAction;
 }

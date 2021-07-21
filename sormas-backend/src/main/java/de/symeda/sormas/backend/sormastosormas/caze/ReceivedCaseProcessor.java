@@ -18,7 +18,7 @@ package de.symeda.sormas.backend.sormastosormas.caze;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -37,8 +37,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
-import de.symeda.sormas.api.sormastosormas.ValidationErrors;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
@@ -50,7 +51,8 @@ import de.symeda.sormas.backend.sormastosormas.ReceivedDataProcessorHelper.Infra
 
 @Stateless
 @LocalBean
-public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData, SormasToSormasCasePreview> {
+public class ReceivedCaseProcessor
+	implements ReceivedDataProcessor<CaseDataDto, SormasToSormasCaseDto, ProcessedCaseData, SormasToSormasCasePreview> {
 
 	@EJB
 	private ReceivedDataProcessorHelper dataProcessorHelper;
@@ -60,7 +62,7 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 	@Override
 	public ProcessedCaseData processReceivedData(SormasToSormasCaseDto receivedCase, CaseDataDto existingCaseData)
 		throws SormasToSormasValidationException {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 
 		PersonDto person = receivedCase.getPerson();
 		CaseDataDto caze = receivedCase.getEntity();
@@ -77,17 +79,17 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 		caseValidationErrors.addAll(caseDataErrors);
 
 		if (caseValidationErrors.hasError()) {
-			validationErrors.put(buildCaseValidationGroupName(caze), caseValidationErrors);
+			validationErrors.add(new ValidationErrors(buildCaseValidationGroupName(caze), caseValidationErrors));
 		}
 
 		if (associatedContacts != null && associatedContacts.size() > 0) {
-			Map<String, ValidationErrors> contactValidationErrors = processAssociatedContacts(associatedContacts);
-			validationErrors.putAll(contactValidationErrors);
+			List<ValidationErrors> contactValidationErrors = processAssociatedContacts(associatedContacts);
+			validationErrors.addAll(contactValidationErrors);
 		}
 
 		if (samples != null && samples.size() > 0) {
-			Map<String, ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
-			validationErrors.putAll(sampleErrors);
+			List<ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
+			validationErrors.addAll(sampleErrors);
 		}
 
 		if (validationErrors.size() > 0) {
@@ -99,11 +101,11 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 
 	@Override
 	public SormasToSormasCasePreview processReceivedPreview(SormasToSormasCasePreview preview) throws SormasToSormasValidationException {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 
 		ValidationErrors caseValidationErrors = new ValidationErrors();
 
-		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
+		DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
 			preview.getRegion(),
 			preview.getDistrict(),
 			preview.getCommunity(),
@@ -124,7 +126,7 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 		});
 
 		if (caseValidationErrors.hasError()) {
-			validationErrors.put(buildCaseValidationGroupName(preview), caseValidationErrors);
+			validationErrors.add(new ValidationErrors(buildCaseValidationGroupName(preview), caseValidationErrors));
 		}
 
 		ValidationErrors personValidationErrors = dataProcessorHelper.processPersonPreview(preview.getPerson());
@@ -132,8 +134,8 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 
 		List<SormasToSormasContactPreview> contacts = preview.getContacts();
 		if (contacts != null && contacts.size() > 0) {
-			Map<String, ValidationErrors> contactValidationErrors = processContactPreviews(contacts);
-			validationErrors.putAll(contactValidationErrors);
+			List<ValidationErrors> contactValidationErrors = processContactPreviews(contacts);
+			validationErrors.addAll(contactValidationErrors);
 		}
 
 		if (validationErrors.size() > 0) {
@@ -152,17 +154,12 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 		caze.setPerson(person.toReference());
 		dataProcessorHelper.updateReportingUser(caze, existingCaseData);
 
-		DataHelper.Pair<InfrastructureData, List<String>> infrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
-			caze.getRegion(),
-			caze.getDistrict(),
-			caze.getCommunity(),
-			caze.getFacilityType(),
-			caze.getHealthFacility(),
-			caze.getHealthFacilityDetails(),
-			caze.getPointOfEntry(),
-			caze.getPointOfEntryDetails());
+		DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(caze);
 
 		dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
+			caze.setResponsibleRegion(infrastructureData.getResponsibleRegion());
+			caze.setResponsibleDistrict(infrastructureData.getResponsibleDistrict());
+			caze.setResponsibleCommunity(infrastructureData.getResponsibleCommunity());
 			caze.setRegion(infrastructureData.getRegion());
 			caze.setDistrict(infrastructureData.getDistrict());
 			caze.setCommunity(infrastructureData.getCommunity());
@@ -185,7 +182,7 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 
 			caze.getHospitalization().getPreviousHospitalizations().forEach(ph -> {
 
-				DataHelper.Pair<InfrastructureData, List<String>> phInfrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
+				DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> phInfrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
 					ph.getRegion(),
 					ph.getDistrict(),
 					ph.getCommunity(),
@@ -212,7 +209,7 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 		MaternalHistoryDto maternalHistory = caze.getMaternalHistory();
 		if (maternalHistory != null) {
 
-			DataHelper.Pair<InfrastructureData, List<String>> rashExposureInfrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
+			DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> rashExposureInfrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
 				maternalHistory.getRashExposureRegion(),
 				maternalHistory.getRashExposureDistrict(),
 				maternalHistory.getRashExposureCommunity());
@@ -233,8 +230,8 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 		return validationErrors;
 	}
 
-	private Map<String, ValidationErrors> processAssociatedContacts(List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts) {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+	private List<ValidationErrors> processAssociatedContacts(List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts) {
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 
 		Map<String, ContactDto> existingContactsMap =
 			contactFacade.getByUuids(associatedContacts.stream().map(c -> c.getContact().getUuid()).collect(Collectors.toList()))
@@ -247,21 +244,21 @@ public class ReceivedCaseProcessor implements ReceivedDataProcessor<CaseDataDto,
 				dataProcessorHelper.processContactData(contact, associatedContact.getPerson(), existingContactsMap.get(contact.getUuid()));
 
 			if (contactErrors.hasError()) {
-				validationErrors.put(buildContactValidationGroupName(contact), contactErrors);
+				validationErrors.add(new ValidationErrors(buildContactValidationGroupName(contact), contactErrors));
 			}
 		}
 
 		return validationErrors;
 	}
 
-	private Map<String, ValidationErrors> processContactPreviews(List<SormasToSormasContactPreview> contacts) {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+	private List<ValidationErrors> processContactPreviews(List<SormasToSormasContactPreview> contacts) {
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 
 		for (SormasToSormasContactPreview contact : contacts) {
 			ValidationErrors contactErrors = dataProcessorHelper.processContactPreview(contact);
 
 			if (contactErrors.hasError()) {
-				validationErrors.put(buildContactValidationGroupName(contact), contactErrors);
+				validationErrors.add(new ValidationErrors(buildContactValidationGroupName(contact), contactErrors));
 			}
 		}
 

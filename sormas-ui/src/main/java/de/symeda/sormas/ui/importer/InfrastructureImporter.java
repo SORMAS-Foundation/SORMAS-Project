@@ -167,7 +167,7 @@ public class InfrastructureImporter extends DataImporter {
 					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 					// according to the types of the infrastructure object's fields; additionally, throw an error if infrastructure data that
 					// is referenced in the imported object does not exist in the database
-					if (!executeDefaultInvokings(pd, currentElement, value, entityPropertyPath)) {
+					if (!executeDefaultInvoke(pd, currentElement, value, entityPropertyPath)) {
 						if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 							List<DistrictReferenceDto> district;
 							switch (type) {

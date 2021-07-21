@@ -15,11 +15,54 @@
 
 package de.symeda.sormas.api.utils.jurisdiction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.api.user.JurisdictionLevel;
 
 public abstract class JurisdictionValidator<T> {
 
-	public T isInJurisdiction(JurisdictionLevel jurisdictionLevel) {
+	private List<? extends JurisdictionValidator<T>> associatedJurisdictionValidators;
+
+	public JurisdictionValidator(List<? extends JurisdictionValidator<T>> associatedJurisdictionValidators) {
+		this.associatedJurisdictionValidators = associatedJurisdictionValidators;
+	}
+
+	public T inJurisdictionOrOwned() {
+		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
+			final List<T> jurisdictionTypes = new ArrayList<>();
+			jurisdictionTypes.add(isInJurisdictionOrOwned());
+			for (JurisdictionValidator<T> jurisdictionValidator : associatedJurisdictionValidators) {
+				if (jurisdictionValidator != null) {
+					jurisdictionTypes.add(jurisdictionValidator.isInJurisdictionOrOwned());
+				}
+			}
+			return or(jurisdictionTypes);
+		} else {
+			return isInJurisdictionOrOwned();
+		}
+	}
+
+	public T inJurisdiction() {
+		if (associatedJurisdictionValidators != null && !associatedJurisdictionValidators.isEmpty()) {
+			final List<T> jurisdictionTypes = new ArrayList<>();
+			jurisdictionTypes.add(isInJurisdiction());
+			for (JurisdictionValidator<T> jurisdictionValidator : associatedJurisdictionValidators) {
+				if (jurisdictionValidator != null) {
+					jurisdictionTypes.add(jurisdictionValidator.isInJurisdiction());
+				}
+			}
+			return or(jurisdictionTypes);
+		} else {
+			return isInJurisdiction();
+		}
+	}
+
+	protected abstract T isInJurisdiction();
+
+	protected abstract T isInJurisdictionOrOwned();
+
+	protected T isInJurisdictionByJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
 
 		switch (jurisdictionLevel) {
 
@@ -36,7 +79,7 @@ public abstract class JurisdictionValidator<T> {
 		case HEALTH_FACILITY:
 			return whenFacilityLevel();
 		case LABORATORY:
-			return whenNotAllowed();
+			return whenLaboratoryLevel();
 		case EXTERNAL_LABORATORY:
 			return whenNotAllowed();
 		case POINT_OF_ENTRY:
@@ -45,6 +88,8 @@ public abstract class JurisdictionValidator<T> {
 			return whenNotAllowed();
 		}
 	}
+
+	protected abstract T or(List<T> jurisdictionTypes);
 
 	protected abstract T whenNotAllowed();
 
@@ -59,4 +104,6 @@ public abstract class JurisdictionValidator<T> {
 	protected abstract T whenFacilityLevel();
 
 	protected abstract T whenPointOfEntryLevel();
+
+	protected abstract T whenLaboratoryLevel();
 }

@@ -33,6 +33,9 @@ import static de.symeda.sormas.api.caze.CaseDataDto.POINT_OF_ENTRY_DETAILS;
 import static de.symeda.sormas.api.caze.CaseDataDto.RABIES_TYPE;
 import static de.symeda.sormas.api.caze.CaseDataDto.REGION;
 import static de.symeda.sormas.api.caze.CaseDataDto.REPORT_DATE;
+import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_COMMUNITY;
+import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_DISTRICT;
+import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_REGION;
 import static de.symeda.sormas.api.caze.CaseDataDto.SYMPTOMS;
 
 import java.beans.PropertyDescriptor;
@@ -85,6 +88,7 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -130,12 +134,16 @@ import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.region.AreaFacadeEjb.AreaFacadeEjbLocal;
-import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
+import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "ImportFacade")
 public class ImportFacadeEjb implements ImportFacade {
@@ -176,13 +184,15 @@ public class ImportFacadeEjb implements ImportFacade {
 	@EJB
 	private CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 	@EJB
-	private UserService userService;
-	@EJB
 	private UserFacadeEjbLocal userFacade;
 	@EJB
 	private AreaFacadeEjbLocal areaFacade;
 	@EJB
-	private RegionFacadeEjbLocal regionFacade;
+	private EnumService enumService;
+	@EJB
+	private RegionService regionService;
+	@EJB
+	private CountryFacadeEjbLocal countryFacade;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = "import_case_template.csv";
 	private static final String EVENT_IMPORT_TEMPLATE_FILE_NAME = "import_event_template.csv";
@@ -201,6 +211,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String FACILITY_IMPORT_TEMPLATE_FILE_NAME = "import_facility_template.csv";
 	private static final String CONTACT_IMPORT_TEMPLATE_FILE_NAME = "import_contact_template.csv";
 	private static final String CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME = "import_campaign_form_data_template.csv";
+	private static final String TRAVEL_ENTRY_IMPORT_TEMPLATE_FILE_NAME = "import_travel_entry_template.csv";
 
 	private static final String ALL_COUNTRIES_IMPORT_FILE_NAME = "sormas_import_all_countries.csv";
 	private static final String ALL_SUBCONTINENTS_IMPORT_FILE_NAME = "sormas_import_all_subcontinents.csv";
@@ -361,9 +372,9 @@ public class ImportFacadeEjb implements ImportFacade {
 		importColumns.add(ImportColumn.from(CaseDataDto.class, EPID_NUMBER, String.class, separator));
 		importColumns.add(ImportColumn.from(CaseDataDto.class, REPORT_DATE, Date.class, separator));
 		importColumns.add(ImportColumn.from(CaseDataDto.class, CASE_ORIGIN, CaseOrigin.class, separator));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, REGION, RegionReferenceDto.class, separator));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, DISTRICT, DistrictReferenceDto.class, separator));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, COMMUNITY, CommunityReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, RESPONSIBLE_REGION, RegionReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, RESPONSIBLE_DISTRICT, DistrictReferenceDto.class, separator));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, RESPONSIBLE_COMMUNITY, CommunityReferenceDto.class, separator));
 		importColumns.add(ImportColumn.from(CaseDataDto.class, FACILITY_TYPE, FacilityType.class, separator));
 		importColumns.add(ImportColumn.from(CaseDataDto.class, HEALTH_FACILITY, FacilityReferenceDto.class, separator));
 		importColumns.add(ImportColumn.from(CaseDataDto.class, HEALTH_FACILITY_DETAILS, String.class, separator));
@@ -845,17 +856,40 @@ public class ImportFacadeEjb implements ImportFacade {
 		return true;
 	}
 
-	public boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
-		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException {
+	public boolean executeDefaultInvoke(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath, boolean allowForeignRegions)
+		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException, EnumService.InvalidEnumCaptionException {
 		Class<?> propertyType = pd.getPropertyType();
 
 		if (propertyType.isEnum()) {
-			pd.getWriteMethod().invoke(element, Enum.valueOf((Class<? extends Enum>) propertyType, entry.toUpperCase()));
+			Enum enumValue = null;
+			Class<Enum> enumType = (Class<Enum>) propertyType;
+			try {
+				enumValue = Enum.valueOf(enumType, entry.toUpperCase());
+			} catch (IllegalArgumentException e) {
+				// ignore
+			}
+
+			if (enumValue == null) {
+				enumValue = enumService.getEnumByCaption(enumType, entry);
+			}
+
+			pd.getWriteMethod().invoke(element, enumValue);
 			return true;
+		}
+		if (propertyType.getSuperclass() != null && propertyType.getSuperclass() == CustomizableEnum.class) {
+			try {
+				Object customizableEnum = propertyType.newInstance();
+				((CustomizableEnum) customizableEnum).setValue(entry);
+				pd.getWriteMethod().invoke(element, customizableEnum);
+				return true;
+			} catch (InstantiationException e) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importErrorCustomizableEnumValue, entry, buildEntityProperty(entryHeaderPath)));
+			}
 		}
 		if (propertyType.isAssignableFrom(Date.class)) {
 			// If the string is smaller than the length of the expected date format, throw an exception
-			if (entry.length() < 10) {
+			if (entry.length() < 8) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(
 						Validations.importInvalidDate,
@@ -882,6 +916,19 @@ public class ImportFacadeEjb implements ImportFacade {
 			pd.getWriteMethod().invoke(element, Boolean.parseBoolean(entry));
 			return true;
 		}
+		if (propertyType.isAssignableFrom(CountryReferenceDto.class)) {
+			List<CountryReferenceDto> countries = countryFacade.getReferencesByName(entry, false);
+			if (countries.isEmpty()) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
+			} else if (countries.size() > 1) {
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importCountryNotUnique, entry, buildEntityProperty(entryHeaderPath)));
+			} else {
+				pd.getWriteMethod().invoke(element, countries.get(0));
+				return true;
+			}
+		}
 		if (propertyType.isAssignableFrom(AreaReferenceDto.class)) {
 			List<AreaReferenceDto> areas = areaFacade.getByName(entry, false);
 			if (areas.isEmpty()) {
@@ -896,16 +943,27 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 		}
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<RegionReferenceDto> region = regionFacade.getReferencesByName(entry, false);
-			if (region.isEmpty()) {
+			List<Region> regions = regionService.getByName(entry, false);
+			if (regions.isEmpty()) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (region.size() > 1) {
+			} else if (regions.size() > 1) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildEntityProperty(entryHeaderPath)));
-			} else {
-				pd.getWriteMethod().invoke(element, region.get(0));
+			} else if (allowForeignRegions) {
+				pd.getWriteMethod().invoke(element, RegionFacadeEjb.toReferenceDto(regions.get(0)));
 				return true;
+			} else {
+				Region region = regions.get(0);
+				CountryReferenceDto serverCountry = countryFacade.getServerCountry();
+
+				if (region.getCountry() != null && !CountryFacadeEjb.toReferenceDto(region.getCountry()).equals(serverCountry)) {
+					throw new ImportErrorException(
+						I18nProperties.getValidationError(Validations.importRegionNotInServerCountry, entry, buildEntityProperty(entryHeaderPath)));
+				} else {
+					pd.getWriteMethod().invoke(element, RegionFacadeEjb.toReferenceDto(region));
+					return true;
+				}
 			}
 		}
 		if (propertyType.isAssignableFrom(UserReferenceDto.class)) {

@@ -21,9 +21,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
-import de.symeda.sormas.backend.region.CommunityService;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.AgeGroup;
@@ -38,6 +35,9 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.region.Area;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb;
+import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
@@ -79,11 +79,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		cq.where(filter);
 		cq.select(root.get(PopulationData.POPULATION));
 
-		try {
-			return em.createQuery(cq).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getSingleResult(em, cq);
 	}
 
 	@Override
@@ -122,17 +118,15 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
 		Root<PopulationData> root = cq.from(PopulationData.class);
 
-		PopulationDataCriteria criteria =
-			new PopulationDataCriteria().ageGroupIsNull(true).sexIsNull(true).district(new DistrictReferenceDto(districtUuid, null, null));
+		PopulationDataCriteria criteria = new PopulationDataCriteria().ageGroupIsNull(true)
+			.sexIsNull(true)
+			.communityIsNull(true)
+			.district(new DistrictReferenceDto(districtUuid, null, null));
 		Predicate filter = service.buildCriteriaFilter(criteria, cb, root);
 		cq.where(filter);
 		cq.select(root.get(PopulationData.POPULATION));
 
-		try {
-			return em.createQuery(cq).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getSingleResult(em, cq);
 	}
 
 	@Override

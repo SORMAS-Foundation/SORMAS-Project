@@ -43,6 +43,8 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityDto;
@@ -73,13 +75,18 @@ public class TestDataCreator {
 	}
 
 	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRole... roles) {
-		return createUser(regionUuid, districtUuid, facilityUuid, firstName, lastName, Language.EN, roles);
+		return createUser(regionUuid, districtUuid, facilityUuid, null, firstName, lastName, Language.EN, roles);
+	}
+
+	public UserDto createPointOfEntryUser(String regionUuid, String districtUuid, String pointOfEntryUuid) {
+		return createUser(regionUuid, districtUuid, null, pointOfEntryUuid, "POE", "User", Language.EN, UserRole.POE_INFORMANT);
 	}
 
 	public UserDto createUser(
 		String regionUuid,
 		String districtUuid,
 		String facilityUuid,
+		String pointOfEntryUuid,
 		String firstName,
 		String lastName,
 		Language language,
@@ -93,6 +100,12 @@ public class TestDataCreator {
 		user.setRegion(FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid));
 		user.setDistrict(FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid));
 		user.setHealthFacility(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
+		if (pointOfEntryUuid != null) {
+			PointOfEntryDto pointOfEntry = FacadeProvider.getPointOfEntryFacade().getByUuid(pointOfEntryUuid);
+			if (pointOfEntry != null) {
+				user.setPointOfEntry(pointOfEntry.toReference());
+			}
+		}
 		user.setLanguage(language);
 		user = FacadeProvider.getUserFacade().saveUser(user);
 
@@ -181,9 +194,9 @@ public class TestDataCreator {
 		caze.setReportingUser(user);
 		caze.setCaseClassification(caseClassification);
 		caze.setInvestigationStatus(investigationStatus);
-		caze.setRegion(FacadeProvider.getRegionFacade().getRegionReferenceByUuid(rdcf.region.getUuid()));
-		caze.setDistrict(FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
-		caze.setCommunity(FacadeProvider.getCommunityFacade().getCommunityReferenceByUuid(rdcf.community.getUuid()));
+		caze.setResponsibleRegion(FacadeProvider.getRegionFacade().getRegionReferenceByUuid(rdcf.region.getUuid()));
+		caze.setResponsibleDistrict(FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
+		caze.setResponsibleCommunity(FacadeProvider.getCommunityFacade().getCommunityReferenceByUuid(rdcf.community.getUuid()));
 		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(rdcf.facility.getUuid());
 		caze.setFacilityType(facility.getType());
 		caze.setHealthFacility(facility.toReference());
@@ -339,6 +352,15 @@ public class TestDataCreator {
 		return new RDCF(region, district, community, facility);
 	}
 
+	public RDP createRDP() {
+
+		RegionDto region = createRegion("Region");
+		DistrictDto district = createDistrict("District", region.toReference());
+		PointOfEntryDto pointOfEntry = createPointOfEntry("POE", region.toReference(), district.toReference());
+
+		return new RDP(region, district, pointOfEntry);
+	}
+
 	public RegionDto createRegion(String regionName) {
 
 		RegionDto region = RegionDto.build();
@@ -387,6 +409,19 @@ public class TestDataCreator {
 		return facility;
 	}
 
+	public PointOfEntryDto createPointOfEntry(String pointOfEntryName, RegionReferenceDto region, DistrictReferenceDto district) {
+
+		PointOfEntryDto pointOfEntry = PointOfEntryDto.build();
+		pointOfEntry.setUuid(DataHelper.createUuid());
+		pointOfEntry.setName(pointOfEntryName);
+		pointOfEntry.setActive(true);
+		pointOfEntry.setRegion(region);
+		pointOfEntry.setDistrict(district);
+		pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);
+		FacadeProvider.getPointOfEntryFacade().save(pointOfEntry);
+		return pointOfEntry;
+	}
+
 	public CampaignDto createCampaign(UserDto user) {
 
 		CampaignDto campaign = CampaignDto.build();
@@ -417,7 +452,7 @@ public class TestDataCreator {
 		return campaignForm;
 	}
 
-	public class RDCF {
+	public static class RDCF {
 
 		public RegionDto region;
 		public DistrictDto district;
@@ -431,4 +466,18 @@ public class TestDataCreator {
 			this.facility = facility;
 		}
 	}
+
+	public static class RDP {
+
+		public RegionDto region;
+		public DistrictDto district;
+		public PointOfEntryDto pointOfEntry;
+
+		public RDP(RegionDto region, DistrictDto district, PointOfEntryDto pointOfEntry) {
+			this.region = region;
+			this.district = district;
+			this.pointOfEntry = pointOfEntry;
+		}
+	}
+
 }

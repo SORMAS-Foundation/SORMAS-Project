@@ -29,34 +29,24 @@ public class CaseFollowUpDto extends FollowUpDto {
 
 	private Date symptomsOnsetDate;
 
-	private final CaseJurisdictionDto jurisdiction;
 	private SymptomJournalStatus symptomJournalStatus;
+	private Boolean isInJurisdiction;
 
 	//@formatter:off
-	public CaseFollowUpDto(String uuid, String personFirstName, String personLastName,
+	public CaseFollowUpDto(String uuid, Date changeDate, String personFirstName, String personLastName,
 						   Date reportDate, Date symptomsOnsetDate, Date followUpUntil, SymptomJournalStatus symptomJournalStatus,
 						   Disease disease,
-						   String caseReportingUserUuid,
-						   String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleCommunityUuid,
-						   String caseRegionUuid, String caseDistrictUuid, String caseCommunityUud,
-						   String caseHealthFacilityUuid, String casePointOfEntryUuid
+						   boolean isInJurisdiction
 	) {
 	//formatter:on
 		super(uuid, personFirstName, personLastName, reportDate, followUpUntil, disease);
 		this.symptomsOnsetDate = symptomsOnsetDate;
 		this.symptomJournalStatus = symptomJournalStatus;
-		this.jurisdiction = new CaseJurisdictionDto(
-				caseReportingUserUuid,
-				ResponsibleJurisdictionDto.of(responsibleRegionUuid, responsibleDistrictUuid, responsibleCommunityUuid),
-				caseRegionUuid,
-				caseDistrictUuid,
-				caseCommunityUud,
-				caseHealthFacilityUuid,
-				casePointOfEntryUuid);
+		this.isInJurisdiction = isInJurisdiction;
 	}
 
-	public CaseJurisdictionDto getJurisdiction() {
-		return jurisdiction;
+	public Boolean getInJurisdiction() {
+		return isInJurisdiction;
 	}
 
 	public Date getSymptomsOnsetDate() {

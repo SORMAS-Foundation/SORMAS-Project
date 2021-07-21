@@ -50,9 +50,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.externaldata.ExternalDataDto;
-import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -62,12 +59,16 @@ import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
+import de.symeda.sormas.api.externaldata.ExternalDataDto;
+import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -75,6 +76,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
+import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.JournalPersonDto;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
@@ -128,8 +130,10 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
@@ -261,7 +265,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return Optional.of(uuid)
 			.map(u -> personService.getByUuid(u))
-			.map(p -> convertToDto(p, pseudonymizer, isPersonInJurisdiction(p)))
+			.map(p -> convertToDto(p, pseudonymizer, personService.inJurisdictionOrOwned(p)))
 			.orElse(null);
 	}
 
@@ -298,7 +302,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	/**
 	 *
-	 * @param personDto a detailed person object
+	 * @param personDto
+	 *            a detailed person object
 	 * @return a pair with element0=emailAddress and element1=phone
 	 */
 	public Pair<String, String> getContactDetails(PersonDto personDto) {
@@ -331,8 +336,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 	}
 
-
-
 	public String formatPhoneNumber(String phoneNumber) {
 		try {
 			PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
@@ -352,13 +355,17 @@ public class PersonFacadeEjb implements PersonFacade {
 	 * Saves the received person.
 	 * If checkChangedDate is specified, it checks whether the the person from the database has a higher timestamp than the source object,
 	 * so it prevents overwriting with obsolete data.
-	 * If the person to be saved is enrolled in the external journal, the relevant data is validated and, if changed, the external journal is notified.
+	 * If the person to be saved is enrolled in the external journal, the relevant data is validated and, if changed, the external journal
+	 * is notified.
 	 *
 	 *
-	 * @param source the person dto object to be saved
-	 * @param checkChangeDate a boolean specifying whether to check if the source data is outdated
+	 * @param source
+	 *            the person dto object to be saved
+	 * @param checkChangeDate
+	 *            a boolean specifying whether to check if the source data is outdated
 	 * @return the newly saved person
-	 * @throws ValidationRuntimeException if the passed source person to be saved contains invalid data
+	 * @throws ValidationRuntimeException
+	 *             if the passed source person to be saved contains invalid data
 	 */
 	public PersonDto savePerson(PersonDto source, boolean checkChangeDate) throws ValidationRuntimeException {
 		Person person = personService.getByUuid(source.getUuid());
@@ -380,22 +387,29 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		onPersonChanged(existingPerson, person);
 
-		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || isPersonInJurisdiction(person));
+		return convertToDto(
+			person,
+			Pseudonymizer.getDefault(userService::hasRight),
+			existingPerson == null || personService.inJurisdictionOrOwned(person));
 	}
 
 	/**
 	 * Saves the received person.
 	 * This method always checks if the given source person data is outdated
-	 * The approximate age reference date is calculated and set on the person object to be saved. In case the case classification was changed by saving the person,
-	 * If the person is enrolled in the external journal, the relevant data is validated,but the external journal is not notified. The task of notifying the external journals falls to the caller of this method.
+	 * The approximate age reference date is calculated and set on the person object to be saved. In case the case classification was
+	 * changed by saving the person,
+	 * If the person is enrolled in the external journal, the relevant data is validated,but the external journal is not notified. The task
+	 * of notifying the external journals falls to the caller of this method.
 	 * Also, in case the case classification was changed, the new classification will be returned.
 	 *
 	 *
-	 * @param source the person dto object to be saved
+	 * @param source
+	 *            the person dto object to be saved
 	 * @return a pair of objects containing:
-	 * 					- the new case classification or null if it was not changed
-	 * 					- the old person data from the database
-	 * @throws ValidationRuntimeException if the passed source person to be saved contains invalid data
+	 *         - the new case classification or null if it was not changed
+	 *         - the old person data from the database
+	 * @throws ValidationRuntimeException
+	 *             if the passed source person to be saved contains invalid data
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(PersonDto source) throws ValidationRuntimeException {
@@ -429,8 +443,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		// Check whether the classification of any of this person's cases has changed
 		for (CaseDataDto oldCase : oldCases) {
 			CaseDataDto updatedPersonCase = caseFacade.getCaseDataByUuid(oldCase.getUuid());
-			if (oldCase.getCaseClassification() != updatedPersonCase.getCaseClassification()
-					&& updatedPersonCase.getClassificationUser() == null) {
+			if (oldCase.getCaseClassification() != updatedPersonCase.getCaseClassification() && updatedPersonCase.getClassificationUser() == null) {
 				return updatedPersonCase.getCaseClassification();
 			}
 		}
@@ -441,8 +454,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private void computeApproximateAgeReferenceDate(PersonDto existingPerson, PersonDto changedPerson) {
 		// approximate age reference date
 		if (existingPerson == null
-				|| !DataHelper.equal(changedPerson.getApproximateAge(), existingPerson.getApproximateAge())
-				|| !DataHelper.equal(changedPerson.getApproximateAgeType(), existingPerson.getApproximateAgeType())) {
+			|| !DataHelper.equal(changedPerson.getApproximateAge(), existingPerson.getApproximateAge())
+			|| !DataHelper.equal(changedPerson.getApproximateAgeType(), existingPerson.getApproximateAgeType())) {
 			if (changedPerson.getApproximateAge() == null) {
 				changedPerson.setApproximateAgeReferenceDate(null);
 			} else {
@@ -873,7 +886,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
 
-		Predicate filter = personService.createUserFilter(cb, cq, person);
+		Predicate filter = personService.createUserFilter(personQueryContext);
 		if (criteria != null) {
 			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
@@ -952,27 +965,68 @@ public class PersonFacadeEjb implements PersonFacade {
 			caseFacade.onCaseChanged(existingCase, personCase);
 		}
 
+		// get the updated personCases
+		personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
+
 		// Update cases if present condition has changed
 		if (existingPerson != null) {
+			// sort cases based on recency
+			Collections.sort(
+				personCases,
+				(c1, c2) -> CaseLogic.getStartDate(c1.getSymptoms().getOnsetDate(), c1.getReportDate())
+					.before(CaseLogic.getStartDate(c2.getSymptoms().getOnsetDate(), c2.getReportDate())) ? 1 : -1);
+
 			if (newPerson.getPresentCondition() != null && existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
-				// Update case list after previous onCaseChanged
-				personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
-				for (Case personCase : personCases) {
-					if (newPerson.getPresentCondition().isDeceased()) {
-						if (personCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
-							CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
-							personCase.setOutcome(CaseOutcome.DECEASED);
-							personCase.setOutcomeDate(newPerson.getDeathDate() != null ? newPerson.getDeathDate() : new Date());
-							// Attention: this may lead to infinite recursion when not properly implemented
-							caseFacade.onCaseChanged(existingCase, personCase);
-						}
-					} else if (personCase.getOutcome() == CaseOutcome.DECEASED) {
+				// get the latest case with disease==causeofdeathdisease
+				Case personCase =
+					personCases.stream().filter(caze -> caze.getDisease() == newPerson.getCauseOfDeathDisease()).findFirst().orElse(null);
+				if (newPerson.getPresentCondition().isDeceased()
+					&& newPerson.getDeathDate() != null
+					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
+					&& newPerson.getCauseOfDeathDisease() != null) {
+
+					// update the latest associated case
+					if (personCase != null
+						&& personCase.getOutcome() != CaseOutcome.DECEASED
+						&& (personCase.getReportDate().before(DateHelper.addDays(newPerson.getDeathDate(), 30))
+							&& personCase.getReportDate().after(DateHelper.subtractDays(newPerson.getDeathDate(), 30)))) {
+						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+						personCase.setOutcome(CaseOutcome.DECEASED);
+						personCase.setOutcomeDate(newPerson.getDeathDate());
+						caseFacade.onCaseChanged(existingCase, personCase);
+					}
+				} else if (!newPerson.getPresentCondition().isDeceased()
+					&& (existingPerson.getPresentCondition() == PresentCondition.DEAD
+						|| existingPerson.getPresentCondition() == PresentCondition.BURIED)) {
+					// Person was put "back alive"
+					// make sure other values are set to null
+					newPerson.setCauseOfDeath(null);
+					newPerson.setCauseOfDeathDisease(null);
+					newPerson.setDeathPlaceDescription(null);
+					newPerson.setDeathPlaceType(null);
+					newPerson.setBurialDate(null);
+					newPerson.setCauseOfDeathDisease(null);
+					// update the latest associated case, if it was set to deceased && and if the case-disease was also the causeofdeath-disease
+					if (personCase != null && personCase.getOutcome() == CaseOutcome.DECEASED) {
 						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 						personCase.setOutcome(CaseOutcome.NO_OUTCOME);
 						personCase.setOutcomeDate(null);
-						// Attention: this may lead to infinite recursion when not properly implemented
 						caseFacade.onCaseChanged(existingCase, personCase);
 					}
+				}
+			} else if (newPerson.getPresentCondition() != null
+				&& newPerson.getPresentCondition().isDeceased()
+				&& newPerson.getDeathDate() != existingPerson.getDeathDate()
+				&& newPerson.getDeathDate() != null) {
+				// only Deathdate has changed
+				// update the latest associated case to the new deathdate, if causeOfDeath matches
+				Case personCase = personCases.isEmpty() ? null : personCases.get(0);
+				if (personCase != null
+					&& personCase.getOutcome() == CaseOutcome.DECEASED
+					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE) {
+					CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+					personCase.setOutcomeDate(newPerson.getDeathDate());
+					caseFacade.onCaseChanged(existingCase, personCase);
 				}
 			}
 		}
@@ -1030,31 +1084,33 @@ public class PersonFacadeEjb implements PersonFacade {
 		final CriteriaQuery<String> cq = cb.createQuery(String.class);
 		final Root<Person> person = cq.from(Person.class);
 
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+
 		cq.select(person.get(Person.UUID));
 		if (!allowPersonsWithCoordinates) {
 			// filter persons by those which have no latitude or longitude given
 			final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 			Predicate noLatitude = cb.isNull(location.get(Location.LATITUDE));
 			Predicate noLongitude = cb.isNull(location.get(Location.LONGITUDE));
-			cq.where(cb.and(personService.createUserFilter(cb, cq, person), cb.or(noLatitude, noLongitude)));
+			cq.where(cb.and(personService.createUserFilter(personQueryContext), cb.or(noLatitude, noLongitude)));
 		} else {
-			cq.where(personService.createUserFilter(cb, cq, person));
+			cq.where(personService.createUserFilter(personQueryContext));
 		}
 		cq.orderBy(cb.desc(person.get(Person.UUID)));
 
 		// repeat the query as often as necessary until all data is retrieved
-		final int BATCH_SIZE = batchSize == null ? 100 : batchSize;
+		final int max = batchSize == null ? 100 : batchSize;
 		int first = 0;
 		int sizeOfLastBatch = 0;
 		List<String> personUuids = new ArrayList<>();
 		do {
 			// By using LIMIT and OFFSET, timeouts and overflowing caches are somewhat prevented
-			List<String> newPersonUuids = em.createQuery(cq).setFirstResult(first).setMaxResults(BATCH_SIZE).getResultList();
+			List<String> newPersonUuids = QueryHelper.getResultList(em, cq, first, max);
 			sizeOfLastBatch = newPersonUuids.size();
 			first += sizeOfLastBatch;
 			personUuids = Stream.concat(personUuids.stream(), newPersonUuids.stream()).collect(Collectors.toList());
 		}
-		while (sizeOfLastBatch >= BATCH_SIZE);
+		while (sizeOfLastBatch >= max);
 
 		return personUuids;
 	}
@@ -1089,7 +1145,6 @@ public class PersonFacadeEjb implements PersonFacade {
 				cb.equal(emailRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.EMAIL)));
 		emailSubQuery.select(emailRoot.get(PersonContactDetail.CONTACT_INFORMATION));
 
-		final Predicate jurisdictionPredicate = personService.getJurisdictionPredicate(cb, cq, person);
 
 		// make sure to check the sorting by the multi-select order if you extend the selections here
 		cq.multiselect(
@@ -1110,9 +1165,9 @@ public class PersonFacadeEjb implements PersonFacade {
 			phoneSubQuery.alias(PersonIndexDto.PHONE),
 			emailSubQuery.alias(PersonIndexDto.EMAIL_ADDRESS),
 			person.get(Person.CHANGE_DATE),
-			cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false)));
+			JurisdictionHelper.booleanSelector(cb, personService.inJurisdictionOrOwned(personQueryContext)));
 
-		Predicate filter = personService.createUserFilter(cb, cq, person);
+		Predicate filter = personService.createUserFilter(personQueryContext);
 		if (criteria != null) {
 			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
@@ -1162,12 +1217,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			cq.orderBy(cb.desc(person.get(Person.CHANGE_DATE)));
 		}
 
-		List<PersonIndexDto> persons;
-		if (first != null && max != null) {
-			persons = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			persons = em.createQuery(cq).getResultList();
-		}
+		List<PersonIndexDto> persons = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
@@ -1211,7 +1261,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	private void restorePseudonymizedDto(PersonDto source, Person person, PersonDto existingPerson) {
 		if (person != null && existingPerson != null) {
-			boolean isInJurisdiction = isPersonInJurisdiction(person);
+			boolean isInJurisdiction = personService.inJurisdictionOrOwned(person);
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			pseudonymizer.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
 			pseudonymizer.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
@@ -1232,9 +1282,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 	}
 
-	private boolean isPersonInJurisdiction(Person person) {
-		return !personService.getInJurisdictionIDs(Collections.singletonList(person)).isEmpty();
-	}
+
 
 	public static PersonReferenceDto toReferenceDto(Person entity) {
 

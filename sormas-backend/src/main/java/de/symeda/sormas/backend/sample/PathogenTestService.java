@@ -46,6 +46,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -127,7 +128,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		Root<PathogenTest> from = cq.from(getElementClass());
 
 		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(PathogenTest.SAMPLE), sample)));
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	public List<PathogenTest> getAllByCase(String caseUuid) {
@@ -252,12 +253,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 	public Predicate createActiveTestsFilter(CriteriaBuilder cb, Root<PathogenTest> root) {
 
 		Join<PathogenTest, Sample> sample = root.join(PathogenTest.SAMPLE, JoinType.LEFT);
-		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		Join<Sample, Contact> contact = sample.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
-		Join<Sample, EventParticipant> event = sample.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
-		Predicate pred =
-			cb.or(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(contact.get(Contact.DELETED)), cb.isFalse(event.get(EventParticipant.DELETED)));
-		return cb.and(pred, cb.isFalse(sample.get(Sample.DELETED)));
+		return sampleService.createActiveSamplesFilter(cb, sample);
 	}
 
 	/**

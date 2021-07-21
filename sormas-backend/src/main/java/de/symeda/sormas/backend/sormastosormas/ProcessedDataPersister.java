@@ -16,7 +16,7 @@
 package de.symeda.sormas.backend.sormastosormas;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 
 public interface ProcessedDataPersister<P> {
 

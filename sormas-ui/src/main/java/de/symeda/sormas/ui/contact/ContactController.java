@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,10 @@ package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,6 +45,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -53,6 +57,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -150,6 +155,58 @@ public class ContactController {
 						});
 					}
 				}, true);
+		}
+
+		lineListingForm.closeWindow();
+		ControllerProvider.getContactController().navigateToIndex();
+	}
+
+	public void openLineListingWindow(EventDto eventDto, Set<EventParticipantIndexDto> eventParticipantIndexDtos) {
+		if (eventParticipantIndexDtos == null || eventParticipantIndexDtos.isEmpty()) {
+			return;
+		}
+
+		Window window = new Window(I18nProperties.getString(Strings.headingLineListing));
+
+		List<String> uuids = eventParticipantIndexDtos.stream().map(EventParticipantIndexDto::getUuid).collect(Collectors.toList());
+		List<EventParticipantDto> eventParticipantDtos = FacadeProvider.getEventParticipantFacade().getByUuids(uuids);
+
+		LineListingLayout lineListingForm = new LineListingLayout(window, eventDto, eventParticipantDtos);
+		lineListingForm.setSaveCallback(contacts -> saveContactsFromEventParticipantsLineListing(lineListingForm, contacts));
+
+		lineListingForm.setWidth(LineListingLayout.DEFAULT_WIDTH, Unit.PIXELS);
+
+		window.setContent(lineListingForm);
+		window.setModal(true);
+		window.setPositionX((int) Math.max(0, (Page.getCurrent().getBrowserWindowWidth() - lineListingForm.getWidth())) / 2);
+		window.setPositionY(70);
+		window.setResizable(false);
+
+		UI.getCurrent().addWindow(window);
+	}
+
+	private void saveContactsFromEventParticipantsLineListing(LineListingLayout lineListingForm, List<LineListingLayout.ContactLineDto> contacts) {
+		try {
+			lineListingForm.validate();
+		} catch (ValidationRuntimeException e) {
+			Notification.show(I18nProperties.getString(Strings.errorFieldValidationFailed), "", Type.ERROR_MESSAGE);
+			return;
+		}
+
+		for (LineListingLayout.ContactLineDto contactLineDto : contacts) {
+			ContactDto newContact = contactLineDto.getContact();
+			if (UserProvider.getCurrent() != null) {
+				newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
+			}
+
+			newContact.setPerson(contactLineDto.getPerson().toReference());
+
+			selectOrCreateContact(newContact, contactLineDto.getPerson(), uuid -> {
+				if (uuid == null) {
+					FacadeProvider.getContactFacade().saveContact(newContact);
+					Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.ASSISTIVE_NOTIFICATION);
+				}
+			});
 		}
 
 		lineListingForm.closeWindow();
@@ -362,18 +419,7 @@ public class ContactController {
 							if (selectedPerson != null) {
 								dto.setPerson(selectedPerson);
 
-								// set the contact person's address to the one of the case when it is currently empty and
-								// the relationship with the case has been set to living in the same household
-								if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
-									PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
-									if (personDto.getAddress().checkIsEmptyLocation()) {
-										CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-										personDto.getAddress().setRegion(caseDto.getRegion());
-										personDto.getAddress().setDistrict(caseDto.getDistrict());
-										personDto.getAddress().setCommunity(caseDto.getCommunity());
-									}
-									FacadeProvider.getPersonFacade().savePerson(personDto);
-								}
+								fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
 
 								selectOrCreateContact(dto, person, selectedContactUuid -> {
 									if (selectedContactUuid != null) {
@@ -432,17 +478,7 @@ public class ContactController {
 				final ContactDto dto = createForm.getValue();
 				PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
 
-				// set the contact person's address to the one of the case when it is currently empty and
-				// the relationship with the case has been set to living in the same household
-				if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
-					if (personDto.getAddress().checkIsEmptyLocation()) {
-						CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-						personDto.getAddress().setRegion(caseDto.getRegion());
-						personDto.getAddress().setDistrict(caseDto.getDistrict());
-						personDto.getAddress().setCommunity(caseDto.getCommunity());
-					}
-					FacadeProvider.getPersonFacade().savePerson(personDto);
-				}
+				fillPersonAddressIfEmpty(dto, () -> personDto);
 
 				selectOrCreateContact(dto, personDto, selectedContactUuid -> {
 					if (selectedContactUuid != null) {
@@ -516,20 +552,10 @@ public class ContactController {
 				if (!editForm.getFieldGroup().isModified()) {
 					ContactDto dto = editForm.getValue();
 
-					// set the contact person's address to the one of the case when it is currently empty and
-					// the relationship with the case has been set to living in the same household
-					if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
-						PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
-						if (person.getAddress().checkIsEmptyLocation()) {
-							CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-							person.getAddress().setRegion(caze.getRegion());
-							person.getAddress().setDistrict(caze.getDistrict());
-							person.getAddress().setCommunity(caze.getCommunity());
-						}
-						FacadeProvider.getPersonFacade().savePerson(person);
-					}
+					fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid()));
 
-					dto = FacadeProvider.getContactFacade().saveContact(dto);
+					FacadeProvider.getContactFacade().saveContact(dto);
+
 					Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
 					SormasUI.refreshView();
 				}
@@ -654,10 +680,11 @@ public class ContactController {
 				confirmed -> {
 					if (confirmed) {
 						for (ContactIndexDto contact : selectedRows) {
-							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
+							if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
+								&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
 								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 								contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
-								contactDto.setFollowUpComment(
+								contactDto.addToFollowUpComment(
 									String.format(I18nProperties.getString(Strings.infoCanceledBy), UserProvider.getCurrent().getUserName()));
 								FacadeProvider.getContactFacade().saveContact(contactDto);
 							}
@@ -693,7 +720,7 @@ public class ContactController {
 							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
 								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 								contactDto.setFollowUpStatus(FollowUpStatus.LOST);
-								contactDto.setFollowUpComment(
+								contactDto.addToFollowUpComment(
 									String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), UserProvider.getCurrent().getUserName()));
 								FacadeProvider.getContactFacade().saveContact(contactDto);
 							}
@@ -811,5 +838,20 @@ public class ContactController {
 		titleLayout.addComponent(contactLabel);
 
 		return titleLayout;
+	}
+
+	private void fillPersonAddressIfEmpty(ContactDto contact, Supplier<PersonDto> personSupplier) {
+		// set the contact person's address to the one of the case when it is currently empty and
+		// the relationship with the case has been set to living in the same household
+		if (contact.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && contact.getCaze() != null) {
+			PersonDto person = personSupplier.get();
+			if (person.getAddress().checkIsEmptyLocation()) {
+				CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid());
+				person.getAddress().setRegion(CaseLogic.getRegionWithFallback(caze));
+				person.getAddress().setDistrict(CaseLogic.getDistrictWithFallback(caze));
+				person.getAddress().setCommunity(CaseLogic.getCommunityWithFallback(caze));
+			}
+			FacadeProvider.getPersonFacade().savePerson(person);
+		}
 	}
 }

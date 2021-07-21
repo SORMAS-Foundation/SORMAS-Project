@@ -127,7 +127,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				boolean ownershipHandedOver = (boolean) e.getProperty().getValue();
 				pseudonimyzePersonalData.setEnabled(!ownershipHandedOver);
 				pseudonymizeSensitiveData.setEnabled(!ownershipHandedOver);
-				if(ownershipHandedOver) {
+				if (ownershipHandedOver) {
 					pseudonimyzePersonalData.setValue(false);
 					pseudonymizeSensitiveData.setValue(false);
 				}
@@ -162,8 +162,11 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		getField(SormasToSormasOptionsDto.ORGANIZATION).setEnabled(false);
 	}
 
-	public void disableOrganizationAndOwnership() {
-		disableOrganization();
-		getField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP).setEnabled(false);
+	public void disableAllOptions() {
+		getFieldGroup().getFields().forEach(f -> {
+			if (!SormasToSormasOptionsDto.COMMENT.equals(f.getId())) {
+				f.setEnabled(false);
+			}
+		});
 	}
 }

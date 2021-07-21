@@ -25,63 +25,61 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVReader;
 
 import de.symeda.sormas.api.SormasToSormasConfig;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 
 @Stateless
 @LocalBean
 public class ServerAccessDataService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServerAccessDataService.class);
-
 	private static final String ORGANIZATION_LIST_FILE_NAME = "organization-list.csv";
+
+	@EJB
+	private SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
 
 	@Inject
 	private SormasToSormasConfig sormasToSormasConfig;
 
-	public Optional<OrganizationServerAccessData> getServerAccessData() {
-
-		String configPath = sormasToSormasConfig.getPath();
-
-		if (StringUtils.isEmpty(configPath)) {
-			return Optional.empty();
+	public OrganizationServerAccessData getServerAccessData() {
+		if (!sormasToSormasFacadeEjb.isFeatureConfigured()) {
+			LOGGER.warn((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
+			return null;
 		}
 
-		Path inputFile = Paths.get(configPath, sormasToSormasConfig.getServerAccessDataFileName());
+		Path inputFile = Paths.get(sormasToSormasConfig.getPath(), sormasToSormasConfig.getServerAccessDataFileName());
 
 		try (Reader reader = Files.newBufferedReader(inputFile, StandardCharsets.UTF_8);
 			CSVReader csvReader = CSVUtils.createCSVReader(reader, ',')) {
-			return Optional.of(buildServerAccessData(csvReader.readNext()));
-
+			return buildServerAccessData(csvReader.readNext());
 		} catch (Exception e) {
+			LOGGER.warn((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 			LOGGER.warn("Unexpected error while reading sormas to sormas server access data", e);
-			return Optional.empty();
+			return null;
 		}
 	}
 
 	public List<OrganizationServerAccessData> getOrganizationList() {
-		String configPath = sormasToSormasConfig.getPath();
 
-		if (StringUtils.isEmpty(configPath)) {
+		String ownOrganizationId = getServerAccessData().getId();
+		if (ownOrganizationId == null) {
 			return Collections.emptyList();
 		}
 
-		String ownOrganizationId = getServerAccessData().map(OrganizationServerAccessData::getId).orElse(null);
-		if (StringUtils.isEmpty(ownOrganizationId)) {
-			return Collections.emptyList();
-		}
-
-		Path inputFile = Paths.get(configPath, ORGANIZATION_LIST_FILE_NAME);
+		Path inputFile = Paths.get(sormasToSormasConfig.getPath(), ORGANIZATION_LIST_FILE_NAME);
 
 		try (Reader reader = Files.newBufferedReader(inputFile, StandardCharsets.UTF_8);
 			CSVReader csvReader = CSVUtils.createCSVReader(reader, ',')) {

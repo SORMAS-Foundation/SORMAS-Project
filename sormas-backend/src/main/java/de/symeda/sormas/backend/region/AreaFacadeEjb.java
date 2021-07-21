@@ -25,11 +25,11 @@ import de.symeda.sormas.api.region.AreaCriteria;
 import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.AreaFacade;
 import de.symeda.sormas.api.region.AreaReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "AreaFacade")
 public class AreaFacadeEjb implements AreaFacade {
@@ -82,11 +82,7 @@ public class AreaFacadeEjb implements AreaFacade {
 
 		cq.select(areaRoot);
 
-		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList().stream().map(this::toDto).collect(Collectors.toList());
-		} else {
-			return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(Collectors.toList());
-		}
+		return QueryHelper.getResultList(em, cq, first, max, this::toDto);
 	}
 
 	@Override

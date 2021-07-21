@@ -94,6 +94,7 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
@@ -155,6 +156,8 @@ public class StartupShutdownService {
 	private CountryFacadeEjbLocal countryFacade;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
 
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
@@ -507,15 +510,17 @@ public class StartupShutdownService {
 	}
 
 	private void createOrUpdateSormasToSormasUser() {
-		serverAccessDataService.getServerAccessData().ifPresent((serverAccessData -> {
-			String sormasToSormasUserPassword = serverAccessData.getRestUserPassword();
+		if (sormasToSormasFacadeEjb.isFeatureConfigured()) {
+			String sormasToSormasUserPassword = serverAccessDataService.getServerAccessData().getRestUserPassword();
+
 			createOrUpdateDefaultUser(
 				Collections.singleton(UserRole.SORMAS_TO_SORMAS_CLIENT),
 				SORMAS_TO_SORMAS_USER_NAME,
 				sormasToSormasUserPassword,
 				"Sormas to Sormas",
 				"Client");
-		}));
+		}
+
 	}
 
 	private void createOrUpdateSymptomJournalUser() {
@@ -858,7 +863,7 @@ public class StartupShutdownService {
 		try {
 			importFacade.generateEventParticipantImportTemplateFile();
 		} catch (IOException e) {
-			logger.error("Could not create eventparticipant import template .csv file.");
+			logger.error("Could not create event participant import template .csv file.");
 		}
 	}
 

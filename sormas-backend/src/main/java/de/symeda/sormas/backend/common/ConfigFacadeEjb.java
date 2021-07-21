@@ -115,6 +115,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
+	private static final String DAYS_AFTER_TRAVEL_ENTRY_GETS_ARCHIVED = "daysAfterTravelEntryGetsArchived";
 
 	private static final String DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED = "daysAfterSystemEventGetsDeleted";
 
@@ -414,6 +415,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public int getDaysAfterTravelEntryGetsArchived() {
+		return getInt(DAYS_AFTER_TRAVEL_ENTRY_GETS_ARCHIVED, 90);
+	}
+
+	@Override
 	public String getGeocodingServiceUrlTemplate() {
 		return getProperty(GEOCODING_SERVICE_URL_TEMPLATE, null);
 	}
@@ -507,15 +513,18 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getPatientDiaryConfig().getProbandsUrl(),
 			getPatientDiaryConfig().getAuthUrl());
 
+		UrlValidator urlValidator = new UrlValidator(
+			new String[] {
+				"http",
+				"https" },
+			UrlValidator.ALLOW_LOCAL_URLS);
+
 		urls.forEach(url -> {
 			if (StringUtils.isBlank(url)) {
 				return;
 			}
-			// Must be a valid URL
-			if (!new UrlValidator(
-				new String[] {
-					"http",
-					"https" }).isValid(url)) {
+
+			if (!urlValidator.isValid(url)) {
 				throw new IllegalArgumentException("'" + url + "' is not a valid URL");
 			}
 		});

@@ -1,19 +1,16 @@
 /*
- *
- *  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- *  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *  * This program is free software: you can redistribute it and/or modify
- *  * it under the terms of the GNU General Public License as published by
- *  * the Free Software Foundation, either version 3 of the License, or
- *  * (at your option) any later version.
- *  * This program is distributed in the hope that it will be useful,
- *  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  * GNU General Public License for more details.
- *  * You should have received a copy of the GNU General Public License
- *  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
- *
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 package de.symeda.sormas.backend.event;
 
@@ -27,6 +24,7 @@ import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -40,14 +38,15 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.sormas.api.externaldata.HasExternalData;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EpidemiologicalEvidenceDetail;
+import de.symeda.sormas.api.event.EventIdentificationSource;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -63,8 +62,10 @@ import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
+import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
@@ -122,6 +123,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	public static final String SRC_MEDIA_NAME = "srcMediaName";
 	public static final String SRC_MEDIA_DETAILS = "srcMediaDetails";
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_VARIANT = "diseaseVariant";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
@@ -133,6 +135,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
 	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
 	public static final String SUBORDINATE_EVENTS = "subordinateEvents";
+	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 
 	public static final String INFECTION_PATH_CERTAINTY = "infectionPathCertainty";
 	public static final String HUMAN_TRANSMISSION_MODE = "humanTransmissionMode";
@@ -179,6 +182,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	private String srcMediaName;
 	private String srcMediaDetails;
 	private Disease disease;
+	private DiseaseVariant diseaseVariant;
 	private String diseaseDetails;
 	private User responsibleUser;
 	private String typeOfPlaceText;
@@ -207,6 +211,8 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 	private List<EventGroup> eventGroups;
 
 	private String internalToken;
+
+	private EventIdentificationSource eventIdentificationSource;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -527,6 +533,16 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.disease = disease;
 	}
 
+	@Column
+	@Convert(converter = DiseaseVariantConverter.class)
+	public DiseaseVariant getDiseaseVariant() {
+		return diseaseVariant;
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
+	}
+
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
@@ -757,5 +773,14 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 
 	public void setEventGroups(List<EventGroup> eventGroups) {
 		this.eventGroups = eventGroups;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public EventIdentificationSource getEventIdentificationSource() {
+		return eventIdentificationSource;
+	}
+
+	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 }

@@ -53,6 +53,7 @@ import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geocoding.GeocodingFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.i18n.I18nFacade;
+import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.info.InfoFacade;
@@ -89,6 +90,9 @@ import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
+import de.symeda.sormas.api.travelentry.TravelEntryFacade;
+import de.symeda.sormas.api.travelentry.TravelEntryFacade;
+import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRightsFacade;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
@@ -123,12 +127,24 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(CaseFacade.class);
 	}
 
+	public static ImmunizationFacade getImmunizationFacade() {
+		return get().lookupEjbRemote(ImmunizationFacade.class);
+	}
+
+	public static TravelEntryFacade getTravelEntryFacade() {
+		return get().lookupEjbRemote(TravelEntryFacade.class);
+	}
+
 	public static CaseStatisticsFacade getCaseStatisticsFacade() {
 		return get().lookupEjbRemote(CaseStatisticsFacade.class);
 	}
 
 	public static CaseImportFacade getCaseImportFacade() {
 		return get().lookupEjbRemote(CaseImportFacade.class);
+	}
+
+	public static TravelEntryImportFacade getTravelEntryImportFacade() {
+		return get().lookupEjbRemote(TravelEntryImportFacade.class);
 	}
 
 	public static ContactFacade getContactFacade() {
@@ -430,7 +446,7 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(CustomizableEnumFacade.class);
 	}
 
-	public static InfoFacade getInfoFacae() {
+	public static InfoFacade getInfoFacade() {
 		return get().lookupEjbRemote(InfoFacade.class);
 	}
 

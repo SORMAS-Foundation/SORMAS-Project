@@ -76,6 +76,7 @@ public interface Strings {
 	String confirmationArchiveSubcontinents = "confirmationArchiveSubcontinents";
 	String confirmationArchiveTask = "confirmationArchiveTask";
 	String confirmationArchiveTasks = "confirmationArchiveTasks";
+	String confirmationArchiveTravelEntry = "confirmationArchiveTravelEntry";
 	String confirmationCancelExternalFollowUpPopup = "confirmationCancelExternalFollowUpPopup";
 	String confirmationCancelFollowUp = "confirmationCancelFollowUp";
 	String confirmationChangeCaseDisease = "confirmationChangeCaseDisease";
@@ -108,6 +109,7 @@ public interface Strings {
 	String confirmationDearchiveSubcontinents = "confirmationDearchiveSubcontinents";
 	String confirmationDearchiveTask = "confirmationDearchiveTask";
 	String confirmationDearchiveTasks = "confirmationDearchiveTasks";
+	String confirmationDearchiveTravelEntry = "confirmationDearchiveTravelEntry";
 	String confirmationDeleteCases = "confirmationDeleteCases";
 	String confirmationDeleteContacts = "confirmationDeleteContacts";
 	String confirmationDeleteEntity = "confirmationDeleteEntity";
@@ -225,6 +227,7 @@ public interface Strings {
 	String entityTask = "entityTask";
 	String entityTasks = "entityTasks";
 	String entityTravel = "entityTravel";
+	String entityTravelEntries = "entityTravelEntries";
 	String entityTreatment = "entityTreatment";
 	String entityTreatments = "entityTreatments";
 	String entityUser = "entityUser";
@@ -265,15 +268,14 @@ public interface Strings {
 	String errorReadingDocument = "errorReadingDocument";
 	String errorReadingTemplate = "errorReadingTemplate";
 	String errorSetFeverRequired = "errorSetFeverRequired";
+	String errorSormasToSormasAccept = "errorSormasToSormasAccept";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
-	String errorSormasToSormasCountry = "errorSormasToSormasCountry";
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
+	String errorSormasToSormasDeleteFromExternalSurveillanceTool = "errorSormasToSormasDeleteFromExternalSurveillanceTool";
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
-	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
-	String errorSormasToSormasNotEditable = "errorSormasToSormasNotEditable";
+	String errorSormasToSormasInvalidRequestMethod = "errorSormasToSormasInvalidRequestMethod";
 	String errorSormasToSormasOwnershipAlreadyHandedOver = "errorSormasToSormasOwnershipAlreadyHandedOver";
-	String errorSormasToSormasPersonEnrolled = "errorSormasToSormasPersonEnrolled";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
 	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
@@ -310,6 +312,7 @@ public interface Strings {
 	String headingArchiveCase = "headingArchiveCase";
 	String headingArchiveEvent = "headingArchiveEvent";
 	String headingArchiveEventGroup = "headingArchiveEventGroup";
+	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
 	String headingBurialDetails = "headingBurialDetails";
 	String headingCampaignBasics = "headingCampaignBasics";
@@ -384,6 +387,7 @@ public interface Strings {
 	String headingCreateNewSample = "headingCreateNewSample";
 	String headingCreateNewTask = "headingCreateNewTask";
 	String headingCreateNewTaskQuestion = "headingCreateNewTaskQuestion";
+	String headingCreateNewTravelEntry = "headingCreateNewTravelEntry";
 	String headingCreateNewTreatment = "headingCreateNewTreatment";
 	String headingCreateNewUser = "headingCreateNewUser";
 	String headingCreateNewVisit = "headingCreateNewVisit";
@@ -395,6 +399,7 @@ public interface Strings {
 	String headingDearchiveCase = "headingDearchiveCase";
 	String headingDearchiveEvent = "headingDearchiveEvent";
 	String headingDearchiveEventGroup = "headingDearchiveEventGroup";
+	String headingDearchiveTravelEntry = "headingDearchiveTravelEntry";
 	String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
 	String headingDisableLineListing = "headingDisableLineListing";
@@ -483,6 +488,7 @@ public interface Strings {
 	String headingImportPopulationData = "headingImportPopulationData";
 	String headingImportRegions = "headingImportRegions";
 	String headingImportSubcontinents = "headingImportSubcontinents";
+	String headingImportTravelEntries = "headingImportTravelEntries";
 	String headingInformationSource = "headingInformationSource";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
@@ -551,6 +557,7 @@ public interface Strings {
 	String headingRemoveCaseFromContact = "headingRemoveCaseFromContact";
 	String headingRequestedAdditionalTests = "headingRequestedAdditionalTests";
 	String headingRequestedPathogenTests = "headingRequestedPathogenTests";
+	String headingResponsibleJurisdiction = "headingResponsibleJurisdiction";
 	String headingResults = "headingResults";
 	String headingRevokeSormasToSormasShareRequest = "headingRevokeSormasToSormasShareRequest";
 	String headingSamplesDeleted = "headingSamplesDeleted";
@@ -579,6 +586,7 @@ public interface Strings {
 	String headingTemplateNotAvailable = "headingTemplateNotAvailable";
 	String headingTests = "headingTests";
 	String headingTransferCase = "headingTransferCase";
+	String headingTravelEntryData = "headingTravelEntryData";
 	String headingTreatments = "headingTreatments";
 	String headingTreatmentsDeleted = "headingTreatmentsDeleted";
 	String headingUnavailableTaskEdition = "headingUnavailableTaskEdition";
@@ -603,6 +611,7 @@ public interface Strings {
 	String infoAddTestsToSample = "infoAddTestsToSample";
 	String infoArchivedCases = "infoArchivedCases";
 	String infoArchivedEvents = "infoArchivedEvents";
+	String infoArchivedTravelEntries = "infoArchivedTravelEntries";
 	String infoAssigneeMissingEmail = "infoAssigneeMissingEmail";
 	String infoAssigneeMissingEmailOrPhoneNumber = "infoAssigneeMissingEmailOrPhoneNumber";
 	String infoBAGExport = "infoBAGExport";
@@ -719,11 +728,9 @@ public interface Strings {
 	String infoSelectOrCreateContactImport = "infoSelectOrCreateContactImport";
 	String infoSelectOrCreateEntry = "infoSelectOrCreateEntry";
 	String infoSelectOrCreatePersonForCase = "infoSelectOrCreatePersonForCase";
-	String infoSelectOrCreatePersonForCaseImport = "infoSelectOrCreatePersonForCaseImport";
 	String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
-	String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
-	String infoSelectOrCreatePersonForEventParticipantImport = "infoSelectOrCreatePersonForEventParticipantImport";
+	String infoSelectOrCreatePersonForImport = "infoSelectOrCreatePersonForImport";
 	String infoSelectOrCreatePersonForLabMessage = "infoSelectOrCreatePersonForLabMessage";
 	String infoSkipOrOverrideDuplicateCampaignFormDataImport = "infoSkipOrOverrideDuplicateCampaignFormDataImport";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";
@@ -1006,6 +1013,9 @@ public interface Strings {
 	String messageTasksDeleted = "messageTasksDeleted";
 	String messageTasksEdited = "messageTasksEdited";
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
+	String messageTravelEntryArchived = "messageTravelEntryArchived";
+	String messageTravelEntryDearchived = "messageTravelEntryDearchived";
+	String messageTravelEntrySaved = "messageTravelEntrySaved";
 	String messageTreatmentCreated = "messageTreatmentCreated";
 	String messageTreatmentSaved = "messageTreatmentSaved";
 	String messageTreatmentsDeleted = "messageTreatmentsDeleted";
@@ -1152,6 +1162,7 @@ public interface Strings {
 	String promptTaskEpiWeekFrom = "promptTaskEpiWeekFrom";
 	String promptTaskEpiWeekTo = "promptTaskEpiWeekTo";
 	String promptTaskSearchField = "promptTaskSearchField";
+	String promptTravelEntrySearchField = "promptTravelEntrySearchField";
 	String promptTreatmentTextFilter = "promptTreatmentTextFilter";
 	String promptTypeToAdd = "promptTypeToAdd";
 	String promptUserSearch = "promptUserSearch";
