@@ -68,7 +68,7 @@ public class VaccinationEntity extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_BIG)
 	private String otherVaccineManufacturer;
 	@Column(length = COLUMN_LENGTH_BIG)
-	private String VaccineManufacturerDetails;
+	private String vaccineManufacturerDetails;
 	@Column(length = COLUMN_LENGTH_BIG)
 	private String vaccineType;
 	@Column(length = COLUMN_LENGTH_BIG)
@@ -169,11 +169,11 @@ public class VaccinationEntity extends PseudonymizableAdo {
 	}
 
 	public String getVaccineManufacturerDetails() {
-		return VaccineManufacturerDetails;
+		return vaccineManufacturerDetails;
 	}
 
 	public void setVaccineManufacturerDetails(String vaccineManufacturerDetails) {
-		VaccineManufacturerDetails = vaccineManufacturerDetails;
+		vaccineManufacturerDetails = vaccineManufacturerDetails;
 	}
 
 	public String getVaccineType() {

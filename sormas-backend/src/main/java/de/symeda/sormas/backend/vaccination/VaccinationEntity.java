@@ -75,7 +75,7 @@ public class VaccinationEntity extends AbstractDomainObject {
 	private String vaccineNameDetails;
 	private VaccineManufacturer vaccineManufacturer;
 	private String otherVaccineManufacturer;
-	private String VaccineManufacturerDetails;
+	private String vaccineManufacturerDetails;
 	private String vaccineType;
 	private String vaccineDose;
 	private String vaccineInn;
@@ -182,11 +182,11 @@ public class VaccinationEntity extends AbstractDomainObject {
 
 	@Column(columnDefinition = "text")
 	public String getVaccineManufacturerDetails() {
-		return VaccineManufacturerDetails;
+		return vaccineManufacturerDetails;
 	}
 
 	public void setVaccineManufacturerDetails(String vaccineManufacturerDetails) {
-		VaccineManufacturerDetails = vaccineManufacturerDetails;
+		vaccineManufacturerDetails = vaccineManufacturerDetails;
 	}
 
 	@Column(columnDefinition = "text")
