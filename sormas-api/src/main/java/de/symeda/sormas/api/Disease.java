@@ -17,11 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
-
 import java.util.Arrays;
 import java.util.List;
+
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 public enum Disease
 	implements
@@ -185,5 +185,5 @@ public enum Disease
 		return this.toString().compareTo(o.toString());
 	}
 
-	public static List<Disease> IN_DISEASE_LIST = Arrays.asList(Disease.values());
+	public static List<Disease> DISEASE_LIST = Arrays.asList(Disease.values());
 }

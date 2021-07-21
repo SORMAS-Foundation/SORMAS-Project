@@ -15,10 +15,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.vaadin.v7.data.util.converter.Converter;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -65,7 +65,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			loc(TRAVEL_ENTRY_HEADING_LOC) +
-					fluidRowLocs(4, TravelEntryDto.UUID, 3, de.symeda.sormas.api.travelentry.TravelEntryDto.REPORT_DATE, 5, de.symeda.sormas.api.travelentry.TravelEntryDto.REPORTING_USER) +
+					fluidRowLocs(4, TravelEntryDto.UUID, 3, TravelEntryDto.REPORT_DATE, 5, TravelEntryDto.REPORTING_USER) +
 					fluidRowLocs(4, TravelEntryDto.EXTERNAL_ID)
 			+ fluidRow(
 			fluidColumnLoc(6, 0, TravelEntryDto.DISEASE),
@@ -73,11 +73,11 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_VARIANT)) +
 					fluidRowLocs(TravelEntryDto.RECOVERED, TravelEntryDto.VACCINATED, TravelEntryDto.TESTED_NEGATIVE) +
 			fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
-			+ fluidRowLocs(de.symeda.sormas.api.travelentry.TravelEntryDto.RESPONSIBLE_REGION, de.symeda.sormas.api.travelentry.TravelEntryDto.RESPONSIBLE_DISTRICT, de.symeda.sormas.api.travelentry.TravelEntryDto.RESPONSIBLE_COMMUNITY)
+			+ fluidRowLocs(TravelEntryDto.RESPONSIBLE_REGION, TravelEntryDto.RESPONSIBLE_DISTRICT, TravelEntryDto.RESPONSIBLE_COMMUNITY)
 			+ fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
 			+ fluidRowLocs(POINT_OF_ENTRY_HEADING_LOC)
-			+ fluidRowLocs(de.symeda.sormas.api.travelentry.TravelEntryDto.REGION, de.symeda.sormas.api.travelentry.TravelEntryDto.DISTRICT)
-			+ fluidRowLocs(de.symeda.sormas.api.travelentry.TravelEntryDto.POINT_OF_ENTRY, de.symeda.sormas.api.travelentry.TravelEntryDto.POINT_OF_ENTRY_DETAILS)
+			+ fluidRowLocs(TravelEntryDto.REGION, TravelEntryDto.DISTRICT)
+			+ fluidRowLocs(TravelEntryDto.POINT_OF_ENTRY, TravelEntryDto.POINT_OF_ENTRY_DETAILS)
 
 			 + loc(DEA_CONTENT_LOC) +
 
@@ -126,40 +126,36 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 	@Override
 	protected void addFields() {
-//		if (person == null || disease == null) {
-//			return;
-//		}
-
 		Label travelEntryDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingTravelEntryData));
 		travelEntryDataHeadingLabel.addStyleName(H3);
 		getContent().addComponent(travelEntryDataHeadingLabel, TRAVEL_ENTRY_HEADING_LOC);
 
-		addField(de.symeda.sormas.api.travelentry.TravelEntryDto.REPORT_DATE, DateField.class);
+		addField(TravelEntryDto.REPORT_DATE, DateField.class);
 
-		addFields(de.symeda.sormas.api.travelentry.TravelEntryDto.UUID, de.symeda.sormas.api.travelentry.TravelEntryDto.REPORTING_USER);
+		addFields(TravelEntryDto.UUID, TravelEntryDto.REPORTING_USER);
 
-		TextField externalIdField = addField(de.symeda.sormas.api.travelentry.TravelEntryDto.EXTERNAL_ID, TextField.class);
+		TextField externalIdField = addField(TravelEntryDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		ComboBox diseaseField = addDiseaseField(de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE, false);
-		ComboBox diseaseVariantField = addField(de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE_VARIANT, ComboBox.class);
+		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false);
+		ComboBox diseaseVariantField = addField(TravelEntryDto.DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
-		addField(de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE_DETAILS, TextField.class);
+		addField(TravelEntryDto.DISEASE_DETAILS, TextField.class);
 
-		addField(de.symeda.sormas.api.travelentry.TravelEntryDto.RECOVERED).addStyleNames(CssStyles.FORCE_CAPTION_CHECKBOX);
-		addField(de.symeda.sormas.api.travelentry.TravelEntryDto.VACCINATED).addStyleNames(CssStyles.FORCE_CAPTION_CHECKBOX);
-		addField(de.symeda.sormas.api.travelentry.TravelEntryDto.TESTED_NEGATIVE).addStyleNames(CssStyles.FORCE_CAPTION_CHECKBOX);
+		addField(TravelEntryDto.RECOVERED).addStyleNames(CssStyles.FORCE_CAPTION_CHECKBOX);
+		addField(TravelEntryDto.VACCINATED).addStyleNames(CssStyles.FORCE_CAPTION_CHECKBOX);
+		addField(TravelEntryDto.TESTED_NEGATIVE).addStyleNames(CssStyles.FORCE_CAPTION_CHECKBOX);
 
 		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingResponsibleJurisdiction));
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		ComboBox responsibleRegion = addField(de.symeda.sormas.api.travelentry.TravelEntryDto.RESPONSIBLE_REGION);
+		ComboBox responsibleRegion = addField(TravelEntryDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
-		ComboBox responsibleDistrictCombo = addField(de.symeda.sormas.api.travelentry.TravelEntryDto.RESPONSIBLE_DISTRICT);
+		ComboBox responsibleDistrictCombo = addField(TravelEntryDto.RESPONSIBLE_DISTRICT);
 		responsibleDistrictCombo.setRequired(true);
-		ComboBox responsibleCommunityCombo = addField(de.symeda.sormas.api.travelentry.TravelEntryDto.RESPONSIBLE_COMMUNITY);
+		ComboBox responsibleCommunityCombo = addField(TravelEntryDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunityCombo.setNullSelectionAllowed(true);
 		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
 
@@ -172,12 +168,24 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		placeOfStayHeadingLabel.addStyleName(H3);
 		getContent().addComponent(placeOfStayHeadingLabel, POINT_OF_ENTRY_HEADING_LOC);
 
-		ComboBox regionCombo = addInfrastructureField(de.symeda.sormas.api.travelentry.TravelEntryDto.REGION);
-		districtCombo = addInfrastructureField(de.symeda.sormas.api.travelentry.TravelEntryDto.DISTRICT);
+		ComboBox regionCombo = addInfrastructureField(TravelEntryDto.REGION);
+		districtCombo = addInfrastructureField(TravelEntryDto.DISTRICT);
 
-		cbPointOfEntry = addInfrastructureField(de.symeda.sormas.api.travelentry.TravelEntryDto.POINT_OF_ENTRY);
+		differentPointOfEntryJurisdiction.addValueChangeListener(e -> {
+			DistrictReferenceDto districtDto;
+			if (differentPointOfEntryJurisdiction.getValue().booleanValue()) {
+				districtCombo.setValue(null);
+				getPointsOfEntryForDistrict(null);
+			} else {
+				cbPointOfEntry.setValue(null);
+				districtDto = (DistrictReferenceDto) responsibleDistrictCombo.getValue();
+				getPointsOfEntryForDistrict(districtDto);
+			}
+		});
+
+		cbPointOfEntry = addInfrastructureField(TravelEntryDto.POINT_OF_ENTRY);
 		cbPointOfEntry.setImmediate(true);
-		TextField tfPointOfEntryDetails = addField(de.symeda.sormas.api.travelentry.TravelEntryDto.POINT_OF_ENTRY_DETAILS, TextField.class);
+		TextField tfPointOfEntryDetails = addField(TravelEntryDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 		tfPointOfEntryDetails.setVisible(false);
 
 		regionCombo.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
@@ -188,16 +196,19 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		});
 		districtCombo.addValueChangeListener(e -> {
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			getPointsOfEntryForDistrict(districtDto);
+			if (differentPointOfEntryJurisdiction.getValue()) {
+				getPointsOfEntryForDistrict(districtDto);
+			} else {
+				getPointsOfEntryForDistrict((DistrictReferenceDto) responsibleDistrictCombo.getValue());
+			}
 		});
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
 		JurisdictionLevel userJurisditionLevel =
 			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : JurisdictionLevel.NONE;
-		if (userJurisditionLevel == JurisdictionLevel.COMMUNITY) {
-			regionCombo.setReadOnly(true);
-			districtCombo.setReadOnly(true);
-		} else if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
+		if (userJurisditionLevel == JurisdictionLevel.COMMUNITY
+			|| userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY
+			|| userJurisditionLevel == JurisdictionLevel.POINT_OF_ENTRY) {
 			regionCombo.setReadOnly(true);
 			districtCombo.setReadOnly(true);
 		}
@@ -319,32 +330,25 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(
-			true,
-			de.symeda.sormas.api.travelentry.TravelEntryDto.REPORT_DATE,
-			de.symeda.sormas.api.travelentry.TravelEntryDto.POINT_OF_ENTRY,
-			de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE);
+		setRequired(true, TravelEntryDto.REPORT_DATE, TravelEntryDto.POINT_OF_ENTRY, TravelEntryDto.DISEASE);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Collections.singletonList(de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE_DETAILS),
-			de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE,
+			Collections.singletonList(TravelEntryDto.DISEASE_DETAILS),
+			TravelEntryDto.DISEASE,
 			Collections.singletonList(Disease.OTHER),
 			true);
 		FieldHelper.setRequiredWhen(
 			getFieldGroup(),
-			de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE,
-			Collections.singletonList(de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE_DETAILS),
+			TravelEntryDto.DISEASE,
+			Collections.singletonList(TravelEntryDto.DISEASE_DETAILS),
 			Collections.singletonList(Disease.OTHER));
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Arrays.asList(
-				de.symeda.sormas.api.travelentry.TravelEntryDto.RECOVERED,
-				de.symeda.sormas.api.travelentry.TravelEntryDto.VACCINATED,
-				de.symeda.sormas.api.travelentry.TravelEntryDto.TESTED_NEGATIVE),
-			de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE,
-			Disease.IN_DISEASE_LIST,
+			Arrays.asList(TravelEntryDto.RECOVERED, TravelEntryDto.VACCINATED, TravelEntryDto.TESTED_NEGATIVE),
+			TravelEntryDto.DISEASE,
+			Disease.DISEASE_LIST,
 			true);
 
 		cbPointOfEntry.addValueChangeListener(e -> updatePointOfEntryFields(cbPointOfEntry, tfPointOfEntryDetails));
@@ -362,7 +366,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			false,
 			null);
 
-		setReadOnly(true, de.symeda.sormas.api.travelentry.TravelEntryDto.UUID, de.symeda.sormas.api.travelentry.TravelEntryDto.REPORTING_USER);
+		setReadOnly(true, TravelEntryDto.UUID, TravelEntryDto.REPORTING_USER);
 
 		responsibleDistrictCombo.addValueChangeListener(e -> {
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
@@ -374,10 +378,8 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			List<DiseaseVariant> diseaseVariants =
 				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
-			diseaseVariantField.setVisible(
-				disease != null
-					&& isVisibleAllowed(de.symeda.sormas.api.travelentry.TravelEntryDto.DISEASE_VARIANT)
-					&& CollectionUtils.isNotEmpty(diseaseVariants));
+			diseaseVariantField
+				.setVisible(disease != null && isVisibleAllowed(TravelEntryDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 		});
 
 	}
@@ -392,8 +394,8 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 		if (cbPointOfEntry.getValue() != null) {
 			boolean isOtherPointOfEntry = ((PointOfEntryReferenceDto) cbPointOfEntry.getValue()).isOtherPointOfEntry();
-			setVisible(isOtherPointOfEntry, de.symeda.sormas.api.travelentry.TravelEntryDto.POINT_OF_ENTRY_DETAILS);
-			setRequired(isOtherPointOfEntry, de.symeda.sormas.api.travelentry.TravelEntryDto.POINT_OF_ENTRY_DETAILS);
+			setVisible(isOtherPointOfEntry, TravelEntryDto.POINT_OF_ENTRY_DETAILS);
+			setRequired(isOtherPointOfEntry, TravelEntryDto.POINT_OF_ENTRY_DETAILS);
 			if (!isOtherPointOfEntry) {
 				tfPointOfEntryDetails.clear();
 			}

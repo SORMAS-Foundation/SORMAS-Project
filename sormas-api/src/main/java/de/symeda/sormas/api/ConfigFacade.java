@@ -91,6 +91,8 @@ public interface ConfigFacade {
 
 	int getDaysAfterSystemEventGetsDeleted();
 
+	int getDaysAfterTravelEntryGetsArchived();
+
 	GeoLatLon getCountryCenter();
 
 	boolean isMapUseCountryCenter();

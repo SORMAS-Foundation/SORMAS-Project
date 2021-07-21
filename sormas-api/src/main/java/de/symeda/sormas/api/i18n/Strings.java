@@ -611,6 +611,7 @@ public interface Strings {
 	String infoAddTestsToSample = "infoAddTestsToSample";
 	String infoArchivedCases = "infoArchivedCases";
 	String infoArchivedEvents = "infoArchivedEvents";
+	String infoArchivedTravelEntries = "infoArchivedTravelEntries";
 	String infoAssigneeMissingEmail = "infoAssigneeMissingEmail";
 	String infoAssigneeMissingEmailOrPhoneNumber = "infoAssigneeMissingEmailOrPhoneNumber";
 	String infoBAGExport = "infoBAGExport";
