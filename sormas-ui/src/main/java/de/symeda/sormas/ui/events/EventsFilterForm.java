@@ -52,6 +52,7 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -80,6 +81,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
@@ -140,6 +142,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		return new String[] {
 			EventCriteria.EVENT_STATUS,
 			EventCriteria.RISK_LEVEL,
+			EventCriteria.SPECIFIC_RISK,
 			EventIndexDto.DISEASE,
 			EventIndexDto.DISEASE_VARIANT,
 			EventCriteria.REPORTING_USER_ROLE,
@@ -154,6 +157,13 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 		addField(FieldConfiguration.pixelSized(EventCriteria.EVENT_STATUS, 140));
 		addField(FieldConfiguration.pixelSized(EventCriteria.RISK_LEVEL, 140));
+
+		List<SpecificRisk> specificRisks = FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_RISK);
+		if (!specificRisks.isEmpty()) {
+			ComboBox specificRiskField = addField(FieldConfiguration.pixelSized(EventCriteria.SPECIFIC_RISK, 140), ComboBox.class);
+			FieldHelper.updateItems(specificRiskField, specificRisks);
+		}
+
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE, 140));
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE_VARIANT, 140), ComboBox.class);
 

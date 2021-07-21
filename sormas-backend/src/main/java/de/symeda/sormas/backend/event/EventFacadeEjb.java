@@ -294,6 +294,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.INTERNAL_TOKEN),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
+			event.get(Event.SPECIFIC_RISK),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			event.get(Event.EVENT_MANAGEMENT_STATUS),
 			event.get(Event.DISEASE),
@@ -356,6 +357,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.INTERNAL_TOKEN:
 				case EventIndexDto.EVENT_STATUS:
 				case EventIndexDto.RISK_LEVEL:
+				case EventIndexDto.SPECIFIC_RISK:
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:
 				case EventIndexDto.EVENT_MANAGEMENT_STATUS:
 				case EventIndexDto.DISEASE:
