@@ -22,7 +22,10 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.person.PersonAssociation;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -105,6 +108,13 @@ public class PersonFacadeEjbUserFilterTest extends AbstractBeanTest {
 			null);
 
 		ContactDto contactForPerson1AndCase2 = creator.createContact(nationalUser.toReference(), person1.toReference(), case2);
+		TravelEntryDto travelEntryForPerson1 = creator.createTravelEntry(person1.toReference(), nationalUser.toReference(),  Disease.CORONAVIRUS, rdcf1.region, rdcf1.district, rdcf1.pointOfEntry);
+
+		PersonCriteria criteria = new PersonCriteria();
+		criteria.setPersonAssociation(PersonAssociation.TRAVEL_ENTRY);
+		List<PersonIndexDto> travelEntryPersonsFornationalUser = getPersonFacade().getIndexList(criteria, null, null, null);
+		assertEquals(1, travelEntryPersonsFornationalUser.size());
+		assertEquals(person1.getUuid(), travelEntryPersonsFornationalUser.get(0).getUuid());
 
 		loginWith(districtUser1);
 		List<PersonIndexDto> indexListForDistrictUser1 = getPersonFacade().getIndexList(null, null, null, null);
