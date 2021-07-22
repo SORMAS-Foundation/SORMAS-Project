@@ -123,7 +123,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 		FieldHelper.setRequiredWhen(
 			pathogenTestResultField,
-			Arrays.asList(testVerifiedField, testTypeField, testDiseaseField, testDateField),
+			Arrays.asList(testVerifiedField, testTypeField, testDiseaseField),
 			Arrays.asList(
 				PathogenTestResultType.POSITIVE,
 				PathogenTestResultType.NEGATIVE,

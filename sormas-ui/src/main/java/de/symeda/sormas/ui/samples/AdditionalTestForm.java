@@ -70,7 +70,6 @@ public class AdditionalTestForm extends AbstractEditForm<AdditionalTestDto> {
 		getContent().addComponent(bloodGasHeadingLabel, BLOOD_GAS_HEADING_LOC);
 
 		DateTimeField testDateTimeField = addField(AdditionalTestDto.TEST_DATE_TIME, DateTimeField.class);
-		testDateTimeField.setRequired(true);
 		testDateTimeField.addValidator(
 			new DateComparisonValidator(
 				testDateTimeField,

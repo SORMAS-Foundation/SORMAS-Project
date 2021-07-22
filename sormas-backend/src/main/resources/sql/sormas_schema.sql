@@ -7688,4 +7688,11 @@ ALTER TABLE sormastosormassharerequest_history ALTER COLUMN events TYPE json USI
 
 INSERT INTO schema_version (version_number, comment) VALUES (387, '[Sormas2Sormas] View share chain for each case shared/received trough S2S #6033');
 
+--2021-07-22 make pathogentest result datetime non-compulsory #3308
+ALTER TABLE pathogentest ALTER COLUMN testdatetime DROP NOT NULL;
+ALTER TABLE pathogentest_history ALTER COLUMN testdatetime DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (388, 'make pathogentest result datetime non-compulsory #3308');
+
+
 -- *** Insert new sql commands BEFORE this line ***
