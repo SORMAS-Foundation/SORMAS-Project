@@ -619,7 +619,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Override
 	public void validate(SampleDto sample) throws ValidationRuntimeException {
 
-		if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null & sample.getAssociatedEventParticipant() == null) {
+		if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
 		}
 		if (sample.getSampleDateTime() == null) {
