@@ -685,9 +685,13 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 		CaseDataDto caseData = CaseDataDto.build(eventParticipant.getPerson().toReference(), eventDisease);
 
-		if (person.getPresentCondition() != null && person.getPresentCondition().isDeceased() && eventDisease == person.getCauseOfDeathDisease()) {
+		if (person.getPresentCondition() != null
+			&& person.getPresentCondition().isDeceased()
+			&& eventDisease == person.getCauseOfDeathDisease()
+			&& person.getDeathDate() != null
+			&& Math.abs(person.getDeathDate().getTime() - eventParticipant.getCreationDate().getTime()) <= MILLISECONDS_30_DAYS) {
 			caseData.setOutcome(CaseOutcome.DECEASED);
-			caseData.setOutcomeDate(new Date());
+			caseData.setOutcomeDate(person.getDeathDate());
 		}
 
 		return caseData;
