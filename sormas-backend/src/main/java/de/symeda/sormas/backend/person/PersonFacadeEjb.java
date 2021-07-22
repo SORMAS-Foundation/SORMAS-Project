@@ -995,7 +995,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		List<EventParticipant> personEventParticipants =
 			eventParticipantService.findBy(new EventParticipantCriteria().withPerson(new PersonReferenceDto(newPerson.getUuid())), null);
-		// Call onEventParticipantChange once for every contact
+		// Call onEventParticipantChange once for every event participant
 		// Attention: this may lead to infinite recursion when not properly implemented
 		for (EventParticipant personEventParticipant : personEventParticipants) {
 			eventParticipantFacade.onEventParticipantChanged(EventFacadeEjbLocal.toDto(personEventParticipant.getEvent()), syncShares);
