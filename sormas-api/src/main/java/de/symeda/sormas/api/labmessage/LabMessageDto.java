@@ -277,7 +277,7 @@ public class LabMessageDto extends EntityDto {
 	public void addTestReport(TestReportDto testReport) {
 		testReport.setLabMessage(this.toReference());
 		if (this.testReports == null) {
-			ArrayList testReports = new ArrayList();
+			List<TestReportDto> testReports = new ArrayList();
 			testReports.add(testReport);
 			this.testReports = testReports;
 		} else {

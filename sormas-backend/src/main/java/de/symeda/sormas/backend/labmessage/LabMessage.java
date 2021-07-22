@@ -5,6 +5,7 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -326,7 +327,7 @@ public class LabMessage extends AbstractDomainObject {
 		this.status = status;
 	}
 
-	@OneToMany(mappedBy = TestReport.LAB_MESSAGE, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = TestReport.LAB_MESSAGE, fetch = FetchType.LAZY)
 	public List<TestReport> getTestReports() {
 		return testReports;
 	}

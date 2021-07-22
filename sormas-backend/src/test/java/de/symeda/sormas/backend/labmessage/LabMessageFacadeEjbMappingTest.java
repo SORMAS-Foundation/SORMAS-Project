@@ -103,10 +103,6 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 
 	@Test
 	public void testToDto() {
-
-		PathogenTest pathogenTest = new PathogenTest();
-		pathogenTest.setUuid(DataHelper.createUuid());
-
 		LabMessage source = new LabMessage();
 
 		TestReport testReport = new TestReport();

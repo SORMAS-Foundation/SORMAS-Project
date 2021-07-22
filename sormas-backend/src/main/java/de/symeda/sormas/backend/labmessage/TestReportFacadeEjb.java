@@ -82,10 +82,10 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		return target;
 	}
 
-	public TestReport fromDto(@NotNull TestReportDto source, boolean checkChangeDate) {
+	public TestReport fromDto(@NotNull TestReportDto source, @NotNull LabMessage labMessage, boolean checkChangeDate) {
 		TestReport target = DtoHelper.fillOrBuildEntity(source, testReportService.getByUuid(source.getUuid()), TestReport::new, checkChangeDate);
 
-		target.setLabMessage(labMessageService.getByReferenceDto(source.getLabMessage()));
+		target.setLabMessage(labMessage);
 		target.setTestLabName(source.getTestLabName());
 		target.setTestLabExternalId(source.getTestLabExternalId());
 		target.setTestLabPostalCode(source.getTestLabPostalCode());
@@ -98,6 +98,12 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setPathogenTest(pathogenTestService.getByReferenceDto(source.getPathogenTest()));
 
 		return target;
+	}
+
+	public TestReport fromDto(@NotNull TestReportDto source, boolean checkChangeDate) {
+		LabMessage labMessage = labMessageService.getByReferenceDto(source.getLabMessage());
+
+		return fromDto(source, labMessage, checkChangeDate);
 	}
 
 	@LocalBean

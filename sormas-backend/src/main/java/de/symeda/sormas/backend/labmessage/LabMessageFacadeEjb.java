@@ -26,7 +26,9 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
+import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.backend.sample.PathogenTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,7 +117,12 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		target.setLabName(source.getLabName());
 		target.setLabPostalCode(source.getLabPostalCode());
 		if (source.getTestReports() != null) {
-			target.setTestReports(source.getTestReports().stream().map(t -> testReportFacade.fromDto(t, false)).collect(toList()));
+			List<TestReport> testReports = new ArrayList<>();
+			for (TestReportDto t : source.getTestReports()) {
+				TestReport testReport = testReportFacade.fromDto(t, target, false);
+				testReports.add(testReport);
+			}
+			target.setTestReports(testReports);
 		}
 
 		return target;
@@ -196,8 +203,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@Override
 	public List<LabMessageDto> getForSample(String sampleUuid) {
 
-		ArrayList pathogenTestUuids = new ArrayList();
-		for (PathogenTestDto pathogenTest : pathogenTestService.getBySampleUuid(sampleUuid, false)) {
+		List<String> pathogenTestUuids = new ArrayList<>();
+		for (PathogenTest pathogenTest : pathogenTestService.getBySampleUuid(sampleUuid, false)) {
 			pathogenTestUuids.add(pathogenTest.getUuid());
 		}
 
@@ -205,7 +212,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		List<LabMessage> labMessages = testReports.stream().map(TestReport::getLabMessage).distinct().collect(Collectors.toList());
 
-		return labMessages.stream().map(labMessage -> toDto(labMessage)).collect(Collectors.toList());
+		return labMessages.stream().map(this::toDto).collect(Collectors.toList());
 
 	}
 
