@@ -2,6 +2,8 @@ package de.symeda.sormas.api.travelentry;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
@@ -19,6 +21,9 @@ public class TravelEntryCriteria extends BaseCriteria implements Serializable, C
 	private Boolean onlyEntriesTestedNegative = Boolean.FALSE;
 	private Boolean onlyEntriesConvertedToCase = Boolean.FALSE;
 	private PersonReferenceDto person;
+	private CaseReferenceDto caze;
+	private Boolean deleted = Boolean.FALSE;
+	private EntityRelevanceStatus relevanceStatus;
 
 	public String getNameUuidExternalIDLike() {
 		return nameUuidExternalIDLike;
@@ -73,4 +78,31 @@ public class TravelEntryCriteria extends BaseCriteria implements Serializable, C
 		return this;
 	}
 
+	public CaseReferenceDto getCase() {
+		return caze;
+	}
+
+	public void setCase(CaseReferenceDto caze) {
+		this.caze = caze;
+	}
+
+	public TravelEntryCriteria caze(CaseReferenceDto caze) {
+		this.caze = caze;
+		return this;
+	}
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public EntityRelevanceStatus getRelevanceStatus() {
+		return relevanceStatus;
+	}
+
+	public void relevanceStatus(EntityRelevanceStatus relevanceStatus) {
+		this.relevanceStatus = relevanceStatus;
+	}
 }

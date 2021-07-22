@@ -172,6 +172,7 @@ import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.
 import de.symeda.sormas.backend.sormastosormas.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.labmessage.SormasToSormasLabMessageFacadeEjb.SormasToSormasLabMessageFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestService;
@@ -194,7 +195,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 import info.novatec.beantest.api.BaseBeanTest;
 
-public class AbstractBeanTest extends BaseBeanTest {
+public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator(this);
 
@@ -521,6 +522,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public SormasToSormasFacadeEjbLocal getSormasToSormasFacade() {
 		return getBean(SormasToSormasFacadeEjbLocal.class);
+	}
+
+	public SormasToSormasShareInfoFacadeEjbLocal getSormasToSormasShareInfoFacade() {
+		return getBean(SormasToSormasShareInfoFacadeEjbLocal.class);
 	}
 
 	public SormasToSormasCaseFacade getSormasToSormasCaseFacade() {

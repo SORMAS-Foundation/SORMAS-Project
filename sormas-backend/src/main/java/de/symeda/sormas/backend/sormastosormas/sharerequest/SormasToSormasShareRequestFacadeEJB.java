@@ -125,6 +125,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 				case SormasToSormasOriginInfo.ORGANIZATION_ID:
 				case SormasToSormasOriginInfo.SENDER_NAME:
 				case SormasToSormasOriginInfo.COMMENT:
+				case SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER:
 					expression = originInfo.get(sortProperty.propertyName);
 					break;
 				default:
@@ -182,9 +183,9 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		target.setDataType(source.getDataType());
 		target.setStatus(source.getStatus());
 		target.setOriginInfo(originInfoFacade.fromDto(source.getOriginInfo(), checkChangeDate));
-		target.setCases(source.getCases());
-		target.setContacts(source.getContacts());
-		target.setEvents(source.getEvents());
+		target.setCasesList(source.getCases());
+		target.setContactsList(source.getContacts());
+		target.setEventsList(source.getEvents());
 
 		return target;
 	}
@@ -199,9 +200,9 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		target.setDataType(source.getDataType());
 		target.setStatus(source.getStatus());
 		target.setOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getOriginInfo()));
-		target.setCases(source.getCases());
-		target.setContacts(source.getContacts());
-		target.setEvents(source.getEvents());
+		target.setCases(source.getCasesList());
+		target.setContacts(source.getContactsList());
+		target.setEvents(source.getEventsList());
 
 		return target;
 	}

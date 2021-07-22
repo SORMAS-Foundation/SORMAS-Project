@@ -40,15 +40,18 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -152,6 +155,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.task.TaskContext;
@@ -263,8 +267,10 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
@@ -417,6 +423,12 @@ public class CaseFacadeEjb implements CaseFacade {
 	private SurveillanceReportService surveillanceReportService;
 	@EJB
 	private SurveillanceReportFacadeEjb.SurveillanceReportFacadeEjbLocal surveillanceReportFacade;
+	@EJB
+	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	@EJB
+	private SormasToSormasCaseFacadeEjbLocal sormasToSormasCaseFacade;
+	@Resource
+	private ManagedScheduledExecutorService executorService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -1392,7 +1404,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				investigationStatusChange,
 				outcomeChange,
 				surveillanceOfficerChange);
-			doSave(caze, true, existingCaseDto);
+			doSave(caze, true, existingCaseDto, true);
 		}
 	}
 
@@ -1434,7 +1446,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.setHealthFacility(facilityService.getByUuid(updatedCaseBulkEditData.getHealthFacility().getUuid()));
 			caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
 			CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
-			doSave(caze, true, existingCaseDto);
+			doSave(caze, true, existingCaseDto, true);
 		}
 	}
 
@@ -1481,13 +1493,25 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges, boolean checkChangeDate) throws ValidationRuntimeException {
 
+		return saveCase(dto, handleChanges, checkChangeDate, true);
+	}
+
+	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean syncShares)
+		throws ValidationRuntimeException {
+
 		Case caze = caseService.getByUuid(dto.getUuid());
 		CaseDataDto existingCaseDto = handleChanges ? toDto(caze) : null;
 
-		return caseSave(dto, handleChanges, caze, existingCaseDto, checkChangeDate);
+		return caseSave(dto, handleChanges, caze, existingCaseDto, checkChangeDate, syncShares);
 	}
 
-	private CaseDataDto caseSave(CaseDataDto dto, boolean handleChanges, Case caze, CaseDataDto existingCaseDto, boolean checkChangeDate) {
+	private CaseDataDto caseSave(
+		CaseDataDto dto,
+		boolean handleChanges,
+		Case caze,
+		CaseDataDto existingCaseDto,
+		boolean checkChangeDate,
+		boolean syncShares) {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
 		restorePseudonymizedDto(dto, caze, existingCaseDto);
@@ -1503,18 +1527,24 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.setCreationVersion(InfoProvider.get().getVersion());
 		}
 
-		doSave(caze, handleChanges, existingCaseDto);
+		doSave(caze, handleChanges, existingCaseDto, syncShares);
 
 		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
-	private void doSave(Case caze, boolean handleChanges, CaseDataDto existingCaseDto) {
+	public void syncSharesAsync(ShareTreeCriteria criteria) {
+		executorService.schedule(() -> {
+			sormasToSormasCaseFacade.syncShares(criteria);
+		}, 5, TimeUnit.SECONDS);
+	}
+
+	private void doSave(Case caze, boolean handleChanges, CaseDataDto existingCaseDto, boolean syncShares) {
 		caseService.ensurePersisted(caze);
 		if (handleChanges) {
 			updateCaseVisitAssociations(existingCaseDto, caze);
 			caseService.updateFollowUpDetails(caze, existingCaseDto != null && caze.getFollowUpStatus() != existingCaseDto.getFollowUpStatus());
 
-			onCaseChanged(existingCaseDto, caze);
+			onCaseChanged(existingCaseDto, caze, syncShares);
 		}
 	}
 
@@ -1741,6 +1771,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * after a case has been created/saved
 	 */
 	public void onCaseChanged(CaseDataDto existingCase, Case newCase) {
+		onCaseChanged(existingCase, newCase, true);
+	}
+
+	public void onCaseChanged(CaseDataDto existingCase, Case newCase, boolean syncShares) {
 
 		// If its a new case and the case is new and the geo coordinates of the case's
 		// health facility are null, set its coordinates to the case's report
@@ -1932,6 +1966,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		if ((existingCase == null || !confirmedClassifications.contains(existingCase.getCaseClassification()))
 			&& confirmedClassifications.contains(newCase.getCaseClassification())) {
 			sendConfirmedCaseNotificationsForEvents(newCase);
+		}
+
+		if (existingCase != null && syncShares && sormasToSormasFacade.isFeatureConfigured()) {
+			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
 		}
 	}
 
@@ -3177,7 +3215,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			if (cloning) {
 				SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), leadCase.toReference());
 				DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), cloning);
-				sampleFacade.saveSample(newSample, false, true);
+				sampleFacade.saveSample(newSample, false, true, true);
 
 				// 2.2.1 Pathogen Tests
 				for (PathogenTest pathogenTest : sample.getPathogenTests()) {
@@ -3591,9 +3629,11 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		cq.select(caseRoot.get(Case.UUID));
 		cq.where(
-			cb.or(
-				cb.isTrue(caseRoot.get(Case.DONT_SHARE_WITH_REPORTING_TOOL)),
-				cb.and(caseRoot.get(Case.UUID).in(caseUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)))));
+			cb.and(
+				cb.or(
+					cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER)),
+					cb.isTrue(caseRoot.get(Case.DONT_SHARE_WITH_REPORTING_TOOL))),
+				caseRoot.get(Case.UUID).in(caseUuids)));
 		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));
 
 		return QueryHelper.getFirstResult(em, cq);

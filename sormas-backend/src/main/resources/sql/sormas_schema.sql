@@ -7672,6 +7672,22 @@ ALTER TABLE events_history ADD COLUMN eventidentificationsource varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (385, 'Event identification source (#5526)');
 
+-- 2021-07-19 DEA Travel entry form #6025 - Change dea content column type to JSON
+ALTER TABLE travelentry ALTER COLUMN deacontent TYPE json USING deacontent::json;
+ALTER TABLE travelentry_history ALTER COLUMN deacontent TYPE json USING deacontent::json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (386, 'DEA Travel entry form #6025 - Change dea content column type to JSON');
+
+-- 2021-07-20 [Sormas2Sormas] View share chain for each case shared/received trough S2S #6033
+ALTER TABLE sormastosormassharerequest ALTER COLUMN cases TYPE json USING cases::json;
+ALTER TABLE sormastosormassharerequest ALTER COLUMN contacts TYPE json USING contacts::json;
+ALTER TABLE sormastosormassharerequest ALTER COLUMN events TYPE json USING events::json;
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN cases TYPE json USING cases::json;
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN contacts TYPE json USING contacts::json;
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN events TYPE json USING events::json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (387, '[Sormas2Sormas] View share chain for each case shared/received trough S2S #6033');
+
 -- 2021-06-25 [DEMIS2SORMAS] Handle New Profile: Allow LabMessages to lead to several PathogenTestResults
 ALTER TABLE labmessage RENAME COLUMN testlabname TO labname;
 ALTER TABLE labmessage RENAME COLUMN testlabexternalid TO labexternalid;
@@ -7739,6 +7755,6 @@ ALTER TABLE labmessage_history
     DROP COLUMN testresultverified,
     DROP COLUMN testresulttext;
 
-INSERT INTO schema_version (version_number, comment) VALUES (386, 'Introduce testreport entity #5539');
+INSERT INTO schema_version (version_number, comment) VALUES (388, 'Introduce testreport entity #5539');
 
 -- *** Insert new sql commands BEFORE this line ***
