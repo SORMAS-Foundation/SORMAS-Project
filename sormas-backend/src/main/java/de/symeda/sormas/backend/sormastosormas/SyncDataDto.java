@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,15 +15,39 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import java.io.Serializable;
+
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 
-public interface ProcessedDataPersister<P> {
+public class SyncDataDto<S> implements Serializable {
 
-	void persistSharedData(P processedData) throws SormasToSormasValidationException;
+	private static final long serialVersionUID = -739984061456636096L;
 
-	void persistReturnedData(P processedData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException;
+	private S shareData;
 
-	void persistSyncData(P processedData, ShareTreeCriteria shareTreeCriteria) throws SormasToSormasValidationException;
+	private ShareTreeCriteria criteria;
+
+	public SyncDataDto() {
+	}
+
+	public SyncDataDto(S shareData, ShareTreeCriteria criteria) {
+		this.shareData = shareData;
+		this.criteria = criteria;
+	}
+
+	public S getShareData() {
+		return shareData;
+	}
+
+	public void setShareData(S shareData) {
+		this.shareData = shareData;
+	}
+
+	public ShareTreeCriteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(ShareTreeCriteria criteria) {
+		this.criteria = criteria;
+	}
 }

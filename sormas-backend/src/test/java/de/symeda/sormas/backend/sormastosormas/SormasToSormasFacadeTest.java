@@ -15,25 +15,18 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
-import static org.mockito.Mockito.mock;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
-
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -51,14 +44,17 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer.MockSormasToSormasConfigProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -157,7 +153,17 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return shareInfo;
 	}
 
-	protected SormasToSormasEncryptedDataDto encryptShareDataAsArray(Object shareData) throws JsonProcessingException, SormasToSormasException {
+	protected SormasToSormasShareInfoDto createShareInfoDto(UserReferenceDto sender, String serverId, boolean ownershipHandedOver) {
+		SormasToSormasShareInfoDto shareInfo = new SormasToSormasShareInfoDto();
+
+		shareInfo.setOwnershipHandedOver(ownershipHandedOver);
+		shareInfo.setTarget(new ServerAccessDataReferenceDto(serverId));
+		shareInfo.setSender(sender);
+
+		return shareInfo;
+	}
+
+	protected SormasToSormasEncryptedDataDto encryptShareDataAsArray(Object shareData) throws SormasToSormasException {
 		return encryptShareData(Collections.singletonList(shareData));
 	}
 
@@ -203,18 +209,6 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certiPass");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststoreName()).thenReturn("sormas2sormas.truststore.p12");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststorePass()).thenReturn("trusteR");
-	}
-
-	@Specializes
-	private static class MockSormasToSormasConfigProducer extends SormasToSormasConfigProducer {
-
-		static SormasToSormasConfig sormasToSormasConfig = mock(SormasToSormasConfig.class);
-
-		@Override
-		@Produces
-		public SormasToSormasConfig sormas2SormasConfig() {
-			return sormasToSormasConfig;
-		}
 	}
 
 	protected MappableRdcf createRDCF(boolean withExternalId) {

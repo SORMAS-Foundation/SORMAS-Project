@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,23 +13,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.api.sormastosormas.shareinfo;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.enterprise.inject.Produces;
+import java.util.List;
 
-import de.symeda.sormas.api.SormasToSormasConfig;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import javax.ejb.Remote;
 
-@LocalBean
-public class SormasToSormasConfigProducer {
+@Remote
+public interface SormasToSormasShareInfoFacade {
 
-	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	List<SormasToSormasShareInfoDto> getIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
 
-	@Produces
-	public SormasToSormasConfig sormasToSormasConfig() {
-		return configFacade.getSormasToSormasConfig();
-	}
+	SormasToSormasShareInfoDto getShareInfoByUuid(String uuid);
 }

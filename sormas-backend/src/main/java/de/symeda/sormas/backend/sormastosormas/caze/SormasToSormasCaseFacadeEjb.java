@@ -64,6 +64,7 @@ public class SormasToSormasCaseFacadeEjb
 	public static final String CASE_REQUEST_GET_DATA_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_GET_DATA_ENDPOINT;
 	public static final String SAVE_SHARED_CASE_ENDPOINT = RESOURCE_PATH + CASE_ENDPOINT;
 	public static final String SYNC_CASE_ENDPOINT = RESOURCE_PATH + CASE_SYNC_ENDPOINT;
+	public static final String CASE_SHARES_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_SHARES_ENDPOINT;
 
 	@EJB
 	private CaseService caseService;
@@ -85,9 +86,11 @@ public class SormasToSormasCaseFacadeEjb
 			CASE_REQUEST_GET_DATA_ENDPOINT,
 			SAVE_SHARED_CASE_ENDPOINT,
 			SYNC_CASE_ENDPOINT,
+			CASE_SHARES_ENDPOINT,
 			Captions.CaseData,
 			ShareRequestDataType.CASE,
-			CaseShareRequestData.class);
+			CaseShareRequestData.class,
+			CaseSyncData.class);
 	}
 
 	@Override
@@ -165,6 +168,11 @@ public class SormasToSormasCaseFacadeEjb
 	@Override
 	protected void setShareRequestPreviewData(SormasToSormasShareRequestDto request, List<SormasToSormasCasePreview> previews) {
 		request.setCases(previews);
+	}
+
+	@Override
+	protected List<SormasToSormasShareInfo> getEntityShares(Case caze) {
+		return caze.getShareInfoCases().stream().map(ShareInfoCase::getShareInfo).collect(Collectors.toList());
 	}
 
 	private ValidationErrors validateSharedUuid(String uuid) {

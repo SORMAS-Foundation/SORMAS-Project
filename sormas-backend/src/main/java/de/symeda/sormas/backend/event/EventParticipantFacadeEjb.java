@@ -54,6 +54,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
@@ -88,6 +89,7 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -127,6 +129,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	@EJB
 	private EventService eventService;
+	@EJB
+	private EventFacadeEjbLocal eventFacade;
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
@@ -219,10 +223,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	@Override
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto) {
-		return saveEventParticipant(dto, true);
+		return saveEventParticipant(dto, true, true);
 	}
 
-	public EventParticipantDto saveEventParticipant(EventParticipantDto dto, boolean checkChangeDate) {
+	public EventParticipantDto saveEventParticipant(EventParticipantDto dto, boolean checkChangeDate, boolean syncShares) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? eventParticipantService.getByUuid(dto.getUuid()) : null;
 		EventParticipantDto existingDto = toDto(existingParticipant);
 
@@ -252,7 +256,13 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			notifyEventResponsibleUsersOfCommonEventParticipant(entity, event);
 		}
 
+		onEventParticipantChanged(EventFacadeEjbLocal.toDto(entity.getEvent()), syncShares);
+
 		return convertToDto(entity, pseudonymizer);
+	}
+
+	public void onEventParticipantChanged(EventDto event, boolean syncShares) {
+		eventFacade.onEventChange(event, syncShares);
 	}
 
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {
