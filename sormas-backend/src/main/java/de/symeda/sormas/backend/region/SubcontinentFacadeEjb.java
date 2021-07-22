@@ -114,7 +114,10 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 		Root<Subcontinent> subcontinent = cq.from(Subcontinent.class);
 		Join<Subcontinent, Continent> continent = subcontinent.join(Subcontinent.CONTINENT, JoinType.LEFT);
 
-		Predicate filter = subcontinentService.buildCriteriaFilter(criteria, cb, subcontinent);
+		Predicate filter = null;
+		if (criteria != null) {
+			filter = subcontinentService.buildCriteriaFilter(criteria, cb, subcontinent);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -264,16 +267,16 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 	public List<SubcontinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
 		return subcontinentService.getByExternalId(externalId, includeArchived)
-				.stream()
-				.map(SubcontinentFacadeEjb::toReferenceDto)
-				.collect(Collectors.toList());
+			.stream()
+			.map(SubcontinentFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	public List<SubcontinentReferenceDto> getReferencesByName(String caption, boolean includeArchived) {
 		return subcontinentService.getByDefaultName(caption, includeArchived)
-				.stream()
-				.map(SubcontinentFacadeEjb::toReferenceDto)
-				.collect(Collectors.toList());
+			.stream()
+			.map(SubcontinentFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	private Subcontinent fillOrBuildEntity(@NotNull SubcontinentDto source, Subcontinent target, boolean checkChangeDate) {
