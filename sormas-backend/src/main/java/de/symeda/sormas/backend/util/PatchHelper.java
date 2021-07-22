@@ -276,7 +276,7 @@ public class PatchHelper {
 		Field requiredField = classFieldsMap.get(objectClass).stream().filter(field -> field.getName().equals(fieldName)).findAny().orElse(null);
 		if (requiredField == null) {
 			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(Validations.patchUnsupportedCollectionFieldType, fieldName, objectClass.getSimpleName()));
+				I18nProperties.getValidationError(Validations.patchNoSuchFieldException, fieldName, objectClass.getSimpleName()));
 		}
 		return requiredField;
 	}
