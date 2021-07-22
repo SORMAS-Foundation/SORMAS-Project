@@ -1220,7 +1220,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		assertThat(shares, arrayWithSize(1));
 		assertThat(shares[0].getShare().getTargetDescriptor().getId(), is(SECOND_SERVER_ID));
 		assertThat(shares[0].getShare().isOwnershipHandedOver(), is(true));
-		assertThat(shares[0].getReShares().get(0).getShare().getUuid(), is("dummy SORMAS"));
+		assertThat(shares[0].getReShares().get(0).getShare().getTargetDescriptor().getId(), is("dummy SORMAS"));
 		assertThat(shares[0].getReShares().get(0).getShare().isOwnershipHandedOver(), is(false));
 		assertThat(shares[0].getReShares().get(0).getReShares(), hasSize(0));
 	}

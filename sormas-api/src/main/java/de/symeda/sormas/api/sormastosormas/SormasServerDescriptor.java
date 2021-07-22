@@ -1,5 +1,8 @@
 package de.symeda.sormas.api.sormastosormas;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -20,7 +23,8 @@ public class SormasServerDescriptor implements Serializable {
 		this.name = name;
 	}
 
-	public SormasServerDescriptor(String id, String name, String hostName) {
+	@JsonCreator
+	public SormasServerDescriptor(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("hostName") String hostName) {
 		this.id = id;
 		this.name = name;
 		this.hostName = hostName;
