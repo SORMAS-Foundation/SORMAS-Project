@@ -57,11 +57,11 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -253,7 +253,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 	}
 
 	@Test
-	public void testReturnContact() throws JsonProcessingException, SormasToSormasException {
+	public void testReturnContact() throws SormasToSormasException {
 		RDCF rdcf = creator.createRDCF();
 
 		useSurveillanceOfficerLogin(rdcf);
@@ -281,8 +281,6 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 			s.setSormasToSormasOriginInfo(contact.getSormasToSormasOriginInfo());
 		});
 
-		SampleDto newSample = creator.createSample(contact.toReference(), officer, rdcf.facility, null);
-
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_ID));
 		options.setHandOverOwnership(true);
@@ -301,12 +299,6 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasFacadeTest
 		// sample ownership should be lost
 		sharedSample = getSampleFacade().getSampleByUuid(sharedSample.getUuid());
 		assertThat(sharedSample.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
-
-		// new samples should have share info with ownership handed over
-		List<SormasToSormasShareInfoDto> newSampleShareInfos =
-			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().sample(newSample.toReference()), 0, 100);
-		assertThat(newSampleShareInfos, hasSize(1));
-		assertThat(newSampleShareInfos.get(0).isOwnershipHandedOver(), is(true));
 	}
 
 	@Test

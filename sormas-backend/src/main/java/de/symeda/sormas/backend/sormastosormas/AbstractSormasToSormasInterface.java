@@ -336,8 +336,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		originInfoService.persist(originInfo);
 
 		SormasToSormasShareInfo shareToOrigin = getShareInfoByEntityAndOrganization(shareData.getEntity().getUuid(), originInfo.getOrganizationId());
-		shareToOrigin.setOwnershipHandedOver(true);
-		shareInfoService.persist(shareToOrigin);
+		if (shareToOrigin != null) {
+			shareToOrigin.setOwnershipHandedOver(true);
+			shareInfoService.persist(shareToOrigin);
+		}
 
 		try {
 			shareInfoService.handleOwnershipChangeInExternalSurvTool(originInfo);
@@ -712,7 +714,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		for (SormasToSormasShareInfo s : entityShares) {
 			boolean noForward =
-				s.getRequestStatus() != ShareRequestStatus.ACCEPTED || s.getOrganizationId().equals(criteria.getExceptedOrganizationId());
+				(s.getRequestStatus() != null && s.getRequestStatus() != ShareRequestStatus.ACCEPTED)
+					|| s.getOrganizationId().equals(criteria.getExceptedOrganizationId());
 			if (originInfo != null) {
 				noForward = noForward || s.getOrganizationId().equals(originInfo.getOrganizationId());
 			}

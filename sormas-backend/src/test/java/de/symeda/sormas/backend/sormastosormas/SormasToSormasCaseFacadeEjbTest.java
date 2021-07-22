@@ -24,7 +24,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
 
-import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -73,7 +72,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
-import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto.AssociatedContactDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
@@ -81,6 +79,7 @@ import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -600,12 +599,10 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 			.createContact(officer, officer, creator.createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf, c -> {
 				c.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
 			});
-		ContactDto newContact = creator.createContact(officer, creator.createPerson().toReference(), caze);
+
 		SampleDto sharedSample = creator.createSample(caze.toReference(), officer, rdcf.facility, s -> {
 			s.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo());
 		});
-
-		SampleDto newSample = creator.createSample(caze.toReference(), officer, rdcf.facility);
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_ID));
@@ -627,21 +624,9 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		sharedContact = getContactFacade().getContactByUuid(sharedContact.getUuid());
 		assertThat(sharedContact.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
 
-		// new contacts should have share info with ownership handed over
-		List<SormasToSormasShareInfoDto> newContactShareInfos =
-			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().contact(newContact.toReference()), 0, 100);
-		assertThat(newContactShareInfos, hasSize(1));
-		assertThat(newContactShareInfos.get(0).isOwnershipHandedOver(), is(true));
-
 		// sample ownership should be lost
 		sharedSample = getSampleFacade().getSampleByUuid(sharedSample.getUuid());
 		assertThat(sharedSample.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
-
-		// new samples should have share info with ownership handed over
-		List<SormasToSormasShareInfoDto> newSampleShareInfos =
-			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().sample(newSample.toReference()), 0, 100);
-		assertThat(newSampleShareInfos, hasSize(1));
-		assertThat(newSampleShareInfos.get(0).isOwnershipHandedOver(), is(true));
 	}
 
 	@Test
@@ -1189,7 +1174,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 	}
 
 	@Test
-	public void testGetReShares() throws SormasToSormasException, IOException {
+	public void testGetReShares() throws SormasToSormasException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		useSurveillanceOfficerLogin(rdcf);
