@@ -903,7 +903,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
 
-		Predicate filter = personService.createUserFilter(personQueryContext);
+		Predicate filter = personService.createUserFilter(personQueryContext, criteria);
 		if (criteria != null) {
 			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
@@ -1128,9 +1128,9 @@ public class PersonFacadeEjb implements PersonFacade {
 			final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 			Predicate noLatitude = cb.isNull(location.get(Location.LATITUDE));
 			Predicate noLongitude = cb.isNull(location.get(Location.LONGITUDE));
-			cq.where(cb.and(personService.createUserFilter(personQueryContext), cb.or(noLatitude, noLongitude)));
+			cq.where(cb.and(personService.createUserFilter(personQueryContext, null), cb.or(noLatitude, noLongitude)));
 		} else {
-			cq.where(personService.createUserFilter(personQueryContext));
+			cq.where(personService.createUserFilter(personQueryContext, null));
 		}
 		cq.orderBy(cb.desc(person.get(Person.UUID)));
 
@@ -1203,7 +1203,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			person.get(Person.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, personService.inJurisdictionOrOwned(personQueryContext)));
 
-		Predicate filter = personService.createUserFilter(personQueryContext);
+		Predicate filter = personService.createUserFilter(personQueryContext, criteria);
 		if (criteria != null) {
 			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
