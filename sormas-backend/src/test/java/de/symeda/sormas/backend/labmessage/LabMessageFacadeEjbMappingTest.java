@@ -20,6 +20,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -38,7 +40,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		TestReport testReport = new TestReport();
 		TestReportDto testReportDto = TestReportFacadeEjb.toDto(testReport);
 
-		when(testReportFacade.fromDto(testReportDto, false)).thenReturn(testReport);
+		when(testReportFacade.fromDto(eq(testReportDto), any(LabMessage.class), eq(false))).thenReturn(testReport);
 
 		source.addTestReport(testReportDto);
 		source.setCreationDate(new Date());
