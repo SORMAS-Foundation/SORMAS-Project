@@ -2130,11 +2130,13 @@ public interface Captions {
 	String travelEntryActiveTravelEntries = "travelEntryActiveTravelEntries";
 	String travelEntryAllTravelEntries = "travelEntryAllTravelEntries";
 	String travelEntryArchivedTravelEntries = "travelEntryArchivedTravelEntries";
+	String travelEntryCreateCase = "travelEntryCreateCase";
 	String travelEntryNewTravelEntry = "travelEntryNewTravelEntry";
 	String travelEntryOnlyEntriesConvertedToCase = "travelEntryOnlyEntriesConvertedToCase";
 	String travelEntryOnlyEntriesTestedNegative = "travelEntryOnlyEntriesTestedNegative";
 	String travelEntryOnlyRecoveredEntries = "travelEntryOnlyRecoveredEntries";
 	String travelEntryOnlyVaccinatedEntries = "travelEntryOnlyVaccinatedEntries";
+	String travelEntryOpenResultingCase = "travelEntryOpenResultingCase";
 	String travelEntryPointOfEntry = "travelEntryPointOfEntry";
 	String travelEntryTravelEntriesList = "travelEntryTravelEntriesList";
 	String Treatment_additionalNotes = "Treatment.additionalNotes";
