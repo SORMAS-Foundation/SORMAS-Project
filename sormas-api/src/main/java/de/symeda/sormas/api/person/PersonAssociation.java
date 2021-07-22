@@ -6,7 +6,9 @@ public enum PersonAssociation {
 
 	CASE,
 	CONTACT,
-	EVENT_PARTICIPANT;
+	EVENT_PARTICIPANT,
+	IMMUNIZATION,
+	TRAVEL_ENTRY;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

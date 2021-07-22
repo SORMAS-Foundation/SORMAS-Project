@@ -13,9 +13,12 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
@@ -65,8 +68,9 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 
 		final TravelEntryJoins joins = (TravelEntryJoins) travelEntryQueryContext.getJoins();
 		final CriteriaBuilder cb = travelEntryQueryContext.getCriteriaBuilder();
-		final From<?, ?> from = travelEntryQueryContext.getRoot();
+		final From<?, TravelEntry> from = travelEntryQueryContext.getRoot();
 		Join<TravelEntry, Person> person = joins.getPerson();
+		Join<TravelEntry, Case> resultingCase = joins.getResultingCase();
 
 		Predicate filter = null;
 
@@ -90,6 +94,23 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
 		}
 
+		if (criteria.getCase() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(resultingCase.get(Case.UUID), criteria.getCase().getUuid()));
+		}
+
+		if (criteria.getRelevanceStatus() != null) {
+			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(from.get(TravelEntry.ARCHIVED), false), cb.isNull(from.get(TravelEntry.ARCHIVED))));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.ARCHIVED), true));
+			}
+		}
+
+		if (criteria.getDeleted() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.DELETED), criteria.getDeleted()));
+		}
+
 		if (!DataHelper.isNullOrEmpty(criteria.getNameUuidExternalIDLike())) {
 			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
 				cb,
@@ -103,6 +124,8 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_ID), textFilter)));
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
+
+		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
 		return filter;
 	}
 
@@ -131,5 +154,9 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public boolean isTravelEntryEditAllowed(TravelEntry travelEntry) {
+		return userService.hasRight(UserRight.TRAVEL_ENTRY_EDIT) && inJurisdictionOrOwned(travelEntry);
 	}
 }

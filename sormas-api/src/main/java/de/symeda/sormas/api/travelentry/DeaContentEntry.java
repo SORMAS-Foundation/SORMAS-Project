@@ -27,6 +27,8 @@ public class DeaContentEntry implements Serializable, Comparable<DeaContentEntry
 	private String caption;
 	private String value;
 
+	public DeaContentEntry(){ }
+
 	public DeaContentEntry(String caption, String value) {
 		this.caption = caption;
 		this.value = value;

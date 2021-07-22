@@ -83,6 +83,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
+import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.systemevents.SystemEventFacade;
@@ -90,6 +91,7 @@ import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
+import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
 import de.symeda.sormas.api.user.UserFacade;
@@ -354,6 +356,10 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(SormasToSormasFacade.class);
 	}
 
+	public static SormasToSormasShareInfoFacade getSormasToSormasShareInfoFacade() {
+		return get().lookupEjbRemote(SormasToSormasShareInfoFacade.class);
+	}
+
 	public static SormasToSormasCaseFacade getSormasToSormasCaseFacade() {
 		return get().lookupEjbRemote(SormasToSormasCaseFacade.class);
 	}
@@ -445,7 +451,7 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(CustomizableEnumFacade.class);
 	}
 
-	public static InfoFacade getInfoFacae() {
+	public static InfoFacade getInfoFacade() {
 		return get().lookupEjbRemote(InfoFacade.class);
 	}
 
