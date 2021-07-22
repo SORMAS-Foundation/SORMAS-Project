@@ -37,6 +37,25 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "Immunization";
 
+	public static final String REPORT_DATE = "reportDate";
+	public static final String EXTERNAL_ID = "externalId";
+
+	public static final String DISEASE = "disease";
+
+	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
+	public static final String MEANS_OF_IMMUNIZATION_DETAILS = "meansOfImmunizationDetails";
+	public static final String MANAGEMENT_STATUS = "managementStatus";
+	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
+
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
+	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
+
+	public static final String START_DATE = "startDate";
+	public static final String END_DATE = "endDate";
+
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+
 	@Outbreaks
 	@Required
 	private Disease disease;
