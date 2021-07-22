@@ -19,6 +19,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -170,15 +172,30 @@ public class PersonsView extends AbstractView {
 		associationButtons = new HashMap<>();
 
 		Button statusAll = ButtonHelper.createButton(Captions.all, e -> {
-			criteria.personAssociation(null);
-			navigateTo(criteria);
+			if (!UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)) {
+				Label contentLabel = new Label(I18nProperties.getString(Strings.confirmationSeeAllPersons));
+				VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getString(Strings.headingSeeAllPersons),
+						contentLabel,
+						I18nProperties.getString(Strings.yes),
+						I18nProperties.getString(Strings.no),
+						640,
+						ee -> {
+							if (ee.booleanValue() == true) {
+								criteria.personAssociation(null);
+								navigateTo(criteria);
+							}
+						});
+			} else {
+				criteria.personAssociation(null);
+				navigateTo(criteria);
+			}
 		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
 
 		associationFilterLayout.addComponent(statusAll);
 		associationFilterLayout.setComponentAlignment(statusAll, Alignment.MIDDLE_LEFT);
 		associationButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
-		activeAssociationButton = statusAll;
 
 		for (PersonAssociation association : PersonAssociation.values()) {
 			Button associationButton = ButtonHelper.createButton(association.toString(), e -> {
@@ -191,6 +208,9 @@ public class PersonsView extends AbstractView {
 			associationFilterLayout.addComponent(associationButton);
 			associationFilterLayout.setComponentAlignment(associationButton, Alignment.MIDDLE_LEFT);
 			associationButtons.put(associationButton, association.toString());
+			if (association == PersonAssociation.CASE) {
+				activeAssociationButton = associationButton;
+			}
 		}
 
 		Label emptyLabel = new Label("");
