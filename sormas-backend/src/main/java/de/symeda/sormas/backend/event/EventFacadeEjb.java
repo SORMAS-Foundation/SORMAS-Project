@@ -184,6 +184,12 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
+	public EventDto getByUuid(String uuid) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return convertToDto(eventService.getByUuid(uuid), pseudonymizer);
+	}
+
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();

@@ -64,6 +64,13 @@ public class EventResource extends EntityDtoResource {
 		return result;
 	}
 
+	@GET
+	@Path("/{uuid}")
+	public EventDto getByUuid(String uuid) {
+		return FacadeProvider.getEventFacade().getByUuid(uuid);
+
+	}
+
 	@POST
 	@Path("/push")
 	public List<PushResult> postEvents(@Valid List<EventDto> dtos) {
