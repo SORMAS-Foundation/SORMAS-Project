@@ -170,33 +170,6 @@ public class PersonsView extends AbstractView {
 		associationFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		associationButtons = new HashMap<>();
-
-		Button statusAll = ButtonHelper.createButton(Captions.all, e -> {
-			if (!UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)) {
-				Label contentLabel = new Label(I18nProperties.getString(Strings.confirmationSeeAllPersons));
-				VaadinUiUtil.showConfirmationPopup(
-						I18nProperties.getString(Strings.headingSeeAllPersons),
-						contentLabel,
-						I18nProperties.getString(Strings.yes),
-						I18nProperties.getString(Strings.no),
-						640,
-						ee -> {
-							if (ee.booleanValue() == true) {
-								criteria.personAssociation(null);
-								navigateTo(criteria);
-							}
-						});
-			} else {
-				criteria.personAssociation(null);
-				navigateTo(criteria);
-			}
-		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
-		statusAll.setCaptionAsHtml(true);
-
-		associationFilterLayout.addComponent(statusAll);
-		associationFilterLayout.setComponentAlignment(statusAll, Alignment.MIDDLE_LEFT);
-		associationButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
-
 		for (PersonAssociation association : PersonAssociation.values()) {
 			Button associationButton = ButtonHelper.createButton(association.toString(), e -> {
 				criteria.personAssociation(association);
@@ -210,6 +183,7 @@ public class PersonsView extends AbstractView {
 			associationButtons.put(associationButton, association.toString());
 			if (association == PersonAssociation.CASE) {
 				activeAssociationButton = associationButton;
+				criteria.setPersonAssociation(association);
 			}
 		}
 
