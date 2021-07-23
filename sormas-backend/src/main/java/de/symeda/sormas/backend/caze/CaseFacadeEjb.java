@@ -1551,8 +1551,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {
 
 		if (existingCase != null
-			&& existingCase.getReportDate() == caze.getReportDate()
-			&& existingCase.getFollowUpUntil() == caze.getFollowUpUntil()
+			&& Objects.equals(existingCase.getReportDate(), caze.getReportDate())
+			&& Objects.equals(existingCase.getFollowUpUntil(), caze.getFollowUpUntil())
 			&& existingCase.getDisease() == caze.getDisease()) {
 			return;
 		}
@@ -1848,8 +1848,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		if (existingCase != null
 			&& (newCase.getDisease() != existingCase.getDisease()
-				|| newCase.getReportDate() != existingCase.getReportDate()
-				|| newCase.getSymptoms().getOnsetDate() != existingCase.getSymptoms().getOnsetDate())) {
+				|| !Objects.equals(newCase.getReportDate(), existingCase.getReportDate())
+				|| !Objects.equals(newCase.getSymptoms().getOnsetDate(), existingCase.getSymptoms().getOnsetDate()))) {
 
 			// Update follow-up until and status of all contacts
 			for (Contact contact : contactService.findBy(new ContactCriteria().caze(newCase.toReference()), null)) {
@@ -2200,7 +2200,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			&& newCase.getOutcome() == CaseOutcome.DECEASED
 			&& (newCase.getPerson().getPresentCondition() == PresentCondition.DEAD
 				|| newCase.getPerson().getPresentCondition() == PresentCondition.BURIED)
-			&& existingCase.getOutcomeDate() != newCase.getOutcomeDate()
+			&& !Objects.equals(existingCase.getOutcomeDate(), newCase.getOutcomeDate())
 			&& newCase.getOutcomeDate() != null
 			&& newCase.getPerson().getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE
 			&& newCase.getPerson().getCauseOfDeathDisease() == existingCase.getDisease()) {

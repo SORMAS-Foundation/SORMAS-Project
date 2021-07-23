@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -455,7 +456,11 @@ public class VisitFacadeEjb implements VisitFacade {
 		return resultList;
 	}
 
-	private Expression<Object> jurisdictionSelector(CriteriaQuery cq, CriteriaBuilder cb, Join<Visit, Case> caseJoin, Join<Visit, Contact> contactJoin) {
+	private Expression<Object> jurisdictionSelector(
+		CriteriaQuery cq,
+		CriteriaBuilder cb,
+		Join<Visit, Case> caseJoin,
+		Join<Visit, Contact> contactJoin) {
 		return JurisdictionHelper.booleanSelector(
 			cb,
 			cb.or(
@@ -617,7 +622,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	private void updateContactVisitAssociations(VisitDto existingVisit, Visit visit) {
 
-		if (existingVisit != null && existingVisit.getVisitDateTime() == visit.getVisitDateTime()) {
+		if (existingVisit != null && Objects.equals(existingVisit.getVisitDateTime(), visit.getVisitDateTime())) {
 			// No need to update the associations
 			return;
 		}
@@ -632,7 +637,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	private void updateCaseVisitAssociations(VisitDto existingVisit, Visit visit) {
 
 		if (existingVisit != null
-			&& existingVisit.getVisitDateTime() == visit.getVisitDateTime()
+			&& Objects.equals(existingVisit.getVisitDateTime(), visit.getVisitDateTime())
 			&& existingVisit.getPerson().equals(visit.getPerson())) {
 			// No need to update the associations
 			return;

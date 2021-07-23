@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -421,9 +422,9 @@ public class ContactFacadeEjb implements ContactFacade {
 	private void updateContactVisitAssociations(ContactDto existingContact, Contact contact) {
 
 		if (existingContact != null
-			&& existingContact.getReportDateTime() == contact.getReportDateTime()
-			&& existingContact.getLastContactDate() == contact.getLastContactDate()
-			&& existingContact.getFollowUpUntil() == contact.getFollowUpUntil()
+			&& Objects.equals(existingContact.getReportDateTime(), contact.getReportDateTime())
+			&& Objects.equals(existingContact.getLastContactDate(), contact.getLastContactDate())
+			&& Objects.equals(existingContact.getFollowUpUntil(), contact.getFollowUpUntil())
 			&& existingContact.getDisease() == contact.getDisease()) {
 			return;
 		}
