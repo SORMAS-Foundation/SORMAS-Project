@@ -22,7 +22,7 @@ import java.util.Date;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
-@Entity(name = "testreport")
+@Entity(name = TestReport.TABLE_NAME)
 @Audited
 public class TestReport extends CoreAdo {
 

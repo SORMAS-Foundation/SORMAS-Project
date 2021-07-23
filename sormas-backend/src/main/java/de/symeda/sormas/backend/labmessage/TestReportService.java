@@ -1,11 +1,12 @@
 package de.symeda.sormas.backend.labmessage;
 
-import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.sample.PathogenTest;
-import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -16,6 +17,8 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 @Stateless
@@ -34,9 +37,23 @@ public class TestReportService extends BaseAdoService<TestReport> {
 		return cb.isFalse(root.get(TestReport.DELETED));
 	}
 
+	public List<TestReport> getByPathogenTestUuidsBatched(List<String> pathogenTestUuids, boolean ordered) {
+		if (CollectionUtils.isEmpty(pathogenTestUuids)) {
+			// Avoid empty IN clause
+			return Collections.emptyList();
+		} else if (pathogenTestUuids.size() > ModelConstants.PARAMETER_LIMIT) {
+			List<TestReport> testReports = new LinkedList<>();
+			IterableHelper
+					.executeBatched(pathogenTestUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> testReports.addAll(getByPathogenTestUuids(batchedPersonUuids, ordered)));
+			return testReports;
+		} else {
+			return getByPathogenTestUuids(pathogenTestUuids, ordered);
+		}
+	}
+
 	public List<TestReport> getByPathogenTestUuids(List<String> pathogenTestUuids, boolean ordered) {
 		if (pathogenTestUuids.isEmpty()) {
-			return new ArrayList();
+			return new ArrayList<>();
 		}
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TestReport> cq = cb.createQuery(TestReport.class);
@@ -55,9 +72,7 @@ public class TestReportService extends BaseAdoService<TestReport> {
 	}
 
 	public List<TestReport> getByPathogenTestUuid(String uuid, boolean ordered) {
-		ArrayList uuidList = new ArrayList();
-		uuidList.add(uuid);
-		return getByPathogenTestUuids(uuidList, ordered);
+		return getByPathogenTestUuids(Collections.singletonList(uuid), ordered);
 	}
 
 }

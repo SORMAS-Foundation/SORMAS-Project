@@ -676,15 +676,18 @@ public class LabMessageController {
 			viaLimsCheckbox.setValue(Boolean.TRUE);
 			viaLimsCheckbox.setEnabled(false);
 		}
-		// TODO currently just the first testReport is picked here. That must be temporary.
-		TestReportDto testReportDto = FacadeProvider.getTestReportFacade().getAllByLabMessage(labMessageDto.toReference()).get(0);
-		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(testReportDto.getTestResult());
-		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(testReportDto.getTestType());
-		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE)).setValue(labMessageDto.getTestedDisease());
-		((NullableOptionGroup) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT_VERIFIED))
-			.setValue(testReportDto.isTestResultVerified());
-		((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
-			.setValue(testReportDto.getTestDateTime());
+		// TODO currently just the first testReport is picked here. That must be temporary. Will be fixed with #5899
+		List<TestReportDto> testReportDtos = FacadeProvider.getTestReportFacade().getAllByLabMessage(labMessageDto.toReference());
+		if(!testReportDtos.isEmpty()) {
+			TestReportDto testReportDto = testReportDtos.get(0);
+			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(testReportDto.getTestResult());
+			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(testReportDto.getTestType());
+			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE)).setValue(labMessageDto.getTestedDisease());
+			((NullableOptionGroup) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT_VERIFIED))
+				.setValue(testReportDto.isTestResultVerified());
+			((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
+				.setValue(testReportDto.getTestDateTime());
+		}
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE))
 				.setValue(labMessageDto.getMessageDateTime());
@@ -698,9 +701,7 @@ public class LabMessageController {
 	}
 
 	private void createPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
-		// TODO currently just the first testReport is picked here. That must be temporary.
-		TestReportDto testReportDto = FacadeProvider.getTestReportFacade().getAllByLabMessage(labMessageDto.toReference()).get(0);
-		PathogenTestDto pathogenTestDto = buildPathogenTest(sampleDto, labMessageDto, testReportDto);
+		PathogenTestDto pathogenTestDto = buildPathogenTest(sampleDto, labMessageDto);
 		Window window = VaadinUiUtil.createPopupWindow();
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
 			getPathogenTestCreateComponent(sampleDto, labMessageDto, pathogenTestDto, window);
@@ -716,14 +717,21 @@ public class LabMessageController {
 			false);
 	}
 
-	private PathogenTestDto buildPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto, TestReportDto testReportDto) {
+	private PathogenTestDto buildPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
 		PathogenTestDto pathogenTestDto = PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser());
-		pathogenTestDto.setTestResult(testReportDto.getTestResult());
-		pathogenTestDto.setTestType(testReportDto.getTestType());
+
+		// TODO currently just the first testReport is picked here. That must be temporary. Will be fixed with #5899
+		List<TestReportDto> testReportDtos = labMessageDto.getTestReports();
+		if (!testReportDtos.isEmpty()) {
+			TestReportDto testReportDto = testReportDtos.get(0);
+			pathogenTestDto.setTestResult(testReportDto.getTestResult());
+			pathogenTestDto.setTestType(testReportDto.getTestType());
+			pathogenTestDto.setTestResultVerified(testReportDto.isTestResultVerified());
+			pathogenTestDto.setTestDateTime(testReportDto.getTestDateTime());
+			pathogenTestDto.setTestResultText(testReportDto.getTestResultText());
+		}
+
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
-		pathogenTestDto.setTestResultVerified(testReportDto.isTestResultVerified());
-		pathogenTestDto.setTestDateTime(testReportDto.getTestDateTime());
-		pathogenTestDto.setTestResultText(testReportDto.getTestResultText());
 		pathogenTestDto.setReportDate(labMessageDto.getMessageDateTime());
 		return pathogenTestDto;
 	}
@@ -779,7 +787,16 @@ public class LabMessageController {
 
 	private void finishProcessingLabMessage(LabMessageDto labMessageDto, PathogenTestDto pathogenTestDto) {
 		// TODO currently just the first testReport is picked here. That must be temporary.
-		FacadeProvider.getTestReportFacade().getAllByLabMessage(labMessageDto.toReference()).get(0).setPathogenTest(pathogenTestDto.toReference());
+		//  #5899 should fix this and also provide better support for handling creation of a new test report
+		List<TestReportDto> testReportDtos = labMessageDto.getTestReports();
+		if	(testReportDtos.isEmpty()) {
+			TestReportDto testReportDto = TestReportDto.build();
+			testReportDto.setLabMessage(labMessageDto.toReference());
+			testReportDto.setPathogenTest(pathogenTestDto.toReference());
+			labMessageDto.addTestReport(testReportDto);
+		} else {
+			labMessageDto.getTestReports().get(0).setPathogenTest(pathogenTestDto.toReference());
+		}
 		labMessageDto.setStatus(LabMessageStatus.PROCESSED);
 		FacadeProvider.getLabMessageFacade().save(labMessageDto);
 		SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);

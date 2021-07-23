@@ -38,9 +38,9 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		return saveTestReport(dto, true);
 	}
 
-	public TestReportDto saveTestReport(TestReportDto dto, boolean checkCkangeDate) {
+	public TestReportDto saveTestReport(TestReportDto dto, boolean checkChangeDate) {
 
-		TestReport testReport = fromDto(dto, checkCkangeDate);
+		TestReport testReport = fromDto(dto, checkChangeDate);
 
 		testReportService.ensurePersisted(testReport);
 
