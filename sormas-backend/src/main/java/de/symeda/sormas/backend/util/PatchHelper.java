@@ -98,9 +98,9 @@ public class PatchHelper {
 		List tempNewElementList = new ArrayList();
 
 		for (JsonNode listElement : jsonObjectFieldNode) {
-			T updatedObjectList = createOrUpdateListElement(existingObject, existingObjectField, listElementClass, listElement);
-			if (updatedObjectList != null) {
-				tempNewElementList.add(updatedObjectList);
+			T updatedListObject = createOrUpdateListElement(existingObject, existingObjectField, listElementClass, listElement);
+			if (updatedListObject != null) {
+				tempNewElementList.add(updatedListObject);
 			}
 		}
 
