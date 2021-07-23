@@ -208,7 +208,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			pathogenTestUuids.add(pathogenTest.getUuid());
 		}
 
-		List<TestReport> testReports = testReportService.getByPathogenTestUuids(pathogenTestUuids, false);
+		List<TestReport> testReports = testReportService.getByPathogenTestUuidsBatched(pathogenTestUuids, false);
 
 		List<LabMessage> labMessages = testReports.stream().map(TestReport::getLabMessage).distinct().collect(Collectors.toList());
 

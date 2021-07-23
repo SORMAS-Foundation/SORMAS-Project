@@ -51,7 +51,11 @@ public class TestReportService extends BaseAdoService<TestReport> {
 		}
 	}
 
-	public List<TestReport> getByPathogenTestUuids(List<String> pathogenTestUuids, boolean ordered) {
+	public List<TestReport> getByPathogenTestUuid(String uuid, boolean ordered) {
+		return getByPathogenTestUuids(Collections.singletonList(uuid), ordered);
+	}
+
+	private List<TestReport> getByPathogenTestUuids(List<String> pathogenTestUuids, boolean ordered) {
 		if (pathogenTestUuids.isEmpty()) {
 			return new ArrayList<>();
 		}
@@ -69,10 +73,6 @@ public class TestReportService extends BaseAdoService<TestReport> {
 		}
 
 		return em.createQuery(cq).getResultList();
-	}
-
-	public List<TestReport> getByPathogenTestUuid(String uuid, boolean ordered) {
-		return getByPathogenTestUuids(Collections.singletonList(uuid), ordered);
 	}
 
 }

@@ -47,13 +47,13 @@ public class TestReportServiceTest extends AbstractBeanTest {
 		ArrayList uuidList = new ArrayList();
 		ArrayList expectedResult = new ArrayList();
 
-		List<TestReportDto> emptyResult = getTestReportService().getByPathogenTestUuids(uuidList, false);
+		List<TestReportDto> emptyResult = getTestReportService().getByPathogenTestUuidsBatched(uuidList, false);
 		assertEquals(expectedResult, emptyResult);
 
 		// Get empty result from one pathogen test
 		uuidList.add(pathogenTest3.getUuid());
 
-		emptyResult = getTestReportService().getByPathogenTestUuids(uuidList, false);
+		emptyResult = getTestReportService().getByPathogenTestUuidsBatched(uuidList, false);
 		assertEquals(expectedResult, emptyResult);
 
 		// Get one result from two pathogen tests
@@ -61,13 +61,13 @@ public class TestReportServiceTest extends AbstractBeanTest {
 
 		expectedResult.add(report1);
 
-		List<TestReportDto> singleResult = getTestReportService().getByPathogenTestUuids(uuidList, false);
+		List<TestReportDto> singleResult = getTestReportService().getByPathogenTestUuidsBatched(uuidList, false);
 		assertEquals(expectedResult, singleResult);
 
 		// Get one result from one pathogen test
 		uuidList.remove(pathogenTest3.getUuid());
 
-		singleResult = getTestReportService().getByPathogenTestUuids(uuidList, false);
+		singleResult = getTestReportService().getByPathogenTestUuidsBatched(uuidList, false);
 		assertEquals(expectedResult, singleResult);
 
 		// Get two results from one pathogen test
@@ -78,18 +78,18 @@ public class TestReportServiceTest extends AbstractBeanTest {
 		uuidList.remove(pathogenTest1.getUuid());
 		uuidList.add(pathogenTest2.getUuid());
 
-		List<TestReportDto> multipleResults = getTestReportService().getByPathogenTestUuids(uuidList, false);
+		List<TestReportDto> multipleResults = getTestReportService().getByPathogenTestUuidsBatched(uuidList, false);
 		assertEquals(2, multipleResults.size());
 		assertTrue(multipleResults.contains(report2) && multipleResults.contains(report3));
 
 		// Get two sorted results from one pathogen test
-		multipleResults = getTestReportService().getByPathogenTestUuids(uuidList, true);
+		multipleResults = getTestReportService().getByPathogenTestUuidsBatched(uuidList, true);
 		assertEquals(expectedResult, multipleResults);
 
 		// Get three results from two pathogen tests
 		uuidList.add(pathogenTest1.getUuid());
 
-		multipleResults = getTestReportService().getByPathogenTestUuids(uuidList, false);
+		multipleResults = getTestReportService().getByPathogenTestUuidsBatched(uuidList, false);
 		assertEquals(3, multipleResults.size());
 		assertTrue(multipleResults.contains(report1) && multipleResults.contains(report2) && multipleResults.contains(report3));
 
@@ -97,7 +97,7 @@ public class TestReportServiceTest extends AbstractBeanTest {
 		uuidList.add(pathogenTest1.getUuid());
 
 		expectedResult.add((report1));
-		multipleResults = getTestReportService().getByPathogenTestUuids(uuidList, true);
+		multipleResults = getTestReportService().getByPathogenTestUuidsBatched(uuidList, true);
 		assertEquals(expectedResult, multipleResults);
 	}
 

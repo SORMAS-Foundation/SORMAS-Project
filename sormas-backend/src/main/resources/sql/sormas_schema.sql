@@ -7763,6 +7763,6 @@ ALTER TABLE labmessage_history
     DROP COLUMN testresultverified,
     DROP COLUMN testresulttext;
 
-INSERT INTO schema_version (version_number, comment) VALUES (388, 'Introduce testreport entity #5539');
+INSERT INTO schema_version (version_number, comment) VALUES (389, 'Introduce testreport entity #5539');
 
 -- *** Insert new sql commands BEFORE this line ***

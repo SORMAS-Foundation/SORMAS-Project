@@ -85,7 +85,7 @@ public class TestReportServiceUnitTest extends AbstractBeanTest {
 		when(em.createQuery(cq)).thenReturn(typedQuery);
 		when(typedQuery.getResultList()).thenReturn(expectedResult);
 
-		List<TestReport> result = sut.getByPathogenTestUuids(uuidList, false);
+		List<TestReport> result = sut.getByPathogenTestUuidsBatched(uuidList, false);
 		assertEquals(expectedResult, result);
 
 	}
