@@ -7688,6 +7688,14 @@ ALTER TABLE sormastosormassharerequest_history ALTER COLUMN events TYPE json USI
 
 INSERT INTO schema_version (version_number, comment) VALUES (387, '[Sormas2Sormas] View share chain for each case shared/received trough S2S #6033');
 
+-- 2021-07-15 Immunization data type correction #4756
+ALTER TABLE immunization ALTER COLUMN additionaldetails set DATA TYPE text;
+ALTER TABLE immunization ALTER COLUMN meansOfImmunizationDetails set DATA TYPE text;
+ALTER TABLE immunization_history ALTER COLUMN additionaldetails set DATA TYPE text;
+ALTER TABLE immunization_history ALTER COLUMN meansOfImmunizationDetails set DATA TYPE text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (388, 'Immunization data type correction #4756');
+
 -- 2021-06-25 [DEMIS2SORMAS] Handle New Profile: Allow LabMessages to lead to several PathogenTestResults
 ALTER TABLE labmessage RENAME COLUMN testlabname TO labname;
 ALTER TABLE labmessage RENAME COLUMN testlabexternalid TO labexternalid;

@@ -215,6 +215,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		if (personCriteria != null && personCriteria.getPersonAssociation() != null) {
 			switch (personCriteria.getPersonAssociation()) {
+			case ALL:
+				break;
 			case CASE:
 				return caseFilter;
 			case CONTACT:
@@ -285,6 +287,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		if (personCriteria.getPersonAssociation() != null) {
 			switch (personCriteria.getPersonAssociation()) {
 
+			case ALL:
+				break;
 			case CASE:
 				final Subquery<Case> caseSubquery = cq.subquery(Case.class);
 				final Root<Case> caseRoot = caseSubquery.from(Case.class);
