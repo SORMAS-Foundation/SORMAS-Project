@@ -27,7 +27,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
@@ -36,6 +36,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPrev
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -61,7 +62,7 @@ public class ShareDataBuilderHelper {
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
-	private ServerAccessDataService serverAccessDataService;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 	@EJB
 	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
 	@EJB
@@ -113,9 +114,8 @@ public class ShareDataBuilderHelper {
 	}
 
 	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, SormasToSormasOptionsDto options) {
-		OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerAccessData();
 		SormasToSormasOriginInfoDto sormasToSormasOriginInfo = new SormasToSormasOriginInfoDto();
-		sormasToSormasOriginInfo.setOrganizationId(serverAccessData.getId());
+		sormasToSormasOriginInfo.setOrganizationId(configFacadeEjb.getS2SConfig().getId());
 		sormasToSormasOriginInfo.setSenderName(String.format("%s %s", user.getFirstName(), user.getLastName()));
 		sormasToSormasOriginInfo.setSenderEmail(user.getUserEmail());
 		sormasToSormasOriginInfo.setSenderPhoneNumber(user.getPhone());
@@ -180,7 +180,7 @@ public class ShareDataBuilderHelper {
 	public SormasToSormasOptionsDto createOptionsFormShareInfo(SormasToSormasShareInfo shareInfo) {
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 
-		options.setOrganization(new ServerAccessDataReferenceDto(shareInfo.getOrganizationId()));
+		options.setOrganization(new SormasServerDescriptor(shareInfo.getOrganizationId()));
 		options.setHandOverOwnership(shareInfo.isOwnershipHandedOver());
 		options.setWithAssociatedContacts(shareInfo.isWithAssociatedContacts());
 		options.setWithSamples(shareInfo.isWithSamples());
@@ -196,7 +196,7 @@ public class ShareDataBuilderHelper {
 	public SormasToSormasOptionsDto createOptionsFromOriginInfoDto(SormasToSormasOriginInfo originInfo) {
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 
-		options.setOrganization(new ServerAccessDataReferenceDto(originInfo.getOrganizationId()));
+		options.setOrganization(new SormasServerDescriptor(originInfo.getOrganizationId()));
 		options.setHandOverOwnership(originInfo.isOwnershipHandedOver());
 		options.setWithAssociatedContacts(originInfo.isWithAssociatedContacts());
 		options.setWithSamples(originInfo.isWithSamples());
