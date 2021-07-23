@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -45,7 +47,12 @@ public interface SormasToSormasEntityInterface {
 
 	void saveReturnedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
 
-	void syncEntity(String entityUuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	void syncShares(ShareTreeCriteria criteria);
 
 	void saveSyncedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
+
+	List<SormasToSormasShareTree> getAllShares(String uuid) throws SormasToSormasException;
+
+	SormasToSormasEncryptedDataDto getShareTrees(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException;
+
 }

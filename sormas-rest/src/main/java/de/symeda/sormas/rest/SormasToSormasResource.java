@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.user.UserRole;
 
 @Path(SormasToSormasApiConstants.RESOURCE_PATH)
@@ -164,13 +164,31 @@ public class SormasToSormasResource {
 		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasFacade().requestAccepted(requestUuid));
 	}
 
+	@POST
+	@Path(SormasToSormasApiConstants.CASE_SHARES_ENDPOINT)
+	public Response getCaseReShares(SormasToSormasEncryptedDataDto caseUuid) {
+		return handleRequestWithReturnData(() -> FacadeProvider.getSormasToSormasCaseFacade().getShareTrees(caseUuid));
+	}
+
+	@POST
+	@Path(SormasToSormasApiConstants.CONTACT_SHARES_ENDPOINT)
+	public Response getContactReShares(SormasToSormasEncryptedDataDto contactUuid) {
+		return handleRequestWithReturnData(() -> FacadeProvider.getSormasToSormasContactFacade().getShareTrees(contactUuid));
+	}
+
+	@POST
+	@Path(SormasToSormasApiConstants.EVENT_SHARES_ENDPOINT)
+	public Response getEventReShares(SormasToSormasEncryptedDataDto eventUuid) {
+		return handleRequestWithReturnData(() -> FacadeProvider.getSormasToSormasEventFacade().getShareTrees(eventUuid));
+	}
+
 	private Response handleVoidRequest(VoidFacadeCall facadeCall) {
 		try {
 			facadeCall.call();
 		} catch (SormasToSormasValidationException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
+			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(null, null, e.getErrors(), null)).build();
 		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new SormasToSormasErrorResponse(e.getMessage(), e.getI18nTag(), e.getErrors(), e.getArgs())).build();
 		}
 
 		return Response.noContent().build();
@@ -181,9 +199,9 @@ public class SormasToSormasResource {
 		try {
 			response = facadeCall.call();
 		} catch (SormasToSormasValidationException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getErrors())).build();
+			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(null, null, e.getErrors(), null)).build();
 		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new SormasToSormasErrorResponse(e.getMessage(), e.getI18nTag(), e.getErrors(), e.getArgs())).build();
 		}
 
 		return Response.ok().entity(response).build();

@@ -46,6 +46,8 @@ import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
+import de.symeda.sormas.api.travelentry.TravelEntryFacade;
+import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
@@ -60,7 +62,6 @@ import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLoca
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
-import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
 import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb.EventImportFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
@@ -80,6 +81,8 @@ import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeE
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.travelentry.travelentryimport.TravelEntryImportFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import info.novatec.beantest.api.BeanProviderHelper;
@@ -154,8 +157,12 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) bm.getBean(EventImportFacadeEjbLocal.class);
 		} else if (DocumentFacade.class == clazz) {
 			return (P) bm.getBean(DocumentFacadeEjbLocal.class);
-		}else if (ImmunizationFacade.class == clazz) {
+		} else if (ImmunizationFacade.class == clazz) {
 			return (P) bm.getBean(ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal.class);
+		} else if (TravelEntryFacade.class == clazz) {
+			return (P) bm.getBean(TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal.class);
+		} else if (TravelEntryImportFacade.class == clazz) {
+			return (P) bm.getBean(TravelEntryImportFacadeEjb.TravelEntryImportFacadeEjbLocal.class);
 		}
 
 		return null;

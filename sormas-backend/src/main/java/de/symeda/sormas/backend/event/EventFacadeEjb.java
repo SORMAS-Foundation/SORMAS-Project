@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import static de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
+
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,14 +31,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -76,6 +81,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -96,6 +102,7 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEvent;
@@ -140,6 +147,12 @@ public class EventFacadeEjb implements EventFacade {
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolFacade;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
+	@EJB
+	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	@EJB
+	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
+	@Resource
+	private ManagedScheduledExecutorService executorService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -203,10 +216,10 @@ public class EventFacadeEjb implements EventFacade {
 
 	@Override
 	public EventDto saveEvent(@Valid @NotNull EventDto dto) {
-		return saveEvent(dto, true);
+		return saveEvent(dto, true, true);
 	}
 
-	public EventDto saveEvent(@NotNull EventDto dto, boolean checkChangeDate) {
+	public EventDto saveEvent(@NotNull EventDto dto, boolean checkChangeDate, boolean syncShares) {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
@@ -221,7 +234,21 @@ public class EventFacadeEjb implements EventFacade {
 		Event event = fromDto(dto, checkChangeDate);
 		eventService.ensurePersisted(event);
 
+		onEventChange(toDto(event), syncShares);
+
 		return convertToDto(event, pseudonymizer);
+	}
+
+	public void onEventChange(EventDto event, boolean syncShares) {
+		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
+			syncSharesAsync(new ShareTreeCriteria(event.getUuid()));
+		}
+	}
+
+	public void syncSharesAsync(ShareTreeCriteria criteria) {
+		executorService.schedule(() -> {
+			sormasToSormasEventFacade.syncShares(criteria);
+		}, 5, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -327,7 +354,8 @@ public class EventFacadeEjb implements EventFacade {
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
 			JurisdictionHelper.booleanSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)),
-			event.get(Event.CHANGE_DATE));
+			event.get(Event.CHANGE_DATE),
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE));
 
 		Predicate filter = null;
 
@@ -619,7 +647,8 @@ public class EventFacadeEjb implements EventFacade {
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
 			JurisdictionHelper.booleanSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)),
-			event.get(Event.EVENT_MANAGEMENT_STATUS));
+			event.get(Event.EVENT_MANAGEMENT_STATUS),
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
@@ -984,6 +1013,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getShareInfoEvents().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
+		target.setEventIdentificationSource(source.getEventIdentificationSource());
+
 		return target;
 	}
 
@@ -1083,6 +1114,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
 
 		target.setInternalToken(source.getInternalToken());
+
+		target.setEventIdentificationSource(source.getEventIdentificationSource());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));

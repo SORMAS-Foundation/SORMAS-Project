@@ -36,7 +36,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
@@ -71,11 +71,11 @@ public class ProcessedDataPersisterHelper {
 				beforeSaveSample.accept(sample);
 			}
 
-			handleValidationError(() -> sampleFacade.saveSample(sample, true, false), Captions.Sample, buildSampleValidationGroupName(sample));
+			handleValidationError(() -> sampleFacade.saveSample(sample, true, false, false), Captions.Sample, buildSampleValidationGroupName(sample));
 
 			for (PathogenTestDto pathogenTest : sormasToSormasSample.getPathogenTests()) {
 				handleValidationError(
-					() -> pathogenTestFacade.savePathogenTest(pathogenTest, false),
+					() -> pathogenTestFacade.savePathogenTest(pathogenTest, false, false),
 					Captions.PathogenTest,
 					buildPathogenTestValidationGroupName(pathogenTest));
 			}
@@ -91,12 +91,6 @@ public class ProcessedDataPersisterHelper {
 
 	public <T extends SormasToSormasEntityDto, U extends SormasToSormasEntityDto> void sharedAssociatedEntityCallback(U parent, T entity) {
 		entity.setSormasToSormasOriginInfo(parent.getSormasToSormasOriginInfo());
-	}
-
-	public <T extends SormasToSormasEntityDto, U extends SormasToSormasEntityDto> void syncedAssociatedEntityCallback(U parent, T entity) {
-		if (entity.getSormasToSormasOriginInfo() == null) {
-			entity.setSormasToSormasOriginInfo(parent.getSormasToSormasOriginInfo());
-		}
 	}
 
 	public ReturnedAssociatedEntityCallback createReturnedAssociatedEntityCallback(SormasToSormasOriginInfoDto originInfo) {
@@ -122,7 +116,41 @@ public class ProcessedDataPersisterHelper {
 		}
 
 		public <T extends HasUuid & SormasToSormasEntityDto> void apply(T entity, BiFunction<String, String, SormasToSormasShareInfo> findShareInfo) {
+			if (entity.getSormasToSormasOriginInfo() != null) {
+				entity.getSormasToSormasOriginInfo().setOwnershipHandedOver(false);
+			} else {
+				SormasToSormasShareInfo shareInfo = findShareInfo.apply(entity.getUuid(), originInfo.getOrganizationId());
+				if (shareInfo == null) {
+					if (!originInfoSaved) {
+						oriInfoFacade.saveOriginInfo(originInfo);
+						originInfoSaved = true;
+					}
+
+					entity.setSormasToSormasOriginInfo(originInfo);
+				} else {
+					shareInfo.setOwnershipHandedOver(false);
+					shareInfoService.persist(shareInfo);
+				}
+			}
+		}
+	}
+
+	public static class SyncedAssociatedEntityCallback {
+
+		private boolean originInfoSaved;
+
+		private final SormasToSormasOriginInfoDto originInfo;
+
+		private final SormasToSormasOriginInfoFacade oriInfoFacade;
+
+		public SyncedAssociatedEntityCallback(SormasToSormasOriginInfoDto originInfo, SormasToSormasOriginInfoFacade originInfoFacade) {
+			this.originInfo = originInfo;
+			this.oriInfoFacade = originInfoFacade;
+		}
+
+		public <T extends HasUuid & SormasToSormasEntityDto> void apply(T entity, BiFunction<String, String, SormasToSormasShareInfo> findShareInfo) {
 			SormasToSormasShareInfo shareInfo = findShareInfo.apply(entity.getUuid(), originInfo.getOrganizationId());
+
 			if (shareInfo == null) {
 				if (!originInfoSaved) {
 					oriInfoFacade.saveOriginInfo(originInfo);
@@ -130,9 +158,6 @@ public class ProcessedDataPersisterHelper {
 				}
 
 				entity.setSormasToSormasOriginInfo(originInfo);
-			} else {
-				shareInfo.setOwnershipHandedOver(false);
-				shareInfoService.persist(shareInfo);
 			}
 		}
 	}

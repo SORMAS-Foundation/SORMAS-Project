@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
@@ -11,8 +11,7 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
-
+ */
 package de.symeda.sormas.ui.labmessage;
 
 import java.util.Collection;
@@ -555,7 +554,7 @@ public class LabMessageController {
 		Window window,
 		CaseDataDto caseDto) {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, true);
+			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, true);
 		caseCreateComponent.addCommitListener(() -> {
 			savePerson(
 				FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
@@ -916,7 +915,7 @@ public class LabMessageController {
 
 		buttonsPanel.addComponent(forwardButton);
 
-		if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
+		if (FacadeProvider.getSormasToSormasFacade().isSharingLabMessagesEnabledForUser()) {
 			Button shareButton = ButtonHelper.createIconButton(Captions.sormasToSormasSendLabMessage, VaadinIcons.SHARE, (e) -> {
 				ControllerProvider.getSormasToSormasController().shareLabMessage(labMessage, callback);
 			});

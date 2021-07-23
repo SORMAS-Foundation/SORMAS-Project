@@ -29,7 +29,7 @@ public class SormasToSormasConfigProducer {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Produces
-	public SormasToSormasConfig sormas2SormasConfig() {
+	public SormasToSormasConfig sormasToSormasConfig() {
 		return configFacade.getSormasToSormasConfig();
 	}
 }

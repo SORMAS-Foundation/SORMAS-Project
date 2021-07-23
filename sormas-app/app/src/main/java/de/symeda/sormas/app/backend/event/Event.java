@@ -33,6 +33,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
+import de.symeda.sormas.api.event.EventIdentificationSource;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -69,6 +70,7 @@ public class Event extends PseudonymizableAdo {
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
+	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
@@ -238,6 +240,9 @@ public class Event extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private EventManagementStatus eventManagementStatus;
+
+	@Enumerated(EnumType.STRING)
+	private EventIdentificationSource eventIdentificationSource;
 
 	@Enumerated(EnumType.STRING)
 	private InfectionPathCertainty infectionPathCertainty;
@@ -653,6 +658,14 @@ public class Event extends PseudonymizableAdo {
 
 	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
 		this.eventManagementStatus = eventManagementStatus;
+	}
+
+	public EventIdentificationSource getEventIdentificationSource() {
+		return eventIdentificationSource;
+	}
+
+	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 
 	public InfectionPathCertainty getInfectionPathCertainty() {

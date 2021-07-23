@@ -25,10 +25,11 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
 public class LabMessageFacadeEjbTest extends AbstractBeanTest {
-	@Test
-	public void deleteLabMessage() {
-		LabMessageDto labMessage = creator.createLabMessage(null);
 
+	@Test
+	public void testDeleteLabMessage() {
+
+		LabMessageDto labMessage = creator.createLabMessage(null);
 		getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
 
 		assertThat(getLabMessageFacade().getByUuid(labMessage.getUuid()), is(nullValue()));

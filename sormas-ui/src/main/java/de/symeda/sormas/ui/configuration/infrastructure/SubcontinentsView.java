@@ -59,6 +59,7 @@ public class SubcontinentsView extends AbstractConfigurationView {
 	private VerticalLayout gridLayout;
 	private SubcontinentsGrid grid;
 	private MenuBar bulkOperationsDropdown;
+	private RowCount rowCount;
 
 	public SubcontinentsView() {
 		super(VIEW_NAME);
@@ -71,7 +72,8 @@ public class SubcontinentsView extends AbstractConfigurationView {
 		grid = new SubcontinentsGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(new RowCount(Strings.labelNumberOfSubcontinents, grid.getItemCount()));
+		rowCount = new RowCount(Strings.labelNumberOfSubcontinents, grid.getItemCount());
+		gridLayout.addComponent(rowCount);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -83,14 +85,14 @@ public class SubcontinentsView extends AbstractConfigurationView {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.SUBCONTINENT));
 				window.setCaption(I18nProperties.getString(Strings.headingImportSubcontinents));
-				window.addCloseListener(c -> grid.reload());
+				window.addCloseListener(c -> grid.reload(true));
 			}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(importButton);
 
 			importDefaultSubcontinentsButton = ButtonHelper.createIconButton(Captions.actionImportAllSubcontinents, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new ImportDefaultSubcontinentsLayout());
 				window.setCaption(I18nProperties.getString(Strings.headingImportAllSubcontinents));
-				window.addCloseListener(c -> grid.reload());
+				window.addCloseListener(c -> grid.reload(true));
 			}, ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(importDefaultSubcontinentsButton);
 		}
@@ -135,7 +137,7 @@ public class SubcontinentsView extends AbstractConfigurationView {
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
-				grid.setEagerDataProvider();
+				grid.setInEagerMode(true);
 				grid.reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
@@ -249,6 +251,7 @@ public class SubcontinentsView extends AbstractConfigurationView {
 		}
 		updateFilterComponents();
 		grid.reload();
+		rowCount.update(grid.getItemCount());
 	}
 
 	public void updateFilterComponents() {

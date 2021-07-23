@@ -99,6 +99,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 	public static final String LABORATORY_DIAGNOSTIC_EVIDENCE_DETAILS = "laboratoryDiagnosticEvidenceDetails";
 	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String EVENT_GROUP = "eventGroup";
+	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 
 	private EventReferenceDto superordinateEvent;
 
@@ -178,6 +179,8 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 
 	@HideForCountriesExcept
 	private String internalToken;
+
+	private EventIdentificationSource eventIdentificationSource;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -649,6 +652,14 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 
 	public void setInternalToken(String internalToken) {
 		this.internalToken = internalToken;
+	}
+
+	public EventIdentificationSource getEventIdentificationSource() {
+		return eventIdentificationSource;
+	}
+
+	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 
 	public EventReferenceDto toReference() {

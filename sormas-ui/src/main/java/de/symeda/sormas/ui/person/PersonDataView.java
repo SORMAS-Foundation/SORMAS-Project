@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.person;
 
+import static de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent.TRAVEL_ENTRIES_LOC;
+
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -16,6 +18,7 @@ import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.caze.caselink.CaseListComponent;
 import de.symeda.sormas.ui.contact.contactlink.ContactListComponent;
 import de.symeda.sormas.ui.events.eventParticipantLink.EventParticipantListComponent;
+import de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -62,7 +65,8 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, PERSON_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_PARTICIPANTS_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_PARTICIPANTS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TRAVEL_ENTRIES_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -118,6 +122,8 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			eventParticipantLayout.addComponent(eventParticipantList);
 			layout.addComponent(eventParticipantLayout, EVENT_PARTICIPANTS_LOC);
 		}
+
+		TravelEntryListComponent.addTravelEntryListComponent(layout, getReference());
 	}
 
 	@Override

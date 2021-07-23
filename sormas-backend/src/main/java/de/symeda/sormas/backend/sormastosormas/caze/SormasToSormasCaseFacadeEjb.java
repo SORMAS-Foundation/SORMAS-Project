@@ -20,9 +20,8 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CAS
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -31,12 +30,13 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
-import de.symeda.sormas.api.sormastosormas.ValidationErrors;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
@@ -64,6 +64,7 @@ public class SormasToSormasCaseFacadeEjb
 	public static final String CASE_REQUEST_GET_DATA_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_GET_DATA_ENDPOINT;
 	public static final String SAVE_SHARED_CASE_ENDPOINT = RESOURCE_PATH + CASE_ENDPOINT;
 	public static final String SYNC_CASE_ENDPOINT = RESOURCE_PATH + CASE_SYNC_ENDPOINT;
+	public static final String CASE_SHARES_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_SHARES_ENDPOINT;
 
 	@EJB
 	private CaseService caseService;
@@ -85,9 +86,11 @@ public class SormasToSormasCaseFacadeEjb
 			CASE_REQUEST_GET_DATA_ENDPOINT,
 			SAVE_SHARED_CASE_ENDPOINT,
 			SYNC_CASE_ENDPOINT,
+			CASE_SHARES_ENDPOINT,
 			Captions.CaseData,
 			ShareRequestDataType.CASE,
-			CaseShareRequestData.class);
+			CaseShareRequestData.class,
+			CaseSyncData.class);
 	}
 
 	@Override
@@ -116,24 +119,24 @@ public class SormasToSormasCaseFacadeEjb
 
 	@Override
 	protected void validateEntitiesBeforeShare(List<Case> entities, boolean handOverOwnership) throws SormasToSormasException {
-		Map<String, ValidationErrors> validationErrors = new HashMap<>();
+		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Case caze : entities) {
 			if (!caseService.isCaseEditAllowed(caze)) {
-				validationErrors.put(
+				validationErrors.add(new ValidationErrors(
 					buildCaseValidationGroupName(caze),
 					ValidationErrors
-						.create(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getString(Strings.errorSormasToSormasNotEditable)));
+						.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
 			}
 			if (handOverOwnership && caze.getPerson().isEnrolledInExternalJournal()) {
-				validationErrors.put(
+				validationErrors.add(new ValidationErrors(
 					buildCaseValidationGroupName(caze),
 					ValidationErrors
-						.create(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getString(Strings.errorSormasToSormasPersonEnrolled)));
+						.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
 			}
 		}
 
 		if (validationErrors.size() > 0) {
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasShare), validationErrors);
+			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
 		}
 	}
 
@@ -167,10 +170,15 @@ public class SormasToSormasCaseFacadeEjb
 		request.setCases(previews);
 	}
 
+	@Override
+	protected List<SormasToSormasShareInfo> getEntityShares(Case caze) {
+		return caze.getShareInfoCases().stream().map(ShareInfoCase::getShareInfo).collect(Collectors.toList());
+	}
+
 	private ValidationErrors validateSharedUuid(String uuid) {
 		ValidationErrors errors = new ValidationErrors();
 		if (caseFacade.exists(uuid)) {
-			errors.add(I18nProperties.getCaption(Captions.CaseData), I18nProperties.getValidationError(Validations.sormasToSormasCaseExists));
+			errors.add(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasCaseExists));
 		}
 
 		return errors;
