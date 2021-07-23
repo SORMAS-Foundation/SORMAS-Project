@@ -326,8 +326,13 @@ public class ContactImporter extends DataImporter {
 							pd.getWriteMethod().invoke(currentElement, district.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
-						List<CommunityReferenceDto> community =
-							FacadeProvider.getCommunityFacade().getByName(entry, ImporterPersonHelper.getPersonDistrict(pd.getName(), person), false);
+						List<CommunityReferenceDto> community = FacadeProvider.getCommunityFacade()
+							.getByName(
+								entry,
+								((ContactDto) currentElement).getDistrict() != null
+									? ((ContactDto) currentElement).getDistrict()
+									: ImporterPersonHelper.getPersonDistrict(pd.getName(), person),
+								false);
 						if (community.isEmpty()) {
 							throw new ImportErrorException(
 								I18nProperties.getValidationError(
