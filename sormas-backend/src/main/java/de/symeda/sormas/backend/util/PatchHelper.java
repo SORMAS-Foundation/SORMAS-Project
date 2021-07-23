@@ -98,7 +98,7 @@ public class PatchHelper {
 		List tempNewElementList = new ArrayList();
 
 		for (JsonNode listElement : jsonObjectFieldNode) {
-			T updatedObjectList = createOrUpdateElement(existingObject, existingObjectField, listElementClass, listElement);
+			T updatedObjectList = createOrUpdateListElement(existingObject, existingObjectField, listElementClass, listElement);
 			if (updatedObjectList != null) {
 				tempNewElementList.add(updatedObjectList);
 			}
@@ -185,7 +185,7 @@ public class PatchHelper {
 	 * @param <T>
 	 * @throws JsonProcessingException
 	 */
-	private static <T extends HasUuid> T createOrUpdateElement(
+	private static <T extends HasUuid> T createOrUpdateListElement(
 		T existingObject,
 		Field existingObjectField,
 		Class listElementClass,
