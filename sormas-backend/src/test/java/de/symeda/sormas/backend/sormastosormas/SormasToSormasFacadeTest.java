@@ -64,7 +64,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
-public class SormasToSormasFacadeTest extends AbstractBeanTest {
+public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 
 	// values are set in server-list.csv located in serveraccessdefault and serveraccesssecond
 	public static final String DEFAULT_SERVER_ACCESS_ID = "default";

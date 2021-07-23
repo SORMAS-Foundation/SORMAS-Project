@@ -63,9 +63,8 @@ public class CountriesGrid extends FilteredGrid<CountryIndexDto, CountryCriteria
 	public void reload(boolean forceFetch) {
 		if (forceFetch || allCountries == null) {
 			allCountries = FacadeProvider.getCountryFacade().getIndexList(null, null, null, null);
-		} else {
-			reload();
 		}
+		reload();
 	}
 
 	public void reload() {

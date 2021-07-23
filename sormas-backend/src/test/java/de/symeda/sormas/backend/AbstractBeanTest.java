@@ -192,7 +192,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 import info.novatec.beantest.api.BaseBeanTest;
 
-public class AbstractBeanTest extends BaseBeanTest {
+public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator(this);
 

@@ -262,7 +262,7 @@ public class LineListingLayout extends VerticalLayout {
 		}
 
 		public boolean hasErrors() {
-			return sharedInfoField.hasErrors() | contactLineField.hasErrors();
+			return sharedInfoField.hasErrors() || contactLineField.hasErrors();
 		}
 
 		public void enableDelete(boolean shouldEnable) {
