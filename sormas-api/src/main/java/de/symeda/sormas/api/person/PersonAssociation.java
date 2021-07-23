@@ -4,6 +4,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum PersonAssociation {
 
+	ALL,
 	CASE,
 	CONTACT,
 	EVENT_PARTICIPANT,
