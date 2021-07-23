@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="de.symeda.sormas.app.util.DateFormatHelper" />
+
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.backend.immunization.Immunization" />
+    </data>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill"
+        android:layout_weight="1"
+        android:background="@drawable/selector_list_activity_row_background"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin">
+
+        <LinearLayout
+            android:id="@+id/row_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_list_activity_row"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/rowListItemVerticalPadding"
+            android:paddingBottom="@dimen/rowListItemVerticalPadding">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/immunization_uuid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    app:defaultValue='@{@string/value_uuid_unknown}'
+                    app:shortUuid="@{true}"
+                    app:value="@{data.uuid}" />
+
+                <ImageView
+                    android:layout_width="@dimen/separatorThickness"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/contentHorizontalSpacing"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginRight="@dimen/contentHorizontalSpacing"
+                    android:layout_marginBottom="2dp"
+                    android:background="@color/listActivityRowTopCaptionSeparator" />
+
+                <TextView
+                    android:id="@+id/immunization_person_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    android:textColor="@color/listActivityRowPrimaryText"
+                    android:fontFamily="sans-serif-medium"
+                    android:scrollHorizontally="true"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    app:personValue="@{data.person}"
+                    app:defaultValue='@{@string/value_person_unknown}' />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="@dimen/listItemConentIndentRight"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/immunization_meansOfImmunization"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    app:value="@{data.meansOfImmunization}" />
+
+                <TextView
+                    android:id="@+id/immunization_immunizationManagementStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    app:value="@{data.immunizationManagementStatus}" />
+
+                <TextView
+                    android:id="@+id/immunization_immunizationStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    app:value="@{data.immunizationStatus}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="@dimen/listItemConentIndentRight"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/immunization_startDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    app:value="@{DateFormatHelper.formatLocalDate(data.startDate)}" />
+
+                <TextView
+                    android:id="@+id/immunization_endDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    app:value="@{DateFormatHelper.formatLocalDate(data.endDate)}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>
