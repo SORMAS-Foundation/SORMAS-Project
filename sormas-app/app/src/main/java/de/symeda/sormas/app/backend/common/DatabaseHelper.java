@@ -2636,7 +2636,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							" archived boolean DEFAULT false," +
 							" immunizationstatus varchar(255) not null," +
 							" meansofimmunization varchar(255) not null," +
-							" meansOfImmunizationDetails varchar(512)," +
+							" meansOfImmunizationDetails text," +
 							" immunizationmanagementstatus varchar(255) not null," +
 							" externalid varchar(255) not null," +
 							" responsibleregion_id bigint," +
@@ -2648,7 +2648,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							" numberofdoses int," +
 							" previousinfection varchar(255)," +
 							" lastinfectiondate timestamp," +
-							" additionaldetails varchar(512)," +
+							" additionaldetails text," +
 							" positivetestresultdate timestamp not null," +
 							" recoverydate timestamp not null," +
 							" relatedcase_id bigint)");
