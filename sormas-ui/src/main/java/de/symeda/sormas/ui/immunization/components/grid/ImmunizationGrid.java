@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.immunization.components;
+package de.symeda.sormas.ui.immunization.components.grid;
 
 import java.util.Date;
 import java.util.stream.Collectors;
