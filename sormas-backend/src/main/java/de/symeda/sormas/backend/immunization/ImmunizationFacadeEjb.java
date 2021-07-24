@@ -202,12 +202,12 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public long count(ImmunizationCriteria criteria) {
-		return immunizationService.count((cb, root) -> immunizationService.buildCriteriaFilter(criteria, cb, root));
+		return immunizationService.count(criteria);
 	}
 
 	@Override
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		return null;
+		return immunizationService.getIndexList(criteria, first, max, sortProperties);
 	}
 
 	public ImmunizationDto toDto(Immunization entity) {

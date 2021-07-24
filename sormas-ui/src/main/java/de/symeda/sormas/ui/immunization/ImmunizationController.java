@@ -9,6 +9,7 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.immunization.components.ImmunizationCreationForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -25,6 +26,11 @@ public class ImmunizationController {
 		if (immunizationCreateComponent != null) {
 			VaadinUiUtil.showModalPopupWindow(immunizationCreateComponent, I18nProperties.getString(Strings.headingCreateNewImmunization));
 		}
+	}
+
+	public void navigateToImmunization(String uuid) {
+		final String navigationState = ImmunizationDataView.VIEW_NAME + "/" + uuid;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
 	private CommitDiscardWrapperComponent<ImmunizationCreationForm> getImmunizationCreateComponent() {

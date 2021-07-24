@@ -1,20 +1,43 @@
 package de.symeda.sormas.ui.immunization;
 
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.immunization.components.ImmunizationGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 public class ImmunizationsView extends AbstractView {
 
 	public static final String VIEW_NAME = "immunizations";
 
+	private final ImmunizationCriteria criteria;
+
+	private final FilteredGrid<?, ImmunizationCriteria> grid;
+
 	public ImmunizationsView() {
 		super(VIEW_NAME);
+
+		criteria = ViewModelProviders.of(ImmunizationsView.class).get(ImmunizationCriteria.class);
+		grid = new ImmunizationGrid(criteria);
+
+		final VerticalLayout gridLayout = new VerticalLayout();
+		gridLayout.addComponent(grid);
+
+		gridLayout.setMargin(true);
+		gridLayout.setSpacing(false);
+		gridLayout.setSizeFull();
+		gridLayout.setExpandRatio(grid, 1);
+		gridLayout.setStyleName("crud-main-layout");
+
+		addComponent(gridLayout);
 
 		UserProvider currentUser = UserProvider.getCurrent();
 		if (currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_CREATE)) {
