@@ -55,228 +55,228 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 @Stateless(name = "ImmunizationFacade")
 public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
-	@EJB
-	private ImmunizationService immunizationService;
-	@EJB
-	private PersonService personService;
-	@EJB
-	private UserService userService;
-	@EJB
-	private RegionService regionService;
-	@EJB
-	private DistrictService districtService;
-	@EJB
-	private CommunityService communityService;
-	@EJB
-	private CaseService caseService;
-	@EJB
-	private CountryService countryService;
+    @EJB
+    private ImmunizationService immunizationService;
+    @EJB
+    private PersonService personService;
+    @EJB
+    private UserService userService;
+    @EJB
+    private RegionService regionService;
+    @EJB
+    private DistrictService districtService;
+    @EJB
+    private CommunityService communityService;
+    @EJB
+    private CaseService caseService;
+    @EJB
+    private CountryService countryService;
 
-	public static ImmunizationReferenceDto toReferenceDto(Immunization entity) {
-		if (entity == null) {
-			return null;
-		}
-		return new ImmunizationReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalId());
-	}
+    public static ImmunizationReferenceDto toReferenceDto(Immunization entity) {
+        if (entity == null) {
+            return null;
+        }
+        return new ImmunizationReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalId());
+    }
 
-	public static ImmunizationReferenceDto toReferenceDto(ImmunizationDto dto) {
-		if (dto == null) {
-			return null;
-		}
-		return new ImmunizationReferenceDto(dto.getUuid(), dto.toString(), dto.getExternalId());
-	}
+    public static ImmunizationReferenceDto toReferenceDto(ImmunizationDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        return new ImmunizationReferenceDto(dto.getUuid(), dto.toString(), dto.getExternalId());
+    }
 
-	@Override
-	public ImmunizationDto getByUuid(String uuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
-		return convertToDto(immunizationService.getByUuid(uuid), pseudonymizer);
-	}
+    @Override
+    public ImmunizationDto getByUuid(String uuid) {
+        Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
+        return convertToDto(immunizationService.getByUuid(uuid), pseudonymizer);
+    }
 
-	@Override
-	public void archive(String uuid) {
-		Immunization immunization = immunizationService.getByUuid(uuid);
-		if (immunization != null) {
-			immunization.setArchived(true);
-			immunizationService.ensurePersisted(immunization);
-		}
-	}
+    @Override
+    public void archive(String uuid) {
+        Immunization immunization = immunizationService.getByUuid(uuid);
+        if (immunization != null) {
+            immunization.setArchived(true);
+            immunizationService.ensurePersisted(immunization);
+        }
+    }
 
-	@Override
-	public void dearchive(String uuid) {
-		Immunization immunization = immunizationService.getByUuid(uuid);
-		if (immunization != null) {
-			immunization.setArchived(false);
-			immunizationService.ensurePersisted(immunization);
-		}
-	}
+    @Override
+    public void dearchive(String uuid) {
+        Immunization immunization = immunizationService.getByUuid(uuid);
+        if (immunization != null) {
+            immunization.setArchived(false);
+            immunizationService.ensurePersisted(immunization);
+        }
+    }
 
-	@Override
-	public List<ImmunizationDto> getAllAfter(Date date) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
-		return immunizationService.getAllActiveAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
-	}
+    @Override
+    public List<ImmunizationDto> getAllAfter(Date date) {
+        Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
+        return immunizationService.getAllActiveAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+    }
 
-	@Override
-	public List<ImmunizationDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
-		return immunizationService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
-	}
+    @Override
+    public List<ImmunizationDto> getByUuids(List<String> uuids) {
+        Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
+        return immunizationService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+    }
 
-	@Override
-	public List<String> getAllUuids() {
-		return immunizationService.getAllUuids();
-	}
+    @Override
+    public List<String> getAllUuids() {
+        return immunizationService.getAllUuids();
+    }
 
-	@Override
-	public List<String> getArchivedUuidsSince(Date since) {
+    @Override
+    public List<String> getArchivedUuidsSince(Date since) {
 
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
+        if (userService.getCurrentUser() == null) {
+            return Collections.emptyList();
+        }
 
-		return immunizationService.getArchivedUuidsSince(since);
-	}
+        return immunizationService.getArchivedUuidsSince(since);
+    }
 
-	@Override
-	public List<String> getDeletedUuidsSince(Date since) {
+    @Override
+    public List<String> getDeletedUuidsSince(Date since) {
 
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-		return immunizationService.getDeletedUuidsSince(since);
-	}
+        if (userService.getCurrentUser() == null) {
+            return Collections.emptyList();
+        }
+        return immunizationService.getDeletedUuidsSince(since);
+    }
 
-	@Override
-	public ImmunizationDto save(ImmunizationDto dto) {
-		Immunization existingImmunization = dto.getUuid() != null ? immunizationService.getByUuid(dto.getUuid()) : null;
-		ImmunizationDto existingDto = toDto(existingImmunization);
+    @Override
+    public ImmunizationDto save(ImmunizationDto dto) {
+        Immunization existingImmunization = dto.getUuid() != null ? immunizationService.getByUuid(dto.getUuid()) : null;
+        ImmunizationDto existingDto = toDto(existingImmunization);
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		restorePseudonymizedDto(dto, existingDto, existingImmunization, pseudonymizer);
+        Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+        restorePseudonymizedDto(dto, existingDto, existingImmunization, pseudonymizer);
 
-		validate(dto);
+        validate(dto);
 
-		existingImmunization = fillOrBuildEntity(dto, existingImmunization, true);
-		immunizationService.ensurePersisted(existingImmunization);
+        existingImmunization = fillOrBuildEntity(dto, existingImmunization, true);
+        immunizationService.ensurePersisted(existingImmunization);
 
-		return convertToDto(existingImmunization, pseudonymizer);
-	}
+        return convertToDto(existingImmunization, pseudonymizer);
+    }
 
-	public ImmunizationDto convertToDto(Immunization source, Pseudonymizer pseudonymizer) {
+    public ImmunizationDto convertToDto(Immunization source, Pseudonymizer pseudonymizer) {
 
-		ImmunizationDto dto = toDto(source);
+        ImmunizationDto dto = toDto(source);
 
-		pseudonymizeDto(source, dto, pseudonymizer);
+        pseudonymizeDto(source, dto, pseudonymizer);
 
-		return dto;
-	}
+        return dto;
+    }
 
-	private void pseudonymizeDto(Immunization source, ImmunizationDto dto, Pseudonymizer pseudonymizer) {
-		if (dto != null) {
-			boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(source);
-			pseudonymizer.pseudonymizeDto(ImmunizationDto.class, dto, inJurisdiction, c -> {
-				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
-				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), inJurisdiction, null);
-			});
-		}
-	}
+    private void pseudonymizeDto(Immunization source, ImmunizationDto dto, Pseudonymizer pseudonymizer) {
+        if (dto != null) {
+            boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(source);
+            pseudonymizer.pseudonymizeDto(ImmunizationDto.class, dto, inJurisdiction, c -> {
+                User currentUser = userService.getCurrentUser();
+                pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+                pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), inJurisdiction, null);
+            });
+        }
+    }
 
-	private void restorePseudonymizedDto(ImmunizationDto dto, ImmunizationDto existingDto, Immunization immunization, Pseudonymizer pseudonymizer) {
-		if (existingDto != null) {
-			final boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(immunization);
-			final User currentUser = userService.getCurrentUser();
-			pseudonymizer.restoreUser(immunization.getReportingUser(), currentUser, dto, dto::setReportingUser);
-			pseudonymizer.restorePseudonymizedValues(ImmunizationDto.class, dto, existingDto, inJurisdiction);
-		}
-	}
+    private void restorePseudonymizedDto(ImmunizationDto dto, ImmunizationDto existingDto, Immunization immunization, Pseudonymizer pseudonymizer) {
+        if (existingDto != null) {
+            final boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(immunization);
+            final User currentUser = userService.getCurrentUser();
+            pseudonymizer.restoreUser(immunization.getReportingUser(), currentUser, dto, dto::setReportingUser);
+            pseudonymizer.restorePseudonymizedValues(ImmunizationDto.class, dto, existingDto, inJurisdiction);
+        }
+    }
 
-	@Override
-	public void validate(ImmunizationDto immunizationDto) throws ValidationRuntimeException {
+    @Override
+    public void validate(ImmunizationDto immunizationDto) throws ValidationRuntimeException {
 
-		// Check whether any required field that does not have a not null constraint in the database is empty
-		if (immunizationDto.getPerson() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
-		}
-	}
+        // Check whether any required field that does not have a not null constraint in the database is empty
+        if (immunizationDto.getPerson() == null) {
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
+        }
+    }
 
-	@Override
-	public long count(ImmunizationCriteria criteria) {
-		return immunizationService.count(criteria);
-	}
+    @Override
+    public long count(ImmunizationCriteria criteria) {
+        return immunizationService.count(criteria);
+    }
 
-	@Override
-	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		return immunizationService.getIndexList(criteria, first, max, sortProperties);
-	}
+    @Override
+    public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+        return immunizationService.getIndexList(criteria, first, max, sortProperties);
+    }
 
-	public ImmunizationDto toDto(Immunization entity) {
-		if (entity == null) {
-			return null;
-		}
-		ImmunizationDto dto = new ImmunizationDto();
-		DtoHelper.fillDto(dto, entity);
+    public ImmunizationDto toDto(Immunization entity) {
+        if (entity == null) {
+            return null;
+        }
+        ImmunizationDto dto = new ImmunizationDto();
+        DtoHelper.fillDto(dto, entity);
 
-		dto.setDisease(entity.getDisease());
-		dto.setPerson(PersonFacadeEjb.toReferenceDto(entity.getPerson()));
-		dto.setReportDate(entity.getReportDate());
-		dto.setReportingUser(entity.getReportingUser().toReference());
-		dto.setArchived(entity.isArchived());
-		dto.setImmunizationStatus(entity.getImmunizationStatus());
-		dto.setMeansOfImmunization(entity.getMeansOfImmunization());
-		dto.setMeansOfImmunizationDetails(entity.getMeansOfImmunizationDetails());
-		dto.setImmunizationManagementStatus(entity.getImmunizationManagementStatus());
-		dto.setExternalId(entity.getExternalId());
-		dto.setResponsibleRegion(RegionFacadeEjb.toReferenceDto(entity.getResponsibleRegion()));
-		dto.setResponsibleDistrict(DistrictFacadeEjb.toReferenceDto(entity.getResponsibleDistrict()));
-		dto.setResponsibleCommunity(CommunityFacadeEjb.toReferenceDto(entity.getResponsibleCommunity()));
-		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
-		dto.setStartDate(entity.getStartDate());
-		dto.setEndDate(entity.getEndDate());
-		dto.setNumberOfDoses(entity.getNumberOfDoses());
-		dto.setPreviousInfection(entity.getPreviousInfection());
-		dto.setLastInfectionDate(entity.getLastInfectionDate());
-		dto.setAdditionalDetails(entity.getAdditionalDetails());
-		dto.setPositiveTestResultDate(entity.getPositiveTestResultDate());
-		dto.setRecoveryDate(entity.getRecoveryDate());
-		dto.setRelatedCase(CaseFacadeEjb.toReferenceDto(entity.getRelatedCase()));
+        dto.setDisease(entity.getDisease());
+        dto.setPerson(PersonFacadeEjb.toReferenceDto(entity.getPerson()));
+        dto.setReportDate(entity.getReportDate());
+        dto.setReportingUser(entity.getReportingUser().toReference());
+        dto.setArchived(entity.isArchived());
+        dto.setImmunizationStatus(entity.getImmunizationStatus());
+        dto.setMeansOfImmunization(entity.getMeansOfImmunization());
+        dto.setMeansOfImmunizationDetails(entity.getMeansOfImmunizationDetails());
+        dto.setImmunizationManagementStatus(entity.getImmunizationManagementStatus());
+        dto.setExternalId(entity.getExternalId());
+        dto.setResponsibleRegion(RegionFacadeEjb.toReferenceDto(entity.getResponsibleRegion()));
+        dto.setResponsibleDistrict(DistrictFacadeEjb.toReferenceDto(entity.getResponsibleDistrict()));
+        dto.setResponsibleCommunity(CommunityFacadeEjb.toReferenceDto(entity.getResponsibleCommunity()));
+        dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
+        dto.setStartDate(entity.getStartDate());
+        dto.setEndDate(entity.getEndDate());
+        dto.setNumberOfDoses(entity.getNumberOfDoses());
+        dto.setPreviousInfection(entity.getPreviousInfection());
+        dto.setLastInfectionDate(entity.getLastInfectionDate());
+        dto.setAdditionalDetails(entity.getAdditionalDetails());
+        dto.setPositiveTestResultDate(entity.getPositiveTestResultDate());
+        dto.setRecoveryDate(entity.getRecoveryDate());
+        dto.setRelatedCase(CaseFacadeEjb.toReferenceDto(entity.getRelatedCase()));
 
-		return dto;
-	}
+        return dto;
+    }
 
-	private Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, checkChangeDate);
+    private Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target, boolean checkChangeDate) {
+        target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, checkChangeDate);
 
-		target.setDisease(source.getDisease());
-		target.setPerson(personService.getByReferenceDto(source.getPerson()));
-		target.setReportDate(source.getReportDate());
-		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
-		target.setArchived(source.isArchived());
-		target.setImmunizationStatus(source.getImmunizationStatus());
-		target.setMeansOfImmunization(source.getMeansOfImmunization());
-		target.setMeansOfImmunizationDetails(source.getMeansOfImmunizationDetails());
-		target.setImmunizationManagementStatus(source.getImmunizationManagementStatus());
-		target.setExternalId(source.getExternalId());
-		target.setResponsibleRegion(regionService.getByReferenceDto(source.getResponsibleRegion()));
-		target.setResponsibleDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
-		target.setResponsibleCommunity(communityService.getByReferenceDto(source.getResponsibleCommunity()));
-		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
-		target.setStartDate(source.getStartDate());
-		target.setEndDate(source.getEndDate());
-		target.setNumberOfDoses(source.getNumberOfDoses());
-		target.setPreviousInfection(source.getPreviousInfection());
-		target.setLastInfectionDate(source.getLastInfectionDate());
-		target.setAdditionalDetails(source.getAdditionalDetails());
-		target.setPositiveTestResultDate(source.getPositiveTestResultDate());
-		target.setRecoveryDate(source.getRecoveryDate());
-		target.setRelatedCase(caseService.getByReferenceDto(source.getRelatedCase()));
+        target.setDisease(source.getDisease());
+        target.setPerson(personService.getByReferenceDto(source.getPerson()));
+        target.setReportDate(source.getReportDate());
+        target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+        target.setArchived(source.isArchived());
+        target.setImmunizationStatus(source.getImmunizationStatus());
+        target.setMeansOfImmunization(source.getMeansOfImmunization());
+        target.setMeansOfImmunizationDetails(source.getMeansOfImmunizationDetails());
+        target.setImmunizationManagementStatus(source.getImmunizationManagementStatus());
+        target.setExternalId(source.getExternalId());
+        target.setResponsibleRegion(regionService.getByReferenceDto(source.getResponsibleRegion()));
+        target.setResponsibleDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
+        target.setResponsibleCommunity(communityService.getByReferenceDto(source.getResponsibleCommunity()));
+        target.setCountry(countryService.getByReferenceDto(source.getCountry()));
+        target.setStartDate(source.getStartDate());
+        target.setEndDate(source.getEndDate());
+        target.setNumberOfDoses(source.getNumberOfDoses());
+        target.setPreviousInfection(source.getPreviousInfection());
+        target.setLastInfectionDate(source.getLastInfectionDate());
+        target.setAdditionalDetails(source.getAdditionalDetails());
+        target.setPositiveTestResultDate(source.getPositiveTestResultDate());
+        target.setRecoveryDate(source.getRecoveryDate());
+        target.setRelatedCase(caseService.getByReferenceDto(source.getRelatedCase()));
 
-		return target;
-	}
+        return target;
+    }
 
-	@LocalBean
-	@Stateless
-	public static class ImmunizationFacadeEjbLocal extends ImmunizationFacadeEjb {
+    @LocalBean
+    @Stateless
+    public static class ImmunizationFacadeEjbLocal extends ImmunizationFacadeEjb {
 
-	}
+    }
 }

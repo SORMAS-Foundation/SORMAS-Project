@@ -175,11 +175,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public Predicate inJurisdictionOrOwned(ImmunizationQueryContext<Immunization> qc) {
-		final User currentUser = userService.getCurrentUser();
-		return ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
-	}
-
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> immunizationPath) {
 		return inJurisdictionOrOwned(new ImmunizationQueryContext(cb, cq, immunizationPath));
@@ -187,17 +182,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Immunization> root) {
 		return cb.isFalse(root.get(Immunization.DELETED));
-	}
-
-	public Predicate buildCriteriaFilter(ImmunizationCriteria criteria, ImmunizationQueryContext<Immunization> immunizationQueryContext) {
-		final ImmunizationJoins joins = (ImmunizationJoins) immunizationQueryContext.getJoins();
-		final CriteriaBuilder cb = immunizationQueryContext.getCriteriaBuilder();
-		final From<?, ?> from = immunizationQueryContext.getRoot();
-		Join<Immunization, Person> person = joins.getPerson();
-
-		Predicate filter = null;
-
-		return filter;
 	}
 
 	public List<Immunization> getAllActiveAfter(Date date) {
@@ -289,5 +273,21 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> immunizationQueryContext) {
 		return inJurisdictionOrOwned(immunizationQueryContext);
+	}
+
+	private Predicate inJurisdictionOrOwned(ImmunizationQueryContext<Immunization> qc) {
+		final User currentUser = userService.getCurrentUser();
+		return ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+	}
+
+	private Predicate buildCriteriaFilter(ImmunizationCriteria criteria, ImmunizationQueryContext<Immunization> immunizationQueryContext) {
+		final ImmunizationJoins joins = (ImmunizationJoins) immunizationQueryContext.getJoins();
+		final CriteriaBuilder cb = immunizationQueryContext.getCriteriaBuilder();
+		final From<?, ?> from = immunizationQueryContext.getRoot();
+		Join<Immunization, Person> person = joins.getPerson();
+
+		Predicate filter = null;
+
+		return filter;
 	}
 }
