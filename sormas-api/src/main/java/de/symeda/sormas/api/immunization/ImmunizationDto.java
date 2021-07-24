@@ -25,6 +25,7 @@ import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
@@ -88,6 +89,19 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private Date recoveryDate;
 
 	private CaseReferenceDto relatedCase;
+
+	public static ImmunizationDto build(PersonReferenceDto person) {
+
+		final ImmunizationDto immunizationDto = new ImmunizationDto();
+		immunizationDto.setUuid(DataHelper.createUuid());
+		immunizationDto.setPerson(person);
+		immunizationDto.setReportDate(new Date());
+
+		// are these mandatory?
+		immunizationDto.setPositiveTestResultDate(new Date());
+		immunizationDto.setRecoveryDate(new Date());
+		return immunizationDto;
+	}
 
 	public Disease getDisease() {
 		return disease;

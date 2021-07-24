@@ -735,6 +735,7 @@ public interface Strings {
 	String infoSelectOrCreatePersonForCase = "infoSelectOrCreatePersonForCase";
 	String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
+	String infoSelectOrCreatePersonForImmunization = "infoSelectOrCreatePersonForImmunization";
 	String infoSelectOrCreatePersonForImport = "infoSelectOrCreatePersonForImport";
 	String infoSelectOrCreatePersonForLabMessage = "infoSelectOrCreatePersonForLabMessage";
 	String infoSkipOrOverrideDuplicateCampaignFormDataImport = "infoSkipOrOverrideDuplicateCampaignFormDataImport";

@@ -13,6 +13,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import java.util.Collections;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -89,7 +91,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		TextField externalIdField = addField(ImmunizationDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		ComboBox diseaseField = addDiseaseField(ImmunizationDto.DISEASE, false);
+		addDiseaseField(ImmunizationDto.DISEASE, false);
 
 		ComboBox meansOfImmunizationField = addField(ImmunizationDto.MEANS_OF_IMMUNIZATION, ComboBox.class);
 		addField(ImmunizationDto.MEANS_OF_IMMUNIZATION_DETAILS, TextField.class);
@@ -101,7 +103,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		managementStatusField.setValue(ImmunizationManagementStatus.SCHEDULED);
 		managementStatusField.setEnabled(false);
 
-		ComboBox immunizationStatusField = addField(ImmunizationDto.IMMUNIZATION_STATUS, ComboBox.class);
+		ComboBox immunizationStatusField = addCustomField(ImmunizationDto.IMMUNIZATION_STATUS, ImmunizationStatus.class, ComboBox.class);
 		immunizationStatusField.setValue(ImmunizationStatus.PENDING);
 		immunizationStatusField.setEnabled(false);
 
@@ -270,5 +272,40 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		if (birthDateDay.containsId(currentlySelected)) {
 			birthDateDay.setValue(currentlySelected);
 		}
+	}
+
+	public PersonDto getPerson() {
+		PersonDto person = PersonDto.build();
+
+		person.setFirstName((String) getField(PersonDto.FIRST_NAME).getValue());
+		person.setLastName((String) getField(PersonDto.LAST_NAME).getValue());
+		person.setBirthdateDD((Integer) getField(PersonDto.BIRTH_DATE_DD).getValue());
+		person.setBirthdateMM((Integer) getField(PersonDto.BIRTH_DATE_MM).getValue());
+		person.setBirthdateYYYY((Integer) getField(PersonDto.BIRTH_DATE_YYYY).getValue());
+		person.setSex((Sex) getField(PersonDto.SEX).getValue());
+		person.setPresentCondition((PresentCondition) getField(PersonDto.PRESENT_CONDITION).getValue());
+
+		String phone = (String) getField(PersonDto.PHONE).getValue();
+		if (StringUtils.isNotEmpty(phone)) {
+			person.setPhone(phone);
+		}
+
+		String emailAddress = (String) getField(PersonDto.EMAIL_ADDRESS).getValue();
+		if (StringUtils.isNotEmpty(emailAddress)) {
+			person.setEmailAddress(emailAddress);
+		}
+
+		person.setNationalHealthId((String) getField(PersonDto.NATIONAL_HEALTH_ID).getValue());
+		person.setPassportNumber((String) getField(PersonDto.PASSPORT_NUMBER).getValue());
+
+		return person;
+	}
+
+	@Override
+	public ImmunizationDto getValue() {
+		ImmunizationDto immunizationDto = super.getValue();
+		immunizationDto.setImmunizationManagementStatus((ImmunizationManagementStatus) getField(ImmunizationDto.MANAGEMENT_STATUS).getValue());
+		immunizationDto.setImmunizationStatus((ImmunizationStatus) getField(ImmunizationDto.IMMUNIZATION_STATUS).getValue());
+		return immunizationDto;
 	}
 }
