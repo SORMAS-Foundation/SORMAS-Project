@@ -13,7 +13,9 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -171,6 +173,19 @@ public class PersonsView extends AbstractView {
 
 		associationButtons = new HashMap<>();
 		for (PersonAssociation association : PersonAssociation.values()) {
+			if (association == PersonAssociation.IMMUNIZATION
+				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+				|| association == PersonAssociation.TRAVEL_ENTRY
+					&& !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+				|| association == PersonAssociation.CONTACT
+					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CONTACT_TRACING)
+				|| association == PersonAssociation.CASE
+					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CASE_SURVEILANCE)
+				|| association == PersonAssociation.EVENT_PARTICIPANT
+					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE)) {
+				continue;
+			}
+
 			Button associationButton = ButtonHelper.createButton(association.toString(), e -> {
 				if (!UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER) && association == PersonAssociation.ALL) {
 					Label contentLabel = new Label(I18nProperties.getString(Strings.confirmationSeeAllPersons));

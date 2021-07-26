@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.labmessage.TestReportFacade;
+import de.symeda.sormas.backend.labmessage.TestReportFacadeEjb;
+import de.symeda.sormas.backend.labmessage.TestReportService;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import org.junit.Before;
@@ -661,5 +664,13 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public SormasToSormasShareRequestService getSormasToSormasShareRequestService() {
 		return getBean(SormasToSormasShareRequestService.class);
+	}
+
+	public TestReportFacade getTestReportFacade() {
+		return getBean(TestReportFacadeEjb.TestReportFacadeEjbLocal.class);
+	}
+
+	public TestReportService getTestReportService() {
+		return getBean(TestReportService.class);
 	}
 }

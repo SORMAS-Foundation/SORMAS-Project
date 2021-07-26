@@ -98,10 +98,6 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 		labMessage.setSampleDateTime(dateValue);
 		labMessage.setSampleMaterial(SampleMaterial.RECTAL_SWAB);
 		labMessage.setLabSampleId("Test lab sample ID");
-		labMessage.setTestType(PathogenTestType.CULTURE);
-		labMessage.setTestDateTime(dateValue);
-		labMessage.setTestResult(PathogenTestResultType.PENDING);
-		labMessage.setTestResultVerified(true);
 		labMessage.setPersonFirstName("James");
 		labMessage.setPersonLastName("Smith");
 		labMessage.setPersonPostalCode("test postal code");
@@ -114,10 +110,6 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 		assertThat(labMessage.getSampleDateTime().getTime(), is(dateTime));
 		assertThat(labMessage.getSampleMaterial(), is(SampleMaterial.RECTAL_SWAB));
 		assertThat(labMessage.getLabSampleId(), is("Test lab sample ID"));
-		assertThat(labMessage.getTestType(), is(PathogenTestType.CULTURE));
-		assertThat(labMessage.getTestDateTime().getTime(), is(dateTime));
-		assertThat(labMessage.getTestResult(), is(PathogenTestResultType.PENDING));
-		assertThat(labMessage.isTestResultVerified(), is(true));
 		assertThat(labMessage.getPersonFirstName(), is("James"));
 		assertThat(labMessage.getPersonLastName(), is("Smith"));
 		assertThat(labMessage.getPersonPostalCode(), is("test postal code"));

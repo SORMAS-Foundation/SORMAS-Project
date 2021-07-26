@@ -226,5 +226,5 @@
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
-	</build>
+    </build>
 </project>

@@ -15,7 +15,6 @@ public class LabMessageIndexDto implements Serializable {
 	public static final String TEST_LAB_NAME = "testLabName";
 	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
 	public static final String TESTED_DISEASE = "testedDisease";
-	public static final String TEST_RESULT = "testResult";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
@@ -27,22 +26,15 @@ public class LabMessageIndexDto implements Serializable {
 	private String testLabName;
 	private String testLabPostalCode;
 	private Disease testedDisease;
-	private PathogenTestResultType testResult;
 	private String personFirstName;
 	private String personLastName;
 	private String personPostalCode;
 	private LabMessageStatus status;
 
-	public LabMessageIndexDto(
-			String uuid,
-			Date messageDateTime,
-			String testLabName,
-			String testLabPostalCode,
-			Disease testedDisease,
-			PathogenTestResultType testResult,
-			String personFirstName,
-			String personLastName,
-			String personPostalCode,
+	public LabMessageIndexDto(String uuid, Date messageDateTime, String testLabName, String testLabPostalCode, Disease testedDisease,
+		String personFirstName,
+		String personLastName,
+		String personPostalCode,
 		LabMessageStatus status) {
 
 		this.uuid = uuid;
@@ -50,7 +42,6 @@ public class LabMessageIndexDto implements Serializable {
 		this.testLabName = testLabName;
 		this.testLabPostalCode = testLabPostalCode;
 		this.testedDisease = testedDisease;
-		this.testResult = testResult;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.personPostalCode = personPostalCode;
@@ -95,14 +86,6 @@ public class LabMessageIndexDto implements Serializable {
 
 	public void setTestedDisease(Disease testedDisease) {
 		this.testedDisease = testedDisease;
-	}
-
-	public PathogenTestResultType getTestResult() {
-		return testResult;
-	}
-
-	public void setTestResult(PathogenTestResultType testResult) {
-		this.testResult = testResult;
 	}
 
 	public String getPersonFirstName() {
