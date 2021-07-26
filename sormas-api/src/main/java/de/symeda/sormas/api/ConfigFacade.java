@@ -91,6 +91,8 @@ public interface ConfigFacade {
 
 	int getDaysAfterSystemEventGetsDeleted();
 
+	int getDaysAfterTravelEntryGetsArchived();
+
 	GeoLatLon getCountryCenter();
 
 	boolean isMapUseCountryCenter();
@@ -109,11 +111,9 @@ public interface ConfigFacade {
 
 	PatientDiaryConfig getPatientDiaryConfig();
 
-	String getSormasToSormasUserPassword();
-
 	void validateExternalUrls();
 
-	SormasToSormasConfig getSormasToSormasConfig();
+	SormasToSormasConfig getS2SConfig();
 
 	String getExternalSurveillanceToolGatewayUrl();
 

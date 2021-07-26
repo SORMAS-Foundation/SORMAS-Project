@@ -1,5 +1,9 @@
 package de.symeda.sormas.backend.feature;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.stream.Collectors;
+
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -17,6 +21,12 @@ public class FeatureConfigurationServiceTest extends AbstractBeanTest {
 		createConfigurations();
 		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
 		featureConfigurationService.createMissingFeatureConfigurations();
+		assertTrue(
+			featureConfigurationService.getAll()
+				.stream()
+				.map(e -> e.getFeatureType())
+				.collect(Collectors.toList())
+				.containsAll(FeatureType.getAllServerFeatures()));
 	}
 
 	@Test

@@ -45,8 +45,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.labmessage.LabMessage;
 import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.labmessage.LabMessageService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClient;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 
 @Stateless(name = "SormasToSormasLabMessageFacade")
 public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessageFacade {
@@ -61,13 +61,13 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 	private SormasToSormasRestClient sormasToSormasRestClient;
 
 	@EJB
-	private SormasToSormasEncryptionService encryptionService;
+	private SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb;
 
 	@Override
 	public void sendLabMessages(List<String> uuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
 		List<LabMessage> labMessages = labMessageService.getByUuids(uuids);
 		List<LabMessageDto> dtos = labMessages.stream().map(labMessageFacade::toDto).collect(Collectors.toList());
-		sormasToSormasRestClient.post(options.getOrganization().getUuid(), SAVE_SHARED_LAB_MESSAGE_ENDPOINT, dtos, null);
+		sormasToSormasRestClient.post(options.getOrganization().getId(), SAVE_SHARED_LAB_MESSAGE_ENDPOINT, dtos, null);
 
 		labMessages.forEach(labMessage -> {
 			labMessage.setStatus(LabMessageStatus.FORWARDED);
@@ -77,7 +77,7 @@ public class SormasToSormasLabMessageFacadeEjb implements SormasToSormasLabMessa
 
 	@Override
 	public void saveLabMessages(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
-		LabMessageDto[] sharedLabMessages = encryptionService.decryptAndVerify(encryptedData, LabMessageDto[].class);
+		LabMessageDto[] sharedLabMessages = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedData, LabMessageDto[].class);
 
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		List<LabMessageDto> labMessagesToSave = new ArrayList<>(sharedLabMessages.length);

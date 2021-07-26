@@ -27,6 +27,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -65,8 +66,10 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
+import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -106,7 +109,12 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -152,6 +160,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	@EJB
 	private ContactService contactService;
 	@EJB
+	private ContactFacadeEjbLocal contactFacade;
+	@EJB
 	private FacilityService facilityService;
 	@EJB
 	private RegionService regionService;
@@ -175,6 +185,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	private UserFacadeEjbLocal userFacade;
 	@EJB
 	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
+	@EJB
+	private EventParticipantService eventParticipantService;
+	@EJB
+	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -368,6 +382,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	 *             if the passed source person to be saved contains invalid data
 	 */
 	public PersonDto savePerson(PersonDto source, boolean checkChangeDate) throws ValidationRuntimeException {
+		return savePerson(source, checkChangeDate, true);
+	}
+
+	public PersonDto savePerson(PersonDto source, boolean checkChangeDate, boolean syncShares) throws ValidationRuntimeException {
 		Person person = personService.getByUuid(source.getUuid());
 
 		PersonDto existingPerson = toDto(person);
@@ -385,7 +403,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		personService.ensurePersisted(person);
 
-		onPersonChanged(existingPerson, person);
+		onPersonChanged(existingPerson, person, syncShares);
 
 		return convertToDto(
 			person,
@@ -886,7 +904,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
 
-		Predicate filter = personService.createUserFilter(personQueryContext);
+		Predicate filter = personService.createUserFilter(personQueryContext, criteria);
 		if (criteria != null) {
 			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
@@ -956,13 +974,32 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	public void onPersonChanged(PersonDto existingPerson, Person newPerson) {
+		onPersonChanged(existingPerson, newPerson, true);
+	}
+
+	public void onPersonChanged(PersonDto existingPerson, Person newPerson, boolean syncShares) {
 
 		List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
 		// Call onCaseChanged once for every case to update case classification
 		// Attention: this may lead to infinite recursion when not properly implemented
 		for (Case personCase : personCases) {
 			CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
-			caseFacade.onCaseChanged(existingCase, personCase);
+			caseFacade.onCaseChanged(existingCase, personCase, syncShares);
+		}
+
+		List<Contact> personContacts = contactService.findBy(new ContactCriteria().setPerson(new PersonReferenceDto(newPerson.getUuid())), null);
+		// Call onContactChanged once for every contact
+		// Attention: this may lead to infinite recursion when not properly implemented
+		for (Contact personContact : personContacts) {
+			contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(personContact), syncShares);
+		}
+
+		List<EventParticipant> personEventParticipants =
+			eventParticipantService.findBy(new EventParticipantCriteria().withPerson(new PersonReferenceDto(newPerson.getUuid())), null);
+		// Call onEventParticipantChange once for every event participant
+		// Attention: this may lead to infinite recursion when not properly implemented
+		for (EventParticipant personEventParticipant : personEventParticipants) {
+			eventParticipantFacade.onEventParticipantChanged(EventFacadeEjbLocal.toDto(personEventParticipant.getEvent()), syncShares);
 		}
 
 		// get the updated personCases
@@ -993,7 +1030,7 @@ public class PersonFacadeEjb implements PersonFacade {
 						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 						personCase.setOutcome(CaseOutcome.DECEASED);
 						personCase.setOutcomeDate(newPerson.getDeathDate());
-						caseFacade.onCaseChanged(existingCase, personCase);
+						caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 					}
 				} else if (!newPerson.getPresentCondition().isDeceased()
 					&& (existingPerson.getPresentCondition() == PresentCondition.DEAD
@@ -1011,12 +1048,12 @@ public class PersonFacadeEjb implements PersonFacade {
 						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 						personCase.setOutcome(CaseOutcome.NO_OUTCOME);
 						personCase.setOutcomeDate(null);
-						caseFacade.onCaseChanged(existingCase, personCase);
+						caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 					}
 				}
 			} else if (newPerson.getPresentCondition() != null
 				&& newPerson.getPresentCondition().isDeceased()
-				&& newPerson.getDeathDate() != existingPerson.getDeathDate()
+				&& !Objects.equals(newPerson.getDeathDate(), existingPerson.getDeathDate())
 				&& newPerson.getDeathDate() != null) {
 				// only Deathdate has changed
 				// update the latest associated case to the new deathdate, if causeOfDeath matches
@@ -1026,7 +1063,7 @@ public class PersonFacadeEjb implements PersonFacade {
 					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE) {
 					CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 					personCase.setOutcomeDate(newPerson.getDeathDate());
-					caseFacade.onCaseChanged(existingCase, personCase);
+					caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 				}
 			}
 		}
@@ -1058,7 +1095,7 @@ public class PersonFacadeEjb implements PersonFacade {
 						personCase.setCaseAge(0);
 					}
 				}
-				caseFacade.onCaseChanged(existingCase, personCase);
+				caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 			}
 		}
 
@@ -1075,7 +1112,7 @@ public class PersonFacadeEjb implements PersonFacade {
 					personCase.setPregnant(null);
 					personCase.setTrimester(null);
 					personCase.setPostpartum(null);
-					caseFacade.onCaseChanged(existingCase, personCase);
+					caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 				}
 			}
 		}
@@ -1097,9 +1134,9 @@ public class PersonFacadeEjb implements PersonFacade {
 			final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 			Predicate noLatitude = cb.isNull(location.get(Location.LATITUDE));
 			Predicate noLongitude = cb.isNull(location.get(Location.LONGITUDE));
-			cq.where(cb.and(personService.createUserFilter(personQueryContext), cb.or(noLatitude, noLongitude)));
+			cq.where(cb.and(personService.createUserFilter(personQueryContext, null), cb.or(noLatitude, noLongitude)));
 		} else {
-			cq.where(personService.createUserFilter(personQueryContext));
+			cq.where(personService.createUserFilter(personQueryContext, null));
 		}
 		cq.orderBy(cb.desc(person.get(Person.UUID)));
 
@@ -1171,7 +1208,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			person.get(Person.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, personService.inJurisdictionOrOwned(personQueryContext)));
 
-		Predicate filter = personService.createUserFilter(personQueryContext);
+		Predicate filter = personService.createUserFilter(personQueryContext, criteria);
 		if (criteria != null) {
 			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);

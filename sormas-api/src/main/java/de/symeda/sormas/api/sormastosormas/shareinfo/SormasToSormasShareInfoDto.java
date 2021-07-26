@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,9 +13,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas;
+package de.symeda.sormas.api.sormastosormas.shareinfo;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
@@ -23,7 +24,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	private static final long serialVersionUID = -1478467237560439811L;
 
-	private ServerAccessDataReferenceDto target;
+	private SormasServerDescriptor targetDescriptor;
 	private UserReferenceDto sender;
 	private boolean ownershipHandedOver;
 	private boolean withAssociatedContacts;
@@ -34,12 +35,19 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private String comment;
 	private ShareRequestStatus requestStatus;
 
-	public ServerAccessDataReferenceDto getTarget() {
-		return target;
+	/**
+	 * @return Get the target server of the share operation.
+	 */
+	public SormasServerDescriptor getTargetDescriptor() {
+		return targetDescriptor;
 	}
 
-	public void setTarget(ServerAccessDataReferenceDto target) {
-		this.target = target;
+	/**
+	 * @param targetDescriptor
+	 *            The target server of the share operation.
+	 */
+	public void setTargetDescriptor(SormasServerDescriptor targetDescriptor) {
+		this.targetDescriptor = targetDescriptor;
 	}
 
 	public UserReferenceDto getSender() {

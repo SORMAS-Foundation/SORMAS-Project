@@ -182,7 +182,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		throw new UnsupportedOperationException("Should not be called -> obsolete!");
 	}
 
-	public Predicate createUserFilter(PersonQueryContext personQueryContext) {
+	public Predicate createUserFilter(PersonQueryContext personQueryContext, PersonCriteria personCriteria) {
 
 		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
 		final CriteriaQuery cq = personQueryContext.getQuery();
@@ -213,8 +213,26 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Predicate immunizationFilter = CriteriaBuilderHelper.and(cb, immunizationUserFilter, immunizationNotDeleted);
 		final Predicate travelEntryFilter = CriteriaBuilderHelper.and(cb, travelEntryUserFilter, travelEntryNotDeleted);
 
+		if (personCriteria != null && personCriteria.getPersonAssociation() != null) {
+			switch (personCriteria.getPersonAssociation()) {
+			case ALL:
+				break;
+			case CASE:
+				return caseFilter;
+			case CONTACT:
+				return contactFilter;
+			case EVENT_PARTICIPANT:
+				return eventParticipantFilter;
+			case IMMUNIZATION:
+				return immunizationFilter;
+			case TRAVEL_ENTRY:
+				return travelEntryFilter;
+			}
+		}
+
 		return CriteriaBuilderHelper.or(cb, caseFilter, contactFilter, eventParticipantFilter, immunizationFilter, travelEntryFilter);
 	}
+	
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, PersonQueryContext personQueryContext) {
 
@@ -269,6 +287,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		if (personCriteria.getPersonAssociation() != null) {
 			switch (personCriteria.getPersonAssociation()) {
 
+			case ALL:
+				break;
 			case CASE:
 				final Subquery<Case> caseSubquery = cq.subquery(Case.class);
 				final Root<Case> caseRoot = caseSubquery.from(Case.class);
@@ -287,6 +307,18 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 				eventParticipantSubquery.select(eventParticipantRoot.get(EventParticipant.ID))
 					.where(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON), personFrom));
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(eventParticipantSubquery));
+				break;
+			case IMMUNIZATION:
+				final Subquery<Immunization> immunizationSubquery = cq.subquery(Immunization.class);
+				final Root<Immunization> immunizationRoot = immunizationSubquery.from(Immunization.class);
+				immunizationSubquery.select(immunizationRoot.get(Immunization.ID)).where(cb.equal(immunizationRoot.get(Immunization.PERSON), personFrom));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(immunizationSubquery));
+				break;
+			case TRAVEL_ENTRY:
+				final Subquery<TravelEntry> travelEntrySubquery = cq.subquery(TravelEntry.class);
+				final Root<TravelEntry> travelEntryRoot = travelEntrySubquery.from(TravelEntry.class);
+				travelEntrySubquery.select(travelEntryRoot.get(TravelEntry.ID)).where(cb.equal(travelEntryRoot.get(TravelEntry.PERSON), personFrom));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(travelEntrySubquery));
 				break;
 			}
 		}

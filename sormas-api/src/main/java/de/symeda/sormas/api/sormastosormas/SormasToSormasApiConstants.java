@@ -57,4 +57,12 @@ public class SormasToSormasApiConstants {
 
 	public static final String REQUEST_ACCEPTED_ENDPOINT = "/request/accepted";
 
+	public static final String CASE_SHARES_ENDPOINT = "/cases/shares";
+
+	public static final String CONTACT_SHARES_ENDPOINT = "/contacts/shares";
+
+	public static final String EVENT_SHARES_ENDPOINT = "/events/shares";
+
+	public static final String CERT_ENDPOINT = "/cert";
+
 }

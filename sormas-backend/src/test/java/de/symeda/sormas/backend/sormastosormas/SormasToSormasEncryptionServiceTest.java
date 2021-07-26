@@ -55,17 +55,19 @@ public class SormasToSormasEncryptionServiceTest extends SormasToSormasFacadeTes
 		s2sOriginInfo.setComment("Test comment");
 		bodyToEncrypt.add(new SormasToSormasCaseDto(person, caze, s2sOriginInfo));
 
+		mockS2Snetwork();
+
 		// encrypt
 		mockDefaultServerAccess();
-		SormasToSormasEncryptedDataDto encryptedBody = getSormasToSormasEncryptionService().signAndEncrypt(bodyToEncrypt, SECOND_SERVER_ACCESS_ID);
+		SormasToSormasEncryptedDataDto encryptedBody = getSormasToSormasEncryptionFacade().signAndEncrypt(bodyToEncrypt, SECOND_SERVER_ID);
 		mockSecondServerAccess();
 
-		assertThat(encryptedBody.getOrganizationId(), is(DEFAULT_SERVER_ACCESS_ID));
+		assertThat(encryptedBody.getSenderId(), is(DEFAULT_SERVER_ID));
 		assertThat(encryptedBody.getData(), instanceOf(byte[].class));
 
 		// decrypt
 		mockSecondServerAccess();
-		SormasToSormasCaseDto[] decryptedBody = getSormasToSormasEncryptionService().decryptAndVerify(encryptedBody, SormasToSormasCaseDto[].class);
+		SormasToSormasCaseDto[] decryptedBody = getSormasToSormasEncryptionFacade().decryptAndVerify(encryptedBody, SormasToSormasCaseDto[].class);
 		mockDefaultServerAccess();
 
 		assertThat(decryptedBody.length, is(1));

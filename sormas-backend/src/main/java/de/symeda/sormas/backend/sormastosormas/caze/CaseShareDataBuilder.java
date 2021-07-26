@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -40,6 +41,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPre
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -71,14 +73,12 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 	private SampleService sampleService;
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
-	@Inject
-	private SormasToSormasConfig sormasToSormasConfig;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
-	public ShareData<Case, SormasToSormasCaseDto> buildShareData(Case caze, User user, SormasToSormasOptionsDto options)
-		throws SormasToSormasException {
+	public ShareData<Case, SormasToSormasCaseDto> buildShareData(Case caze, User user, SormasToSormasOptionsDto options) {
 
-		SormasToSormasOriginInfoDto originInfo =
-			dataBuilderHelper.createSormasToSormasOriginInfo(user, options);
+		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, options);
 
 		List<Contact> associatedContacts = Collections.emptyList();
 		if (options.isWithAssociatedContacts()) {
@@ -86,18 +86,8 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		}
 
 		List<Sample> samples = Collections.emptyList();
-		if (options.isWithSamples()) {
-			final List<Sample> caseSamples = sampleService.findBy(new SampleCriteria().caze(caze.toReference()), user);
-			samples = new ArrayList<>(caseSamples);
-
-			for (Contact associatedContact : associatedContacts) {
-				List<Sample> contactSamples = sampleService.findBy(new SampleCriteria().contact(associatedContact.toReference()), user)
-					.stream()
-					.filter(contactSample -> caseSamples.stream().noneMatch(caseSample -> DataHelper.isSame(caseSample, contactSample)))
-					.collect(Collectors.toList());
-
-				samples.addAll(contactSamples);
-			}
+		if(options.isWithSamples()) {
+			samples = getAssociatedSamples(caze.toReference(), associatedContacts, user);
 		}
 
 		return createShareData(
@@ -110,8 +100,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 	}
 
 	@Override
-	public ShareData<Case, SormasToSormasCasePreview> buildShareDataPreview(Case caze, User user, SormasToSormasOptionsDto options)
-		throws SormasToSormasException {
+	public ShareData<Case, SormasToSormasCasePreview> buildShareDataPreview(Case caze, User user, SormasToSormasOptionsDto options) {
 
 		SormasToSormasCasePreview cazePreview = getCasePreview(caze);
 
@@ -121,14 +110,20 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 			cazePreview.setContacts(getContactPreviews(associatedContacts));
 		}
 
+		List<Sample> samples = Collections.emptyList();
+		if(options.isWithSamples()) {
+			samples = getAssociatedSamples(caze.toReference(), associatedContacts, user);
+		}
+
 		ShareData<Case, SormasToSormasCasePreview> shareData = new ShareData<>(caze, cazePreview);
 		shareData.addAssociatedEntities(AssociatedEntityWrapper.forContacts(associatedContacts));
+		shareData.addAssociatedEntities(AssociatedEntityWrapper.forSamples(samples));
 
 		return shareData;
 	}
 
 	@Override
-	public List<ShareData<Case, SormasToSormasCaseDto>> buildShareData(User user, SormasToSormasShareInfo shareInfo) throws SormasToSormasException {
+	public List<ShareData<Case, SormasToSormasCaseDto>> buildShareData(User user, SormasToSormasShareInfo shareInfo) {
 		SormasToSormasOriginInfoDto originInfo =
 			dataBuilderHelper.createSormasToSormasOriginInfo(user, shareInfo);
 
@@ -161,7 +156,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		// external tokens ("Aktenzeichen") are not globally unique in Germany due to SurvNet, therefore, do not
 		// transmit the token to other GAs, but let them generate their own token based on their local, configurable
 		// format
-		if (!sormasToSormasConfig.getRetainCaseExternalToken()) {
+		if (!configFacadeEjb.getS2SConfig().getRetainCaseExternalToken()) {
 			cazeDto.setExternalToken(null);
 		}
 
@@ -232,5 +227,21 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 
 	private List<SormasToSormasContactPreview> getContactPreviews(List<Contact> contacts) {
 		return contacts.stream().map(c -> dataBuilderHelper.getContactPreview(c)).collect(Collectors.toList());
+	}
+
+	private List<Sample> getAssociatedSamples(CaseReferenceDto caseReferenceDto, List<Contact> associatedContacts, User user) {
+		List<Sample> samples;
+		final List<Sample> caseSamples = sampleService.findBy(new SampleCriteria().caze(caseReferenceDto), user);
+		samples = new ArrayList<>(caseSamples);
+
+		for (Contact associatedContact : associatedContacts) {
+			List<Sample> contactSamples = sampleService.findBy(new SampleCriteria().contact(associatedContact.toReference()), user)
+					.stream()
+					.filter(contactSample -> caseSamples.stream().noneMatch(caseSample -> DataHelper.isSame(caseSample, contactSample)))
+					.collect(Collectors.toList());
+
+			samples.addAll(contactSamples);
+		}
+		return samples;
 	}
 }

@@ -1,10 +1,11 @@
 package de.symeda.sormas.backend.labmessage;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,17 +13,15 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.api.Disease;
 
 import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -33,22 +32,18 @@ public class LabMessage extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "labmessage";
 
+	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
 	public static final String LAB_SAMPLE_ID = "labSampleId";
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
-	public static final String TEST_LAB_NAME = "testLabName";
-	public static final String TEST_LAB_EXTERNAL_ID = "testLabExternalId";
-	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
-	public static final String TEST_LAB_CITY = "testLabCity";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
-	public static final String TEST_TYPE = "testType";
-	public static final String TESTED_DISEASE = "testedDisease";
-	public static final String TEST_DATE_TIME = "testDateTime";
-	public static final String TEST_RESULT = "testResult";
-	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
+	public static final String TEST_LAB_NAME = "labName";
+	public static final String TEST_LAB_EXTERNAL_ID = "labExternalId";
+	public static final String TEST_LAB_POSTAL_CODE = "labPostalCode";
+	public static final String TEST_LAB_CITY = "labCity";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_SEX = "personSex";
@@ -63,25 +58,21 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String PERSON_EMAIL = "personEmail";
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String STATUS = "status";
-	public static final String TEST_RESULT_TEXT = "testResultText";
-	public static final String PATHOGEN_TEST = "pathogenTest";
 
+	private Disease testedDisease;
 	private Date messageDateTime;
 	private Date sampleDateTime;
 	private Date sampleReceivedDate;
 	private String labSampleId;
 	private SampleMaterial sampleMaterial;
 	private String sampleMaterialText;
-	private String testLabName;
-	private String testLabExternalId;
-	private String testLabPostalCode;
-	private String testLabCity;
 	private SpecimenCondition specimenCondition;
-	private PathogenTestType testType;
-	private Disease testedDisease;
-	private Date testDateTime;
-	private PathogenTestResultType testResult;
-	private Boolean testResultVerified;
+
+	private String labName;
+	private String labExternalId;
+	private String labPostalCode;
+	private String labCity;
+
 	private String personFirstName;
 	private String personLastName;
 	private Sex personSex;
@@ -95,12 +86,20 @@ public class LabMessage extends AbstractDomainObject {
 	private String personPhone;
 	private String personEmail;
 
+	private List<TestReport> testReports;
+
 	private String labMessageDetails;
 
 	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 
-	private String testResultText;
-	private PathogenTest pathogenTest;
+	@Enumerated(EnumType.STRING)
+	public Disease getTestedDisease() {
+		return testedDisease;
+	}
+
+	public void setTestedDisease(Disease testedDisease) {
+		this.testedDisease = testedDisease;
+	}
 
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getMessageDateTime() {
@@ -147,7 +146,6 @@ public class LabMessage extends AbstractDomainObject {
 		this.sampleMaterial = sampleMaterial;
 	}
 
-
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSampleMaterialText() {
 		return sampleMaterialText;
@@ -155,42 +153,6 @@ public class LabMessage extends AbstractDomainObject {
 
 	public void setSampleMaterialText(String sampleMaterialText) {
 		this.sampleMaterialText = sampleMaterialText;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getTestLabName() {
-		return testLabName;
-	}
-
-	public void setTestLabName(String testLabName) {
-		this.testLabName = testLabName;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getTestLabExternalId() {
-		return testLabExternalId;
-	}
-
-	public void setTestLabExternalId(String testLabExternalId) {
-		this.testLabExternalId = testLabExternalId;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getTestLabPostalCode() {
-		return testLabPostalCode;
-	}
-
-	public void setTestLabPostalCode(String testLabPostalCode) {
-		this.testLabPostalCode = testLabPostalCode;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getTestLabCity() {
-		return testLabCity;
-	}
-
-	public void setTestLabCity(String testLabCity) {
-		this.testLabCity = testLabCity;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -202,49 +164,40 @@ public class LabMessage extends AbstractDomainObject {
 		this.specimenCondition = specimenCondition;
 	}
 
-	@Enumerated(EnumType.STRING)
-	public PathogenTestType getTestType() {
-		return testType;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getLabName() {
+		return labName;
 	}
 
-	public void setTestType(PathogenTestType testType) {
-		this.testType = testType;
+	public void setLabName(String labName) {
+		this.labName = labName;
 	}
 
-	@Enumerated(EnumType.STRING)
-	public Disease getTestedDisease() {
-		return testedDisease;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getLabExternalId() {
+		return labExternalId;
 	}
 
-	public void setTestedDisease(Disease testedDisease) {
-		this.testedDisease = testedDisease;
+	public void setLabExternalId(String labExternalId) {
+		this.labExternalId = labExternalId;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date getTestDateTime() {
-		return testDateTime;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getLabPostalCode() {
+		return labPostalCode;
 	}
 
-	public void setTestDateTime(Date testDateTime) {
-		this.testDateTime = testDateTime;
+	public void setLabPostalCode(String testLabPostalCode) {
+		this.labPostalCode = testLabPostalCode;
 	}
 
-	@Enumerated(EnumType.STRING)
-	public PathogenTestResultType getTestResult() {
-		return testResult;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getLabCity() {
+		return labCity;
 	}
 
-	public void setTestResult(PathogenTestResultType testResult) {
-		this.testResult = testResult;
-	}
-
-	@Column
-	public Boolean isTestResultVerified() {
-		return testResultVerified;
-	}
-
-	public void setTestResultVerified(Boolean testResultVerified) {
-		this.testResultVerified = testResultVerified;
+	public void setLabCity(String labCity) {
+		this.labCity = labCity;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -355,7 +308,6 @@ public class LabMessage extends AbstractDomainObject {
 		this.personEmail = personEmail;
 	}
 
-
 	@Column
 	public String getLabMessageDetails() {
 		return labMessageDetails;
@@ -375,22 +327,13 @@ public class LabMessage extends AbstractDomainObject {
 		this.status = status;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
-	public String getTestResultText() {
-		return testResultText;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = TestReport.LAB_MESSAGE, fetch = FetchType.LAZY)
+	public List<TestReport> getTestReports() {
+		return testReports;
 	}
 
-	public void setTestResultText(String testResultText) {
-		this.testResultText = testResultText;
+	public void setTestReports(List<TestReport> testReports) {
+		this.testReports = testReports;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn
-	public PathogenTest getPathogenTest() {
-		return pathogenTest;
-	}
-
-	public void setPathogenTest(PathogenTest pathogenTest) {
-		this.pathogenTest = pathogenTest;
-	}
 }

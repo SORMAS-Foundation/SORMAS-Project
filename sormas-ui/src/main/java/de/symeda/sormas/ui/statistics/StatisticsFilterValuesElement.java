@@ -120,6 +120,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		tokenField.setEnableDefaultDeleteTokenAction(true);
 
 		addDropdown = new ComboBox<TokenizableValue>("", getFilterValues());
+		addDropdown.setWidth(200, Unit.PIXELS);
 		addDropdown.setId("select-" + rowIndex);
 		addDropdown.addStyleName(CssStyles.VSPACE_NONE);
 		addDropdown.setPlaceholder(I18nProperties.getString(Strings.promptTypeToAdd));
