@@ -127,6 +127,9 @@ public interface Validations {
 	String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
 	String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
 	String onlyNumbersAllowed = "onlyNumbersAllowed";
+	String patchNoSuchFieldException = "patchNoSuchFieldException";
+	String patchUnsupportedCollectionFieldType = "patchUnsupportedCollectionFieldType";
+	String patchWrongUuid = "patchWrongUuid";
 	String personMultiplePrimaryEmailAddresses = "personMultiplePrimaryEmailAddresses";
 	String personMultiplePrimaryPhoneNumbers = "personMultiplePrimaryPhoneNumbers";
 	String phoneNumberValidation = "phoneNumberValidation";
