@@ -28,7 +28,6 @@ import java.util.Optional;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -57,9 +56,9 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
-import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless
 @LocalBean
@@ -248,11 +247,11 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> eventParticipantPath) {
-		// can see the participants of all accessible events
 		EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
 		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
 		eventUserFilterCriteria.forceRegionJurisdiction(true);
 
+		// can see the participants of all accessible events
 		return eventService.createUserFilter(cb, cq, null, eventParticipantPath, eventUserFilterCriteria);
 	}
 
@@ -337,6 +336,26 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return cb.isFalse(root.get(EventParticipant.DELETED));
 	}
 
+	public List<EventParticipant> findBy(EventParticipantCriteria criteria, User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipant> cq = cb.createQuery(getElementClass());
+		Root<EventParticipant> from = cq.from(getElementClass());
+		final EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, from);
+
+		Predicate filter = buildCriteriaFilter(criteria, queryContext);
+
+		if (user != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.asc(from.get(EventParticipant.CREATION_DATE)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	public Optional<EventParticipant> getFirst(EventParticipantCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -348,11 +367,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		cq.where(filter);
 		cq.orderBy(cb.asc(eventParticipant.get(EventParticipant.UUID)));
 
-		try {
-			return Optional.of(em.createQuery(cq).setFirstResult(0).setMaxResults(1).getSingleResult());
-		} catch (NoResultException e) {
-			return Optional.empty();
-		}
+		return QueryHelper.getFirstResult(em, cq, Optional::ofNullable);
 	}
 
 	public List<EventParticipant> getByEventUuids(List<String> eventUuids) {
@@ -380,8 +395,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	public boolean isEventParticipantEditAllowed(EventParticipant eventParticipant) {
-		if (eventParticipant.getSormasToSormasOriginInfo() != null) {
-			return eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		if (eventParticipant.getSormasToSormasOriginInfo() != null && !eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
+			return false;
 		}
 
 		return inJurisdiction(eventParticipant) && !sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant);

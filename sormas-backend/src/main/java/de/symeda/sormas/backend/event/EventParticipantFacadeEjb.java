@@ -54,6 +54,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
@@ -88,6 +89,7 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -112,6 +114,7 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb.VaccinationInfoFacadeEjbLocal;
 import de.symeda.sormas.utils.EventParticipantJoins;
@@ -126,6 +129,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	@EJB
 	private EventService eventService;
+	@EJB
+	private EventFacadeEjbLocal eventFacade;
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
@@ -218,10 +223,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	@Override
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto) {
-		return saveEventParticipant(dto, true);
+		return saveEventParticipant(dto, true, true);
 	}
 
-	public EventParticipantDto saveEventParticipant(EventParticipantDto dto, boolean checkChangeDate) {
+	public EventParticipantDto saveEventParticipant(EventParticipantDto dto, boolean checkChangeDate, boolean syncShares) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? eventParticipantService.getByUuid(dto.getUuid()) : null;
 		EventParticipantDto existingDto = toDto(existingParticipant);
 
@@ -251,7 +256,13 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			notifyEventResponsibleUsersOfCommonEventParticipant(entity, event);
 		}
 
+		onEventParticipantChanged(EventFacadeEjbLocal.toDto(entity.getEvent()), syncShares);
+
 		return convertToDto(entity, pseudonymizer);
+	}
+
+	public void onEventParticipantChanged(EventDto event, boolean syncShares) {
+		eventFacade.onEventChange(event, syncShares);
 	}
 
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {
@@ -460,12 +471,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			cq.orderBy(cb.desc(person.get(Person.LAST_NAME)));
 		}
 
-		List<EventParticipantIndexDto> indexList;
-		if (first != null && max != null) {
-			indexList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			indexList = em.createQuery(cq).getResultList();
-		}
+		List<EventParticipantIndexDto> indexList = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!indexList.isEmpty()) {
 			Map<String, Long> eventParticipantContactCount = getContactCountPerEventParticipant(
@@ -510,12 +516,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		cq.where(filter);
 		cq.orderBy(cb.desc(eventParticipant.get(EventParticipant.CREATION_DATE)));
 
-		List<EventParticipantListEntryDto> result;
-		if (first != null && max != null) {
-			result = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			result = em.createQuery(cq).getResultList();
-		}
+		List<EventParticipantListEntryDto> result = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(EventParticipantListEntryDto.class, result, p -> p.getInJurisdiction(), null);
@@ -631,7 +632,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, eventParticipant.get(EventParticipant.UUID));
 		cq.where(filter);
 
-		List<EventParticipantExportDto> eventParticipantResultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<EventParticipantExportDto> eventParticipantResultList = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!eventParticipantResultList.isEmpty()) {
 			Map<String, Long> eventParticipantContactCount = getContactCountPerEventParticipant(

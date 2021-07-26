@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -90,6 +89,7 @@ import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.utils.EventJoins;
 
 @Stateless
@@ -396,6 +396,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				filter = CriteriaBuilderHelper
 					.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getHealthFacility().getDistrict()));
 			}
+			break;
 		case LABORATORY:
 			final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
 			final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
@@ -530,6 +531,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		if (eventCriteria.getDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE), eventCriteria.getDisease()));
 		}
+		if (eventCriteria.getDiseaseVariant() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE_VARIANT), eventCriteria.getDiseaseVariant()));
+		}
 		if (eventCriteria.getEventStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
 		}
@@ -543,6 +547,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		if (eventCriteria.getEventManagementStatus() != null) {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.EVENT_MANAGEMENT_STATUS), eventCriteria.getEventManagementStatus()));
+		}
+		if (eventCriteria.getEventIdentificationSource() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.get(Event.EVENT_IDENTIFICATION_SOURCE), eventCriteria.getEventIdentificationSource()));
 		}
 		if (eventCriteria.getTypeOfPlace() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.TYPE_OF_PLACE), eventCriteria.getTypeOfPlace()));
@@ -791,11 +799,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		cq.orderBy(cb.desc(root.get(Event.REPORT_DATE_TIME)));
 		cq.select(root.get(Event.UUID));
 
-		try {
-			return em.createQuery(cq).setMaxResults(1).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getFirstResult(em, cq);
 	}
 
 	public List<EventSummaryDetails> getEventSummaryDetailsByCases(List<Long> casesId) {
@@ -858,8 +862,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	public boolean isEventEditAllowed(Event event) {
-		if (event.getSormasToSormasOriginInfo() != null) {
-			return event.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		if (event.getSormasToSormasOriginInfo() != null && !event.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
+			return false;
 		}
 
 		return inJurisdictionOrOwned(event) && !sormasToSormasShareInfoService.isEventOwnershipHandedOver(event);

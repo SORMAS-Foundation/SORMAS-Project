@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
@@ -11,8 +11,7 @@
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
-
+ */
 package de.symeda.sormas.ui.labmessage;
 
 import java.util.Collection;
@@ -79,6 +78,7 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
+import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -176,6 +176,7 @@ public class LabMessageController {
 
 					EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 					eventParticipantCriteria.setPerson(selectedPerson);
+					eventParticipantCriteria.setDisease(labMessageDto.getTestedDisease());
 					List<SimilarEventParticipantDto> similarEventParticipants =
 						FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
 
@@ -555,7 +556,7 @@ public class LabMessageController {
 		Window window,
 		CaseDataDto caseDto) {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, true);
+			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, true);
 		caseCreateComponent.addCommitListener(() -> {
 			savePerson(
 				FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
@@ -642,12 +643,14 @@ public class LabMessageController {
 		sampleDto.setSampleMaterialText(labMessageDto.getSampleMaterialText());
 		sampleDto.setSpecimenCondition(SpecimenCondition.ADEQUATE);
 		sampleDto.setLab(getLabReference(labMessageDto));
-		sampleDto.setLabDetails(labMessageDto.getTestLabName());
+		sampleDto.setLabDetails(labMessageDto.getLabName());
 	}
 
 	private FacilityReferenceDto getLabReference(LabMessageDto labMessageDto) {
 		FacilityFacade facilityFacade = FacadeProvider.getFacilityFacade();
-		List<FacilityReferenceDto> labs = facilityFacade.getByExternalIdAndType(labMessageDto.getTestLabExternalId(), FacilityType.LABORATORY, false);
+		List<FacilityReferenceDto> labs = labMessageDto.getLabExternalId() != null
+			? facilityFacade.getByExternalIdAndType(labMessageDto.getLabExternalId(), FacilityType.LABORATORY, false)
+			: null;
 		if (labs != null && labs.size() == 1) {
 			return labs.get(0);
 		} else {
@@ -673,14 +676,18 @@ public class LabMessageController {
 			viaLimsCheckbox.setValue(Boolean.TRUE);
 			viaLimsCheckbox.setEnabled(false);
 		}
-
-		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(labMessageDto.getTestResult());
-		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(labMessageDto.getTestType());
-		((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE)).setValue(labMessageDto.getTestedDisease());
-		((NullableOptionGroup) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT_VERIFIED))
-			.setValue(labMessageDto.isTestResultVerified());
-		((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
-			.setValue(labMessageDto.getTestDateTime());
+		// TODO currently just the first testReport is picked here. That must be temporary. Will be fixed with #5899
+		List<TestReportDto> testReportDtos = FacadeProvider.getTestReportFacade().getAllByLabMessage(labMessageDto.toReference());
+		if(!testReportDtos.isEmpty()) {
+			TestReportDto testReportDto = testReportDtos.get(0);
+			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(testReportDto.getTestResult());
+			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(testReportDto.getTestType());
+			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE)).setValue(labMessageDto.getTestedDisease());
+			((NullableOptionGroup) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT_VERIFIED))
+				.setValue(testReportDto.isTestResultVerified());
+			((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
+				.setValue(testReportDto.getTestDateTime());
+		}
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE))
 				.setValue(labMessageDto.getMessageDateTime());
@@ -712,12 +719,19 @@ public class LabMessageController {
 
 	private PathogenTestDto buildPathogenTest(SampleDto sampleDto, LabMessageDto labMessageDto) {
 		PathogenTestDto pathogenTestDto = PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser());
-		pathogenTestDto.setTestResult(labMessageDto.getTestResult());
-		pathogenTestDto.setTestType(labMessageDto.getTestType());
+
+		// TODO currently just the first testReport is picked here. That must be temporary. Will be fixed with #5899
+		List<TestReportDto> testReportDtos = labMessageDto.getTestReports();
+		if (!testReportDtos.isEmpty()) {
+			TestReportDto testReportDto = testReportDtos.get(0);
+			pathogenTestDto.setTestResult(testReportDto.getTestResult());
+			pathogenTestDto.setTestType(testReportDto.getTestType());
+			pathogenTestDto.setTestResultVerified(testReportDto.isTestResultVerified());
+			pathogenTestDto.setTestDateTime(testReportDto.getTestDateTime());
+			pathogenTestDto.setTestResultText(testReportDto.getTestResultText());
+		}
+
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
-		pathogenTestDto.setTestResultVerified(labMessageDto.isTestResultVerified());
-		pathogenTestDto.setTestDateTime(labMessageDto.getTestDateTime());
-		pathogenTestDto.setTestResultText(labMessageDto.getTestResultText());
 		pathogenTestDto.setReportDate(labMessageDto.getMessageDateTime());
 		return pathogenTestDto;
 	}
@@ -772,7 +786,17 @@ public class LabMessageController {
 	}
 
 	private void finishProcessingLabMessage(LabMessageDto labMessageDto, PathogenTestDto pathogenTestDto) {
-		labMessageDto.setPathogenTest(pathogenTestDto.toReference());
+		// TODO currently just the first testReport is picked here. That must be temporary.
+		//  #5899 should fix this and also provide better support for handling creation of a new test report
+		List<TestReportDto> testReportDtos = labMessageDto.getTestReports();
+		if	(testReportDtos.isEmpty()) {
+			TestReportDto testReportDto = TestReportDto.build();
+			testReportDto.setLabMessage(labMessageDto.toReference());
+			testReportDto.setPathogenTest(pathogenTestDto.toReference());
+			labMessageDto.addTestReport(testReportDto);
+		} else {
+			labMessageDto.getTestReports().get(0).setPathogenTest(pathogenTestDto.toReference());
+		}
 		labMessageDto.setStatus(LabMessageStatus.PROCESSED);
 		FacadeProvider.getLabMessageFacade().save(labMessageDto);
 		SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
@@ -916,7 +940,7 @@ public class LabMessageController {
 
 		buttonsPanel.addComponent(forwardButton);
 
-		if (FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
+		if (FacadeProvider.getSormasToSormasFacade().isSharingLabMessagesEnabledForUser()) {
 			Button shareButton = ButtonHelper.createIconButton(Captions.sormasToSormasSendLabMessage, VaadinIcons.SHARE, (e) -> {
 				ControllerProvider.getSormasToSormasController().shareLabMessage(labMessage, callback);
 			});

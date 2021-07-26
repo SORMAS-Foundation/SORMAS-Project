@@ -26,11 +26,13 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.AdditionalTestingStatus;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
@@ -138,6 +140,34 @@ public class SampleListEntry extends HorizontalLayout {
 				Label samplingReasonLabel =
 					new Label(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLING_REASON) + ": " + samplingReasonCaption);
 				topLeftLayout.addComponent(samplingReasonLabel);
+			}
+
+			Label testCountLabel = new Label(
+				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleIndexDto.PATHOGEN_TEST_COUNT) + ": " + sample.getPathogenTestCount());
+			topLeftLayout.addComponent(testCountLabel);
+
+			if (sample.getPathogenTestCount() > 0) {
+				VerticalLayout latestTestLayout = new VerticalLayout();
+				latestTestLayout.setMargin(false);
+				latestTestLayout.setSpacing(false);
+
+				Label heading = new Label(I18nProperties.getCaption(Captions.latestPathogenTest));
+				CssStyles.style(heading, CssStyles.LABEL_BOLD);
+				PathogenTestDto latestTest = FacadeProvider.getPathogenTestFacade().getLatestPathogenTest(sample.getUuid());
+				Label testDate = new Label(
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME) + ": "
+						+ DateFormatHelper.formatDate(latestTest.getTestDateTime()));
+				HorizontalLayout bottomLayout = new HorizontalLayout();
+				Label testType = new Label(latestTest.getTestType().toString());
+				bottomLayout.addComponent(testType);
+				if (latestTest.getCqValue() != null) {
+					Label cqValue = new Label(
+						I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.CQ_VALUE) + ": " + latestTest.getCqValue());
+					cqValue.addStyleName(CssStyles.ALIGN_RIGHT);
+					bottomLayout.addComponent(cqValue);
+				}
+				latestTestLayout.addComponents(heading, testDate, bottomLayout);
+				topLeftLayout.addComponent(latestTestLayout);
 			}
 		}
 

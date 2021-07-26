@@ -34,6 +34,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SubcontinentFacade")
 public class SubcontinentFacadeEjb implements SubcontinentFacade {
@@ -98,7 +99,7 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 		cq.select(root.get(Subcontinent.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	@Override
@@ -113,7 +114,10 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 		Root<Subcontinent> subcontinent = cq.from(Subcontinent.class);
 		Join<Subcontinent, Continent> continent = subcontinent.join(Subcontinent.CONTINENT, JoinType.LEFT);
 
-		Predicate filter = subcontinentService.buildCriteriaFilter(criteria, cb, subcontinent);
+		Predicate filter = null;
+		if (criteria != null) {
+			filter = subcontinentService.buildCriteriaFilter(criteria, cb, subcontinent);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -145,17 +149,7 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 		cq.select(subcontinent);
 
-		if (first != null && max != null) {
-			return em.createQuery(cq)
-				.setFirstResult(first)
-				.setMaxResults(max)
-				.getResultList()
-				.stream()
-				.map(this::toIndexDto)
-				.collect(Collectors.toList());
-		} else {
-			return em.createQuery(cq).getResultList().stream().map(this::toIndexDto).collect(Collectors.toList());
-		}
+		return QueryHelper.getResultList(em, cq, first, max, this::toIndexDto);
 	}
 
 	@Override
@@ -204,12 +198,12 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 	}
 
 	@Override
-	public void save(SubcontinentDto dto) {
-		save(dto, false);
+	public SubcontinentDto save(SubcontinentDto dto) {
+		return save(dto, false);
 	}
 
 	@Override
-	public void save(SubcontinentDto dto, boolean allowMerge) {
+	public SubcontinentDto save(SubcontinentDto dto, boolean allowMerge) {
 
 		Subcontinent subcontinent = subcontinentService.getByUuid(dto.getUuid());
 
@@ -229,6 +223,8 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 		subcontinent = fillOrBuildEntity(dto, subcontinent, true);
 		subcontinentService.ensurePersisted(subcontinent);
+
+		return toDto(subcontinent);
 	}
 
 	@Override
@@ -271,16 +267,16 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 	public List<SubcontinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
 		return subcontinentService.getByExternalId(externalId, includeArchived)
-				.stream()
-				.map(SubcontinentFacadeEjb::toReferenceDto)
-				.collect(Collectors.toList());
+			.stream()
+			.map(SubcontinentFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	public List<SubcontinentReferenceDto> getReferencesByName(String caption, boolean includeArchived) {
 		return subcontinentService.getByDefaultName(caption, includeArchived)
-				.stream()
-				.map(SubcontinentFacadeEjb::toReferenceDto)
-				.collect(Collectors.toList());
+			.stream()
+			.map(SubcontinentFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	private Subcontinent fillOrBuildEntity(@NotNull SubcontinentDto source, Subcontinent target, boolean checkChangeDate) {

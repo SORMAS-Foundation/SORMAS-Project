@@ -42,6 +42,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictCriteria;
@@ -58,6 +59,7 @@ import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.Populatio
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "DistrictFacade")
 public class DistrictFacadeEjb implements DistrictFacade {
@@ -131,7 +133,10 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		Root<District> district = cq.from(District.class);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 
-		Predicate filter = districtService.buildCriteriaFilter(criteria, cb, district);
+		Predicate filter = null;
+		if (criteria != null) {
+			filter = districtService.buildCriteriaFilter(criteria, cb, district);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -163,17 +168,13 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		cq.select(district);
 
-		if (first != null && max != null) {
-			return em.createQuery(cq)
-				.setFirstResult(first)
-				.setMaxResults(max)
-				.getResultList()
-				.stream()
-				.map(f -> toIndexDto(f))
-				.collect(Collectors.toList());
-		} else {
-			return em.createQuery(cq).getResultList().stream().map(f -> toIndexDto(f)).collect(Collectors.toList());
-		}
+		return QueryHelper.getResultList(em, cq, first, max, this::toIndexDto);
+	}
+
+	public Page<DistrictIndexDto> getIndexPage(DistrictCriteria districtCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<DistrictIndexDto> districtIndexList = getIndexList(districtCriteria, offset, size, sortProperties);
+		long totalElementCount = count(districtCriteria);
+		return new Page<>(districtIndexList, offset, size, totalElementCount);
 	}
 
 	@Override
@@ -183,7 +184,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<District> root = cq.from(District.class);
 
-		Predicate filter = districtService.buildCriteriaFilter(criteria, cb, root);
+		Predicate filter = null;
+
+		if (criteria != null) {
+			filter = districtService.buildCriteriaFilter(criteria, cb, root);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -348,7 +353,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		cq.select(root.get(District.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	public static DistrictReferenceDto toReferenceDto(District entity) {

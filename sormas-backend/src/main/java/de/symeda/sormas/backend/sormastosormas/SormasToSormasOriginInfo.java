@@ -30,6 +30,7 @@ import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequest;
@@ -59,6 +60,12 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private boolean ownershipHandedOver;
 
+	private boolean withAssociatedContacts;
+
+	private boolean withSamples;
+
+	private boolean withEventParticipants;
+
 	private String comment;
 
 	private SormasToSormasShareRequest request;
@@ -66,6 +73,8 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 	private List<Case> cases;
 
 	private List<Contact> contacts;
+
+	private List<Event> events;
 
 	private List<EventParticipant> eventParticipants;
 
@@ -116,6 +125,33 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
+	@Column
+	public boolean isWithAssociatedContacts() {
+		return withAssociatedContacts;
+	}
+
+	public void setWithAssociatedContacts(boolean withContacts) {
+		this.withAssociatedContacts = withContacts;
+	}
+
+	@Column
+	public boolean isWithSamples() {
+		return withSamples;
+	}
+
+	public void setWithSamples(boolean withSamples) {
+		this.withSamples = withSamples;
+	}
+
+	@Column
+	public boolean isWithEventParticipants() {
+		return withEventParticipants;
+	}
+
+	public void setWithEventParticipants(boolean withEventParticipants) {
+		this.withEventParticipants = withEventParticipants;
+	}
+
 	@OneToOne(mappedBy = "originInfo")
 	public SormasToSormasShareRequest getRequest() {
 		return request;
@@ -152,6 +188,16 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	public void setContacts(List<Contact> contacts) {
 		this.contacts = contacts;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@AuditedIgnore
+	public List<Event> getEvents() {
+		return events;
+	}
+
+	public void setEvents(List<Event> events) {
+		this.events = events;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")

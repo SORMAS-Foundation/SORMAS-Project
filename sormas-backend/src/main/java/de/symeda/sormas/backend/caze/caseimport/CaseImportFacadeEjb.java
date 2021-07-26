@@ -30,8 +30,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -48,7 +46,6 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -59,19 +56,17 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
+import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -82,20 +77,14 @@ import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLoca
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportCellData;
 import de.symeda.sormas.backend.importexport.ImportErrorException;
+import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportHelper;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.region.AreaFacadeEjb.AreaFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CountryFacadeEjb;
-import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "CaseImportFacade")
@@ -116,12 +105,6 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
-	private UserFacadeEjbLocal userFacade;
-	@EJB
-	private AreaFacadeEjbLocal areaFacade;
-	@EJB
-	private RegionService regionService;
-	@EJB
 	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
 	private CommunityFacadeEjbLocal communityFacade;
@@ -132,9 +115,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
-	private EnumService enumService;
-	@EJB
-	private CountryFacadeEjbLocal countryFacade;
+	private ImportFacadeEjbLocal importFacade;
 
 	@Override
 	@Transactional
@@ -370,7 +351,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		List<String> invalidColumns = new ArrayList<>();
 
 		for (int i = 0; i < values.length; i++) {
-			String value = values[i];
+			String value = StringUtils.trimToNull(values[i]);
 			if (ignoreEmptyEntries && (value == null || value.isEmpty())) {
 				continue;
 			}
@@ -439,11 +420,11 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 
 					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 					// according to the types of the case or person fields
-					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
+					if (importFacade.executeDefaultInvoke(pd, currentElement, entry, entryHeaderPath, false)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 						List<DistrictReferenceDto> district = districtFacade
-							.getByName(entry, ImportHelper.getRegionBasedOnDistrict(pd.getName(), caze, null, person, currentElement), false);
+							.getByName(entry, ImportHelper.getRegionBasedOnDistrict(pd.getName(), caze, null, null, person, currentElement), false);
 						if (district.isEmpty()) {
 							throw new ImportErrorException(
 								I18nProperties
@@ -520,21 +501,25 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 						if (customPointsOfEntry.isEmpty()) {
 							final String poeName = entry;
 							List<PointOfEntryDto> defaultPointOfEntries = pointOfEntryFacade.getByUuids(PointOfEntryDto.CONSTANT_POE_UUIDS);
-							Optional<PointOfEntryDto> defaultPointOfEntry = defaultPointOfEntries.stream().filter(defaultPoe -> InfrastructureHelper.buildPointOfEntryString(defaultPoe.getUuid(), defaultPoe.getName()).equals(poeName)).findFirst();
+							Optional<PointOfEntryDto> defaultPointOfEntry = defaultPointOfEntries.stream()
+								.filter(
+									defaultPoe -> InfrastructureHelper.buildPointOfEntryString(defaultPoe.getUuid(), defaultPoe.getName())
+										.equals(poeName))
+								.findFirst();
 							if (!defaultPointOfEntry.isPresent()) {
 								throw new ImportErrorException(
-										I18nProperties.getValidationError(
-												Validations.importEntryDoesNotExistDbOrDistrict,
-												entry,
-												buildEntityProperty(entryHeaderPath)));
+									I18nProperties.getValidationError(
+										Validations.importEntryDoesNotExistDbOrDistrict,
+										entry,
+										buildEntityProperty(entryHeaderPath)));
 							}
 							pointOfEntryReference = defaultPointOfEntry.get().toReference();
 						} else if (customPointsOfEntry.size() > 1) {
 							throw new ImportErrorException(
-									I18nProperties.getValidationError(
-											Validations.importPointOfEntryNotUniqueInDistrict,
-											entry,
-											buildEntityProperty(entryHeaderPath)));
+								I18nProperties.getValidationError(
+									Validations.importPointOfEntryNotUniqueInDistrict,
+									entry,
+									buildEntityProperty(entryHeaderPath)));
 
 						} else {
 							pointOfEntryReference = customPointsOfEntry.get(0);
@@ -586,7 +571,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 
 					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 					// according to the types of the sample or pathogen test fields
-					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
+					if (importFacade.executeDefaultInvoke(pd, currentElement, entry, entryHeaderPath, false)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
 						List<FacilityReferenceDto> lab = facilityFacade.getLaboratoriesByName(entry, false);
@@ -636,109 +621,6 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		}
 		PropertyDescriptor pd = new PropertyDescriptor(typeProperty, currentElement.getClass());
 		return (FacilityType) pd.getReadMethod().invoke(currentElement);
-	}
-
-	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
-		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException, EnumService.InvalidEnumCaptionException {
-		Class<?> propertyType = pd.getPropertyType();
-
-		if (propertyType.isEnum()) {
-			Enum enumValue = null;
-			Class<Enum> enumType = (Class<Enum>) propertyType;
-			try {
-				enumValue = Enum.valueOf(enumType, entry.toUpperCase());
-			} catch (IllegalArgumentException e) {
-				// ignore
-			}
-
-			if (enumValue == null) {
-				enumValue = enumService.getEnumByCaption(enumType, entry);
-			}
-
-			pd.getWriteMethod().invoke(element, enumValue);
-			return true;
-		}
-		if (propertyType.getSuperclass() != null && propertyType.getSuperclass() == CustomizableEnum.class) {
-			try {
-				Object test = propertyType.newInstance();
-				((CustomizableEnum) test).setValue(entry);
-				pd.getWriteMethod().invoke(element, test);
-				return true;
-			} catch (InstantiationException e) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importErrorCustomizableEnumValue, entry, buildEntityProperty(entryHeaderPath)));
-			}
-		}
-		if (propertyType.isAssignableFrom(Date.class)) {
-			pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(Integer.class)) {
-			pd.getWriteMethod().invoke(element, Integer.parseInt(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(Double.class)) {
-			pd.getWriteMethod().invoke(element, Double.parseDouble(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(Float.class)) {
-			pd.getWriteMethod().invoke(element, Float.parseFloat(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(boolean.class)) {
-			pd.getWriteMethod().invoke(element, DataHelper.parseBoolean(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(AreaReferenceDto.class)) {
-			List<AreaReferenceDto> areas = areaFacade.getByName(entry, false);
-			if (areas.isEmpty()) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (areas.size() > 1) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importAreaNotUnique, entry, buildEntityProperty(entryHeaderPath)));
-			} else {
-				pd.getWriteMethod().invoke(element, areas.get(0));
-				return true;
-			}
-		}
-		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<Region> regions = regionService.getByName(entry, false);
-			if (regions.isEmpty()) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (regions.size() > 1) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildEntityProperty(entryHeaderPath)));
-			} else {
-				Region region = regions.get(0);
-				CountryReferenceDto serverCountry = countryFacade.getServerCountry();
-
-				if (region.getCountry() != null && !CountryFacadeEjb.toReferenceDto(region.getCountry()).equals(serverCountry)) {
-					throw new ImportErrorException(
-						I18nProperties.getValidationError(Validations.importRegionNotInServerCountry, entry, buildEntityProperty(entryHeaderPath)));
-				} else {
-					pd.getWriteMethod().invoke(element, RegionFacadeEjb.toReferenceDto(region));
-					return true;
-				}
-			}
-		}
-		if (propertyType.isAssignableFrom(UserReferenceDto.class)) {
-			UserDto user = userFacade.getByUserName(entry);
-			if (user != null) {
-				pd.getWriteMethod().invoke(element, user.toReference());
-				return true;
-			} else {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			}
-		}
-		if (propertyType.isAssignableFrom(String.class)) {
-			pd.getWriteMethod().invoke(element, entry);
-			return true;
-		}
-
-		return false;
 	}
 
 	protected String buildEntityProperty(String[] entityPropertyPath) {

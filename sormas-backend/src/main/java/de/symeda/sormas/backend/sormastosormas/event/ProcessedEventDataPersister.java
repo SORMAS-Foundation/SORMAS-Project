@@ -32,14 +32,16 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersisterHelper;
 import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersisterHelper.ReturnedAssociatedEntityCallback;
+import de.symeda.sormas.backend.sormastosormas.ProcessedDataPersisterHelper.SyncedAssociatedEntityCallback;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
@@ -63,7 +65,7 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 	private SormasToSormasShareInfoService shareInfoService;
 
 	@EJB
-	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal oriInfoFacade;
+	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@Override
 	@Transactional(rollbackOn = {
@@ -98,16 +100,30 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistSyncData(ProcessedEventData processedData) throws SormasToSormasValidationException {
+	public void persistSyncData(ProcessedEventData processedData, ShareTreeCriteria shareTreeCriteria) throws SormasToSormasValidationException {
 		SormasToSormasOriginInfoDto originInfo = processedData.getOriginInfo();
 
+		SyncedAssociatedEntityCallback associatedEntityCallback = new SyncedAssociatedEntityCallback(originInfo, originInfoFacade);
 		persistProcessedData(processedData, (event) -> {
 			SormasToSormasOriginInfoDto eventOriginInfo = event.getSormasToSormasOriginInfo();
-			eventOriginInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
-			eventOriginInfo.setComment(originInfo.getComment());
+			if (eventOriginInfo != null) {
+				eventOriginInfo.setOwnershipHandedOver(originInfo.isOwnershipHandedOver());
 
-			oriInfoFacade.saveOriginInfo(eventOriginInfo);
-		}, processedDataPersisterHelper::syncedAssociatedEntityCallback, processedDataPersisterHelper::syncedAssociatedEntityCallback);
+				originInfoFacade.saveOriginInfo(eventOriginInfo);
+			} else {
+				SormasToSormasShareInfo shareInfo = shareInfoService.getByEventAndOrganization(event.getUuid(), originInfo.getOrganizationId());
+
+				shareInfo.setOwnershipHandedOver(!originInfo.isOwnershipHandedOver());
+
+				shareInfoService.ensurePersisted(shareInfo);
+			}
+		}, (event, eventParticipant) -> {
+			associatedEntityCallback.apply(eventParticipant, shareInfoService::getByEventParticipantAndOrganization);
+		}, (event, sample) -> {
+			associatedEntityCallback.apply(sample, shareInfoService::getBySampleAndOrganization);
+		});
+
+		eventFacade.syncSharesAsync(shareTreeCriteria);
 	}
 
 	private void persistProcessedData(
@@ -119,7 +135,7 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 		EventDto event = eventData.getEntity();
 
 		final EventDto savedEvent;
-		savedEvent = handleValidationError(() -> eventFacade.saveEvent(event, false), Captions.CaseData, buildCaseValidationGroupName(event));
+		savedEvent = handleValidationError(() -> eventFacade.saveEvent(event, false, false), Captions.CaseData, buildCaseValidationGroupName(event));
 		if (afterSaveEvent != null) {
 			afterSaveEvent.accept(savedEvent);
 		}
@@ -140,7 +156,7 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 		throws SormasToSormasValidationException {
 		for (EventParticipantDto ep : eventParticipants) {
 			handleValidationError(
-				() -> personFacade.savePerson(ep.getPerson(), false),
+				() -> personFacade.savePerson(ep.getPerson(), false, false),
 				Captions.EventParticipant,
 				buildEventValidationGroupName(ep.getEvent()));
 
@@ -149,7 +165,7 @@ public class ProcessedEventDataPersister implements ProcessedDataPersister<Proce
 			}
 
 			handleValidationError(
-				() -> eventParticipantFacade.saveEventParticipant(ep, false),
+				() -> eventParticipantFacade.saveEventParticipant(ep, false, false),
 				Captions.EventParticipant,
 				buildEventValidationGroupName(ep.getEvent()));
 		}

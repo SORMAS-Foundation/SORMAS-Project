@@ -36,18 +36,19 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.sormastosormas.OrganizationServerAccessData;
-import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SormasToSormasShareRequestFacade")
 public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareRequestFacade {
@@ -62,7 +63,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@EJB
-	private ServerAccessDataService serverAccessDataService;
+	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 
 	@Override
 	public SormasToSormasShareRequestDto saveShareRequest(@Valid SormasToSormasShareRequestDto dto) {
@@ -124,6 +125,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 				case SormasToSormasOriginInfo.ORGANIZATION_ID:
 				case SormasToSormasOriginInfo.SENDER_NAME:
 				case SormasToSormasOriginInfo.COMMENT:
+				case SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER:
 					expression = originInfo.get(sortProperty.propertyName);
 					break;
 				default:
@@ -135,23 +137,18 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 
 		cq.orderBy(order);
 
-		List<SormasToSormasShareRequestIndexDto> requests;
-		if (first != null && max != null) {
-			requests = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			requests = em.createQuery(cq).getResultList();
-		}
+		List<SormasToSormasShareRequestIndexDto> requests = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!requests.isEmpty()) {
-			Map<String, OrganizationServerAccessData> organizations = serverAccessDataService.getOrganizationList()
+			Map<String, SormasServerDescriptor> serverDescriptorMap = sormasToSormasDiscoveryService.getAllAvailableServers()
 				.stream()
-				.collect(Collectors.toMap(OrganizationServerAccessData::getId, Function.identity()));
+				.collect(Collectors.toMap(SormasServerDescriptor::getId, Function.identity()));
 
 			requests.forEach(request -> {
 				String organizationId = request.getOrganizationId();
-				OrganizationServerAccessData organizationAccessData = organizations.get(organizationId);
+				SormasServerDescriptor serverDescriptor = serverDescriptorMap.get(organizationId);
 
-				request.setOrganizationName(organizationAccessData != null ? organizationAccessData.getName() : organizationId);
+				request.setOrganizationName(serverDescriptor != null ? serverDescriptor.getName() : organizationId);
 			});
 		}
 
@@ -186,9 +183,9 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		target.setDataType(source.getDataType());
 		target.setStatus(source.getStatus());
 		target.setOriginInfo(originInfoFacade.fromDto(source.getOriginInfo(), checkChangeDate));
-		target.setCases(source.getCases());
-		target.setContacts(source.getContacts());
-		target.setEvents(source.getEvents());
+		target.setCasesList(source.getCases());
+		target.setContactsList(source.getContacts());
+		target.setEventsList(source.getEvents());
 
 		return target;
 	}
@@ -203,9 +200,9 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		target.setDataType(source.getDataType());
 		target.setStatus(source.getStatus());
 		target.setOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getOriginInfo()));
-		target.setCases(source.getCases());
-		target.setContacts(source.getContacts());
-		target.setEvents(source.getEvents());
+		target.setCases(source.getCasesList());
+		target.setContacts(source.getContactsList());
+		target.setEvents(source.getEventsList());
 
 		return target;
 	}

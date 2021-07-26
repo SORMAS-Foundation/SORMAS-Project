@@ -101,7 +101,7 @@ public class CountryImporter extends InfrastructureImporter {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
 					validateFieldLength(headerPathElementName, value);
-					if (!executeDefaultInvokings(pd, currentElement, value, entityPropertyPath)) {
+					if (!executeDefaultInvoke(pd, currentElement, value, entityPropertyPath)) {
 						throw new UnsupportedOperationException(
 							I18nProperties.getValidationError(Validations.importPropertyTypeNotAllowed, propertyType.getName()));
 					}

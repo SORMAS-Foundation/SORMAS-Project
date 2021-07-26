@@ -24,9 +24,15 @@ import lombok.Getter;
 @Getter
 public enum CaseOutcome {
   NO_OUTCOME("No Outcome Yet"),
+  NOT_CLASSIFIED("Not yet classified"),
+  PENDING("Investigation pending"),
   DECEASED("Deceased"),
   RECOVERED("Recovered"),
-  UNKNOWN("Unknown");
+  UNKNOWN("Unknown"),
+  CORONAVIRUS("COVID-19"),
+  RESPONSIBLE_REGION("Voreingestellte Bundesl"),
+  RESPONSIBLE_DISTRICT("Voreingestellter Landkreis"),
+  HEALTH_FACILITY("Standard Einrichtung - Details");
 
   private final String outcome;
 

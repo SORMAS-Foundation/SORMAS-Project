@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import static de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
+
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,16 +31,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -53,7 +57,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -78,6 +81,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -98,6 +102,7 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEvent;
@@ -108,8 +113,10 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.utils.EventJoins;
 
 @Stateless(name = "EventFacade")
@@ -140,6 +147,12 @@ public class EventFacadeEjb implements EventFacade {
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolFacade;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
+	@EJB
+	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	@EJB
+	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
+	@Resource
+	private ManagedScheduledExecutorService executorService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -168,6 +181,12 @@ public class EventFacadeEjb implements EventFacade {
 	public List<EventDto> getByUuids(List<String> uuids) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return eventService.getByUuids(uuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+	}
+
+	@Override
+	public EventDto getByUuid(String uuid) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return convertToDto(eventService.getByUuid(uuid), pseudonymizer);
 	}
 
 	@Override
@@ -203,10 +222,10 @@ public class EventFacadeEjb implements EventFacade {
 
 	@Override
 	public EventDto saveEvent(@Valid @NotNull EventDto dto) {
-		return saveEvent(dto, true);
+		return saveEvent(dto, true, true);
 	}
 
-	public EventDto saveEvent(@NotNull EventDto dto, boolean checkChangeDate) {
+	public EventDto saveEvent(@NotNull EventDto dto, boolean checkChangeDate, boolean syncShares) {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
@@ -221,7 +240,21 @@ public class EventFacadeEjb implements EventFacade {
 		Event event = fromDto(dto, checkChangeDate);
 		eventService.ensurePersisted(event);
 
+		onEventChange(toDto(event), syncShares);
+
 		return convertToDto(event, pseudonymizer);
+	}
+
+	public void onEventChange(EventDto event, boolean syncShares) {
+		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
+			syncSharesAsync(new ShareTreeCriteria(event.getUuid()));
+		}
+	}
+
+	public void syncSharesAsync(ShareTreeCriteria criteria) {
+		executorService.schedule(() -> {
+			sormasToSormasEventFacade.syncShares(criteria);
+		}, 5, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -297,6 +330,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			event.get(Event.EVENT_MANAGEMENT_STATUS),
 			event.get(Event.DISEASE),
+			event.get(Event.DISEASE_VARIANT),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
@@ -326,7 +360,8 @@ public class EventFacadeEjb implements EventFacade {
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
 			JurisdictionHelper.booleanSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)),
-			event.get(Event.CHANGE_DATE));
+			event.get(Event.CHANGE_DATE),
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE));
 
 		Predicate filter = null;
 
@@ -357,6 +392,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:
 				case EventIndexDto.EVENT_MANAGEMENT_STATUS:
 				case EventIndexDto.DISEASE:
+				case EventIndexDto.DISEASE_VARIANT:
 				case EventIndexDto.DISEASE_DETAILS:
 				case EventIndexDto.START_DATE:
 				case EventIndexDto.EVOLUTION_DATE:
@@ -415,12 +451,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		cq.distinct(true);
 
-		List<EventIndexDto> indexList;
-		if (first != null && max != null) {
-			indexList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			indexList = em.createQuery(cq).getResultList();
-		}
+		List<EventIndexDto> indexList = QueryHelper.getResultList(em, cq, first, max);
 
 		Map<String, Long> participantCounts = new HashMap<>();
 		Map<String, Long> caseCounts = new HashMap<>();
@@ -581,6 +612,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			event.get(Event.DISEASE),
+			event.get(Event.DISEASE_VARIANT),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
@@ -621,7 +653,8 @@ public class EventFacadeEjb implements EventFacade {
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
 			JurisdictionHelper.booleanSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)),
-			event.get(Event.EVENT_MANAGEMENT_STATUS));
+			event.get(Event.EVENT_MANAGEMENT_STATUS),
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
@@ -637,13 +670,7 @@ public class EventFacadeEjb implements EventFacade {
 		cq.where(filter);
 		cq.orderBy(cb.desc(event.get(Event.REPORT_DATE_TIME)));
 
-		List<EventExportDto> exportList;
-		if (first != null && max != null) {
-			exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-
-		} else {
-			exportList = em.createQuery(cq).getResultList();
-		}
+		List<EventExportDto> exportList = QueryHelper.getResultList(em, cq, first, max);
 
 		Map<String, Long> participantCounts = new HashMap<>();
 		Map<String, Long> caseCounts = new HashMap<>();
@@ -857,11 +884,7 @@ public class EventFacadeEjb implements EventFacade {
 		cq.where(cb.and(eventRoot.get(Event.UUID).in(eventUuids), cb.isTrue(sormasToSormasJoin.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
 		cq.orderBy(cb.asc(eventRoot.get(AbstractDomainObject.CREATION_DATE)));
 
-		try {
-			return em.createQuery(cq).setMaxResults(1).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getFirstResult(em, cq);
 	}
 
 	@Override
@@ -968,6 +991,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcMediaName(source.getSrcMediaName());
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
@@ -994,6 +1018,8 @@ public class EventFacadeEjb implements EventFacade {
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getShareInfoEvents().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+
+		target.setEventIdentificationSource(source.getEventIdentificationSource());
 
 		return target;
 	}
@@ -1070,6 +1096,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcMediaName(source.getSrcMediaName());
 		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setResponsibleUser(userService.getByReferenceDto(source.getResponsibleUser()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
@@ -1093,6 +1120,8 @@ public class EventFacadeEjb implements EventFacade {
 		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
 
 		target.setInternalToken(source.getInternalToken());
+
+		target.setEventIdentificationSource(source.getEventIdentificationSource());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));

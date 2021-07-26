@@ -17,7 +17,7 @@
  */
 package org.sormas.e2etests.helpers.api;
 
-import static org.sormas.e2etests.constants.api.Endpoints.PERSONS;
+import static org.sormas.e2etests.constants.api.Endpoints.PERSONS_PATH;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
@@ -42,7 +42,7 @@ public class PersonsHelper {
 
   public void getAllPersonUuid() {
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.GET).path(PERSONS + "uuids").build());
+        Request.builder().method(Method.GET).path(PERSONS_PATH + "uuids").build());
   }
 
   @SneakyThrows
@@ -51,6 +51,16 @@ public class PersonsHelper {
     List<Person> personBody = List.of(person);
     objectMapper.writeValue(out, personBody);
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.POST).body(out.toString()).path(PERSONS + "push").build());
+        Request.builder()
+            .method(Method.POST)
+            .body(out.toString())
+            .path(PERSONS_PATH + "push")
+            .build());
+  }
+
+  public void pushPerson(String specificPath, String jsonBody) {
+    final String json = jsonBody;
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.POST).path(PERSONS_PATH + specificPath).body(json).build());
   }
 }
