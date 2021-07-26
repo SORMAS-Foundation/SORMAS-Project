@@ -101,15 +101,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			immunization.get(Immunization.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)));
 
-		Predicate filter = createUserFilter(immunizationQueryContext);
-		if (criteria != null) {
-			final Predicate criteriaFilter = buildCriteriaFilter(criteria, immunizationQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
+		buildWhereCondition(criteria, cb, cq, immunizationQueryContext);
 
 		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
@@ -159,15 +151,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		ImmunizationQueryContext<Immunization> immunizationQueryContext = new ImmunizationQueryContext<>(cb, cq, immunization);
 
-		Predicate filter = createUserFilter(immunizationQueryContext);
-		if (criteria != null) {
-			final Predicate criteriaFilter = buildCriteriaFilter(criteria, immunizationQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
+		buildWhereCondition(criteria, cb, cq, immunizationQueryContext);
 
 		cq.select(cb.countDistinct(immunization));
 		return em.createQuery(cq).getSingleResult();
@@ -282,6 +266,22 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {
 		final User currentUser = userService.getCurrentUser();
 		return ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+	}
+
+	private <T> void buildWhereCondition(
+		ImmunizationCriteria criteria,
+		CriteriaBuilder cb,
+		CriteriaQuery<T> cq,
+		ImmunizationQueryContext<Immunization> immunizationQueryContext) {
+		Predicate filter = createUserFilter(immunizationQueryContext);
+		if (criteria != null) {
+			final Predicate criteriaFilter = buildCriteriaFilter(criteria, immunizationQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
 	}
 
 	private Predicate buildCriteriaFilter(ImmunizationCriteria criteria, ImmunizationQueryContext<Immunization> immunizationQueryContext) {
