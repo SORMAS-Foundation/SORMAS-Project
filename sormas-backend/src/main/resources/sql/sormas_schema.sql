@@ -7765,4 +7765,9 @@ ALTER TABLE labmessage_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (389, 'Introduce testreport entity #5539');
 
+-- 2021-07-21 SymptomJournalStatus default to UNREGISTERED
+UPDATE person SET symptomjournalstatus = 'UNREGISTERED' WHERE symptomjournalstatus IS NULL;
+ALTER TABLE person ALTER COLUMN symptomjournalstatus SET DEFAULT 'UNREGISTERED';
+
+INSERT INTO schema_version (version_number, comment) VALUES (390, 'symptonjournalstatus = UNREGISTERED as default #6146');
 -- *** Insert new sql commands BEFORE this line ***
