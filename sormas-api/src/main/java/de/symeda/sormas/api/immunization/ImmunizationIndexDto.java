@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
-import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -62,18 +61,12 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	private Date endDate;
 	private Date recoveryDate;
 
-	private boolean isInJurisdiction;
-
 	public ImmunizationIndexDto(
 		String uuid,
 		String personId,
 		String personFirstName,
 		String personLastName,
-		Integer age,
-		ApproximateAgeType ageType,
-		Integer birthdateDD,
-		Integer birthdateMM,
-		Integer birthdateYYYY,
+		AgeAndBirthDateDto ageAndBirthDate,
 		Sex sex,
 		String district,
 		MeansOfImmunization meansOfImmunization,
@@ -81,15 +74,13 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		ImmunizationStatus immunizationStatus,
 		Date startDate,
 		Date endDate,
-		Date recoveryDate,
-		Date changeDate,
-		boolean isInJurisdiction) {
+		Date recoveryDate) {
 
 		this.uuid = uuid;
 		this.personId = personId;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
-		this.ageAndBirthDate = new AgeAndBirthDateDto(age, ageType, birthdateDD, birthdateMM, birthdateYYYY);
+		this.ageAndBirthDate = ageAndBirthDate;
 		this.sex = sex;
 		this.district = district;
 		this.meansOfImmunization = meansOfImmunization;
@@ -98,7 +89,6 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.recoveryDate = recoveryDate;
-		this.isInJurisdiction = isInJurisdiction;
 	}
 
 	public String getUuid() {
@@ -203,13 +193,5 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 
 	public void setRecoveryDate(Date recoveryDate) {
 		this.recoveryDate = recoveryDate;
-	}
-
-	public boolean isInJurisdiction() {
-		return isInJurisdiction;
-	}
-
-	public void setInJurisdiction(boolean inJurisdiction) {
-		isInJurisdiction = inJurisdiction;
 	}
 }

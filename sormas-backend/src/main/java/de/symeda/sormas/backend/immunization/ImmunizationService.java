@@ -67,9 +67,9 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		super(Immunization.class);
 	}
 
-	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<Object[]> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<ImmunizationIndexDto> cq = cb.createQuery(ImmunizationIndexDto.class);
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Immunization> immunization = cq.from(Immunization.class);
 
 		ImmunizationQueryContext<Immunization> immunizationQueryContext = new ImmunizationQueryContext<>(cb, cq, immunization);
