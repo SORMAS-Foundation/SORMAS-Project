@@ -247,7 +247,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		List<String> invalidColumns = new ArrayList<>();
 
 		for (int i = 0; i < values.length; i++) {
-			String value = values[i] != null ? values[i].trim() : values[i];
+			String value = StringUtils.trimToNull(values[i]);
 			if (ignoreEmptyEntries && StringUtils.isBlank(value)) {
 				continue;
 			}

@@ -534,7 +534,7 @@ public abstract class DataImporter {
 		List<String> invalidColumns = new ArrayList<>();
 
 		for (int i = 0; i < values.length; i++) {
-			String value = values[i] != null ? values[i].trim() : values[i];
+			String value = StringUtils.trimToNull(values[i]);
 			if (ignoreEmptyEntries && (value == null || value.isEmpty())) {
 				continue;
 			}
