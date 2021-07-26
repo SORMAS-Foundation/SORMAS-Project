@@ -99,7 +99,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			immunization.get(Immunization.END_DATE),
 			immunization.get(Immunization.RECOVERY_DATE),
 			immunization.get(Immunization.CHANGE_DATE),
-			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(immunizationQueryContext)));
+			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)));
 
 		Predicate filter = createUserFilter(immunizationQueryContext);
 		if (criteria != null) {
@@ -178,14 +178,14 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Immunization> root = cq.from(Immunization.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new ImmunizationQueryContext<>(cb, cq, root))));
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, createUserFilter(new ImmunizationQueryContext<>(cb, cq, root))));
 		cq.where(cb.equal(root.get(Immunization.UUID), immunization.getUuid()));
 		return em.createQuery(cq).getSingleResult();
 	}
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> immunizationPath) {
-		return inJurisdictionOrOwned(new ImmunizationQueryContext(cb, cq, immunizationPath));
+		return createUserFilter(new ImmunizationQueryContext(cb, cq, immunizationPath));
 	}
 
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Immunization> root) {
@@ -279,11 +279,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> immunizationQueryContext) {
-		return inJurisdictionOrOwned(immunizationQueryContext);
-	}
-
-	private Predicate inJurisdictionOrOwned(ImmunizationQueryContext<Immunization> qc) {
+	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {
 		final User currentUser = userService.getCurrentUser();
 		return ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 	}
