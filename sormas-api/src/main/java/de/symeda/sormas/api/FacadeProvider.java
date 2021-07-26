@@ -62,6 +62,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
 import de.symeda.sormas.api.labmessage.ExternalLabResultsFacade;
 import de.symeda.sormas.api.labmessage.LabMessageFacade;
+import de.symeda.sormas.api.labmessage.TestReportFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.AreaFacade;
@@ -457,6 +458,10 @@ public class FacadeProvider {
 
 	public static InfoFacade getInfoFacade() {
 		return get().lookupEjbRemote(InfoFacade.class);
+	}
+
+	public static TestReportFacade getTestReportFacade() {
+		return get().lookupEjbRemote(TestReportFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")
