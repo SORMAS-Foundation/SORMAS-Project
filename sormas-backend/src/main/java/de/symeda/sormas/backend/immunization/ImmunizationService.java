@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.backend.immunization;
 
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEqualsReferenceDto;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,13 +39,18 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonQueryContext;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -286,7 +294,63 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		final From<?, ?> from = immunizationQueryContext.getRoot();
 		Join<Immunization, Person> person = joins.getPerson();
 
+		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+		final Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
+		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+		final Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
+
 		Predicate filter = null;
+		if (criteria.getDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.DISEASE), criteria.getDisease()));
+		}
+		if (!DataHelper.isNullOrEmpty(criteria.getNameAddressPhoneEmailLike())) {
+			final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
+			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+
+			String[] textFilters = criteria.getNameAddressPhoneEmailLike().split("\\s+");
+
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
+				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, person.get(Person.UUID), textFilter),
+					CriteriaBuilderHelper.ilike(
+						cb,
+						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
+						textFilter),
+					phoneNumberPredicate(
+						cb,
+						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
+						textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.STREET), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
+					CriteriaBuilderHelper.ilike(cb, person.get(Person.INTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_ID), textFilter),
+					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_TOKEN), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			}
+		}
+		filter = andEquals(cb, person, filter, criteria.getBirthdateYYYY(), Person.BIRTHDATE_YYYY);
+		filter = andEquals(cb, person, filter, criteria.getBirthdateMM(), Person.BIRTHDATE_MM);
+		filter = andEquals(cb, person, filter, criteria.getBirthdateDD(), Person.BIRTHDATE_DD);
+		if (criteria.getMeansOfImmunization() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.MEANS_OF_IMMUNIZATION), criteria.getMeansOfImmunization()));
+		}
+		if (criteria.getManagementStatus() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS), criteria.getManagementStatus()));
+		}
+		if (criteria.getImmunizationStatus() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_STATUS), criteria.getImmunizationStatus()));
+		}
+		filter = andEqualsReferenceDto(cb, region, filter, criteria.getRegion());
+		filter = andEqualsReferenceDto(cb, district, filter, criteria.getDistrict());
+		filter = andEqualsReferenceDto(cb, community, filter, criteria.getCommunity());
 
 		return filter;
 	}

@@ -37,6 +37,10 @@ public class ImmunizationGrid extends FilteredGrid<ImmunizationIndexDto, Immuniz
 				e -> ControllerProvider.getImmunizationController().navigateToImmunization(e.getUuid())));
 	}
 
+	public void reload() {
+		getDataProvider().refreshAll();
+	}
+
 	private void initColumns() {
 		setColumns(
 			ImmunizationIndexDto.UUID,
