@@ -42,6 +42,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -326,13 +327,13 @@ public class ContactImporter extends DataImporter {
 							pd.getWriteMethod().invoke(currentElement, district.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
+
+						DistrictReferenceDto district = currentElement instanceof ContactDto
+							? ((ContactDto) currentElement).getDistrict()
+							: (currentElement instanceof LocationDto ? ((LocationDto) currentElement).getDistrict() : null);
 						List<CommunityReferenceDto> community = FacadeProvider.getCommunityFacade()
-							.getByName(
-								entry,
-								((ContactDto) currentElement).getDistrict() != null
-									? ((ContactDto) currentElement).getDistrict()
-									: ImporterPersonHelper.getPersonDistrict(pd.getName(), person),
-								false);
+							.getByName(entry, district != null ? district : ImporterPersonHelper.getPersonDistrict(pd.getName(), person), false);
+
 						if (community.isEmpty()) {
 							throw new ImportErrorException(
 								I18nProperties.getValidationError(
