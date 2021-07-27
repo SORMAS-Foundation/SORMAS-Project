@@ -1,10 +1,15 @@
 package de.symeda.sormas.ui.immunization;
 
+import java.util.HashMap;
+
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -13,6 +18,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
 import de.symeda.sormas.ui.immunization.components.grid.ImmunizationGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
@@ -108,44 +114,22 @@ public class ImmunizationsView extends AbstractView {
 		statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
-		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
-		actionButtonsLayout.setSpacing(true);
+		HashMap<Button, String> statusButtons = new HashMap<>();
 
-		// Show active/archived/all dropdown
-		/*
-		 * if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
-		 * int daysAfterTravelEntryGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterTravelEntryGetsArchived();
-		 * if (daysAfterTravelEntryGetsArchived > 0) {
-		 * relevanceStatusInfoLabel = new Label(
-		 * VaadinIcons.INFO_CIRCLE.getHtml() + " "
-		 * + String.format(I18nProperties.getString(Strings.infoArchivedTravelEntries), daysAfterTravelEntryGetsArchived),
-		 * ContentMode.HTML);
-		 * relevanceStatusInfoLabel.setVisible(false);
-		 * relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
-		 * actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
-		 * actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
-		 * }
-		 * relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
-		 * relevanceStatusFilter.setId("relevanceStatus");
-		 * relevanceStatusFilter.setWidth(140, Unit.PIXELS);
-		 * relevanceStatusFilter.setNullSelectionAllowed(false);
-		 * relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
-		 * relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE,
-		 * I18nProperties.getCaption(Captions.travelEntryActiveTravelEntries));
-		 * relevanceStatusFilter
-		 * .setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.travelEntryArchivedTravelEntries));
-		 * relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.travelEntryAllTravelEntries));
-		 * relevanceStatusFilter.addValueChangeListener(e -> {
-		 * relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
-		 * criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
-		 * navigateTo(criteria);
-		 * });
-		 * actionButtonsLayout.addComponent(relevanceStatusFilter);
-		 * }
-		 * statusFilterLayout.addComponent(actionButtonsLayout);
-		 * statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
-		 * statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
-		 */
+		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
+		buttonFilterLayout.setSpacing(true);
+
+		Button statusAll = ButtonHelper.createButton(Captions.all, e -> {
+			navigateTo(criteria);
+		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+		statusAll.setCaptionAsHtml(true);
+
+		buttonFilterLayout.addComponent(statusAll);
+
+		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
+		Button activeStatusButton = statusAll;
+
+		statusFilterLayout.addComponent(buttonFilterLayout);
 
 		return statusFilterLayout;
 	}
