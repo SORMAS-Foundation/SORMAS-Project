@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.immunization;
 
 import com.vaadin.navigator.Navigator;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -16,8 +15,8 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.immunization.components.ImmunizationCreationForm;
+import de.symeda.sormas.ui.immunization.components.TitleLayout;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ImmunizationController {
@@ -74,17 +73,11 @@ public class ImmunizationController {
 	public VerticalLayout getImmunizationViewTitleLayout(String uuid) {
 		ImmunizationDto immunizationDto = findimmunization(uuid);
 
-		VerticalLayout titleLayout = new VerticalLayout();
-		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
-		titleLayout.setSpacing(false);
-
 		String shortUuid = DataHelper.getShortUuid(immunizationDto.getUuid());
 		PersonReferenceDto person = immunizationDto.getPerson();
-		Label immunizationLabel = new Label(person.getFirstName() + " " + person.getLastName() + " (" + shortUuid + ")");
-		immunizationLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
-		titleLayout.addComponent(immunizationLabel);
+		String text = person.getFirstName() + " " + person.getLastName() + " (" + shortUuid + ")";
 
-		return titleLayout;
+		return new TitleLayout(text);
 	}
 
 	private ImmunizationDto findimmunization(String uuid) {
