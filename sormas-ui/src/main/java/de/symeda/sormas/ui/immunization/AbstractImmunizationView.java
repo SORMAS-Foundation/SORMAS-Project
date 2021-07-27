@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.immunization;
 
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.Component;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -59,5 +60,13 @@ public class AbstractImmunizationView extends AbstractDetailView<ImmunizationRef
 		menu.addView(ImmunizationPersonView.VIEW_NAME, I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.PERSON), params);
 
 		setMainHeaderComponent(ControllerProvider.getImmunizationController().getImmunizationMainHeaderLayout(getReference().getUuid()));
+	}
+
+	public void setImmunizationEditPermission(Component component) {
+		Boolean isImmunizationEditAllowed = FacadeProvider.getImmunizationFacade().isImmunizationEditAllowed(getReference().getUuid());
+
+		if (!isImmunizationEditAllowed) {
+			component.setEnabled(false);
+		}
 	}
 }

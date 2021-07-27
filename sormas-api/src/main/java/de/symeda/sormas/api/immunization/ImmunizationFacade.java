@@ -33,5 +33,7 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 
 	boolean exists(String uuid);
 
-	ImmunizationReferenceDto getReferenceByUuid(String uuid);;
+	ImmunizationReferenceDto getReferenceByUuid(String uuid);
+
+	boolean isImmunizationEditAllowed(String uuid);
 }

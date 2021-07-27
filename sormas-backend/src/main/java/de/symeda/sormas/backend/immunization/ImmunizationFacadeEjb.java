@@ -40,6 +40,7 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -161,6 +162,12 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	@Override
 	public ImmunizationReferenceDto getReferenceByUuid(String uuid) {
 		return Optional.of(uuid).map(u -> immunizationService.getByUuid(u)).map(ImmunizationFacadeEjb::toReferenceDto).orElse(null);
+	}
+
+	@Override
+	public boolean isImmunizationEditAllowed(String uuid) {
+		Immunization immunization = immunizationService.getByUuid(uuid);
+		return userService.hasRight(UserRight.IMMUNIZATION_EDIT) && immunizationService.inJurisdictionOrOwned(immunization);
 	}
 
 	@Override
