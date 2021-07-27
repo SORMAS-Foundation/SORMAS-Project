@@ -305,38 +305,30 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                        <de.symeda.sormas.app.component.controls.ControlTextImageField
                             android:id="@+id/sample_received"
-                            app:value="@{data.received}"
+                            app:receivedStatus="@{data}"
                             app:dependencyParentField="@{samplePurpose}"
                             app:dependencyParentValue="@{SamplePurpose.EXTERNAL}"
                             style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                        <de.symeda.sormas.app.component.controls.ControlDateField
-                            android:id="@+id/sample_receivedDate"
-                            app:value="@={data.receivedDate}"
+                        <de.symeda.sormas.app.component.controls.ControlTextReadField
+                            android:id="@+id/sample_labSampleID"
+                            app:value="@{data.labSampleID}"
                             app:dependencyParentField="@{sampleReceived}"
                             app:dependencyParentValue="@{true}"
-                            style="@style/ControlSecondOfTwoColumnsStyle" />
+                            style="@style/ControlSingleColumnStyle" />
 
                     </LinearLayout>
-
-                    <de.symeda.sormas.app.component.controls.ControlTextEditField
-                        android:id="@+id/sample_labSampleID"
-                        app:value="@{data.labSampleID}"
-                        app:dependencyParentField="@{sampleReceived}"
-                        app:dependencyParentValue="@{true}"
-                        style="@style/ControlSingleColumnStyle" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                        <de.symeda.sormas.app.component.controls.ControlTextReadField
                             android:id="@+id/sample_specimenCondition"
                             app:value="@{data.specimenCondition}"
-                            app:required="true"
                             app:dependencyParentField="@{sampleReceived}"
                             app:dependencyParentValue="@{true}"
                             style="@style/ControlFirstOfTwoColumnsStyle" />

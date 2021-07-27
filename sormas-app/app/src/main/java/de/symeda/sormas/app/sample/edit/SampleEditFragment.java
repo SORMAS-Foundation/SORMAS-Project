@@ -76,7 +76,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 	private List<String> requestedPathogenTests = new ArrayList<>();
 	private List<String> requestedAdditionalTests = new ArrayList<>();
 	private List<Item> finalTestResults;
-	private List<Item> sampleSpecimenConditionList;
 
 	public static SampleEditFragment newInstance(Sample activityRootData) {
 		return newInstanceWithFieldCheckers(
@@ -169,7 +168,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 		labList = DatabaseHelper.getFacilityDao().getActiveLaboratories(true);
 		samplePurposeList = DataUtils.getEnumItems(SamplePurpose.class, true);
 		samplingReasonList = DataUtils.getEnumItems(SamplingReason.class, true, getFieldVisibilityCheckers());
-		sampleSpecimenConditionList = DataUtils.getEnumItems(SpecimenCondition.class, true);
 
 		for (PathogenTestType pathogenTest : record.getRequestedPathogenTests()) {
 			requestedPathogenTests.clear();
@@ -222,7 +220,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 		// Initialize ControlSpinnerFields
 		contentBinding.sampleSampleMaterial.initializeSpinner(sampleMaterialList);
 		contentBinding.sampleSampleSource.initializeSpinner(sampleSourceList);
-		contentBinding.sampleSpecimenCondition.initializeSpinner(sampleSpecimenConditionList);
 		contentBinding.samplePurpose.setEnabled(referredSample == null || record.getSamplePurpose() != SamplePurpose.EXTERNAL);
 		contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), field -> {
 			Facility laboratory = (Facility) field.getValue();
@@ -260,7 +257,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 		// Initialize ControlDateFields and ControlDateTimeFields
 		contentBinding.sampleSampleDateTime.initializeDateTimeField(getFragmentManager());
 		contentBinding.sampleShipmentDate.initializeDateField(getFragmentManager());
-		contentBinding.sampleReceivedDate.initializeDateField(getFragmentManager());
 
 		// Initialize on clicks
 		contentBinding.buttonScanFieldSampleId.setOnClickListener((View v) -> {
@@ -282,7 +278,6 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			contentBinding.sampleShipmentDetails.setEnabled(false);
 			contentBinding.samplePurpose.setEnabled(false);
 			contentBinding.sampleReceived.setEnabled(false);
-			contentBinding.sampleReceivedDate.setEnabled(false);
 			contentBinding.sampleLabSampleID.setEnabled(false);
 			contentBinding.sampleSpecimenCondition.setEnabled(false);
 			contentBinding.samplePathogenTestingRequested.setVisibility(GONE);

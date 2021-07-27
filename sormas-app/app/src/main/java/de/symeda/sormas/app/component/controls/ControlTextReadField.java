@@ -444,15 +444,6 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 		setValue(textField, dateValue != null ? DateHelper.formatTime(dateValue) : null, null, valueFormat, defaultValue, dateValue);
 	}
 
-	// Date
-	@BindingAdapter(value = {
-		"dateValue",
-		"valueFormat",
-		"defaultValue" }, requireAll = false)
-	public static void setDateValue(ControlTextReadField textField, Date dateValue, String valueFormat, String defaultValue) {
-		setValue(textField, dateValue != null ? DateFormatHelper.formatLocalDate(dateValue) : null, null, valueFormat, defaultValue, dateValue);
-	}
-
 	// Date & time
 	@BindingAdapter(value = {
 		"dateTimeValue",
