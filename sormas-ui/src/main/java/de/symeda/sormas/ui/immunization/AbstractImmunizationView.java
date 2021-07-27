@@ -58,6 +58,6 @@ public class AbstractImmunizationView extends AbstractDetailView<ImmunizationRef
 		menu.addView(ImmunizationDataView.VIEW_NAME, I18nProperties.getCaption(ImmunizationDto.I18N_PREFIX), params);
 		menu.addView(ImmunizationPersonView.VIEW_NAME, I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.PERSON), params);
 
-		setMainHeaderComponent(ControllerProvider.getImmunizationController().getImmunizationViewTitleLayout(getReference().getUuid()));
+		setMainHeaderComponent(ControllerProvider.getImmunizationController().getImmunizationMainHeaderLayout(getReference().getUuid()));
 	}
 }

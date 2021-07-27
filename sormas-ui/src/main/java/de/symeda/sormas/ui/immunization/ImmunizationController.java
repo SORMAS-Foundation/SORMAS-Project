@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.immunization;
 
 import com.vaadin.navigator.Navigator;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -15,7 +14,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.immunization.components.ImmunizationCreationForm;
-import de.symeda.sormas.ui.immunization.components.TitleLayout;
+import de.symeda.sormas.ui.immunization.components.MainHeaderLayout;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -70,14 +69,14 @@ public class ImmunizationController {
 		return null;
 	}
 
-	public VerticalLayout getImmunizationViewTitleLayout(String uuid) {
+	public MainHeaderLayout getImmunizationMainHeaderLayout(String uuid) {
 		ImmunizationDto immunizationDto = findimmunization(uuid);
 
 		String shortUuid = DataHelper.getShortUuid(immunizationDto.getUuid());
 		PersonReferenceDto person = immunizationDto.getPerson();
 		String text = person.getFirstName() + " " + person.getLastName() + " (" + shortUuid + ")";
 
-		return new TitleLayout(text);
+		return new MainHeaderLayout(text);
 	}
 
 	private ImmunizationDto findimmunization(String uuid) {
