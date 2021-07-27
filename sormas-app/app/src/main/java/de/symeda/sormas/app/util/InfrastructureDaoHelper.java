@@ -15,10 +15,6 @@
 
 package de.symeda.sormas.app.util;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static de.symeda.sormas.app.util.DataUtils.toItems;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -53,6 +49,10 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static de.symeda.sormas.app.util.DataUtils.toItems;
 
 public final class InfrastructureDaoHelper {
 
@@ -726,20 +726,22 @@ public final class InfrastructureDaoHelper {
 				if (initialCommunity != null && selectedDistrict.equals(initialCommunity.getDistrict()) && !newCommunities.contains(communityItem)) {
 					newCommunities.add(communityItem);
 				}
-				if (typeField == null) {
-					List<Item> newFacilities = loadFacilities(selectedDistrict, null, FacilityType.HOSPITAL);
-					if (initialFacility != null && selectedDistrict.equals(initialFacility.getDistrict()) && !newFacilities.contains(facilityItem)) {
-						newFacilities.add(facilityItem);
+				if (facilityField != null) {
+					if (typeField == null) {
+						List<Item> newFacilities = loadFacilities(selectedDistrict, null, FacilityType.HOSPITAL);
+						if (initialFacility != null && selectedDistrict.equals(initialFacility.getDistrict()) && !newFacilities.contains(facilityItem)) {
+							newFacilities.add(facilityItem);
+						}
+						facilityField.setSpinnerData(newFacilities, facilityField.getValue());
+					} else if (typeField.getValue() != null) {
+						List<Item> newFacilities = loadFacilities(selectedDistrict, null, (FacilityType) typeField.getValue());
+						if (initialFacility != null && selectedDistrict.equals(initialFacility.getDistrict()) && !newFacilities.contains(facilityItem)) {
+							newFacilities.add(facilityItem);
+						}
+						facilityField.setSpinnerData(newFacilities, facilityField.getValue());
+					} else {
+						facilityField.setSpinnerData(null);
 					}
-					facilityField.setSpinnerData(newFacilities, facilityField.getValue());
-				} else if (typeField.getValue() != null) {
-					List<Item> newFacilities = loadFacilities(selectedDistrict, null, (FacilityType) typeField.getValue());
-					if (initialFacility != null && selectedDistrict.equals(initialFacility.getDistrict()) && !newFacilities.contains(facilityItem)) {
-						newFacilities.add(facilityItem);
-					}
-					facilityField.setSpinnerData(newFacilities, facilityField.getValue());
-				} else {
-					facilityField.setSpinnerData(null);
 				}
 				communityField.setSpinnerData(newCommunities, communityField.getValue());
 				if (pointOfEntryField != null) {
@@ -753,7 +755,9 @@ public final class InfrastructureDaoHelper {
 				}
 			} else {
 				communityField.setSpinnerData(null);
-				facilityField.setSpinnerData(null);
+				if (facilityField != null) {
+					facilityField.setSpinnerData(null);
+				}
 				if (pointOfEntryField != null) {
 					pointOfEntryField.setSpinnerData(null);
 				}
@@ -765,7 +769,9 @@ public final class InfrastructureDaoHelper {
 				return;
 			}
 
-			handleCommunityChange(field, districtField, facilityField, typeField, initialFacility);
+			if (facilityField != null) {
+				handleCommunityChange(field, districtField, facilityField, typeField, initialFacility);
+			}
 		});
 
 		if (typeField != null) {

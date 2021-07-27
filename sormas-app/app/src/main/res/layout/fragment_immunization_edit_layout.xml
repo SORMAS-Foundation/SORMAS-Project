@@ -40,7 +40,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            style="@style/LayoutSingleContentSpaceBelowStyle">
+            android:padding="@dimen/fragment_padding"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/main_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -50,13 +53,15 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/immunization_reportingUser"
                     app:value="@{data.reportingUser}"
-                    style="@style/ControlSingleColumnStyle" />
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/immunization_reportDate"
                     app:value="@{data.reportDate}"
                     app:required="true"
-                    style="@style/ControlSingleColumnStyle" />
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/immunization_disease"
@@ -125,7 +130,7 @@
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/immunization_numberOfDoses"
                     app:value="@={data.numberOfDoses}"
                     style="@style/ControlSingleColumnStyle" />
@@ -145,14 +150,15 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/immunization_additionalDetails"
-                    app:value="=@{data.additionalDetails}"
-                    app:showCaption="false"
+                    app:value="@={data.additionalDetails}"
+                    app:inputType="textMultiLine"
+                    app:textAlignment="gravity"
+                    app:gravity="top|start"
+                    app:showCaption="true"
                     app:singleLine="false"
                     app:maxLines="3"
                     app:textArea="true"
                     style="@style/ControlSingleColumnStyle" />
-
-            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

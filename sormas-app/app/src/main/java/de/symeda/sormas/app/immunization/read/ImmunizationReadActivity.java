@@ -20,6 +20,8 @@ package de.symeda.sormas.app.immunization.read;
 
 import android.content.Context;
 
+import java.util.List;
+
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -74,6 +76,11 @@ public class ImmunizationReadActivity extends BaseReadActivity<Immunization> {
     @Override
     public Enum getPageStatus() {
         return null;
+    }
+
+    @Override
+    public List<PageMenuItem> getPageMenuData() {
+        return PageMenuItem.fromEnum(ImmunizationSection.values(), getContext());
     }
 
     @Override
