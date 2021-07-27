@@ -193,38 +193,52 @@
 
                     <de.symeda.sormas.app.component.controls.ControlTextImageField
                         android:id="@+id/sample_shipped"
-                        app:shipmentStatus="@{data}"
+                        app:value="@{data.shipped}"
                         android:visibility="@{data.samplePurpose == SamplePurpose.EXTERNAL ? View.VISIBLE : View.GONE}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlTextImageField
-                        android:id="@+id/sample_received"
-                        app:receivedStatus="@{data}"
-                        android:visibility="@{data.samplePurpose == SamplePurpose.EXTERNAL ? View.VISIBLE : View.GONE}"
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/sample_shipmentDate"
+                        app:dateValue="@{data.shipmentDate}"
+                        app:dependencyParentField="@{sampleShipped}"
+                        app:dependencyParentValue="@{true}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_shipmentDetails"
+                    app:value="@{data.shipmentDetails}"
+                    app:dependencyParentField="@{sampleShipped}"
+                    app:dependencyParentValue="@{true}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/sample_shipmentDetails"
-                        app:value="@{data.shipmentDetails}"
-                        app:dependencyParentField="@{sampleShipped}"
-                        app:dependencyParentValue="@{true}"
+                    <de.symeda.sormas.app.component.controls.ControlTextImageField
+                        android:id="@+id/sample_received"
+                        app:value="@{data.received}"
+                        android:visibility="@{data.samplePurpose == SamplePurpose.EXTERNAL ? View.VISIBLE : View.GONE}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/sample_labSampleID"
-                        app:value="@{data.labSampleID}"
+                        android:id="@+id/sample_receivedDate"
+                        app:dateValue="@{data.receivedDate}"
                         app:dependencyParentField="@{sampleReceived}"
                         app:dependencyParentValue="@{true}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/sample_labSampleID"
+                    app:value="@{data.labSampleID}"
+                    app:dependencyParentField="@{sampleReceived}"
+                    app:dependencyParentValue="@{true}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
