@@ -72,12 +72,6 @@ public class ImmunizationsView extends AbstractView {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
-		/*
-		 * if (relevanceStatusFilter != null) {
-		 * relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
-		 * }
-		 */
-
 		filterForm.setValue(criteria);
 
 		applyingCriteria = false;
