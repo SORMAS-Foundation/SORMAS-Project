@@ -162,7 +162,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 		validate(dto);
 
-		existingImmunization = fillOrBuildEntity(dto, existingImmunization, true);
+		existingImmunization = fillOrBuildEntity(dto, existingImmunization);
 		immunizationService.ensurePersisted(existingImmunization);
 
 		return convertToDto(existingImmunization, pseudonymizer);
@@ -270,8 +270,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		return dto;
 	}
 
-	private Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, checkChangeDate);
+	private Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, true);
 
 		target.setDisease(source.getDisease());
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
