@@ -1,6 +1,13 @@
 package de.symeda.sormas.ui.immunization;
 
+import com.vaadin.navigator.ViewChangeListener;
+
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 
@@ -13,13 +20,26 @@ public class AbstractImmunizationView extends AbstractDetailView<ImmunizationRef
 	}
 
 	@Override
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
+
+		super.enter(event);
+		initOrRedirect(event);
+	}
+
+	@Override
 	protected ImmunizationReferenceDto getReferenceByUuid(String uuid) {
-		return null;
+		final ImmunizationReferenceDto reference;
+		if (FacadeProvider.getImmunizationFacade().exists(uuid)) {
+			reference = FacadeProvider.getImmunizationFacade().getReferenceByUuid(uuid);
+		} else {
+			reference = null;
+		}
+		return reference;
 	}
 
 	@Override
 	protected String getRootViewName() {
-		return null;
+		return ROOT_VIEW_NAME;
 	}
 
 	@Override
@@ -29,6 +49,15 @@ public class AbstractImmunizationView extends AbstractDetailView<ImmunizationRef
 
 	@Override
 	public void refreshMenu(SubMenu menu, String params) {
+		if (!findReferenceByParams(params)) {
+			return;
+		}
 
+		menu.removeAllViews();
+		menu.addView(ImmunizationsView.VIEW_NAME, I18nProperties.getCaption(Captions.immunizationImmunizationsList));
+		menu.addView(ImmunizationDataView.VIEW_NAME, I18nProperties.getCaption(ImmunizationDto.I18N_PREFIX), params);
+		menu.addView(ImmunizationPersonView.VIEW_NAME, I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.PERSON), params);
+
+		setMainHeaderComponent(ControllerProvider.getImmunizationController().getImmunizationViewTitleLayout(getReference().getUuid()));
 	}
 }

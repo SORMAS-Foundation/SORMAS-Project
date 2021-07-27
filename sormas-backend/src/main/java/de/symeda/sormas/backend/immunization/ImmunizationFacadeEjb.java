@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.immunization;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -150,6 +151,16 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 			return Collections.emptyList();
 		}
 		return immunizationService.getDeletedUuidsSince(since);
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return immunizationService.exists(uuid);
+	}
+
+	@Override
+	public ImmunizationReferenceDto getReferenceByUuid(String uuid) {
+		return Optional.of(uuid).map(u -> immunizationService.getByUuid(u)).map(ImmunizationFacadeEjb::toReferenceDto).orElse(null);
 	}
 
 	@Override

@@ -1,24 +1,31 @@
 package de.symeda.sormas.ui.immunization;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.immunization.components.ImmunizationCreationForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ImmunizationController {
 
 	public void registerViews(Navigator navigator) {
-
+		navigator.addView(ImmunizationsView.VIEW_NAME, ImmunizationsView.class);
+		navigator.addView(ImmunizationDataView.VIEW_NAME, ImmunizationDataView.class);
+		navigator.addView(ImmunizationPersonView.VIEW_NAME, ImmunizationPersonView.class);
 	}
 
 	public void create() {
@@ -62,5 +69,25 @@ public class ImmunizationController {
 			return viewComponent;
 		}
 		return null;
+	}
+
+	public VerticalLayout getImmunizationViewTitleLayout(String uuid) {
+		ImmunizationDto immunizationDto = findimmunization(uuid);
+
+		VerticalLayout titleLayout = new VerticalLayout();
+		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);
+		titleLayout.setSpacing(false);
+
+		String shortUuid = DataHelper.getShortUuid(immunizationDto.getUuid());
+		PersonReferenceDto person = immunizationDto.getPerson();
+		Label immunizationLabel = new Label(person.getFirstName() + " " + person.getLastName() + " (" + shortUuid + ")");
+		immunizationLabel.addStyleNames(CssStyles.H2, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY);
+		titleLayout.addComponent(immunizationLabel);
+
+		return titleLayout;
+	}
+
+	private ImmunizationDto findimmunization(String uuid) {
+		return FacadeProvider.getImmunizationFacade().getByUuid(uuid);
 	}
 }

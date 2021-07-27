@@ -57,6 +57,8 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	public static final String NUMBER_OF_DOSES = "numberOfDoses";
 
+	public static final String PERSON = "person";
+
 	@Outbreaks
 	@Required
 	private Disease disease;
