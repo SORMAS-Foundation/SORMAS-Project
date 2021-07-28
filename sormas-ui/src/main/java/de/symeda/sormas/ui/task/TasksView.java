@@ -18,19 +18,29 @@
 package de.symeda.sormas.ui.task;
 
 import java.util.Collections;
+import java.util.Date;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
+import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskExportDto;
+import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -38,6 +48,9 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
@@ -66,10 +79,19 @@ public class TasksView extends AbstractView {
 		addComponent(taskListComponent);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_EXPORT)) {
+			VerticalLayout exportLayout = new VerticalLayout();
+			exportLayout.setSpacing(true);
+			exportLayout.setMargin(true);
+			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			exportLayout.setWidth(200, Unit.PIXELS);
+
+			PopupButton exportButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+			addHeaderComponent(exportButton);
+
 			Button basicExportButton = ButtonHelper.createIconButton(Captions.exportBasic, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
-			addHeaderComponent(basicExportButton);
-
+			basicExportButton.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(basicExportButton);
 			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 				taskListComponent.getGrid(),
 				() -> viewConfiguration.isInEagerMode() ? taskListComponent.getGrid().asMultiSelect().getSelectedItems() : Collections.emptySet(),
@@ -77,6 +99,29 @@ public class TasksView extends AbstractView {
 				TaskGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
+
+			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(
+				TaskExportDto.class,
+				null,
+				(Integer start, Integer max) -> FacadeProvider.getTaskFacade()
+					.getExportList(taskListComponent.getGrid().getCriteria(), getSelectedRowUuids(), start, max),
+				(propertyId, type) -> {
+					String caption = I18nProperties.findPrefixCaption(propertyId, TaskExportDto.I18N_PREFIX, TaskDto.I18N_PREFIX);
+					if (Date.class.isAssignableFrom(type)) {
+						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+					}
+					return caption;
+				},
+				ExportEntityName.TASKS,
+				null);
+
+			addExportButton(
+				extendedExportStreamResource,
+				exportButton,
+				exportLayout,
+				VaadinIcons.FILE_TEXT,
+				Captions.exportDetailed,
+				Strings.infoDetailedExport);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -116,6 +161,12 @@ public class TasksView extends AbstractView {
 
 			addHeaderComponent(createButton);
 		}
+	}
+
+	private Set<String> getSelectedRowUuids() {
+		return viewConfiguration.isInEagerMode()
+			? taskListComponent.getGrid().asMultiSelect().getSelectedItems().stream().map(TaskIndexDto::getUuid).collect(Collectors.toSet())
+			: Collections.emptySet();
 	}
 
 	@Override
