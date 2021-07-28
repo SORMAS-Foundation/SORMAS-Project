@@ -7672,6 +7672,105 @@ ALTER TABLE events_history ADD COLUMN eventidentificationsource varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (385, 'Event identification source (#5526)');
 
+-- 2021-07-19 DEA Travel entry form #6025 - Change dea content column type to JSON
+ALTER TABLE travelentry ALTER COLUMN deacontent TYPE json USING deacontent::json;
+ALTER TABLE travelentry_history ALTER COLUMN deacontent TYPE json USING deacontent::json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (386, 'DEA Travel entry form #6025 - Change dea content column type to JSON');
+
+-- 2021-07-20 [Sormas2Sormas] View share chain for each case shared/received trough S2S #6033
+ALTER TABLE sormastosormassharerequest ALTER COLUMN cases TYPE json USING cases::json;
+ALTER TABLE sormastosormassharerequest ALTER COLUMN contacts TYPE json USING contacts::json;
+ALTER TABLE sormastosormassharerequest ALTER COLUMN events TYPE json USING events::json;
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN cases TYPE json USING cases::json;
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN contacts TYPE json USING contacts::json;
+ALTER TABLE sormastosormassharerequest_history ALTER COLUMN events TYPE json USING events::json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (387, '[Sormas2Sormas] View share chain for each case shared/received trough S2S #6033');
+
+-- 2021-07-15 Immunization data type correction #4756
+ALTER TABLE immunization ALTER COLUMN additionaldetails set DATA TYPE text;
+ALTER TABLE immunization ALTER COLUMN meansOfImmunizationDetails set DATA TYPE text;
+ALTER TABLE immunization_history ALTER COLUMN additionaldetails set DATA TYPE text;
+ALTER TABLE immunization_history ALTER COLUMN meansOfImmunizationDetails set DATA TYPE text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (388, 'Immunization data type correction #4756');
+
+-- 2021-06-25 [DEMIS2SORMAS] Handle New Profile: Allow LabMessages to lead to several PathogenTestResults
+ALTER TABLE labmessage RENAME COLUMN testlabname TO labname;
+ALTER TABLE labmessage RENAME COLUMN testlabexternalid TO labexternalid;
+ALTER TABLE labmessage RENAME COLUMN testlabpostalcode TO labpostalcode;
+ALTER TABLE labmessage RENAME COLUMN testlabcity TO labcity;
+
+ALTER TABLE labmessage_history RENAME COLUMN testlabname TO labname;
+ALTER TABLE labmessage_history RENAME COLUMN testlabexternalid TO labexternalid;
+ALTER TABLE labmessage_history RENAME COLUMN testlabpostalcode TO labpostalcode;
+ALTER TABLE labmessage_history RENAME COLUMN testlabcity TO labcity;
+
+CREATE TABLE testreport (
+    id bigint not null,
+    uuid varchar(36) not null unique,
+    changedate timestamp not null,
+    creationdate timestamp not null,
+    deleted boolean DEFAULT false,
+    sys_period tstzrange not null,
+    labmessage_id bigint not null,
+    testlabname text,
+    testlabexternalid text,
+    testlabpostalcode text,
+    testlabcity text,
+    testtype varchar(255),
+    testdatetime timestamp,
+    testresult varchar(255),
+    testresultverified boolean,
+    testresulttext text,
+    pathogentest_id BIGINT,
+    PRIMARY KEY (id));
+
+CREATE TABLE testreport_history (LIKE testreport);
+
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON testreport
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'testreport_history', true);
+ALTER TABLE testreport OWNER TO sormas_user;
+ALTER TABLE testreport_history OWNER TO sormas_user;
+
+ALTER TABLE testreport ADD CONSTRAINT fk_testreport_labmessage_id FOREIGN KEY (labmessage_id) REFERENCES labmessage (id);
+
+
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+        FOR rec IN SELECT id, labname, labexternalid, labpostalcode, labcity, testtype, testdatetime, testresult, testresultverified, testresulttext, pathogentest_id FROM labmessage
+             LOOP
+                INSERT INTO testreport(id, uuid, changedate, creationdate, labmessage_id, testlabname, testlabexternalid, testlabpostalcode, testlabcity, testtype, testdatetime, testresult, testresultverified, testresulttext, pathogentest_id)
+                VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), rec.id, rec.labname, rec.labexternalid, rec.labpostalcode, rec.labcity, rec.testtype, rec.testdatetime, rec.testresult, rec.testresultverified, rec.testresulttext, rec.pathogentest_id);
+            END LOOP;
+        END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE labmessage
+    DROP COLUMN testtype,
+    DROP COLUMN testdatetime,
+    DROP COLUMN testresult,
+    DROP COLUMN testresultverified,
+    DROP COLUMN testresulttext;
+
+ALTER TABLE labmessage_history
+    DROP COLUMN testtype,
+    DROP COLUMN testdatetime,
+    DROP COLUMN testresult,
+    DROP COLUMN testresultverified,
+    DROP COLUMN testresulttext;
+
+INSERT INTO schema_version (version_number, comment) VALUES (389, 'Introduce testreport entity #5539');
+
+-- 2021-07-21 SymptomJournalStatus default to UNREGISTERED
+UPDATE person SET symptomjournalstatus = 'UNREGISTERED' WHERE symptomjournalstatus IS NULL;
+ALTER TABLE person ALTER COLUMN symptomjournalstatus SET DEFAULT 'UNREGISTERED';
+
+INSERT INTO schema_version (version_number, comment) VALUES (390, 'symptonjournalstatus = UNREGISTERED as default #6146');
+
 -- 2021-07-13 Immunizations II: Vaccination Entity #4763
 CREATE TABLE vaccination (
                               id bigint not null,
@@ -7711,6 +7810,6 @@ CREATE TRIGGER versioning_trigger
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'vaccination_history', true);
 ALTER TABLE vaccination_history OWNER TO sormas_user;
 
-INSERT INTO schema_version (version_number, comment) VALUES (386, 'Immunizations II: Vaccination Entity #4763');
+INSERT INTO schema_version (version_number, comment) VALUES (391, 'Immunizations II: Vaccination Entity #4763');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

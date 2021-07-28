@@ -70,7 +70,7 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import info.novatec.beantest.api.BaseBeanTest;
 
-public class AbstractBeanTest extends BaseBeanTest {
+public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator();
 

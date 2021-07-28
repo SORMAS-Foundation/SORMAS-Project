@@ -44,8 +44,6 @@ public class LabMessageFacadeEjbUnitTest {
 	@Mock
 	private LabMessageService labMessageService;
 	@Mock
-	private PathogenTestService pathogenTestService;
-	@Mock
 	private SystemEventFacadeEjb.SystemEventFacadeEjbLocal systemEventFacade;
 
 	@InjectMocks
@@ -112,14 +110,10 @@ public class LabMessageFacadeEjbUnitTest {
 
 		LabMessageDto labMessageDto = new LabMessageDto();
 		String testUuid = "Test UUID";
-		PathogenTestDto pathogenTestDto = new PathogenTestDto();
 		labMessageDto.setUuid(testUuid);
-		labMessageDto.setPathogenTest(pathogenTestDto.toReference());
 		LabMessage labMessage = new LabMessage();
 
 		when(labMessageService.getByUuid(testUuid)).thenReturn(labMessage);
-		PathogenTest pathogenTest = new PathogenTest();
-		when(pathogenTestService.getByReferenceDto(labMessageDto.getPathogenTest())).thenReturn(pathogenTest);
 		sut.save(labMessageDto);
 
 		verify(labMessageService).ensurePersisted(labMessage);

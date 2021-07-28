@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,22 +13,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas.contact;
 
-import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
+import de.symeda.sormas.backend.sormastosormas.SyncDataDto;
 
-public class ServerAccessDataReferenceDto extends ReferenceDto {
-
-	private static final long serialVersionUID = 807898485681272418L;
-
-	public ServerAccessDataReferenceDto() {
-	}
-
-	public ServerAccessDataReferenceDto(String uuid) {
-		super(uuid);
-	}
-
-	public ServerAccessDataReferenceDto(String uuid, String caption) {
-		super(uuid, caption);
-	}
+public class ContactSyncData extends SyncDataDto<SormasToSormasContactDto> {
 }

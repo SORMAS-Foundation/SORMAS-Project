@@ -113,9 +113,9 @@
     <string name="action_save_pathogen_test">Erregertest speichern</string>
     <string name="action_edit_pathogen_test">Erregertest bearbeiten</string>
     <string name="action_submit_case_numbers">Fallnummern einreichen</string>
-    <string name="action_kex_lbds">LBDS Key Exchange</string>
-    <string name="action_sync_person_lbds">LBDS Sync Persons</string>
-    <string name="action_sync_case_lbds">LBDS Sync Cases</string>
+    <string name="action_kex_lbds">LBDS Schlüsselaustausch</string>
+    <string name="action_sync_person_lbds">LBDS Sync-Personen</string>
+    <string name="action_sync_case_lbds">LBDS Sync-Fälle</string>
     <string name="caption_address">Adresse</string>
     <string name="caption_age">Alter</string>
     <string name="caption_attended_by">Attended by</string>
@@ -414,7 +414,7 @@
     <string name="hint_weekly_report_no_data">Keine Daten für diese Epi-Woche verfügbar.</string>
     <string name="hint_case_numbers_not_submitted">Fallnummern noch nicht übermittelt</string>
     <string name="hint_contact_text_filter">Kontakt-ID oder Name der Kontaktperson</string>
-    <string name="hint_settings_debug_url_lbds">e.g. https://localhost:6070/sormas-rest/</string>
+    <string name="hint_settings_debug_url_lbds">z.B. https://localhost:6070/sormas-rest/</string>
     <string name="indicator_error">FEHLER</string>
     <string name="indicator_required">*</string>
     <string name="indicator_soft_required">*</string>
@@ -425,10 +425,10 @@
     <string name="info_create_event">Wenn Sie das Ereigniss <b>nicht</b> in obiger Liste finden konnten, dann klicken Sie auf \"Erstellen\".</string>
     <string name="info_epidemiological_info">Bitte geben Sie an, ob einer der folgenden Punkte für den/die Patient*in während des Inkubationszeitraums oder der Erkrankung relevant ist.</string>
     <string name="info_initial_synchronization">Initialisiere Synchronisierung mit SORMAS Server.\nDas Laden der Infrastrukturdaten wird einige Minuten dauern.</string>
-    <string name="info_lbds_key_exchange_started">LBDS Sync: Key Exchange started</string>
-    <string name="info_lbds_key_exchange_successful">LBDS Sync: Key Exchange successful</string>
-    <string name="info_lbds_no_case_to_transfer">LBDS Sync. No case to transfer</string>
-    <string name="info_lbds_no_person_to_transfer">LBDS Sync. No person to transfer</string>
+    <string name="info_lbds_key_exchange_started">LBDS Sync: Schlüsselaustausch gestartet</string>
+    <string name="info_lbds_key_exchange_successful">LBDS Sync: Schlüsselaustausch erfolgreich</string>
+    <string name="info_lbds_no_case_to_transfer">LBDS Sync. Kein Fall zum Übertragen</string>
+    <string name="info_lbds_no_person_to_transfer">LBDS Sync. Keine Person zum Übertragen</string>
     <string name="info_no_additional_test">Es wurden noch keine zusätzlichen Tests an dieser Probe durchgeführt</string>
     <string name="info_no_sample_test">Probe wurde noch nicht getestet</string>
     <string name="info_pick_person">Bitte schauen Sie sich die Liste der Personen an.<b>Wenn Sie sich sicher sind</b>, dass die von Ihnen eingebenen persönlichen Daten zu dieser Person gehören, wählen Sie die Person aus und klicken Sie anschließend auf \"Auswählen\".</string>

@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.sample;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -183,6 +184,10 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		}
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public List<PathogenTest> getBySampleUuid(String sampleUuid, boolean ordered) {
+		return getBySampleUuids(Collections.singletonList(sampleUuid), ordered);
 	}
 
 	public List<String> getDeletedUuidsSince(Date since) {

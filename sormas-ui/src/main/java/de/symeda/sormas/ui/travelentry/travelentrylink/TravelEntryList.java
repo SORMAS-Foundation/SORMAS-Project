@@ -22,9 +22,7 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
+import de.symeda.sormas.api.i18n.I18nProperties;import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -35,11 +33,11 @@ public class TravelEntryList extends PaginationList<TravelEntryIndexDto> {
 
 	private static final long serialVersionUID = -534579406662710137L;
 
-	private final TravelEntryCriteria travelEntryCriteria = new TravelEntryCriteria();
+	private final TravelEntryCriteria travelEntryCriteria;
 
-	public TravelEntryList(PersonReferenceDto personRef) {
+	public TravelEntryList(TravelEntryCriteria travelEntryCriteria) {
 		super(5);
-		travelEntryCriteria.person(personRef);
+		this.travelEntryCriteria = travelEntryCriteria;
 	}
 
 	@Override

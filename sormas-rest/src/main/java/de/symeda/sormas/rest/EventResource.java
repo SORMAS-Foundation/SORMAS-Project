@@ -77,6 +77,13 @@ public class EventResource extends EntityDtoResource {
 	}
 
 	@GET
+	@Path("/{uuid}")
+	public EventDto getByUuid(@PathParam("uuid") String uuid) {
+		return FacadeProvider.getEventFacade().getByUuid(uuid);
+
+	}
+
+	@GET
 	@Path("/archived/{since}")
 	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getEventFacade().getArchivedUuidsSince(new Date(since));
