@@ -30,6 +30,9 @@
             type="de.symeda.sormas.app.backend.immunization.Immunization" />
         <variable name="yesNoUnknownClass" type="Class" />
         <import type="de.symeda.sormas.api.immunization.MeansOfImmunization" />
+
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Strings" />
     </data>
 
     <ScrollView
@@ -130,22 +133,46 @@
 
                 </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlSwitchField
+                android:id="@+id/immunization_previousInfection"
+                app:enumClass="@{yesNoUnknownClass}"
+                app:value="@={data.previousInfection}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlDateField
+                android:id="@+id/immunization_lastInfectionDate"
+                app:value="@={data.lastInfectionDate}"
+                app:dependencyParentField="@{immunizationPreviousInfection}"
+                app:dependencyParentValue="@{true}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{I18nProperties.getString(Strings.vaccination)}"
+                style="@style/SubHeadingStyle" />
+
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/immunization_numberOfDoses"
                     app:value="@={data.numberOfDoses}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/immunization_previousInfection"
-                    app:enumClass="@{yesNoUnknownClass}"
-                    app:value="@={data.previousInfection}"
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{I18nProperties.getString(Strings.recovery)}"
+                style="@style/SubHeadingStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/immunization_positiveTestResultDate"
+                    app:value="@={data.positiveTestResultDate}"
+                    app:required="true"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
-                    android:id="@+id/immunization_previousInfectionDate"
-                    app:value="@={data.positiveTestResultDate}"
-                    app:dependencyParentField="@{immunizationPreviousInfection}"
-                    app:dependencyParentValue="@{true}"
+                    android:id="@+id/immunization_recoveryDate"
+                    app:value="@={data.recoveryDate}"
+                    app:required="true"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField

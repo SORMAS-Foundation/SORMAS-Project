@@ -25,8 +25,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 
@@ -79,6 +86,22 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 		Where<Immunization, Long> where = queryBuilder.where();
 		whereStatements.add(where.eq(AbstractDomainObject.SNAPSHOT, false));
 
+		addDateFromCriteria(whereStatements, where, criteria.getPositiveTestResultDateFrom(), Immunization.POSITIVE_TEST_RESULT_DATE);
+		addDateToCriteria(whereStatements, where, criteria.getPositiveTestResultDateTo(), Immunization.POSITIVE_TEST_RESULT_DATE);
+
+		addDateFromCriteria(whereStatements, where, criteria.getRecoveryDateFrom(), Immunization.RECOVERY_DATE);
+		addDateToCriteria(whereStatements, where, criteria.getRecoveryDateTo(), Immunization.RECOVERY_DATE);
+
+		addDateFromCriteria(whereStatements, where, criteria.getReportDateFrom(), Immunization.REPORT_DATE);
+		addDateToCriteria(whereStatements, where, criteria.getReportDateTo(), Immunization.REPORT_DATE);
+
+		addDateFromCriteria(whereStatements, where, criteria.getStartDateFrom(), Immunization.START_DATE);
+		addDateToCriteria(whereStatements, where, criteria.getEndDateTo(), Immunization.END_DATE);
+
+		addEqualsCriteria(whereStatements, where, criteria.getImmunizationStatus());
+		addEqualsCriteria(whereStatements, where, criteria.getImmunizationManagementStatus());
+		addEqualsCriteria(whereStatements, where, criteria.getMeansOfImmunization());
+
 		if (!whereStatements.isEmpty()) {
 			Where<Immunization, Long> whereStatement = where.and(whereStatements.size());
 			queryBuilder.setWhere(whereStatement);
@@ -99,4 +122,59 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 		deleteCascade(immunization);
 	}
 
+	public Immunization build(Person person) {
+		Immunization immunization = super.build();
+		immunization.setPerson(person);
+
+		User user = ConfigProvider.getUser();
+		immunization.setReportingUser(user);
+
+		// Location
+		User currentUser = ConfigProvider.getUser();
+
+		// Set the disease if a default disease is available
+		Disease defaultDisease = DiseaseConfigurationCache.getInstance().getDefaultDisease();
+		if (defaultDisease != null) {
+			immunization.setDisease(defaultDisease);
+		}
+
+		if (UserRole.isPortHealthUser(currentUser.getUserRoles())) {
+			immunization.setResponsibleRegion(currentUser.getRegion());
+			immunization.setResponsibleDistrict(currentUser.getDistrict());
+			immunization.setDisease(Disease.UNDEFINED);
+		} else if (currentUser.getHealthFacility() != null) {
+			immunization.setResponsibleRegion(currentUser.getHealthFacility().getRegion());
+			immunization.setResponsibleDistrict(currentUser.getHealthFacility().getDistrict());
+			immunization.setResponsibleCommunity(currentUser.getHealthFacility().getCommunity());
+		} else {
+			immunization.setResponsibleRegion(currentUser.getRegion());
+			immunization.setResponsibleDistrict(currentUser.getDistrict());
+			immunization.setResponsibleCommunity(currentUser.getCommunity());
+		}
+
+		return immunization;
+	}
+
+	public List<Immunization> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria) {
+		try {
+			QueryBuilder<Immunization, Long> queryBuilder = queryBuilder();
+			QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
+
+			Where<Immunization, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+			ImmunizationCriteria immunizationCriteria = criteria.getImmunizationCriteria();
+			where.and().eq(Immunization.DISEASE, immunizationCriteria.getDisease());
+			where.and().eq(Immunization.RESPONSIBLE_REGION + "_id", criteria.getImmunizationCriteria().getResponsibleRegion());
+			where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
+//			where.and()
+//					.between(Case.REPORT_DATE, DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30));
+
+			queryBuilder.setWhere(where);
+			queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
+
+			return queryBuilder.orderBy(Immunization.CREATION_DATE, false).query();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform getSimilarImmunizations on immunization");
+			throw new RuntimeException(e);
+		}
+	}
 }

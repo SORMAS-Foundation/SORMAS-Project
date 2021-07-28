@@ -22,6 +22,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -47,6 +48,10 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 
 	public static void startActivity(Context context, String rootUuid) {
 		BaseEditActivity.startActivity(context, ImmunizationEditActivity.class, buildBundle(rootUuid));
+	}
+
+	public static void startActivity(Context context, String recordUuid, ImmunizationSection section) {
+		BaseActivity.startActivity(context, ImmunizationEditActivity.class, buildBundle(recordUuid, section));
 	}
 
 	public static Bundler buildBundle(String recordUuid, ImmunizationSection section) {

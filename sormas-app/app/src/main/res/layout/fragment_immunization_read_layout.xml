@@ -135,11 +135,16 @@
                 app:value="@{data.previousInfection}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/immunization_previousInfectionDate"
+                android:id="@+id/immunization_lastInfectionDate"
                 style="@style/ControlSingleColumnStyle"
                 app:dependencyParentField="@{immunizationPreviousInfection}"
                 app:dependencyParentValue="@{true}"
-                app:value="@{data.positiveTestResultDate}" />
+                app:value="@{data.lastInfectionDate}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/immunization_positiveTestResultDate"
+                app:value="@{data.positiveTestResultDate}"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/immunization_additionalDetails"

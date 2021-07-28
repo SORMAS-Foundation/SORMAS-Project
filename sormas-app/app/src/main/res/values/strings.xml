@@ -237,6 +237,7 @@
     <string name="caption_latest_submission">Latest Submission: %1$s</string>
     <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
     <string name="caption_immunization_information">Immunization Information</string>
+    <string name="caption_new_immunization">New Immunization</string>
 `
     <string name="confirmation_action">Are you sure you want to do this?</string>
     <string name="confirmation_delete">Are you sure you want to delete this record?</string>
@@ -317,6 +318,7 @@
     <string name="heading_events_list">Event Listing</string>
     <string name="heading_existing_persons">Existing Persons</string>
     <string name="heading_existing_cases">Existing Cases</string>
+    <string name="heading_existing_immunizations">Existing Immunizations</string>
     <string name="heading_existing_events">Existing Events</string>
     <string name="heading_gathering">Gathering</string>
     <string name="heading_gps_activation">Turn On GPS</string>
@@ -338,6 +340,7 @@
     <string name="heading_person_contact_detail">Person contact details</string>
     <string name="heading_pick_or_create_person">Pick or Create Person</string>
     <string name="heading_pick_or_create_case">Pick or Create a Case</string>
+    <string name="heading_pick_or_create_immunization">Pick or Create an Immunization</string>
     <string name="heading_pick_or_create_event">Pick or Create a Event</string>
     <string name="heading_prescription">Prescription</string>
     <string name="heading_prescription_edit">Edit Prescription</string>
@@ -463,6 +466,8 @@
     <string name="info_case_creation_mark_check_box">This case is a <b>new case</b> and <b>not a duplicate</b> of one of the cases above</string>
     <string name="info_event_creation_mark_check_box">This event is a <b>new event</b> and <b>not a duplicate</b> of one of the events above</string>
     <string name="info_pick_campaign_form_meta">Please select a campaign form for which you want to enter data!</string>
+    <string name="info_pick_or_create_immunization">The system already contains an immunization for {disease name} for this person that overlaps with the specified immunziation period. Please compare the existing immunization with the one you created and decide whether to discard the new immunization or use its information to update the existing one.</string>
+    <string name="info_immunization_creation_mark_check_box">This immunization is a <b>new immunization</b> and <b>not a duplicate</b></string>
 
     <string name="main_menu_cases">Cases</string>
     <string name="main_menu_contacts">Contacts</string>
@@ -538,6 +543,7 @@
     <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
     <string name="tag_row_item_select_or_create_event">rowItemSelectOrCreateEvent</string>
     <string name="tag_row_item_case_pick_or_create">rowItemPickOrCreatePerson</string>
+    <string name="tag_row_item_immunization_pick_or_create">rowItemImmunizationPickOrCreatePerson</string>
 
     <string name="time_future_almost_two_years">within almost two years</string>
     <string name="time_future_one_day">tomorrow</string>

@@ -17,8 +17,10 @@ package de.symeda.sormas.app.immunization.list;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.AdapterView;
 
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,11 +35,15 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.databinding.FilterImmunizationListLayoutBinding;
 import de.symeda.sormas.app.immunization.edit.ImmunizationNewActivity;
 
 public class ImmunizationListActivity extends PagedBaseListActivity {
 
 	private ImmunizationListViewModel model;
+
+	private FilterImmunizationListLayoutBinding filterBinding;
+
 
 	public static void startActivity(Context context) {
 		List<Immunization> immunizations = DatabaseHelper.getImmunizationDao().getAll();
@@ -78,16 +84,14 @@ public class ImmunizationListActivity extends PagedBaseListActivity {
 			hidePreloader();
 		});
 
-//		filterBinding.setCriteria(model.getCaseCriteria());
+		filterBinding.setCriteria(model.getImmunizationCriteria());
 
 		setOpenPageCallback(p -> {
 			showPreloader();
-//			model.getCaseCriteria().setInvestigationStatus(statusFilters[((PageMenuItem) p).getPosition()]);
 			model.notifyCriteriaUpdated();
 		});
 	}
 
-	@Override
 	public int onNotificationCountChangingAsync(AdapterView parent, PageMenuItem menuItem, int position) {
 		return 0;
 	}
@@ -105,7 +109,8 @@ public class ImmunizationListActivity extends PagedBaseListActivity {
 
 	@Override
 	public void addFiltersToPageMenu() {
-
+		View immunizationListFilterView = getLayoutInflater().inflate(R.layout.filter_immunization_list_layout, null);
+		filterBinding = DataBindingUtil.bind(immunizationListFilterView);
 	}
 
 	@Override
