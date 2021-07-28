@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.SormasToSormasConfig;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 
 @Provider
