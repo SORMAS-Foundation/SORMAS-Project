@@ -1099,6 +1099,11 @@ public class PersonFacadeEjb implements PersonFacade {
 			}
 		}
 
+		// For newly created persons, assume no registration in external journals
+		if (existingPerson == null && newPerson.getSymptomJournalStatus() == null) {
+			newPerson.setSymptomJournalStatus(SymptomJournalStatus.UNREGISTERED);
+		}
+
 		// Update case pregnancy information if sex has changed
 		if (existingPerson != null && existingPerson.getSex() != newPerson.getSex()) {
 			if (newPerson.getSex() != Sex.FEMALE) {

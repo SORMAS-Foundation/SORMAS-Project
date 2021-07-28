@@ -30,6 +30,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.facility.FacilityCriteria;
@@ -197,7 +198,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Facility> getFacilitiesByExternalIdAndType(String externalId, FacilityType type, boolean includeArchivedEntities) {
+	public List<Facility> getFacilitiesByExternalIdAndType(@NotNull String externalId, FacilityType type, boolean includeArchivedEntities) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());

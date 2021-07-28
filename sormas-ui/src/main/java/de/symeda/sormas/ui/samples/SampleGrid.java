@@ -108,7 +108,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			return text;
 		});
 		lastPathogenTestColumn.setId(LAST_PATHOGEN_TEST);
-		lastPathogenTestColumn.setSortProperty(SampleIndexDto.PATHOGEN_TEST_RESULT);
+		lastPathogenTestColumn.setSortable(false);
 
 		setColumns(
 			SampleIndexDto.UUID,
@@ -137,6 +137,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.RECEIVED)).setRenderer(new BooleanRenderer());
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.LAB)).setMaximumWidth(200);
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.ADDITIONAL_TESTING_STATUS)).setSortable(false);
+		((Column<SampleIndexDto, Integer>) getColumn(SampleIndexDto.PATHOGEN_TEST_COUNT)).setSortable(false);
 
 		((Column<SampleIndexDto, String>) getColumn(SampleIndexDto.UUID)).setRenderer(new UuidRenderer());
 		addItemClickListener(

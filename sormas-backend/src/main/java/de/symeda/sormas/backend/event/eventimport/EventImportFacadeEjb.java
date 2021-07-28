@@ -259,7 +259,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		String importError = null;
 
 		for (int i = 0; i < values.length; i++) {
-			String value = values[i];
+			String value = StringUtils.trimToNull(values[i]);
 			if (ignoreEmptyEntries && (value == null || value.isEmpty())) {
 				continue;
 			}
