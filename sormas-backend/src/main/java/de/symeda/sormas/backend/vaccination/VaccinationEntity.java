@@ -22,7 +22,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -96,7 +95,7 @@ public class VaccinationEntity extends AbstractDomainObject {
 		this.immunization = immunization;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(nullable = false)
 	@AuditedIgnore
 	public HealthConditions getHealthConditions() {
@@ -186,7 +185,7 @@ public class VaccinationEntity extends AbstractDomainObject {
 	}
 
 	public void setVaccineManufacturerDetails(String vaccineManufacturerDetails) {
-		vaccineManufacturerDetails = vaccineManufacturerDetails;
+		this.vaccineManufacturerDetails = vaccineManufacturerDetails;
 	}
 
 	@Column(columnDefinition = "text")

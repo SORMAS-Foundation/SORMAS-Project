@@ -25,6 +25,7 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
@@ -59,16 +60,26 @@ public class VaccinationEntityDto extends PseudonymizableDto {
 	private UserReferenceDto reportingUser;
 	private Date vaccinationDate;
 	private Vaccine vaccineName;
+	@SensitiveData
 	private String otherVaccineName;
+	@SensitiveData
 	private String vaccineNameDetails;
 	private VaccineManufacturer vaccineManufacturer;
+	@SensitiveData
 	private String otherVaccineManufacturer;
+	@SensitiveData
 	private String VaccineManufacturerDetails;
+	@SensitiveData
 	private String vaccineType;
+	@SensitiveData
 	private String vaccineDose;
+	@SensitiveData
 	private String vaccineInn;
+	@SensitiveData
 	private String vaccineBatchNumber;
+	@SensitiveData
 	private String vaccineUniiCode;
+	@SensitiveData
 	private String vaccineAtcCode;
 	private VaccinationInfoSource vaccinationInfoSource;
 	private YesNoUnknown pregnant;

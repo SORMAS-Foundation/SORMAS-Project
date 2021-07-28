@@ -118,7 +118,7 @@ public class Immunization extends CoreAdo {
 		this.disease = disease;
 	}
 
-	@ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
 	public Person getPerson() {
 		return person;

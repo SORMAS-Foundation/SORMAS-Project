@@ -20,6 +20,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationEntityDto;
 import de.symeda.sormas.api.vaccination.VaccinationEntityFacade;
@@ -97,13 +99,13 @@ public class VaccinationEntityFacadeEjb implements VaccinationEntityFacade {
 	public void validate(VaccinationEntityDto vaccinationDto) {
 
 		if (vaccinationDto.getImmunization() == null) {
-			throw new ValidationRuntimeException("i18n TBD");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validImmunization));
 		}
 		if (vaccinationDto.getHealthConditions() == null) {
-			throw new ValidationRuntimeException("i18n TBD");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validHealthConditions));
 		}
 		if (vaccinationDto.getReportDate() == null) {
-			throw new ValidationRuntimeException("i18n TBD");
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
 		}
 	}
 

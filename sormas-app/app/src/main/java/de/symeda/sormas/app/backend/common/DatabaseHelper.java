@@ -1852,6 +1852,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 234:
 				currentVersion = 234;
 
+				//@formatter:off
 				getDao(SormasToSormasOriginInfo.class).executeRaw(
 					"CREATE TABLE sormasToSormasOriginInfo ("
 					+ "		comment VARCHAR,"
@@ -1871,6 +1872,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ "		UNIQUE (snapshot ASC, uuid ASC)"
 					+ ");"
 				);
+				//@formatter:on
 
 				getDao(Case.class)
 					.executeRaw("ALTER TABLE cases ADD COLUMN sormasToSormasOriginInfo_id bigint REFERENCES sormasToSormasOriginInfo(id);");
@@ -2615,39 +2617,34 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(PathogenTest.class).executeRaw("UPDATE pathogenTest SET testedDiseaseVariant_id = NULL;");
 				getDao(Case.class).executeRaw("DROP TABLE diseaseVariant;");
 
-				case 302:
-					currentVersion = 302;
-					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN internalToken text;");
-					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN internalToken text;");
-					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN internalToken text;");
+			case 302:
+				currentVersion = 302;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN internalToken text;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN internalToken text;");
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN internalToken text;");
 
-				case 303:
-					currentVersion = 303;
-					getDao(Case.class).executeRaw("UPDATE cases" +
-							" SET responsibleRegion_id = region_id," +
-							" responsibleDistrict_id = district_id," +
-							" responsibleCommunity_id = community_id," +
-							" region_id = null," +
-							" district_id = null," +
-							" community_id = null," +
-							" reportingDistrict_id = null"+
-							" WHERE responsibleRegion_id IS NULL AND (reportingDistrict_id IS NULL OR reportingDistrict_id = district_id)");
+			case 303:
+				currentVersion = 303;
+				getDao(Case.class).executeRaw(
+					"UPDATE cases" + " SET responsibleRegion_id = region_id," + " responsibleDistrict_id = district_id,"
+						+ " responsibleCommunity_id = community_id," + " region_id = null," + " district_id = null," + " community_id = null,"
+						+ " reportingDistrict_id = null"
+						+ " WHERE responsibleRegion_id IS NULL AND (reportingDistrict_id IS NULL OR reportingDistrict_id = district_id)");
 
-					getDao(Case.class).executeRaw("UPDATE cases" +
-							" SET responsibleRegion_id = (SELECT region_id from district where id = cases.reportingDistrict_id)," +
-							" responsibleDistrict_id = reportingDistrict_id," +
-							" reportingDistrict_id = null"+
-							" WHERE responsibleRegion_id IS NULL AND reportingDistrict_id IS NOT NULL");
+				getDao(Case.class).executeRaw(
+					"UPDATE cases" + " SET responsibleRegion_id = (SELECT region_id from district where id = cases.reportingDistrict_id),"
+						+ " responsibleDistrict_id = reportingDistrict_id," + " reportingDistrict_id = null"
+						+ " WHERE responsibleRegion_id IS NULL AND reportingDistrict_id IS NOT NULL");
 
-				case 304:
-					currentVersion = 304;
-					getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withAssociatedContacts boolean;");
-					getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withSamples boolean;");
-					getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withEventParticipants boolean;");
+			case 304:
+				currentVersion = 304;
+				getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withAssociatedContacts boolean;");
+				getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withSamples boolean;");
+				getDao(SormasToSormasOriginInfo.class).executeRaw("ALTER TABLE sormasToSormasOriginInfo ADD COLUMN withEventParticipants boolean;");
 
-				case 305:
-					currentVersion = 305;
-					//@formatter:off
+			case 305:
+				currentVersion = 305;
+				//@formatter:off
 					getDao(Immunization.class).executeRaw("CREATE TABLE immunization (" +
 							" id integer primary key autoincrement, uuid varchar(36) not null unique," +
 							" changeDate timestamp not null, creationDate timestamp not null, lastOpenedDate timestamp, localChangeDate timestamp not null," +
@@ -2677,17 +2674,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 							" relatedcase_id bigint)");
 					//@formatter:on
 
-				case 306:
-					currentVersion = 306;
-					getDao(Immunization.class).executeRaw("ALTER TABLE immunization ADD COLUMN pseudonymized boolean;");
+			case 306:
+				currentVersion = 306;
+				getDao(Immunization.class).executeRaw("ALTER TABLE immunization ADD COLUMN pseudonymized boolean;");
 
-				case 307:
-					currentVersion = 307;
-					getDao(LbdsSync.class).executeRaw(
-							"CREATE TABLE lbdsSync(" +
-							"sentUuid varchar(36) primary key," +
-							"lastSendDate timestamp," +
-							"lastReceivedDate timestamp);");
+			case 307:
+				currentVersion = 307;
+				getDao(LbdsSync.class).executeRaw(
+					"CREATE TABLE lbdsSync(" + "sentUuid varchar(36) primary key," + "lastSendDate timestamp," + "lastReceivedDate timestamp);");
 
 			case 308:
 				currentVersion = 308;
@@ -2701,28 +2695,28 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 310;
 				//@formatter:off
 				getDao(VaccinationEntity.class).executeRaw(
-					"CREATE TABLE vaccination (\n"
-						+ "id integer primary key autoincrement,\n"
-						+ " uuid varchar(36) not null unique,\n"
-						+ " changedate timestamp not null,\n"
-						+ " creationdate timestamp not null,\n"
-						+ " immunization_id bigint not null,\n"
-						+ " healthconditions_id bigint not null,\n"
-						+ " reportdate timestamp not null,\n"
-						+ " reportinguser_id bigint,\n"
-						+ " vaccinationDate timestamp,\n"
-						+ " vaccinename varchar(255),\n"
-						+ " othervaccinename text,\n"
-						+ " vaccinenamedetails text,\n"
-						+ " vaccinemanufacturer varchar(255),\n"
-						+ " othervaccinemanufacturer text,\n"
-						+ " vaccinemanufacturerdetails text,\n"
-						+ " vaccineinn text,\n"
-						+ " vaccinebatchnumber text,\n"
-						+ " vaccineuniicode text,\n"
-						+ " vaccineatccode text,\n"
-						+ " vaccinationinfosource varchar(255),\n"
-						+ " pregnant varchar(255),\n"
+					"CREATE TABLE vaccination ("
+						+ "id integer primary key autoincrement,"
+						+ " uuid varchar(36) unique,"
+						+ " changeDate timestamp,"
+						+ " creationDate timestamp,"
+						+ " immunization_id bigint,"
+						+ " healthConditions_id bigint,"
+						+ " reportDate timestamp,"
+						+ " reportingUser_id bigint,"
+						+ " vaccinationDate timestamp,"
+						+ " vaccineName varchar(255),"
+						+ " otherVaccineName text,"
+						+ " vaccineNameDetails text,"
+						+ " vaccineManufacturer varchar(255),"
+						+ " otherVaccineManufacturer text,"
+						+ " vaccineManufacturerDetails text,"
+						+ " vaccineInn text,"
+						+ " vaccineBatchNumber text,"
+						+ " vaccineUniiCode text,"
+						+ " vaccineAtcCode text,"
+						+ " vaccinationInfoSource varchar(255),"
+						+ " pregnant varchar(255),"
 						+ " trimester varchar(255), pseudonymized boolean);");
 				//@formatter:on
 

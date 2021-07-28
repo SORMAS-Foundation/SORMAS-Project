@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.app.backend.vaccination;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -47,11 +45,11 @@ public class VaccinationEntity extends PseudonymizableAdo {
 	public static final String TABLE_NAME = "vaccination";
 	public static final String I18N_PREFIX = "vaccination";
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Immunization immunization;
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private HealthConditions healthConditions;
-	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
+	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date reportDate;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User reportingUser;
@@ -59,27 +57,27 @@ public class VaccinationEntity extends PseudonymizableAdo {
 	private Date vaccinationDate;
 	@Enumerated(EnumType.STRING)
 	private Vaccine vaccineName;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	private String otherVaccineName;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	private String vaccineNameDetails;
 	@Enumerated(EnumType.STRING)
 	private VaccineManufacturer vaccineManufacturer;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	private String otherVaccineManufacturer;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	private String vaccineManufacturerDetails;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	private String vaccineType;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	private String vaccineDose;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	private String vaccineInn;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	private String vaccineBatchNumber;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	private String vaccineUniiCode;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	private String vaccineAtcCode;
 	@Enumerated(EnumType.STRING)
 	private VaccinationInfoSource vaccinationInfoSource;
