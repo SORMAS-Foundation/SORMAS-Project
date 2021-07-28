@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -213,8 +214,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Predicate immunizationFilter = CriteriaBuilderHelper.and(cb, immunizationUserFilter, immunizationNotDeleted);
 		final Predicate travelEntryFilter = CriteriaBuilderHelper.and(cb, travelEntryUserFilter, travelEntryNotDeleted);
 
-		if (personCriteria != null && personCriteria.getPersonAssociation() != null) {
-			switch (personCriteria.getPersonAssociation()) {
+		switch (Optional.ofNullable(personCriteria).map(e -> e.getPersonAssociation()).orElse(PersonCriteria.DEFAULT_ASSOCIATION)) {
 			case ALL:
 				break;
 			case CASE:
@@ -228,7 +228,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			case TRAVEL_ENTRY:
 				return travelEntryFilter;
 			}
-		}
 
 		return CriteriaBuilderHelper.or(cb, caseFilter, contactFilter, eventParticipantFilter, immunizationFilter, travelEntryFilter);
 	}
@@ -283,9 +282,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		filter = andEqualsReferenceDto(cb, district, filter, personCriteria.getDistrict());
 		filter = andEqualsReferenceDto(cb, community, filter, personCriteria.getCommunity());
 
-		if (personCriteria.getPersonAssociation() != null) {
 			switch (personCriteria.getPersonAssociation()) {
-
 			case ALL:
 				break;
 			case CASE:
@@ -321,7 +318,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(travelEntrySubquery));
 				break;
 			}
-		}
 
 		return filter;
 	}
