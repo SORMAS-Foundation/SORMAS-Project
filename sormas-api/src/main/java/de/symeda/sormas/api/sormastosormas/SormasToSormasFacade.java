@@ -27,9 +27,9 @@ public interface SormasToSormasFacade {
 
 	String getOrganizationId();
 
-	List<ServerAccessDataReferenceDto> getAvailableOrganizations();
+	List<SormasServerDescriptor> getAllAvailableServers();
 
-	ServerAccessDataReferenceDto getOrganizationRef(String id);
+	SormasServerDescriptor getSormasServerDescriptorById(String id);
 
 	void rejectShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException;
 

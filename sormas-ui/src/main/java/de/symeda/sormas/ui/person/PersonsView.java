@@ -13,7 +13,9 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -170,11 +172,24 @@ public class PersonsView extends AbstractView {
 		associationFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		associationButtons = new HashMap<>();
+		for (PersonAssociation association : PersonAssociation.values()) {
+			if (association == PersonAssociation.IMMUNIZATION
+				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+				|| association == PersonAssociation.TRAVEL_ENTRY
+					&& !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+				|| association == PersonAssociation.CONTACT
+					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CONTACT_TRACING)
+				|| association == PersonAssociation.CASE
+					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CASE_SURVEILANCE)
+				|| association == PersonAssociation.EVENT_PARTICIPANT
+					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE)) {
+				continue;
+			}
 
-		Button statusAll = ButtonHelper.createButton(Captions.all, e -> {
-			if (!UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)) {
-				Label contentLabel = new Label(I18nProperties.getString(Strings.confirmationSeeAllPersons));
-				VaadinUiUtil.showConfirmationPopup(
+			Button associationButton = ButtonHelper.createButton(association.toString(), e -> {
+				if (!UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER) && association == PersonAssociation.ALL) {
+					Label contentLabel = new Label(I18nProperties.getString(Strings.confirmationSeeAllPersons));
+					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getString(Strings.headingSeeAllPersons),
 						contentLabel,
 						I18nProperties.getString(Strings.yes),
@@ -182,25 +197,14 @@ public class PersonsView extends AbstractView {
 						640,
 						ee -> {
 							if (ee.booleanValue() == true) {
-								criteria.personAssociation(null);
+								criteria.personAssociation(association);
 								navigateTo(criteria);
 							}
 						});
-			} else {
-				criteria.personAssociation(null);
-				navigateTo(criteria);
-			}
-		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
-		statusAll.setCaptionAsHtml(true);
-
-		associationFilterLayout.addComponent(statusAll);
-		associationFilterLayout.setComponentAlignment(statusAll, Alignment.MIDDLE_LEFT);
-		associationButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
-
-		for (PersonAssociation association : PersonAssociation.values()) {
-			Button associationButton = ButtonHelper.createButton(association.toString(), e -> {
-				criteria.personAssociation(association);
-				navigateTo(criteria);
+				} else {
+					criteria.personAssociation(association);
+					navigateTo(criteria);
+				}
 			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			associationButton.setData(association);
 			associationButton.setCaptionAsHtml(true);
@@ -208,8 +212,9 @@ public class PersonsView extends AbstractView {
 			associationFilterLayout.addComponent(associationButton);
 			associationFilterLayout.setComponentAlignment(associationButton, Alignment.MIDDLE_LEFT);
 			associationButtons.put(associationButton, association.toString());
-			if (association == PersonAssociation.CASE) {
+			if (association == PersonAssociation.CASE && criteria.getPersonAssociation() == null) {
 				activeAssociationButton = associationButton;
+				criteria.setPersonAssociation(association);
 			}
 		}
 

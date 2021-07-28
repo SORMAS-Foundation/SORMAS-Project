@@ -396,6 +396,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				filter = CriteriaBuilderHelper
 					.or(cb, filter, cb.equal(eventJoins.getLocation().get(Location.DISTRICT), currentUser.getHealthFacility().getDistrict()));
 			}
+			break;
 		case LABORATORY:
 			final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
 			final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);

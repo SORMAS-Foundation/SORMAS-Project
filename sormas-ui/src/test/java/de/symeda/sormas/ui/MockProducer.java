@@ -31,20 +31,17 @@ import javax.ejb.SessionContext;
 import javax.ejb.TimerService;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
 import javax.jms.ConnectionFactory;
 import javax.jms.Topic;
 import javax.mail.Session;
 import javax.transaction.UserTransaction;
 
 import org.apache.james.mime4j.field.address.Mailbox;
-import org.mockito.Mockito;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasConfigProducer;
+
 
 /**
  * Creates mocks for resources needed in bean test / external services. <br />
@@ -150,17 +147,5 @@ public class MockProducer {
 	@Produces
 	public static ManagedScheduledExecutorService getManagedScheduledExecutorService() {
 		return managedScheduledExecutorService;
-	}
-
-	@Specializes
-	public static class MockSormasToSormasConfigProducer extends SormasToSormasConfigProducer {
-
-		public static SormasToSormasConfig sormasToSormasConfig = Mockito.mock(SormasToSormasConfig.class);
-
-		@Override
-		@Produces
-		public SormasToSormasConfig sormasToSormasConfig() {
-			return sormasToSormasConfig;
-		}
 	}
 }

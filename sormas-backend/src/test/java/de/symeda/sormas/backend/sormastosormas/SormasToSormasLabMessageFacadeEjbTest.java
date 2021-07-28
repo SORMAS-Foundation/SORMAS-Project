@@ -36,7 +36,7 @@ import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
@@ -56,7 +56,7 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 				MockProducer.getSormasToSormasClient()
 					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.thenAnswer(invocation -> {
-				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ACCESS_ID));
+				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ID));
 				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/labmessages"));
 
 				List<LabMessageDto> postBody = invocation.getArgument(2, List.class);
@@ -70,7 +70,7 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 			});
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new ServerAccessDataReferenceDto(SECOND_SERVER_ACCESS_ID));
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 
 		getSormasToSormasLabMessageFacade().sendLabMessages(Collections.singletonList(labMessage.getUuid()), options);
 
@@ -98,10 +98,6 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 		labMessage.setSampleDateTime(dateValue);
 		labMessage.setSampleMaterial(SampleMaterial.RECTAL_SWAB);
 		labMessage.setLabSampleId("Test lab sample ID");
-		labMessage.setTestType(PathogenTestType.CULTURE);
-		labMessage.setTestDateTime(dateValue);
-		labMessage.setTestResult(PathogenTestResultType.PENDING);
-		labMessage.setTestResultVerified(true);
 		labMessage.setPersonFirstName("James");
 		labMessage.setPersonLastName("Smith");
 		labMessage.setPersonPostalCode("test postal code");
@@ -114,10 +110,6 @@ public class SormasToSormasLabMessageFacadeEjbTest extends SormasToSormasFacadeT
 		assertThat(labMessage.getSampleDateTime().getTime(), is(dateTime));
 		assertThat(labMessage.getSampleMaterial(), is(SampleMaterial.RECTAL_SWAB));
 		assertThat(labMessage.getLabSampleId(), is("Test lab sample ID"));
-		assertThat(labMessage.getTestType(), is(PathogenTestType.CULTURE));
-		assertThat(labMessage.getTestDateTime().getTime(), is(dateTime));
-		assertThat(labMessage.getTestResult(), is(PathogenTestResultType.PENDING));
-		assertThat(labMessage.isTestResultVerified(), is(true));
 		assertThat(labMessage.getPersonFirstName(), is("James"));
 		assertThat(labMessage.getPersonLastName(), is("Smith"));
 		assertThat(labMessage.getPersonPostalCode(), is("test postal code"));

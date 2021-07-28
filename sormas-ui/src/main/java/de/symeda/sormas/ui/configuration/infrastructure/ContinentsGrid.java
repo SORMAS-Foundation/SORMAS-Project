@@ -1,17 +1,17 @@
 package de.symeda.sormas.ui.configuration.infrastructure;
 
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.shared.data.sort.SortDirection;
+import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.ContinentCriteria;
 import de.symeda.sormas.api.region.ContinentIndexDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -19,6 +19,8 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class ContinentsGrid extends FilteredGrid<ContinentIndexDto, ContinentCriteria> {
+
+	List<ContinentIndexDto> allContinents;
 
 	public ContinentsGrid(ContinentCriteria criteria) {
 		super(ContinentIndexDto.class);
@@ -28,18 +30,14 @@ public class ContinentsGrid extends FilteredGrid<ContinentIndexDto, ContinentCri
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(ContinentsView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
+		super.setCriteria(criteria, true);
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			setCriteria(criteria);
-			setEagerDataProvider();
+			setSelectionMode(SelectionMode.MULTI);
 		} else {
-			setLazyDataProvider();
-			setCriteria(criteria);
+			setSelectionMode(SelectionMode.NONE);
 		}
 
-		setColumns(
-			ContinentIndexDto.DISPLAY_NAME,
-			ContinentIndexDto.EXTERNAL_ID,
-			ContinentIndexDto.DEFAULT_NAME);
+		setColumns(ContinentIndexDto.DISPLAY_NAME, ContinentIndexDto.EXTERNAL_ID, ContinentIndexDto.DEFAULT_NAME);
 		getColumn(ContinentIndexDto.DEFAULT_NAME).setHidden(true);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
@@ -49,35 +47,50 @@ public class ContinentsGrid extends FilteredGrid<ContinentIndexDto, ContinentCri
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(ContinentIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
+
+		reload(true);
+	}
+
+	public void reload(boolean forceFetch) {
+		if (forceFetch || allContinents == null) {
+			allContinents = FacadeProvider.getContinentFacade().getIndexList(null, null, null, null);
+		}
+		reload();
 	}
 
 	public void reload() {
-		getDataProvider().refreshAll();
+		this.setItems(createFilteredStream());
+		setSelectionMode(isInEagerMode() ? SelectionMode.MULTI : SelectionMode.NONE);
 	}
 
-	public void setLazyDataProvider() {
+	private Stream<ContinentIndexDto> createFilteredStream() {
 
-		DataProvider<ContinentIndexDto, ContinentCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getContinentFacade()
-						.getIndexList(
-								query.getFilter().orElse(null),
-								query.getOffset(),
-								query.getLimit(),
-								query.getSortOrders()
-										.stream()
-										.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-										.collect(Collectors.toList()))
-						.stream(),
-				query -> (int) FacadeProvider.getContinentFacade().count(query.getFilter().orElse(null)));
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.NONE);
-	}
+		// get all filter properties
+		String nameLike = getCriteria().getNameLike() != null ? getCriteria().getNameLike().toLowerCase() : null;
+		EntityRelevanceStatus relevanceStatus = getCriteria().getRelevanceStatus();
 
-	public void setEagerDataProvider() {
+		Predicate<ContinentIndexDto> filters = x -> true; // "empty" basefilter
 
-		ListDataProvider<ContinentIndexDto> dataProvider =
-				DataProvider.fromStream(FacadeProvider.getContinentFacade().getIndexList(getCriteria(), null, null, null).stream());
-		setDataProvider(dataProvider);
-		setSelectionMode(SelectionMode.MULTI);
+		// name filter
+		if (!StringUtils.isEmpty(nameLike)) {
+			filters = filters.and(
+				continent -> (continent.getDefaultName().toLowerCase().contains(nameLike)
+					|| continent.getDisplayName().toLowerCase().contains(nameLike)));
+		}
+		// relevancestatus filter (active/archived/all)
+		if (relevanceStatus != null) {
+			switch (relevanceStatus) {
+			case ACTIVE:
+				filters = filters.and(continent -> (!continent.isArchived()));
+				break;
+			case ARCHIVED:
+				filters = filters.and(continent -> (continent.isArchived()));
+				break;
+			}
+		}
+
+		// apply filters
+		return allContinents.stream().filter(filters);
+
 	}
 }

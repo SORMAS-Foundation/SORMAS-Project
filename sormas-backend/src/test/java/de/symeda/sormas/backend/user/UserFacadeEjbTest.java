@@ -20,9 +20,11 @@ import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -77,7 +79,15 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetUsersByRegionAndRoles() {
-		getUserFacade().getUsersByRegionAndRoles(null, SURVEILLANCE_OFFICER);
+
+		// 0. Call with no users and without region does not fail
+		assertThat(getUserFacade().getUsersByRegionAndRoles(null, SURVEILLANCE_OFFICER), is(empty()));
+
+		// 1. Get yourself back in user list
+		RegionReferenceDto region = creator.createRDCF().region;
+		UserDto user = creator.createUser(region.getUuid(), null, null, null, "Surv", "Off", SURVEILLANCE_OFFICER);
+		loginWith(user);
+		assertThat(getUserFacade().getUsersByRegionAndRoles(region, SURVEILLANCE_OFFICER), contains(user.toReference()));
 	}
 
 	/**

@@ -199,7 +199,7 @@ public class LbdsIntentSender {
 	private static String getAuthHeader() {
 
 		String authToken = Credentials.basic(ConfigProvider.getUsername(), ConfigProvider.getPassword());
-		return "Authorization: " + authToken;
+		return "Authorization= " + authToken;
 	}
 
 	private static HttpMethod createLbdsHttpMethodPersons(List<PersonDto> personsToSend) {

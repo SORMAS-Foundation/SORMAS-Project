@@ -46,7 +46,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
@@ -211,7 +211,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 							AbstractOrderedLayout ownerLayout = null;
 							if (isOwnedByRootOrg) {
 								ownerLayout = buildSormasOriginInfo(rootOrigin, true, false);
-							} else if (ownerShare != null && !ownerShare.getTarget().getUuid().equals(currentServerOrgId)) {
+							} else if (ownerShare != null && !ownerShare.getTargetDescriptor().getId().equals(currentServerOrgId)) {
 								ownerLayout = buildOwnerShareLayout(ownerShare);
 							}
 
@@ -223,9 +223,9 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 						// show shares to other systems then owner and current one
 						List<SormasToSormasShareListEntryData> listData = shareInfoList.stream().filter(s -> {
-							String shareOrganizationId = s.getTarget().getUuid();
+							String shareOrganizationId = s.getTargetDescriptor().getId();
 
-							if (ownerShare != null && shareOrganizationId.equals(ownerShare.getTarget().getUuid())) {
+							if (ownerShare != null && shareOrganizationId.equals(ownerShare.getTargetDescriptor().getId())) {
 								return false;
 							}
 
@@ -241,7 +241,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 						}).map(s -> {
 							SormasToSormasShareListEntryData entryData = new SormasToSormasShareListEntryData();
 							entryData.shareUuid = s.getUuid();
-							entryData.target = s.getTarget().getCaption();
+							entryData.target = s.getTargetDescriptor().getName();
 							entryData.sender = s.getSender().getShortCaption();
 							entryData.status = s.getRequestStatus();
 							entryData.creationDate = s.getCreationDate();
@@ -257,12 +257,12 @@ public class SormasToSormasListComponent extends VerticalLayout {
 							&& originInfo != null
 							&& !rootOrigin.getOrganizationId().equals(currentServerOrgId)
 							&& !rootOrigin.getOrganizationId().equals(originInfo.getOrganizationId())) {
-							ServerAccessDataReferenceDto serverAccessDataRef =
-								FacadeProvider.getSormasToSormasFacade().getOrganizationRef(rootOrigin.getOrganizationId());
+							SormasServerDescriptor serverDescriptor =
+								FacadeProvider.getSormasToSormasFacade().getSormasServerDescriptorById(rootOrigin.getOrganizationId());
 
 							SormasToSormasShareListEntryData entryData = new SormasToSormasShareListEntryData();
 							entryData.shareUuid = null;
-							entryData.target = serverAccessDataRef.getCaption();
+							entryData.target = serverDescriptor.getName();
 							entryData.sender = rootOrigin.getSenderName();
 							entryData.status = ShareRequestStatus.ACCEPTED;
 							entryData.creationDate = rootOrigin.getCreationDate();
@@ -308,7 +308,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 	private String getOwnerOrganizationId(SormasToSormasShareInfoDto ownerShare, SormasToSormasOriginInfoDto rootOrigin, String ownOrganizationId) {
 		if (ownerShare != null) {
-			return ownerShare.getTarget().getUuid();
+			return ownerShare.getTargetDescriptor().getId();
 		}
 
 		if (rootOrigin != null && !rootOrigin.isOwnershipHandedOver()) {
@@ -359,7 +359,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 	private SormasToSormasShareInfoDto getShareFromOrigin(List<SormasToSormasShareInfoDto> shareInfoList) {
 		if (originInfo != null) {
 			return shareInfoList.stream()
-				.filter(s -> s.getRequestStatus() == ShareRequestStatus.ACCEPTED && s.getTarget().getUuid().equals(originInfo.getOrganizationId()))
+				.filter(s -> s.getRequestStatus() == ShareRequestStatus.ACCEPTED && s.getTargetDescriptor().getId().equals(originInfo.getOrganizationId()))
 				.findFirst()
 				.orElse(null);
 		}
@@ -389,7 +389,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		infoLayout.setSpacing(false);
 		infoLayout.addStyleName(CssStyles.SORMAS_LIST_ENTRY);
 
-		Label targetLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasOwnedBy) + " " + shareInfo.getTarget());
+		Label targetLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasOwnedBy) + " " + shareInfo.getTargetDescriptor().getName());
 		targetLabel.addStyleName(CssStyles.LABEL_BOLD);
 		infoLayout.addComponent(targetLabel);
 
@@ -416,11 +416,11 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		infoLayout.setMargin(false);
 		infoLayout.setSpacing(false);
 
-		ServerAccessDataReferenceDto serverAccessDataRef =
-			FacadeProvider.getSormasToSormasFacade().getOrganizationRef(originInfo.getOrganizationId());
+		SormasServerDescriptor serverDescriptor =
+			FacadeProvider.getSormasToSormasFacade().getSormasServerDescriptorById(originInfo.getOrganizationId());
 
 		Label senderOrganizationLabel = new Label(
-			I18nProperties.getCaption(isOwner ? Captions.sormasToSormasOwnedBy : Captions.sormasToSormasSentFrom) + " " + serverAccessDataRef);
+			I18nProperties.getCaption(isOwner ? Captions.sormasToSormasOwnedBy : Captions.sormasToSormasSentFrom) + " " + serverDescriptor);
 		senderOrganizationLabel.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.LABEL_WHITE_SPACE_NORMAL);
 		infoLayout.addComponent(senderOrganizationLabel);
 

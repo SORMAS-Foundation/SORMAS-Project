@@ -27,6 +27,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -1052,7 +1053,7 @@ public class PersonFacadeEjb implements PersonFacade {
 				}
 			} else if (newPerson.getPresentCondition() != null
 				&& newPerson.getPresentCondition().isDeceased()
-				&& newPerson.getDeathDate() != existingPerson.getDeathDate()
+				&& !Objects.equals(newPerson.getDeathDate(), existingPerson.getDeathDate())
 				&& newPerson.getDeathDate() != null) {
 				// only Deathdate has changed
 				// update the latest associated case to the new deathdate, if causeOfDeath matches
@@ -1096,6 +1097,11 @@ public class PersonFacadeEjb implements PersonFacade {
 				}
 				caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 			}
+		}
+
+		// For newly created persons, assume no registration in external journals
+		if (existingPerson == null && newPerson.getSymptomJournalStatus() == null) {
+			newPerson.setSymptomJournalStatus(SymptomJournalStatus.UNREGISTERED);
 		}
 
 		// Update case pregnancy information if sex has changed
@@ -1180,7 +1186,6 @@ public class PersonFacadeEjb implements PersonFacade {
 				cb.isTrue(emailRoot.get(PersonContactDetail.PRIMARY_CONTACT)),
 				cb.equal(emailRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.EMAIL)));
 		emailSubQuery.select(emailRoot.get(PersonContactDetail.CONTACT_INFORMATION));
-
 
 		// make sure to check the sorting by the multi-select order if you extend the selections here
 		cq.multiselect(
@@ -1317,8 +1322,6 @@ public class PersonFacadeEjb implements PersonFacade {
 						isInJurisdiction));
 		}
 	}
-
-
 
 	public static PersonReferenceDto toReferenceDto(Person entity) {
 

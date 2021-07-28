@@ -27,11 +27,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoFacade;
-import de.symeda.sormas.backend.sormastosormas.OrganizationServerAccessData;
-import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
+import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -46,7 +46,7 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 	private SormasToSormasShareInfoService shareInfoService;
 
 	@EJB
-	private ServerAccessDataService serverAccessDataService;
+	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 
 	@Override
 	public List<SormasToSormasShareInfoDto> getIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max) {
@@ -73,9 +73,12 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 
 		DtoHelper.fillDto(target, source);
 
-		OrganizationServerAccessData serverAccessData = serverAccessDataService.getServerListItemById(source.getOrganizationId())
-			.orElseGet(() -> new OrganizationServerAccessData(source.getOrganizationId(), source.getOrganizationId()));
-		target.setTarget(serverAccessData.toReference());
+		SormasServerDescriptor sormasServerDescriptor = sormasToSormasDiscoveryService.getSormasServerDescriptorById(source.getOrganizationId());
+		if (sormasServerDescriptor == null) {
+			sormasServerDescriptor = new SormasServerDescriptor(source.getOrganizationId(), source.getOrganizationId());
+		}
+
+		target.setTargetDescriptor(sormasServerDescriptor);
 
 		target.setRequestStatus(source.getRequestStatus());
 		target.setSender(source.getSender().toReference());

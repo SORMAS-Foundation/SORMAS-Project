@@ -13,16 +13,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas.rest;
 
 import javax.enterprise.inject.Produces;
+
+import de.symeda.sormas.api.SormasToSormasConfig;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 
 public class SormasToSormasRestClientProducer {
 
 	@Produces
 	public SormasToSormasRestClient sormasToSormasClient(
-		ServerAccessDataService serverAccessDataService,
-		SormasToSormasEncryptionService encryptionService) {
-		return new SormasToSormasRestClient(serverAccessDataService, encryptionService);
+		SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
+		SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
+		ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
+		return new SormasToSormasRestClient(sormasToSormasDiscoveryService, sormasToSormasEncryptionEjb, configFacadeEjb);
 	}
 }
