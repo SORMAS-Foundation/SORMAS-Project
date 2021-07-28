@@ -823,9 +823,9 @@
 			<!-- *** Test dependencies END *** -->
 
 			<dependency>
-				<groupId>io.lettuce</groupId>
-				<artifactId>lettuce-core</artifactId>
-				<version>6.1.2.RELEASE</version>
+				<groupId>com.ibm.etcd</groupId>
+				<artifactId>etcd-java</artifactId>
+				<version>0.0.18</version>
 			</dependency>
 
 			<!-- OIDC for S2S -->
