@@ -277,8 +277,6 @@
                         <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                             android:id="@+id/sample_shipped"
                             app:value="@={data.shipped}"
-                            app:dependencyParentField="@{samplePurpose}"
-                            app:dependencyParentValue="@{SamplePurpose.EXTERNAL}"
                             style="@style/ControlFirstOfTwoColumnsStyle" />
 
                         <de.symeda.sormas.app.component.controls.ControlDateField
@@ -308,8 +306,6 @@
                         <de.symeda.sormas.app.component.controls.ControlTextImageField
                             android:id="@+id/sample_received"
                             app:receivedStatus="@{data}"
-                            app:dependencyParentField="@{samplePurpose}"
-                            app:dependencyParentValue="@{SamplePurpose.EXTERNAL}"
                             style="@style/ControlFirstOfTwoColumnsStyle" />
 
                         <de.symeda.sormas.app.component.controls.ControlTextReadField
@@ -317,7 +313,7 @@
                             app:value="@{data.labSampleID}"
                             app:dependencyParentField="@{sampleReceived}"
                             app:dependencyParentValue="@{true}"
-                            style="@style/ControlSingleColumnStyle" />
+                            style="@style/ControlSecondOfTwoColumnsStyle" />
 
                     </LinearLayout>
 

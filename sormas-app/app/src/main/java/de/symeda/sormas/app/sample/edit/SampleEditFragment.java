@@ -246,6 +246,9 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 				contentBinding.sampleAdditionalTestingRequested
 					.setVisibility(ConfigProvider.getUser().equals(record.getReportingUser()) ? VISIBLE : GONE);
 			} else {
+				contentBinding.sampleShipped.setValue(null);
+				contentBinding.sampleShipmentDate.setValue(null);
+				contentBinding.sampleShipmentDetails.setValue(null);
 				contentBinding.externalSampleFieldsLayout.setVisibility(GONE);
 				contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
 				contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);
