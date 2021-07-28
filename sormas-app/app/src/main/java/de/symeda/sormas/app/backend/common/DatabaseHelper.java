@@ -172,7 +172,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 310;
+	public static final int DATABASE_VERSION = 311;
 
 	private static DatabaseHelper instance = null;
 
@@ -2672,6 +2672,43 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 309:
 				currentVersion = 309;
 				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN eventIdentificationSource varchar(255);");
+
+			case 310:
+				currentVersion = 310;
+				getDao(Immunization.class).executeRaw("DROP TABLE immunization");
+				getDao(Immunization.class).executeRaw("CREATE TABLE immunization (" +
+						" id integer primary key autoincrement," +
+						" uuid varchar(36) not null unique," +
+						" changeDate timestamp not null," +
+						" creationDate timestamp not null," +
+						" lastOpenedDate timestamp," +
+						" localChangeDate timestamp not null," +
+						" modified SMALLINT DEFAULT 0," +
+						" snapshot SMALLINT DEFAULT 0,"  +
+						" pseudonymized SMALLINT,"  +
+						" disease varchar(255) not null," +
+						" person_id bigint not null," +
+						" reportDate timestamp not null," +
+						" reportingUser_id bigint not null," +
+						" archived boolean DEFAULT false," +
+						" immunizationStatus varchar(255) not null," +
+						" meansOfImmunization varchar(255) not null," +
+						" meansOfImmunizationDetails text," +
+						" immunizationManagementStatus varchar(255) not null," +
+						" externalId varchar(255) not null," +
+						" responsibleRegion_id bigint," +
+						" responsibleDistrict_id bigint," +
+						" responsibleCommunity_id bigint," +
+						" country_id bigint," +
+						" startDate timestamp," +
+						" endDate timestamp," +
+						" numberOfDoses int," +
+						" previousInfection varchar(255)," +
+						" lastInfectionDate timestamp," +
+						" additionalDetails text," +
+						" positiveTestResultDate timestamp not null," +
+						" recoveryDate timestamp not null," +
+						" relatedCase_id bigint)");
 
 				// ATTENTION: break should only be done after last version
 				break;
