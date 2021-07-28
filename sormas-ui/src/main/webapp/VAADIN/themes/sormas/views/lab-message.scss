@@ -1,0 +1,14 @@
+@mixin sormas-lab-message-view {
+
+  div[location="labMessageDetails"] {
+    word-break: break-word;
+  }
+
+  .v-verticallayout div[location="labMessageDetails"] {
+    height: calc(100vh - 230px);
+  }
+
+  .v-horizontallayout div[location="labMessageDetails"] {
+    height: calc(100vh - 197px);
+  }
+}
