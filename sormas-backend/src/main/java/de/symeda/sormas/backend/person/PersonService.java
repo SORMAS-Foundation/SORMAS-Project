@@ -49,7 +49,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -234,6 +233,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, PersonQueryContext personQueryContext) {
 
+		// Hint: personCriteria.getPersonAssociation() is interpreted in createUserFilter, but not again here
+
 		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
 		final From<?, Person> personFrom = personQueryContext.getRoot();
 		final CriteriaQuery<?> cq = personQueryContext.getQuery();
@@ -281,43 +282,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		filter = andEqualsReferenceDto(cb, region, filter, personCriteria.getRegion());
 		filter = andEqualsReferenceDto(cb, district, filter, personCriteria.getDistrict());
 		filter = andEqualsReferenceDto(cb, community, filter, personCriteria.getCommunity());
-
-			switch (personCriteria.getPersonAssociation()) {
-			case ALL:
-				break;
-			case CASE:
-				final Subquery<Case> caseSubquery = cq.subquery(Case.class);
-				final Root<Case> caseRoot = caseSubquery.from(Case.class);
-				caseSubquery.select(caseRoot.get(Case.ID)).where(cb.equal(caseRoot.get(Case.PERSON), personFrom));
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(caseSubquery));
-				break;
-			case CONTACT:
-				final Subquery<Contact> contactSubquery = cq.subquery(Contact.class);
-				final Root<Contact> contactRoot = contactSubquery.from(Contact.class);
-				contactSubquery.select(contactRoot.get(Contact.ID)).where(cb.equal(contactRoot.get(Contact.PERSON), personFrom));
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(contactSubquery));
-				break;
-			case EVENT_PARTICIPANT:
-				final Subquery<EventParticipant> eventParticipantSubquery = cq.subquery(EventParticipant.class);
-				final Root<EventParticipant> eventParticipantRoot = eventParticipantSubquery.from(EventParticipant.class);
-				eventParticipantSubquery.select(eventParticipantRoot.get(EventParticipant.ID))
-					.where(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON), personFrom));
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(eventParticipantSubquery));
-				break;
-			case IMMUNIZATION:
-				final Subquery<Immunization> immunizationSubquery = cq.subquery(Immunization.class);
-				final Root<Immunization> immunizationRoot = immunizationSubquery.from(Immunization.class);
-				immunizationSubquery.select(immunizationRoot.get(Immunization.ID))
-					.where(cb.equal(immunizationRoot.get(Immunization.PERSON), personFrom));
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(immunizationSubquery));
-				break;
-			case TRAVEL_ENTRY:
-				final Subquery<TravelEntry> travelEntrySubquery = cq.subquery(TravelEntry.class);
-				final Root<TravelEntry> travelEntryRoot = travelEntrySubquery.from(TravelEntry.class);
-				travelEntrySubquery.select(travelEntryRoot.get(TravelEntry.ID)).where(cb.equal(travelEntryRoot.get(TravelEntry.PERSON), personFrom));
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(travelEntrySubquery));
-				break;
-			}
 
 		return filter;
 	}
