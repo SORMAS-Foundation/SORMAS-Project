@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -32,6 +35,7 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -50,10 +54,14 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "ImmunizationFacade")
 public class ImmunizationFacadeEjb implements ImmunizationFacade {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
 	@EJB
 	private ImmunizationService immunizationService;
@@ -272,6 +280,17 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		target.setRelatedCase(caseService.getByReferenceDto(source.getRelatedCase()));
 
 		return target;
+	}
+
+	@Override
+	public void updateImmunizationStatuses() {
+		final Query nativeQuery = em.createNativeQuery(
+			"UPDATE " + Immunization.TABLE_NAME + " SET " + Immunization.IMMUNIZATION_STATUS + " = ?1 WHERE " + Immunization.IMMUNIZATION_STATUS
+				+ " = ?2 AND ?3 >= " + Immunization.END_DATE);
+		nativeQuery.setParameter(1, ImmunizationStatus.EXPIRED.toString().toUpperCase());
+		nativeQuery.setParameter(2, ImmunizationStatus.ACQUIRED.toString().toUpperCase());
+		nativeQuery.setParameter(3, new Date());
+		nativeQuery.executeUpdate();
 	}
 
 	@LocalBean

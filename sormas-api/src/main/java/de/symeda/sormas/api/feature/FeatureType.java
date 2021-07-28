@@ -195,7 +195,8 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT }),
-	IMMUNIZATION_MANAGEMENT(true, false, null);
+	IMMUNIZATION_MANAGEMENT(true, false, null),
+	IMMUNIZATION_STATUS_AUTOMATION(true, false, new FeatureType[]{ IMMUNIZATION_MANAGEMENT});
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system
