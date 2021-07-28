@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.task;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,14 +31,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
-import de.symeda.sormas.api.task.TaskDto;
-import de.symeda.sormas.api.task.TaskExportDto;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
@@ -49,10 +45,9 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.TaskDownloadUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
@@ -100,21 +95,8 @@ public class TasksView extends AbstractView {
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 
-			StreamResource extendedExportStreamResource = DownloadUtil.createCsvExportStreamResource(
-				TaskExportDto.class,
-				null,
-				(Integer start, Integer max) -> FacadeProvider.getTaskFacade()
-					.getExportList(taskListComponent.getGrid().getCriteria(), getSelectedRowUuids(), start, max),
-				(propertyId, type) -> {
-					String caption = I18nProperties.findPrefixCaption(propertyId, TaskExportDto.I18N_PREFIX, TaskDto.I18N_PREFIX);
-					if (Date.class.isAssignableFrom(type)) {
-						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-					}
-					return caption;
-				},
-				ExportEntityName.TASKS,
-				null);
-
+			StreamResource extendedExportStreamResource =
+				TaskDownloadUtil.createTaskExportResource(taskListComponent.getGrid().getCriteria(), this::getSelectedRowUuids, null);
 			addExportButton(
 				extendedExportStreamResource,
 				exportButton,
@@ -122,6 +104,14 @@ public class TasksView extends AbstractView {
 				VaadinIcons.FILE_TEXT,
 				Captions.exportDetailed,
 				Strings.infoDetailedExport);
+
+			Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
+				ControllerProvider.getCustomExportController().openTaskExportWindow(taskListComponent.getCriteria(), this::getSelectedRowUuids);
+				exportButton.setPopupVisible(false);
+			}, ValoTheme.BUTTON_PRIMARY);
+			btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
+			btnCustomExport.setWidth(100, Unit.PERCENTAGE);
+			exportLayout.addComponent(btnCustomExport);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {

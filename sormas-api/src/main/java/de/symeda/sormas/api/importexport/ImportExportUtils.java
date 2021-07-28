@@ -33,6 +33,7 @@ import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
+import de.symeda.sormas.api.task.TaskExportDto;
 import de.symeda.sormas.api.utils.Order;
 
 public final class ImportExportUtils {
@@ -88,6 +89,16 @@ public final class ImportExportUtils {
 
 	public static List<ExportPropertyMetaInfo> getEventParticipantExportProperties(PropertyCaptionProvider propertyCaptionProvider) {
 		return getExportProperties(EventParticipantExportDto.class, new PropertyTypeFilter() {
+
+			@Override
+			public boolean accept(ExportGroupType type) {
+				return true;
+			}
+		}, propertyCaptionProvider);
+	}
+
+	public static List<ExportPropertyMetaInfo> getTaskExportProperties(PropertyCaptionProvider propertyCaptionProvider) {
+		return getExportProperties(TaskExportDto.class, new PropertyTypeFilter() {
 
 			@Override
 			public boolean accept(ExportGroupType type) {
