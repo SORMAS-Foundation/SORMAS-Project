@@ -905,6 +905,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		final Root<Person> person = cq.from(Person.class);
 
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		((PersonJoins) personQueryContext.getJoins()).configure(criteria);
 
 		Predicate filter = personService.createUserFilter(personQueryContext, criteria);
 		if (criteria != null) {
@@ -1167,6 +1168,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		final Root<Person> person = cq.from(Person.class);
 
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		((PersonJoins) personQueryContext.getJoins()).configure(criteria);
 
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
