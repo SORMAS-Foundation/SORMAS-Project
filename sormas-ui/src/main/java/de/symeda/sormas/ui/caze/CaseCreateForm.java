@@ -530,11 +530,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 
 		addValueChangeListener(e -> {
-			Disease defaultDisease = FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease();
-			if (defaultDisease != null) {
-				diseaseField.setValue(defaultDisease);
-			}
-
 			if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 				setVisible(false, CaseDataDto.CASE_ORIGIN, CaseDataDto.DISEASE, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);

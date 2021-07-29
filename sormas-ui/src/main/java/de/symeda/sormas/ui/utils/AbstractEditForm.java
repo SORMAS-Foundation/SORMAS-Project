@@ -55,6 +55,8 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	private List<Field<?>> editableAllowedFields = new ArrayList<>();
 	private boolean fieldAccessesInitialized;
 
+	private ComboBox diseaseField;
+
 	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix) {
 		this(type, propertyI18nPrefix, true, null, null);
 	}
@@ -89,6 +91,10 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	@Override
 	public void setValue(DTO newFieldValue) throws com.vaadin.v7.data.Property.ReadOnlyException, ConversionException {
 		super.setValue(newFieldValue);
+		// this method should only be called once upon initializing the form, thus allowing us to set the default disease here
+		if (diseaseField != null && diseaseField.getValue() == null) {
+			setDefaultDiseaseValue();
+		}
 	}
 
 	@Override
@@ -167,19 +173,35 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	@SuppressWarnings("unchecked")
 	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases) {
 
-		ComboBox field = addField(fieldId, ComboBox.class);
+		diseaseField = addField(fieldId, ComboBox.class);
 		if (showNonPrimaryDiseases) {
-			addNonPrimaryDiseasesTo(field);
+			addNonPrimaryDiseasesTo(diseaseField);
 		}
+
+		setDefaultDiseaseValue();
+
 		// Make sure that the ComboBox still contains a pre-selected inactive disease
-		field.addValueChangeListener(e -> {
+		diseaseField.addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
-			if (value != null && !field.containsId(value)) {
-				Item newItem = field.addItem(value);
+			if (value != null && !diseaseField.containsId(value)) {
+				Item newItem = diseaseField.addItem(value);
 				newItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(value.toString());
 			}
 		});
-		return field;
+		return diseaseField;
+	}
+
+	/**
+	 * If the server is only configured for one disease, automatically set this as the default value of the disease field.
+	 * Disease.OTHER and Disease.UNDEFINED are not counted as disease
+	 */
+	private void setDefaultDiseaseValue() {
+		Disease defaultDisease = FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease();
+		if (defaultDisease != null) {
+			diseaseField.setValue(defaultDisease);
+		} else if (diseaseField.getItemIds().size() == 1) {
+			diseaseField.setValue(diseaseField.getItemIds().stream().findFirst().get());
+		}
 	}
 
 	protected ComboBox addInfrastructureField(String fieldId) {
