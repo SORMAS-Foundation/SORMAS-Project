@@ -82,6 +82,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
@@ -160,7 +161,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private ComboBox diseaseField;
 	private ComboBox diseaseVariantField;
 	private DateField reportDate;
-	private DateField startDate;
+	private DateTimeField startDate;
 
 	public EventDataForm(boolean create, boolean isPseudonymized) {
 		super(
@@ -224,9 +225,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.INTERNAL_TOKEN);
 
-		startDate = addField(EventDto.START_DATE, DateField.class);
+		startDate = addField(EventDto.START_DATE, DateTimeField.class);
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);
-		DateField endDate = addField(EventDto.END_DATE, DateField.class);
+		DateTimeField endDate = addField(EventDto.END_DATE, DateTimeField.class);
 		initEventDateValidation(startDate, endDate, multiDayCheckbox);
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
@@ -619,7 +620,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			laboratoryDiagnosticEvidenceDetail);
 	}
 
-	private void initEventDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
+	private void initEventDateValidation(DateTimeField startDate, DateTimeField endDate, CheckBox multiDayCheckbox) {
 		DateComparisonValidator startDateValidator = new DateComparisonValidator(
 			startDate,
 			endDate,
