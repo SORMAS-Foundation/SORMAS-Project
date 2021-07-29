@@ -126,10 +126,13 @@ public class LabMessageController {
 		layout.addComponent(form);
 
 		if (newDto.getStatus().isProcessable()) {
+			layout.addStyleName("lab-message-processable");
 			layout.addComponent(getLabMessageButtonsPanel(newDto, () -> {
 				window.close();
 				onFormActionPerformed.run();
 			}));
+		} else {
+			layout.addStyleName("lab-message-not-processable");
 		}
 
 		form.setValue(newDto);
@@ -768,6 +771,7 @@ public class LabMessageController {
 		horizontalSplitPanel.setFirstComponent(form);
 		horizontalSplitPanel.setSecondComponent(createComponent);
 		horizontalSplitPanel.setSplitPosition(569, Sizeable.Unit.PIXELS); // This is just the position it needs to avoid vertical scroll bars.
+		horizontalSplitPanel.addStyleName("lab-message-processing");
 
 		Panel panel = new Panel();
 		panel.setHeightFull();
