@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.62.0</version>
+	<version>1.62.1</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -823,9 +823,9 @@
 			<!-- *** Test dependencies END *** -->
 
 			<dependency>
-				<groupId>io.lettuce</groupId>
-				<artifactId>lettuce-core</artifactId>
-				<version>6.1.2.RELEASE</version>
+				<groupId>com.ibm.etcd</groupId>
+				<artifactId>etcd-java</artifactId>
+				<version>0.0.18</version>
 			</dependency>
 
 			<!-- OIDC for S2S -->

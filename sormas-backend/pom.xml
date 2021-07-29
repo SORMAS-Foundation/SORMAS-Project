@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>sormas-base</artifactId>
 		<groupId>de.symeda.sormas</groupId>
-		<version>1.62.0</version>
+		<version>1.62.1</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -204,8 +204,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>io.lettuce</groupId>
-			<artifactId>lettuce-core</artifactId>
+			<groupId>com.ibm.etcd</groupId>
+			<artifactId>etcd-java</artifactId>
 		</dependency>
 
 		<!-- OIDC for S2S -->
