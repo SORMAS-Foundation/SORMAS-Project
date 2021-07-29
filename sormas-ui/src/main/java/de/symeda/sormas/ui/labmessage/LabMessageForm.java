@@ -41,6 +41,7 @@ public class LabMessageForm extends AbstractEditForm<LabMessageDto> {
 
 		detailsPanel = new Panel();
 		detailsPanel.setHeightFull();
+		detailsPanel.addStyleName("lab-message-details");
 		getContent().addComponent(detailsPanel, LabMessageDto.LAB_MESSAGE_DETAILS);
 	}
 
