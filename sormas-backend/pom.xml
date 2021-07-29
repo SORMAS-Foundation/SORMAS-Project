@@ -204,8 +204,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>io.lettuce</groupId>
-			<artifactId>lettuce-core</artifactId>
+			<groupId>com.ibm.etcd</groupId>
+			<artifactId>etcd-java</artifactId>
 		</dependency>
 
 		<!-- OIDC for S2S -->

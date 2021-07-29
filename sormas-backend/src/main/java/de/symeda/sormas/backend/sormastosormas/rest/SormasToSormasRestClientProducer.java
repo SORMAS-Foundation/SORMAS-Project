@@ -17,7 +17,6 @@ package de.symeda.sormas.backend.sormastosormas.rest;
 
 import javax.enterprise.inject.Produces;
 
-import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
