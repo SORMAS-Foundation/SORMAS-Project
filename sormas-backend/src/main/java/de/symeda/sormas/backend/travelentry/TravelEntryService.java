@@ -18,6 +18,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
@@ -69,6 +70,7 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		final CriteriaBuilder cb = travelEntryQueryContext.getCriteriaBuilder();
 		final From<?, TravelEntry> from = travelEntryQueryContext.getRoot();
 		Join<TravelEntry, Person> person = joins.getPerson();
+		Join<TravelEntry, Case> resultingCase = joins.getResultingCase();
 
 		Predicate filter = null;
 
@@ -90,6 +92,10 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 
 		if (criteria.getPerson() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
+		}
+
+		if (criteria.getCase() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(resultingCase.get(Case.UUID), criteria.getCase().getUuid()));
 		}
 
 		if (criteria.getRelevanceStatus() != null) {

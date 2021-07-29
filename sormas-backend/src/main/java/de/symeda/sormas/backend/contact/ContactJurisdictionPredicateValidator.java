@@ -58,8 +58,9 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
-		final Predicate reportedByCurrentUser =
-			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
+		final Predicate reportedByCurrentUser = cb.and(
+			cb.isNotNull(joins.getRoot().get(Contact.REPORTING_USER)),
+			cb.equal(joins.getRoot().get(Contact.REPORTING_USER).get(User.ID), currentUser.getId()));
 
 		return cb.or(reportedByCurrentUser, inJurisdiction());
 	}
@@ -81,17 +82,17 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 
 	@Override
 	protected Predicate whenRegionalLevel() {
-		return cb.equal(joins.getRegion().get(Region.ID), currentUser.getRegion().getId());
+		return cb.equal(joins.getRoot().get(Contact.REGION).get(Region.ID), currentUser.getRegion().getId());
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
-		return cb.equal(joins.getDistrict().get(District.ID), currentUser.getDistrict().getId());
+		return cb.equal(joins.getRoot().get(Contact.DISTRICT).get(District.ID), currentUser.getDistrict().getId());
 	}
 
 	@Override
 	protected Predicate whenCommunityLevel() {
-		return cb.equal(joins.getCommunity().get(Community.ID), currentUser.getCommunity().getId());
+		return cb.equal(joins.getRoot().get(Contact.COMMUNITY).get(Community.ID), currentUser.getCommunity().getId());
 	}
 
 	@Override

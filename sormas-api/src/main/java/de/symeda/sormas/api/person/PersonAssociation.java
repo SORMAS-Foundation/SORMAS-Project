@@ -4,9 +4,12 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum PersonAssociation {
 
+	ALL,
 	CASE,
 	CONTACT,
-	EVENT_PARTICIPANT;
+	EVENT_PARTICIPANT,
+	IMMUNIZATION,
+	TRAVEL_ENTRY;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

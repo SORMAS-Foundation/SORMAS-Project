@@ -23,16 +23,13 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 
-import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
@@ -41,6 +38,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPre
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -72,8 +70,8 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 	private SampleService sampleService;
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
-	@Inject
-	private SormasToSormasConfig sormasToSormasConfig;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
 	public ShareData<Case, SormasToSormasCaseDto> buildShareData(Case caze, User user, SormasToSormasOptionsDto options) {
 
@@ -155,7 +153,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		// external tokens ("Aktenzeichen") are not globally unique in Germany due to SurvNet, therefore, do not
 		// transmit the token to other GAs, but let them generate their own token based on their local, configurable
 		// format
-		if (!sormasToSormasConfig.getRetainCaseExternalToken()) {
+		if (!configFacadeEjb.getS2SConfig().getRetainCaseExternalToken()) {
 			cazeDto.setExternalToken(null);
 		}
 

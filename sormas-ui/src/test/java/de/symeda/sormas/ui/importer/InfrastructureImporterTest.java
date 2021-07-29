@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.importer;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -40,6 +42,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 	@Test
 	public void testUmlautsInInfrastructureImport()
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+
 		RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
 
@@ -47,31 +50,37 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(regionCsvFile, user, InfrastructureType.REGION);
 		importer.runImport();
-		RegionReferenceDto region = getRegionFacade().getReferencesByName("Region with ä", false).get(0);
+		List<RegionReferenceDto> regions = getRegionFacade().getReferencesByName("Region with ä", false);
+		assertThat(regions, hasSize(1));
+		RegionReferenceDto region = regions.get(0);
 
 		// Import district
 		File districtCsvFile = new File(getClass().getClassLoader().getResource("sormas_district_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(districtCsvFile, user, InfrastructureType.DISTRICT);
 		importer.runImport();
-		DistrictReferenceDto district = getDistrictFacade().getByName("District with ß", region, false).get(0);
+		List<DistrictReferenceDto> districts = getDistrictFacade().getByName("District with ß", region, false);
+		assertThat(districts, hasSize(1));
+		DistrictReferenceDto district = districts.get(0);
 
 		// Import community
 		File communityCsvFile = new File(getClass().getClassLoader().getResource("sormas_community_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(communityCsvFile, user, InfrastructureType.COMMUNITY);
 		importer.runImport();
-		CommunityReferenceDto community = getCommunityFacade().getByName("Community with ö", district, false).get(0);
+		List<CommunityReferenceDto> communities = getCommunityFacade().getByName("Community with ö", district, false);
+		assertThat(communities, hasSize(1));
+		CommunityReferenceDto community = communities.get(0);
 
 		// Import facility
 		File facilityCsvFile = new File(getClass().getClassLoader().getResource("sormas_facility_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(facilityCsvFile, user, InfrastructureType.FACILITY);
 		importer.runImport();
-		getFacilityFacade().getByNameAndType("Facility with ü", district, community, null, false).get(0);
+		assertThat(getFacilityFacade().getByNameAndType("Facility with ü", district, community, null, false), hasSize(2));
 
 		// Import point of entry from commented CSV file
 		File commentedPoeCsvFile = new File(getClass().getClassLoader().getResource("sormas_poe_import_test_comment.csv").toURI());
 		importer = new InfrastructureImporterExtension(commentedPoeCsvFile, user, InfrastructureType.POINT_OF_ENTRY);
 		importer.runImport();
-		getPointOfEntryFacade().getByName("Airport A", district, false).get(0);
+		assertThat(getPointOfEntryFacade().getByName("Airport A", district, false), hasSize(1));
 	}
 
 	@Test

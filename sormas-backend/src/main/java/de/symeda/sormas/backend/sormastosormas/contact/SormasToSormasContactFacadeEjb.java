@@ -66,6 +66,7 @@ public class SormasToSormasContactFacadeEjb
 	private static final String CONTACT_REQUEST_GET_DATA_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_GET_DATA_ENDPOINT;
 	private static final String SAVE_SHARED_CONTACT_ENDPOINT = RESOURCE_PATH + CONTACT_ENDPOINT;
 	public static final String SYNC_SHARED_CONTACT_ENDPOINT = RESOURCE_PATH + CONTACT_SYNC_ENDPOINT;
+	public static final String CONTACT_SHARES_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_SHARES_ENDPOINT;
 
 	@EJB
 	private ContactService contactService;
@@ -89,9 +90,11 @@ public class SormasToSormasContactFacadeEjb
 			CONTACT_REQUEST_GET_DATA_ENDPOINT,
 			SAVE_SHARED_CONTACT_ENDPOINT,
 			SYNC_SHARED_CONTACT_ENDPOINT,
+			CONTACT_SHARES_ENDPOINT,
 			Captions.Contact,
 			ShareRequestDataType.CONTACT,
-			ContactShareRequestData.class);
+			ContactShareRequestData.class,
+			ContactSyncData.class);
 	}
 
 	@Override
@@ -157,8 +160,8 @@ public class SormasToSormasContactFacadeEjb
 	}
 
 	@Override
-	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String organizationId) {
-		return shareInfoService.getByContactAndOrganization(entityUuid, organizationId);
+	protected SormasToSormasShareInfo getShareInfoByEntityAndOrganization(String entityUuid, String receiverId) {
+		return shareInfoService.getByContactAndOrganization(entityUuid, receiverId);
 	}
 
 	@Override
@@ -169,6 +172,11 @@ public class SormasToSormasContactFacadeEjb
 	@Override
 	protected void setShareRequestPreviewData(SormasToSormasShareRequestDto request, List<SormasToSormasContactPreview> previews) {
 		request.setContacts(previews);
+	}
+
+	@Override
+	protected List<SormasToSormasShareInfo> getEntityShares(Contact contact) {
+		return contact.getShareInfoContacts().stream().map(ShareInfoContact::getShareInfo).collect(Collectors.toList());
 	}
 
 	private ValidationErrors validateSharedUuids(String uuid, CaseReferenceDto caze) {

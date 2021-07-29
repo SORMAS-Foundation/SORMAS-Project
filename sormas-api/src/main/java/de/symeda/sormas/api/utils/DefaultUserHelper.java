@@ -40,6 +40,7 @@ public class DefaultUserHelper {
 	public static final DataHelper.Pair<String, String> HOSP_INF_USERNAME_AND_PASSWORD = new DataHelper.Pair<>("HospInf", "HospInf");
 	public static final DataHelper.Pair<String, String> COMM_OFF_USERNAME_AND_PASSWORD = new DataHelper.Pair<>("CommOff", "CommOff");
 	public static final DataHelper.Pair<String, String> POE_INF_USERNAME_AND_PASSWORD = new DataHelper.Pair<>("PoeInf", "PoeInf");
+	public static final String SORMAS_TO_SORMAS_USER_NAME = "Sormas2Sormas";
 
 	private static final Map<String, String> defaultUsersWithPassword = new HashMap<>();
 
