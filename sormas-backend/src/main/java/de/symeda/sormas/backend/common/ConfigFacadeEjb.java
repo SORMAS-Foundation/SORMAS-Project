@@ -33,7 +33,7 @@ import com.google.common.collect.Lists;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.SormasToSormasConfig;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
@@ -125,11 +125,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String GEOCODING_EPSG4326_WKT = "geocodingEPSG4326_WKT";
 
 	private static final String CENTRAL_OIDC_URL = "central.oidc.url";
-	private static final String CENTRAL_REDIS_HOST = "central.redis.host";
-	private static final String CENTRAL_REDIS_KEYSTORE_PATH = "central.redis.keystorePath";
-	private static final String CENTRAL_REDIS_KEYSTORE_PASSWORD = "central.redis.keystorePassword";
-	private static final String CENTRAL_REDIS_TRUSTSTORE_PATH = "central.redis.truststorePath";
-	private static final String CENTRAL_REDIS_TRUSTSTORE_PASSWORD = "central.redis.truststorePassword";
+	private static final String CENTRAL_ETCD_HOST = "central.etcd.host";
+	private static final String CENTRAL_ETCD_CA_PATH = "central.etcd.caPath";
 
 	public static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
 	public static final String SORMAS2SORMAS_ID = "sormas2sormas.id";
@@ -143,9 +140,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SORMAS2SORMAS_OIDC_CLIENT_ID = "sormas2sormas.oidc.clientId";
 	private static final String SORMAS2SORMAS_OIDC_CLIENT_SECRET = "sormas2sormas.oidc.clientSecret";
 
-	private static final String SORMAS2SORMAS_REDIS_CLIENT_NAME = "sormas2sormas.redis.clientName";
-	private static final String SORMAS2SORMAS_REDIS_CLIENT_PASSWORD = "sormas2sormas.redis.clientPassword";
-	private static final String SORMAS2SORMAS_REDIS_KEY_PREFIX = "sormas2sormas.redis.keyPrefix";
+	private static final String SORMAS2SORMAS_ETCD_CLIENT_NAME = "sormas2sormas.etcd.clientName";
+	private static final String SORMAS2SORMAS_ETCD_CLIENT_PASSWORD = "sormas2sormas.etcd.clientPassword";
+	private static final String SORMAS2SORMAS_ETCD_KEY_PREFIX = "sormas2sormas.etcd.keyPrefix";
 
 	private static final String SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN = "sormas2sormas.retainCaseExternalToken";
 
@@ -506,13 +503,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setRootCaAlias(getProperty(SORMAS2SORMAS_ROOT_CA_ALIAS, null));
 		config.setRetainCaseExternalToken(getBoolean(SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN, true));
 		config.setId(getProperty(SORMAS2SORMAS_ID, null));
-		config.setRedisClientName(getProperty(SORMAS2SORMAS_REDIS_CLIENT_NAME, null));
-		config.setRedisClientPassword(getProperty(SORMAS2SORMAS_REDIS_CLIENT_PASSWORD, null));
+		config.setEtcdClientName(getProperty(SORMAS2SORMAS_ETCD_CLIENT_NAME, null));
+		config.setEtcdClientPassword(getProperty(SORMAS2SORMAS_ETCD_CLIENT_PASSWORD, null));
 		config.setOidcServer(getProperty(CENTRAL_OIDC_URL, null));
 		config.setOidcRealm(getProperty(SORMAS2SORMAS_OIDC_REALM, null));
 		config.setOidcClientId(getProperty(SORMAS2SORMAS_OIDC_CLIENT_ID, null));
 		config.setOidcClientSecret(getProperty(SORMAS2SORMAS_OIDC_CLIENT_SECRET, null));
-		config.setKeyPrefix(getProperty(SORMAS2SORMAS_REDIS_KEY_PREFIX, null));
+		config.setKeyPrefix(getProperty(SORMAS2SORMAS_ETCD_KEY_PREFIX, null));
 		return config;
 	}
 
@@ -629,24 +626,12 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(DOCGENERATION_NULL_REPLACEMENT, "./.");
 	}
 
-	public String getCentralRedisHost() {
-		return getProperty(CENTRAL_REDIS_HOST, null);
+	public String getCentralEtcdHost() {
+		return getProperty(CENTRAL_ETCD_HOST, null);
 	}
 
-	public String getCentralRedisKeystorePath() {
-		return getProperty(CENTRAL_REDIS_KEYSTORE_PATH, null);
-	}
-
-	public String getCentralRedisKeystorePassword() {
-		return getProperty(CENTRAL_REDIS_KEYSTORE_PASSWORD, null);
-	}
-
-	public String getCentralRedisTruststorePath() {
-		return getProperty(CENTRAL_REDIS_TRUSTSTORE_PATH, null);
-	}
-
-	public String getCentralRedisTruststorePassword() {
-		return getProperty(CENTRAL_REDIS_TRUSTSTORE_PASSWORD, null);
+	public String getCentralEtcdCaPath() {
+		return getProperty(CENTRAL_ETCD_CA_PATH, null);
 	}
 
 	@Override
