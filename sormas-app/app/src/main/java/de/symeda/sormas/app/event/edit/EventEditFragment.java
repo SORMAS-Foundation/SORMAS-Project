@@ -205,7 +205,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		infectionPathCertaintyList = DataUtils.getEnumItems(InfectionPathCertainty.class, true);
 
 		List<SpecificRisk> specificRisks =
-				DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.SPECIFIC_RISK);
+				DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
 		specificRiskList = DataUtils.toItems(specificRisks);
 		if (record.getSpecificRisk() != null && !specificRisks.contains(record.getSpecificRisk())) {
 			specificRiskList.add(DataUtils.toItem(record.getSpecificRisk()));
@@ -225,6 +225,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventEndDate);
 		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventReportDateTime);
+
+		contentBinding.eventSpecificRisk.setVisibility(specificRiskList.isEmpty() ? GONE : VISIBLE);
 	}
 
 	@Override

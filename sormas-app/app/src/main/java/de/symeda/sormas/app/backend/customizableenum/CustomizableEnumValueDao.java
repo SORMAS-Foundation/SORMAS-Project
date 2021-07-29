@@ -73,32 +73,6 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type) {
-		Language language = I18nProperties.getUserLanguage();
-		Class<T> enumClass = (Class<T>) type.getEnumClass();
-
-		initCaches(type, language);
-
-		return enumValuesByLanguage
-				.get(enumClass)
-				.get(language)
-				.entrySet()
-				.stream()
-				.map(entry -> {
-					try {
-						T enumValue = enumClass.newInstance();
-						enumValue.setValue(entry.getKey());
-						enumValue.setCaption(entry.getValue());
-						enumValue.setProperties(enumProperties.get(type).get(entry.getKey()));
-						return enumValue;
-					} catch (InstantiationException | IllegalAccessException e) {
-						throw new RuntimeException(e);
-					}
-				})
-				.collect(Collectors.toList());
-	}
-
-	@SuppressWarnings("unchecked")
 	public <T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, String value) {
 		if (customizableEnumsByType.isEmpty()) {
 			loadData();

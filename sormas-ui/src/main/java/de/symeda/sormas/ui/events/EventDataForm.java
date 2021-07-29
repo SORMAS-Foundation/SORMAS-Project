@@ -236,7 +236,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		ComboBox specificRiskField = addField(EventDto.SPECIFIC_RISK, ComboBox.class);
 		specificRiskField.setNullSelectionAllowed(true);
 
-		List<CustomizableEnum> specificRiskValues = FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_RISK);
+		List<CustomizableEnum> specificRiskValues = FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
 		FieldHelper.updateItems(specificRiskField, specificRiskValues);
 		specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 

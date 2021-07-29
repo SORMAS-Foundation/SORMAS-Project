@@ -24,7 +24,7 @@ import de.symeda.sormas.api.event.SpecificRisk;
 public enum CustomizableEnumType {
 
 	DISEASE_VARIANT(DiseaseVariant.class),
-	SPECIFIC_RISK(SpecificRisk.class);
+	SPECIFIC_EVENT_RISK(SpecificRisk.class);
 
 	private final Class<? extends CustomizableEnum> enumClass;
 

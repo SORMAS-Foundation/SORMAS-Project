@@ -290,7 +290,7 @@ public class Event extends PseudonymizableAdo {
 		if (StringUtils.isBlank(specificRiskString)) {
 			return null;
 		} else {
-			return DatabaseHelper.getCustomizableEnumValueDao().getEnumValue(CustomizableEnumType.SPECIFIC_RISK, specificRiskString);
+			return DatabaseHelper.getCustomizableEnumValueDao().getEnumValue(CustomizableEnumType.SPECIFIC_EVENT_RISK, specificRiskString);
 		}
 	}
 
