@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.maxBy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -83,6 +84,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonCriteria;
@@ -900,6 +902,32 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public long count(PersonCriteria criteria) {
+
+		final PersonCriteria nullSafeCriteria = Optional.ofNullable(criteria).orElse(new PersonCriteria());
+		final long count;
+		if (nullSafeCriteria.getPersonAssociation() == PersonAssociation.ALL) {
+			/*
+			 * Fetch Person.id per association and find the distinct count.
+			 * Executed sequencially because the criteria object is reused.
+			 */
+			Set<Long> distinctPersonIds = new HashSet<>();
+			Arrays.stream(PersonAssociation.getSingleAssociations())
+				.map(e -> getPersonIds(nullSafeCriteria.personAssociation(e)))
+				.forEach(e -> distinctPersonIds.addAll(e));
+			count = distinctPersonIds.size();
+		} else {
+			// Directly fetch the count for the only required association
+			count = getPersonIds(criteria).size();
+		}
+
+		return count;
+	}
+
+	@SuppressWarnings({
+		"rawtypes",
+		"unchecked" })
+	private List<Long> getPersonIds(PersonCriteria criteria) {
+
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Person> person = cq.from(Person.class);
@@ -915,8 +943,12 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.select(cb.countDistinct(person));
-		return em.createQuery(cq).getSingleResult();
+
+		cq.select(person.get(Person.ID));
+		cq.distinct(true);
+
+		List<Long> result = em.createQuery(cq).getResultList();
+		return result;
 	}
 
 	@Override
