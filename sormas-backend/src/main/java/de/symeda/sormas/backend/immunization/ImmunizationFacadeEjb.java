@@ -165,6 +165,28 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
+	public void deleteImmunization(String uuid) {
+		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete immunizations");
+		}
+
+		Immunization immunization = immunizationService.getByUuid(uuid);
+		immunizationService.delete(immunization);
+	}
+
+	@Override
+	public boolean isArchived(String uuid) {
+		return immunizationService.isArchived(uuid);
+	}
+
+	@Override
+	public void archiveOrDearchiveImmunization(String uuid, boolean archive) {
+		Immunization immunization = immunizationService.getByUuid(uuid);
+		immunization.setArchived(archive);
+		immunizationService.ensurePersisted(immunization);
+	}
+
+	@Override
 	public boolean isImmunizationEditAllowed(String uuid) {
 		Immunization immunization = immunizationService.getByUuid(uuid);
 		return userService.hasRight(UserRight.IMMUNIZATION_EDIT) && immunizationService.inJurisdictionOrOwned(immunization);

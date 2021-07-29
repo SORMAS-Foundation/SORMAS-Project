@@ -66,6 +66,7 @@ public interface Strings {
 	String confirmationArchiveEvents = "confirmationArchiveEvents";
 	String confirmationArchiveFacilities = "confirmationArchiveFacilities";
 	String confirmationArchiveFacility = "confirmationArchiveFacility";
+	String confirmationArchiveImmunization = "confirmationArchiveImmunization";
 	String confirmationArchiveLaboratories = "confirmationArchiveLaboratories";
 	String confirmationArchiveLaboratory = "confirmationArchiveLaboratory";
 	String confirmationArchivePointOfEntry = "confirmationArchivePointOfEntry";
@@ -99,6 +100,7 @@ public interface Strings {
 	String confirmationDearchiveEvents = "confirmationDearchiveEvents";
 	String confirmationDearchiveFacilities = "confirmationDearchiveFacilities";
 	String confirmationDearchiveFacility = "confirmationDearchiveFacility";
+	String confirmationDearchiveImmunization = "confirmationDearchiveImmunization";
 	String confirmationDearchiveLaboratories = "confirmationDearchiveLaboratories";
 	String confirmationDearchiveLaboratory = "confirmationDearchiveLaboratory";
 	String confirmationDearchivePointOfEntry = "confirmationDearchivePointOfEntry";
@@ -214,6 +216,8 @@ public interface Strings {
 	String entityExposure = "entityExposure";
 	String entityFacilities = "entityFacilities";
 	String entityGathering = "entityGathering";
+	String entityImmunization = "entityImmunization";
+	String entityImmunizations = "entityImmunizations";
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPersonContactDetail = "entityPersonContactDetail";
 	String entityPointsOfEntry = "entityPointsOfEntry";
@@ -315,6 +319,7 @@ public interface Strings {
 	String headingArchiveCase = "headingArchiveCase";
 	String headingArchiveEvent = "headingArchiveEvent";
 	String headingArchiveEventGroup = "headingArchiveEventGroup";
+	String headingArchiveImmunization = "headingArchiveImmunization";
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
 	String headingBurialDetails = "headingBurialDetails";
@@ -403,6 +408,7 @@ public interface Strings {
 	String headingDearchiveCase = "headingDearchiveCase";
 	String headingDearchiveEvent = "headingDearchiveEvent";
 	String headingDearchiveEventGroup = "headingDearchiveEventGroup";
+	String headingDearchiveImmunization = "headingDearchiveImmunization";
 	String headingDearchiveTravelEntry = "headingDearchiveTravelEntry";
 	String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
@@ -919,6 +925,9 @@ public interface Strings {
 	String messageFormHasErrorsPathogenTest = "messageFormHasErrorsPathogenTest";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";
+	String messageImmunizationArchived = "messageImmunizationArchived";
+	String messageImmunizationDearchived = "messageImmunizationDearchived";
+	String messageImmunizationSaved = "messageImmunizationSaved";
 	String messageImportCanceled = "messageImportCanceled";
 	String messageImportCanceledErrors = "messageImportCanceledErrors";
 	String messageImportError = "messageImportError";

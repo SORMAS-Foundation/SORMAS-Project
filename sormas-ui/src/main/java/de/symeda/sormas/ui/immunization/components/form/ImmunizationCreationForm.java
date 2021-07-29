@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.immunization.components;
+package de.symeda.sormas.ui.immunization.components.form;
 
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;

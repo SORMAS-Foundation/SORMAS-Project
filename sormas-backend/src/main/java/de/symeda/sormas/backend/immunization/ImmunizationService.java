@@ -44,6 +44,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -203,6 +204,17 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public boolean isArchived(String uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Immunization> from = cq.from(Immunization.class);
+
+		cq.where(cb.and(cb.equal(from.get(Immunization.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), uuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
 	}
 
 	public List<String> getArchivedUuidsSince(Date since) {
