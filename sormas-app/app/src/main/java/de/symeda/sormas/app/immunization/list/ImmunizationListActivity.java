@@ -26,6 +26,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
@@ -34,9 +37,12 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.immunization.Immunization;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.databinding.FilterImmunizationListLayoutBinding;
 import de.symeda.sormas.app.immunization.edit.ImmunizationNewActivity;
+import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class ImmunizationListActivity extends PagedBaseListActivity {
 
@@ -111,6 +117,56 @@ public class ImmunizationListActivity extends PagedBaseListActivity {
 	public void addFiltersToPageMenu() {
 		View immunizationListFilterView = getLayoutInflater().inflate(R.layout.filter_immunization_list_layout, null);
 		filterBinding = DataBindingUtil.bind(immunizationListFilterView);
+
+		List<Item> diseases = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
+		filterBinding.diseaseFilter.initializeSpinner(diseases);
+
+		List<Item> immunizationStatuses = DataUtils.getEnumItems(ImmunizationStatus.class);
+		filterBinding.immunizationStatusFilter.initializeSpinner(immunizationStatuses);
+		List<Item> immunizationManagementStatuses = DataUtils.getEnumItems(ImmunizationManagementStatus.class);
+		filterBinding.immunizationManagementStatusFilter.initializeSpinner(immunizationManagementStatuses);
+		List<Item> meansOfImmunizations = DataUtils.getEnumItems(MeansOfImmunization.class);
+		filterBinding.meansOfImmunizationFilter.initializeSpinner(meansOfImmunizations);
+
+		filterBinding.reportDateFromFilter.initializeDateField(getSupportFragmentManager());
+		filterBinding.reportDateToFilter.initializeDateField(getSupportFragmentManager());
+
+		filterBinding.startDateFromFilter.initializeDateField(getSupportFragmentManager());
+		filterBinding.endDateToFilter.initializeDateField(getSupportFragmentManager());
+
+		filterBinding.positiveTestResultDateFromFilter.initializeDateField(getSupportFragmentManager());
+		filterBinding.positiveTestResultDateToFilter.initializeDateField(getSupportFragmentManager());
+
+		filterBinding.recoveryDateFromFilter.initializeDateField(getSupportFragmentManager());
+		filterBinding.recoveryDateToFilter.initializeDateField(getSupportFragmentManager());
+
+		pageMenu.addFilter(immunizationListFilterView);
+
+		filterBinding.applyFilters.setOnClickListener(e -> {
+			showPreloader();
+			pageMenu.hideAll();
+			model.notifyCriteriaUpdated();
+		});
+
+		filterBinding.resetFilters.setOnClickListener(e -> {
+			showPreloader();
+			pageMenu.hideAll();
+			model.getImmunizationCriteria().setDisease(null);
+			model.getImmunizationCriteria().setImmunizationStatus(null);
+			model.getImmunizationCriteria().setImmunizationManagementStatus(null);
+			model.getImmunizationCriteria().setMeansOfImmunization(null);
+			model.getImmunizationCriteria().setReportDateFrom(null);
+			model.getImmunizationCriteria().setReportDateTo(null);
+			model.getImmunizationCriteria().setStartDateFrom(null);
+			model.getImmunizationCriteria().setEndDateTo(null);
+			model.getImmunizationCriteria().setRecoveryDateFrom(null);
+			model.getImmunizationCriteria().setRecoveryDateTo(null);
+			model.getImmunizationCriteria().setPositiveTestResultDateFrom(null);
+			model.getImmunizationCriteria().setPositiveTestResultDateTo(null);
+			filterBinding.invalidateAll();
+			filterBinding.executePendingBindings();
+			model.notifyCriteriaUpdated();
+		});
 	}
 
 	@Override
