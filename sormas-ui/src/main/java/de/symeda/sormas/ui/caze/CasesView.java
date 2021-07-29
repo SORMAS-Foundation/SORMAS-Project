@@ -716,6 +716,35 @@ public class CasesView extends AbstractView {
 							}));
 					}
 
+					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+						menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkLinkToEvent), VaadinIcons.PHONE, mi -> {
+							grid.bulkActionHandler(items -> {
+								List<CaseIndexDto> selectedCases = caseGrid.asMultiSelect().getSelectedItems().stream().collect(Collectors.toList());
+
+								if (selectedCases.size() == 0) {
+									new Notification(
+										I18nProperties.getString(Strings.headingNoCasesSelected),
+										I18nProperties.getString(Strings.messageNoCasesSelected),
+										Notification.Type.WARNING_MESSAGE,
+										false).show(Page.getCurrent());
+
+									return;
+								}
+
+								if (!selectedCases.stream()
+									.allMatch(caze -> caze.getDisease().equals(selectedCases.stream().findAny().get().getDisease()))) {
+									new Notification(
+										I18nProperties.getString(Strings.messageBulkCasesWithDifferentDiseasesSelected),
+										Notification.Type.WARNING_MESSAGE).show(Page.getCurrent());
+									return;
+								}
+
+								ControllerProvider.getEventController()
+									.selectOrCreateEvent(selectedCases.stream().map(CaseIndexDto::toReference).collect(Collectors.toList()));
+							});
+						}));
+					}
+
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);
 
 					bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());

@@ -53,10 +53,7 @@ public interface EventParticipantFacade {
 		Integer max,
 		List<SortProperty> sortProperties);
 
-	List<EventParticipantListEntryDto> getListEntries(
-		EventParticipantCriteria eventParticipantCriteria,
-		Integer first,
-		Integer max);
+	List<EventParticipantListEntryDto> getListEntries(EventParticipantCriteria eventParticipantCriteria, Integer first, Integer max);
 
 	EventParticipantDto getByUuid(String uuid);
 
@@ -89,5 +86,7 @@ public interface EventParticipantFacade {
 
 	List<SimilarEventParticipantDto> getMatchingEventParticipants(EventParticipantCriteria criteria);
 
-    List<EventParticipantDto> getByPersonUuids(List<String> personUuids);
+	List<EventParticipantDto> getByPersonUuids(List<String> personUuids);
+
+	List<EventParticipantReferenceDto> getReferencesByEventAndPersons(String eventUuid, List<String> personUuids);
 }
