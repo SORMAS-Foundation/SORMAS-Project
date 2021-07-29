@@ -44,6 +44,7 @@ public enum FeatureType {
 			EVENT_SURVEILLANCE }),
 	TASK_MANAGEMENT(true, true, null),
 	WEEKLY_REPORTING(true, true, null),
+	IMMUNIZATION_MANAGEMENT(true, false, null),
 
 	// FEATURE EXTENSIONS
 	ASSIGN_TASKS_TO_HIGHER_LEVEL(true,
@@ -109,6 +110,7 @@ public enum FeatureType {
 			new FeatureType[]{
 					LAB_MESSAGES
 			}),
+	IMMUNIZATION_STATUS_AUTOMATION(true, false, new FeatureType[]{ IMMUNIZATION_MANAGEMENT}),
 
 	PERSON_DUPLICATE_CUSTOM_SEARCH(true, false, null),
 
@@ -194,9 +196,7 @@ public enum FeatureType {
 	TASK_GENERATION_GENERAL(true,
 		true,
 		new FeatureType[] {
-			TASK_MANAGEMENT }),
-	IMMUNIZATION_MANAGEMENT(true, false, null),
-	IMMUNIZATION_STATUS_AUTOMATION(true, false, new FeatureType[]{ IMMUNIZATION_MANAGEMENT});
+			TASK_MANAGEMENT });
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system
