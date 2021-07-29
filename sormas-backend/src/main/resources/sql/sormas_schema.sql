@@ -7770,4 +7770,12 @@ UPDATE person SET symptomjournalstatus = 'UNREGISTERED' WHERE symptomjournalstat
 ALTER TABLE person ALTER COLUMN symptomjournalstatus SET DEFAULT 'UNREGISTERED';
 
 INSERT INTO schema_version (version_number, comment) VALUES (390, 'symptonjournalstatus = UNREGISTERED as default #6146');
+
+--2021-07-28 make pathogentest result datetime non-compulsory #3308
+ALTER TABLE pathogentest ALTER COLUMN testdatetime DROP NOT NULL;
+ALTER TABLE pathogentest_history ALTER COLUMN testdatetime DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (391, 'make pathogentest result datetime non-compulsory #3308');
+
+
 -- *** Insert new sql commands BEFORE this line ***
