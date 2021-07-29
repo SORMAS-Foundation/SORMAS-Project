@@ -1,7 +1,9 @@
 package de.symeda.sormas.backend.person;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
@@ -30,6 +32,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonCriteria;
@@ -39,13 +42,48 @@ import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
+
+	/**
+	 * Test all {@link PersonAssociation} variants if they work. Also serves to review the generated SQL.
+	 */
+	@Test
+	public void testCountAndGetIndexListWithAssociations() {
+
+		Integer offset = null;
+		Integer limit = null;
+		List<SortProperty> sortProperties = null;
+
+		RegionReferenceDto region = creator.createRDCF().region;
+		UserDto user = creator.createUser(region.getUuid(), null, null, null, "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		loginWith(user);
+
+		// Test for all available PersonAssociations
+		for (PersonAssociation pa : PersonAssociation.values()) {
+			assertThat(
+				"Failed for testing association on count: " + pa
+					.name(),
+				getPersonFacade().count(new PersonCriteria().personAssociation(pa)),
+				equalTo(0L));
+			assertThat(
+				"Failed for testing association on getIndexList: " + pa
+					.name(),
+				getPersonFacade().getIndexList(new PersonCriteria().personAssociation(pa), offset, limit, sortProperties),
+				is(empty()));
+		}
+
+		// Test that calling with "null" as criteria also works
+		assertThat(getPersonFacade().count(null), equalTo(0L));
+		assertThat(getPersonFacade().getIndexList(null, offset, limit, sortProperties), is(empty()));
+	}
 
 	@Test
 	public void testGetIndexListByPresentCondition() {
