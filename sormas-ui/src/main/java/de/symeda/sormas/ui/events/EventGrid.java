@@ -34,6 +34,8 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupsIndexDto;
@@ -111,6 +113,8 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			pendingTasksColumn.setSortable(false);
 		}
 
+		boolean specificRiskEnabled = FacadeProvider.getCustomizableEnumFacade().hasEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
+
 		List<String> columnIds = new ArrayList<>(
 			Arrays.asList(
 				EventIndexDto.UUID,
@@ -118,16 +122,22 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				EventIndexDto.EXTERNAL_TOKEN,
 				EventIndexDto.INTERNAL_TOKEN,
 				EventIndexDto.EVENT_STATUS,
-				EventIndexDto.RISK_LEVEL,
-				EventIndexDto.SPECIFIC_RISK,
-				EventIndexDto.EVENT_INVESTIGATION_STATUS,
-				EventIndexDto.EVENT_MANAGEMENT_STATUS,
-				EventIndexDto.EVENT_IDENTIFICATION_SOURCE,
-				createEventDateColumn(this),
-				createEventEvolutionDateColumn(this),
-				DISEASE_SHORT,
-				EventIndexDto.DISEASE_VARIANT,
-				EventIndexDto.EVENT_TITLE));
+				EventIndexDto.RISK_LEVEL));
+
+		if (specificRiskEnabled) {
+			columnIds.add(EventIndexDto.SPECIFIC_RISK);
+		}
+
+		columnIds.addAll(Arrays.asList(
+			EventIndexDto.EVENT_INVESTIGATION_STATUS,
+			EventIndexDto.EVENT_MANAGEMENT_STATUS,
+			EventIndexDto.EVENT_IDENTIFICATION_SOURCE,
+			createEventDateColumn(this),
+			createEventEvolutionDateColumn(this),
+			DISEASE_SHORT,
+			EventIndexDto.DISEASE_VARIANT,
+			EventIndexDto.EVENT_TITLE));
+
 
 		if (eventGroupsFeatureEnabled) {
 			columnIds.add(EventIndexDto.EVENT_GROUPS);

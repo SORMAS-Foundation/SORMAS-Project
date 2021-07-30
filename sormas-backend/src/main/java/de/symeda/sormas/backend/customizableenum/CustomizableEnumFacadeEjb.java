@@ -150,6 +150,11 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 			.collect(Collectors.toList());
 	}
 
+	@Override
+	public boolean hasEnumValues(CustomizableEnumType type, Disease disease) {
+		return !getEnumValues(type, disease).isEmpty();
+	}
+
 	@SuppressWarnings("unchecked")
 	private <T extends CustomizableEnum> void initCaches(CustomizableEnumType type, Language language) {
 		Class<T> enumClass = (Class<T>) type.getEnumClass();

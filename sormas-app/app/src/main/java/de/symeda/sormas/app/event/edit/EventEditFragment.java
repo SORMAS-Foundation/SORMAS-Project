@@ -226,7 +226,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventEndDate);
 		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventReportDateTime);
 
-		contentBinding.eventSpecificRisk.setVisibility(specificRiskList.isEmpty() ? GONE : VISIBLE);
+		boolean specificRisksEnabled = DatabaseHelper.getCustomizableEnumValueDao().hasEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
+		contentBinding.eventSpecificRisk.setVisibility(specificRisksEnabled ? VISIBLE : GONE);
 	}
 
 	@Override

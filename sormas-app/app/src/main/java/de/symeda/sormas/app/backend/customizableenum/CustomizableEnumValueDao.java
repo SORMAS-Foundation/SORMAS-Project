@@ -135,6 +135,10 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 			.collect(Collectors.toList());
 	}
 
+	public boolean hasEnumValues(CustomizableEnumType type, Disease disease) {
+		return !getEnumValues(type, disease).isEmpty();
+	}
+
 	private <T extends CustomizableEnum> void initCaches(CustomizableEnumType type, Language language) {
 		Class<T> enumClass = (Class<T>) type.getEnumClass();
 		if (enumValuesByLanguage.containsKey(enumClass) && enumValuesByLanguage.get(enumClass).containsKey(language)) {
