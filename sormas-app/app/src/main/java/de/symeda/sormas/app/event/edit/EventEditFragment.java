@@ -59,8 +59,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
-import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.component.validation.ValidationHelper;
@@ -133,7 +131,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 			contentBinding.eventEvolutionComment.setCaption(String.format(I18nProperties.getCaption(EVOLUTION_COMMENT_WITH_STATUS), statusCaption));
 		});
 
-		contentBinding.eventDisease.addValueChangedListener(f -> updateDiseaseVariantsField(contentBinding));
+		contentBinding.eventDisease.addValueChangedListener(f -> updateCustomizableEnumFields(contentBinding));
 	}
 
 	private void openAddressPopup(final FragmentEventEditLayoutBinding contentBinding) {
@@ -186,10 +184,16 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 			diseaseList.add(DataUtils.toItem(record.getDisease()));
 		}
 		List<DiseaseVariant> diseaseVariants =
-				DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
+			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
 		diseaseVariantList = DataUtils.toItems(diseaseVariants);
 		if (record.getDiseaseVariant() != null && !diseaseVariants.contains(record.getDiseaseVariant())) {
 			diseaseVariantList.add(DataUtils.toItem(record.getDiseaseVariant()));
+		}
+		List<SpecificRisk> specificRisks =
+			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, record.getDisease());
+		specificRiskList = DataUtils.toItems(specificRisks);
+		if (record.getSpecificRisk() != null && !specificRisks.contains(record.getSpecificRisk())) {
+			specificRiskList.add(DataUtils.toItem(record.getSpecificRisk()));
 		}
 
 		eventIdentificationSourceList = DataUtils.getEnumItems(EventIdentificationSource.class, true);
@@ -203,13 +207,6 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		parenteralTransmissionModeList = DataUtils.getEnumItems(ParenteralTransmissionMode.class, true);
 		medicallyAssociatedTransmissionModeList = DataUtils.getEnumItems(MedicallyAssociatedTransmissionMode.class, true);
 		infectionPathCertaintyList = DataUtils.getEnumItems(InfectionPathCertainty.class, true);
-
-		List<SpecificRisk> specificRisks =
-				DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
-		specificRiskList = DataUtils.toItems(specificRisks);
-		if (record.getSpecificRisk() != null && !specificRisks.contains(record.getSpecificRisk())) {
-			specificRiskList.add(DataUtils.toItem(record.getSpecificRisk()));
-		}
 	}
 
 	@Override
@@ -225,9 +222,6 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventEndDate);
 		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventReportDateTime);
-
-		boolean specificRisksEnabled = DatabaseHelper.getCustomizableEnumValueDao().hasEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
-		contentBinding.eventSpecificRisk.setVisibility(specificRisksEnabled ? VISIBLE : GONE);
 	}
 
 	@Override
@@ -300,14 +294,29 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		}
 	}
 
-	private void updateDiseaseVariantsField(FragmentEventEditLayoutBinding contentBinding) {
+	private void updateCustomizableEnumFields(FragmentEventEditLayoutBinding contentBinding) {
+		// Disease variant
 		List<DiseaseVariant> diseaseVariants =
-				DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
+			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, record.getDisease());
 		diseaseVariantList.clear();
 		diseaseVariantList.addAll(DataUtils.toItems(diseaseVariants));
 		contentBinding.eventDiseaseVariant.setSpinnerData(diseaseVariantList);
 		contentBinding.eventDiseaseVariant.setValue(null);
 		contentBinding.eventDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
+
+		// Specific risk
+		SpecificRisk selectedValue = (SpecificRisk) contentBinding.eventSpecificRisk.getValue();
+		List<SpecificRisk> specificRisks =
+			DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, record.getDisease());
+		specificRiskList.clear();
+		specificRiskList.addAll(DataUtils.toItems(specificRisks));
+		contentBinding.eventSpecificRisk.setSpinnerData(specificRiskList);
+		if (specificRisks.contains(selectedValue)) {
+			contentBinding.eventSpecificRisk.setValue(selectedValue);
+		} else {
+			contentBinding.eventSpecificRisk.setValue(null);
+		}
+		contentBinding.eventSpecificRisk.setVisibility(specificRisks.isEmpty() ? GONE : VISIBLE);
 	}
 
 	@Override

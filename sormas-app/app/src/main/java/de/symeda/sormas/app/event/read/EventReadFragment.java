@@ -21,15 +21,11 @@ import static android.view.View.VISIBLE;
 import android.os.Bundle;
 import android.view.View;
 
-import java.util.List;
-
-import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.HumanTransmissionMode;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
-import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
@@ -74,10 +70,6 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 		contentBinding.setData(record);
 		contentBinding.setMultiDayEvent(record.getEndDate() != null);
 		contentBinding.setParticipantCount(DatabaseHelper.getEventParticipantDao().countByEvent(record).intValue());
-
-		boolean specificRiskEnabled =
-				DatabaseHelper.getCustomizableEnumValueDao().hasEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
-		contentBinding.eventSpecificRisk.setVisibility(specificRiskEnabled ? VISIBLE : GONE);
 	}
 
 	@Override
@@ -116,25 +108,28 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 		}
 		if (isVisibleAllowed(EventDto.class, contentBinding.eventHumanTransmissionMode)) {
 			setVisibleWhen(
-					contentBinding.eventHumanTransmissionMode,
-					contentBinding.eventDiseaseTransmissionMode,
-					DiseaseTransmissionMode.HUMAN_TO_HUMAN);
+				contentBinding.eventHumanTransmissionMode,
+				contentBinding.eventDiseaseTransmissionMode,
+				DiseaseTransmissionMode.HUMAN_TO_HUMAN);
 		}
 		if (isVisibleAllowed(EventDto.class, contentBinding.eventParenteralTransmissionMode)) {
 			setVisibleWhen(
-					contentBinding.eventParenteralTransmissionMode,
-					contentBinding.eventHumanTransmissionMode,
-					HumanTransmissionMode.PARENTERAL);
+				contentBinding.eventParenteralTransmissionMode,
+				contentBinding.eventHumanTransmissionMode,
+				HumanTransmissionMode.PARENTERAL);
 		}
 		if (isVisibleAllowed(EventDto.class, contentBinding.eventMedicallyAssociatedTransmissionMode)) {
 			setVisibleWhen(
-					contentBinding.eventMedicallyAssociatedTransmissionMode,
-					contentBinding.eventParenteralTransmissionMode,
-					ParenteralTransmissionMode.MEDICALLY_ASSOCIATED);
+				contentBinding.eventMedicallyAssociatedTransmissionMode,
+				contentBinding.eventParenteralTransmissionMode,
+				ParenteralTransmissionMode.MEDICALLY_ASSOCIATED);
 		}
 
 		if (isVisibleAllowed(EventDto.class, contentBinding.eventDiseaseVariant)) {
 			contentBinding.eventDiseaseVariant.setVisibility(record.getDiseaseVariant() != null ? VISIBLE : GONE);
+		}
+		if (isVisibleAllowed(EventDto.class, contentBinding.eventSpecificRisk)) {
+			contentBinding.eventSpecificRisk.setVisibility(record.getSpecificRisk() != null ? VISIBLE : GONE);
 		}
 	}
 

@@ -33,10 +33,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.customizableenum.CustomizableEnum;
-import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
-import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.ui.utils.CheckBoxTree;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -53,6 +49,8 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EpidemiologicalEvidenceDetail;
 import de.symeda.sormas.api.event.EventDto;
@@ -64,6 +62,7 @@ import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.LaboratoryDiagnosticEvidenceDetail;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
+import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
@@ -81,6 +80,7 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -235,10 +235,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.RISK_LEVEL);
 		ComboBox specificRiskField = addField(EventDto.SPECIFIC_RISK, ComboBox.class);
 		specificRiskField.setNullSelectionAllowed(true);
-
-		List<CustomizableEnum> specificRiskValues = FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
-		FieldHelper.updateItems(specificRiskField, specificRiskValues);
-		specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 
 		addField(EventDto.EVENT_MANAGEMENT_STATUS, NullableOptionGroup.class);
 		addField(EventDto.EVENT_IDENTIFICATION_SOURCE, NullableOptionGroup.class);
@@ -420,14 +416,20 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			Collections.singletonList(EventDto.DISEASE_DETAILS),
 			Collections.singletonList(Disease.OTHER));
 
-		// default to invisible; visibility will be recomputed when diseaseField's value change
+		// Customizable enum fields visibilities
 		diseaseVariantField.setVisible(false);
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
+			// Disease variants
 			List<DiseaseVariant> diseaseVariants =
 				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			diseaseVariantField.setVisible(disease != null && CollectionUtils.isNotEmpty(diseaseVariants));
+			// Specific event risks
+			List<SpecificRisk> specificRiskValues =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, disease);
+			FieldHelper.updateItems(specificRiskField, specificRiskValues);
+			specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 		});
 
 		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_TITLE, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
@@ -606,6 +608,14 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			epidemiologicalEvidenceCheckBoxTree.initCheckboxes();
 			laboratoryDiagnosticEvidenceCheckBoxTree.initCheckboxes();
+
+			// Initialize specific risk field if disease is null
+			if (getValue().getDisease() == null) {
+				List<SpecificRisk> specificRiskValues =
+					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
+				FieldHelper.updateItems(specificRiskField, specificRiskValues);
+				specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
+			}
 		});
 	}
 
