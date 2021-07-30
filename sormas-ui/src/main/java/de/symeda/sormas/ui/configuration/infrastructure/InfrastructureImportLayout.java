@@ -97,10 +97,7 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			throw new UnsupportedOperationException("Import is currently not implemented for infrastructure type " + infrastructureType.name());
 		}
 
-		addDownloadResourcesComponent(
-			1,
-			new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"),
-			new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(2, templateFilePath, templateFileName);
 
 		if (infrastructureType == InfrastructureType.POPULATION_DATA) {
