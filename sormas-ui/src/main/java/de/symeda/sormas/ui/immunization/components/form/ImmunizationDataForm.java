@@ -127,7 +127,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.DISEASE, ImmunizationDto.START_DATE);
+		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.DISEASE, ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.START_DATE);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

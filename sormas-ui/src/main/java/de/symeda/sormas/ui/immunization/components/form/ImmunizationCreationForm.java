@@ -203,6 +203,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 			true,
 			ImmunizationDto.REPORT_DATE,
 			ImmunizationDto.DISEASE,
+			ImmunizationDto.MEANS_OF_IMMUNIZATION,
 			ImmunizationDto.START_DATE,
 			PersonDto.FIRST_NAME,
 			PersonDto.LAST_NAME,
