@@ -40,6 +40,7 @@ import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.MedicallyAssociatedTransmissionMode;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.RiskLevel;
+import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -92,6 +93,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	private List<Item> parenteralTransmissionModeList;
 	private List<Item> medicallyAssociatedTransmissionModeList;
 	private List<Item> infectionPathCertaintyList;
+	private List<Item> specificRiskList;
 
 	public static EventEditFragment newInstance(Event activityRootData) {
 		EventEditFragment fragment = newInstanceWithFieldCheckers(
@@ -201,6 +203,13 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		parenteralTransmissionModeList = DataUtils.getEnumItems(ParenteralTransmissionMode.class, true);
 		medicallyAssociatedTransmissionModeList = DataUtils.getEnumItems(MedicallyAssociatedTransmissionMode.class, true);
 		infectionPathCertaintyList = DataUtils.getEnumItems(InfectionPathCertainty.class, true);
+
+		List<SpecificRisk> specificRisks =
+				DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
+		specificRiskList = DataUtils.toItems(specificRisks);
+		if (record.getSpecificRisk() != null && !specificRisks.contains(record.getSpecificRisk())) {
+			specificRiskList.add(DataUtils.toItem(record.getSpecificRisk()));
+		}
 	}
 
 	@Override
@@ -216,6 +225,9 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventEndDate);
 		ValidationHelper.initDateIntervalValidator(contentBinding.eventStartDate, contentBinding.eventReportDateTime);
+
+		boolean specificRisksEnabled = DatabaseHelper.getCustomizableEnumValueDao().hasEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
+		contentBinding.eventSpecificRisk.setVisibility(specificRisksEnabled ? VISIBLE : GONE);
 	}
 
 	@Override
@@ -234,6 +246,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.eventParenteralTransmissionMode.initializeSpinner(parenteralTransmissionModeList);
 		contentBinding.eventMedicallyAssociatedTransmissionMode.initializeSpinner(medicallyAssociatedTransmissionModeList);
 		contentBinding.eventInfectionPathCertainty.initializeSpinner(infectionPathCertaintyList);
+		contentBinding.eventSpecificRisk.initializeSpinner(specificRiskList);
 
 		// Initialize ControlDateFields
 		contentBinding.eventReportDateTime.initializeDateField(getFragmentManager());

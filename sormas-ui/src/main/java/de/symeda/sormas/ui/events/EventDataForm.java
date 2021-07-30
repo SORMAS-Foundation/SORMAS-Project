@@ -33,6 +33,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.ui.utils.CheckBoxTree;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,8 +53,6 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EpidemiologicalEvidenceDetail;
 import de.symeda.sormas.api.event.EventDto;
@@ -79,7 +81,6 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -108,8 +109,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private static final String HTML_LAYOUT =
 			loc(EVENT_DATA_HEADING_LOC) +
 					fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
-					fluidRowLocs(EventDto.EVENT_STATUS, EventDto.RISK_LEVEL) +
-					fluidRowLocs(EventDto.EVENT_MANAGEMENT_STATUS, EventDto.EVENT_IDENTIFICATION_SOURCE) +
+					fluidRowLocs(EventDto.EVENT_STATUS, EventDto.EVENT_MANAGEMENT_STATUS) +
+					fluidRowLocs(EventDto.EVENT_IDENTIFICATION_SOURCE) +
+					fluidRowLocs(EventDto.RISK_LEVEL, EventDto.SPECIFIC_RISK) +
 					fluidRowLocs(EventDto.MULTI_DAY_EVENT) +
 					fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
 					fluidRowLocs(EventDto.EVOLUTION_DATE, EventDto.EVOLUTION_COMMENT) +
@@ -231,6 +233,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
 		addField(EventDto.RISK_LEVEL);
+		ComboBox specificRiskField = addField(EventDto.SPECIFIC_RISK, ComboBox.class);
+		specificRiskField.setNullSelectionAllowed(true);
+
+		List<CustomizableEnum> specificRiskValues = FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
+		FieldHelper.updateItems(specificRiskField, specificRiskValues);
+		specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 
 		addField(EventDto.EVENT_MANAGEMENT_STATUS, NullableOptionGroup.class);
 		addField(EventDto.EVENT_IDENTIFICATION_SOURCE, NullableOptionGroup.class);

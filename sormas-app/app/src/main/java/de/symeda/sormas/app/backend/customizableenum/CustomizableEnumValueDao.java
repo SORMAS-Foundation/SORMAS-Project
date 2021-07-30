@@ -81,10 +81,7 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 		Language language = I18nProperties.getUserLanguage();
 		Class<T> enumClass = (Class<T>) type.getEnumClass();
 
-		// Build caches according to language with no disease association if they're not initialized
-		if (!enumValuesByLanguage.containsKey(enumClass) || !enumValuesByLanguage.get(enumClass).containsKey(language)) {
-			getEnumValues(type, null);
-		}
+		initCaches(type, language);
 
 		try {
 			T enumValue = enumClass.newInstance();
@@ -106,36 +103,7 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 		Language language = I18nProperties.getUserLanguage();
 		Class<T> enumClass = (Class<T>) type.getEnumClass();
 
-		enumValuesByLanguage.putIfAbsent(enumClass, new HashMap<>());
-		enumValuesByDisease.putIfAbsent(enumClass, new HashMap<>());
-
-		if (!enumValuesByLanguage.get(enumClass).containsKey(language)) {
-			enumValuesByLanguage.get(enumClass).put(language, new HashMap<>());
-			for (CustomizableEnumValue customizableEnumValue : customizableEnumsByType.get(type)) {
-				if (StringUtils.equals(ConfigProvider.getServerLocale(), language.getLocale().toString())
-					|| CollectionUtils.isEmpty(customizableEnumValue.getTranslations())) {
-					// If the enum value does not have any translations or the user uses the server language,
-					// add the server language to the cache and use the default caption of the enum value
-					enumValuesByLanguage.get(enumClass)
-						.get(language)
-						.putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getCaption());
-				} else {
-					// Check whether the list of translations contains the user language; if yes, add that language 
-					// to the cache and use its translation; if not, fall back to the default caption of the enum value
-					Optional<CustomizableEnumTranslation> translation = customizableEnumValue.getTranslations()
-						.stream()
-						.filter(t -> t.getLanguageCode().equals(language.getLocale().toString()))
-						.findFirst();
-					if (translation.isPresent()) {
-						enumValuesByLanguage.get(enumClass).get(language).putIfAbsent(customizableEnumValue.getValue(), translation.get().getValue());
-					} else {
-						enumValuesByLanguage.get(enumClass)
-							.get(language)
-							.putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getCaption());
-					}
-				}
-			}
-		}
+		initCaches(type, language);
 
 		// Always add values for no disease because they are relevant in all cases
 		if (!enumValuesByDisease.get(enumClass).containsKey(null)) {
@@ -165,6 +133,49 @@ public class CustomizableEnumValueDao extends AbstractAdoDao<CustomizableEnumVal
 				e -> enumValuesByDisease.get(enumClass).get(disease).contains(e.getValue())
 					|| enumValuesByDisease.get(enumClass).get(null).contains(e.getValue()))
 			.collect(Collectors.toList());
+	}
+
+	public boolean hasEnumValues(CustomizableEnumType type, Disease disease) {
+		return !getEnumValues(type, disease).isEmpty();
+	}
+
+	private <T extends CustomizableEnum> void initCaches(CustomizableEnumType type, Language language) {
+		Class<T> enumClass = (Class<T>) type.getEnumClass();
+		if (enumValuesByLanguage.containsKey(enumClass) && enumValuesByLanguage.get(enumClass).containsKey(language)) {
+			return;
+		}
+
+		// Build caches according to language with no disease association if they're not initialized
+		enumValuesByLanguage.putIfAbsent(enumClass, new HashMap<>());
+		enumValuesByDisease.putIfAbsent(enumClass, new HashMap<>());
+
+		if (!enumValuesByLanguage.get(enumClass).containsKey(language)) {
+			enumValuesByLanguage.get(enumClass).put(language, new HashMap<>());
+			for (CustomizableEnumValue customizableEnumValue : customizableEnumsByType.get(type)) {
+				if (StringUtils.equals(ConfigProvider.getServerLocale(), language.getLocale().toString())
+					|| CollectionUtils.isEmpty(customizableEnumValue.getTranslations())) {
+					// If the enum value does not have any translations or the user uses the server language,
+					// add the server language to the cache and use the default caption of the enum value
+					enumValuesByLanguage.get(enumClass)
+						.get(language)
+						.putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getCaption());
+				} else {
+					// Check whether the list of translations contains the user language; if yes, add that language
+					// to the cache and use its translation; if not, fall back to the default caption of the enum value
+					Optional<CustomizableEnumTranslation> translation = customizableEnumValue.getTranslations()
+						.stream()
+						.filter(t -> t.getLanguageCode().equals(language.getLocale().toString()))
+						.findFirst();
+					if (translation.isPresent()) {
+						enumValuesByLanguage.get(enumClass).get(language).putIfAbsent(customizableEnumValue.getValue(), translation.get().getValue());
+					} else {
+						enumValuesByLanguage.get(enumClass)
+							.get(language)
+							.putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getCaption());
+					}
+				}
+			}
+		}
 	}
 
 	private <T extends CustomizableEnum> void addValuesByDisease(CustomizableEnumType type, Class<T> enumClass, Disease disease) {
