@@ -16,6 +16,7 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.util.converter.StringToIntegerConverter;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
@@ -124,7 +125,8 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		addField(ImmunizationDto.START_DATE, DateField.class);
 		addField(ImmunizationDto.END_DATE, DateField.class);
 
-		addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
+		TextField numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
+		numberOfDosesField.setConverter(new StringToIntegerConverter());
 
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);

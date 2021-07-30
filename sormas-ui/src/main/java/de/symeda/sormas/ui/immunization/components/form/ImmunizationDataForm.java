@@ -12,6 +12,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import java.util.Collections;
 
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.util.converter.StringToIntegerConverter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -112,7 +113,8 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		addField(ImmunizationDto.START_DATE, DateField.class);
 		addField(ImmunizationDto.END_DATE, DateField.class);
 
-		addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
+		TextField numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
+		numberOfDosesField.setConverter(new StringToIntegerConverter());
 
 		addField(ImmunizationDto.REPORTING_USER, ComboBox.class);
 		addField(ImmunizationDto.PREVIOUS_INFECTION, NullableOptionGroup.class);
