@@ -451,10 +451,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			switch (jurisdictionLevel) {
 			case REGION:
 				if (currentUser.getRegion() != null) {
-					filter = CriteriaBuilderHelper.or(
-						cb,
-						filter,
-						cb.equal(eventParticipantPath.get(EventParticipant.REGION).get(Region.ID), currentUser.getRegion().getId()));
+					filter = CriteriaBuilderHelper
+						.or(cb, filter, cb.equal(eventParticipantPath.get(EventParticipant.REGION).get(Region.ID), currentUser.getRegion().getId()));
 				}
 				break;
 			case DISTRICT:
@@ -676,7 +674,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				cb.isFalse(joins.getEventParticipants().get(EventParticipant.DELETED)));
 		}
 		if (eventCriteria.getFacilityType() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getFacilityType(), eventCriteria.getFacilityType()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getLocation().get(Location.FACILITY_TYPE), eventCriteria.getFacilityType()));
 		}
 		if (eventCriteria.getFacility() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getFacility().get(Facility.UUID), eventCriteria.getFacility().getUuid()));
