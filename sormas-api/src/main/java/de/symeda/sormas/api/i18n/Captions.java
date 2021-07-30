@@ -1269,6 +1269,7 @@ public interface Captions {
 	String HealthConditions_otherConditions = "HealthConditions.otherConditions";
 	String HealthConditions_sickleCellDisease = "HealthConditions.sickleCellDisease";
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
+	String Immunization_additionalDetails = "Immunization.additionalDetails";
 	String Immunization_ageAndBirthDate = "Immunization.ageAndBirthDate";
 	String Immunization_disease = "Immunization.disease";
 	String Immunization_diseaseDetails = "Immunization.diseaseDetails";
@@ -1276,6 +1277,7 @@ public interface Captions {
 	String Immunization_endDate = "Immunization.endDate";
 	String Immunization_externalId = "Immunization.externalId";
 	String Immunization_immunizationStatus = "Immunization.immunizationStatus";
+	String Immunzation_lastInfectionDate = "Immunization.lastInfectionDate";
 	String Immunization_managementStatus = "Immunization.managementStatus";
 	String Immunization_meansOfImmunization = "Immunization.meansOfImmunization";
 	String Immunization_meansOfImmunizationDetails = "Immunization.meansOfImmunizationDetails";
@@ -1284,6 +1286,7 @@ public interface Captions {
 	String Immunization_personFirstName = "Immunization.personFirstName";
 	String Immunization_personId = "Immunization.personId";
 	String Immunization_personLastName = "Immunization.personLastName";
+	String Immunization_previousInfection = "Immunization.previousInfection";
 	String Immunization_recoveryDate = "Immunization.recoveryDate";
 	String Immunization_reportDate = "Immunization.reportDate";
 	String Immunization_startDate = "Immunization.startDate";
