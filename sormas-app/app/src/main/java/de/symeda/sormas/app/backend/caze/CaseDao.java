@@ -15,6 +15,22 @@
 
 package de.symeda.sormas.app.backend.caze;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -23,22 +39,7 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.text.Html;
 import android.util.Log;
-
 import androidx.core.app.NotificationCompat;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -72,6 +73,9 @@ import de.symeda.sormas.app.backend.event.EventEditAuthorization;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.exposure.Exposure;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
+import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.task.Task;
@@ -84,8 +88,6 @@ import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.LocationService;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class CaseDao extends AbstractAdoDao<Case> {
 
@@ -262,21 +264,21 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		}
 
 		if (UserRole.isPortHealthUser(currentUser.getUserRoles())) {
-			caze.setRegion(currentUser.getRegion());
-			caze.setDistrict(currentUser.getDistrict());
+			caze.setResponsibleRegion(currentUser.getRegion());
+			caze.setResponsibleDistrict(currentUser.getDistrict());
 			caze.setDisease(Disease.UNDEFINED);
 			caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
 			caze.setPointOfEntry(ConfigProvider.getUser().getPointOfEntry());
 		} else if (currentUser.getHealthFacility() != null) {
-			caze.setRegion(currentUser.getHealthFacility().getRegion());
-			caze.setDistrict(currentUser.getHealthFacility().getDistrict());
-			caze.setCommunity(currentUser.getHealthFacility().getCommunity());
+			caze.setResponsibleRegion(currentUser.getHealthFacility().getRegion());
+			caze.setResponsibleDistrict(currentUser.getHealthFacility().getDistrict());
+			caze.setResponsibleCommunity(currentUser.getHealthFacility().getCommunity());
 			caze.setHealthFacility(currentUser.getHealthFacility());
 			caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 		} else {
-			caze.setRegion(currentUser.getRegion());
-			caze.setDistrict(currentUser.getDistrict());
-			caze.setCommunity(currentUser.getCommunity());
+			caze.setResponsibleRegion(currentUser.getRegion());
+			caze.setResponsibleDistrict(currentUser.getDistrict());
+			caze.setResponsibleCommunity(currentUser.getCommunity());
 			caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 		}
 
@@ -386,7 +388,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			&& currentCase.isModified()
 			&& currentCase.getOutcomeDate() != null
 			&& source.getOutcomeDate() != null
-			&& currentCase.getOutcomeDate() != source.getOutcomeDate()) {
+			&& !Objects.equals(currentCase.getOutcomeDate(), source.getOutcomeDate())) {
 			// this could be the situation, but we also have to check the snapshot - the outcome date has to be null
 			Case snapshotCase = querySnapshotByUuid(source.getUuid());
 			if (snapshotCase != null && snapshotCase.getOutcomeDate() == null) {
@@ -644,8 +646,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		for (Event event : eventList) {
 			List<EventParticipant> eventParticipantByEventList = DatabaseHelper.getEventParticipantDao().getByEvent(event);
 			if (eventParticipantByEventList.isEmpty()) {
-				Boolean isEventInJurisdiction =
-					EventEditAuthorization.isEventEditAllowed(event);
+				Boolean isEventInJurisdiction = EventEditAuthorization.isEventEditAllowed(event);
 				if (!isEventInJurisdiction) {
 					DatabaseHelper.getEventDao().delete(event);
 				}
@@ -662,8 +663,18 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
 
 			Where<Case, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
-			where.and().eq(Case.DISEASE, criteria.getCaseCriteria().getDisease());
-			where.and().eq(Case.REGION + "_id", criteria.getCaseCriteria().getRegion());
+			CaseCriteria caseCriteria = criteria.getCaseCriteria();
+			where.and().eq(Case.DISEASE, caseCriteria.getDisease());
+			Where<Case, Long> regionFilter = where.and()
+				.eq(Case.RESPONSIBLE_REGION + "_id", caseCriteria.getResponsibleRegion())
+				.or()
+				.eq(Case.REGION + "_id", caseCriteria.getResponsibleRegion());
+			if (caseCriteria.getRegion() != null) {
+				regionFilter.or()
+					.eq(Case.RESPONSIBLE_REGION + "_id", caseCriteria.getRegion())
+					.or()
+					.eq(Case.REGION + "_id", caseCriteria.getRegion());
+			}
 			where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
 			where.and()
 				.between(Case.REPORT_DATE, DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30));
@@ -746,5 +757,29 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		}
 		queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
 		return queryBuilder;
+	}
+
+	public static Region getRegionWithFallback(Case caze) {
+		if (caze.getRegion() == null) {
+			return caze.getResponsibleRegion();
+		}
+
+		return caze.getRegion();
+	}
+
+	public static District getDistrictWithFallback(Case caze) {
+		if (caze.getDistrict() == null) {
+			return caze.getResponsibleDistrict();
+		}
+
+		return caze.getDistrict();
+	}
+
+	public static Community getCommunityWithFallback(Case caze) {
+		if (caze.getRegion() == null) {
+			return caze.getResponsibleCommunity();
+		}
+
+		return caze.getCommunity();
 	}
 }

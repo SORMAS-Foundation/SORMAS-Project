@@ -26,6 +26,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CountryCriteria;
@@ -41,6 +42,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CountryFacade")
 public class CountryFacadeEjb implements CountryFacade {
@@ -102,7 +104,10 @@ public class CountryFacadeEjb implements CountryFacade {
 		Root<Country> country = cq.from(Country.class);
 		Join<Country, Subcontinent> subcontinent = country.join(Country.SUBCONTINENT, JoinType.LEFT);
 
-		Predicate filter = countryService.buildCriteriaFilter(criteria, cb, country);
+		Predicate filter = null;
+		if (criteria != null) {
+			filter = countryService.buildCriteriaFilter(criteria, cb, country);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -136,17 +141,13 @@ public class CountryFacadeEjb implements CountryFacade {
 
 		cq.select(country);
 
-		if (first != null && max != null) {
-			return em.createQuery(cq)
-				.setFirstResult(first)
-				.setMaxResults(max)
-				.getResultList()
-				.stream()
-				.map(this::toIndexDto)
-				.collect(Collectors.toList());
-		} else {
-			return em.createQuery(cq).getResultList().stream().map(this::toIndexDto).collect(Collectors.toList());
-		}
+		return QueryHelper.getResultList(em, cq, first, max, this::toIndexDto);
+	}
+
+	public Page<CountryIndexDto> getIndexPage(CountryCriteria countryCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<CountryIndexDto> countryIndexList = getIndexList(countryCriteria, offset, size, sortProperties);
+		long totalElementCount = count(countryCriteria);
+		return new Page<>(countryIndexList, offset, size, totalElementCount);
 	}
 
 	@Override
@@ -155,7 +156,11 @@ public class CountryFacadeEjb implements CountryFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Country> root = cq.from(Country.class);
 
-		Predicate filter = countryService.buildCriteriaFilter(criteria, cb, root);
+		Predicate filter = null;
+
+		if (criteria != null) {
+			filter = countryService.buildCriteriaFilter(criteria, cb, root);
+		}
 
 		if (filter != null) {
 			cq.where(filter);
@@ -276,16 +281,13 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	public List<CountryReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
 		return countryService.getByExternalId(externalId, includeArchived)
-				.stream()
-				.map(CountryFacadeEjb::toReferenceDto)
-				.collect(Collectors.toList());
+			.stream()
+			.map(CountryFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	public List<CountryReferenceDto> getReferencesByName(String caption, boolean includeArchived) {
-		return countryService.getByDefaultName(caption, includeArchived)
-				.stream()
-				.map(CountryFacadeEjb::toReferenceDto)
-				.collect(Collectors.toList());
+		return countryService.getByDefaultName(caption, includeArchived).stream().map(CountryFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	private Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {
@@ -368,7 +370,7 @@ public class CountryFacadeEjb implements CountryFacade {
 
 		cq.select(root.get(Country.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	// Need to be in the same order as in the constructor

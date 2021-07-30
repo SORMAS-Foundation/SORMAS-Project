@@ -32,7 +32,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -128,6 +127,7 @@ import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.utils.CaseJoins;
@@ -278,7 +278,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
 		Root<Case> caze = cq.from(getElementClass());
 
-		CaseJoins<Case> joins = new CaseJoins<>(caze);
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
 		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
 
@@ -300,7 +301,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				caze.get(Case.REPORT_LON),
 				joins.getPersonAddress().get(Location.LATITUDE),
 				joins.getPersonAddress().get(Location.LONGITUDE),
-				JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)));
+				JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(caseQueryContext)));
 
 			result = em.createQuery(cq).getResultList();
 		} else {
@@ -376,40 +377,35 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	public String getHighestEpidNumber(String epidNumberPrefix, String caseUuid, Disease caseDisease) {
 
-		try {
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<String> cq = cb.createQuery(String.class);
-			Root<Case> caze = cq.from(Case.class);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> caze = cq.from(Case.class);
 
-			Predicate filter = cb.and(cb.equal(caze.get(Case.DELETED), false), cb.equal(caze.get(Case.DISEASE), caseDisease));
-			if (!DataHelper.isNullOrEmpty(caseUuid)) {
-				filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
-			}
-			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), epidNumberPrefix + "%"));
-			cq.where(filter);
-
-			ParameterExpression<String> regexPattern = cb.parameter(String.class);
-			ParameterExpression<String> regexReplacement = cb.parameter(String.class);
-			ParameterExpression<String> regexFlags = cb.parameter(String.class);
-			Expression<String> epidNumberSuffixClean = cb.function(
-				"regexp_replace",
-				String.class,
-				cb.substring(caze.get(Case.EPID_NUMBER), epidNumberPrefix.length() + 1),
-				regexPattern,
-				regexReplacement,
-				regexFlags);
-			cq.orderBy(cb.desc(cb.concat("0", epidNumberSuffixClean).as(Integer.class)));
-			cq.select(caze.get(Case.EPID_NUMBER));
-			TypedQuery<String> query = em.createQuery(cq);
-			query.setParameter(regexPattern, "\\D"); // Non-digits
-			query.setParameter(regexReplacement, ""); // Replace all non-digits with empty string
-			query.setParameter(regexFlags, "g"); // Global search
-			query.setMaxResults(1);
-			return query.getSingleResult();
-
-		} catch (NoResultException e) {
-			return null;
+		Predicate filter = cb.and(cb.equal(caze.get(Case.DELETED), false), cb.equal(caze.get(Case.DISEASE), caseDisease));
+		if (!DataHelper.isNullOrEmpty(caseUuid)) {
+			filter = cb.and(filter, cb.notEqual(caze.get(Case.UUID), caseUuid));
 		}
+		filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), epidNumberPrefix + "%"));
+		cq.where(filter);
+
+		ParameterExpression<String> regexPattern = cb.parameter(String.class);
+		ParameterExpression<String> regexReplacement = cb.parameter(String.class);
+		ParameterExpression<String> regexFlags = cb.parameter(String.class);
+		Expression<String> epidNumberSuffixClean = cb.function(
+			"regexp_replace",
+			String.class,
+			cb.substring(caze.get(Case.EPID_NUMBER), epidNumberPrefix.length() + 1),
+			regexPattern,
+			regexReplacement,
+			regexFlags);
+		cq.orderBy(cb.desc(cb.concat("0", epidNumberSuffixClean).as(Integer.class)));
+		cq.select(caze.get(Case.EPID_NUMBER));
+		TypedQuery<String> query = em.createQuery(cq);
+		query.setParameter(regexPattern, "\\D"); // Non-digits
+		query.setParameter(regexReplacement, ""); // Replace all non-digits with empty string
+		query.setParameter(regexFlags, "g"); // Global search
+
+		return QueryHelper.getFirstResult(query);
 	}
 
 	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
@@ -433,11 +429,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cq.orderBy(cb.desc(root.get(Case.REPORT_DATE)));
 		cq.select(root.get(Case.UUID));
 
-		try {
-			return em.createQuery(cq).setMaxResults(1).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getFirstResult(em, cq);
 	}
 
 	public List<String> getArchivedUuidsSince(Date since) {
@@ -560,13 +552,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.OUTCOME), caseCriteria.getOutcome()));
 		}
 		if (caseCriteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createRegionFilterWithFallback(cb, joins, caseCriteria.getRegion()));
 		}
 		if (caseCriteria.getDistrict() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(district.get(District.UUID), caseCriteria.getDistrict().getUuid()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createDistrictFilterWithFallback(cb, joins, caseCriteria.getDistrict()));
 		}
 		if (caseCriteria.getCommunity() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(community.get(Community.UUID), caseCriteria.getCommunity().getUuid()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, CaseCriteriaHelper.createCommunityFilterWithFallback(cb, joins, caseCriteria.getCommunity()));
 		}
 		if (caseCriteria.getFollowUpStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.FOLLOW_UP_STATUS), caseCriteria.getFollowUpStatus()));
@@ -714,11 +708,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					CriteriaBuilderHelper.ilike(cb, from.get(Case.EXTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Case.HEALTH_FACILITY_DETAILS), textFilter),
 					phoneNumberPredicate(
-					cb,
-					(Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-					textFilter),
+						cb,
+						(Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
+						textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
-				CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
+					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Case.INTERNAL_TOKEN), textFilter)));
 
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
@@ -742,6 +737,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					Predicate likeFilters = cb.or(
 						CriteriaBuilderHelper.unaccentedIlike(cb, event.get(Event.EVENT_DESC), textFilter),
 						CriteriaBuilderHelper.unaccentedIlike(cb, event.get(Event.EVENT_TITLE), textFilter),
+						CriteriaBuilderHelper.unaccentedIlike(cb, event.get(Event.INTERNAL_TOKEN), textFilter),
 						CriteriaBuilderHelper.ilike(cb, event.get(Event.UUID), textFilter));
 					filter = CriteriaBuilderHelper.and(cb, filter, likeFilters, cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
 				}
@@ -787,12 +783,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			sharesSubQuery.where(cb.equal(sharesRoot.get(ShareInfoCase.CAZE), from));
 			sharesSubQuery.select(sharesRoot.get(ShareInfoCase.ID));
 
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.or(
-					cb.exists(sharesSubQuery),
-					cb.isNotNull(from.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO))));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.or(cb.exists(sharesSubQuery), cb.isNotNull(from.get(Case.SORMAS_TO_SORMAS_ORIGIN_INFO))));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithReinfection())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.RE_INFECTION), YesNoUnknown.YES));
@@ -1007,13 +999,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				}
 				break;
 			case LABORATORY:
-				final Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
-				final Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
+				final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
+				final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
 				final SampleJoins joins = new SampleJoins(sampleRoot);
 				final Join cazeJoin = joins.getCaze();
-				sampleCaseSubquery.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutAssociations(cb, joins), cb.isNotNull(cazeJoin)));
-				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
+				sampleSubQuery.where(cb.and(cb.equal(cazeJoin, casePath), sampleService.createUserFilterWithoutAssociations(cb, joins)));
+				sampleSubQuery.select(sampleRoot.get(Sample.ID));
+				filter = CriteriaBuilderHelper.or(cb, filter, cb.exists(sampleSubQuery));
 				break;
 			default:
 			}
@@ -1022,11 +1014,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			if (userFilterCriteria == null
 				|| (!userFilterCriteria.isExcludeCasesFromContacts()
 					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
-				Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
-				Root<Contact> contactRoot = contactCaseSubquery.from(Contact.class);
-				contactCaseSubquery.where(contactService.createUserFilterWithoutCase(new ContactQueryContext(cb, cq, contactRoot)));
-				contactCaseSubquery.select(contactRoot.get(Contact.CAZE).get(Case.ID));
-				filter = CriteriaBuilderHelper.or(cb, filter, cb.in(casePath.get(Case.ID)).value(contactCaseSubquery));
+				filter = CriteriaBuilderHelper.or(
+					cb,
+					filter,
+					contactService.createUserFilterWithoutCase(new ContactQueryContext(cb, cq, casePath.join(Case.CONTACTS, JoinType.LEFT))));
 			}
 
 			// users can only be assigned to a task when they have also access to the case
@@ -1244,21 +1235,27 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public boolean isCaseEditAllowed(Case caze) {
-		if (caze.getSormasToSormasOriginInfo() != null) {
-			return caze.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+
+		if (caze.getSormasToSormasOriginInfo() != null && !caze.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
+			return false;
 		}
 
 		return inJurisdictionOrOwned(caze) && !sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze);
 	}
 
 	public boolean inJurisdictionOrOwned(Case caze) {
-		return exists(
-			(cb, root) -> cb.and(cb.equal(root.get(AbstractDomainObject.ID), caze.getId()), inJurisdictionOrOwned(cb, new CaseJoins<>(root))));
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Case> root = cq.from(Case.class);
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(new CaseQueryContext(cb, cq, root))));
+		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
+		return em.createQuery(cq).getSingleResult();
 	}
 
-	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, CaseJoins<?> joins) {
+	public Predicate inJurisdictionOrOwned(CaseQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
-		return CaseJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdictionOrOwned();
+		return CaseJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 	}
 
 	public Collection<Case> getByPersonUuids(List<String> personUuids) {
@@ -1312,9 +1309,22 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		casesForUpdate.forEach(this::updateCompleteness);
 	}
 
-	public void updateCompleteness(Case caze){
-		caze.setCompleteness(calculateCompleteness(caze));
-		ensurePersisted(caze);
+	public void updateCompleteness(Case caze) {
+
+		float completeness = calculateCompleteness(caze);
+
+		/*
+		 * Set the calculated value without updating the changeDate:
+		 * 1. Do not trigger sync mechanisms that compare changeDates
+		 * 2. Avoid optimistic locking problem with parallel running logic like batch imports
+		 * Side effect: No AuditLogEntry is created triggered
+		 */
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+		Root<Case> root = cu.from(Case.class);
+		cu.set(root.get(Case.COMPLETENESS), completeness);
+		cu.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
+		em.createQuery(cu).executeUpdate();
 	}
 
 	private float calculateCompleteness(Case caze) {

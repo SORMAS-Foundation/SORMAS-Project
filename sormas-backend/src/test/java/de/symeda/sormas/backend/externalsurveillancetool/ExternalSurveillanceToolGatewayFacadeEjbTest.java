@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,6 +49,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.share.ExternalShareInfoService;
 
 public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTest {
 
@@ -62,6 +64,11 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 	public void setup() {
 		configureExternalSurvToolUrlForWireMock();
 		subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
+	}
+
+	@After
+	public void teardown() {
+		clearExternalSurvToolUrlForWireMock();
 	}
 
 	@Test
@@ -116,6 +123,9 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.withRequestBody(containing("eventUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		subjectUnderTest.sendEvents(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "VXAERX-5RCKFA-G5DVXH-DPHPCAFB"));
+
+		// Events don't actually exist, so no share info is created
+		assertThat(getBean(ExternalShareInfoService.class).getAll(), hasSize(0));
 	}
 
 	@Test
@@ -181,6 +191,10 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 
 	private void configureExternalSurvToolUrlForWireMock() {
 		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+	}
+
+	private void clearExternalSurvToolUrlForWireMock() {
+		MockProducer.getProperties().setProperty("survnet.url", "");
 	}
 
 	private EventDto createEventDto(

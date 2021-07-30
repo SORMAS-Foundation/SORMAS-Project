@@ -110,7 +110,6 @@ import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
-import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -817,7 +816,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				if (contact.getFollowUpStatus() != FollowUpStatus.COMPLETED && contact.getContactStatus() == ContactStatus.CONVERTED) {
 					// Cancel follow-up if the contact was converted to a case
 					contact.setFollowUpStatus(FollowUpStatus.CANCELED);
-					contact.setFollowUpComment(I18nProperties.getString(Strings.messageSystemFollowUpCanceled));
+					addToFollowUpStatusComment(contact, I18nProperties.getString(Strings.messageSystemFollowUpCanceled));
 				}
 				statusChangedBySystem = true;
 			}
@@ -836,9 +835,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	public void cancelFollowUp(Contact contact, String comment) {
 		contact.setFollowUpStatus(FollowUpStatus.CANCELED);
-		contact.setFollowUpComment(comment);
+		addToFollowUpStatusComment(contact, comment);
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		ensurePersisted(contact);
+	}
+
+	private void addToFollowUpStatusComment(Contact contact, String comment) {
+		String followUpComment = DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment);
+		contact.setFollowUpComment(followUpComment);
 	}
 
 	// Used only for testing; directly retrieve the contacts from the visit instead
@@ -918,8 +922,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate filter = null;
 		// whoever created it or is assigned to it is allowed to access it
 		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
-			filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
-			filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
+			filter = cb.equal(contactPath.get(Contact.REPORTING_USER), currentUser);
+			filter = cb.or(filter, cb.equal(contactPath.get(Contact.CONTACT_OFFICER), currentUser));
 		}
 
 		switch (jurisdictionLevel) {
@@ -943,13 +947,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 			break;
 		case LABORATORY:
-			final Subquery<Long> sampleContactSubquery = cq.subquery(Long.class);
-			final Root<Sample> sampleRoot = sampleContactSubquery.from(Sample.class);
+			final Subquery<Long> sampleSubQuery = cq.subquery(Long.class);
+			final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
 			final SampleJoins joins = new SampleJoins(sampleRoot);
 			final Join contactJoin = joins.getContact();
-			sampleContactSubquery.where(CriteriaBuilderHelper.or(cb, sampleService.createUserFilterWithoutAssociations(cb, joins), cb.isNotNull(contactJoin)));
-			sampleContactSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CONTACT).get(Contact.ID));
-			filter = CriteriaBuilderHelper.or(cb, filter, cb.in(contactPath.get(Contact.ID)).value(sampleContactSubquery));
+			sampleSubQuery.where(cb.and(cb.equal(contactJoin, contactPath), sampleService.createUserFilterWithoutAssociations(cb, joins)));
+			sampleSubQuery.select(sampleRoot.get(Sample.ID));
+			filter = CriteriaBuilderHelper.or(cb, filter, cb.exists(sampleSubQuery));
 			break;
 		default:
 		}
@@ -1339,32 +1343,30 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactJurisdictionFlagsDto> cq = cb.createQuery(ContactJurisdictionFlagsDto.class);
 		Root<Contact> root = cq.from(Contact.class);
-
-		ContactJoins joins = new ContactJoins(root);
-
-		cq.multiselect(getJurisdictionSelections(cb, joins));
-
+		cq.multiselect(getJurisdictionSelections(new ContactQueryContext(cb, cq, root)));
 		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
-
-
-		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+		return em.createQuery(cq).getSingleResult();
 	}
 
-	public List<Selection<?>> getJurisdictionSelections(CriteriaBuilder cb, ContactJoins joins) {
-		return Arrays.asList(JurisdictionHelper.jurisdictionSelector(cb, inJurisdictionOrOwned(cb, joins)),
-				JurisdictionHelper.jurisdictionSelector(
-						cb,
-						cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze())))));
+	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {
+
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+		final ContactJoins joins = (ContactJoins) qc.getJoins();
+		return Arrays.asList(
+			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
+			JurisdictionHelper.booleanSelector(
+				cb,
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze())))));
 	}
 
-	public Predicate inJurisdictionOrOwned(CriteriaBuilder cb, ContactJoins<?> joins) {
+	public Predicate inJurisdictionOrOwned(ContactQueryContext contactQueryContext) {
 		final User currentUser = userService.getCurrentUser();
-		return ContactJurisdictionPredicateValidator.of(cb, joins, currentUser).inJurisdictionOrOwned();
+		return ContactJurisdictionPredicateValidator.of(contactQueryContext, currentUser).inJurisdictionOrOwned();
 	}
 
 	public boolean isContactEditAllowed(Contact contact) {
-		if (contact.getSormasToSormasOriginInfo() != null) {
-			return contact.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		if (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
+			return false;
 		}
 
 		return inJurisdictionOrOwned(contact).getInJurisdiction() && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
@@ -1398,7 +1400,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException{
+	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
 	}
 

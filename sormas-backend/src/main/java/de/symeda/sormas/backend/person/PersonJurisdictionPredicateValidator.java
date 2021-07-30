@@ -20,16 +20,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
-import de.symeda.sormas.backend.contact.ContactJoins;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.event.EventParticipantJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.event.EventParticipantQueryContext;
+import de.symeda.sormas.backend.immunization.ImmunizationJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.immunization.ImmunizationQueryContext;
+import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventParticipantJoins;
+import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
 public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
@@ -42,13 +47,15 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
         this.currentUser = currentUser;
     }
 
-	public static PersonJurisdictionPredicateValidator of(CriteriaBuilder cb, PersonJoins joins, User currentUser) {
+	public static PersonJurisdictionPredicateValidator of(CriteriaQuery<?> cq, CriteriaBuilder cb, PersonJoins joins , User currentUser) {
 		final List<PredicateJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
 
-		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(cb, new CaseJoins<>(joins.getCaze()), currentUser));
-		associatedJurisdictionValidators.add(ContactJurisdictionPredicateValidator.of(cb, new ContactJoins<>(joins.getContact()), currentUser));
+		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, joins.getCaze()), currentUser));
+		associatedJurisdictionValidators.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext<>(cb, cq, joins.getContact()), currentUser));
 		associatedJurisdictionValidators
-			.add(EventParticipantJurisdictionPredicateValidator.of(cb, new EventParticipantJoins<>(joins.getEventParticipant()), currentUser));
+			.add(EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext<>(cb, cq, joins.getEventParticipant()), currentUser));
+		associatedJurisdictionValidators.add(TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext(cb, cq, joins.getTravelEntry()), currentUser));
+		associatedJurisdictionValidators.add(ImmunizationJurisdictionPredicateValidator.of(new ImmunizationQueryContext<>(cb, cq, joins.getImmunization()), currentUser));
 
 		return new PersonJurisdictionPredicateValidator(cb, joins, currentUser, associatedJurisdictionValidators);
 	}

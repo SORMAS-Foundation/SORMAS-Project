@@ -17,9 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -261,7 +264,7 @@ public class EventsView extends AbstractView {
 			}
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENT) && isDefaultViewType()) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 
@@ -500,49 +503,59 @@ public class EventsView extends AbstractView {
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) && isDefaultViewType()) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENT) && isDefaultViewType()) {
 				EventGrid eventGrid = (EventGrid) grid;
-				bulkOperationsDropdown = MenuBarHelper.createDropDown(
-					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(
+				List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
+				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)) {
+					bulkActions.add(new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.bulkEdit),
 						VaadinIcons.ELLIPSIS_H,
-						mi -> grid.bulkActionHandler(items -> ControllerProvider.getEventController().showBulkEventDataEditComponent(items))),
-					new MenuBarHelper.MenuBarItem(
+						mi -> grid.bulkActionHandler(items -> ControllerProvider.getEventController().showBulkEventDataEditComponent(items))));
+				}
+				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
+					bulkActions.add(new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.bulkDelete),
 						VaadinIcons.TRASH,
 						mi -> grid.bulkActionHandler(
 							items -> ControllerProvider.getEventController().deleteAllSelectedItems(items, () -> navigateTo(eventCriteria)),
-							true)),
-					new MenuBarHelper.MenuBarItem(
+							true)));
+				}
+				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
+					bulkActions.add(new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.actionArchive),
 						VaadinIcons.ARCHIVE,
 						mi -> grid.bulkActionHandler(
 							items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, () -> navigateTo(eventCriteria)),
 							true),
-						EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())),
-					new MenuBarHelper.MenuBarItem(
+						EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())));
+					bulkActions.add(new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.actionDearchive),
 						VaadinIcons.ARCHIVE,
 						mi -> grid.bulkActionHandler(
 							items -> ControllerProvider.getEventController()
 								.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria)),
 							true),
-						EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())),
-					new MenuBarHelper.MenuBarItem(
+						EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())));
+				}
+				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_CREATE) && UserProvider.getCurrent().hasUserRight(UserRight.EVENTGROUP_LINK)) {
+					bulkActions.add(new MenuBarHelper.MenuBarItem(
 						I18nProperties.getCaption(Captions.actionGroupEvent),
 						VaadinIcons.FILE_TREE,
 						mi -> grid.bulkActionHandler(
 							items -> ControllerProvider.getEventGroupController()
-								.linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria)))),
-					new MenuBarHelper.MenuBarItem(
-						I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
-						VaadinIcons.SHARE,
-						mi -> grid.bulkActionHandler(
-							items -> ControllerProvider.getEventController()
-								.sendAllSelectedToExternalSurveillanceTool(
-									eventGrid.asMultiSelect().getSelectedItems(),
-									() -> navigateTo(eventCriteria)))));
+								.linkAllToGroup(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria)))));
+				}
+				bulkActions.add(new MenuBarHelper.MenuBarItem(
+					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
+					VaadinIcons.SHARE,
+					mi -> grid.bulkActionHandler(
+						items -> ControllerProvider.getEventController()
+							.sendAllSelectedToExternalSurveillanceTool(
+								eventGrid.asMultiSelect().getSelectedItems(),
+								() -> navigateTo(eventCriteria)))));
+				bulkOperationsDropdown = MenuBarHelper.createDropDown(
+					Captions.bulkActions,
+					bulkActions);
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				bulkOperationsDropdown.setCaption("");

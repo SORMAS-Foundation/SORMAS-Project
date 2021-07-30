@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
 		boolean externalSurveillanceToolShareEnabled = FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled();
 
-		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENT)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
 		} else {
@@ -121,9 +121,11 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				EventIndexDto.RISK_LEVEL,
 				EventIndexDto.EVENT_INVESTIGATION_STATUS,
 				EventIndexDto.EVENT_MANAGEMENT_STATUS,
+				EventIndexDto.EVENT_IDENTIFICATION_SOURCE,
 				createEventDateColumn(this),
 				createEventEvolutionDateColumn(this),
 				DISEASE_SHORT,
+				EventIndexDto.DISEASE_VARIANT,
 				EventIndexDto.EVENT_TITLE));
 
 		if (eventGroupsFeatureEnabled) {

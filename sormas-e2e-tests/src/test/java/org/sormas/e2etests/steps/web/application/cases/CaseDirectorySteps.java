@@ -26,6 +26,7 @@ import cucumber.api.java8.En;
 import java.util.Arrays;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.common.*;
 import org.sormas.e2etests.enums.CaseClasification;
 import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.enums.Disease;
@@ -37,13 +38,20 @@ public class CaseDirectorySteps implements En {
 
   @Inject
   public CaseDirectorySteps(
-      WebDriverHelpers webDriverHelpers, ApiState apiState, AssertHelpers assertHelpers) {
+      WebDriverHelpers webDriverHelpers,
+      DataOperations dataOperations,
+      ApiState apiState,
+      AssertHelpers assertHelpers) {
 
     When(
         "^I click on the NEW CASE button$",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 NEW_CASE_BUTTON, DATE_OF_REPORT_INPUT));
+
+    When(
+        "^I click on Case Line Listing button$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_BUTTON));
 
     When(
         "^I open last created case",
@@ -54,6 +62,20 @@ public class CaseDirectorySteps implements En {
         () ->
             webDriverHelpers.fillAndSubmitInWebElement(
                 NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid()));
+    When(
+        "I click on the DETAILED button from Case directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CASE_DIRECTORY_DETAILED_RADIOBUTTON));
+
+    When(
+        "I filter by CaseID on Case directory page",
+        () -> {
+          String partialUuid =
+              dataOperations.getPartialUuidFromAssociatedLink(apiState.getCreatedCase().getUuid());
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
+          webDriverHelpers.clickOnWebElementBySelector(
+              CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+        });
 
     When(
         "^I open the last created Case via API",

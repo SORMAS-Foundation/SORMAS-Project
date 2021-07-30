@@ -86,7 +86,6 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
-import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
@@ -104,8 +103,7 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
-import de.symeda.sormas.utils.EventJoins;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
@@ -354,7 +352,8 @@ public class TaskFacadeEjb implements TaskFacade {
 		CriteriaQuery<TaskIndexDto> cq = cb.createQuery(TaskIndexDto.class);
 		Root<Task> task = cq.from(Task.class);
 
-		TaskJoins joins = new TaskJoins(task);
+		TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
+		TaskJoins<Task> joins = (TaskJoins<Task>) taskQueryContext.getJoins();
 
 		// Filter select based on case/contact/event region/district/community
 		Expression<Object> region = cb.selectCase()
@@ -414,7 +413,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			district,
 			community));
 
-		selections.addAll(taskService.getJurisdictionSelections(cb, joins));
+		selections.addAll(taskService.getJurisdictionSelections(taskQueryContext));
 		cq.multiselect(selections);
 
 		Predicate filter = null;
@@ -489,12 +488,8 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 		order.add(cb.desc(task.get(Task.DUE_DATE)));
 		cq.orderBy(order);
-		List<TaskIndexDto> tasks;
-		if (first != null && max != null) {
-			tasks = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			tasks = em.createQuery(cq).getResultList();
-		}
+
+		List<TaskIndexDto> tasks = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!tasks.isEmpty()) {
 			List<String> assigneeUserUuids = tasks.stream().map(t -> t.getAssigneeUser().getUuid()).collect(Collectors.toList());

@@ -28,7 +28,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -110,10 +110,10 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	@Override
 	protected void addFields() {
-		ComboBox organizationField = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
-		organizationField.setRequired(true);
-		List<ServerAccessDataReferenceDto> organizations = FacadeProvider.getSormasToSormasFacade().getAvailableOrganizations();
-		organizationField.addItems(organizations.stream().filter(o -> !excludedOrganizationIds.contains(o.getUuid())).collect(Collectors.toList()));
+		ComboBox availableServersBox = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
+		availableServersBox.setRequired(true);
+		List<SormasServerDescriptor> availableServers = FacadeProvider.getSormasToSormasFacade().getAllAvailableServers();
+		availableServersBox.addItems(availableServers.stream().filter(o -> !excludedOrganizationIds.contains(o.getId())).collect(Collectors.toList()));
 
 		if (hasOptions) {
 			addFields(customOptions);
@@ -127,7 +127,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				boolean ownershipHandedOver = (boolean) e.getProperty().getValue();
 				pseudonimyzePersonalData.setEnabled(!ownershipHandedOver);
 				pseudonymizeSensitiveData.setEnabled(!ownershipHandedOver);
-				if(ownershipHandedOver) {
+				if (ownershipHandedOver) {
 					pseudonimyzePersonalData.setValue(false);
 					pseudonymizeSensitiveData.setValue(false);
 				}
@@ -162,8 +162,11 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		getField(SormasToSormasOptionsDto.ORGANIZATION).setEnabled(false);
 	}
 
-	public void disableOrganizationAndOwnership() {
-		disableOrganization();
-		getField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP).setEnabled(false);
+	public void disableAllOptions() {
+		getFieldGroup().getFields().forEach(f -> {
+			if (!SormasToSormasOptionsDto.COMMENT.equals(f.getId())) {
+				f.setEnabled(false);
+			}
+		});
 	}
 }

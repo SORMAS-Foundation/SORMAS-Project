@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -186,14 +187,8 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		}
 
 		cq.orderBy(cb.desc(action.get(Action.DATE)));
-		List<Action> actions;
-		if (first != null && max != null) {
-			actions = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			actions = em.createQuery(cq).getResultList();
-		}
 
-		return actions;
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	/**
@@ -275,6 +270,10 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EVENT_TITLE),
+			event.get(Event.DISEASE),
+			event.get(Event.DISEASE_VARIANT),
+			event.get(Event.DISEASE_DETAILS),
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
 			event.get(Event.EVENT_STATUS),
@@ -311,6 +310,15 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 					break;
 				case EventActionIndexDto.EVENT_TITLE:
 					expression = cb.lower(event.get(Event.EVENT_TITLE));
+					break;
+				case EventActionIndexDto.EVENT_DISEASE:
+					expression = event.get(Event.DISEASE);
+					break;
+				case EventActionIndexDto.EVENT_DISEASE_VARIANT:
+					expression = event.get(Event.DISEASE_VARIANT);
+					break;
+				case EventActionIndexDto.EVENT_IDENTIFICATION_SOURCE:
+					expression = event.get(Event.EVENT_IDENTIFICATION_SOURCE);
 					break;
 				case EventActionIndexDto.EVENT_START_DATE:
 					expression = event.get(Event.START_DATE);
@@ -369,14 +377,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			cq.orderBy(cb.desc(event.get(Event.CHANGE_DATE)));
 		}
 
-		List<EventActionIndexDto> actions;
-		if (first != null && max != null) {
-			actions = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			actions = em.createQuery(cq).getResultList();
-		}
-
-		return actions;
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	public List<EventActionExportDto> getEventActionExportList(EventCriteria criteria, Integer first, Integer max) {
@@ -407,7 +408,11 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EVENT_TITLE),
+			event.get(Event.DISEASE),
+			event.get(Event.DISEASE_VARIANT),
+			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.EVENT_DESC),
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
 			event.get(Event.EVOLUTION_DATE),
@@ -436,14 +441,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		cq.orderBy(cb.desc(event.get(Event.CHANGE_DATE)));
 
-		List<EventActionExportDto> actions;
-		if (first != null && max != null) {
-			actions = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			actions = em.createQuery(cq).getResultList();
-		}
-
-		return actions;
+		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
 	public long countEventActions(EventCriteria criteria) {

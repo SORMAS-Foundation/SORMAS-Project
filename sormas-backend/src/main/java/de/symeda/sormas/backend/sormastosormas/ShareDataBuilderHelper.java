@@ -25,10 +25,10 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
@@ -36,6 +36,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPrev
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -48,6 +49,7 @@ import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -60,7 +62,7 @@ public class ShareDataBuilderHelper {
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
-	private ServerAccessDataService serverAccessDataService;
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 	@EJB
 	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
 	@EJB
@@ -107,17 +109,21 @@ public class ShareDataBuilderHelper {
 		return contactDto;
 	}
 
-	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, boolean isOwnershipHandedOver, String comment)
-		throws SormasToSormasException {
-		OrganizationServerAccessData serverAccessData = getServerAccessData();
+	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, SormasToSormasShareInfo shareInfo) {
+		return createSormasToSormasOriginInfo(user, createOptionsFormShareInfo(shareInfo));
+	}
 
+	public SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User user, SormasToSormasOptionsDto options) {
 		SormasToSormasOriginInfoDto sormasToSormasOriginInfo = new SormasToSormasOriginInfoDto();
-		sormasToSormasOriginInfo.setOrganizationId(serverAccessData.getId());
+		sormasToSormasOriginInfo.setOrganizationId(configFacadeEjb.getS2SConfig().getId());
 		sormasToSormasOriginInfo.setSenderName(String.format("%s %s", user.getFirstName(), user.getLastName()));
 		sormasToSormasOriginInfo.setSenderEmail(user.getUserEmail());
 		sormasToSormasOriginInfo.setSenderPhoneNumber(user.getPhone());
-		sormasToSormasOriginInfo.setOwnershipHandedOver(isOwnershipHandedOver);
-		sormasToSormasOriginInfo.setComment(comment);
+		sormasToSormasOriginInfo.setOwnershipHandedOver(options.isHandOverOwnership());
+		sormasToSormasOriginInfo.setWithAssociatedContacts(options.isWithAssociatedContacts());
+		sormasToSormasOriginInfo.setWithSamples(options.isWithSamples());
+		sormasToSormasOriginInfo.setWithEventParticipants(options.isWithEventParticipants());
+		sormasToSormasOriginInfo.setComment(options.getComment());
 
 		return sormasToSormasOriginInfo;
 	}
@@ -132,11 +138,6 @@ public class ShareDataBuilderHelper {
 				s.getPathogenTests().stream().map(t -> pathogenTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()),
 				s.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()));
 		}).collect(Collectors.toList());
-	}
-
-	private OrganizationServerAccessData getServerAccessData() throws SormasToSormasException {
-		return serverAccessDataService.getServerAccessData()
-			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasCertNotGenerated)));
 	}
 
 	public SormasToSormasPersonPreview getPersonPreview(Person person) {
@@ -174,5 +175,35 @@ public class ShareDataBuilderHelper {
 		contactPreview.setCaze(CaseFacadeEjb.toReferenceDto(contact.getCaze()));
 
 		return contactPreview;
+	}
+
+	public SormasToSormasOptionsDto createOptionsFormShareInfo(SormasToSormasShareInfo shareInfo) {
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+
+		options.setOrganization(new SormasServerDescriptor(shareInfo.getOrganizationId()));
+		options.setHandOverOwnership(shareInfo.isOwnershipHandedOver());
+		options.setWithAssociatedContacts(shareInfo.isWithAssociatedContacts());
+		options.setWithSamples(shareInfo.isWithSamples());
+		options.setWithEventParticipants(shareInfo.isWithEventParticipants());
+		options.setComment(shareInfo.getComment());
+		options.setPseudonymizePersonalData(shareInfo.isPseudonymizedPersonalData());
+		options.setPseudonymizeSensitiveData(shareInfo.isPseudonymizedSensitiveData());
+
+		return options;
+
+	}
+
+	public SormasToSormasOptionsDto createOptionsFromOriginInfoDto(SormasToSormasOriginInfo originInfo) {
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+
+		options.setOrganization(new SormasServerDescriptor(originInfo.getOrganizationId()));
+		options.setHandOverOwnership(originInfo.isOwnershipHandedOver());
+		options.setWithAssociatedContacts(originInfo.isWithAssociatedContacts());
+		options.setWithSamples(originInfo.isWithSamples());
+		options.setWithEventParticipants(originInfo.isWithEventParticipants());
+		options.setComment(originInfo.getComment());
+
+		return options;
+
 	}
 }

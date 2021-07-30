@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.api.caze;
 
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
@@ -48,6 +46,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
@@ -68,6 +67,8 @@ import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.Longitude
 public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEntityDto {
 
 	private static final long serialVersionUID = 5007131477733638086L;
+
+	private static final long MILLISECONDS_30_DAYS = 30L * 24L * 60L * 60L * 1000L;
 
 	public static final String I18N_PREFIX = "CaseData";
 
@@ -195,8 +196,6 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String RE_INFECTION = "reInfection";
 	public static final String PREVIOUS_INFECTION_DATE = "previousInfectionDate";
 
-	public static final String REPORTING_DISTRICT = "reportingDistrict";
-
 	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
 
 	public static final String NOT_A_CASE_REASON_NEGATIVE_TEST = "notACaseReasonNegativeTest";
@@ -280,6 +279,9 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	private RegionReferenceDto responsibleRegion;
 	private DistrictReferenceDto responsibleDistrict;
+	@Outbreaks
+	@PersonalData
+	@SensitiveData
 	private CommunityReferenceDto responsibleCommunity;
 
 	@Outbreaks
@@ -597,9 +599,6 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private Date previousInfectionDate;
 
 	@HideForCountriesExcept
-	private DistrictReferenceDto reportingDistrict;
-
-	@HideForCountriesExcept
 	private YesNoUnknown bloodOrganOrTissueDonated;
 
 	@HideForCountriesExcept
@@ -666,6 +665,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		List<ExposureDto> exposures = cazeData.getEpiData().getExposures();
 		if (exposures.size() == 1) {
 			exposures.get(0).setProbableInfectionEnvironment(true);
+			exposures.get(0).setContactToCase(contact.toReference());
 		}
 		return cazeData;
 	}
@@ -686,9 +686,39 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 		CaseDataDto caseData = CaseDataDto.build(eventParticipant.getPerson().toReference(), eventDisease);
 
-		if (person.getPresentCondition() != null && person.getPresentCondition().isDeceased() && eventDisease == person.getCauseOfDeathDisease()) {
+		if (person.getPresentCondition() != null
+			&& person.getPresentCondition().isDeceased()
+			&& eventDisease == person.getCauseOfDeathDisease()
+			&& person.getDeathDate() != null
+			&& Math.abs(person.getDeathDate().getTime() - eventParticipant.getCreationDate().getTime()) <= MILLISECONDS_30_DAYS) {
 			caseData.setOutcome(CaseOutcome.DECEASED);
-			caseData.setOutcomeDate(new Date());
+			caseData.setOutcomeDate(person.getDeathDate());
+		}
+
+		return caseData;
+	}
+
+	public static CaseDataDto buildFromTravelEntry(TravelEntryDto travelEntry, PersonDto person) {
+
+		CaseDataDto caseData = CaseDataDto.build(person.toReference(), travelEntry.getDisease());
+
+		caseData.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+		caseData.setResponsibleRegion(travelEntry.getResponsibleRegion());
+		caseData.setResponsibleDistrict(travelEntry.getResponsibleDistrict());
+		caseData.setResponsibleCommunity(travelEntry.getResponsibleCommunity());
+		caseData.setRegion(travelEntry.getPointOfEntryRegion());
+		caseData.setDistrict(travelEntry.getPointOfEntryDistrict());
+		caseData.setPointOfEntry(travelEntry.getPointOfEntry());
+		caseData.setPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+		caseData.setReportDate(travelEntry.getReportDate());
+
+		if (person.getPresentCondition() != null
+			&& person.getPresentCondition().isDeceased()
+			&& travelEntry.getDisease() == person.getCauseOfDeathDisease()
+			&& person.getDeathDate() != null
+			&& Math.abs(person.getDeathDate().getTime() - travelEntry.getReportDate().getTime()) <= MILLISECONDS_30_DAYS) {
+			caseData.setOutcome(CaseOutcome.DECEASED);
+			caseData.setOutcomeDate(person.getDeathDate());
 		}
 
 		return caseData;
@@ -1662,14 +1692,6 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	public void setPreviousInfectionDate(Date previousInfectionDate) {
 		this.previousInfectionDate = previousInfectionDate;
-	}
-
-	public DistrictReferenceDto getReportingDistrict() {
-		return reportingDistrict;
-	}
-
-	public void setReportingDistrict(DistrictReferenceDto reportingDistrict) {
-		this.reportingDistrict = reportingDistrict;
 	}
 
 	public YesNoUnknown getBloodOrganOrTissueDonated() {

@@ -12,9 +12,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -24,6 +22,8 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -50,6 +50,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.utils.CaseJoins;
 import de.symeda.sormas.utils.EventJoins;
 
@@ -79,10 +80,6 @@ public class DashboardService {
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-
-		if (filter != null) {
-			cq.where(filter);
-		}
 
 		List<DashboardCaseDto> result;
 		if (filter != null) {
@@ -165,7 +162,7 @@ public class DashboardService {
 		Root<Case> caze = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
-		Join<Case, District> district = joins.getDistrict();
+		Join<Case, District> district = joins.getResponsibleDistrict();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
@@ -181,12 +178,7 @@ public class DashboardService {
 		order.add(cb.desc(caze.get(Case.CREATION_DATE)));
 		cq.orderBy(order);
 
-		TypedQuery<String> query = em.createQuery(cq).setMaxResults(1);
-		try {
-			return query.getSingleResult();
-		} catch (NoResultException e) {
-			return "";
-		}
+		return QueryHelper.getFirstResult(em, cq, t -> t == null ? StringUtils.EMPTY : t);
 	}
 
 	public Map<Disease, District> getLastReportedDistrictByDisease(DashboardCriteria dashboardCriteria) {
@@ -196,7 +188,7 @@ public class DashboardService {
 		Root<Case> caze = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
-		Join<Case, District> districtJoin = joins.getDistrict();
+		Join<Case, District> districtJoin = joins.getResponsibleDistrict();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 
@@ -311,12 +303,13 @@ public class DashboardService {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
 		Root<Event> event = cq.from(Event.class);
-		EventJoins<Event> eventJoins = new EventJoins<>(event);
+		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
+		EventJoins<Event> eventJoins = (EventJoins<Event>) eventQueryContext.getJoins();
 		Join<Event, Location> eventLocation = eventJoins.getLocation();
 		Join<Location, District> eventDistrict = eventJoins.getDistrict();
 
 		Predicate filter = eventService.createDefaultFilter(cb, event);
-		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, new EventQueryContext(cb, cq, event)));
+		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
 		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(cb, cq, event));
 
 		List<DashboardEventDto> result;
@@ -340,7 +333,7 @@ public class DashboardService {
 				eventDistrict.get(District.NAME),
 				eventDistrict.get(District.UUID),
 				eventJoins.getCommunity().get(Community.UUID),
-				JurisdictionHelper.jurisdictionSelector(cb, eventService.inJurisdictionOrOwned(cb, eventJoins)));
+				JurisdictionHelper.booleanSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)));
 
 			result = em.createQuery(cq).getResultList();
 
@@ -381,18 +374,19 @@ public class DashboardService {
 		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
 		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
-		Join<Case, Region> region = joins.getRegion();
-		Join<Case, District> district = joins.getDistrict();
+		Join<Case, Region> responsibleRegion = joins.getResponsibleRegion();
+		Join<Case, District> responsibleDistrict = joins.getResponsibleDistrict();
 
 		Predicate filter = null;
 		if (dashboardCriteria.getDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), dashboardCriteria.getDisease()));
 		}
 		if (dashboardCriteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(region.get(Region.UUID), dashboardCriteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(responsibleRegion.get(Region.UUID), dashboardCriteria.getRegion().getUuid()));
 		}
 		if (dashboardCriteria.getDistrict() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(district.get(District.UUID), dashboardCriteria.getDistrict().getUuid()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(responsibleDistrict.get(District.UUID), dashboardCriteria.getDistrict().getUuid()));
 		}
 		if (dashboardCriteria.getDateFrom() != null && dashboardCriteria.getDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(

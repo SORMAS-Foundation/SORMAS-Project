@@ -15,10 +15,12 @@
 
 package de.symeda.sormas.app.rest;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,12 +29,10 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
-
-import androidx.fragment.app.FragmentActivity;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
@@ -86,6 +86,7 @@ public final class RetroProvider {
 
 	private InfoFacadeRetro infoFacadeRetro;
 	private CaseFacadeRetro caseFacadeRetro;
+	private ImmunizationFacadeRetro immunizationFacadeRetro;
 	private PersonFacadeRetro personFacadeRetro;
 	private CommunityFacadeRetro communityFacadeRetro;
 	private DistrictFacadeRetro districtFacadeRetro;
@@ -132,6 +133,50 @@ public final class RetroProvider {
 			throw new ServerConnectionException(404);
 		}
 
+		retrofit = buildRetrofit(serverUrl);
+
+		checkCompatibility();
+
+		updateLocale();
+		updateCountryName();
+	}
+
+	public static Retrofit buildRetrofit(String serverUrl) {
+		Gson gson = initGson();
+
+		// Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit
+
+		String authToken = Credentials.basic(ConfigProvider.getUsername(), ConfigProvider.getPassword());
+		AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
+
+		OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+		httpClient.connectTimeout(20, TimeUnit.SECONDS);
+		httpClient.readTimeout(240, TimeUnit.SECONDS); // for infrastructure data
+		httpClient.writeTimeout(60, TimeUnit.SECONDS);
+
+		// adds "Accept-Encoding: gzip" by default
+		httpClient.addInterceptor(interceptor);
+
+		// header for logging purposes
+		httpClient.addInterceptor(chain -> {
+
+			Request original = chain.request();
+			Request.Builder builder = original.newBuilder();
+
+			User user = ConfigProvider.getUser();
+			if (user != null) {
+				builder.header("User", DataHelper.getShortUuid(user.getUuid()));
+				builder.header("Connection", String.valueOf(lastConnectionId)); // not sure if this is a good solution
+			}
+
+			builder.method(original.method(), original.body());
+			return chain.proceed(builder.build());
+		});
+
+		return new Retrofit.Builder().baseUrl(serverUrl).addConverterFactory(GsonConverterFactory.create(gson)).client(httpClient.build()).build();
+	}
+
+	public static Gson initGson() {
 		RuntimeTypeAdapterFactory<ClassificationCriteriaDto> classificationCriteriaFactory =
 			RuntimeTypeAdapterFactory.of(ClassificationCriteriaDto.class, "type")
 				.registerSubtype(ClassificationAllOfCriteriaDto.class, "ClassificationAllOfCriteriaDto")
@@ -156,7 +201,7 @@ public final class RetroProvider {
 				.registerSubtype(ClassificationAllSymptomsCriteriaDto.class, "ClassificationAllSymptomsCriteriaDto");
 
 
-		Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
+		return new GsonBuilder().registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> {
 			if (json.isJsonNull()) {
 				return null;
 			}
@@ -168,43 +213,6 @@ public final class RetroProvider {
 			}
 			return new JsonPrimitive(src.getTime());
 		}).registerTypeAdapterFactory(classificationCriteriaFactory).create();
-
-		// Basic auth as explained in https://futurestud.io/tutorials/android-basic-authentication-with-retrofit
-
-		String authToken = Credentials.basic(ConfigProvider.getUsername(), ConfigProvider.getPassword());
-		AuthenticationInterceptor interceptor = new AuthenticationInterceptor(authToken);
-
-		OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-		httpClient.connectTimeout(20, TimeUnit.SECONDS);
-		httpClient.readTimeout(1800, TimeUnit.SECONDS); // for infrastructure data
-		httpClient.writeTimeout(60, TimeUnit.SECONDS);
-
-		// adds "Accept-Encoding: gzip" by default
-		httpClient.addInterceptor(interceptor);
-
-		// header for logging purposes
-		httpClient.addInterceptor(chain -> {
-
-			Request original = chain.request();
-			Request.Builder builder = original.newBuilder();
-
-			User user = ConfigProvider.getUser();
-			if (user != null) {
-				builder.header("User", DataHelper.getShortUuid(user.getUuid()));
-				builder.header("Connection", String.valueOf(lastConnectionId)); // not sure if this is a good solution
-			}
-
-			builder.method(original.method(), original.body());
-			return chain.proceed(builder.build());
-		});
-
-		retrofit =
-			new Retrofit.Builder().baseUrl(serverUrl).addConverterFactory(GsonConverterFactory.create(gson)).client(httpClient.build()).build();
-
-		checkCompatibility();
-
-		updateLocale();
-		updateCountryName();
 	}
 
 	public static int getLastConnectionId() {
@@ -476,6 +484,19 @@ public final class RetroProvider {
 			}
 		}
 		return instance.caseFacadeRetro;
+	}
+
+	public static ImmunizationFacadeRetro getImmunizationFacade() throws NoConnectionException {
+		if (instance == null)
+			throw new NoConnectionException();
+		if (instance.immunizationFacadeRetro == null) {
+			synchronized ((RetroProvider.class)) {
+				if (instance.immunizationFacadeRetro == null) {
+					instance.immunizationFacadeRetro = instance.retrofit.create(ImmunizationFacadeRetro.class);
+				}
+			}
+		}
+		return instance.immunizationFacadeRetro;
 	}
 
 	public static PersonFacadeRetro getPersonFacade() throws NoConnectionException {

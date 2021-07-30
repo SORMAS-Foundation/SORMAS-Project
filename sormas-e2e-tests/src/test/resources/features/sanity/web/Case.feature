@@ -1,4 +1,4 @@
-@Sanity @Case
+@UI @Sanity @Case
 Feature: Case end to end tests
 
   Background: Create new case

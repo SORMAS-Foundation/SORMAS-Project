@@ -90,6 +90,7 @@ import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -446,13 +447,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		cq.select(user);
 
-		List<User> resultList;
-		if (first != null && max != null) {
-			resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			resultList = em.createQuery(cq).getResultList();
-		}
-		return resultList.stream().map(u -> toDto(u)).collect(Collectors.toList());
+		return QueryHelper.getResultList(em, cq, first, max, UserFacadeEjb::toDto);
 	}
 
 	@Override

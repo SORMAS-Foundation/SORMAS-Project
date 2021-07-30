@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,8 +41,10 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -160,6 +162,7 @@ public class EventParticipantsView extends AbstractEventView {
 				customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));
 				customExportWindow.setContent(customExportsLayout);
 				UI.getCurrent().addWindow(customExportWindow);
+				exportPopupButton.setPopupVisible(false);
 			}, ValoTheme.BUTTON_PRIMARY);
 			btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
 			btnCustomExport.setWidth(100, Unit.PERCENTAGE);
@@ -184,12 +187,19 @@ public class EventParticipantsView extends AbstractEventView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
-			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>(
-				Collections.singletonList(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
+			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
+			bulkActions
+				.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEventParticipantsToContacts), VaadinIcons.HAND, mi -> {
 					grid.bulkActionHandler(items -> {
-						ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> navigateTo(criteria));
+						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid());
+						ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
 					}, true);
-				})));
+				}));
+			bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
+				grid.bulkActionHandler(items -> {
+					ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> navigateTo(criteria));
+				}, true);
+			}));
 
 			if (isDocGenerationAllowed()) {
 				bulkActions

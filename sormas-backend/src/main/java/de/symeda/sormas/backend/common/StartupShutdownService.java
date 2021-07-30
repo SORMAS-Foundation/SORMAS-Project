@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
@@ -107,7 +108,6 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
 
-	public static final String SORMAS_TO_SORMAS_USER_NAME = "Sormas2Sormas";
 	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
 	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
@@ -150,11 +150,11 @@ public class StartupShutdownService {
 	@EJB
 	private FeatureConfigurationService featureConfigurationService;
 	@EJB
-	private ServerAccessDataService serverAccessDataService;
-	@EJB
 	private CountryFacadeEjbLocal countryFacade;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
 
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
@@ -507,15 +507,19 @@ public class StartupShutdownService {
 	}
 
 	private void createOrUpdateSormasToSormasUser() {
-		serverAccessDataService.getServerAccessData().ifPresent((serverAccessData -> {
-			String sormasToSormasUserPassword = serverAccessData.getRestUserPassword();
+		if (sormasToSormasFacadeEjb.isFeatureConfigured()) {
+			// password is never used, just to prevent login as this user
+			byte[] pwd = new byte[64];
+			SecureRandom rnd = new SecureRandom();
+			rnd.nextBytes(pwd);
+
 			createOrUpdateDefaultUser(
 				Collections.singleton(UserRole.SORMAS_TO_SORMAS_CLIENT),
-				SORMAS_TO_SORMAS_USER_NAME,
-				sormasToSormasUserPassword,
+				DefaultUserHelper.SORMAS_TO_SORMAS_USER_NAME,
+				new String(pwd),
 				"Sormas to Sormas",
 				"Client");
-		}));
+		}
 	}
 
 	private void createOrUpdateSymptomJournalUser() {
@@ -858,7 +862,7 @@ public class StartupShutdownService {
 		try {
 			importFacade.generateEventParticipantImportTemplateFile();
 		} catch (IOException e) {
-			logger.error("Could not create eventparticipant import template .csv file.");
+			logger.error("Could not create event participant import template .csv file.");
 		}
 	}
 

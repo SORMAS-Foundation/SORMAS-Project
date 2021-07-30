@@ -54,6 +54,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
@@ -88,6 +89,7 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -112,6 +114,7 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb.VaccinationInfoFacadeEjbLocal;
 import de.symeda.sormas.utils.EventParticipantJoins;
@@ -126,6 +129,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	@EJB
 	private EventService eventService;
+	@EJB
+	private EventFacadeEjbLocal eventFacade;
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
@@ -218,10 +223,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	@Override
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto) {
-		return saveEventParticipant(dto, true);
+		return saveEventParticipant(dto, true, true);
 	}
 
-	public EventParticipantDto saveEventParticipant(EventParticipantDto dto, boolean checkChangeDate) {
+	public EventParticipantDto saveEventParticipant(EventParticipantDto dto, boolean checkChangeDate, boolean syncShares) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? eventParticipantService.getByUuid(dto.getUuid()) : null;
 		EventParticipantDto existingDto = toDto(existingParticipant);
 
@@ -251,7 +256,13 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			notifyEventResponsibleUsersOfCommonEventParticipant(entity, event);
 		}
 
+		onEventParticipantChanged(EventFacadeEjbLocal.toDto(entity.getEvent()), syncShares);
+
 		return convertToDto(entity, pseudonymizer);
+	}
+
+	public void onEventParticipantChanged(EventDto event, boolean syncShares) {
+		eventFacade.onEventChange(event, syncShares);
 	}
 
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {
@@ -352,7 +363,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		final CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
 		final Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		final EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
-		EventParticipantJoins<EventParticipant> joins = new EventParticipantJoins<>(eventParticipant);
+		EventParticipantJoins<EventParticipant> joins = (EventParticipantJoins<EventParticipant>) queryContext.getJoins();
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
@@ -360,8 +371,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<EventParticipant, VaccinationInfo> vaccinationInfoJoin = joins.getVaccinationInfo();
 		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
 
-		Expression<Object> jurisdictionSelector =
-			JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, joins));
+		Expression<Object> inJurisdictionSelector =
+			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdiction(queryContext));
+		Expression<Object> inJurisdictionOrOwnedSelector =
+			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(queryContext));
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.UUID),
@@ -379,8 +392,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			cb.max(samples.get(Sample.SAMPLE_DATE_TIME)),
 			vaccinationInfoJoin.get(VaccinationInfo.VACCINATION),
 			joins.getEventParticipantReportingUser().get(User.UUID),
-			jurisdictionSelector);
+			inJurisdictionSelector,
+			inJurisdictionOrOwnedSelector);
 		cq.groupBy(
+			eventParticipant.get(EventParticipant.ID),
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.UUID),
 			resultingCase.get(Case.UUID),
@@ -392,8 +407,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
 			vaccinationInfoJoin.get(VaccinationInfo.VACCINATION),
+			joins.getEventParticipantReportingUser().get(User.ID),
 			joins.getEventParticipantReportingUser().get(User.UUID),
-			jurisdictionSelector);
+			inJurisdictionSelector,
+			inJurisdictionOrOwnedSelector);
 
 		Subquery<Date> dateSubquery = cq.subquery(Date.class);
 		Root<Sample> subRoot = dateSubquery.from(Sample.class);
@@ -454,12 +471,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			cq.orderBy(cb.desc(person.get(Person.LAST_NAME)));
 		}
 
-		List<EventParticipantIndexDto> indexList;
-		if (first != null && max != null) {
-			indexList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			indexList = em.createQuery(cq).getResultList();
-		}
+		List<EventParticipantIndexDto> indexList = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!indexList.isEmpty()) {
 			Map<String, Long> eventParticipantContactCount = getContactCountPerEventParticipant(
@@ -473,7 +485,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(EventParticipantIndexDto.class, indexList, p -> p.getInJurisdiction(), null);
+		pseudonymizer.pseudonymizeDtoCollection(EventParticipantIndexDto.class, indexList, p -> p.getInJurisdictionOrOwned(), null);
 
 		return indexList;
 	}
@@ -487,28 +499,24 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
 
+		EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.UUID),
 			event.get(Event.UUID),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.EVENT_TITLE),
-			JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(eventParticipant))));
+			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(queryContext)));
 
 		Predicate filter = CriteriaBuilderHelper.and(
 			cb,
-			eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, new EventParticipantQueryContext(cb, cq, eventParticipant)),
+			eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, queryContext),
 			cb.isFalse(event.get(Event.DELETED)));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(eventParticipant.get(EventParticipant.CREATION_DATE)));
 
-		List<EventParticipantListEntryDto> result;
-		if (first != null && max != null) {
-			result = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			result = em.createQuery(cq).getResultList();
-		}
+		List<EventParticipantListEntryDto> result = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(EventParticipantListEntryDto.class, result, p -> p.getInJurisdiction(), null);
@@ -528,7 +536,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		CriteriaQuery<EventParticipantExportDto> cq = cb.createQuery(EventParticipantExportDto.class);
 		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
-		EventParticipantJoins<EventParticipant> joins = new EventParticipantJoins<>(eventParticipant);
+		EventParticipantJoins<EventParticipant> joins = (EventParticipantJoins<EventParticipant>) eventParticipantQueryContext.getJoins();
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 
@@ -551,7 +559,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.NATIONAL_HEALTH_ID),
 			person.get(Location.ID),
-			JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, joins)),
+			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(eventParticipantQueryContext)),
 
 			event.get(Event.UUID),
 
@@ -624,7 +632,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, eventParticipant.get(EventParticipant.UUID));
 		cq.where(filter);
 
-		List<EventParticipantExportDto> eventParticipantResultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<EventParticipantExportDto> eventParticipantResultList = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!eventParticipantResultList.isEmpty()) {
 			Map<String, Long> eventParticipantContactCount = getContactCountPerEventParticipant(
@@ -929,7 +937,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<Object, Object> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.LEFT);
 		Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
 
-		Expression<Object> jurisdictionSelector = JurisdictionHelper.jurisdictionSelector(cb, eventParticipantService.inJurisdictionOrOwned(cb, new EventParticipantJoins(eventParticipantRoot)));
+		Expression<Object> jurisdictionSelector = JurisdictionHelper
+			.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, eventParticipantRoot)));
 		cq.multiselect(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),

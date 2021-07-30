@@ -30,6 +30,7 @@ import androidx.fragment.app.FragmentActivity;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.component.Item;
@@ -82,9 +83,10 @@ public class ReferCaseFromPoeDialog extends AbstractDialog {
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
 		List<Item> initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
-		List<Item> initialDistricts = InfrastructureDaoHelper.loadDistricts(data.getRegion());
-		List<Item> initialCommunities = InfrastructureDaoHelper.loadCommunities(data.getDistrict());
-		List<Item> initialFacilities = InfrastructureDaoHelper.loadFacilities(data.getDistrict(), data.getCommunity(), data.getFacilityType());
+		List<Item> initialDistricts = InfrastructureDaoHelper.loadDistricts(CaseDao.getRegionWithFallback(data));
+		List<Item> initialCommunities = InfrastructureDaoHelper.loadCommunities(CaseDao.getDistrictWithFallback(data));
+		List<Item> initialFacilities = InfrastructureDaoHelper
+			.loadFacilities(CaseDao.getDistrictWithFallback(data), CaseDao.getCommunityWithFallback(data), data.getFacilityType());
 		InfrastructureDaoHelper.initializeFacilityFields(
 			data,
 			contentBinding.caseDataRegion,

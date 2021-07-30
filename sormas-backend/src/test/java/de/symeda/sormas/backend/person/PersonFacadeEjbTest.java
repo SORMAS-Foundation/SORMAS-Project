@@ -51,8 +51,24 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 
 		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
+		creator.createCase(
+			user.toReference(),
+			person1.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
 		person1.setPresentCondition(PresentCondition.DEAD);
-		creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1920, 1, 1);
+		final PersonDto person2 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1920, 1, 1);
+		creator.createCase(
+			user.toReference(),
+			person2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
 
 		getPersonFacade().savePerson(person1);
 
@@ -61,7 +77,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetIndexListPersonNotConsideredIfAssociatedEntityDeleted() throws ExternalSurveillanceToolException {
+	public void testGetIndexListPersonNotConsideredIfAssociatedEntitiesDeleted() throws ExternalSurveillanceToolException {
 		final RDCFEntities rdcf = creator.createRDCFEntities();
 		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 
@@ -87,23 +103,23 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
 		getCaseFacade().deleteCase(caze.getUuid());
 
-		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
 		getCaseFacade().deleteCase(caze2.getUuid());
 
-		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+		assertEquals(0, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
 		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), person1.toReference(), caze, new Date(), new Date(), null);
 
-		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
 		getContactFacade().deleteContact(contact.getUuid());
 
-		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
+		assertEquals(0, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 	}
 
 	@Test

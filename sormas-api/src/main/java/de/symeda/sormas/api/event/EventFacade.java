@@ -55,6 +55,8 @@ public interface EventFacade {
 
 	List<EventDto> getByUuids(List<String> uuids);
 
+	EventDto getByUuid(String uuid);
+
 	void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException;
 
 	long count(EventCriteria eventCriteria);

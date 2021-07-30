@@ -53,12 +53,13 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
-@Entity(name = "users")
+@Entity(name = User.TABLE_NAME)
 @Audited
 public class User extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -629432920970152112L;
 
+	public static final String TABLE_NAME = "users";
 	public static final String TABLE_NAME_USERROLES = "users_userroles";
 
 	public static final String USER_NAME = "userName";
@@ -208,7 +209,7 @@ public class User extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ElementCollection(fetch = FetchType.LAZY)
+	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = TABLE_NAME_USERROLES,
 		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),

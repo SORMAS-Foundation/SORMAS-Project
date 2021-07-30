@@ -30,7 +30,9 @@ import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequest;
 
 @Entity(name = "sormastosormasorigininfo")
@@ -58,6 +60,12 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private boolean ownershipHandedOver;
 
+	private boolean withAssociatedContacts;
+
+	private boolean withSamples;
+
+	private boolean withEventParticipants;
+
 	private String comment;
 
 	private SormasToSormasShareRequest request;
@@ -66,7 +74,11 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	private List<Contact> contacts;
 
+	private List<Event> events;
+
 	private List<EventParticipant> eventParticipants;
+
+	private List<Sample> samples;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
 	public String getOrganizationId() {
@@ -113,6 +125,33 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
+	@Column
+	public boolean isWithAssociatedContacts() {
+		return withAssociatedContacts;
+	}
+
+	public void setWithAssociatedContacts(boolean withContacts) {
+		this.withAssociatedContacts = withContacts;
+	}
+
+	@Column
+	public boolean isWithSamples() {
+		return withSamples;
+	}
+
+	public void setWithSamples(boolean withSamples) {
+		this.withSamples = withSamples;
+	}
+
+	@Column
+	public boolean isWithEventParticipants() {
+		return withEventParticipants;
+	}
+
+	public void setWithEventParticipants(boolean withEventParticipants) {
+		this.withEventParticipants = withEventParticipants;
+	}
+
 	@OneToOne(mappedBy = "originInfo")
 	public SormasToSormasShareRequest getRequest() {
 		return request;
@@ -153,11 +192,31 @@ public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
 	@AuditedIgnore
+	public List<Event> getEvents() {
+		return events;
+	}
+
+	public void setEvents(List<Event> events) {
+		this.events = events;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@AuditedIgnore
 	public List<EventParticipant> getEventParticipants() {
 		return eventParticipants;
 	}
 
 	public void setEventParticipants(List<EventParticipant> eventParticipants) {
 		this.eventParticipants = eventParticipants;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sormasToSormasOriginInfo")
+	@AuditedIgnore
+	public List<Sample> getSamples() {
+		return samples;
+	}
+
+	public void setSamples(List<Sample> samples) {
+		this.samples = samples;
 	}
 }

@@ -20,6 +20,7 @@ public enum PersonContext {
 	CASE,
 	CONTACT,
 	EVENT_PARTICIPANT,
+	TRAVEL_ENTRY,
 	OTHER;
 
 }

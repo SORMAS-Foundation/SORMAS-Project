@@ -38,7 +38,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "TreatmentFacade")
 public class TreatmentFacadeEjb implements TreatmentFacade {
@@ -63,7 +63,6 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TreatmentIndexDto> cq = cb.createQuery(TreatmentIndexDto.class);
 		Root<Treatment> treatment = cq.from(Treatment.class);
-
 		TreatmentJoins joins = new TreatmentJoins(treatment);
 
 		cq.multiselect(
@@ -76,7 +75,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 			treatment.get(Treatment.ROUTE),
 			treatment.get(Treatment.ROUTE_DETAILS),
 			treatment.get(Treatment.EXECUTING_CLINICIAN),
-			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaze()))));
 
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, treatment));
@@ -173,7 +172,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 			treatment.get(Treatment.ROUTE),
 			treatment.get(Treatment.ROUTE_DETAILS),
 			treatment.get(Treatment.ADDITIONAL_NOTES),
-			JurisdictionHelper.jurisdictionSelector(cb, caseService.inJurisdictionOrOwned(cb, new CaseJoins<>(joins.getCaze()))));
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaze()))));
 
 		Predicate filter = service.createUserFilter(cb, cq, treatment);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, new CaseQueryContext(cb, cq, joins.getCaze()));
@@ -182,7 +181,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		cq.where(filter);
 		cq.orderBy(cb.desc(joins.getCaze().get(Case.UUID)), cb.desc(treatment.get(Treatment.TREATMENT_DATE_TIME)));
 
-		List<TreatmentExportDto> exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<TreatmentExportDto> exportList = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(TreatmentExportDto.class, exportList, t -> t.getInJurisdiction(), null);

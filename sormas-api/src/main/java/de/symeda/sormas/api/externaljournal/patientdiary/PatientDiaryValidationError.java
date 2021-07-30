@@ -12,7 +12,7 @@ public enum PatientDiaryValidationError {
 	PHONE_TAKEN(Validations.externalJournalPersonValidationPhoneTaken),
 	SEVERAL_PHONES_OR_EMAILS(Validations.externalJournalPersonValidationSeveralPhonesOrEmails);
 
-	public String errorLanguageKey;
+	private final String errorLanguageKey;
 
 	PatientDiaryValidationError(String errorLanguageKey) {
 		this.errorLanguageKey = errorLanguageKey;

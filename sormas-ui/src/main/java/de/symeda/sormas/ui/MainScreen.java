@@ -39,6 +39,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -81,6 +82,7 @@ import de.symeda.sormas.ui.sormastosormas.ShareRequestsView;
 import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
 import de.symeda.sormas.ui.task.TasksView;
+import de.symeda.sormas.ui.travelentry.TravelEntriesView;
 import de.symeda.sormas.ui.user.UsersView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -94,7 +96,7 @@ public class MainScreen extends HorizontalLayout {
 	// Add new views to this set to make sure that the right error page is shown
 	private static final Set<String> KNOWN_VIEWS = initKnownViews();
 
-	private Menu menu;
+	private final Menu menu;
 
 	public MainScreen(SormasUI ui) {
 
@@ -182,8 +184,18 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
 		}
 
+		if (permitted(UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS)
+			&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			ControllerProvider.getTravelEntryController().registerViews(navigator);
+			menu.addView(
+				TravelEntriesView.class,
+				TravelEntriesView.VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuEntries),
+				VaadinIcons.AIRPLANE);
+		}
+
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
-			&& FacadeProvider.getSormasToSormasFacade().isFeatureEnabled()) {
+			&& FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
 			ControllerProvider.getSormasToSormasController().registerViews(navigator);
 			menu.addView(
 				ShareRequestsView.class,
@@ -307,7 +319,8 @@ public class MainScreen extends HorizontalLayout {
 				ContinentsView.VIEW_NAME,
 				SubcontinentsView.VIEW_NAME,
 				CountriesView.VIEW_NAME,
-				LabMessagesView.VIEW_NAME));
+				LabMessagesView.VIEW_NAME,
+				TravelEntriesView.VIEW_NAME));
 
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			views.add(SurveillanceDashboardView.VIEW_NAME);
@@ -350,7 +363,7 @@ public class MainScreen extends HorizontalLayout {
 					if (!DataHelper.isNullOrEmpty(event.getParameters())) {
 						url += event.getParameters();
 					}
-					url += "?" + urlParams.toString();
+					url += "?" + urlParams;
 					SormasUI.get().getNavigator().navigateTo(url);
 					return false;
 				}
