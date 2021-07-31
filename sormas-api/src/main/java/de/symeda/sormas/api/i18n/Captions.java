@@ -1286,6 +1286,7 @@ public interface Captions {
 	String Immunization_personFirstName = "Immunization.personFirstName";
 	String Immunization_personId = "Immunization.personId";
 	String Immunization_personLastName = "Immunization.personLastName";
+	String Immunization_positiveTestResultDate = "Immunization.positiveTestResultDate";
 	String Immunization_previousInfection = "Immunization.previousInfection";
 	String Immunization_recoveryDate = "Immunization.recoveryDate";
 	String Immunization_reportDate = "Immunization.reportDate";

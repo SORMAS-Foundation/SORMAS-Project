@@ -560,6 +560,7 @@ public interface Strings {
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
 	String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
 	String headingQuarantineForCases = "headingQuarantineForCases";
+	String headingRecovery = "headingRecovery";
 	String headingReduceQuarantine = "headingReduceQuarantine";
 	String headingReferCaseFromPointOfEntry = "headingReferCaseFromPointOfEntry";
 	String headingReferSample = "headingReferSample";
@@ -611,6 +612,7 @@ public interface Strings {
 	String headingUsersDisabled = "headingUsersDisabled";
 	String headingUsersEnabled = "headingUsersEnabled";
 	String headingUserSettings = "headingUserSettings";
+	String headingVaccination = "headingVaccination";
 	String headingViewNotFound = "headingViewNotFound";
 	String headingVisits = "headingVisits";
 	String headingVisitsDeleted = "headingVisitsDeleted";

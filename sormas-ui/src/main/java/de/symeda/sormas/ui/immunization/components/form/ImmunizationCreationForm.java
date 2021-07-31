@@ -50,6 +50,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 
 	private static final String OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS = "overwriteImmunizationManagementStatus";
 	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
+	private static final String VACCINATION_HEADING_LOC = "vaccinationHeadingLoc";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(ImmunizationDto.REPORT_DATE, ImmunizationDto.EXTERNAL_ID)
@@ -60,6 +61,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.RESPONSIBLE_REGION, ImmunizationDto.RESPONSIBLE_DISTRICT, ImmunizationDto.RESPONSIBLE_COMMUNITY)
 		+ fluidRowLocs(ImmunizationDto.START_DATE, ImmunizationDto.END_DATE)
+		+ fluidRowLocs(VACCINATION_HEADING_LOC)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.NUMBER_OF_DOSES))
 		+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
 		+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
@@ -125,8 +127,14 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		addField(ImmunizationDto.START_DATE, DateField.class);
 		addField(ImmunizationDto.END_DATE, DateField.class);
 
+		Label vaccinationHeadingLabel = new Label(I18nProperties.getString(Strings.headingVaccination));
+		vaccinationHeadingLabel.addStyleName(H3);
+		getContent().addComponent(vaccinationHeadingLabel, VACCINATION_HEADING_LOC);
+		vaccinationHeadingLabel.setVisible(false);
+
 		TextField numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
 		numberOfDosesField.setConverter(new StringToIntegerConverter());
+		numberOfDosesField.setVisible(false);
 
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
@@ -229,6 +237,13 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 				managementStatusField.setValue(ImmunizationManagementStatus.COMPLETED);
 			} else {
 				managementStatusField.setValue(ImmunizationManagementStatus.SCHEDULED);
+			}
+			boolean isVaccinationVisible =
+				MeansOfImmunization.VACCINATION.equals(meansOfImmunization) || MeansOfImmunization.VACCINATION_RECOVERY.equals(meansOfImmunization);
+			vaccinationHeadingLabel.setVisible(isVaccinationVisible);
+			numberOfDosesField.setVisible(isVaccinationVisible);
+			if (!isVaccinationVisible) {
+				numberOfDosesField.setValue(null);
 			}
 		});
 

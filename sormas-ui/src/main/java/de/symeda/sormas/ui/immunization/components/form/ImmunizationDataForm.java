@@ -40,6 +40,8 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 	private static final String OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS = "overwriteImmunizationManagementStatus";
 	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
+	private static final String VACCINATION_HEADING_LOC = "vaccinationHeadingLoc";
+	private static final String RECOVERY_HEADING_LOC = "recoveryHeadingLoc";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(ImmunizationDto.REPORT_DATE, ImmunizationDto.EXTERNAL_ID)
@@ -50,7 +52,10 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.RESPONSIBLE_REGION, ImmunizationDto.RESPONSIBLE_DISTRICT, ImmunizationDto.RESPONSIBLE_COMMUNITY)
 		+ fluidRowLocs(ImmunizationDto.START_DATE, ImmunizationDto.END_DATE)
+		+ fluidRowLocs(VACCINATION_HEADING_LOC)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.NUMBER_OF_DOSES))
+		+ fluidRowLocs(RECOVERY_HEADING_LOC)
+		+ fluidRowLocs(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, ImmunizationDto.RECOVERY_DATE)
 		+ fluidRowLocs(ImmunizationDto.REPORTING_USER, ImmunizationDto.PREVIOUS_INFECTION, ImmunizationDto.LAST_INFECTION_DATE)
 		+ fluidRowLocs(ImmunizationDto.ADDITIONAL_DETAILS);
 	//@formatter:on
@@ -113,8 +118,25 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		addField(ImmunizationDto.START_DATE, DateField.class);
 		addField(ImmunizationDto.END_DATE, DateField.class);
 
+		Label vaccinationHeadingLabel = new Label(I18nProperties.getString(Strings.headingVaccination));
+		vaccinationHeadingLabel.addStyleName(H3);
+		getContent().addComponent(vaccinationHeadingLabel, VACCINATION_HEADING_LOC);
+		vaccinationHeadingLabel.setVisible(shouldShowVaccinationFields((MeansOfImmunization) meansOfImmunizationField.getValue()));
+
 		TextField numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
 		numberOfDosesField.setConverter(new StringToIntegerConverter());
+		numberOfDosesField.setVisible(shouldShowVaccinationFields((MeansOfImmunization) meansOfImmunizationField.getValue()));
+
+		Label recoveryHeadingLabel = new Label(I18nProperties.getString(Strings.headingRecovery));
+		recoveryHeadingLabel.addStyleName(H3);
+		getContent().addComponent(recoveryHeadingLabel, RECOVERY_HEADING_LOC);
+		recoveryHeadingLabel.setVisible(shouldShowVaccinationFields((MeansOfImmunization) meansOfImmunizationField.getValue()));
+
+		DateField positiveTestResultDate = addField(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, DateField.class);
+		positiveTestResultDate.setVisible(shouldShowVaccinationFields((MeansOfImmunization) meansOfImmunizationField.getValue()));
+
+		DateField recoveryDate = addField(ImmunizationDto.RECOVERY_DATE, DateField.class);
+		recoveryDate.setVisible(shouldShowVaccinationFields((MeansOfImmunization) meansOfImmunizationField.getValue()));
 
 		addField(ImmunizationDto.REPORTING_USER, ComboBox.class);
 		addField(ImmunizationDto.PREVIOUS_INFECTION, NullableOptionGroup.class);
@@ -150,6 +172,15 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			} else {
 				managementStatusField.setValue(ImmunizationManagementStatus.SCHEDULED);
 			}
+			boolean isVaccinationVisible = shouldShowVaccinationFields(meansOfImmunization);
+			vaccinationHeadingLabel.setVisible(isVaccinationVisible);
+			numberOfDosesField.setVisible(isVaccinationVisible);
+			if (!isVaccinationVisible) {
+				numberOfDosesField.setValue(null);
+			}
+			recoveryHeadingLabel.setVisible(isVaccinationVisible);
+			positiveTestResultDate.setVisible(isVaccinationVisible);
+			recoveryDate.setVisible(isVaccinationVisible);
 		});
 
 		managementStatusField.addValueChangeListener(valueChangeEvent -> {
@@ -186,5 +217,9 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		}
 
 		return UiFieldAccessCheckers.getNoop();
+	}
+
+	private boolean shouldShowVaccinationFields(MeansOfImmunization meansOfImmunization) {
+		return MeansOfImmunization.VACCINATION.equals(meansOfImmunization) || MeansOfImmunization.VACCINATION_RECOVERY.equals(meansOfImmunization);
 	}
 }
