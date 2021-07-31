@@ -65,6 +65,8 @@ public class ImmunizationDto extends PseudonymizableDto {
 	public static final String POSITIVE_TEST_RESULT_DATE = "positiveTestResultDate";
 	public static final String RECOVERY_DATE = "recoveryDate";
 
+	public static final String COUNTRY = "country";
+
 	public static final String PERSON = "person";
 
 	@Outbreaks

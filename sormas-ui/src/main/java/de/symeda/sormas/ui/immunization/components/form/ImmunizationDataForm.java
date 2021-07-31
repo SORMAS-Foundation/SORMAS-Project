@@ -52,12 +52,13 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.RESPONSIBLE_REGION, ImmunizationDto.RESPONSIBLE_DISTRICT, ImmunizationDto.RESPONSIBLE_COMMUNITY)
 		+ fluidRowLocs(ImmunizationDto.START_DATE, ImmunizationDto.END_DATE)
+		+ fluidRowLocs(ImmunizationDto.REPORTING_USER, ImmunizationDto.PREVIOUS_INFECTION, ImmunizationDto.LAST_INFECTION_DATE)
+		+ fluidRowLocs(ImmunizationDto.ADDITIONAL_DETAILS)
 		+ fluidRowLocs(VACCINATION_HEADING_LOC)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.NUMBER_OF_DOSES))
 		+ fluidRowLocs(RECOVERY_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, ImmunizationDto.RECOVERY_DATE)
-		+ fluidRowLocs(ImmunizationDto.REPORTING_USER, ImmunizationDto.PREVIOUS_INFECTION, ImmunizationDto.LAST_INFECTION_DATE)
-		+ fluidRowLocs(ImmunizationDto.ADDITIONAL_DETAILS);
+		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY));
 	//@formatter:on
 
 	private final String immunizationUuid;
@@ -147,6 +148,9 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		descriptionField.setDescription(
 			I18nProperties.getPrefixDescription(ImmunizationDto.I18N_PREFIX, ImmunizationDto.ADDITIONAL_DETAILS, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
+
+		ComboBox country = addInfrastructureField(ImmunizationDto.COUNTRY);
+		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();

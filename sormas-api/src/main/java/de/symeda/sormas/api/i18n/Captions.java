@@ -1271,13 +1271,14 @@ public interface Captions {
 	String HealthConditions_tuberculosis = "HealthConditions.tuberculosis";
 	String Immunization_additionalDetails = "Immunization.additionalDetails";
 	String Immunization_ageAndBirthDate = "Immunization.ageAndBirthDate";
+	String Immunization_country = "Immunization.country";
 	String Immunization_disease = "Immunization.disease";
 	String Immunization_diseaseDetails = "Immunization.diseaseDetails";
 	String Immunization_diseaseVariant = "Immunization.diseaseVariant";
 	String Immunization_endDate = "Immunization.endDate";
 	String Immunization_externalId = "Immunization.externalId";
 	String Immunization_immunizationStatus = "Immunization.immunizationStatus";
-	String Immunzation_lastInfectionDate = "Immunization.lastInfectionDate";
+	String Immunization_lastInfectionDate = "Immunization.lastInfectionDate";
 	String Immunization_managementStatus = "Immunization.managementStatus";
 	String Immunization_meansOfImmunization = "Immunization.meansOfImmunization";
 	String Immunization_meansOfImmunizationDetails = "Immunization.meansOfImmunizationDetails";
