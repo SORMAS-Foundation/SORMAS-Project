@@ -109,9 +109,6 @@ public class ImmunizationDto extends PseudonymizableDto {
 		immunizationDto.setPerson(person);
 		immunizationDto.setReportDate(new Date());
 
-		// are these mandatory?
-		immunizationDto.setPositiveTestResultDate(new Date());
-		immunizationDto.setRecoveryDate(new Date());
 		return immunizationDto;
 	}
 
