@@ -9,6 +9,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import com.vaadin.ui.Label;
@@ -19,6 +20,7 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -45,7 +47,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(ImmunizationDto.REPORT_DATE, ImmunizationDto.EXTERNAL_ID)
-		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.DISEASE))
+		+ fluidRowLocs(ImmunizationDto.DISEASE, ImmunizationDto.DISEASE_DETAILS)
 		+ fluidRowLocs(ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.MEANS_OF_IMMUNIZATION_DETAILS)
 		+ fluidRowLocs(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS)
 		+ fluidRowLocs(ImmunizationDto.MANAGEMENT_STATUS, ImmunizationDto.IMMUNIZATION_STATUS)
@@ -87,6 +89,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
 		addDiseaseField(ImmunizationDto.DISEASE, false);
+		addField(ImmunizationDto.DISEASE_DETAILS, TextField.class);
 
 		ComboBox meansOfImmunizationField = addField(ImmunizationDto.MEANS_OF_IMMUNIZATION, ComboBox.class);
 		addField(ImmunizationDto.MEANS_OF_IMMUNIZATION_DETAILS, TextField.class);
@@ -156,6 +159,15 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 
 		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.DISEASE, ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.START_DATE);
+
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(ImmunizationDto.DISEASE_DETAILS),
+			ImmunizationDto.DISEASE,
+			Arrays.asList(Disease.OTHER),
+			true);
+		FieldHelper
+			.setRequiredWhen(getFieldGroup(), ImmunizationDto.DISEASE, Arrays.asList(ImmunizationDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

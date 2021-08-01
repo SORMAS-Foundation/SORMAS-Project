@@ -42,6 +42,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	public static final String EXTERNAL_ID = "externalId";
 
 	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
 
 	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
 	public static final String MEANS_OF_IMMUNIZATION_DETAILS = "meansOfImmunizationDetails";
@@ -72,6 +73,8 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Outbreaks
 	@Required
 	private Disease disease;
+	@Outbreaks
+	private String diseaseDetails;
 	@Required
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
@@ -118,6 +121,14 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
 	}
 
 	public PersonReferenceDto getPerson() {

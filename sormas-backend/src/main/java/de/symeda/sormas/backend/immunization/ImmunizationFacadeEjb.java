@@ -284,6 +284,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		DtoHelper.fillDto(dto, entity);
 
 		dto.setDisease(entity.getDisease());
+		dto.setDiseaseDetails(entity.getDiseaseDetails());
 		dto.setPerson(PersonFacadeEjb.toReferenceDto(entity.getPerson()));
 		dto.setReportDate(entity.getReportDate());
 		dto.setReportingUser(entity.getReportingUser().toReference());
@@ -314,6 +315,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, true);
 
 		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));

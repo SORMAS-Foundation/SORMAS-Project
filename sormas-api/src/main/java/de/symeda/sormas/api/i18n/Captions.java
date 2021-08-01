@@ -1274,7 +1274,6 @@ public interface Captions {
 	String Immunization_country = "Immunization.country";
 	String Immunization_disease = "Immunization.disease";
 	String Immunization_diseaseDetails = "Immunization.diseaseDetails";
-	String Immunization_diseaseVariant = "Immunization.diseaseVariant";
 	String Immunization_endDate = "Immunization.endDate";
 	String Immunization_externalId = "Immunization.externalId";
 	String Immunization_immunizationStatus = "Immunization.immunizationStatus";
