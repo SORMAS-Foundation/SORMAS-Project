@@ -19,6 +19,8 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
@@ -28,7 +30,9 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
@@ -52,6 +56,10 @@ public class ImmunizationDto extends PseudonymizableDto {
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
+
+	public static final String FACILITY_TYPE = "facilityType";
+	public static final String HEALTH_FACILITY = "healthFacility";
+	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
@@ -91,6 +99,19 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private DistrictReferenceDto responsibleDistrict;
 	private CommunityReferenceDto responsibleCommunity;
 	private CountryReferenceDto country;
+
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
+	private FacilityType facilityType;
+	@Outbreaks
+	@Required
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
+	private FacilityReferenceDto healthFacility;
+	@Outbreaks
+	@PersonalData
+	@SensitiveData
+	private String healthFacilityDetails;
 
 	private Date startDate;
 	private Date endDate;
@@ -201,6 +222,30 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	public void setResponsibleCommunity(CommunityReferenceDto responsibleCommunity) {
 		this.responsibleCommunity = responsibleCommunity;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+	}
+
+	public FacilityReferenceDto getHealthFacility() {
+		return healthFacility;
+	}
+
+	public void setHealthFacility(FacilityReferenceDto healthFacility) {
+		this.healthFacility = healthFacility;
+	}
+
+	public String getHealthFacilityDetails() {
+		return healthFacilityDetails;
+	}
+
+	public void setHealthFacilityDetails(String healthFacilityDetails) {
+		this.healthFacilityDetails = healthFacilityDetails;
 	}
 
 	public Date getStartDate() {

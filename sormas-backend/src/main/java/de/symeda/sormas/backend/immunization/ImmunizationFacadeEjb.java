@@ -45,6 +45,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
@@ -75,6 +77,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	private DistrictService districtService;
 	@EJB
 	private CommunityService communityService;
+	@EJB
+	private FacilityService facilityService;
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -298,6 +302,9 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		dto.setResponsibleDistrict(DistrictFacadeEjb.toReferenceDto(entity.getResponsibleDistrict()));
 		dto.setResponsibleCommunity(CommunityFacadeEjb.toReferenceDto(entity.getResponsibleCommunity()));
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
+		dto.setFacilityType(entity.getFacilityType());
+		dto.setHealthFacility(FacilityFacadeEjb.toReferenceDto(entity.getHealthFacility()));
+		dto.setHealthFacilityDetails(entity.getHealthFacilityDetails());
 		dto.setStartDate(entity.getStartDate());
 		dto.setEndDate(entity.getEndDate());
 		dto.setNumberOfDoses(entity.getNumberOfDoses());
@@ -329,6 +336,9 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		target.setResponsibleDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
 		target.setResponsibleCommunity(communityService.getByReferenceDto(source.getResponsibleCommunity()));
 		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
+		target.setFacilityType(source.getFacilityType());
+		target.setHealthFacility(facilityService.getByReferenceDto(source.getHealthFacility()));
+		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
 		target.setNumberOfDoses(source.getNumberOfDoses());

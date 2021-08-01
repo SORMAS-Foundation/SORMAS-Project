@@ -22,6 +22,11 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -29,10 +34,13 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -42,6 +50,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 	private static final String OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS = "overwriteImmunizationManagementStatus";
 	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
+	private static final String FACILITY_TYPE_GROUP_LOC = "facilityTypeGroupLoc";
 	private static final String VACCINATION_HEADING_LOC = "vaccinationHeadingLoc";
 	private static final String RECOVERY_HEADING_LOC = "recoveryHeadingLoc";
 
@@ -53,6 +62,8 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(ImmunizationDto.MANAGEMENT_STATUS, ImmunizationDto.IMMUNIZATION_STATUS)
 		+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.RESPONSIBLE_REGION, ImmunizationDto.RESPONSIBLE_DISTRICT, ImmunizationDto.RESPONSIBLE_COMMUNITY)
+		+ fluidRowLocs(FACILITY_TYPE_GROUP_LOC, ImmunizationDto.FACILITY_TYPE)
+		+ fluidRowLocs(ImmunizationDto.HEALTH_FACILITY, ImmunizationDto.HEALTH_FACILITY_DETAILS)
 		+ fluidRowLocs(ImmunizationDto.START_DATE, ImmunizationDto.END_DATE)
 		+ fluidRowLocs(ImmunizationDto.REPORTING_USER, ImmunizationDto.PREVIOUS_INFECTION, ImmunizationDto.LAST_INFECTION_DATE)
 		+ fluidRowLocs(ImmunizationDto.ADDITIONAL_DETAILS)
@@ -119,6 +130,22 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrictCombo, responsibleCommunityCombo);
 
+		ComboBox facilityTypeGroup = ComboBoxHelper.createComboBoxV7();
+		facilityTypeGroup.setId("typeGroup");
+		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
+		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
+		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
+		ComboBox facilityType = ComboBoxHelper.createComboBoxV7();
+		facilityType.setId("type");
+		facilityType.setCaption(I18nProperties.getCaption(Captions.facilityType));
+		facilityType.setWidth(100, Unit.PERCENTAGE);
+		getContent().addComponent(facilityType, ImmunizationDto.FACILITY_TYPE);
+		ComboBox facilityCombo = addInfrastructureField(ImmunizationDto.HEALTH_FACILITY);
+		facilityCombo.setImmediate(true);
+		TextField facilityDetails = addField(ImmunizationDto.HEALTH_FACILITY_DETAILS, TextField.class);
+		facilityDetails.setVisible(false);
+
 		addField(ImmunizationDto.START_DATE, DateField.class);
 		addField(ImmunizationDto.END_DATE, DateField.class);
 
@@ -158,7 +185,15 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.DISEASE, ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.START_DATE);
+		setRequired(
+			true,
+			ImmunizationDto.REPORT_DATE,
+			ImmunizationDto.DISEASE,
+			ImmunizationDto.MEANS_OF_IMMUNIZATION,
+			FACILITY_TYPE_GROUP_LOC,
+			ImmunizationDto.FACILITY_TYPE,
+			ImmunizationDto.HEALTH_FACILITY,
+			ImmunizationDto.START_DATE);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -225,6 +260,71 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			ImmunizationDto.PREVIOUS_INFECTION,
 			Collections.singletonList(YesNoUnknown.YES),
 			true);
+
+		responsibleDistrictCombo.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facilityCombo);
+			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+			if (districtDto != null && facilityType.getValue() != null) {
+				FieldHelper.updateItems(
+					facilityCombo,
+					FacadeProvider.getFacilityFacade()
+						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityType.getValue(), true, false));
+			}
+		});
+
+		responsibleCommunityCombo.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facilityCombo);
+			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
+			if (facilityType.getValue() != null) {
+				FieldHelper.updateItems(
+					facilityCombo,
+					communityDto != null
+						? FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, false)
+						: responsibleDistrictCombo.getValue() != null
+							? FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByDistrictAndType(
+									(DistrictReferenceDto) responsibleDistrictCombo.getValue(),
+									(FacilityType) facilityType.getValue(),
+									true,
+									false)
+							: null);
+			}
+		});
+
+		facilityTypeGroup.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facilityCombo);
+			FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
+		});
+		facilityType.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facilityCombo);
+			if (facilityType.getValue() != null && responsibleDistrictCombo.getValue() != null) {
+				if (responsibleCommunityCombo.getValue() != null) {
+					FieldHelper.updateItems(
+						facilityCombo,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByCommunityAndType(
+								(CommunityReferenceDto) responsibleCommunityCombo.getValue(),
+								(FacilityType) facilityType.getValue(),
+								true,
+								false));
+				} else {
+					FieldHelper.updateItems(
+						facilityCombo,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByDistrictAndType(
+								(DistrictReferenceDto) responsibleDistrictCombo.getValue(),
+								(FacilityType) facilityType.getValue(),
+								true,
+								false));
+				}
+			}
+		});
+
+		facilityCombo.addValueChangeListener(e -> {
+			updateFacilityFields(facilityCombo, facilityDetails);
+			this.getValue().setFacilityType((FacilityType) facilityType.getValue());
+		});
 	}
 
 	private static UiFieldAccessCheckers createFieldAccessCheckers(boolean isPseudonymized, boolean withPersonalAndSensitive) {
@@ -237,5 +337,31 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 	private boolean shouldShowVaccinationFields(MeansOfImmunization meansOfImmunization) {
 		return MeansOfImmunization.VACCINATION.equals(meansOfImmunization) || MeansOfImmunization.VACCINATION_RECOVERY.equals(meansOfImmunization);
+	}
+
+	private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {
+
+		if (cbFacility.getValue() != null) {
+			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+			boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+
+			tfFacilityDetails.setVisible(visibleAndRequired);
+			tfFacilityDetails.setRequired(otherHealthFacility);
+
+			if (otherHealthFacility) {
+				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.HEALTH_FACILITY_DETAILS));
+			}
+			if (noneHealthFacility) {
+				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
+			}
+			if (!visibleAndRequired) {
+				tfFacilityDetails.clear();
+			}
+		} else {
+			tfFacilityDetails.setVisible(false);
+			tfFacilityDetails.setRequired(false);
+			tfFacilityDetails.clear();
+		}
 	}
 }

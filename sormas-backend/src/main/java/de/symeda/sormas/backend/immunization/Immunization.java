@@ -33,12 +33,14 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.Country;
@@ -62,6 +64,9 @@ public class Immunization extends CoreAdo {
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
+	public static final String FACILITY_TYPE = "facilityType";
+	public static final String HEALTH_FACILITY = "healthFacility";
+	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 	public static final String NUMBER_OF_DOSES = "numberOfDoses";
@@ -87,6 +92,10 @@ public class Immunization extends CoreAdo {
 	private Region responsibleRegion;
 	private District responsibleDistrict;
 	private Community responsibleCommunity;
+
+	private FacilityType facilityType;
+	private Facility healthFacility;
+	private String healthFacilityDetails;
 
 	private Date startDate;
 	private Date endDate;
@@ -203,6 +212,33 @@ public class Immunization extends CoreAdo {
 
 	public void setResponsibleCommunity(Community responsibleCommunity) {
 		this.responsibleCommunity = responsibleCommunity;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+	}
+
+	@ManyToOne(cascade = {})
+	public Facility getHealthFacility() {
+		return healthFacility;
+	}
+
+	public void setHealthFacility(Facility healthFacility) {
+		this.healthFacility = healthFacility;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getHealthFacilityDetails() {
+		return healthFacilityDetails;
+	}
+
+	public void setHealthFacilityDetails(String healthFacilityDetails) {
+		this.healthFacilityDetails = healthFacilityDetails;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
