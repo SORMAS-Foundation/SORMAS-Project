@@ -7777,11 +7777,31 @@ ALTER TABLE pathogentest_history ALTER COLUMN testdatetime DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (391, 'make pathogentest result datetime non-compulsory #3308');
 
--- 2017-07-29 Add specificrisk column to events table #5940
+-- 2021-07-29 Add specificrisk column to events table #5940
 
 ALTER TABLE events ADD COLUMN specificrisk TEXT;
 ALTER TABLE events_history ADD COLUMN specificrisk TEXT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (392, 'Add SpecificRisk field into events #5940');
+
+-- 2021-08-01 Modifications to immunization tables #6025
+ALTER TABLE immunization ALTER COLUMN externalid DROP NOT NULL;
+ALTER TABLE immunization ALTER COLUMN positivetestresultdate DROP NOT NULL;
+ALTER TABLE immunization ALTER COLUMN recoverydate DROP NOT NULL;
+ALTER TABLE immunization ADD COLUMN diseasedetails varchar(512);
+ALTER TABLE immunization ADD COLUMN healthfacility_id bigint;
+ALTER TABLE immunization ADD COLUMN healthfacilitydetails varchar(512);
+ALTER TABLE immunization ADD COLUMN facilitytype varchar(255);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility(id);
+
+ALTER TABLE immunization_history ALTER COLUMN externalid DROP NOT NULL;
+ALTER TABLE immunization_history ALTER COLUMN positivetestresultdate DROP NOT NULL;
+ALTER TABLE immunization_history ALTER COLUMN recoverydate DROP NOT NULL;
+ALTER TABLE immunization_history ADD COLUMN diseasedetails varchar(512);
+ALTER TABLE immunization_history ADD COLUMN healthfacility_id bigint;
+ALTER TABLE immunization_history ADD COLUMN healthfacilitydetails varchar(512);
+ALTER TABLE immunization_history ADD COLUMN facilitytype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (393, 'Modifications to immunization tables #6025');
 
 -- *** Insert new sql commands BEFORE this line ***
