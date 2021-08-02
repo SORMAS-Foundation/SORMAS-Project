@@ -88,7 +88,6 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -108,7 +107,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.AreaDto;
-import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.ContinentDto;
@@ -124,12 +122,10 @@ import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
@@ -137,11 +133,11 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.importexport.parser.ImportParserService;
 import de.symeda.sormas.backend.region.AreaFacadeEjb.AreaFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CountryFacadeEjb;
 import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 
@@ -193,6 +189,8 @@ public class ImportFacadeEjb implements ImportFacade {
 	private RegionService regionService;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
+	@EJB
+	private ImportParserService converterService;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = "import_case_template.csv";
 	private static final String EVENT_IMPORT_TEMPLATE_FILE_NAME = "import_event_template.csv";
@@ -860,126 +858,24 @@ public class ImportFacadeEjb implements ImportFacade {
 		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException, EnumService.InvalidEnumCaptionException {
 		Class<?> propertyType = pd.getPropertyType();
 
-		if (propertyType.isEnum()) {
-			Enum enumValue = null;
-			Class<Enum> enumType = (Class<Enum>) propertyType;
-			try {
-				enumValue = Enum.valueOf(enumType, entry.toUpperCase());
-			} catch (IllegalArgumentException e) {
-				// ignore
-			}
+		if (converterService.hasParser(pd)) {
+			Object parsedValue = converterService.parseValue(pd, entry, entryHeaderPath);
+			pd.getWriteMethod().invoke(element, parsedValue);
 
-			if (enumValue == null) {
-				enumValue = enumService.getEnumByCaption(enumType, entry);
-			}
+			if (propertyType.isAssignableFrom(RegionReferenceDto.class) && !allowForeignRegions && parsedValue != null) {
 
-			pd.getWriteMethod().invoke(element, enumValue);
-			return true;
-		}
-		if (propertyType.getSuperclass() != null && propertyType.getSuperclass() == CustomizableEnum.class) {
-			try {
-				Object customizableEnum = propertyType.newInstance();
-				((CustomizableEnum) customizableEnum).setValue(entry);
-				pd.getWriteMethod().invoke(element, customizableEnum);
-				return true;
-			} catch (InstantiationException e) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importErrorCustomizableEnumValue, entry, buildEntityProperty(entryHeaderPath)));
-			}
-		}
-		if (propertyType.isAssignableFrom(Date.class)) {
-			// If the string is smaller than the length of the expected date format, throw an exception
-			if (entry.length() < 8) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(
-						Validations.importInvalidDate,
-						buildEntityProperty(entryHeaderPath),
-						DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
-			} else {
-				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));
-				return true;
-			}
-		}
-		if (propertyType.isAssignableFrom(Integer.class)) {
-			pd.getWriteMethod().invoke(element, Integer.parseInt(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(Double.class)) {
-			pd.getWriteMethod().invoke(element, Double.parseDouble(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(Float.class)) {
-			pd.getWriteMethod().invoke(element, Float.parseFloat(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(boolean.class)) {
-			pd.getWriteMethod().invoke(element, Boolean.parseBoolean(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(CountryReferenceDto.class)) {
-			List<CountryReferenceDto> countries = countryFacade.getReferencesByName(entry, false);
-			if (countries.isEmpty()) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (countries.size() > 1) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importCountryNotUnique, entry, buildEntityProperty(entryHeaderPath)));
-			} else {
-				pd.getWriteMethod().invoke(element, countries.get(0));
-				return true;
-			}
-		}
-		if (propertyType.isAssignableFrom(AreaReferenceDto.class)) {
-			List<AreaReferenceDto> areas = areaFacade.getByName(entry, false);
-			if (areas.isEmpty()) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (areas.size() > 1) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importAreaNotUnique, entry, buildEntityProperty(entryHeaderPath)));
-			} else {
-				pd.getWriteMethod().invoke(element, areas.get(0));
-				return true;
-			}
-		}
-		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<Region> regions = regionService.getByName(entry, false);
-			if (regions.isEmpty()) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (regions.size() > 1) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (allowForeignRegions) {
-				pd.getWriteMethod().invoke(element, RegionFacadeEjb.toReferenceDto(regions.get(0)));
-				return true;
-			} else {
-				Region region = regions.get(0);
+				Region region = regionService.getByUuid(((RegionReferenceDto) parsedValue).getUuid());
 				CountryReferenceDto serverCountry = countryFacade.getServerCountry();
 
 				if (region.getCountry() != null && !CountryFacadeEjb.toReferenceDto(region.getCountry()).equals(serverCountry)) {
 					throw new ImportErrorException(
 						I18nProperties.getValidationError(Validations.importRegionNotInServerCountry, entry, buildEntityProperty(entryHeaderPath)));
-				} else {
-					pd.getWriteMethod().invoke(element, RegionFacadeEjb.toReferenceDto(region));
-					return true;
 				}
 			}
-		}
-		if (propertyType.isAssignableFrom(UserReferenceDto.class)) {
-			UserDto user = userFacade.getByUserName(entry);
-			if (user != null) {
-				pd.getWriteMethod().invoke(element, user.toReference());
-				return true;
-			} else {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			}
-		}
-		if (propertyType.isAssignableFrom(String.class)) {
-			pd.getWriteMethod().invoke(element, entry);
+
 			return true;
 		}
+
 
 		return false;
 	}

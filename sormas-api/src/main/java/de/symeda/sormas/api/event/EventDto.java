@@ -15,13 +15,15 @@
 
 package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import java.util.Date;
 import java.util.Map;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
+import de.symeda.sormas.api.importexport.format.ImportExportFormat;
+import de.symeda.sormas.api.importexport.format.ImportFormat;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -278,6 +280,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 		return startDate;
 	}
 
+	@ImportFormat(ImportExportFormat.DATE_TIME)
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
@@ -286,6 +289,7 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasEntity
 		return endDate;
 	}
 
+	@ImportFormat(ImportExportFormat.DATE_TIME)
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}

@@ -589,7 +589,7 @@ public class StartupShutdownService {
 	 */
 	private void syncUsers() {
 
-		AuthProvider authProvider = AuthProvider.getProvider();
+		AuthProvider authProvider = AuthProvider.getProvider(configFacade);
 
 		if (!authProvider.isUserSyncSupported()) {
 			logger.info("Active Authentication Provider {} doesn't support user sync", authProvider.getName());

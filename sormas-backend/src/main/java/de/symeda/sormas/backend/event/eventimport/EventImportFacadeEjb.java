@@ -19,6 +19,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -257,6 +258,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		throws InvalidColumnException {
 
 		String importError = null;
+		List<String> invalidColumns = new ArrayList<>();
 
 		for (int i = 0; i < values.length; i++) {
 			String value = StringUtils.trimToNull(values[i]);
@@ -278,10 +280,14 @@ public class EventImportFacadeEjb implements EventImportFacade {
 						importError = exception.getMessage();
 						break;
 					} else if (exception instanceof InvalidColumnException) {
-						throw (InvalidColumnException) exception;
+						invalidColumns.add(((InvalidColumnException) exception).getColumnName());
 					}
 				}
 			}
+		}
+
+		if (invalidColumns.size() > 0) {
+			LOGGER.warn("Unhandled columns [{}]", String.join(", ", invalidColumns));
 		}
 
 		return importError != null ? ImportLineResultDto.errorResult(importError) : ImportLineResultDto.successResult();
