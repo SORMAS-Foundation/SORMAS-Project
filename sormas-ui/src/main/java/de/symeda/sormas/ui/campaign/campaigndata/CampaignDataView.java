@@ -71,6 +71,8 @@ public class CampaignDataView extends AbstractCampaignView {
 	private final CampaignDataGrid grid;
 	private CampaignFormDataFilterForm filterForm;
 	private ImportanceFilterSwitcher importanceFilterSwitcher;
+	private PopupButton newFormButton;
+	private PopupButton importCampaignButton;
 
 	@SuppressWarnings("deprecation")
 	public CampaignDataView() {
@@ -139,7 +141,6 @@ public class CampaignDataView extends AbstractCampaignView {
 			}
 		}
 
-		PopupButton newFormButton;
 		Panel newFormPanel = new Panel();
 		{
 			VerticalLayout newFormLayout = new VerticalLayout();
@@ -156,7 +157,6 @@ public class CampaignDataView extends AbstractCampaignView {
 			addHeaderComponent(newFormButton);
 		}
 
-		PopupButton importCampaignButton;
 		Panel importFormPanel = new Panel();
 		{
 			VerticalLayout importFormLayout = new VerticalLayout();
@@ -205,6 +205,7 @@ public class CampaignDataView extends AbstractCampaignView {
 				FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
 				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
+					importCampaignButton.setPopupVisible(false);
 					try {
 						Window popupWindow = VaadinUiUtil.showPopupWindow(new CampaignFormDataImportLayout(campaignForm, campaignReferenceDto));
 						popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCampaign));
@@ -234,9 +235,10 @@ public class CampaignDataView extends AbstractCampaignView {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences =
 				FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
-				Button campaignFormButton = ButtonHelper.createButton(
-					campaignForm.toString(),
-					e -> ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm));
+				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
+					ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm);
+					newFormButton.setPopupVisible(false);
+				});
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
 				((VerticalLayout) containerPanel.getContent()).addComponent(campaignFormButton);
 			}
