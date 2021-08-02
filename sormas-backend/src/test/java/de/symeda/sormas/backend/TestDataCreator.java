@@ -48,6 +48,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
@@ -69,6 +70,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
@@ -113,6 +115,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
@@ -438,6 +441,21 @@ public class TestDataCreator {
 
 		immunization.setReportDate(new Date());
 		return immunization;
+	}
+
+	public VaccinationDto createVaccinationEntity(
+		UserReferenceDto reportingUser,
+		ImmunizationReferenceDto immunization,
+		HealthConditionsDto healthConditions) {
+		VaccinationDto vaccination = new VaccinationDto();
+		vaccination.setUuid(DataHelper.createUuid());
+		vaccination.setReportingUser(reportingUser);
+		vaccination.setReportDate(new Date());
+
+		vaccination.setImmunization(immunization);
+		vaccination.setHealthConditions(healthConditions);
+
+		return beanTest.getVaccinationFacade().save(vaccination);
 	}
 
 	public TravelEntryDto createTravelEntry(
