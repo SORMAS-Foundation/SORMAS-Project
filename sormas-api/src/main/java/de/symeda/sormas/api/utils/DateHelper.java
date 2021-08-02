@@ -39,6 +39,8 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.google.common.collect.Sets;
 
@@ -161,7 +163,7 @@ public final class DateHelper {
 	public static Date parseDateTimeWithException(String date, String dateTimeFormat) throws ParseException {
 		if (!date.contains(TIME_SEPARATOR)) {
 			// no separator means no time
-			return parseDateWithException(date, dateTimeFormat);
+			return parseDateWithException(date, dateTimeFormat.split(TIME_SEPARATOR)[0]);
 		}
 
 		return parseDateWithException(date, getAllowedDateTimeFormats(dateTimeFormat));
@@ -174,10 +176,9 @@ public final class DateHelper {
 
 		for (String format : dateFormats) {
 			try {
-				SimpleDateFormat formatter = new SimpleDateFormat(format);
-				formatter.setLenient(false);
-				return formatter.parse(date);
-			} catch (ParseException e) {
+				DateTimeFormatter formatter = DateTimeFormat.forPattern(format);
+				return DateTime.parse(date, formatter).toDate();
+			} catch (Exception e) {
 				// Try next format
 			}
 		}
@@ -192,8 +193,26 @@ public final class DateHelper {
 		if (matcher.find()) {
 			final List<String> dateFieldsDefault = new ArrayList<>(Arrays.asList(matcher.group(1), matcher.group(3), matcher.group(5)));
 
+			final List<String> dateFieldsYearFormat = new ArrayList<>(dateFieldsDefault.size());
+			boolean isFourDigitYear = false;
+			for (String dateField : dateFieldsDefault) {
+				if (dateField.toLowerCase().startsWith("y")) {
+					isFourDigitYear = dateField.length() == 4;
+					dateFieldsYearFormat.add(isFourDigitYear ? dateField.substring(0, 2) : dateField + dateField);
+				} else {
+					dateFieldsYearFormat.add(dateField);
+				}
+			}
+
 			final List<List<String>> dateFields = new ArrayList<>(dateFieldsDefault.size());
-			dateFields.add(dateFieldsDefault);
+			// take 2 digit year formats first
+			if (isFourDigitYear) {
+				dateFields.add(dateFieldsYearFormat);
+				dateFields.add(dateFieldsDefault);
+			} else {
+				dateFields.add(dateFieldsDefault);
+				dateFields.add(dateFieldsYearFormat);
+			}
 
 			String defaultSeparator = matcher.group(2);
 			for (List<String> fields : dateFields) {
@@ -211,13 +230,18 @@ public final class DateHelper {
 	}
 
 	public static List<String> getAllowedDateTimeFormats(String defaultFormat) {
-		final List<String> dateFormats = getAllowedDateFormats(defaultFormat);
+		String[] dateAndTimeFormat = defaultFormat.split(TIME_SEPARATOR);
+		final List<String> dateFormats = getAllowedDateFormats(dateAndTimeFormat[0]);
 
 		List<String> dateTimeFormats = new ArrayList<>();
 
 		for (String dateFormat : dateFormats) {
+			dateTimeFormats.add(dateFormat + TIME_SEPARATOR + dateAndTimeFormat[1]);
+
 			for (String timeFormat : ALLOWED_TIME_FORMATS) {
-				dateTimeFormats.add(dateFormat + TIME_SEPARATOR + timeFormat);
+				if (!timeFormat.equals(dateAndTimeFormat[1])) {
+					dateTimeFormats.add(dateFormat + TIME_SEPARATOR + timeFormat);
+				}
 			}
 		}
 

@@ -179,7 +179,7 @@ public class ImportParserService {
 					DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
 		} else {
 			try {
-				return DateHelper.parseDateTimeWithException(v, I18nProperties.getUserLanguage().getDateFormat());
+				return DateHelper.parseDateTimeWithException(v, I18nProperties.getUserLanguage().getDateTimeFormat());
 			} catch (ParseException e) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(

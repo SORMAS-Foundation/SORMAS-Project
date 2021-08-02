@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.is;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.text.ParseException;
 import java.util.Date;
 
 import org.hamcrest.Matchers;
@@ -36,6 +37,7 @@ import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.region.Country;
@@ -84,14 +86,14 @@ public class ImportParserServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testParseDateTimeFieldValue() throws IntrospectionException, ImportErrorException {
+	public void testParseDateTimeFieldValue() throws IntrospectionException, ImportErrorException, ParseException {
 		Object parsed = getImportParserService().parseValue(
 			new PropertyDescriptor(EventDto.START_DATE, EventDto.class),
 			"07/30/2021 15:30",
 			new String[] {
 				EventDto.START_DATE });
 
-		assertThat(parsed, is(new Date(1627648200000L)));
+		assertThat(parsed, is(DateHelper.parseDateTimeWithException("30/07/2021 3:30 pm", "dd/MM/yyyy h:mm a")));
 	}
 
 	@Test
