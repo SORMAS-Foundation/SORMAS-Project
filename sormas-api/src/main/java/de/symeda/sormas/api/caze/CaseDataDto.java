@@ -665,6 +665,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		List<ExposureDto> exposures = cazeData.getEpiData().getExposures();
 		if (exposures.size() == 1) {
 			exposures.get(0).setProbableInfectionEnvironment(true);
+			exposures.get(0).setContactToCase(contact.toReference());
 		}
 		return cazeData;
 	}

@@ -1,8 +1,7 @@
-package de.symeda.sormas.api;
+package de.symeda.sormas.api.sormastosormas;
 
 import java.io.Serializable;
 import java.util.Objects;
-
 
 public class SormasToSormasConfig implements Serializable {
 
@@ -27,8 +26,8 @@ public class SormasToSormasConfig implements Serializable {
 	private String oidcClientId;
 	private String oidcClientSecret;
 
-	private String redisClientName;
-	private String redisClientPassword;
+	private String etcdClientName;
+	private String etcdClientPassword;
 	private String keyPrefix;
 
 	public String getId() {
@@ -87,20 +86,20 @@ public class SormasToSormasConfig implements Serializable {
 		this.retainCaseExternalToken = retainCaseExternalToken;
 	}
 
-	public String getRedisClientName() {
-		return redisClientName;
+	public String getEtcdClientName() {
+		return etcdClientName;
 	}
 
-	public void setRedisClientName(String redisClientName) {
-		this.redisClientName = redisClientName;
+	public void setEtcdClientName(String etcdClientName) {
+		this.etcdClientName = etcdClientName;
 	}
 
-	public String getRedisClientPassword() {
-		return redisClientPassword;
+	public String getEtcdClientPassword() {
+		return etcdClientPassword;
 	}
 
-	public void setRedisClientPassword(String redisClientPassword) {
-		this.redisClientPassword = redisClientPassword;
+	public void setEtcdClientPassword(String etcdClientPassword) {
+		this.etcdClientPassword = etcdClientPassword;
 	}
 
 	@Override
@@ -210,7 +209,7 @@ public class SormasToSormasConfig implements Serializable {
 	 * Computed template for the key prefix
 	 */
 	public String getKeyPrefixTemplate() {
-		return this.getKeyPrefix() + "%s";
+		return "/" + this.getKeyPrefix() + "/" + "%s";
 	}
 
 	public String getRootCaAlias() {

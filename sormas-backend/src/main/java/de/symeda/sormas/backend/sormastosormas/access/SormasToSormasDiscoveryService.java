@@ -15,29 +15,35 @@
 
 package de.symeda.sormas.backend.sormastosormas.access;
 
+import java.io.IOException;
+
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.Resources;
+import com.google.protobuf.ByteString;
+import com.ibm.etcd.api.KeyValue;
+import com.ibm.etcd.client.EtcdClient;
+import com.ibm.etcd.client.KvStoreClient;
+import com.ibm.etcd.client.kv.KvClient;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.SormasToSormasConfig;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
-import io.lettuce.core.ClientOptions;
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.RedisURI;
-import io.lettuce.core.SslOptions;
-import io.lettuce.core.SslVerifyMode;
-import io.lettuce.core.api.sync.RedisCommands;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -54,39 +60,42 @@ public class SormasToSormasDiscoveryService {
 	@EJB
 	private ConfigFacadeEjbLocal configFacadeEjb;
 
-	private RedisCommands<String, String> createRedisConnection() {
-		String[] redis = configFacadeEjb.getCentralRedisHost().split(":");
+	private KvClient createEtcdClient() {
+		String[] hostPort = configFacadeEjb.getCentralEtcdHost().split(":");
 		SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
-		RedisURI uri = RedisURI.Builder.redis(redis[0], Integer.parseInt(redis[1]))
-			.withAuthentication(sormasToSormasConfig.getRedisClientName(), sormasToSormasConfig.getRedisClientPassword())
-			.withSsl(true)
-			.withVerifyPeer(SslVerifyMode.FULL)
-			.build();
+		KvStoreClient client;
 
-		SslOptions sslOptions;
+		URL truststorePath;
 		try {
-			sslOptions = SslOptions.builder()
-				.jdkSslProvider()
-				.keystore(
-					Paths.get(configFacadeEjb.getCentralRedisKeystorePath()).toUri().toURL(),
-					configFacadeEjb.getCentralRedisKeystorePassword().toCharArray())
-				.truststore(
-					Paths.get(configFacadeEjb.getCentralRedisTruststorePath()).toUri().toURL(),
-					configFacadeEjb.getCentralRedisTruststorePassword())
-				.build();
+			truststorePath = Paths.get(configFacadeEjb.getCentralEtcdCaPath()).toUri().toURL();
 		} catch (MalformedURLException e) {
-			LOGGER.error(String.format("Could not load key material to connect to redis: %s", e));
+			LOGGER.error("Etcd Url is malformed: %s", e);
 			return null;
 		}
 
-		RedisClient redisClient = RedisClient.create(uri);
-		ClientOptions clientOptions = ClientOptions.builder().sslOptions(sslOptions).build();
-		redisClient.setOptions(clientOptions);
-		return redisClient.connect().sync();
+		try {
+			client = EtcdClient.forEndpoint(hostPort[0], Integer.parseInt(hostPort[1]))
+				.withCredentials(sormasToSormasConfig.getEtcdClientName(), sormasToSormasConfig.getEtcdClientPassword())
+				.withCaCert(Resources.asByteSource(truststorePath))
+				.build();
+		} catch (IOException e) {
+			LOGGER.error("Could not load Etcd CA cert: %s", e);
+			return null;
+		}
+
+		return client.getKvClient();
 	}
 
-	private SormasServerDescriptor buildSormasServerDescriptor(String id, Map<String, String> entry) {
-		return new SormasServerDescriptor(id, entry.get("name"), entry.get("hostName"));
+	private SormasServerDescriptor buildSormasServerDescriptor(KeyValue kv) {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+		mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+		try {
+			return mapper.readValue(kv.getValue().toStringUtf8(), SormasServerDescriptor.class);
+		} catch (JsonProcessingException e) {
+			LOGGER.error("Could not serialize server descriptor");
+			return null;
+		}
 	}
 
 	public SormasServerDescriptor getSormasServerDescriptorById(String id) {
@@ -96,14 +105,15 @@ public class SormasToSormasDiscoveryService {
 		}
 
 		try {
-			RedisCommands<String, String> redis = createRedisConnection();
-			if (redis == null) {
+			KvClient etcd = createEtcdClient();
+			if (etcd == null) {
 				LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 				return null;
 			}
+			String key = String.format(configFacadeEjb.getS2SConfig().getKeyPrefixTemplate(), id);
+			KeyValue result = etcd.get(ByteString.copyFromUtf8(key)).sync().getKvsList().get(0);
 
-			Map<String, String> serverAccess = redis.hgetall(String.format(configFacadeEjb.getS2SConfig().getKeyPrefixTemplate(), id));
-			return buildSormasServerDescriptor(id, serverAccess);
+			return buildSormasServerDescriptor(result);
 
 		} catch (Exception e) {
 			LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
@@ -119,24 +129,26 @@ public class SormasToSormasDiscoveryService {
 		}
 
 		try {
-			RedisCommands<String, String> redis = createRedisConnection();
-			if (redis == null) {
+			KvClient etcd = createEtcdClient();
+			if (etcd == null) {
 				LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 				return Collections.emptyList();
 			}
 
-			List<String> keys = redis.keys(String.format(sormasToSormasConfig.getKeyPrefixTemplate(), "*"));
+			final String ownKey = String.format(sormasToSormasConfig.getKeyPrefixTemplate(), sormasToSormasConfig.getId());
+			final String keyPrefix = String.format(sormasToSormasConfig.getKeyPrefixTemplate(), "");
+			return etcd.get(ByteString.copyFromUtf8(keyPrefix))
+				.asPrefix()
+				.sync()
+				.getKvsList()
+				.stream()
+				.filter(
+					// this ensures that the own key (i.e., /s2s/$instance_id) is removed from the list
+					kv -> !kv.getKey().toStringUtf8().equals(ownKey))
+				.map(this::buildSormasServerDescriptor)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
 
-			// remove own Id from the set
-			keys.remove(String.format(sormasToSormasConfig.getKeyPrefixTemplate(), sormasToSormasConfig.getId()));
-
-			List<SormasServerDescriptor> list = new ArrayList<>();
-			keys.forEach(key -> {
-				Map<String, String> hgetAll = redis.hgetall(key);
-				SormasServerDescriptor sormasServerDescriptor = buildSormasServerDescriptor(key.split(":")[1], hgetAll);
-				list.add(sormasServerDescriptor);
-			});
-			return list;
 		} catch (Exception e) {
 			LOGGER.error("Unexpected error while reading sormas to sormas server list", e);
 			return Collections.emptyList();
