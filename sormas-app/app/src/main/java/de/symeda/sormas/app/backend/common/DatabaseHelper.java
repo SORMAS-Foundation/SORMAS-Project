@@ -41,6 +41,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
+
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.exposure.AnimalContactType;
@@ -155,8 +156,8 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDao;
 import de.symeda.sormas.app.backend.user.UserRoleConfig;
 import de.symeda.sormas.app.backend.user.UserRoleConfigDao;
+import de.symeda.sormas.app.backend.vaccination.VaccinationDao;
 import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntityDao;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.backend.visit.VisitDao;
 
@@ -3145,7 +3146,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				} else if (type.equals(Immunization.class)) {
 					dao = (AbstractAdoDao<ADO>) new ImmunizationDao((Dao<Immunization, Long>) innerDao);
 				} else if (type.equals(VaccinationEntity.class)) {
-					dao = (AbstractAdoDao<ADO>) new VaccinationEntityDao((Dao<VaccinationEntity, Long>) innerDao);
+					dao = (AbstractAdoDao<ADO>) new VaccinationDao((Dao<VaccinationEntity, Long>) innerDao);
 				} else if (type.equals(Therapy.class)) {
 					dao = (AbstractAdoDao<ADO>) new TherapyDao((Dao<Therapy, Long>) innerDao);
 				} else if (type.equals(Prescription.class)) {
@@ -3328,8 +3329,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return (ImmunizationDao) getAdoDao(Immunization.class);
 	}
 
-	public static VaccinationEntityDao getVaccinationEntityDao() {
-		return (VaccinationEntityDao) getAdoDao(VaccinationEntity.class);
+	public static VaccinationDao getVaccinationDao() {
+		return (VaccinationDao) getAdoDao(VaccinationEntity.class);
 	}
 
 	public static TherapyDao getTherapyDao() {

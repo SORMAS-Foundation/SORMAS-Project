@@ -14,11 +14,11 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.vaccination.VaccinationEntityDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
-public class VaccinationEntityFacadeEjbTest extends AbstractBeanTest {
+public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 
 	private TestDataCreator.RDCF rdcf1;
 	private UserDto nationalUser;
@@ -55,17 +55,17 @@ public class VaccinationEntityFacadeEjbTest extends AbstractBeanTest {
 		HealthConditionsDto healthConditions = new HealthConditionsDto();
 		healthConditions.setOtherConditions("PEBMAC");
 
-		VaccinationEntityDto vaccinationEntityDto = creator.createVaccinationEntity(
+		VaccinationDto vaccinationDto = creator.createVaccinationEntity(
 			nationalUser.toReference(),
 			new ImmunizationReferenceDto(immunizationDto.getUuid(), immunizationDto.toString(), immunizationDto.getExternalId()),
 			healthConditions);
 
-		VaccinationEntity actualVaccinationEntity = getVaccinationEntityService().getByUuid(vaccinationEntityDto.getUuid());
-		assertEquals(vaccinationEntityDto.getUuid(), actualVaccinationEntity.getUuid());
-		assertEquals(vaccinationEntityDto.getHealthConditions().getOtherConditions(), "PEBMAC");
+		VaccinationEntity actualVaccinationEntity = getVaccinationService().getByUuid(vaccinationDto.getUuid());
+		assertEquals(vaccinationDto.getUuid(), actualVaccinationEntity.getUuid());
+		assertEquals(vaccinationDto.getHealthConditions().getOtherConditions(), "PEBMAC");
 
 		ImmunizationDto actualImmunization = getImmunizationFacade().getByUuid(immunizationDto.getUuid());
 		assertEquals(actualImmunization.getVaccinations().size(), 1);
-		assertEquals(actualImmunization.getVaccinations().get(0).getUuid(), vaccinationEntityDto.getUuid());
+		assertEquals(actualImmunization.getVaccinations().get(0).getUuid(), vaccinationDto.getUuid());
 	}
 }

@@ -21,7 +21,7 @@ import java.util.List;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
-import de.symeda.sormas.api.vaccination.VaccinationEntityDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -38,15 +38,15 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
+import de.symeda.sormas.app.backend.vaccination.VaccinationDtoHelper;
 import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntityDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
 public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, ImmunizationDto> {
 
-	private VaccinationEntityDtoHelper vaccinationEntityDtoHelper = new VaccinationEntityDtoHelper();
+	private VaccinationDtoHelper vaccinationDtoHelper = new VaccinationDtoHelper();
 
 	@Override
 	protected Class<Immunization> getAdoClass() {
@@ -101,8 +101,8 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 
 		List<VaccinationEntity> vaccinations = new ArrayList<>();
 		if (!source.getVaccinations().isEmpty()) {
-			for (VaccinationEntityDto vaccinationDto : source.getVaccinations()) {
-				VaccinationEntity vaccination = vaccinationEntityDtoHelper.fillOrCreateFromDto(null, vaccinationDto);
+			for (VaccinationDto vaccinationDto : source.getVaccinations()) {
+				VaccinationEntity vaccination = vaccinationDtoHelper.fillOrCreateFromDto(null, vaccinationDto);
 				vaccination.setImmunization(target);
 				vaccinations.add(vaccination);
 			}
@@ -160,10 +160,10 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 			target.setRelatedCase(CaseDtoHelper.toReferenceDto(caze));
 		}
 
-		List<VaccinationEntityDto> vaccinationEntityDtos = new ArrayList<>();
+		List<VaccinationDto> vaccinationEntityDtos = new ArrayList<>();
 		if (!source.getVaccinations().isEmpty()) {
 			for (VaccinationEntity vaccinationEntity : source.getVaccinations()) {
-				VaccinationEntityDto vaccinationEntityDto = vaccinationEntityDtoHelper.adoToDto(vaccinationEntity);
+				VaccinationDto vaccinationEntityDto = vaccinationDtoHelper.adoToDto(vaccinationEntity);
 				vaccinationEntityDtos.add(vaccinationEntityDto);
 			}
 		}

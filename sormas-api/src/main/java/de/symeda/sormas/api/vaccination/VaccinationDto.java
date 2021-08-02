@@ -29,7 +29,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class VaccinationEntityDto extends PseudonymizableDto {
+public class VaccinationDto extends PseudonymizableDto {
 
 	public static final String IMMUNIZATION = "immunization";
 	public static final String HEALTH_CONDITIONS = "healthConditions";

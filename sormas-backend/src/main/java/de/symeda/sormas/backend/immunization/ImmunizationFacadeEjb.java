@@ -36,7 +36,7 @@ import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.api.vaccination.VaccinationEntityDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -54,7 +54,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.vaccination.VaccinationEntity;
-import de.symeda.sormas.backend.vaccination.VaccinationEntityFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 
 @Stateless(name = "ImmunizationFacade")
 public class ImmunizationFacadeEjb implements ImmunizationFacade {
@@ -76,7 +76,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	@EJB
 	private CountryService countryService;
 	@EJB
-	private VaccinationEntityFacadeEjb.VaccinationEntityFacadeEjbLocal vaccinationEntityFacade;
+	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 
 	public static ImmunizationReferenceDto toReferenceDto(Immunization entity) {
 		if (entity == null) {
@@ -247,12 +247,12 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		dto.setRecoveryDate(entity.getRecoveryDate());
 		dto.setRelatedCase(CaseFacadeEjb.toReferenceDto(entity.getRelatedCase()));
 
-		List<VaccinationEntityDto> vaccinationEntityDtos = new ArrayList<>();
+		List<VaccinationDto> vaccinationDtos = new ArrayList<>();
 		for (VaccinationEntity vaccinationEntity : entity.getVaccinations()) {
-			VaccinationEntityDto vaccinationEntityDto = vaccinationEntityFacade.toDto(vaccinationEntity);
-			vaccinationEntityDtos.add(vaccinationEntityDto);
+			VaccinationDto vaccinationDto = vaccinationFacade.toDto(vaccinationEntity);
+			vaccinationDtos.add(vaccinationDto);
 		}
-		dto.setVaccinations(vaccinationEntityDtos);
+		dto.setVaccinations(vaccinationDtos);
 
 		return dto;
 	}
@@ -285,8 +285,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		target.setRelatedCase(caseService.getByReferenceDto(source.getRelatedCase()));
 
 		List<VaccinationEntity> vaccinationEntities = new ArrayList<>();
-		for (VaccinationEntityDto vaccinationEntityDto : source.getVaccinations()) {
-			VaccinationEntity vaccinationEntity = vaccinationEntityFacade.fromDto(vaccinationEntityDto, checkChangeDate);
+		for (VaccinationDto vaccinationDto : source.getVaccinations()) {
+			VaccinationEntity vaccinationEntity = vaccinationFacade.fromDto(vaccinationDto, checkChangeDate);
 			vaccinationEntity.setImmunization(target);
 			vaccinationEntities.add(vaccinationEntity);
 		}

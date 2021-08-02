@@ -3,7 +3,7 @@ package de.symeda.sormas.app.backend.vaccination;
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.vaccination.VaccinationEntityDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.app.backend.clinicalcourse.HealthConditionsDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
@@ -15,7 +15,7 @@ import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import retrofit2.Call;
 
-public class VaccinationEntityDtoHelper extends AdoDtoHelper<VaccinationEntity, VaccinationEntityDto> {
+public class VaccinationDtoHelper extends AdoDtoHelper<VaccinationEntity, VaccinationDto> {
 
 	private HealthConditionsDtoHelper healthConditionsDtoHelper = new HealthConditionsDtoHelper();
 
@@ -25,27 +25,27 @@ public class VaccinationEntityDtoHelper extends AdoDtoHelper<VaccinationEntity, 
 	}
 
 	@Override
-	protected Class<VaccinationEntityDto> getDtoClass() {
-		return VaccinationEntityDto.class;
+	protected Class<VaccinationDto> getDtoClass() {
+		return VaccinationDto.class;
 	}
 
 	@Override
-	protected Call<List<VaccinationEntityDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<VaccinationDto>> pullAllSince(long since) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
 	@Override
-	protected Call<List<VaccinationEntityDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
+	protected Call<List<VaccinationDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<VaccinationEntityDto> vaccinationEntityDtos) throws NoConnectionException {
+	protected Call<List<PushResult>> pushAll(List<VaccinationDto> vaccinationDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
 	@Override
-	protected void fillInnerFromDto(VaccinationEntity target, VaccinationEntityDto source) {
+	protected void fillInnerFromDto(VaccinationEntity target, VaccinationDto source) {
 
 		target.setImmunization(DatabaseHelper.getImmunizationDao().getByReferenceDto(source.getImmunization()));
 		target.setHealthConditions(healthConditionsDtoHelper.fillOrCreateFromDto(target.getHealthConditions(), source.getHealthConditions()));
@@ -71,7 +71,7 @@ public class VaccinationEntityDtoHelper extends AdoDtoHelper<VaccinationEntity, 
 	}
 
 	@Override
-	protected void fillInnerFromAdo(VaccinationEntityDto target, VaccinationEntity source) {
+	protected void fillInnerFromAdo(VaccinationDto target, VaccinationEntity source) {
 
 		if (source.getImmunization() != null) {
 			Immunization immunization = DatabaseHelper.getImmunizationDao().queryForId(source.getImmunization().getId());

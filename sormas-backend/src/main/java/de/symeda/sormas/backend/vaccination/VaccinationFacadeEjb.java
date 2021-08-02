@@ -23,8 +23,8 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.api.vaccination.VaccinationEntityDto;
-import de.symeda.sormas.api.vaccination.VaccinationEntityFacade;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
+import de.symeda.sormas.api.vaccination.VaccinationFacade;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
@@ -33,8 +33,8 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
-@Stateless(name = "VaccinationEntityFacade")
-public class VaccinationEntityFacadeEjb implements VaccinationEntityFacade {
+@Stateless(name = "VaccinationFacade")
+public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	@EJB
 	private UserService userService;
@@ -43,12 +43,12 @@ public class VaccinationEntityFacadeEjb implements VaccinationEntityFacade {
 	@EJB
 	private ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
 	@EJB
-	private VaccinationEntityService vaccinationService;
+	private VaccinationService vaccinationService;
 
-	public VaccinationEntityDto save(VaccinationEntityDto dto) {
+	public VaccinationDto save(VaccinationDto dto) {
 
 		VaccinationEntity existingVaccination = dto.getUuid() != null ? vaccinationService.getByUuid(dto.getUuid()) : null;
-		VaccinationEntityDto existingDto = toDto(existingVaccination);
+		VaccinationDto existingDto = toDto(existingVaccination);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		restorePseudonymizedDto(dto, existingDto, existingVaccination, pseudonymizer);
@@ -61,20 +61,20 @@ public class VaccinationEntityFacadeEjb implements VaccinationEntityFacade {
 		return convertToDto(existingVaccination, pseudonymizer);
 	}
 
-	public VaccinationEntityDto convertToDto(VaccinationEntity source, Pseudonymizer pseudonymizer) {
+	public VaccinationDto convertToDto(VaccinationEntity source, Pseudonymizer pseudonymizer) {
 
-		VaccinationEntityDto dto = toDto(source);
+		VaccinationDto dto = toDto(source);
 
 		pseudonymizeDto(source, dto, pseudonymizer);
 
 		return dto;
 	}
 
-	private void pseudonymizeDto(VaccinationEntity source, VaccinationEntityDto dto, Pseudonymizer pseudonymizer) {
+	private void pseudonymizeDto(VaccinationEntity source, VaccinationDto dto, Pseudonymizer pseudonymizer) {
 
 		if (dto != null) {
 			boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(source.getImmunization());
-			pseudonymizer.pseudonymizeDto(VaccinationEntityDto.class, dto, inJurisdiction, c -> {
+			pseudonymizer.pseudonymizeDto(VaccinationDto.class, dto, inJurisdiction, c -> {
 
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
@@ -82,21 +82,17 @@ public class VaccinationEntityFacadeEjb implements VaccinationEntityFacade {
 		}
 	}
 
-	private void restorePseudonymizedDto(
-		VaccinationEntityDto dto,
-		VaccinationEntityDto existingDto,
-		VaccinationEntity vaccination,
-		Pseudonymizer pseudonymizer) {
+	private void restorePseudonymizedDto(VaccinationDto dto, VaccinationDto existingDto, VaccinationEntity vaccination, Pseudonymizer pseudonymizer) {
 
 		if (existingDto != null) {
 			final boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(vaccination.getImmunization());
 			final User currentUser = userService.getCurrentUser();
 			pseudonymizer.restoreUser(vaccination.getReportingUser(), currentUser, dto, dto::setReportingUser);
-			pseudonymizer.restorePseudonymizedValues(VaccinationEntityDto.class, dto, existingDto, inJurisdiction);
+			pseudonymizer.restorePseudonymizedValues(VaccinationDto.class, dto, existingDto, inJurisdiction);
 		}
 	}
 
-	public void validate(VaccinationEntityDto vaccinationDto) {
+	public void validate(VaccinationDto vaccinationDto) {
 
 		if (vaccinationDto.getImmunization() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validImmunization));
@@ -109,7 +105,7 @@ public class VaccinationEntityFacadeEjb implements VaccinationEntityFacade {
 		}
 	}
 
-	private VaccinationEntity fillOrBuildEntity(@NotNull VaccinationEntityDto source, VaccinationEntity target, boolean checkChangeDate) {
+	private VaccinationEntity fillOrBuildEntity(@NotNull VaccinationDto source, VaccinationEntity target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, VaccinationEntity::new, checkChangeDate);
 
 		target.setImmunization(immunizationService.getByReferenceDto(source.getImmunization()));
@@ -135,11 +131,11 @@ public class VaccinationEntityFacadeEjb implements VaccinationEntityFacade {
 		return target;
 	}
 
-	public VaccinationEntityDto toDto(VaccinationEntity entity) {
+	public VaccinationDto toDto(VaccinationEntity entity) {
 		if (entity == null) {
 			return null;
 		}
-		VaccinationEntityDto dto = new VaccinationEntityDto();
+		VaccinationDto dto = new VaccinationDto();
 		DtoHelper.fillDto(dto, entity);
 
 		dto.setImmunization(ImmunizationFacadeEjb.toReferenceDto(entity.getImmunization()));
@@ -165,13 +161,13 @@ public class VaccinationEntityFacadeEjb implements VaccinationEntityFacade {
 		return dto;
 	}
 
-	public VaccinationEntity fromDto(@NotNull VaccinationEntityDto source, boolean checkChangeDate) {
+	public VaccinationEntity fromDto(@NotNull VaccinationDto source, boolean checkChangeDate) {
 		return fillOrBuildEntity(source, vaccinationService.getByUuid(source.getUuid()), checkChangeDate);
 	}
 
 	@LocalBean
 	@Stateless
-	public static class VaccinationEntityFacadeEjbLocal extends VaccinationEntityFacadeEjb {
+	public static class VaccinationFacadeEjbLocal extends VaccinationFacadeEjb {
 
 	}
 }

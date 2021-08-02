@@ -13,14 +13,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.vaccination;
+package de.symeda.sormas.backend.vaccination;
 
-import javax.ejb.Remote;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 
-@Remote
-public interface VaccinationEntityFacade {
+import de.symeda.sormas.backend.common.BaseAdoService;
 
-	VaccinationEntityDto save(VaccinationEntityDto dto);
+@Stateless
+@LocalBean
+public class VaccinationService extends BaseAdoService<VaccinationEntity> {
 
-	void validate(VaccinationEntityDto vaccinationDto);
+	public VaccinationService() {
+		super(VaccinationEntity.class);
+	}
 }

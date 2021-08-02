@@ -113,7 +113,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.vaccination.VaccinationEntityDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
@@ -415,11 +415,11 @@ public class TestDataCreator {
 		return beanTest.getImmunizationFacade().save(immunization);
 	}
 
-	public VaccinationEntityDto createVaccinationEntity(
+	public VaccinationDto createVaccinationEntity(
 		UserReferenceDto reportingUser,
 		ImmunizationReferenceDto immunization,
 		HealthConditionsDto healthConditions) {
-		VaccinationEntityDto vaccination = new VaccinationEntityDto();
+		VaccinationDto vaccination = new VaccinationDto();
 		vaccination.setUuid(DataHelper.createUuid());
 		vaccination.setReportingUser(reportingUser);
 		vaccination.setReportDate(new Date());
@@ -427,7 +427,7 @@ public class TestDataCreator {
 		vaccination.setImmunization(immunization);
 		vaccination.setHealthConditions(healthConditions);
 
-		return beanTest.getVaccinationEntityFacade().save(vaccination);
+		return beanTest.getVaccinationFacade().save(vaccination);
 	}
 
 	public TravelEntryDto createTravelEntry(

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,26 +13,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.backend.vaccination;
+package de.symeda.sormas.api.vaccination;
 
-import com.j256.ormlite.dao.Dao;
+import javax.ejb.Remote;
 
-import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+@Remote
+public interface VaccinationFacade {
 
-public class VaccinationEntityDao extends AbstractAdoDao<VaccinationEntity> {
+	VaccinationDto save(VaccinationDto dto);
 
-	public VaccinationEntityDao(Dao<VaccinationEntity, Long> innerDao) {
-		super(innerDao);
-	}
-
-	@Override
-	protected Class<VaccinationEntity> getAdoClass() {
-		return VaccinationEntity.class;
-	}
-
-	@Override
-	public String getTableName() {
-		return VaccinationEntity.TABLE_NAME;
-	}
-
+	void validate(VaccinationDto vaccinationDto);
 }

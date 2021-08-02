@@ -32,7 +32,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
-import de.symeda.sormas.api.vaccination.VaccinationEntityDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 public class ImmunizationDto extends PseudonymizableDto {
 
@@ -73,7 +73,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	private CaseReferenceDto relatedCase;
 
-	private List<VaccinationEntityDto> vaccinations = new ArrayList<>();
+	private List<VaccinationDto> vaccinations = new ArrayList<>();
 
 	public Disease getDisease() {
 		return disease;
@@ -259,11 +259,11 @@ public class ImmunizationDto extends PseudonymizableDto {
 		this.country = country;
 	}
 
-	public List<VaccinationEntityDto> getVaccinations() {
+	public List<VaccinationDto> getVaccinations() {
 		return vaccinations;
 	}
 
-	public void setVaccinations(List<VaccinationEntityDto> vaccinations) {
+	public void setVaccinations(List<VaccinationDto> vaccinations) {
 		this.vaccinations = vaccinations;
 	}
 }
