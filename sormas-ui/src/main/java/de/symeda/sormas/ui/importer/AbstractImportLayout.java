@@ -1,15 +1,7 @@
 package de.symeda.sormas.ui.importer;
 
-import static de.symeda.sormas.ui.utils.DownloadUtil.createFileNameWithCurrentDate;
-
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.function.Function;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.LoggerFactory;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ClassResource;
@@ -35,12 +27,10 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.AboutView;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
-import de.symeda.sormas.ui.utils.ExportEntityName;
 
 @SuppressWarnings("serial")
 public class AbstractImportLayout extends VerticalLayout {
@@ -75,21 +65,7 @@ public class AbstractImportLayout extends VerticalLayout {
 			ValoTheme.BUTTON_PRIMARY,
 			CssStyles.VSPACE_TOP_3,
 			CssStyles.VSPACE_2);
-
-		new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
-			try {
-				String documentPath = FacadeProvider.getInfoFacade().generateDataDictionary();
-				IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
-			} catch (IOException e) {
-				LoggerFactory.getLogger(AboutView.class).error("Failed to generate data dictionary", e);
-
-				// fall back to pre-generated document
-				InputStream preGeneratedDocumentStream = new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx").getStream().getStream();
-				IOUtils.copy(preGeneratedDocumentStream, out);
-			}
-		}, (e) -> {
-		}), createFileNameWithCurrentDate(ExportEntityName.DATA_DICTIONARY, ".xlsx"))).extend(dataDictionaryButton);
-
+		DownloadUtil.attachDataDictionaryDownloader(dataDictionaryButton);
 		addComponent(dataDictionaryButton);
 	}
 
