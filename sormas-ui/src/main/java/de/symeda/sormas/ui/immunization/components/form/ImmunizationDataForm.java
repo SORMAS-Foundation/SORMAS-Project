@@ -149,25 +149,27 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		addField(ImmunizationDto.START_DATE, DateField.class);
 		addField(ImmunizationDto.END_DATE, DateField.class);
 
+		MeansOfImmunization meansOfImmunizationValue = (MeansOfImmunization) meansOfImmunizationField.getValue();
+
 		Label vaccinationHeadingLabel = new Label(I18nProperties.getString(Strings.headingVaccination));
 		vaccinationHeadingLabel.addStyleName(H3);
 		getContent().addComponent(vaccinationHeadingLabel, VACCINATION_HEADING_LOC);
-		vaccinationHeadingLabel.setVisible(shouldShowVaccinationFields((MeansOfImmunization) meansOfImmunizationField.getValue()));
+		vaccinationHeadingLabel.setVisible(shouldShowVaccinationFields(meansOfImmunizationValue));
 
 		TextField numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
 		numberOfDosesField.setConverter(new StringToIntegerConverter());
-		numberOfDosesField.setVisible(shouldShowVaccinationFields((MeansOfImmunization) meansOfImmunizationField.getValue()));
+		numberOfDosesField.setVisible(shouldShowVaccinationFields(meansOfImmunizationValue));
 
 		Label recoveryHeadingLabel = new Label(I18nProperties.getString(Strings.headingRecovery));
 		recoveryHeadingLabel.addStyleName(H3);
 		getContent().addComponent(recoveryHeadingLabel, RECOVERY_HEADING_LOC);
-		recoveryHeadingLabel.setVisible(shouldShowVaccinationFields((MeansOfImmunization) meansOfImmunizationField.getValue()));
+		recoveryHeadingLabel.setVisible(shouldShowRecoveryFields(meansOfImmunizationValue));
 
 		DateField positiveTestResultDate = addField(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, DateField.class);
-		positiveTestResultDate.setVisible(shouldShowVaccinationFields((MeansOfImmunization) meansOfImmunizationField.getValue()));
+		positiveTestResultDate.setVisible(shouldShowRecoveryFields(meansOfImmunizationValue));
 
 		DateField recoveryDate = addField(ImmunizationDto.RECOVERY_DATE, DateField.class);
-		recoveryDate.setVisible(shouldShowVaccinationFields((MeansOfImmunization) meansOfImmunizationField.getValue()));
+		recoveryDate.setVisible(shouldShowRecoveryFields(meansOfImmunizationValue));
 
 		addField(ImmunizationDto.REPORTING_USER, ComboBox.class);
 		addField(ImmunizationDto.PREVIOUS_INFECTION, NullableOptionGroup.class);
@@ -229,9 +231,10 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			if (!isVaccinationVisible) {
 				numberOfDosesField.setValue(null);
 			}
-			recoveryHeadingLabel.setVisible(isVaccinationVisible);
-			positiveTestResultDate.setVisible(isVaccinationVisible);
-			recoveryDate.setVisible(isVaccinationVisible);
+			boolean isRecoveryVisible = shouldShowRecoveryFields(meansOfImmunization);
+			recoveryHeadingLabel.setVisible(isRecoveryVisible);
+			positiveTestResultDate.setVisible(isRecoveryVisible);
+			recoveryDate.setVisible(isRecoveryVisible);
 		});
 
 		managementStatusField.addValueChangeListener(valueChangeEvent -> {
@@ -337,6 +340,10 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 	private boolean shouldShowVaccinationFields(MeansOfImmunization meansOfImmunization) {
 		return MeansOfImmunization.VACCINATION.equals(meansOfImmunization) || MeansOfImmunization.VACCINATION_RECOVERY.equals(meansOfImmunization);
+	}
+
+	private boolean shouldShowRecoveryFields(MeansOfImmunization meansOfImmunization) {
+		return MeansOfImmunization.RECOVERY.equals(meansOfImmunization) || MeansOfImmunization.VACCINATION_RECOVERY.equals(meansOfImmunization);
 	}
 
 	private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {
