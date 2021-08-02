@@ -948,12 +948,6 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	public void deleteCascade(ADO ado) throws SQLException {
 
 		try {
-			if (ado.isModified() && ado.getClass().getAnnotation(EmbeddedAdo.class) == null) {
-				// let user know if changes are lost (not for embedded entities)
-				DatabaseHelper.getSyncLogDao()
-					.createWithParentStack(ado.toString(), DatabaseHelper.getString(R.string.error_changes_dropped_no_access));
-				// TODO include JSON backup
-			}
 			delete(ado);
 
 			// ignore parent property
