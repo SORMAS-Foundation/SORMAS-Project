@@ -59,11 +59,11 @@ public class ImportParserService {
 	@EJB
 	private UserFacadeEjbLocal userFacade;
 
-	private final PropertyTypeBasedParsers classBaseParsers;
+	private final PropertyTypeBasedParsers classBasedParsers;
 	private final FormatterBasedParsers formatBasedParsers;
 
 	public ImportParserService() {
-		classBaseParsers = PropertyTypeBasedParsers.Builder.of(PropertyTypeBasedParsers.class)
+		classBasedParsers = PropertyTypeBasedParsers.Builder.of(PropertyTypeBasedParsers.class)
 			.withParser(Enum.class, this::parseEnum)
 			.withParser(CustomizableEnum.class, this::parseCustomizableEnum)
 			.withParser(Date.class, this::parseDate)
@@ -89,7 +89,7 @@ public class ImportParserService {
 			// force calling parse method and fail if parsers are not not properly set
 			return true;
 		} else {
-			return classBaseParsers.hasParser(pd.getPropertyType());
+			return classBasedParsers.hasParser(pd.getPropertyType());
 		}
 	}
 
@@ -103,7 +103,7 @@ public class ImportParserService {
 		if (formatAnnotation != null) {
 			parser = formatBasedParsers.getParser(formatAnnotation.value());
 		} else {
-			parser = classBaseParsers.getParser(propertyType);
+			parser = classBasedParsers.getParser(propertyType);
 		}
 
 		if (parser.isPresent()) {

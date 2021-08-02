@@ -190,7 +190,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
 	@EJB
-	private ImportParserService converterService;
+	private ImportParserService importParserService;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = "import_case_template.csv";
 	private static final String EVENT_IMPORT_TEMPLATE_FILE_NAME = "import_event_template.csv";
@@ -858,8 +858,8 @@ public class ImportFacadeEjb implements ImportFacade {
 		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException, EnumService.InvalidEnumCaptionException {
 		Class<?> propertyType = pd.getPropertyType();
 
-		if (converterService.hasParser(pd)) {
-			Object parsedValue = converterService.parseValue(pd, entry, entryHeaderPath);
+		if (importParserService.hasParser(pd)) {
+			Object parsedValue = importParserService.parseValue(pd, entry, entryHeaderPath);
 			pd.getWriteMethod().invoke(element, parsedValue);
 
 			if (propertyType.isAssignableFrom(RegionReferenceDto.class) && !allowForeignRegions && parsedValue != null) {

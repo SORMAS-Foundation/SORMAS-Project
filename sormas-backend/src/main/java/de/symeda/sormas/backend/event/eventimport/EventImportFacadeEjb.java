@@ -102,8 +102,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		String[] entityClasses,
 		String[] entityProperties,
 		String[][] entityPropertyPaths,
-		boolean ignoreEmptyEntries)
-		throws InvalidColumnException {
+		boolean ignoreEmptyEntries) {
 
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
@@ -180,8 +179,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		String[] entityClasses,
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries,
-		EventImportEntities entities)
-		throws InvalidColumnException {
+		EventImportEntities entities) {
 
 		final UserReferenceDto currentUserRef = userService.getCurrentUser().toReference();
 
@@ -254,8 +252,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		String[] entityClasses,
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries,
-		Function<ImportCellData, Exception> insertCallback)
-		throws InvalidColumnException {
+		Function<ImportCellData, Exception> insertCallback) {
 
 		String importError = null;
 		List<String> invalidColumns = new ArrayList<>();

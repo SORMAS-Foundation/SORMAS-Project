@@ -21,7 +21,6 @@ import static org.hamcrest.Matchers.is;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.text.ParseException;
-import java.util.Date;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -75,14 +74,14 @@ public class ImportParserServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testParseDateFieldValue() throws IntrospectionException, ImportErrorException {
+	public void testParseDateFieldValue() throws IntrospectionException, ImportErrorException, ParseException {
 		Object parsed = getImportParserService().parseValue(
 			new PropertyDescriptor(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.class),
 			"07/30/2021",
 			new String[] {
 				CaseDataDto.DISTRICT_LEVEL_DATE });
 
-		assertThat(parsed, is(new Date(1627592400000L)));
+		assertThat(parsed, is(DateHelper.parseDateWithException("30/07/2021", "dd/MM/yyyy")));
 	}
 
 	@Test
