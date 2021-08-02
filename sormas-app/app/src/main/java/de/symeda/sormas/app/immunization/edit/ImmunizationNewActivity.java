@@ -33,6 +33,7 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.immunization.ImmunizationPickOrCreateDialog;
 import de.symeda.sormas.app.immunization.ImmunizationSection;
+import de.symeda.sormas.app.immunization.list.ImmunizationListActivity;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
 
@@ -111,42 +112,72 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 
 	private void pickOrCreateImmunizationAndSave(Immunization immunization, ImmunizationNewFragment fragment) {
 		ImmunizationPickOrCreateDialog.pickOrCreateImmunization(immunization, pickedImmunization -> {
-			if (pickedImmunization.getUuid().equals(immunization.getUuid())) {
-
+			if (pickedImmunization != null) {
 				if (saveTask != null) {
 					NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
 					return; // don't save multiple times
 				}
-				saveTask = new SavingAsyncTask(getRootView(), immunization) {
+				if (pickedImmunization.getUuid().equals(immunization.getUuid())) {
+					saveTask = new SavingAsyncTask(getRootView(), immunization) {
 
-					@Override
-					protected void onPreExecute() {
-						showPreloader();
-					}
-
-					@Override
-					protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
-						DatabaseHelper.getPersonDao().saveAndSnapshot(immunization.getPerson());
-						DatabaseHelper.getImmunizationDao().saveAndSnapshot(immunization);
-					}
-
-					@Override
-					protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-						hidePreloader();
-						if (taskResult.getResultStatus().isSuccess()) {
-							finish();
-							ImmunizationEditActivity.startActivity(getContext(), immunization.getUuid(), ImmunizationSection.IMMUNIZATION_INFO);
+						@Override
+						protected void onPreExecute() {
+							showPreloader();
 						}
 
-						// do after clearing, because we want to show a success notification that would otherwise be hidden immediately
-						super.onPostExecute(taskResult);
+						@Override
+						protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
+							DatabaseHelper.getPersonDao().saveAndSnapshot(immunization.getPerson());
+							DatabaseHelper.getImmunizationDao().saveAndSnapshot(immunization);
+						}
 
-						saveTask = null;
-					}
-				}.executeOnThreadPool();
+						@Override
+						protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+							hidePreloader();
+							if (taskResult.getResultStatus().isSuccess()) {
+								finish();
+								ImmunizationEditActivity.startActivity(getContext(), immunization.getUuid(), ImmunizationSection.IMMUNIZATION_INFO);
+							}
+
+							// do after clearing, because we want to show a success notification that would otherwise be hidden immediately
+							super.onPostExecute(taskResult);
+
+							saveTask = null;
+						}
+					}.executeOnThreadPool();
+				} else {
+					saveTask = new SavingAsyncTask(getRootView(), immunization) {
+
+						@Override
+						protected void onPreExecute() {
+							showPreloader();
+						}
+
+						@Override
+						protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
+							pickedImmunization.update(immunization);
+							DatabaseHelper.getImmunizationDao().saveAndSnapshot(pickedImmunization);
+						}
+
+						@Override
+						protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+							hidePreloader();
+							if (taskResult.getResultStatus().isSuccess()) {
+								finish();
+								ImmunizationEditActivity
+									.startActivity(getContext(), pickedImmunization.getUuid(), ImmunizationSection.IMMUNIZATION_INFO);
+							}
+
+							// do after clearing, because we want to show a success notification that would otherwise be hidden immediately
+							super.onPostExecute(taskResult);
+
+							saveTask = null;
+						}
+					}.executeOnThreadPool();
+				}
 			} else {
 				finish();
-				ImmunizationEditActivity.startActivity(getContext(), pickedImmunization.getUuid(), ImmunizationSection.IMMUNIZATION_INFO);
+				ImmunizationListActivity.startActivity(getContext());
 			}
 		});
 	}

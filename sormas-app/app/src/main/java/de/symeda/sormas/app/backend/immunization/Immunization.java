@@ -305,4 +305,30 @@ public class Immunization extends PseudonymizableAdo {
     public String getI18nPrefix() {
         return I18N_PREFIX;
     }
+
+
+    public void update(Immunization immunization) {
+        this.setPerson(immunization.getPerson());
+        this.setReportDate(immunization.getReportDate());
+        this.setReportingUser(immunization.getReportingUser());
+        this.setArchived(immunization.isArchived());
+        this.setImmunizationStatus(immunization.getImmunizationStatus());
+        this.setMeansOfImmunization(immunization.getMeansOfImmunization());
+        this.setMeansOfImmunizationDetails(immunization.getMeansOfImmunizationDetails());
+        this.setImmunizationManagementStatus(immunization.getImmunizationManagementStatus());
+        this.setExternalId(immunization.getExternalId());
+        this.setResponsibleRegion(immunization.getResponsibleRegion());
+        this.setResponsibleDistrict(immunization.getResponsibleDistrict());
+        this.setResponsibleCommunity(immunization.getResponsibleCommunity());
+        this.setCountry(immunization.getCountry());
+        this.setStartDate(immunization.getStartDate());
+        this.setEndDate(immunization.getEndDate());
+        this.setNumberOfDoses(immunization.getNumberOfDoses());
+        this.setPreviousInfection(immunization.getPreviousInfection());
+        this.setLastInfectionDate(immunization.getLastInfectionDate());
+        this.setAdditionalDetails(immunization.getAdditionalDetails());
+        this.setPositiveTestResultDate(immunization.getPositiveTestResultDate());
+        this.setRecoveryDate(immunization.getRecoveryDate());
+        this.setRelatedCase(immunization.getRelatedCase());
+    }
 }

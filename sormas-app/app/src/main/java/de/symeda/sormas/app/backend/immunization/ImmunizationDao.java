@@ -164,9 +164,11 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 			ImmunizationCriteria immunizationCriteria = criteria.getImmunizationCriteria();
 			where.and().eq(Immunization.DISEASE, immunizationCriteria.getDisease());
 			where.and().eq(Immunization.RESPONSIBLE_REGION + "_id", criteria.getImmunizationCriteria().getResponsibleRegion());
+			if (criteria.getStartDate() != null && criteria.getEndDate() != null) {
+				where.and().ge(Immunization.START_DATE, criteria.getStartDate());
+				where.and().le(Immunization.END_DATE, criteria.getEndDate());
+			}
 			where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
-//			where.and()
-//					.between(Case.REPORT_DATE, DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30));
 
 			queryBuilder.setWhere(where);
 			queryBuilder = queryBuilder.leftJoin(personQueryBuilder);

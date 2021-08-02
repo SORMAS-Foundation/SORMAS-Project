@@ -19,6 +19,7 @@
 package de.symeda.sormas.app.immunization.read;
 
 import android.content.Context;
+import android.view.MenuItem;
 
 import java.util.List;
 
@@ -29,6 +30,7 @@ import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.immunization.Immunization;
+import de.symeda.sormas.app.backend.immunization.ImmunizationEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.immunization.ImmunizationSection;
 import de.symeda.sormas.app.immunization.edit.ImmunizationEditActivity;
@@ -86,5 +88,20 @@ public class ImmunizationReadActivity extends BaseReadActivity<Immunization> {
     @Override
     protected int getActivityTitle() {
         return R.string.heading_immunization_read;
+    }
+
+    @Override
+    protected void processActionbarMenu() {
+        super.processActionbarMenu();
+        final Immunization selectedImmunization = DatabaseHelper.getImmunizationDao().queryUuid(getRootUuid());
+        final MenuItem editMenu = getEditMenu();
+
+        if (editMenu != null) {
+            if (ImmunizationEditAuthorization.isImmunizationEditAllowed(selectedImmunization)) {
+                editMenu.setVisible(true);
+            } else {
+                editMenu.setVisible(false);
+            }
+        }
     }
 }

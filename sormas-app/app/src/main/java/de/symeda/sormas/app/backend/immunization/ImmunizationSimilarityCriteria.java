@@ -26,6 +26,8 @@ public class ImmunizationSimilarityCriteria implements Serializable {
 	private ImmunizationCriteria immunizationCriteria;
 	private String personUuid;
 	private Date reportDate;
+	private Date startDate;
+	private Date endDate;
 
 	public ImmunizationCriteria getImmunizationCriteria() {
 		return immunizationCriteria;
@@ -49,5 +51,21 @@ public class ImmunizationSimilarityCriteria implements Serializable {
 
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 }

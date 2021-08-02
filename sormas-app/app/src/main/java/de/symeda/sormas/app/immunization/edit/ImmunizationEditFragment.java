@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.immunization.edit;
 
+import android.view.View;
+
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
@@ -52,6 +54,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	private List<Item> allDistricts;
 	private List<Item> initialDistricts;
 	private List<Item> initialCommunities;
+	private List<Item> countries;
 
 	public static ImmunizationEditFragment newInstance(Immunization activityRootData) {
 		ImmunizationEditFragment immunizationEditFragment = newInstanceWithFieldCheckers(
@@ -93,6 +96,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		meansOfImmunizationList = DataUtils.getEnumItems(MeansOfImmunization.class, true);
 		immunizationManagementStatusList = DataUtils.getEnumItems(ImmunizationManagementStatus.class, true);
 
+		countries = InfrastructureDaoHelper.loadCountries();
 		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
 		allDistricts = InfrastructureDaoHelper.loadAllDistricts();
 		initialResponsibleDistricts = InfrastructureDaoHelper.loadDistricts(record.getResponsibleRegion());
@@ -106,6 +110,8 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		contentBinding.setData(record);
 
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
+
+		contentBinding.immunizationCountry.initializeSpinner(countries);
 
 		InfrastructureDaoHelper.initializeRegionFields(
 			contentBinding.immunizationResponsibleRegion,
@@ -143,9 +149,62 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 
 		// Initialize ControlDateFields
 		contentBinding.immunizationReportDate.initializeDateField(getFragmentManager());
+		contentBinding.immunizationRecoveryDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationStartDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationEndDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationLastInfectionDate.initializeDateField(getFragmentManager());
+
+		contentBinding.immunizationMeansOfImmunization.addValueChangedListener(e -> {
+			if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
+				contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
+				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
+				contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.VISIBLE);
+			}
+			if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
+				contentBinding.immunizationVaccinationHeading.setVisibility(View.VISIBLE);
+				contentBinding.immunizationRecoveryHeading.setVisibility(View.VISIBLE);
+
+				contentBinding.immunizationNumberOfDoses.setVisibility(View.VISIBLE);
+				contentBinding.immunizationRecoveryDate.setVisibility(View.VISIBLE);
+				contentBinding.immunizationPositiveTestResultDate.setVisibility(View.VISIBLE);
+
+				contentBinding.immunizationNumberOfDoses.setEnabled(true);
+				contentBinding.immunizationRecoveryDate.setEnabled(true);
+				contentBinding.immunizationPositiveTestResultDate.setEnabled(true);
+			} else {
+				contentBinding.immunizationVaccinationHeading.setVisibility(View.GONE);
+				contentBinding.immunizationRecoveryHeading.setVisibility(View.GONE);
+				contentBinding.immunizationNumberOfDoses.setVisibility(View.GONE);
+				contentBinding.immunizationRecoveryDate.setVisibility(View.GONE);
+				contentBinding.immunizationPositiveTestResultDate.setVisibility(View.GONE);
+			}
+		});
+
+		contentBinding.overwriteImmunizationManagementStatusCheckBox.addValueChangedListener(e -> {
+			if (Boolean.TRUE.equals(e.getValue())) {
+				contentBinding.immunizationImmunizationManagementStatus.setEnabled(true);
+			} else {
+				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
+			}
+		});
+
+		contentBinding.immunizationImmunizationManagementStatus.addValueChangedListener(e -> {
+			if (e.getValue() == ImmunizationManagementStatus.SCHEDULED || e.getValue() == ImmunizationManagementStatus.ONGOING) {
+				contentBinding.immunizationImmunizationStatus.setValue(ImmunizationStatus.PENDING);
+			}
+			if (e.getValue() == ImmunizationManagementStatus.COMPLETED) {
+				contentBinding.immunizationImmunizationStatus.setValue(ImmunizationStatus.ACQUIRED);
+			}
+			if (e.getValue() == ImmunizationManagementStatus.CANCELED) {
+				contentBinding.immunizationImmunizationStatus.setValue(ImmunizationStatus.NOT_ACQUIRED);
+			}
+		});
+
+		contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.SCHEDULED);
+		contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
+		contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.VISIBLE);
+		contentBinding.immunizationNumberOfDoses.setVisibility(View.GONE);
+
 	}
 
 	@Override

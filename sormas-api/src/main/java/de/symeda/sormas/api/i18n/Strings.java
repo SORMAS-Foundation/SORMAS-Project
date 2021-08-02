@@ -609,6 +609,8 @@ public interface Strings {
 	String headingVisitsDeleted = "headingVisitsDeleted";
 	String headingVisualization = "headingVisualization";
 	String headingWrongFileType = "headingWrongFileType";
+	String immunizationRecoveryHeading = "immunizationRecoveryHeading";
+	String immunizationVaccinationHeading = "immunizationVaccinationHeading";
 	String inactive = "inactive";
 	String inColumn = "inColumn";
 	String infoActivityAsCaseInvestigation = "infoActivityAsCaseInvestigation";

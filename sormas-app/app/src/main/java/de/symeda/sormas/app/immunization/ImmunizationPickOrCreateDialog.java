@@ -70,6 +70,9 @@ public class ImmunizationPickOrCreateDialog extends AbstractDialog {
 		dialog.setPositiveCallback(() -> {
 			pickedImmunizationCallback.accept(dialog.getSelectedImmunization() != null ? dialog.getSelectedImmunization() : newImmunization);
 		});
+		dialog.setNegativeCallback(() -> {
+			pickedImmunizationCallback.accept(null);
+		});
 
 		dialog.show();
 		dialog.getPositiveButton().setEnabled(false);
@@ -139,26 +142,11 @@ public class ImmunizationPickOrCreateDialog extends AbstractDialog {
 			}
 
 			if (getSelectedImmunization() != null) {
-				contentBinding.cbCreateImmunization.setValue(Boolean.FALSE);
 				getPositiveButton().setEnabled(true);
 			} else {
 				getPositiveButton().setEnabled(false);
 			}
 		};
-
-		contentBinding.cbCreateImmunization.addValueChangedListener(e -> {
-			if (Boolean.TRUE.equals(e.getValue())) {
-				setSelectedImmunization(null);
-				getPositiveButton().setEnabled(true);
-				String tag = getActivity().getResources().getString(R.string.tag_row_item_immunization_pick_or_create);
-				ArrayList<View> views = ViewHelper.getViewsByTag(contentBinding.existingImmunizationsList, tag);
-				for (View itemView : views) {
-					itemView.setSelected(false);
-				}
-			} else {
-				getPositiveButton().setEnabled(false);
-			}
-		});
 	}
 
 	private ObservableArrayList makeObservable(List<Immunization> immunizations) {

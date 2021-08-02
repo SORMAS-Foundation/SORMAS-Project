@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
   ~ Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
   ~
@@ -19,12 +18,22 @@
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:descendantFocusability="beforeDescendants"
-    android:id="@+id/base_layout">
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants">
 
     <data>
-        <variable name="similarImmunizations" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.immunization.Immunization&gt;" />
-        <variable name="similarImmunizationItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+
+        <variable
+            name="immunization"
+            type="de.symeda.sormas.app.backend.immunization.Immunization" />
+
+        <variable
+            name="similarImmunizations"
+            type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.immunization.Immunization&gt;" />
+
+        <variable
+            name="similarImmunizationItemClickCallback"
+            type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
     </data>
 
     <ScrollView
@@ -38,67 +47,41 @@
 
             <TextView
                 android:id="@+id/dialog_description"
+                style="@style/SubHeadingDescriptionStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/info_pick_or_create_immunization"
                 android:paddingStart="@dimen/rowListItemHorizontalMargin"
                 android:paddingEnd="@dimen/rowListItemHorizontalMargin"
-                style="@style/SubHeadingDescriptionStyle"
+                android:text="String.format(@string/info_pick_or_create_immunization, @{immunization.disease})"
                 android:textSize="@dimen/defaultControlTextSize" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
                 android:background="@color/formListSectionBackground"
-                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:orientation="vertical"
                 android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
-                android:paddingRight="@dimen/parentLayoutHorizontalPadding"
-                android:layout_marginBottom="@dimen/controlReadTextMarginBottom">
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding">
 
                 <TextView
+                    style="@style/SubHeadingCompactStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/heading_existing_immunizations"
                     android:paddingBottom="@dimen/parentLayoutVerticalMargin"
-                    style="@style/SubHeadingCompactStyle" />
+                    android:text="@string/heading_existing_immunizations" />
 
                 <LinearLayout
                     android:id="@+id/existing_immunizations_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:clipToPadding="false"
+                    android:orientation="vertical"
                     android:padding="@dimen/rowListItemParentPadding"
+                    app:callback="@{similarImmunizationItemClickCallback}"
                     app:entries="@{similarImmunizations}"
-                    app:layout="@{@layout/row_immunization_pick_or_create_layout}"
-                    app:callback="@{similarImmunizationItemClickCallback}" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
-                    android:id="@+id/cb_create_immunization"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/rowListItemHorizontalMargin"
-                    android:layout_marginEnd="@dimen/rowListItemHorizontalMargin"
-                    app:showCaption="false" />
-
-                <TextView
-                    android:id="@+id/dialog_create_immunization_hint"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/info_case_creation_mark_check_box"
-                    android:paddingStart="@dimen/rowListItemHorizontalMargin"
-                    android:paddingEnd="@dimen/rowListItemHorizontalMargin"
-                    android:layout_marginTop="6dp"
-                    style="@style/SubHeadingDescriptionStyle"
-                    android:textSize="@dimen/defaultControlTextSize" />
+                    app:layout="@{@layout/row_immunization_pick_or_create_layout}" />
 
             </LinearLayout>
 

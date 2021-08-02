@@ -29,6 +29,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.immunization.Immunization;
+import de.symeda.sormas.app.backend.immunization.ImmunizationEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
@@ -101,40 +102,45 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 
 		final Immunization changedImmunization = getStoredRootEntity();
 
-		try {
-			FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
-		} catch (ValidationException e) {
-			NotificationHelper.showNotification(this, ERROR, e.getMessage());
-			return;
+		if (ImmunizationEditAuthorization.isImmunizationEditAllowed(changedImmunization)) {
+
+			try {
+				FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
+			} catch (ValidationException e) {
+				NotificationHelper.showNotification(this, ERROR, e.getMessage());
+				return;
+			}
+
+			saveTask = new SavingAsyncTask(getRootView(), changedImmunization) {
+
+				@Override
+				protected void onPreExecute() {
+					showPreloader();
+				}
+
+				@Override
+				protected void doInBackground(TaskResultHolder resultHolder) throws DaoException {
+					synchronized (ImmunizationEditActivity.this) {
+						DatabaseHelper.getPersonDao().saveAndSnapshot(DatabaseHelper.getImmunizationDao().queryUuid(changedImmunization.getUuid()).getPerson());
+						DatabaseHelper.getImmunizationDao().saveAndSnapshot(changedImmunization);
+					}
+				}
+
+				@Override
+				protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+					hidePreloader();
+					super.onPostExecute(taskResult);
+					if (taskResult.getResultStatus().isSuccess()) {
+						goToNextPage();
+					} else {
+						onResume(); // reload data
+					}
+					saveTask = null;
+				}
+			}.executeOnThreadPool();
+		} else {
+			NotificationHelper.showNotification(this, WARNING, getString(R.string.message_edit_forbidden));
 		}
-
-		saveTask = new SavingAsyncTask(getRootView(), changedImmunization) {
-
-			@Override
-			protected void onPreExecute() {
-				showPreloader();
-			}
-
-			@Override
-			protected void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-				synchronized (ImmunizationEditActivity.this) {
-					DatabaseHelper.getPersonDao().saveAndSnapshot(changedImmunization.getPerson());
-					DatabaseHelper.getImmunizationDao().saveAndSnapshot(changedImmunization);
-				}
-			}
-
-			@Override
-			protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-				hidePreloader();
-				super.onPostExecute(taskResult);
-				if (taskResult.getResultStatus().isSuccess()) {
-					goToNextPage();
-				} else {
-					onResume(); // reload data
-				}
-				saveTask = null;
-			}
-		}.executeOnThreadPool();
 	}
 
 	@Override

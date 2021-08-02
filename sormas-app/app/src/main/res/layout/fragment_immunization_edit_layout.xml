@@ -28,10 +28,15 @@
         <variable
             name="data"
             type="de.symeda.sormas.app.backend.immunization.Immunization" />
-        <variable name="yesNoUnknownClass" type="Class" />
+
+        <variable
+            name="yesNoUnknownClass"
+            type="Class" />
+
         <import type="de.symeda.sormas.api.immunization.MeansOfImmunization" />
 
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+
         <import type="de.symeda.sormas.api.i18n.Strings" />
     </data>
 
@@ -40,13 +45,13 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/main_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/fragment_padding"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:id="@+id/main_content">
+            android:orientation="vertical"
+            android:padding="@dimen/fragment_padding">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -55,137 +60,151 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/immunization_reportingUser"
-                    app:value="@{data.reportingUser}"
-                    style="@style/ControlFirstOfTwoColumnsStyle" />
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.reportingUser}" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/immunization_reportDate"
-                    app:value="@{data.reportDate}"
+                    app:value="@={data.reportDate}"
                     app:required="true"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
 
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/immunization_disease"
+                style="@style/ControlSingleColumnStyle"
+                app:required="true"
+                app:value="@={data.disease}" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/immunization_meansOfImmunization"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.meansOfImmunization}" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/immunization_immunizationManagementStatus"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.immunizationManagementStatus}" />
+
+            <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                android:id="@+id/overwrite_immunization_management_status_checkBox"
+                style="@style/ControlSingleColumnStyle"
+                android:visibility="gone"
+                app:caption="@string/caption_overwrite_immunization_management_status" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/immunization_immunizationStatus"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.immunizationStatus}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/immunization_externalID"
+                style="@style/ControlSingleColumnStyle"
+                app:required="true"
+                app:value="@={data.externalId}" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/immunization_disease"
-                    app:value="@={data.disease}"
+                    android:id="@+id/immunization_responsibleRegion"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
                     app:required="true"
-                    style="@style/ControlSingleColumnStyle" />
+                    app:value="@={data.responsibleRegion}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/immunization_meansOfImmunization"
-                    app:value="@={data.meansOfImmunization}"
-                    style="@style/ControlSingleColumnStyle" />
+                    android:id="@+id/immunization_responsibleDistrict"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:required="true"
+                    app:value="@={data.responsibleDistrict}" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/immunization_immunizationManagementStatus"
-                    app:value="@={data.immunizationManagementStatus}"
-                    style="@style/ControlSingleColumnStyle" />
+            </LinearLayout>
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/immunization_immunizationStatus"
-                    app:value="@={data.immunizationStatus}"
-                    style="@style/ControlSingleColumnStyle" />
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/immunization_responsibleCommunity"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.responsibleCommunity}" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/immunization_externalID"
-                    app:value="@={data.externalId}"
-                    style="@style/ControlSingleColumnStyle" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/immunization_startDate"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@={data.startDate}" />
 
-                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/immunization_responsibleRegion"
-                        app:value="@={data.responsibleRegion}"
-                        app:required="true"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/immunization_endDate"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@={data.endDate}" />
 
-                    <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                        android:id="@+id/immunization_responsibleDistrict"
-                        app:value="@={data.responsibleDistrict}"
-                        app:required="true"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                </LinearLayout>
-
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/immunization_responsibleCommunity"
-                    app:value="@={data.responsibleCommunity}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <de.symeda.sormas.app.component.controls.ControlDateField
-                        android:id="@+id/immunization_startDate"
-                        app:value="@={data.startDate}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
-
-                    <de.symeda.sormas.app.component.controls.ControlDateField
-                        android:id="@+id/immunization_endDate"
-                        app:value="@={data.endDate}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
-
-                </LinearLayout>
+            </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
                 android:id="@+id/immunization_previousInfection"
+                style="@style/ControlSingleColumnStyle"
                 app:enumClass="@{yesNoUnknownClass}"
-                app:value="@={data.previousInfection}"
-                style="@style/ControlSingleColumnStyle" />
+                app:value="@={data.previousInfection}" />
 
             <de.symeda.sormas.app.component.controls.ControlDateField
                 android:id="@+id/immunization_lastInfectionDate"
-                app:value="@={data.lastInfectionDate}"
+                style="@style/ControlSingleColumnStyle"
                 app:dependencyParentField="@{immunizationPreviousInfection}"
                 app:dependencyParentValue="@{true}"
-                style="@style/ControlSingleColumnStyle" />
+                app:value="@={data.lastInfectionDate}" />
 
             <TextView
+                android:id="@+id/immunization_vaccination_heading"
+                style="@style/SubHeadingStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{I18nProperties.getString(Strings.vaccination)}"
-                style="@style/SubHeadingStyle" />
+                android:text="@{I18nProperties.getString(Strings.immunizationVaccinationHeading)}" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/immunization_numberOfDoses"
-                    app:value="@={data.numberOfDoses}"
-                    style="@style/ControlSingleColumnStyle" />
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/immunization_numberOfDoses"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.numberOfDoses}" />
 
             <TextView
+                android:id="@+id/immunization_recovery_heading"
+                style="@style/SubHeadingStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{I18nProperties.getString(Strings.recovery)}"
-                style="@style/SubHeadingStyle" />
+                android:text="@{I18nProperties.getString(Strings.immunizationRecoveryHeading)}" />
 
-                <de.symeda.sormas.app.component.controls.ControlDateField
-                    android:id="@+id/immunization_positiveTestResultDate"
-                    app:value="@={data.positiveTestResultDate}"
-                    app:required="true"
-                    style="@style/ControlSingleColumnStyle" />
+            <de.symeda.sormas.app.component.controls.ControlDateField
+                android:id="@+id/immunization_positiveTestResultDate"
+                style="@style/ControlSingleColumnStyle"
+                app:required="true"
+                app:value="@={data.positiveTestResultDate}" />
 
-                <de.symeda.sormas.app.component.controls.ControlDateField
-                    android:id="@+id/immunization_recoveryDate"
-                    app:value="@={data.recoveryDate}"
-                    app:required="true"
-                    style="@style/ControlSingleColumnStyle" />
+            <de.symeda.sormas.app.component.controls.ControlDateField
+                android:id="@+id/immunization_recoveryDate"
+                style="@style/ControlSingleColumnStyle"
+                app:required="true"
+                app:value="@={data.recoveryDate}" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/immunization_additionalDetails"
-                    app:value="@={data.additionalDetails}"
-                    app:inputType="textMultiLine"
-                    app:textAlignment="gravity"
-                    app:gravity="top|start"
-                    app:showCaption="true"
-                    app:singleLine="false"
-                    app:maxLines="3"
-                    app:textArea="true"
-                    style="@style/ControlSingleColumnStyle" />
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/immunization_country"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.country}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/immunization_additionalDetails"
+                style="@style/ControlSingleColumnStyle"
+                app:gravity="top|start"
+                app:inputType="textMultiLine"
+                app:maxLines="3"
+                app:showCaption="true"
+                app:singleLine="false"
+                app:textAlignment="gravity"
+                app:textArea="true"
+                app:value="@={data.additionalDetails}" />
 
         </LinearLayout>
     </ScrollView>
