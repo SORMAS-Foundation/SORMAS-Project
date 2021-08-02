@@ -30,4 +30,6 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 	List<String> getArchivedUuidsSince(Date since);
 
 	List<String> getDeletedUuidsSince(Date since);
+
+	void updateImmunizationStatuses();
 }

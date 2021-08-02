@@ -54,6 +54,8 @@ import de.symeda.sormas.backend.vaccination.VaccinationEntity;
 @Audited
 public class Immunization extends CoreAdo {
 
+	public static final String TABLE_NAME = "immunization";
+
 	public static final String DISEASE = "disease";
 	public static final String PERSON = "person";
 	public static final String REPORT_DATE = "reportDate";

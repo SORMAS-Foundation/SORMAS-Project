@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.Disease;
@@ -390,6 +392,25 @@ public class TestDataCreator {
 		return caze;
 	}
 
+
+	public ImmunizationDto createImmunization(
+		Disease disease,
+		PersonReferenceDto person,
+		UserReferenceDto reportingUser,
+		ImmunizationStatus immunizationStatus,
+		MeansOfImmunization meansOfImmunization,
+		ImmunizationManagementStatus immunizationManagementStatus,
+		RDCF rdcf,
+		Date startDate,
+		Date endDate) {
+		ImmunizationDto immunization =
+			createImmunizationDto(disease, person, reportingUser, immunizationStatus, meansOfImmunization, immunizationManagementStatus, rdcf);
+		immunization.setStartDate(startDate);
+		immunization.setEndDate(endDate);
+
+		return beanTest.getImmunizationFacade().save(immunization);
+	}
+
 	public ImmunizationDto createImmunization(
 		Disease disease,
 		PersonReferenceDto person,
@@ -398,6 +419,14 @@ public class TestDataCreator {
 		MeansOfImmunization meansOfImmunization,
 		ImmunizationManagementStatus immunizationManagementStatus,
 		RDCF rdcf) {
+		ImmunizationDto immunization =
+			createImmunizationDto(disease, person, reportingUser, immunizationStatus, meansOfImmunization, immunizationManagementStatus, rdcf);
+
+		return beanTest.getImmunizationFacade().save(immunization);
+	}
+
+	@NotNull
+	private ImmunizationDto createImmunizationDto(Disease disease, PersonReferenceDto person, UserReferenceDto reportingUser, ImmunizationStatus immunizationStatus, MeansOfImmunization meansOfImmunization, ImmunizationManagementStatus immunizationManagementStatus, RDCF rdcf) {
 		ImmunizationDto immunization = new ImmunizationDto();
 		immunization.setUuid(DataHelper.createUuid());
 		immunization.setDisease(disease);
@@ -411,8 +440,7 @@ public class TestDataCreator {
 		immunization.setResponsibleCommunity(rdcf.community);
 
 		immunization.setReportDate(new Date());
-
-		return beanTest.getImmunizationFacade().save(immunization);
+		return immunization;
 	}
 
 	public VaccinationDto createVaccinationEntity(

@@ -7771,6 +7771,19 @@ ALTER TABLE person ALTER COLUMN symptomjournalstatus SET DEFAULT 'UNREGISTERED';
 
 INSERT INTO schema_version (version_number, comment) VALUES (390, 'symptonjournalstatus = UNREGISTERED as default #6146');
 
+--2021-07-28 make pathogentest result datetime non-compulsory #3308
+ALTER TABLE pathogentest ALTER COLUMN testdatetime DROP NOT NULL;
+ALTER TABLE pathogentest_history ALTER COLUMN testdatetime DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (391, 'make pathogentest result datetime non-compulsory #3308');
+
+-- 2017-07-29 Add specificrisk column to events table #5940
+
+ALTER TABLE events ADD COLUMN specificrisk TEXT;
+ALTER TABLE events_history ADD COLUMN specificrisk TEXT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (392, 'Add SpecificRisk field into events #5940');
+
 -- 2021-07-13 Immunizations II: Vaccination Entity #4763
 CREATE TABLE vaccination (
                               id bigint not null,
@@ -7810,6 +7823,6 @@ CREATE TRIGGER versioning_trigger
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'vaccination_history', true);
 ALTER TABLE vaccination_history OWNER TO sormas_user;
 
-INSERT INTO schema_version (version_number, comment) VALUES (391, 'Immunizations II: Vaccination Entity #4763');
+INSERT INTO schema_version (version_number, comment) VALUES (393, 'Immunizations II: Vaccination Entity #4763');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

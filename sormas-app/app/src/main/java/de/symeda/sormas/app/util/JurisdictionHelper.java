@@ -84,7 +84,7 @@ public class JurisdictionHelper {
         }
         List<Sample> samples = DatabaseHelper.getSampleDao().queryByCase(caze);
         if (!samples.isEmpty()) {
-            dto.setSampleLabUuids(samples.stream().map(sample -> sample.getLab().getUuid()).collect(Collectors.toList()));
+            dto.setSampleLabUuids(samples.stream().filter(sample -> sample.getLab() != null).map(sample -> sample.getLab().getUuid()).collect(Collectors.toList()));
         }
 
         return dto;

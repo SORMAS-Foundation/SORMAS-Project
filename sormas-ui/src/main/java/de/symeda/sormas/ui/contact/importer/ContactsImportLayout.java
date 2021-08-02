@@ -27,10 +27,7 @@ public class ContactsImportLayout extends AbstractImportLayout {
 
 		ImportFacade importFacade = FacadeProvider.getImportFacade();
 
-		addDownloadResourcesComponent(
-			1,
-			new ClassResource("/SORMAS_Contact_Import_Guide.pdf"),
-			new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Contact_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(2, importFacade.getContactImportTemplateFilePath(), importFacade.getContactImportTemplateFileName());
 		addImportCsvComponent(3, new ImportReceiver("_contact_import_", new Consumer<File>() {
 
