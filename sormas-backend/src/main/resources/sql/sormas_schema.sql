@@ -7777,5 +7777,11 @@ ALTER TABLE pathogentest_history ALTER COLUMN testdatetime DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (391, 'make pathogentest result datetime non-compulsory #3308');
 
+-- 2017-07-29 Add specificrisk column to events table #5940
+
+ALTER TABLE events ADD COLUMN specificrisk TEXT;
+ALTER TABLE events_history ADD COLUMN specificrisk TEXT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (392, 'Add SpecificRisk field into events #5940');
 
 -- *** Insert new sql commands BEFORE this line ***
