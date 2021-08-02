@@ -35,6 +35,7 @@ import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
+import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -194,6 +195,21 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	public boolean isImmunizationEditAllowed(String uuid) {
 		Immunization immunization = immunizationService.getByUuid(uuid);
 		return userService.hasRight(UserRight.IMMUNIZATION_EDIT) && immunizationService.inJurisdictionOrOwned(immunization);
+	}
+
+	@Override
+	public List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria) {
+		return immunizationService.getSimilarImmunizations(criteria).stream().map(result -> {
+			ImmunizationDto immunizationDto = new ImmunizationDto();
+			immunizationDto.setUuid((String) result[0]);
+			immunizationDto.setMeansOfImmunization((MeansOfImmunization) result[1]);
+			immunizationDto.setImmunizationManagementStatus((ImmunizationManagementStatus) result[2]);
+			immunizationDto.setImmunizationStatus((ImmunizationStatus) result[3]);
+			immunizationDto.setStartDate((Date) result[4]);
+			immunizationDto.setEndDate((Date) result[5]);
+			immunizationDto.setRecoveryDate((Date) result[6]);
+			return immunizationDto;
+		}).collect(Collectors.toList());
 	}
 
 	@Override

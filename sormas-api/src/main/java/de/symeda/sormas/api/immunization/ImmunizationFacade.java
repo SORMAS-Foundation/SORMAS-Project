@@ -42,4 +42,6 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 	void archiveOrDearchiveImmunization(String uuid, boolean archive);
 
 	boolean isImmunizationEditAllowed(String uuid);
+
+	List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria);
 }

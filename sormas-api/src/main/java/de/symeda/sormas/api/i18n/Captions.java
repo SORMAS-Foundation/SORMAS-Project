@@ -1295,7 +1295,9 @@ public interface Captions {
 	String Immunization_startDate = "Immunization.startDate";
 	String Immunization_uuid = "Immunization.uuid";
 	String immunizationImmunizationsList = "immunizationImmunizationsList";
+	String immunizationKeepImmunization = "immunizationKeepImmunization";
 	String immunizationNewImmunization = "immunizationNewImmunization";
+	String immunizationOverwriteImmunization = "immunizationOverwriteImmunization";
 	String importCancelImport = "importCancelImport";
 	String importDetailed = "importDetailed";
 	String importDownloadCaseImportTemplate = "importDownloadCaseImportTemplate";

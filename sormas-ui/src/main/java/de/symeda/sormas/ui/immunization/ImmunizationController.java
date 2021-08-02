@@ -1,6 +1,10 @@
 package de.symeda.sormas.ui.immunization;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -13,6 +17,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -21,6 +26,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.immunization.components.MainHeaderLayout;
+import de.symeda.sormas.ui.immunization.components.fields.pickorcreate.ImmunizationPickOrCreateField;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationCreationForm;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -68,7 +74,14 @@ public class ImmunizationController {
 						.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForImmunization), selectedPerson -> {
 							if (selectedPerson != null) {
 								dto.setPerson(selectedPerson);
-								FacadeProvider.getImmunizationFacade().save(dto);
+								selectOrCreateImmunization(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+									if (uuid.equals(dto.getUuid())) {
+										FacadeProvider.getImmunizationFacade().save(dto);
+										navigateToImmunization(dto.getUuid());
+									} else {
+										navigateToImmunization(uuid);
+									}
+								});
 							}
 						}, true);
 				}
@@ -151,7 +164,7 @@ public class ImmunizationController {
 				I18nProperties.getString(Strings.no),
 				640,
 				e -> {
-					if (e.booleanValue() == true) {
+					if (e) {
 						FacadeProvider.getImmunizationFacade().archiveOrDearchiveImmunization(uuid, true);
 						Notification.show(
 							String.format(
@@ -174,7 +187,7 @@ public class ImmunizationController {
 				I18nProperties.getString(Strings.no),
 				640,
 				e -> {
-					if (e.booleanValue()) {
+					if (e) {
 						FacadeProvider.getImmunizationFacade().archiveOrDearchiveImmunization(uuid, false);
 						Notification.show(
 							String.format(
@@ -184,6 +197,35 @@ public class ImmunizationController {
 						navigateToImmunization(uuid);
 					}
 				});
+		}
+	}
+
+	private void selectOrCreateImmunization(ImmunizationDto immunizationDto, PersonDto person, Consumer<String> selectedImmunizationUuidConsumer) {
+		ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria.Builder().withDisease(immunizationDto.getDisease())
+			.withStartDate(immunizationDto.getStartDate())
+			.withEndDate(immunizationDto.getEndDate())
+			.withPerson(person.getUuid())
+			.build();
+
+		List<ImmunizationDto> similarImmunizations = FacadeProvider.getImmunizationFacade().getSimilarImmunizations(criteria);
+
+		if (!similarImmunizations.isEmpty()) {
+			ImmunizationPickOrCreateField pickOrCreateField = new ImmunizationPickOrCreateField(immunizationDto, similarImmunizations);
+			pickOrCreateField.setWidth(1280, Sizeable.Unit.PIXELS);
+
+			final CommitDiscardWrapperComponent<ImmunizationPickOrCreateField> component = new CommitDiscardWrapperComponent<>(pickOrCreateField);
+			component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+			component.getCommitButton().setEnabled(false);
+			component.addCommitListener(() -> {
+				ImmunizationDto pickedImmunization = pickOrCreateField.getValue();
+				selectedImmunizationUuidConsumer.accept(pickedImmunization.getUuid());
+			});
+
+			pickOrCreateField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
+
+			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateImmunization));
+		} else {
+			selectedImmunizationUuidConsumer.accept(immunizationDto.getUuid());
 		}
 	}
 }

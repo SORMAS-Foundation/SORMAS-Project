@@ -553,6 +553,7 @@ public interface Strings {
 	String headingPickOrCreateEntry = "headingPickOrCreateEntry";
 	String headingPickOrCreateEvent = "headingPickOrCreateEvent";
 	String headingPickOrCreateEventGroup = "headingPickOrCreateEventGroup";
+	String headingPickOrCreateImmunization = "headingPickOrCreateImmunization";
 	String headingPickOrCreatePathogenTest = "headingPickOrCreatePathogenTest";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	String headingPickOrCreateSample = "headingPickOrCreateSample";
@@ -726,6 +727,9 @@ public interface Strings {
 	String infoPickOrCreateEventForContact = "infoPickOrCreateEventForContact";
 	String infoPickOrCreateEventForLabMessage = "infoPickOrCreateEventForLabMessage";
 	String infoPickOrCreateEventGroupForEvent = "infoPickOrCreateEventGroupForEvent";
+	String infoPickOrCreateImmunization = "infoPickOrCreateImmunization";
+	String getInfoPickOrCreateImmunizationExisting = "getInfoPickOrCreateImmunizationExisting";
+	String getInfoPickOrCreateImmunizationNew = "getInfoPickOrCreateImmunizationNew";
 	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";

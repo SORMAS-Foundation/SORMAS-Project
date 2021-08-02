@@ -39,6 +39,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -271,6 +272,50 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		cq.where(filter);
 		cq.select(from.get(Immunization.UUID));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<Object[]> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final Root<Immunization> immunization = cq.from(Immunization.class);
+
+		ImmunizationQueryContext<Immunization> immunizationQueryContext = new ImmunizationQueryContext<>(cb, cq, immunization);
+		ImmunizationJoins<Immunization> joins = (ImmunizationJoins<Immunization>) immunizationQueryContext.getJoins();
+
+		cq.multiselect(
+			immunization.get(Immunization.UUID),
+			immunization.get(Immunization.MEANS_OF_IMMUNIZATION),
+			immunization.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS),
+			immunization.get(Immunization.IMMUNIZATION_STATUS),
+			immunization.get(Immunization.START_DATE),
+			immunization.get(Immunization.END_DATE),
+			immunization.get(Immunization.RECOVERY_DATE),
+			immunization.get(Immunization.CHANGE_DATE),
+			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)));
+
+		Predicate filter = createUserFilter(immunizationQueryContext);
+
+		Predicate diseaseFilter = criteria.getDisease() != null ? cb.equal(immunization.get(Immunization.DISEASE), criteria.getDisease()) : null;
+
+		Predicate startDateFilter =
+			criteria.getStartDate() != null ? cb.equal(immunization.get(Immunization.START_DATE), criteria.getStartDate()) : null;
+		Predicate endDateFilter = criteria.getEndDate() != null ? cb.equal(immunization.get(Immunization.END_DATE), criteria.getEndDate()) : null;
+
+		Predicate personSimilarityFilter =
+			criteria.getPersonUuid() != null ? cb.equal(joins.getPerson().get(Person.UUID), criteria.getPersonUuid()) : null;
+
+		filter = CriteriaBuilderHelper.and(cb, filter, diseaseFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, startDateFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, endDateFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, personSimilarityFilter);
+
+		cq.where(filter);
+
+		cq.orderBy(cb.desc(immunization.get(Immunization.CHANGE_DATE)));
+
+		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
 	}
