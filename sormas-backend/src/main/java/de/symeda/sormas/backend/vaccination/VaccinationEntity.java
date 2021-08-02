@@ -96,7 +96,7 @@ public class VaccinationEntity extends AbstractDomainObject {
 		this.immunization = immunization;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(nullable = false)
 	@AuditedIgnore
 	public HealthConditions getHealthConditions() {
