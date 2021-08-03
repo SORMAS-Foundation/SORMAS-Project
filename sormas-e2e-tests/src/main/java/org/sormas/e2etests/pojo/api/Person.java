@@ -31,5 +31,7 @@ public class Person {
   String firstName;
   String lastName;
   String caption;
+  String phoneNumber;
+  String sex;
   String uuid;
 }
