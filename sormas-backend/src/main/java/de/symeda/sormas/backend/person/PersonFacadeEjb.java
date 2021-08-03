@@ -55,6 +55,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -906,13 +907,10 @@ public class PersonFacadeEjb implements PersonFacade {
 		final PersonCriteria nullSafeCriteria = Optional.ofNullable(criteria).orElse(new PersonCriteria());
 		final long count;
 		if (nullSafeCriteria.getPersonAssociation() == PersonAssociation.ALL) {
-			/*
-			 * Fetch Person.id per association and find the distinct count.
-			 * Executed sequencially because the criteria object is reused.
-			 */
+			// Fetch Person.id per association and find the distinct count.
 			Set<Long> distinctPersonIds = new HashSet<>();
 			Arrays.stream(PersonAssociation.getSingleAssociations())
-				.map(e -> getPersonIds(nullSafeCriteria.personAssociation(e)))
+				.map(e -> getPersonIds(SerializationUtils.clone(nullSafeCriteria).personAssociation(e)))
 				.forEach(e -> distinctPersonIds.addAll(e));
 			count = distinctPersonIds.size();
 		} else {

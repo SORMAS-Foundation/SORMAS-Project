@@ -68,16 +68,14 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// Test for all available PersonAssociations
 		for (PersonAssociation pa : PersonAssociation.values()) {
+			PersonCriteria criteria = new PersonCriteria().personAssociation(pa);
+			assertThat("Failed for testing association on count: " + pa.name(), getPersonFacade().count(criteria), equalTo(0L));
+			assertThat(criteria.getPersonAssociation(), equalTo(pa));
 			assertThat(
-				"Failed for testing association on count: " + pa
-					.name(),
-				getPersonFacade().count(new PersonCriteria().personAssociation(pa)),
-				equalTo(0L));
-			assertThat(
-				"Failed for testing association on getIndexList: " + pa
-					.name(),
-				getPersonFacade().getIndexList(new PersonCriteria().personAssociation(pa), offset, limit, sortProperties),
+				"Failed for testing association on getIndexList: " + pa.name(),
+				getPersonFacade().getIndexList(criteria, offset, limit, sortProperties),
 				is(empty()));
+			assertThat(criteria.getPersonAssociation(), equalTo(pa));
 		}
 
 		// Test that calling with "null" as criteria also works
