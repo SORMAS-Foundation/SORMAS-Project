@@ -123,7 +123,6 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 				contentBinding.contactContactProximity
 					.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
 			});
-		contentBinding.contactDisease.setValue(Disease.AFP);
 
 		if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.contactContactProximity.addValueChangedListener(
