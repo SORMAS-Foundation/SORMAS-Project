@@ -21,15 +21,20 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.CountryReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -40,9 +45,47 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "Immunization";
 
+	public static final String REPORT_DATE = "reportDate";
+	public static final String EXTERNAL_ID = "externalId";
+
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
+
+	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
+	public static final String MEANS_OF_IMMUNIZATION_DETAILS = "meansOfImmunizationDetails";
+	public static final String MANAGEMENT_STATUS = "managementStatus";
+	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
+
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
+	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
+
+	public static final String FACILITY_TYPE = "facilityType";
+	public static final String HEALTH_FACILITY = "healthFacility";
+	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
+
+	public static final String START_DATE = "startDate";
+	public static final String END_DATE = "endDate";
+
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+
+	public static final String REPORTING_USER = "reportingUser";
+	public static final String PREVIOUS_INFECTION = "previousInfection";
+	public static final String LAST_INFECTION_DATE = "lastInfectionDate";
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+
+	public static final String POSITIVE_TEST_RESULT_DATE = "positiveTestResultDate";
+	public static final String RECOVERY_DATE = "recoveryDate";
+
+	public static final String COUNTRY = "country";
+
+	public static final String PERSON = "person";
+
 	@Outbreaks
 	@Required
 	private Disease disease;
+	@Outbreaks
+	private String diseaseDetails;
 	@Required
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
@@ -60,6 +103,19 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private CommunityReferenceDto responsibleCommunity;
 	private CountryReferenceDto country;
 
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
+	private FacilityType facilityType;
+	@Outbreaks
+	@Required
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
+	private FacilityReferenceDto healthFacility;
+	@Outbreaks
+	@PersonalData
+	@SensitiveData
+	private String healthFacilityDetails;
+
 	private Date startDate;
 	private Date endDate;
 	private Integer numberOfDoses;
@@ -75,12 +131,30 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	private List<VaccinationDto> vaccinations = new ArrayList<>();
 
+	public static ImmunizationDto build(PersonReferenceDto person) {
+
+		final ImmunizationDto immunizationDto = new ImmunizationDto();
+		immunizationDto.setUuid(DataHelper.createUuid());
+		immunizationDto.setPerson(person);
+		immunizationDto.setReportDate(new Date());
+
+		return immunizationDto;
+	}
+
 	public Disease getDisease() {
 		return disease;
 	}
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
 	}
 
 	public PersonReferenceDto getPerson() {
@@ -153,6 +227,30 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	public void setResponsibleCommunity(CommunityReferenceDto responsibleCommunity) {
 		this.responsibleCommunity = responsibleCommunity;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+	}
+
+	public FacilityReferenceDto getHealthFacility() {
+		return healthFacility;
+	}
+
+	public void setHealthFacility(FacilityReferenceDto healthFacility) {
+		this.healthFacility = healthFacility;
+	}
+
+	public String getHealthFacilityDetails() {
+		return healthFacilityDetails;
+	}
+
+	public void setHealthFacilityDetails(String healthFacilityDetails) {
+		this.healthFacilityDetails = healthFacilityDetails;
 	}
 
 	public Date getStartDate() {

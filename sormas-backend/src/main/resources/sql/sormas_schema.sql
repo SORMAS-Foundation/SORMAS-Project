@@ -7826,3 +7826,24 @@ ALTER TABLE vaccination_history OWNER TO sormas_user;
 INSERT INTO schema_version (version_number, comment) VALUES (393, 'Immunizations II: Vaccination Entity #4763');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
+-- 2021-08-01 Modifications to immunization tables #6025
+ALTER TABLE immunization ALTER COLUMN externalid DROP NOT NULL;
+ALTER TABLE immunization ALTER COLUMN positivetestresultdate DROP NOT NULL;
+ALTER TABLE immunization ALTER COLUMN recoverydate DROP NOT NULL;
+ALTER TABLE immunization ADD COLUMN diseasedetails varchar(512);
+ALTER TABLE immunization ADD COLUMN healthfacility_id bigint;
+ALTER TABLE immunization ADD COLUMN healthfacilitydetails varchar(512);
+ALTER TABLE immunization ADD COLUMN facilitytype varchar(255);
+ALTER TABLE immunization ADD CONSTRAINT fk_immunization_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility(id);
+
+ALTER TABLE immunization_history ALTER COLUMN externalid DROP NOT NULL;
+ALTER TABLE immunization_history ALTER COLUMN positivetestresultdate DROP NOT NULL;
+ALTER TABLE immunization_history ALTER COLUMN recoverydate DROP NOT NULL;
+ALTER TABLE immunization_history ADD COLUMN diseasedetails varchar(512);
+ALTER TABLE immunization_history ADD COLUMN healthfacility_id bigint;
+ALTER TABLE immunization_history ADD COLUMN healthfacilitydetails varchar(512);
+ALTER TABLE immunization_history ADD COLUMN facilitytype varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (393, 'Modifications to immunization tables #6025');
+
+-- *** Insert new sql commands BEFORE this line ***
