@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.immunization.components.fields.pickorcreate;
+package de.symeda.sormas.ui.immunization.components.fields.info;
 
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.HorizontalLayout;
@@ -8,12 +8,12 @@ import com.vaadin.v7.ui.Label;
 
 public class InfoLayout extends HorizontalLayout {
 
-	protected InfoLayout(String text) {
+	public InfoLayout(String text) {
 		setWidth(100, Unit.PERCENTAGE);
 		setSpacing(true);
 		Image icon = new Image(null, new ThemeResource("img/info-icon.png"));
-		icon.setHeight(35, Unit.PIXELS);
-		icon.setWidth(35, Unit.PIXELS);
+		icon.setHeight(25, Unit.PIXELS);
+		icon.setWidth(25, Unit.PIXELS);
 		addComponent(icon);
 		Label infoLabel = new Label(text);
 		infoLabel.setContentMode(ContentMode.HTML);

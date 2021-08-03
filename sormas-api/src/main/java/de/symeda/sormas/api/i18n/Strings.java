@@ -580,6 +580,7 @@ public interface Strings {
 	String headingSelectCampaign = "headingSelectCampaign";
 	String headingSelectSourceCase = "headingSelectSourceCase";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
+	String headingSimilarImmunization = "headingSimilarImmunization";
 	String headingShareRequestCases = "headingShareRequestCases";
 	String headingShareRequestContacts = "headingShareRequestContacts";
 	String headingShareRequestDetails = "headingShareRequestDetails";
@@ -682,6 +683,7 @@ public interface Strings {
 	String infoEpiDataFieldsHint = "infoEpiDataFieldsHint";
 	String infoEpiDataSourceCaseContacts = "infoEpiDataSourceCaseContacts";
 	String infoEventParticipantAlreadyExisting = "infoEventParticipantAlreadyExisting";
+	String infoExistingImmunizationPeriod = "infoExistingImmunizationPeriod";
 	String infoExpectedFollowUpUntilDateCase = "infoExpectedFollowUpUntilDateCase";
 	String infoExpectedFollowUpUntilDateContact = "infoExpectedFollowUpUntilDateContact";
 	String infoExportNoFilters = "infoExportNoFilters";
@@ -691,6 +693,7 @@ public interface Strings {
 	String infoExposuresRiskAreaHint = "infoExposuresRiskAreaHint";
 	String infoFacilityCsvImport = "infoFacilityCsvImport";
 	String infoFacilityNeedsDistrict = "infoFacilityNeedsDistrict";
+	String infoImmunizationPeriod = "infoImmunizationPeriod";
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoHowToMergeContacts = "infoHowToMergeContacts";
 	String infoImportAllContinents = "infoImportAllContinents";
@@ -728,8 +731,8 @@ public interface Strings {
 	String infoPickOrCreateEventForLabMessage = "infoPickOrCreateEventForLabMessage";
 	String infoPickOrCreateEventGroupForEvent = "infoPickOrCreateEventGroupForEvent";
 	String infoPickOrCreateImmunization = "infoPickOrCreateImmunization";
-	String getInfoPickOrCreateImmunizationExisting = "getInfoPickOrCreateImmunizationExisting";
-	String getInfoPickOrCreateImmunizationNew = "getInfoPickOrCreateImmunizationNew";
+	String infoPickOrCreateImmunizationExisting = "infoPickOrCreateImmunizationExisting";
+	String infoPickOrCreateImmunizationNew = "infoPickOrCreateImmunizationNew";
 	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
@@ -750,6 +753,7 @@ public interface Strings {
 	String infoSelectOrCreatePersonForImmunization = "infoSelectOrCreatePersonForImmunization";
 	String infoSelectOrCreatePersonForImport = "infoSelectOrCreatePersonForImport";
 	String infoSelectOrCreatePersonForLabMessage = "infoSelectOrCreatePersonForLabMessage";
+	String infoSimilarImmunization = "infoSimilarImmunization";
 	String infoSkipOrOverrideDuplicateCampaignFormDataImport = "infoSkipOrOverrideDuplicateCampaignFormDataImport";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	String infoSpecificEventSearch = "infoSpecificEventSearch";

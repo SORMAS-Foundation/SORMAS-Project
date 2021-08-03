@@ -27,6 +27,7 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.immunization.components.MainHeaderLayout;
 import de.symeda.sormas.ui.immunization.components.fields.pickorcreate.ImmunizationPickOrCreateField;
+import de.symeda.sormas.ui.immunization.components.fields.popup.SimilarImmunizationPopup;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationCreationForm;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -106,9 +107,14 @@ public class ImmunizationController {
 		editComponent.addCommitListener(() -> {
 			if (!immunizationDataForm.getFieldGroup().isModified()) {
 				ImmunizationDto immunizationDtoValue = immunizationDataForm.getValue();
-				FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
-				Notification.show(I18nProperties.getString(Strings.messageImmunizationSaved), Notification.Type.WARNING_MESSAGE);
-				SormasUI.refreshView();
+				List<ImmunizationDto> similarImmunizations = findForSimilarImmunizations(immunizationDtoValue);
+				if (similarImmunizations.isEmpty()) {
+					FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
+					Notification.show(I18nProperties.getString(Strings.messageImmunizationSaved), Notification.Type.WARNING_MESSAGE);
+					SormasUI.refreshView();
+				} else {
+					showSimilarImmunizationPopup(immunizationDtoValue, similarImmunizations.get(0));
+				}
 			}
 		});
 
@@ -227,5 +233,26 @@ public class ImmunizationController {
 		} else {
 			selectedImmunizationUuidConsumer.accept(immunizationDto.getUuid());
 		}
+	}
+
+	private List<ImmunizationDto> findForSimilarImmunizations(ImmunizationDto immunizationDto) {
+		ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria.Builder().withDisease(immunizationDto.getDisease())
+			.withStartDate(immunizationDto.getStartDate())
+			.withEndDate(immunizationDto.getEndDate())
+			.withPerson(immunizationDto.getPerson().getUuid())
+			.build();
+
+		return FacadeProvider.getImmunizationFacade().getSimilarImmunizations(criteria);
+	}
+
+	private void showSimilarImmunizationPopup(ImmunizationDto immunizationDto, ImmunizationDto similarImmunization) {
+		SimilarImmunizationPopup similarImmunizationPopup = new SimilarImmunizationPopup(immunizationDto, similarImmunization);
+		similarImmunizationPopup.setWidth(1280, Sizeable.Unit.PIXELS);
+
+		final CommitDiscardWrapperComponent<SimilarImmunizationPopup> component = new CommitDiscardWrapperComponent<>(similarImmunizationPopup);
+		component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionOkay));
+		component.getDiscardButton().setVisible(false);
+
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSimilarImmunization));
 	}
 }

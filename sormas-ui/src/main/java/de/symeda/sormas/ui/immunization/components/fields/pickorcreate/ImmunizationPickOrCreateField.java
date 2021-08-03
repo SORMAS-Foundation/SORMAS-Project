@@ -11,6 +11,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.ui.immunization.components.fields.info.ImmunizationInfo;
+import de.symeda.sormas.ui.immunization.components.fields.info.InfoLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class ImmunizationPickOrCreateField extends CustomField<ImmunizationDto> {
@@ -43,17 +45,17 @@ public class ImmunizationPickOrCreateField extends CustomField<ImmunizationDto> 
 		mainLayout.addComponent(infoLayout);
 		CssStyles.style(infoLayout, CssStyles.VSPACE_3);
 
-		ImmunizationInfo existingImmunization =
-			new ImmunizationInfo(similarImmunization, I18nProperties.getString(Strings.getInfoPickOrCreateImmunizationExisting));
+		ImmunizationInfo existingImmunization = new ImmunizationInfo(I18nProperties.getString(Strings.infoPickOrCreateImmunizationExisting));
+		existingImmunization.addComponent(new ImmunizationInfoLayout(similarImmunization));
 		mainLayout.addComponent(existingImmunization);
 
 		ImmunizationPickOrCreateOption keepImmunization =
 			new ImmunizationPickOrCreateOption(KEEP_IMMUNIZATION, I18nProperties.getCaption(Captions.immunizationKeepImmunization));
 		mainLayout.addComponent(keepImmunization);
 
-		ImmunizationInfo immunizationInfo =
-			new ImmunizationInfo(newImmunization, I18nProperties.getString(Strings.getInfoPickOrCreateImmunizationNew));
-		mainLayout.addComponent(immunizationInfo);
+		ImmunizationInfo newImmunizationInfo = new ImmunizationInfo(I18nProperties.getString(Strings.infoPickOrCreateImmunizationNew));
+		newImmunizationInfo.addComponent(new ImmunizationInfoLayout(newImmunization));
+		mainLayout.addComponent(newImmunizationInfo);
 
 		ImmunizationPickOrCreateOption overwriteImmunization =
 			new ImmunizationPickOrCreateOption(OVERWRITE_IMMUNIZATION, I18nProperties.getCaption(Captions.immunizationOverwriteImmunization));
