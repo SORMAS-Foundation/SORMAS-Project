@@ -2,8 +2,6 @@ package de.symeda.sormas.ui.immunization;
 
 import com.vaadin.ui.CustomLayout;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -43,8 +41,6 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setHeightUndefined();
 		container.addComponent(layout);
-
-		ImmunizationDto immunizationDto = FacadeProvider.getImmunizationFacade().getByUuid(getReference().getUuid());
 
 		editComponent = ControllerProvider.getImmunizationController().getImmunizationDataEditComponent(getReference().getUuid());
 		editComponent.setMargin(false);
