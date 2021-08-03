@@ -279,41 +279,38 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	public List<Object[]> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		final Root<Immunization> immunization = cq.from(Immunization.class);
+		final Root<Immunization> from = cq.from(Immunization.class);
 
-		ImmunizationQueryContext<Immunization> immunizationQueryContext = new ImmunizationQueryContext<>(cb, cq, immunization);
+		ImmunizationQueryContext<Immunization> immunizationQueryContext = new ImmunizationQueryContext<>(cb, cq, from);
 		ImmunizationJoins<Immunization> joins = (ImmunizationJoins<Immunization>) immunizationQueryContext.getJoins();
 
 		cq.multiselect(
-			immunization.get(Immunization.UUID),
-			immunization.get(Immunization.MEANS_OF_IMMUNIZATION),
-			immunization.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS),
-			immunization.get(Immunization.IMMUNIZATION_STATUS),
-			immunization.get(Immunization.START_DATE),
-			immunization.get(Immunization.END_DATE),
-			immunization.get(Immunization.RECOVERY_DATE),
-			immunization.get(Immunization.CHANGE_DATE),
+			from.get(Immunization.UUID),
+			from.get(Immunization.MEANS_OF_IMMUNIZATION),
+			from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS),
+			from.get(Immunization.IMMUNIZATION_STATUS),
+			from.get(Immunization.START_DATE),
+			from.get(Immunization.END_DATE),
+			from.get(Immunization.RECOVERY_DATE),
+			from.get(Immunization.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)));
 
 		Predicate filter = createUserFilter(immunizationQueryContext);
 
-		Predicate diseaseFilter = criteria.getDisease() != null ? cb.equal(immunization.get(Immunization.DISEASE), criteria.getDisease()) : null;
+		Predicate diseaseFilter = criteria.getDisease() != null ? cb.equal(from.get(Immunization.DISEASE), criteria.getDisease()) : null;
 
-		Predicate startDateFilter =
-			criteria.getStartDate() != null ? cb.equal(immunization.get(Immunization.START_DATE), criteria.getStartDate()) : null;
-		Predicate endDateFilter = criteria.getEndDate() != null ? cb.equal(immunization.get(Immunization.END_DATE), criteria.getEndDate()) : null;
+		Predicate dateFilter = createDateFilter(cq, cb, from, criteria);
 
 		Predicate personSimilarityFilter =
 			criteria.getPersonUuid() != null ? cb.equal(joins.getPerson().get(Person.UUID), criteria.getPersonUuid()) : null;
 
 		filter = CriteriaBuilderHelper.and(cb, filter, diseaseFilter);
-		filter = CriteriaBuilderHelper.and(cb, filter, startDateFilter);
-		filter = CriteriaBuilderHelper.and(cb, filter, endDateFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		filter = CriteriaBuilderHelper.and(cb, filter, personSimilarityFilter);
 
 		cq.where(filter);
 
-		cq.orderBy(cb.desc(immunization.get(Immunization.CHANGE_DATE)));
+		cq.orderBy(cb.desc(from.get(Immunization.CHANGE_DATE)));
 
 		cq.distinct(true);
 
@@ -323,6 +320,32 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {
 		final User currentUser = userService.getCurrentUser();
 		return ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+	}
+
+	private Predicate createDateFilter(CriteriaQuery<?> cq, CriteriaBuilder cb, Root<Immunization> from, ImmunizationSimilarityCriteria criteria) {
+		Date startDate = criteria.getStartDate();
+		Date endDate = criteria.getEndDate();
+
+		Predicate dateFilter = null;
+
+		if (startDate != null && endDate != null) {
+			dateFilter = cb.or(
+				cb.and(cb.isNull(from.get(Immunization.END_DATE)), cb.between(from.get(Immunization.START_DATE), startDate, endDate)),
+				cb.and(cb.isNull(from.get(Immunization.START_DATE)), cb.between(from.get(Immunization.END_DATE), startDate, endDate)),
+				cb.and(
+					cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), startDate),
+					cb.lessThanOrEqualTo(from.get(Immunization.START_DATE), endDate)));
+		} else if (startDate != null) {
+			dateFilter = cb.or(
+				cb.and(cb.isNull(from.get(Immunization.END_DATE)), cb.greaterThanOrEqualTo(from.get(Immunization.START_DATE), startDate)),
+				cb.and(cb.isNull(from.get(Immunization.START_DATE)), cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), startDate)));
+		} else if (endDate != null) {
+			dateFilter = cb.or(
+				cb.and(cb.isNull(from.get(Immunization.START_DATE)), cb.lessThanOrEqualTo(from.get(Immunization.END_DATE), endDate)),
+				cb.and(cb.isNull(from.get(Immunization.END_DATE)), cb.lessThanOrEqualTo(from.get(Immunization.START_DATE), endDate)));
+		}
+
+		return dateFilter;
 	}
 
 	private <T> void buildWhereCondition(
