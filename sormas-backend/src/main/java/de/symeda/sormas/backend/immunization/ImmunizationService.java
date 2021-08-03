@@ -304,9 +304,12 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		Predicate personSimilarityFilter =
 			criteria.getPersonUuid() != null ? cb.equal(joins.getPerson().get(Person.UUID), criteria.getPersonUuid()) : null;
 
+		Predicate notDeletedFilter = cb.isFalse(from.get(Immunization.DELETED));
+
 		filter = CriteriaBuilderHelper.and(cb, filter, diseaseFilter);
 		filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		filter = CriteriaBuilderHelper.and(cb, filter, personSimilarityFilter);
+		filter = CriteriaBuilderHelper.and(cb, filter, notDeletedFilter);
 
 		cq.where(filter);
 
@@ -427,6 +430,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		filter = andEqualsReferenceDto(cb, region, filter, criteria.getRegion());
 		filter = andEqualsReferenceDto(cb, district, filter, criteria.getDistrict());
 		filter = andEqualsReferenceDto(cb, community, filter, criteria.getCommunity());
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
 
 		return filter;
 	}
