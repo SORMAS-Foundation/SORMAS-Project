@@ -110,17 +110,20 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 
 		contentBinding.contactFirstContactDate.addValueChangedListener(e -> contentBinding.contactLastContactDate.setRequired(e.getValue() != null));
 
-		contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
-		contentBinding.contactDisease.addValueChangedListener(e -> {
-			contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
-			if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
-				contentBinding.contactContactProximityDetails.setVisibility(e.getValue() == null ? GONE : VISIBLE);
-				contentBinding.contactContactCategory.setVisibility(e.getValue() == null ? GONE : VISIBLE);
-			}
-			contentBinding.contactContactProximity.clear();
-			contentBinding.contactContactProximity
-				.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
-		});
+		contentBinding.contactDisease.initializeSpinner(
+			diseaseList,
+			record.getDisease() != null ? record.getDisease() : DiseaseConfigurationCache.getInstance().getDefaultDisease(),
+			e -> {
+				contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+				if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+					contentBinding.contactContactProximityDetails.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+					contentBinding.contactContactCategory.setVisibility(e.getValue() == null ? GONE : VISIBLE);
+				}
+				contentBinding.contactContactProximity.clear();
+				contentBinding.contactContactProximity
+					.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
+			});
+		contentBinding.contactDisease.setValue(Disease.AFP);
 
 		if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.contactContactProximity.addValueChangedListener(
@@ -184,6 +187,9 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 
 	@Override
 	public void onAfterLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
+		contentBinding.contactDisease
+			.setValue(record.getDisease() != null ? record.getDisease() : DiseaseConfigurationCache.getInstance().getDefaultDisease());
+
 		contentBinding.personSex.initializeSpinner(sexList);
 		contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
 		contentBinding.contactContactCategory.initializeSpinner(categoryList);

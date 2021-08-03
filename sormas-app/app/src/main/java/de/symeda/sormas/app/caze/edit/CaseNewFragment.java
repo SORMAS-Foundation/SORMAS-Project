@@ -201,11 +201,11 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		contentBinding.caseDataDifferentPlaceOfStayJurisdiction.addValueChangedListener(f -> {
 			if (Boolean.FALSE.equals(f.getValue())) {
 				InfrastructureDaoHelper.handleCommunityChange(
-						contentBinding.caseDataResponsibleCommunity,
-						contentBinding.caseDataResponsibleDistrict,
-						contentBinding.caseDataHealthFacility,
-						contentBinding.caseDataFacilityType,
-						initialHealthFacility);
+					contentBinding.caseDataResponsibleCommunity,
+					contentBinding.caseDataResponsibleDistrict,
+					contentBinding.caseDataHealthFacility,
+					contentBinding.caseDataFacilityType,
+					initialHealthFacility);
 			}
 		});
 
