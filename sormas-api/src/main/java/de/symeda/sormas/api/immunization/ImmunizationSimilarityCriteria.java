@@ -8,6 +8,7 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class ImmunizationSimilarityCriteria extends BaseCriteria implements Cloneable {
 
+	private String immunizationUuid;
 	private Disease disease;
 	private Date startDate;
 	private Date endDate;
@@ -15,10 +16,16 @@ public class ImmunizationSimilarityCriteria extends BaseCriteria implements Clon
 
 	public static class Builder {
 
+		private String immunizationUuid;
 		private Disease disease;
 		private Date startDate;
 		private Date endDate;
 		private String personUuid;
+
+		public Builder withImmunization(String immunizationUuid) {
+			this.immunizationUuid = immunizationUuid;
+			return this;
+		}
 
 		public Builder withDisease(Disease disease) {
 			this.disease = disease;
@@ -46,10 +53,16 @@ public class ImmunizationSimilarityCriteria extends BaseCriteria implements Clon
 	}
 
 	private ImmunizationSimilarityCriteria(Builder builder) {
+		this.immunizationUuid = builder.immunizationUuid;
 		this.disease = builder.disease;
 		this.startDate = builder.startDate;
 		this.endDate = builder.endDate;
 		this.personUuid = builder.personUuid;
+	}
+
+	@IgnoreForUrl
+	public String getImmunizationUuid() {
+		return immunizationUuid;
 	}
 
 	@IgnoreForUrl

@@ -236,7 +236,8 @@ public class ImmunizationController {
 	}
 
 	private List<ImmunizationDto> findForSimilarImmunizations(ImmunizationDto immunizationDto) {
-		ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria.Builder().withDisease(immunizationDto.getDisease())
+		ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria.Builder().withImmunization(immunizationDto.getUuid())
+			.withDisease(immunizationDto.getDisease())
 			.withStartDate(immunizationDto.getStartDate())
 			.withEndDate(immunizationDto.getEndDate())
 			.withPerson(immunizationDto.getPerson().getUuid())
