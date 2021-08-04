@@ -626,4 +626,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		caze.setFollowUpStatus(status);
 		getCaseFacade().saveCase(caze);
 	}
+
+	@Test
+	public void testSetMissingGeoCoordinates() {
+
+		assertThat(getPersonFacade().setMissingGeoCoordinates(false), equalTo(0L));
+	}
 }
