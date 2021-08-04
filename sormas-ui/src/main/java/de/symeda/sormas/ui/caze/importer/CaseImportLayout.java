@@ -41,7 +41,7 @@ public class CaseImportLayout extends AbstractImportLayout {
 
 		ImportFacade importFacade = FacadeProvider.getImportFacade();
 
-		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Import_Guide.pdf"), new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(2, importFacade.getCaseImportTemplateFilePath(), importFacade.getCaseImportTemplateFileName());
 		addImportCsvComponent(3, new ImportReceiver("_case_import_", file -> {
 			resetDownloadErrorReportButton();

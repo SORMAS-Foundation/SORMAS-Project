@@ -13,23 +13,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.immunization;
-
-import java.util.Date;
-import java.util.List;
+package de.symeda.sormas.api.vaccination;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.region.BaseFacade;
-
 @Remote
-public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationCriteria> {
+public interface VaccinationFacade {
 
-	void validate(ImmunizationDto immunizationDto);
+	VaccinationDto save(VaccinationDto dto);
 
-	List<String> getArchivedUuidsSince(Date since);
-
-	List<String> getDeletedUuidsSince(Date since);
-
-	void updateImmunizationStatuses();
+	void validate(VaccinationDto vaccinationDto);
 }

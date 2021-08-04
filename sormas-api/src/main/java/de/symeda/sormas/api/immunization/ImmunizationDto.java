@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.api.immunization;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -30,6 +32,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 public class ImmunizationDto extends PseudonymizableDto {
 
@@ -82,6 +85,8 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private Date recoveryDate;
 
 	private CaseReferenceDto relatedCase;
+
+	private List<VaccinationDto> vaccinations = new ArrayList<>();
 
 	public Disease getDisease() {
 		return disease;
@@ -265,5 +270,13 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	public void setCountry(CountryReferenceDto country) {
 		this.country = country;
+	}
+
+	public List<VaccinationDto> getVaccinations() {
+		return vaccinations;
+	}
+
+	public void setVaccinations(List<VaccinationDto> vaccinations) {
+		this.vaccinations = vaccinations;
 	}
 }

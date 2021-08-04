@@ -13,23 +13,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.immunization;
+package de.symeda.sormas.backend.vaccination;
 
-import java.util.Date;
-import java.util.List;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 
-import javax.ejb.Remote;
+import de.symeda.sormas.backend.common.BaseAdoService;
 
-import de.symeda.sormas.api.region.BaseFacade;
+@Stateless
+@LocalBean
+public class VaccinationService extends BaseAdoService<VaccinationEntity> {
 
-@Remote
-public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationCriteria> {
-
-	void validate(ImmunizationDto immunizationDto);
-
-	List<String> getArchivedUuidsSince(Date since);
-
-	List<String> getDeletedUuidsSince(Date since);
-
-	void updateImmunizationStatuses();
+	public VaccinationService() {
+		super(VaccinationEntity.class);
+	}
 }
