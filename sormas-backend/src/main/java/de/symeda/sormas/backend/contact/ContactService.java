@@ -610,11 +610,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter = createUserFilter(cb, cq, contact);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, contactQueryContext);
-		Predicate notDeleted = cb.equal(contact.get(Contact.DELETED), false);
 		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter, notDeleted);
+			filter = cb.and(filter, criteriaFilter);
 		} else {
-			filter = cb.and(criteriaFilter, notDeleted);
+			filter = criteriaFilter;
 		}
 
 		if (filter != null) {
@@ -636,12 +635,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
 
 		Predicate filter = createUserFilter(cb, cq, contact);
-		Predicate notDeleted = cb.equal(contact.get(Contact.DELETED), false);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, contactQueryContext);
 		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter, notDeleted);
+			filter = cb.and(filter, criteriaFilter);
 		} else {
-			filter = cb.and(criteriaFilter, notDeleted);
+			filter = criteriaFilter;
 		}
 
 		if (filter != null) {
@@ -664,11 +662,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter = createUserFilter(cb, cq, contact);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, contactQueryContext);
-		Predicate notDeleted = cb.equal(contact.get(Contact.DELETED), false);
 		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter, notDeleted);
+			filter = cb.and(filter, criteriaFilter);
 		} else {
-			filter = cb.and(criteriaFilter, notDeleted);
+			filter = criteriaFilter;
 		}
 
 		if (filter != null) {
@@ -905,6 +902,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public Predicate createUserFilterWithoutCase(ContactQueryContext qc, ContactCriteria contactCriteria) {
+
 
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		CriteriaQuery cq = qc.getQuery();
