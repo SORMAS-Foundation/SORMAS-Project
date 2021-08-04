@@ -61,7 +61,8 @@ public class PersonSteps implements En {
         (String expectedCode) -> {
           Response response =
               personsHelper.getPersonBasedOnUUID(apiState.getEditPerson().getUuid());
-          Truth.assertThat(response.equals(expectedCode));
+          int responseStatusCode = response.getStatusCode();
+          Truth.assertThat(expectedCode.equals(String.valueOf(responseStatusCode)));
         });
   }
 }
