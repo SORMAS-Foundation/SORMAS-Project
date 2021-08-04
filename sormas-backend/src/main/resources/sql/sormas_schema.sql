@@ -7825,6 +7825,15 @@ ALTER TABLE vaccination_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (393, 'Immunizations II: Vaccination Entity #4763');
 
+-- 2021-08-04 Add missing vaccination columns #4763
+
+ALTER TABLE vaccination ADD COLUMN vaccinetype text;
+ALTER TABLE vaccination ADD COLUMN vaccinedose text;
+ALTER TABLE vaccination_history ADD COLUMN vaccinetype text;
+ALTER TABLE vaccination_history ADD COLUMN vaccinedose text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (394, 'Add missing vaccination columns #4763');
+
 -- 2021-08-01 Modifications to immunization tables #6025
 ALTER TABLE immunization ALTER COLUMN externalid DROP NOT NULL;
 ALTER TABLE immunization ALTER COLUMN positivetestresultdate DROP NOT NULL;
@@ -7843,6 +7852,6 @@ ALTER TABLE immunization_history ADD COLUMN healthfacility_id bigint;
 ALTER TABLE immunization_history ADD COLUMN healthfacilitydetails varchar(512);
 ALTER TABLE immunization_history ADD COLUMN facilitytype varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (394, 'Modifications to immunization tables #6025');
+INSERT INTO schema_version (version_number, comment) VALUES (395, 'Modifications to immunization tables #6025');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
