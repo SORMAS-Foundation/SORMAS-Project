@@ -19,6 +19,7 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEqualsReferenceDto;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,8 +27,11 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
@@ -41,6 +45,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -332,6 +337,23 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void updateImmunizationStatuses() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Immunization> cu = cb.createCriteriaUpdate(Immunization.class);
+		Root<Immunization> root = cu.from(Immunization.class);
+
+		cu.set(Immunization.CHANGE_DATE, Timestamp.from(Instant.now()));
+		cu.set(root.get(Immunization.IMMUNIZATION_STATUS), ImmunizationStatus.EXPIRED);
+
+		cu.where(
+			cb.and(
+				cb.equal(root.get(Immunization.IMMUNIZATION_STATUS), ImmunizationStatus.ACQUIRED),
+				cb.lessThanOrEqualTo(root.get(Immunization.END_DATE), new Date())));
+
+		em.createQuery(cu).executeUpdate();
 	}
 
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {
