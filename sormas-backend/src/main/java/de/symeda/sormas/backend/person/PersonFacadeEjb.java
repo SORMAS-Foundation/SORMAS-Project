@@ -1193,6 +1193,46 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
+		final PersonCriteria nullSafeCriteria = Optional.ofNullable(criteria).orElse(new PersonCriteria());
+		final List<PersonIndexDto> result;
+		if (nullSafeCriteria.getPersonAssociation() == PersonAssociation.ALL) {
+			// Fetch data for all single associations
+			Set<String> distinctPersonUuids = new HashSet<>();
+			Arrays.stream(PersonAssociation.getSingleAssociations())
+				.map(
+					e -> getIndexList(
+						null,
+						SerializationUtils.clone(nullSafeCriteria).personAssociation(e),
+						first,
+						max,
+						sortProperties))
+				.map(e -> e.stream().map(p -> p.getUuid()).collect(Collectors.toList()))
+				.forEach(e -> distinctPersonUuids.addAll(e));
+			// Select the first items in total sorting filtered by personUuids
+			result = getIndexList(distinctPersonUuids, null, first, max, sortProperties);
+		} else {
+			// Directly fetch for one association
+			result = getIndexList(null, criteria, first, max, sortProperties);
+		}
+
+		return result;
+	}
+
+	/**
+	 * @param personUuids
+	 *            If set, this method filters by the given {@code personUuids} and
+	 *            <strong>not</strong> listening to the {@code criteria} which was done previously.
+	 */
+	@SuppressWarnings({
+		"rawtypes",
+		"unchecked" })
+	private List<PersonIndexDto> getIndexList(
+		Set<String> personUuids,
+		PersonCriteria criteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
+
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
 		final Root<Person> person = cq.from(Person.class);
@@ -1242,10 +1282,17 @@ public class PersonFacadeEjb implements PersonFacade {
 			person.get(Person.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, personService.inJurisdictionOrOwned(personQueryContext)));
 
-		Predicate filter = personService.createUserFilter(personQueryContext, criteria);
-		if (criteria != null) {
-			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		Predicate filter;
+		if (personUuids != null) {
+			filter = personUuids.isEmpty()
+				? cb.disjunction()
+				: CriteriaBuilderHelper.andInValues(personUuids, null, cb, personQueryContext.getRoot().get(Person.UUID));
+		} else {
+			filter = personService.createUserFilter(personQueryContext, criteria);
+			if (criteria != null) {
+				final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
+				filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+			}
 		}
 
 		if (filter != null) {
