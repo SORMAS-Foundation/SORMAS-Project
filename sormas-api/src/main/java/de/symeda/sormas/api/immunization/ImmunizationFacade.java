@@ -31,8 +31,6 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 
 	List<String> getDeletedUuidsSince(Date since);
 
-	void updateImmunizationStatuses();
-
 	boolean exists(String uuid);
 
 	ImmunizationReferenceDto getReferenceByUuid(String uuid);
@@ -46,4 +44,6 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 	boolean isImmunizationEditAllowed(String uuid);
 
 	List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria);
+
+	void updateImmunizationStatuses();
 }

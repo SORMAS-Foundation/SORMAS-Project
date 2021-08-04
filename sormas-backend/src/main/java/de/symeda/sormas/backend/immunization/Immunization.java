@@ -84,7 +84,6 @@ public class Immunization extends CoreAdo {
 	public static final String RELATED_CASE = "relatedCase";
 	public static final String VACCINATIONS = "vaccinations";
 
-
 	private Disease disease;
 	private String diseaseDetails;
 	private Person person;
@@ -131,7 +130,6 @@ public class Immunization extends CoreAdo {
 		this.disease = disease;
 	}
 
-	@ManyToOne(cascade = {})
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
@@ -141,7 +139,7 @@ public class Immunization extends CoreAdo {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	@ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
 	public Person getPerson() {
 		return person;

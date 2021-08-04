@@ -2308,6 +2308,7 @@ public interface Captions {
 	String View_events_eventparticipants_data = "View.events.eventparticipants.data";
 	String View_events_sub = "View.events.sub";
 	String View_groups = "View.groups";
+	String View_immunizations = "View.immunizations";
 	String View_persons = "View.persons";
 	String View_persons_data = "View.persons.data";
 	String View_reports = "View.reports";
