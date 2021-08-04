@@ -15,6 +15,21 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -26,21 +41,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
 
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
@@ -174,7 +174,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 313;
+	public static final int DATABASE_VERSION = 314;
 
 	private static DatabaseHelper instance = null;
 
@@ -2765,7 +2765,46 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ " trimester varchar(255), pseudonymized boolean);");
 				//@formatter:on
 
-				// ATTENTION: break should only be done after last version
+				case 313:
+					currentVersion = 313;
+					getDao(Immunization.class).executeRaw("DROP TABLE immunization");
+					//@formatter:off
+					getDao(Immunization.class).executeRaw("CREATE TABLE immunization (" +
+							" id integer primary key autoincrement," +
+							" uuid varchar(36) not null unique," +
+							" changeDate timestamp not null," +
+							" creationDate timestamp not null," +
+							" lastOpenedDate timestamp," +
+							" localChangeDate timestamp not null," +
+							" modified SMALLINT DEFAULT 0," +
+							" snapshot SMALLINT DEFAULT 0,"  +
+							" pseudonymized SMALLINT,"  +
+							" disease varchar(255) not null," +
+							" person_id bigint not null," +
+							" reportDate timestamp not null," +
+							" reportingUser_id bigint not null," +
+							" archived boolean DEFAULT false," +
+							" immunizationStatus varchar(255) not null," +
+							" meansOfImmunization varchar(255) not null," +
+							" meansOfImmunizationDetails text," +
+							" immunizationManagementStatus varchar(255) not null," +
+							" externalId varchar(255) not null," +
+							" responsibleRegion_id bigint," +
+							" responsibleDistrict_id bigint," +
+							" responsibleCommunity_id bigint," +
+							" country_id bigint," +
+							" startDate timestamp," +
+							" endDate timestamp," +
+							" numberOfDoses int," +
+							" previousInfection varchar(255)," +
+							" lastInfectionDate timestamp," +
+							" additionalDetails text," +
+							" positiveTestResultDate timestamp," +
+							" recoveryDate timestamp," +
+							" relatedCase_id bigint)");
+					//@formatter:on
+
+					// ATTENTION: break should only be done after last version
 				break;
 
 			default:

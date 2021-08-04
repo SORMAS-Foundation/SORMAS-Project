@@ -1319,15 +1319,15 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 
 	// dao utilities
 
-	protected void addDateFromCriteria(List<Where<Immunization, Long>> whereStatements, Where<Immunization, Long> where, Date reportDateFrom, String reportDate) throws SQLException {
-		if (reportDateFrom != null) {
-			whereStatements.add(where.ge(reportDate, DateHelper.getStartOfDay(reportDateFrom)));
+	protected void addDateFromCriteria(List<Where<Immunization, Long>> whereStatements, Where<Immunization, Long> where, Date dateFrom, String date) throws SQLException {
+		if (dateFrom != null) {
+			whereStatements.add(where.ge(date, DateHelper.getStartOfDay(dateFrom)));
 		}
 	}
 
-	protected void addDateToCriteria(List<Where<Immunization, Long>> whereStatements, Where<Immunization, Long> where, Date endDateTo, String endDate) throws SQLException {
-		if (endDateTo != null) {
-			whereStatements.add(where.le(endDate, DateHelper.getEndOfDay(endDateTo)));
+	protected void addDateToCriteria(List<Where<Immunization, Long>> whereStatements, Where<Immunization, Long> where, Date dateTo, String date) throws SQLException {
+		if (dateTo != null) {
+			whereStatements.add(where.le(date, DateHelper.getEndOfDay(dateTo)));
 		}
 	}
 

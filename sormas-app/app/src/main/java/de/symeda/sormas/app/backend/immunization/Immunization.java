@@ -15,8 +15,9 @@
 
 package de.symeda.sormas.app.backend.immunization;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,10 +27,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
@@ -45,6 +42,9 @@ import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = Immunization.TABLE_NAME)
 @DatabaseTable(tableName = Immunization.TABLE_NAME)
@@ -311,15 +311,10 @@ public class Immunization extends PseudonymizableAdo {
 		this.vaccinations = vaccinations;
 	}
 
-	@Override
-	public String getI18nPrefix() {
-		return I18N_PREFIX;
-	}
     @Override
     public String getI18nPrefix() {
         return I18N_PREFIX;
     }
-
 
     public void update(Immunization immunization) {
         this.setPerson(immunization.getPerson());

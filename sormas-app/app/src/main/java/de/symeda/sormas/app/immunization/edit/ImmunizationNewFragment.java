@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.immunization.edit;
@@ -46,7 +43,6 @@ import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizationNewLayoutBinding, Immunization, Immunization> {
 
 	private Immunization record;
-
 
 	private List<Item> yearList;
 	private List<Item> monthList;
@@ -143,15 +139,15 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>());
 		contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
 			DataUtils.updateListOfDays(
-					contentBinding.personBirthdateDD,
-					(Integer) contentBinding.personBirthdateYYYY.getValue(),
-					(Integer) field.getValue());
+				contentBinding.personBirthdateDD,
+				(Integer) contentBinding.personBirthdateYYYY.getValue(),
+				(Integer) field.getValue());
 		});
 		contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
 			DataUtils.updateListOfDays(
-					contentBinding.personBirthdateDD,
-					(Integer) field.getValue(),
-					(Integer) contentBinding.personBirthdateMM.getValue());
+				contentBinding.personBirthdateDD,
+				(Integer) field.getValue(),
+				(Integer) contentBinding.personBirthdateMM.getValue());
 		});
 		int year = Calendar.getInstance().get(Calendar.YEAR);
 		contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
@@ -159,14 +155,11 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 
 		// Initialize ControlDateFields
 		contentBinding.immunizationReportDate.initializeDateField(getFragmentManager());
-		contentBinding.immunizationRecoveryDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationStartDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationEndDate.initializeDateField(getFragmentManager());
-		contentBinding.immunizationLastInfectionDate.initializeDateField(getFragmentManager());
-		contentBinding.immunizationPositiveTestResultDate.initializeDateField(getFragmentManager());
 
 		ValidationHelper
-				.initIntegerValidator(contentBinding.immunizationNumberOfDoses, I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10);
+			.initIntegerValidator(contentBinding.immunizationNumberOfDoses, I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10);
 	}
 
 	@Override
@@ -179,22 +172,10 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 				contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.VISIBLE);
 			}
 			if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
-				contentBinding.immunizationVaccinationHeading.setVisibility(View.VISIBLE);
-				contentBinding.immunizationRecoveryHeading.setVisibility(View.VISIBLE);
-
 				contentBinding.immunizationNumberOfDoses.setVisibility(View.VISIBLE);
-				contentBinding.immunizationRecoveryDate.setVisibility(View.VISIBLE);
-				contentBinding.immunizationPositiveTestResultDate.setVisibility(View.VISIBLE);
-
 				contentBinding.immunizationNumberOfDoses.setEnabled(true);
-				contentBinding.immunizationRecoveryDate.setEnabled(true);
-				contentBinding.immunizationPositiveTestResultDate.setEnabled(true);
 			} else {
-				contentBinding.immunizationVaccinationHeading.setVisibility(View.GONE);
-				contentBinding.immunizationRecoveryHeading.setVisibility(View.GONE);
 				contentBinding.immunizationNumberOfDoses.setVisibility(View.GONE);
-				contentBinding.immunizationRecoveryDate.setVisibility(View.GONE);
-				contentBinding.immunizationPositiveTestResultDate.setVisibility(View.GONE);
 			}
 		});
 
@@ -216,12 +197,10 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 			}
 		});
 
-
 		contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.SCHEDULED);
 		contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
 		contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.GONE);
 		contentBinding.immunizationNumberOfDoses.setVisibility(View.GONE);
-
 
 	}
 }

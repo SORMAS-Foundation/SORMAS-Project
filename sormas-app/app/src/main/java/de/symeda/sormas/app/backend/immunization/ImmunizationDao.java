@@ -27,6 +27,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -165,8 +166,32 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 			where.and().eq(Immunization.DISEASE, immunizationCriteria.getDisease());
 			where.and().eq(Immunization.RESPONSIBLE_REGION + "_id", criteria.getImmunizationCriteria().getResponsibleRegion());
 			if (criteria.getStartDate() != null && criteria.getEndDate() != null) {
-				where.and().ge(Immunization.START_DATE, criteria.getStartDate());
-				where.and().le(Immunization.END_DATE, criteria.getEndDate());
+				Where<Immunization, Long> betweenCombination = where.or(
+					where.between(
+						Immunization.START_DATE,
+						DateHelper.getStartOfDay(criteria.getStartDate()),
+						DateHelper.getEndOfDay(criteria.getEndDate())),
+					where.between(
+						Immunization.END_DATE,
+						DateHelper.getStartOfDay(criteria.getStartDate()),
+						DateHelper.getEndOfDay(criteria.getEndDate())));
+
+				Where<Immunization, Long> startDateNull = where.and(
+					where.and().isNull(Immunization.START_DATE),
+					where.gt(Immunization.END_DATE, DateHelper.getStartOfDay(criteria.getStartDate())));
+
+				Where<Immunization, Long> endDateNull = where.and(
+					where.and().isNull(Immunization.END_DATE),
+					where.lt(Immunization.START_DATE, DateHelper.getStartOfDay(criteria.getEndDate())));
+
+				where.and().or(betweenCombination, startDateNull, endDateNull);
+
+			} else if (criteria.getStartDate() == null && criteria.getEndDate() != null) {
+				where.and()
+					.or(where.isNull(Immunization.START_DATE), where.lt(Immunization.START_DATE, DateHelper.getStartOfDay(criteria.getEndDate())));
+			} else if (criteria.getStartDate() != null && criteria.getEndDate() == null) {
+				where.and()
+					.or(where.isNull(Immunization.END_DATE), where.gt(Immunization.END_DATE, DateHelper.getStartOfDay(criteria.getStartDate())));
 			}
 			where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
 

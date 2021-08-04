@@ -42,9 +42,11 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	public static final String DISEASE = "disease";
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
-
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
+	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
 
 	public static final String POSITIVE_TEST_RESULT_DATE = "positivetestresultdate";
+	public static final String EXTERNAL_ID = "externalId";
 	public static final String RECOVERY_DATE = "recoveryDate";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String START_DATE = "startDate";

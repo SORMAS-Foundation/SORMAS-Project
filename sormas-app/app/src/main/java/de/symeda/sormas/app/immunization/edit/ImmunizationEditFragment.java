@@ -161,22 +161,17 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 				contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.VISIBLE);
 			}
 			if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
-				contentBinding.immunizationVaccinationHeading.setVisibility(View.VISIBLE);
-				contentBinding.immunizationRecoveryHeading.setVisibility(View.VISIBLE);
-
-				contentBinding.immunizationNumberOfDoses.setVisibility(View.VISIBLE);
-				contentBinding.immunizationRecoveryDate.setVisibility(View.VISIBLE);
-				contentBinding.immunizationPositiveTestResultDate.setVisibility(View.VISIBLE);
-
+				contentBinding.immunizationVaccinationLayout.setVisibility(View.VISIBLE);
 				contentBinding.immunizationNumberOfDoses.setEnabled(true);
+			} else {
+				contentBinding.immunizationVaccinationLayout.setVisibility(View.GONE);
+			}
+			if (e.getValue() == MeansOfImmunization.RECOVERY || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
+				contentBinding.immunizationRecoveryLayout.setVisibility(View.VISIBLE);
 				contentBinding.immunizationRecoveryDate.setEnabled(true);
 				contentBinding.immunizationPositiveTestResultDate.setEnabled(true);
 			} else {
-				contentBinding.immunizationVaccinationHeading.setVisibility(View.GONE);
-				contentBinding.immunizationRecoveryHeading.setVisibility(View.GONE);
-				contentBinding.immunizationNumberOfDoses.setVisibility(View.GONE);
-				contentBinding.immunizationRecoveryDate.setVisibility(View.GONE);
-				contentBinding.immunizationPositiveTestResultDate.setVisibility(View.GONE);
+				contentBinding.immunizationRecoveryLayout.setVisibility(View.GONE);
 			}
 		});
 
@@ -199,12 +194,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 				contentBinding.immunizationImmunizationStatus.setValue(ImmunizationStatus.NOT_ACQUIRED);
 			}
 		});
-
-		contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.SCHEDULED);
-		contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-		contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.VISIBLE);
-		contentBinding.immunizationNumberOfDoses.setVisibility(View.GONE);
-
 	}
 
 	@Override

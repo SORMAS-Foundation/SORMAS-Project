@@ -7825,4 +7825,9 @@ ALTER TABLE vaccination_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (393, 'Immunizations II: Vaccination Entity #4763');
 
+-- 2021-08-04 Immunizations drop not null constraint on positivetestresultdate #5827
+ALTER TABLE immunization ALTER COLUMN positivetestresultdate DROP NOT NULL;
+ALTER TABLE immunization ALTER COLUMN recoverydate DROP NOT NULL;
+INSERT INTO schema_version (version_number, comment) VALUES (394, 'Immunizations drop not null constraint on positivetestresultdate #5827');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
