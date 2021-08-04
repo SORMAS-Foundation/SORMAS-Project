@@ -312,7 +312,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		Predicate diseaseFilter = criteria.getDisease() != null ? cb.equal(from.get(Immunization.DISEASE), criteria.getDisease()) : null;
 
-		Predicate dateFilter = createDateFilter(cq, cb, from, criteria);
+		Predicate dateFilter = createDateFilter(cb, from, criteria);
 
 		Predicate personSimilarityFilter =
 			criteria.getPersonUuid() != null ? cb.equal(joins.getPerson().get(Person.UUID), criteria.getPersonUuid()) : null;
@@ -339,7 +339,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 	}
 
-	private Predicate createDateFilter(CriteriaQuery<?> cq, CriteriaBuilder cb, Root<Immunization> from, ImmunizationSimilarityCriteria criteria) {
+	private Predicate createDateFilter(CriteriaBuilder cb, Root<Immunization> from, ImmunizationSimilarityCriteria criteria) {
 		Date startDate = criteria.getStartDate();
 		Date endDate = criteria.getEndDate();
 
