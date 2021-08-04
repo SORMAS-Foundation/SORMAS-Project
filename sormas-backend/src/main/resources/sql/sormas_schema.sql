@@ -7784,6 +7784,47 @@ ALTER TABLE events_history ADD COLUMN specificrisk TEXT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (392, 'Add SpecificRisk field into events #5940');
 
+-- 2021-07-13 Immunizations II: Vaccination Entity #4763
+CREATE TABLE vaccination (
+                             id bigint not null,
+                             uuid varchar(36) not null unique,
+                             changedate timestamp not null,
+                             creationdate timestamp not null,
+                             immunization_id bigint not null,
+                             healthconditions_id bigint not null,
+                             reportdate timestamp not null,
+                             reportinguser_id bigint,
+                             vaccinationDate timestamp,
+                             vaccinename varchar(255),
+                             othervaccinename text,
+                             vaccinenamedetails text,
+                             vaccinemanufacturer varchar(255),
+                             othervaccinemanufacturer text,
+                             vaccinemanufacturerdetails text,
+                             vaccineinn text,
+                             vaccinebatchnumber text,
+                             vaccineuniicode text,
+                             vaccineatccode text,
+                             vaccinationinfosource varchar(255),
+                             pregnant varchar(255),
+                             trimester varchar(255),
+                             sys_period tstzrange not null,
+                             primary key(id));
+ALTER TABLE vaccination OWNER TO sormas_user;
+
+ALTER TABLE vaccination ADD CONSTRAINT fk_vaccination_immunization_id FOREIGN KEY (immunization_id) REFERENCES immunization(id);
+ALTER TABLE vaccination ADD CONSTRAINT fk_vaccination_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+ALTER TABLE vaccination ADD CONSTRAINT fk_vaccination_healthconditions_id FOREIGN KEY (healthconditions_id) REFERENCES healthconditions(id);
+
+
+CREATE TABLE vaccination_history (LIKE vaccination);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON vaccination
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'vaccination_history', true);
+ALTER TABLE vaccination_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (393, 'Immunizations II: Vaccination Entity #4763');
+
 -- 2021-08-01 Modifications to immunization tables #6025
 ALTER TABLE immunization ALTER COLUMN externalid DROP NOT NULL;
 ALTER TABLE immunization ALTER COLUMN positivetestresultdate DROP NOT NULL;
@@ -7802,6 +7843,6 @@ ALTER TABLE immunization_history ADD COLUMN healthfacility_id bigint;
 ALTER TABLE immunization_history ADD COLUMN healthfacilitydetails varchar(512);
 ALTER TABLE immunization_history ADD COLUMN facilitytype varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (393, 'Modifications to immunization tables #6025');
+INSERT INTO schema_version (version_number, comment) VALUES (394, 'Modifications to immunization tables #6025');
 
--- *** Insert new sql commands BEFORE this line ***
+-- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

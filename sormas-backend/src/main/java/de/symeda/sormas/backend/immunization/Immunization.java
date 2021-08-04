@@ -17,7 +17,9 @@ package de.symeda.sormas.backend.immunization;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,6 +29,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -47,10 +50,13 @@ import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.vaccination.VaccinationEntity;
 
 @Entity(name = "immunization")
 @Audited
 public class Immunization extends CoreAdo {
+
+	public static final String TABLE_NAME = "immunization";
 
 	public static final String DISEASE = "disease";
 	public static final String PERSON = "person";
@@ -76,6 +82,7 @@ public class Immunization extends CoreAdo {
 	public static final String POSITIVE_TEST_RESULT_DATE = "positiveTestResultDate";
 	public static final String RECOVERY_DATE = "recoveryDate";
 	public static final String RELATED_CASE = "relatedCase";
+	public static final String VACCINATIONS = "vaccinations";
 
 	private Disease disease;
 	private String diseaseDetails;
@@ -112,6 +119,8 @@ public class Immunization extends CoreAdo {
 
 	private Country country;
 
+	private List<VaccinationEntity> vaccinations = new ArrayList<>();
+
 	@Enumerated(EnumType.STRING)
 	public Disease getDisease() {
 		return disease;
@@ -130,7 +139,7 @@ public class Immunization extends CoreAdo {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	@ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
 	public Person getPerson() {
 		return person;
@@ -356,5 +365,14 @@ public class Immunization extends CoreAdo {
 
 	public void setCountry(Country country) {
 		this.country = country;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = VaccinationEntity.IMMUNIZATION, fetch = FetchType.EAGER)
+	public List<VaccinationEntity> getVaccinations() {
+		return vaccinations;
+	}
+
+	public void setVaccinations(List<VaccinationEntity> vaccinations) {
+		this.vaccinations = vaccinations;
 	}
 }

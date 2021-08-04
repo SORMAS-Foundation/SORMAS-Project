@@ -24,10 +24,8 @@ import com.vaadin.server.ClassResource;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
@@ -38,12 +36,8 @@ public class TravelEntryImportLayout extends AbstractImportLayout {
 	public TravelEntryImportLayout() {
 
 		super();
-		ImportFacade importFacade = FacadeProvider.getImportFacade();
 
-		addDownloadResourcesComponent(
-			1,
-			new ClassResource("/SORMAS_Travel_Entry_Import_Guide.pdf"),
-			new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Travel_Entry_Import_Guide.pdf"));
 		addImportCsvComponent(2, new ImportReceiver("_travel_entry_import_", file -> {
 
 			resetDownloadErrorReportButton();
