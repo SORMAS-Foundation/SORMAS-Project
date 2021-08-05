@@ -410,9 +410,9 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		Join<Immunization, Person> person = joins.getPerson();
 
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
-		final Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
-		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
-		final Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
+		final Join<Immunization, Region> region = joins.getResponsibleRegion();
+		final Join<Immunization, District> district = joins.getResponsibleDistrict();
+		final Join<Immunization, Community> community = joins.getResponsibleCommunity();
 
 		Predicate filter = null;
 		if (criteria.getDisease() != null) {
