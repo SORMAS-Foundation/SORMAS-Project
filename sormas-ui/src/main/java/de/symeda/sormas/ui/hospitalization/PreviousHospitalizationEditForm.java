@@ -258,10 +258,11 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 	private <T> List<T> addUnknown(List<T> items, T unknownItem) {
 		List<T> withUnknown = new ArrayList<>();
 
-		withUnknown.add(unknownItem);
 		if (items != null) {
 			withUnknown.addAll(items);
 		}
+
+		withUnknown.add(unknownItem);
 
 		return withUnknown;
 	}

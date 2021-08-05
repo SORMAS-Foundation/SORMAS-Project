@@ -51,6 +51,7 @@ import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBinding, Case, Case> {
 
@@ -146,7 +147,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 
 		Facility initialHealthFacility = record.getHealthFacility();
 
-		InfrastructureDaoHelper.initializeRegionFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeRegionFields(
 			contentBinding.caseDataResponsibleRegion,
 			initialRegions,
 			record.getResponsibleRegion(),
@@ -157,7 +158,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			initialResponsibleCommunities,
 			record.getResponsibleCommunity());
 
-		InfrastructureDaoHelper.initializeRegionFieldListeners(
+		InfrastructureFieldsDependencyHandler.instance.initializeRegionFieldListeners(
 			contentBinding.caseDataResponsibleRegion,
 			contentBinding.caseDataResponsibleDistrict,
 			record.getResponsibleDistrict(),
@@ -170,7 +171,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			null,
 			() -> Boolean.TRUE.equals(contentBinding.caseDataDifferentPlaceOfStayJurisdiction.getValue()));
 
-		InfrastructureDaoHelper.initializeFacilityFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			record,
 			contentBinding.caseDataRegion,
 			initialRegions,
@@ -200,7 +201,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		// trigger responsible jurisdiction change handlers removing place of stay region/district/community
 		contentBinding.caseDataDifferentPlaceOfStayJurisdiction.addValueChangedListener(f -> {
 			if (Boolean.FALSE.equals(f.getValue())) {
-				InfrastructureDaoHelper.handleCommunityChange(
+				InfrastructureFieldsDependencyHandler.instance.handleCommunityChange(
 						contentBinding.caseDataResponsibleCommunity,
 						contentBinding.caseDataResponsibleDistrict,
 						contentBinding.caseDataHealthFacility,
