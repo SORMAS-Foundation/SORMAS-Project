@@ -79,6 +79,8 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
@@ -274,6 +276,16 @@ public class TestDataCreator {
 		person = beanTest.getPersonFacade().savePerson(person);
 
 		return person;
+	}
+
+	public PersonContactDetailDto createPersonContactDetail(
+		PersonReferenceDto person,
+		boolean primaryContact,
+		PersonContactDetailType personContactDetailType,
+		String contactInformation) {
+		PersonContactDetailDto contactDetails =
+			PersonContactDetailDto.build(person, primaryContact, personContactDetailType, null, null, contactInformation, null, false, null, null);
+		return contactDetails;
 	}
 
 	public CaseDataDto createUnclassifiedCase(Disease disease) {
