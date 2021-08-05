@@ -25,10 +25,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1449,6 +1451,24 @@ public class PersonFacadeEjb implements PersonFacade {
 			.nationalHealthId(referencePerson.getNationalHealthId());
 
 		return checkMatchingNameInDatabase(userFacade.getCurrentUser().toReference(), criteria);
+	}
+
+	@Override
+	public void mergePerson(PersonDto leadPerson, PersonDto otherPerson) {
+		// Make sure the resulting person does not have multiple primary contact details
+		Set primaryContactDetailTypes = new HashSet<>();
+		for (PersonContactDetailDto contactDetailDto : leadPerson.getPersonContactDetails()) {
+			if (contactDetailDto.isPrimaryContact()) {
+				primaryContactDetailTypes.add(contactDetailDto.getPersonContactDetailType());
+			}
+		}
+		for (PersonContactDetailDto contactDetailDto : otherPerson.getPersonContactDetails()) {
+			if (contactDetailDto.isPrimaryContact() && primaryContactDetailTypes.contains(contactDetailDto.getPersonContactDetailType())) {
+				contactDetailDto.setPrimaryContact(false);
+			}
+		}
+		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
+		savePerson(leadPerson);
 	}
 
 	@LocalBean

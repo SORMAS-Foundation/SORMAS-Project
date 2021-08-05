@@ -30,6 +30,8 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
@@ -546,6 +548,35 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		updateFollowUpStatus(case1, FollowUpStatus.LOST);
 		assertThat(getPersonFacade().getMostRelevantFollowUpStatusByUuid(person.getUuid()), is(FollowUpStatus.NO_FOLLOW_UP));
 
+	}
+
+	@Test
+	public void testMergePerson() {
+		PersonDto leadPerson = creator.createPerson("Alex", "Miller");
+		PersonDto otherPerson = creator.createPerson("Max", "Smith");
+
+		PersonContactDetailDto leadContactDetail =
+			creator.createPersonContactDetail(leadPerson.toReference(), true, PersonContactDetailType.PHONE, "123");
+		PersonContactDetailDto otherContactDetail =
+			creator.createPersonContactDetail(otherPerson.toReference(), true, PersonContactDetailType.PHONE, "456");
+
+		leadPerson.setPersonContactDetails(Collections.singletonList(leadContactDetail));
+		otherPerson.setPersonContactDetails(Collections.singletonList(otherContactDetail));
+
+		leadPerson = getPersonFacade().savePerson(leadPerson);
+		otherPerson = getPersonFacade().savePerson(otherPerson);
+
+		getPersonFacade().mergePerson(leadPerson, otherPerson);
+
+		assertThat(leadPerson.getPersonContactDetails().size(), is(2));
+		assertThat(
+			leadPerson.getPersonContactDetails()
+				.stream()
+				.filter(PersonContactDetailDto::isPrimaryContact)
+				.collect(Collectors.toList())
+				.get(0)
+				.getContactInformation(),
+			is("123"));
 	}
 
 	private void updateFollowUpStatus(ContactDto contact, FollowUpStatus status) {

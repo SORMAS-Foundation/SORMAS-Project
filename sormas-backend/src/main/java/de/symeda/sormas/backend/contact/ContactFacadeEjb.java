@@ -1739,11 +1739,14 @@ public class ContactFacadeEjb implements ContactFacade {
 		copyDtoValues(leadContactDto, otherContactDto);
 		saveContact(leadContactDto);
 
-		// 1.2 Person
-		PersonDto leadPerson = personFacade.getPersonByUuid(leadContactDto.getPerson().getUuid());
-		PersonDto otherPerson = personFacade.getPersonByUuid(otherContactDto.getPerson().getUuid());
-		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
-		personFacade.savePerson(leadPerson);
+		// 1.2 Person - Only merge when the persons have different UUIDs
+		if (!DataHelper.equal(leadContactDto.getPerson().getUuid(), otherContactDto.getPerson().getUuid())) {
+			PersonDto leadPerson = personFacade.getPersonByUuid(leadContactDto.getPerson().getUuid());
+			PersonDto otherPerson = personFacade.getPersonByUuid(otherContactDto.getPerson().getUuid());
+			personFacade.mergePerson(leadPerson, otherPerson);
+		} else {
+			assert (DataHelper.equal(leadContactDto.getPerson().getUuid(), otherContactDto.getPerson().getUuid()));
+		}
 
 		// 2 Change ContactReference
 		Contact leadContact = contactService.getByUuid(leadContactDto.getUuid());
