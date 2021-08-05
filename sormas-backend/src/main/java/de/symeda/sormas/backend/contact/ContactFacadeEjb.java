@@ -1744,8 +1744,6 @@ public class ContactFacadeEjb implements ContactFacade {
 			PersonDto leadPerson = personFacade.getPersonByUuid(leadContactDto.getPerson().getUuid());
 			PersonDto otherPerson = personFacade.getPersonByUuid(otherContactDto.getPerson().getUuid());
 			personFacade.mergePerson(leadPerson, otherPerson);
-		} else {
-			assert (DataHelper.equal(leadContactDto.getPerson().getUuid(), otherContactDto.getPerson().getUuid()));
 		}
 
 		// 2 Change ContactReference
