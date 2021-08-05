@@ -73,6 +73,7 @@ import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.events.EventGroupDataView;
 import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.events.EventsView;
+import de.symeda.sormas.ui.immunization.ImmunizationsView;
 import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
@@ -182,6 +183,15 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)) {
 			ControllerProvider.getSampleController().registerViews(navigator);
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
+		}
+
+		if (permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_MANAGEMENT_ACCESS)) {
+			ControllerProvider.getImmunizationController().registerViews(navigator);
+			menu.addView(
+				ImmunizationsView.class,
+				ImmunizationsView.VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuImmunizations),
+				VaadinIcons.HEALTH_CARD);
 		}
 
 		if (permitted(UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS)
@@ -320,7 +330,8 @@ public class MainScreen extends HorizontalLayout {
 				SubcontinentsView.VIEW_NAME,
 				CountriesView.VIEW_NAME,
 				LabMessagesView.VIEW_NAME,
-				TravelEntriesView.VIEW_NAME));
+				TravelEntriesView.VIEW_NAME,
+				ImmunizationsView.VIEW_NAME));
 
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			views.add(SurveillanceDashboardView.VIEW_NAME);
