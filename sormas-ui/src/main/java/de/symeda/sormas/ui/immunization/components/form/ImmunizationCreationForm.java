@@ -83,6 +83,8 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		+ fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 	//@formatter:on
 
+	private final int DAYS_IN_THE_FUTURE = 365;
+
 	private ComboBox birthDateDay;
 
 	public ImmunizationCreationForm() {
@@ -154,7 +156,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		facilityDetails.setVisible(false);
 
 		addField(ImmunizationDto.START_DATE, DateField.class);
-		addField(ImmunizationDto.END_DATE, DateField.class);
+		addDateField(ImmunizationDto.END_DATE, DateField.class, DAYS_IN_THE_FUTURE);
 
 		Label vaccinationHeadingLabel = new Label(I18nProperties.getString(Strings.headingVaccination));
 		vaccinationHeadingLabel.addStyleName(H3);
