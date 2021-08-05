@@ -1,36 +1,30 @@
 package de.symeda.sormas.ui.immunization;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
+import de.symeda.sormas.ui.immunization.components.filter.status.StatusBar;
 import de.symeda.sormas.ui.immunization.components.grid.ImmunizationGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 public class ImmunizationsView extends AbstractView {
 
 	public static final String VIEW_NAME = "immunizations";
 
-	private final ImmunizationGrid grid;
 	private final ImmunizationCriteria criteria;
 
-	private ImmunizationFilterForm filterForm;
+	private final StatusBar statusBar;
+	private final ImmunizationGrid grid;
 
-	private Button statusAll;
+	private ImmunizationFilterForm filterForm;
 
 	public ImmunizationsView() {
 		super(VIEW_NAME);
@@ -38,9 +32,11 @@ public class ImmunizationsView extends AbstractView {
 		criteria = ViewModelProviders.of(ImmunizationsView.class).get(ImmunizationCriteria.class);
 		grid = new ImmunizationGrid(criteria);
 
+		statusBar = new StatusBar(Captions.all, e -> navigateTo(criteria));
+
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(createStatusFilterBar());
+		gridLayout.addComponent(statusBar);
 		gridLayout.addComponent(grid);
 
 		gridLayout.setMargin(true);
@@ -73,7 +69,7 @@ public class ImmunizationsView extends AbstractView {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
-		updateStatusButton();
+		statusBar.updateStatusButton(String.valueOf(grid.getItemCount()));
 		filterForm.setValue(criteria);
 
 		applyingCriteria = false;
@@ -99,33 +95,10 @@ public class ImmunizationsView extends AbstractView {
 
 		filterForm.addApplyHandler(clickEvent -> {
 			grid.reload();
-			updateStatusButton();
+			statusBar.updateStatusButton(String.valueOf(grid.getItemCount()));
 		});
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
-	}
-
-	private HorizontalLayout createStatusFilterBar() {
-		HorizontalLayout statusFilterLayout = new HorizontalLayout();
-		statusFilterLayout.setSpacing(true);
-		statusFilterLayout.setMargin(false);
-		statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
-		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
-
-		statusAll = ButtonHelper.createButton(I18nProperties.getCaption(Captions.all), e -> {
-			navigateTo(criteria);
-		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
-		statusAll.setCaptionAsHtml(true);
-
-		statusFilterLayout.addComponent(statusAll);
-
-		return statusFilterLayout;
-	}
-
-	private void updateStatusButton() {
-		if (statusAll != null) {
-			statusAll.setCaption(I18nProperties.getCaption(Captions.all) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
-		}
 	}
 }
