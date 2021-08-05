@@ -42,7 +42,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -80,8 +79,11 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -478,10 +480,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
+		ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
-		UserDto labUser = creator
-				.createUser(null, null, null, "Lab", "Off", UserRole.LAB_USER);
+		UserDto labUser = creator.createUser(null, null, null, "Lab", "Off", UserRole.LAB_USER);
 		FacilityReferenceDto laboratory = new FacilityReferenceDto(rdcf.facility.getUuid(), rdcf.facility.toString(), rdcf.facility.getExternalID());
 		labUser.setLaboratory(laboratory);
 		getUserFacade().saveUser(labUser);
@@ -1383,6 +1385,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		UserDto leadUser = creator.createUser("", "", "", "", "");
 		UserReferenceDto leadUserReference = new UserReferenceDto(leadUser.getUuid());
 		PersonDto leadPerson = creator.createPerson("Alex", "Miller");
+		PersonContactDetailDto leadContactDetail =
+			creator.createPersonContactDetail(leadPerson.toReference(), true, PersonContactDetailType.PHONE, "123");
+		leadPerson.setPersonContactDetails(Collections.singletonList(leadContactDetail));
+		getPersonFacade().savePerson(leadPerson);
 		PersonReferenceDto leadPersonReference = new PersonReferenceDto(leadPerson.getUuid());
 		RDCF leadRdcf = creator.createRDCF();
 		CaseDataDto sourceCase = creator.createCase(
@@ -1414,6 +1420,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		UserDto otherUser = creator.createUser("", "", "", "", "");
 		UserReferenceDto otherUserReference = new UserReferenceDto(otherUser.getUuid());
 		PersonDto otherPerson = creator.createPerson("Max", "Smith");
+		PersonContactDetailDto otherContactDetail =
+			creator.createPersonContactDetail(otherPerson.toReference(), true, PersonContactDetailType.PHONE, "456");
+		otherPerson.setPersonContactDetails(Collections.singletonList(otherContactDetail));
 		otherPerson.setBirthWeight(2);
 		getPersonFacade().savePerson(otherPerson);
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
