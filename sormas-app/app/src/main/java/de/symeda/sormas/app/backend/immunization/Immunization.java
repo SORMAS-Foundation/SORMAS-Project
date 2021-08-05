@@ -29,12 +29,14 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.Country;
@@ -65,6 +67,8 @@ public class Immunization extends PseudonymizableAdo {
     public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
     public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
 
+	public static final String HEALTH_FACILITY = "healthFacility_id";
+
     @Enumerated(EnumType.STRING)
     private Disease disease;
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
@@ -94,6 +98,13 @@ public class Immunization extends PseudonymizableAdo {
 	private Community responsibleCommunity;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Country country;
+
+	@Enumerated(EnumType.STRING)
+	private FacilityType facilityType;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Facility healthFacility;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String healthFacilityDetails;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date startDate;
@@ -311,7 +322,31 @@ public class Immunization extends PseudonymizableAdo {
 		this.vaccinations = vaccinations;
 	}
 
-    @Override
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+	}
+
+	public Facility getHealthFacility() {
+		return healthFacility;
+	}
+
+	public void setHealthFacility(Facility healthFacility) {
+		this.healthFacility = healthFacility;
+	}
+
+	public String getHealthFacilityDetails() {
+		return healthFacilityDetails;
+	}
+
+	public void setHealthFacilityDetails(String healthFacilityDetails) {
+		this.healthFacilityDetails = healthFacilityDetails;
+	}
+
+	@Override
     public String getI18nPrefix() {
         return I18N_PREFIX;
     }

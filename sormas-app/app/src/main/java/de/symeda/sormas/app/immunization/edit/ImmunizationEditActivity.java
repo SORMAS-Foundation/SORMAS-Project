@@ -158,7 +158,11 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 						hidePreloader();
 						super.onPostExecute(taskResult);
 						if (taskResult.getResultStatus().isSuccess()) {
-							goToNextPage();
+							if (getActivePage().getPosition() == ImmunizationSection.PERSON_INFO.ordinal()) {
+								finish();
+							} else {
+								goToNextPage();
+							}
 						} else {
 							onResume(); // reload data
 						}

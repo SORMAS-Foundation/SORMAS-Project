@@ -20,6 +20,8 @@ import android.view.View;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
@@ -54,6 +56,9 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	private List<Item> allDistricts;
 	private List<Item> initialDistricts;
 	private List<Item> initialCommunities;
+	private List<Item> initialFacilities;
+	private List<Item> facilityOrHomeList;
+	private List<Item> facilityTypeGroupList;
 	private List<Item> countries;
 
 	public static ImmunizationEditFragment newInstance(Immunization activityRootData) {
@@ -103,6 +108,11 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		initialResponsibleCommunities = InfrastructureDaoHelper.loadCommunities(record.getResponsibleDistrict());
 		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getResponsibleRegion());
 		initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getResponsibleDistrict());
+		initialFacilities =
+			InfrastructureDaoHelper.loadFacilities(record.getResponsibleDistrict(), record.getResponsibleCommunity(), record.getFacilityType());
+
+		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.FOR_CASES, true);
+		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
 	}
 
 	@Override
@@ -113,28 +123,31 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 
 		contentBinding.immunizationCountry.initializeSpinner(countries);
 
-		InfrastructureDaoHelper.initializeRegionFields(
+		InfrastructureDaoHelper.initializeFacilityFields(
+			record,
 			contentBinding.immunizationResponsibleRegion,
 			initialRegions,
 			record.getResponsibleRegion(),
 			contentBinding.immunizationResponsibleDistrict,
-			initialResponsibleDistricts,
+			initialDistricts,
 			record.getResponsibleDistrict(),
 			contentBinding.immunizationResponsibleCommunity,
-			initialResponsibleCommunities,
-			record.getResponsibleCommunity());
-
-		InfrastructureDaoHelper.initializeRegionFieldListeners(
-			contentBinding.immunizationResponsibleRegion,
-			contentBinding.immunizationResponsibleDistrict,
-			record.getResponsibleDistrict(),
-			contentBinding.immunizationResponsibleCommunity,
+			initialCommunities,
 			record.getResponsibleCommunity(),
+			contentBinding.facilityOrHome,
+			facilityOrHomeList,
+			contentBinding.facilityTypeGroup,
+			facilityTypeGroupList,
+			contentBinding.immunizationFacilityType,
+			null,
+			contentBinding.immunizationHealthFacility,
+			initialFacilities,
+			record.getHealthFacility(),
+			contentBinding.immunizationHealthFacilityDetails,
 			null,
 			null,
 			null,
-			null,
-			null,
+			false,
 			() -> false);
 	}
 

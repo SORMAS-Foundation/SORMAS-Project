@@ -22,6 +22,8 @@ import java.util.Calendar;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
@@ -56,6 +58,10 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 	private List<Item> initialResponsibleRegions;
 	private List<Item> initialResponsibleDistricts;
 	private List<Item> initialResponsibleCommunities;
+
+	private List<Item> initialFacilities;
+	private List<Item> facilityOrHomeList;
+	private List<Item> facilityTypeGroupList;
 
 	public static ImmunizationNewFragment newInstance(Immunization activityRootData) {
 		return newInstance(ImmunizationNewFragment.class, ImmunizationNewActivity.buildBundle().get(), activityRootData);
@@ -98,6 +104,12 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		monthList = DataUtils.getMonthItems(true);
 
 		sexList = DataUtils.getEnumItems(Sex.class, true);
+
+		initialFacilities =
+				InfrastructureDaoHelper.loadFacilities(record.getResponsibleDistrict(), record.getResponsibleCommunity(), record.getFacilityType());
+
+		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.FOR_CASES, true);
+		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
 	}
 
 	@Override
@@ -106,29 +118,32 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
-		InfrastructureDaoHelper.initializeRegionFields(
-			contentBinding.immunizationResponsibleRegion,
-			initialResponsibleRegions,
-			record.getResponsibleRegion(),
-			contentBinding.immunizationResponsibleDistrict,
-			initialResponsibleDistricts,
-			record.getResponsibleDistrict(),
-			contentBinding.immunizationResponsibleCommunity,
-			initialResponsibleCommunities,
-			record.getResponsibleCommunity());
-
-		InfrastructureDaoHelper.initializeRegionFieldListeners(
-			contentBinding.immunizationResponsibleRegion,
-			contentBinding.immunizationResponsibleDistrict,
-			record.getResponsibleDistrict(),
-			contentBinding.immunizationResponsibleCommunity,
-			record.getResponsibleCommunity(),
-			null,
-			null,
-			null,
-			null,
-			null,
-			() -> false);
+		InfrastructureDaoHelper.initializeFacilityFields(
+				record,
+				contentBinding.immunizationResponsibleRegion,
+				initialResponsibleRegions,
+				record.getResponsibleRegion(),
+				contentBinding.immunizationResponsibleDistrict,
+				initialResponsibleDistricts,
+				record.getResponsibleDistrict(),
+				contentBinding.immunizationResponsibleCommunity,
+				initialResponsibleCommunities,
+				record.getResponsibleCommunity(),
+				contentBinding.facilityOrHome,
+				facilityOrHomeList,
+				contentBinding.facilityTypeGroup,
+				facilityTypeGroupList,
+				contentBinding.immunizationFacilityType,
+				null,
+				contentBinding.immunizationHealthFacility,
+				initialFacilities,
+				record.getHealthFacility(),
+				contentBinding.immunizationHealthFacilityDetails,
+				null,
+				null,
+				null,
+				false,
+				() -> false);
 
 		// Initialize ControlSpinnerFields
 		contentBinding.immunizationDisease.initializeSpinner(diseaseList);

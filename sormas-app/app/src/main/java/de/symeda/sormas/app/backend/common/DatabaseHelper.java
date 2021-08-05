@@ -2798,6 +2798,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" responsibleDistrict_id bigint," +
 						" responsibleCommunity_id bigint," +
 						" country_id bigint REFERENCES country(id)," +
+						" facilityType varchar(255)," +
+						" healthFacility_id bigint REFERENCES facility(id)," +
+						" healthFacilityDetails varchar(512)," +
 						" startDate timestamp," +
 						" endDate timestamp," +
 						" numberOfDoses int," +
@@ -2807,6 +2810,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" positiveTestResultDate timestamp," +
 						" recoveryDate timestamp," +
 						" relatedCase_id bigint REFERENCES cases(id))");
+
 				//@formatter:on
 				// ATTENTION: break should only be done after last version
 				break;

@@ -26,6 +26,8 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.Community;
@@ -88,6 +90,8 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 		target.setResponsibleRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getResponsibleRegion()));
 		target.setResponsibleDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getResponsibleDistrict()));
 		target.setResponsibleCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getResponsibleCommunity()));
+		target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
+		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setCountry(DatabaseHelper.getCountryDao().getByReferenceDto(source.getCountry()));
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
@@ -146,6 +150,14 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 			Country country = DatabaseHelper.getCountryDao().queryForId(source.getCountry().getId());
 			target.setCountry(CountryDtoHelper.toReferenceDto(country));
 		}
+
+		if (source.getHealthFacility() != null) {
+			Facility facility = DatabaseHelper.getFacilityDao().queryForId(source.getHealthFacility().getId());
+			target.setHealthFacility(FacilityDtoHelper.toReferenceDto(facility));
+		} else {
+			target.setHealthFacility(null);
+		}
+		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
 		target.setNumberOfDoses(source.getNumberOfDoses());
