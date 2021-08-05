@@ -21,10 +21,10 @@ public class ImmunizationsView extends AbstractView {
 
 	private final ImmunizationCriteria criteria;
 
-	private final StatusBar statusBar;
 	private final ImmunizationGrid grid;
 
 	private ImmunizationFilterForm filterForm;
+	private StatusBar statusBar;
 
 	public ImmunizationsView() {
 		super(VIEW_NAME);
@@ -32,11 +32,9 @@ public class ImmunizationsView extends AbstractView {
 		criteria = ViewModelProviders.of(ImmunizationsView.class).get(ImmunizationCriteria.class);
 		grid = new ImmunizationGrid(criteria);
 
-		statusBar = new StatusBar(Captions.all, e -> navigateTo(criteria));
-
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(statusBar);
+		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(grid);
 
 		gridLayout.setMargin(true);
@@ -100,5 +98,13 @@ public class ImmunizationsView extends AbstractView {
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
+	}
+
+	private StatusBar createStatusFilterBar() {
+
+		statusBar = new StatusBar();
+		statusBar.addItem(Captions.all, e -> navigateTo(criteria));
+
+		return statusBar;
 	}
 }
