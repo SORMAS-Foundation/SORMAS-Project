@@ -1,7 +1,5 @@
 package de.symeda.sormas.ui.immunization;
 
-import java.util.HashMap;
-
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -20,6 +18,7 @@ import de.symeda.sormas.ui.immunization.components.grid.ImmunizationGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 public class ImmunizationsView extends AbstractView {
@@ -30,6 +29,8 @@ public class ImmunizationsView extends AbstractView {
 	private final ImmunizationCriteria criteria;
 
 	private ImmunizationFilterForm filterForm;
+
+	private Button statusAll;
 
 	public ImmunizationsView() {
 		super(VIEW_NAME);
@@ -72,6 +73,7 @@ public class ImmunizationsView extends AbstractView {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
+		updateStatusButton();
 		filterForm.setValue(criteria);
 
 		applyingCriteria = false;
@@ -95,7 +97,10 @@ public class ImmunizationsView extends AbstractView {
 			navigateTo(null, true);
 		});
 
-		filterForm.addApplyHandler(clickEvent -> grid.reload());
+		filterForm.addApplyHandler(clickEvent -> {
+			grid.reload();
+			updateStatusButton();
+		});
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
@@ -108,23 +113,19 @@ public class ImmunizationsView extends AbstractView {
 		statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
 		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
-		HashMap<Button, String> statusButtons = new HashMap<>();
-
-		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
-		buttonFilterLayout.setSpacing(true);
-
-		Button statusAll = ButtonHelper.createButton(Captions.all, e -> {
+		statusAll = ButtonHelper.createButton(I18nProperties.getCaption(Captions.all), e -> {
 			navigateTo(criteria);
 		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 		statusAll.setCaptionAsHtml(true);
 
-		buttonFilterLayout.addComponent(statusAll);
-
-		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
-		Button activeStatusButton = statusAll;
-
-		statusFilterLayout.addComponent(buttonFilterLayout);
+		statusFilterLayout.addComponent(statusAll);
 
 		return statusFilterLayout;
+	}
+
+	private void updateStatusButton() {
+		if (statusAll != null) {
+			statusAll.setCaption(I18nProperties.getCaption(Captions.all) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+		}
 	}
 }
