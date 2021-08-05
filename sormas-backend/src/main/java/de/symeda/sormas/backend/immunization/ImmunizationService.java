@@ -57,9 +57,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
-import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -410,9 +408,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		Join<Immunization, Person> person = joins.getPerson();
 
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
-		final Join<Immunization, Region> region = joins.getResponsibleRegion();
-		final Join<Immunization, District> district = joins.getResponsibleDistrict();
-		final Join<Immunization, Community> community = joins.getResponsibleCommunity();
 
 		Predicate filter = null;
 		if (criteria.getDisease() != null) {
@@ -463,9 +458,9 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		if (criteria.getImmunizationStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_STATUS), criteria.getImmunizationStatus()));
 		}
-		filter = andEqualsReferenceDto(cb, region, filter, criteria.getRegion());
-		filter = andEqualsReferenceDto(cb, district, filter, criteria.getDistrict());
-		filter = andEqualsReferenceDto(cb, community, filter, criteria.getCommunity());
+		filter = andEqualsReferenceDto(cb, joins.getResponsibleRegion(), filter, criteria.getRegion());
+		filter = andEqualsReferenceDto(cb, joins.getResponsibleDistrict(), filter, criteria.getDistrict());
+		filter = andEqualsReferenceDto(cb, joins.getResponsibleCommunity(), filter, criteria.getCommunity());
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
 
 		return filter;
