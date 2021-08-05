@@ -37,7 +37,7 @@ public class PersonApiService {
         .firstName(faker.name().firstName())
         .lastName(faker.name().lastName())
         .sex("Male")
-        .phoneNumber(faker.phoneNumber().phoneNumber())
+        .phone(faker.phoneNumber().phoneNumber())
         .build();
   }
 }

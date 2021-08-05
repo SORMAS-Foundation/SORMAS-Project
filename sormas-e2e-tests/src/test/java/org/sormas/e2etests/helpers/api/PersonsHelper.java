@@ -48,6 +48,7 @@ public class PersonsHelper {
   public void getAllPersonUuid() {
     restAssuredClient.sendRequest(
         Request.builder().method(Method.GET).path(PERSONS_PATH + "uuids").build());
+    int totalPersons = apiState.getResponse().getBody().asString().replaceAll("\"", "").split(",").length;
   }
 
   public Response getPersonBasedOnUUID(String personUUID) {

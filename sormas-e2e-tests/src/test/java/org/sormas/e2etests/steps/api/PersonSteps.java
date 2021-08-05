@@ -47,8 +47,8 @@ public class PersonSteps implements En {
                   .uuid(UUID.randomUUID().toString())
                   .firstName(faker.name().firstName())
                   .lastName(faker.name().lastName())
-                  .sex("Male")
-                  .phoneNumber(faker.phoneNumber().phoneNumber())
+                  .sex("MALE")
+                  .phone(faker.phoneNumber().phoneNumber())
                   .build();
           apiState.setEditPerson(createPersonObject);
           personsHelper.createNewPerson(createPersonObject);
