@@ -24,6 +24,7 @@ import java.util.Date;
 public class ImmunizationSimilarityCriteria implements Serializable {
 
 	private ImmunizationCriteria immunizationCriteria;
+	private String immunizationUuid;
 	private String personUuid;
 	private Date reportDate;
 	private Date startDate;
@@ -35,6 +36,14 @@ public class ImmunizationSimilarityCriteria implements Serializable {
 
 	public void setImmunizationCriteria(ImmunizationCriteria immunizationCriteria) {
 		this.immunizationCriteria = immunizationCriteria;
+	}
+
+	public String getImmunizationUuid() {
+		return immunizationUuid;
+	}
+
+	public void setImmunizationUuid(String immunizationUuid) {
+		this.immunizationUuid = immunizationUuid;
 	}
 
 	public String getPersonUuid() {

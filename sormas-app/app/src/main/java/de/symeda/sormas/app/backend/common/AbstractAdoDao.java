@@ -1331,9 +1331,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		}
 	}
 
-	protected void addEqualsCriteria(List<Where<Immunization, Long>> whereStatements, Where<Immunization, Long> where, Object criteriaValue) throws SQLException {
+	protected void addEqualsCriteria(List<Where<Immunization, Long>> whereStatements, Where<Immunization, Long> where, Object criteriaValue, String columnName) throws SQLException {
 		if (criteriaValue != null) {
-			whereStatements.add(where.eq(Immunization.IMMUNIZATION_STATUS, criteriaValue));
+			whereStatements.add(where.eq(columnName, criteriaValue));
 		}
 	}
 }

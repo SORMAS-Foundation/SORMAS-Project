@@ -99,9 +99,10 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 		addDateFromCriteria(whereStatements, where, criteria.getStartDateFrom(), Immunization.START_DATE);
 		addDateToCriteria(whereStatements, where, criteria.getEndDateTo(), Immunization.END_DATE);
 
-		addEqualsCriteria(whereStatements, where, criteria.getImmunizationStatus());
-		addEqualsCriteria(whereStatements, where, criteria.getImmunizationManagementStatus());
-		addEqualsCriteria(whereStatements, where, criteria.getMeansOfImmunization());
+		addEqualsCriteria(whereStatements, where, criteria.getImmunizationStatus(), Immunization.IMMUNIZATION_STATUS);
+		addEqualsCriteria(whereStatements, where, criteria.getImmunizationManagementStatus(), Immunization.IMMUNIZATION_MANAGEMENT_STATUS);
+		addEqualsCriteria(whereStatements, where, criteria.getMeansOfImmunization(), Immunization.MEANS_OF_IMMUNIZATION);
+		addEqualsCriteria(whereStatements, where, criteria.getDisease(), Immunization.DISEASE);
 
 		if (!whereStatements.isEmpty()) {
 			Where<Immunization, Long> whereStatement = where.and(whereStatements.size());
@@ -163,6 +164,7 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 
 			Where<Immunization, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
 			ImmunizationCriteria immunizationCriteria = criteria.getImmunizationCriteria();
+			where.and().ne(Immunization.UUID, criteria.getImmunizationUuid());
 			where.and().eq(Immunization.DISEASE, immunizationCriteria.getDisease());
 			where.and().eq(Immunization.RESPONSIBLE_REGION + "_id", criteria.getImmunizationCriteria().getResponsibleRegion());
 			if (criteria.getStartDate() != null && criteria.getEndDate() != null) {
@@ -177,11 +179,11 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 						DateHelper.getEndOfDay(criteria.getEndDate())));
 
 				Where<Immunization, Long> startDateNull = where.and(
-					where.and().isNull(Immunization.START_DATE),
+					where.isNull(Immunization.START_DATE),
 					where.gt(Immunization.END_DATE, DateHelper.getStartOfDay(criteria.getStartDate())));
 
 				Where<Immunization, Long> endDateNull = where.and(
-					where.and().isNull(Immunization.END_DATE),
+					where.isNull(Immunization.END_DATE),
 					where.lt(Immunization.START_DATE, DateHelper.getStartOfDay(criteria.getEndDate())));
 
 				where.and().or(betweenCombination, startDateNull, endDateNull);

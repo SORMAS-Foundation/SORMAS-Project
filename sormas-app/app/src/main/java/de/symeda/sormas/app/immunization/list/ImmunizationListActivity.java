@@ -17,6 +17,7 @@ package de.symeda.sormas.app.immunization.list;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -24,7 +25,10 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.joda.time.DateTime;
+
 import java.util.List;
+import java.util.Random;
 
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -41,15 +45,14 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.databinding.FilterImmunizationListLayoutBinding;
 import de.symeda.sormas.app.immunization.edit.ImmunizationNewActivity;
+import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class ImmunizationListActivity extends PagedBaseListActivity {
 
 	private ImmunizationListViewModel model;
-
 	private FilterImmunizationListLayoutBinding filterBinding;
-
 
 	public static void startActivity(Context context) {
 		List<Immunization> immunizations = DatabaseHelper.getImmunizationDao().getAll();
@@ -67,7 +70,6 @@ public class ImmunizationListActivity extends PagedBaseListActivity {
 
 			@Override
 			public void onItemRangeInserted(int positionStart, int itemCount) {
-				// Scroll to the topmost position after cases have been inserted
 				if (positionStart == 0) {
 					RecyclerView recyclerView = findViewById(R.id.recyclerViewForList);
 					if (recyclerView != null) {
@@ -85,6 +87,7 @@ public class ImmunizationListActivity extends PagedBaseListActivity {
 			}
 		});
 		model = ViewModelProviders.of(this).get(ImmunizationListViewModel.class);
+		model.initializeViewModel();
 		model.getImmunizationList().observe(this, immunizations -> {
 			adapter.submitList(immunizations);
 			hidePreloader();
@@ -98,8 +101,33 @@ public class ImmunizationListActivity extends PagedBaseListActivity {
 		});
 	}
 
+	@Override
+	public void onPause() {
+		super.onPause();
+		getIntent().putExtra("refreshOnResume", true);
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (getIntent().getBooleanExtra("refreshOnResume", false)) {
+			showPreloader();
+			if (model.getImmunizationList().getValue() != null) {
+				model.getImmunizationList().getValue().getDataSource().invalidate();
+			}
+		}
+	}
+
+	@Override
+	protected Callback getSynchronizeResultCallback() {
+		return () -> {
+			showPreloader();
+			model.getImmunizationList().getValue().getDataSource().invalidate();
+		};
+	}
+
 	public int onNotificationCountChangingAsync(AdapterView parent, PageMenuItem menuItem, int position) {
-		return 0;
+		return (int) (new Random(DateTime.now().getMillis() * 1000).nextInt() / 10000000);
 	}
 
 	@Override
@@ -178,4 +206,12 @@ public class ImmunizationListActivity extends PagedBaseListActivity {
 	protected int getActivityTitle() {
 		return R.string.heading_immunizations_list;
 	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		getNewMenu().setTitle(R.string.action_new_immunization);
+		return true;
+	}
+
 }

@@ -35,7 +35,7 @@ public class ImmunizationListViewModel extends ViewModel {
 	private LiveData<PagedList<Immunization>> immunizationList;
 	private ImmunizationFactory immunizationFactory;
 
-	public ImmunizationListViewModel() {
+	public void initializeViewModel() {
 		immunizationFactory = new ImmunizationFactory();
 		ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
 		immunizationFactory.setImmunizationCriteria(immunizationCriteria);

@@ -2785,9 +2785,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" snapshot SMALLINT DEFAULT 0,"  +
 						" pseudonymized SMALLINT,"  +
 						" disease varchar(255) not null," +
-						" person_id bigint not null," +
+						" person_id bigint not null REFERENCES person(id)," +
 						" reportDate timestamp not null," +
-						" reportingUser_id bigint not null," +
+						" reportingUser_id bigint not null REFERENCES users(id)," +
 						" archived boolean DEFAULT false," +
 						" immunizationStatus varchar(255) not null," +
 						" meansOfImmunization varchar(255) not null," +
@@ -2797,7 +2797,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" responsibleRegion_id bigint," +
 						" responsibleDistrict_id bigint," +
 						" responsibleCommunity_id bigint," +
-						" country_id bigint," +
+						" country_id bigint REFERENCES country(id)," +
 						" startDate timestamp," +
 						" endDate timestamp," +
 						" numberOfDoses int," +
@@ -2806,7 +2806,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" additionalDetails text," +
 						" positiveTestResultDate timestamp," +
 						" recoveryDate timestamp," +
-						" relatedCase_id bigint)");
+						" relatedCase_id bigint REFERENCES cases(id))");
 				//@formatter:on
 				// ATTENTION: break should only be done after last version
 				break;

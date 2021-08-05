@@ -136,11 +136,13 @@
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/immunization_startDate"
                     style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:allowedDaysInFuture="365"
                     app:value="@={data.startDate}" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/immunization_endDate"
                     style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:allowedDaysInFuture="365"
                     app:value="@={data.endDate}" />
 
             </LinearLayout>
@@ -195,13 +197,11 @@
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/immunization_positiveTestResultDate"
                     style="@style/ControlSingleColumnStyle"
-                    app:required="true"
                     app:value="@={data.positiveTestResultDate}" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/immunization_recoveryDate"
                     style="@style/ControlSingleColumnStyle"
-                    app:required="true"
                     app:value="@={data.recoveryDate}" />
             </LinearLayout>
 
