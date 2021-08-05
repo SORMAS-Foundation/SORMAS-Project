@@ -409,10 +409,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 
-		Predicate filter = null;
-		if (criteria.getDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.DISEASE), criteria.getDisease()));
-		}
+		Predicate filter = CriteriaBuilderHelper.and(cb, null, cb.equal(from.get(Immunization.DISEASE), criteria.getDisease()));
+
 		if (!DataHelper.isNullOrEmpty(criteria.getNameAddressPhoneEmailLike())) {
 			final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
 			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);

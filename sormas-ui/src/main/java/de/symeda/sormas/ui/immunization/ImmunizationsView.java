@@ -95,7 +95,7 @@ public class ImmunizationsView extends AbstractView {
 			navigateTo(null, true);
 		});
 
-		filterForm.addApplyHandler(clickEvent -> ((ImmunizationGrid) grid).reload());
+		filterForm.addApplyHandler(clickEvent -> grid.reload());
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
