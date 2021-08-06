@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.person;
 
+import static de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent.IMMUNIZATION_LOC;
 import static de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent.TRAVEL_ENTRIES_LOC;
 
 import com.vaadin.navigator.ViewChangeListener;
@@ -18,6 +19,7 @@ import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.caze.caselink.CaseListComponent;
 import de.symeda.sormas.ui.contact.contactlink.ContactListComponent;
 import de.symeda.sormas.ui.events.eventParticipantLink.EventParticipantListComponent;
+import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
 import de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -66,7 +68,8 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_PARTICIPANTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TRAVEL_ENTRIES_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TRAVEL_ENTRIES_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -124,6 +127,10 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 		}
 
 		TravelEntryListComponent.addTravelEntryListComponent(layout, getReference());
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)) {
+			ImmunizationListComponent.addImmunizationListComponent(layout, getReference());
+		}
 	}
 
 	@Override

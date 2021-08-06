@@ -1278,6 +1278,7 @@ public interface Captions {
 	String Immunization_externalId = "Immunization.externalId";
 	String Immunization_healthFacility = "Immunization.healthFacility";
 	String Immunization_healthFacilityDetails = "Immunization.healthFacilityDetails";
+	String Immunization_immunizationPeriod = "Immunization.immunizationPeriod";
 	String Immunization_immunizationStatus = "Immunization.immunizationStatus";
 	String Immunization_lastInfectionDate = "Immunization.lastInfectionDate";
 	String Immunization_managementStatus = "Immunization.managementStatus";
@@ -1297,6 +1298,7 @@ public interface Captions {
 	String immunizationImmunizationsList = "immunizationImmunizationsList";
 	String immunizationKeepImmunization = "immunizationKeepImmunization";
 	String immunizationNewImmunization = "immunizationNewImmunization";
+	String immunizationNoImmunizationsForPerson = "immunizationNoImmunizationsForPerson";
 	String immunizationOverwriteImmunization = "immunizationOverwriteImmunization";
 	String importCancelImport = "importCancelImport";
 	String importDetailed = "importDetailed";

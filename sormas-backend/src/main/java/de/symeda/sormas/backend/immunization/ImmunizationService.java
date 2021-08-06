@@ -109,7 +109,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			immunization.get(Immunization.END_DATE),
 			immunization.get(Immunization.RECOVERY_DATE),
 			immunization.get(Immunization.CHANGE_DATE),
-			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)));
+			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)),
+			immunization.get(Immunization.DISEASE));
 
 		buildWhereCondition(criteria, cb, cq, immunizationQueryContext);
 
@@ -463,6 +464,11 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		if (criteria.getImmunizationStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_STATUS), criteria.getImmunizationStatus()));
 		}
+
+		if (criteria.getPerson() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
+		}
+
 		filter = andEqualsReferenceDto(cb, region, filter, criteria.getRegion());
 		filter = andEqualsReferenceDto(cb, district, filter, criteria.getDistrict());
 		filter = andEqualsReferenceDto(cb, community, filter, criteria.getCommunity());

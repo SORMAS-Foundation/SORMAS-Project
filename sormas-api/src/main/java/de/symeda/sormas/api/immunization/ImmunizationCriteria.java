@@ -18,6 +18,8 @@ package de.symeda.sormas.api.immunization;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -48,6 +50,8 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	private MeansOfImmunization meansOfImmunization;
 	private ImmunizationManagementStatus managementStatus;
 	private ImmunizationStatus immunizationStatus;
+	private CaseReferenceDto relatedCase;
+	private PersonReferenceDto person;
 
 	public Disease getDisease() {
 		return disease;
@@ -135,5 +139,31 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 
 	public void setImmunizationStatus(ImmunizationStatus immunizationStatus) {
 		this.immunizationStatus = immunizationStatus;
+	}
+
+	public CaseReferenceDto getRelatedCase() {
+		return relatedCase;
+	}
+
+	public void setRelatedCase(CaseReferenceDto relatedCase) {
+		this.relatedCase = relatedCase;
+	}
+
+	public ImmunizationCriteria caze(CaseReferenceDto relatedCase) {
+		this.relatedCase = relatedCase;
+		return this;
+	}
+
+	public PersonReferenceDto getPerson() {
+		return person;
+	}
+
+	public void setPerson(PersonReferenceDto person) {
+		this.person = person;
+	}
+
+	public ImmunizationCriteria person(PersonReferenceDto person) {
+		this.person = person;
+		return this;
 	}
 }

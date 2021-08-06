@@ -27,6 +27,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -298,7 +299,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 				(ImmunizationStatus) result[13],
 				(Date) result[14],
 				(Date) result[15],
-				(Date) result[16]);
+				(Date) result[16],
+				(Disease) result[19]);
 		}).collect(Collectors.toList());
 	}
 
