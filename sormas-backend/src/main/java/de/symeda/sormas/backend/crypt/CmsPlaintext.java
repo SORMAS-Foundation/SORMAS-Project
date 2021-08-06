@@ -17,7 +17,7 @@ import java.io.Serializable;
  * This class enforces that both, the sender's and the receiver's identity are included in the plain text to
  * mitigate surreptitious forwarding.
  */
-public class CmsPlaintext implements Serializable {
+public class CmsPlaintext {
 
 	private final String senderId;
 	private final String receiverId;

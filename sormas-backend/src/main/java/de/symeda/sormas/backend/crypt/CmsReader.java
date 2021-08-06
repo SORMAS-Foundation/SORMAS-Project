@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.smime.SMIMECapability;
 import org.bouncycastle.cms.CMSEnvelopedData;
@@ -37,6 +38,8 @@ import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.bc.BcDigestCalculatorProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <a href="https://tools.ietf.org/html/rfc5652">CMS</a>-decodes the payload
@@ -49,6 +52,7 @@ public class CmsReader {
 	private static final String EXPECTED_SIG_ALG_OID = PKCSObjectIdentifiers.sha256WithRSAEncryption.getId();
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasRestClient.class);
 
 	static {
 		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
@@ -67,17 +71,18 @@ public class CmsReader {
 		try {
 			plaintext = objectMapper.readValue(verified, CmsPlaintext.class);
 		} catch (IOException e) {
-			// todo
-			e.printStackTrace();
+			LOGGER.error("Could not read the received plain text.", e);
 			return null;
 		}
 
 		if (!plaintext.getReceiverId().equals(certificateConfig.getOwnId())) {
-			throw new SecurityException();
+			LOGGER.error("Wrong receiver: Expected {}, was {}", certificateConfig.getOwnId(), plaintext.getReceiverId());
+			throw new SecurityException("We are not the intended receiver of the message!");
 		}
 
 		if (!plaintext.getSenderId().equals(certificateConfig.getOtherId())) {
-			throw new SecurityException();
+			LOGGER.error("Wrong sender: Expected {}, was {}", certificateConfig.getOtherId(), plaintext.getSenderId());
+			throw new SecurityException("The send of the message is not correct!");
 		}
 
 		return plaintext.getMessage();
