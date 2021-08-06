@@ -18,7 +18,6 @@ package de.symeda.sormas.api.travelentry.travelentryimport;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
@@ -30,8 +29,7 @@ public class TravelEntryImportEntities implements Serializable {
 	private final PersonDto person;
 
 	public TravelEntryImportEntities(UserReferenceDto reportingUser) {
-		person = PersonDto.build();
-		person.setSex(Sex.UNKNOWN);
+		person = PersonDto.buildImportEntity();
 		travelEntry = TravelEntryDto.build(person.toReference());
 		travelEntry.setReportingUser(reportingUser);
 	}

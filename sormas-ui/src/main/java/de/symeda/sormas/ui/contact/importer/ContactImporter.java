@@ -46,7 +46,6 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -115,8 +114,7 @@ public class ContactImporter extends DataImporter {
 			values[uuidIndex] = DataHelper.createUuid();
 		}
 
-		final PersonDto newPersonTemp = PersonDto.build();
-		newPersonTemp.setSex(Sex.UNKNOWN);
+		final PersonDto newPersonTemp = PersonDto.buildImportEntity();
 		final ContactDto newContactTemp = caze != null ? ContactDto.build(caze) : ContactDto.build();
 		newContactTemp.setReportingUser(currentUser.toReference());
 

@@ -330,6 +330,13 @@ public class PersonDto extends PseudonymizableDto {
 		return person;
 	}
 
+	public static PersonDto buildImportEntity() {
+
+		PersonDto person = build();
+		person.setSex(Sex.UNKNOWN);
+		return person;
+	}
+
 	public Integer getBirthdateDD() {
 		return birthdateDD;
 	}
