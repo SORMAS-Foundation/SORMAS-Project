@@ -57,9 +57,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
-import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -411,14 +409,9 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		Join<Immunization, Person> person = joins.getPerson();
 
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
-		final Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
-		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
-		final Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
-		Predicate filter = null;
-		if (criteria.getDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.DISEASE), criteria.getDisease()));
-		}
+		Predicate filter = CriteriaBuilderHelper.and(cb, null, cb.equal(from.get(Immunization.DISEASE), criteria.getDisease()));
+
 		if (!DataHelper.isNullOrEmpty(criteria.getNameAddressPhoneEmailLike())) {
 			final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
 			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
@@ -467,12 +460,19 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		if (criteria.getPerson() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
+		}		if (criteria.getPerson() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
 		}
 
-		filter = andEqualsReferenceDto(cb, region, filter, criteria.getRegion());
-		filter = andEqualsReferenceDto(cb, district, filter, criteria.getDistrict());
-		filter = andEqualsReferenceDto(cb, community, filter, criteria.getCommunity());
+		filter = andEqualsReferenceDto(cb, joins.getResponsibleRegion(), filter, criteria.getRegion());
+		filter = andEqualsReferenceDto(cb, joins.getResponsibleDistrict(), filter, criteria.getDistrict());
+		filter = andEqualsReferenceDto(cb, joins.getResponsibleCommunity(), filter, criteria.getCommunity());
+		if (criteria.getFacilityType() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.FACILITY_TYPE), criteria.getFacilityType()));
+		}
+		filter = andEqualsReferenceDto(cb, joins.getHealthFacility(), filter, criteria.getHealthFacility());
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
+
 
 		return filter;
 	}
