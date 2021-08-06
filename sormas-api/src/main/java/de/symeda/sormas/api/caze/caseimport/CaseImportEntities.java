@@ -21,6 +21,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -36,6 +37,7 @@ public class CaseImportEntities implements Serializable {
 
 	public CaseImportEntities(UserReferenceDto reportingUser) {
 		person = PersonDto.build();
+		person.setSex(Sex.UNKNOWN);
 		caze = createCase(person, reportingUser);
 
 		samples = new ArrayList<>();

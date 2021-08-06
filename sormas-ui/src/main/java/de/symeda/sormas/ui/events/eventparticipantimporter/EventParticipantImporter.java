@@ -48,6 +48,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -121,6 +122,7 @@ public class EventParticipantImporter extends DataImporter {
 		}
 
 		final PersonDto newPersonTemp = PersonDto.build();
+		newPersonTemp.setSex(Sex.UNKNOWN);
 		final EventParticipantDto newEventParticipantTemp = EventParticipantDto.build(event, currentUser.toReference());
 		newEventParticipantTemp.setPerson(newPersonTemp);
 

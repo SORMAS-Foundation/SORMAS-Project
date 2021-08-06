@@ -151,6 +151,7 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	private String namesOfGuardians;
 	@Outbreaks
+	@Required
 	private Sex sex;
 	@Outbreaks
 	@PersonalData
