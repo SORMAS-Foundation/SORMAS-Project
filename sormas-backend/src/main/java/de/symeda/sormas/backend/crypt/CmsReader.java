@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.crypt;
 
+import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -9,9 +10,15 @@ import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.smime.SMIMECapability;
 import org.bouncycastle.cms.CMSEnvelopedData;
@@ -41,17 +48,40 @@ public class CmsReader {
 	private static final String EXPECTED_KEY_ENC_ALG_OID = PKCSObjectIdentifiers.rsaEncryption.getId();
 	private static final String EXPECTED_SIG_ALG_OID = PKCSObjectIdentifiers.sha256WithRSAEncryption.getId();
 
+	private static final ObjectMapper objectMapper = new ObjectMapper();
+
+	static {
+		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+		objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+		objectMapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY);
+	}
+
 	private CmsReader() {
 		//NOOP
 	}
 
-	public static byte[] decryptAndVerify(
-		byte[] encryptedData,
-		List<X509Certificate> expectedSignatureCerts,
-		X509Certificate recipientCertificate,
-		PrivateKey recipientPrivateKey) {
-		byte[] decrypted = decrypt(encryptedData, recipientCertificate, recipientPrivateKey);
-		return verifyAndExtractPayload(decrypted, expectedSignatureCerts);
+	public static byte[] decryptAndVerify(byte[] encryptedData, CmsCertificateConfig certificateConfig) {
+		byte[] decrypted = decrypt(encryptedData, certificateConfig.getOwnCertificate(), certificateConfig.getOwnPrivateKey());
+		byte[] verified = verifyAndExtractPayload(decrypted, Collections.singleton(certificateConfig.getOtherCertificate()));
+		CmsPlaintext plaintext;
+		try {
+			plaintext = objectMapper.readValue(verified, CmsPlaintext.class);
+		} catch (IOException e) {
+			// todo
+			e.printStackTrace();
+			return null;
+		}
+
+		if (!plaintext.getReceiverId().equals(certificateConfig.getOwnId())) {
+			throw new SecurityException();
+		}
+
+		if (!plaintext.getSenderId().equals(certificateConfig.getOtherId())) {
+			throw new SecurityException();
+		}
+
+		return plaintext.getMessage();
+
 	}
 
 	static byte[] verifyAndExtractPayload(byte[] signedData, Collection<X509Certificate> expectedSignatureCerts) {
@@ -96,7 +126,7 @@ public class CmsReader {
 
 	/**
 	 * verify the signature (assuming the cert is contained in the message)
-	 * 
+	 *
 	 * @param expectedCerts
 	 *            The Certificates of the expected Signer
 	 * @throws Mail301Exception

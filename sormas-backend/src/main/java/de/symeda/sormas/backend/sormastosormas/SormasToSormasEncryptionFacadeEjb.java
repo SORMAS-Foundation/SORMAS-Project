@@ -39,14 +39,15 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import org.bouncycastle.cms.CMSException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.crypt.CmsCertificateConfig;
+import de.symeda.sormas.backend.crypt.CmsPlaintext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Lists;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
@@ -63,12 +64,13 @@ import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncryptionFacade {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasEncryptionFacadeEjb.class);
+	private final ObjectMapper objectMapper;
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
+
 	@Inject
 	SormasToSormasRestClient restClient;
-	private final ObjectMapper objectMapper;
 
 	public SormasToSormasEncryptionFacadeEjb() {
 		objectMapper = new ObjectMapper();
@@ -94,12 +96,11 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 		try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(storePath))) {
 			store.load(in, password.toCharArray());
 		}
-
 		return store;
 	}
 
 	@Override
-	public X509Certificate getOwnCertificate()
+	public X509Certificate loadOwnCertificate()
 		throws SormasToSormasException, CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException {
 		String ownId = configFacadeEjb.getS2SConfig().getId();
 		KeyStore keystore = getKeystore();
@@ -112,7 +113,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 		return cert;
 	}
 
-	private X509Certificate getOtherCertificate(String otherId)
+	private X509Certificate loadOtherCertificate(String otherId)
 		throws CertificateException, SormasToSormasException, KeyStoreException, IOException, NoSuchAlgorithmException {
 
 		byte[] certBytes = restClient.get(otherId, SormasToSormasApiConstants.RESOURCE_PATH + SormasToSormasApiConstants.CERT_ENDPOINT, byte[].class);
@@ -144,29 +145,25 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 		return receivedCert;
 	}
 
-	enum Mode {
-		ENCRYPTION,
-		DECRYPTION
-	}
+	private class S2SCertificateConfig extends CmsCertificateConfig {
 
-	private byte[] cipher(Mode mode, byte[] data, String otherId)
-		throws SormasToSormasException, CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException,
-		CMSException {
-		SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
-		String ownId = sormasToSormasConfig.getId();
-		KeyStore keystore = getKeystore();
-		X509Certificate ownCert = getOwnCertificate();
+		private S2SCertificateConfig(String otherId)
+			throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, SormasToSormasException,
+			UnrecoverableKeyException {
+			SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
 
-		PrivateKey ownKey = (PrivateKey) keystore.getKey(ownId, sormasToSormasConfig.getKeystorePass().toCharArray());
-		X509Certificate otherCert = getOtherCertificate(otherId);
+			this.ownId = sormasToSormasConfig.getId();
+			this.otherId = otherId;
 
-		switch (mode) {
-		case ENCRYPTION:
-			return CmsCreator.signAndEncrypt(data, ownCert, ownKey, otherCert, true);
-		case DECRYPTION:
-			return CmsReader.decryptAndVerify(data, Lists.newArrayList(otherCert), ownCert, ownKey);
-		default:
-			throw new IllegalArgumentException("Unknown mode " + mode);
+			KeyStore keystore = getKeystore();
+
+			this.ownCertificate = loadOwnCertificate();
+			this.ownPrivateKey = (PrivateKey) keystore.getKey(ownId, sormasToSormasConfig.getKeystorePass().toCharArray());
+			this.otherCertificate = loadOtherCertificate(otherId);
+
+			if (this.otherCertificate == null) {
+				throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasCertNotGenerated);
+			}
 		}
 	}
 
@@ -174,8 +171,12 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	public SormasToSormasEncryptedDataDto signAndEncrypt(Object entities, String recipientId) throws SormasToSormasException {
 		LOGGER.info("Sign and encrypt data for {}", recipientId);
 		try {
-			byte[] encryptedData = cipher(Mode.ENCRYPTION, objectMapper.writeValueAsBytes(entities), recipientId);
-			return new SormasToSormasEncryptedDataDto(configFacadeEjb.getS2SConfig().getId(), encryptedData);
+			final String ownId = configFacadeEjb.getS2SConfig().getId();
+			CmsPlaintext plaintext = new CmsPlaintext(ownId, recipientId, entities);
+			S2SCertificateConfig config = new S2SCertificateConfig(plaintext.getReceiverId());
+			byte[] encryptedData = CmsCreator.signAndEncrypt(plaintext, config, true);
+
+			return new SormasToSormasEncryptedDataDto(ownId, encryptedData);
 		} catch (Exception e) {
 			LOGGER.error("Could not sign and encrypt data", e);
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasEncrypt);
@@ -186,7 +187,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 	public <T> T decryptAndVerify(SormasToSormasEncryptedDataDto encryptedData, Class<T> dataType) throws SormasToSormasException {
 		LOGGER.info("Decrypt and verify data from {}", encryptedData.getSenderId());
 		try {
-			byte[] decryptedData = cipher(Mode.DECRYPTION, encryptedData.getData(), encryptedData.getSenderId());
+			byte[] decryptedData = CmsReader.decryptAndVerify(encryptedData.getData(), new S2SCertificateConfig(encryptedData.getSenderId()));
 			return objectMapper.readValue(decryptedData, dataType);
 		} catch (Exception e) {
 			LOGGER.error("Could not decrypt and verify data", e);
