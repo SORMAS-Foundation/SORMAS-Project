@@ -43,6 +43,7 @@ public class ImmunizationListEntry extends HorizontalLayout {
 
 		Label immunizationUuidLabel = new Label(DataHelper.getShortUuid(immunization.getUuid()));
 		immunizationUuidLabel.setDescription(immunization.getUuid());
+		CssStyles.style(immunizationUuidLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		uuidReportLayout.addComponent(immunizationUuidLabel);
 
 		Label diseaseLabel = new Label(DataHelper.toStringNullable(immunization.getDisease()));
@@ -59,7 +60,6 @@ public class ImmunizationListEntry extends HorizontalLayout {
 			I18nProperties.getPrefixCaption(ImmunizationIndexDto.I18N_PREFIX, ImmunizationIndexDto.MEANS_OF_IMMUNIZATION)
 				+ SEPARATOR
 				+ DataHelper.toStringNullable(immunization.getMeansOfImmunization()));
-		CssStyles.style(diseaseLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		meansOfImmunizationLayout.addComponent(meansOfImmunizationLabel);
 		mainLayout.addComponent(meansOfImmunizationLayout);
 
@@ -68,7 +68,6 @@ public class ImmunizationListEntry extends HorizontalLayout {
 			I18nProperties.getPrefixCaption(ImmunizationIndexDto.I18N_PREFIX, ImmunizationIndexDto.IMMUNIZATION_STATUS)
 				+ SEPARATOR
 				+ DataHelper.toStringNullable(immunization.getImmunizationStatus()));
-		CssStyles.style(diseaseLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		immunizationStatusLayout.addComponent(immunizationStatusLabel);
 		mainLayout.addComponent(immunizationStatusLayout);
 
@@ -77,7 +76,6 @@ public class ImmunizationListEntry extends HorizontalLayout {
 			I18nProperties.getPrefixCaption(ImmunizationIndexDto.I18N_PREFIX, ImmunizationIndexDto.MANAGEMENT_STATUS)
 				+ SEPARATOR
 				+ DataHelper.toStringNullable(immunization.getManagementStatus()));
-		CssStyles.style(diseaseLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		managementStatusLayout.addComponent(managementStatusLabel);
 		mainLayout.addComponent(managementStatusLayout);
 

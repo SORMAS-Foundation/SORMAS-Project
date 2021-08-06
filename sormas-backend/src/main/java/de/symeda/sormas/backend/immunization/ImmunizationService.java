@@ -410,7 +410,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 
-		Predicate filter = CriteriaBuilderHelper.and(cb, null, cb.equal(from.get(Immunization.DISEASE), criteria.getDisease()));
+		Predicate filter = null;
+		if (criteria.getDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.DISEASE), criteria.getDisease()));
+		}
 
 		if (!DataHelper.isNullOrEmpty(criteria.getNameAddressPhoneEmailLike())) {
 			final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
@@ -460,8 +463,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		if (criteria.getPerson() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
-		}		if (criteria.getPerson() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
 		}
 
 		filter = andEqualsReferenceDto(cb, joins.getResponsibleRegion(), filter, criteria.getRegion());
@@ -472,7 +473,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		}
 		filter = andEqualsReferenceDto(cb, joins.getHealthFacility(), filter, criteria.getHealthFacility());
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
-
 
 		return filter;
 	}
