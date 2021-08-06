@@ -9,7 +9,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
+import de.symeda.sormas.ui.immunization.components.filter.FilterFormLayout;
 import de.symeda.sormas.ui.immunization.components.filter.status.StatusBarLayout;
 import de.symeda.sormas.ui.immunization.components.grid.ImmunizationGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -23,7 +23,7 @@ public class ImmunizationsView extends AbstractView {
 
 	private final ImmunizationGrid grid;
 
-	private ImmunizationFilterForm filterForm;
+	private FilterFormLayout filterFormLayout;
 	private StatusBarLayout statusBarLayout;
 
 	public ImmunizationsView() {
@@ -67,37 +67,26 @@ public class ImmunizationsView extends AbstractView {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
-		filterForm.setValue(criteria);
+		filterFormLayout.setValue(criteria);
 		statusBarLayout.updateActiveBadge(grid.getItemCount());
 
 		applyingCriteria = false;
 	}
 
-	private VerticalLayout createFilterBar() {
-		VerticalLayout filterLayout = new VerticalLayout();
-		filterLayout.setSpacing(false);
-		filterLayout.setMargin(false);
-		filterLayout.setWidth(100, Unit.PERCENTAGE);
+	private FilterFormLayout createFilterBar() {
+		filterFormLayout = new FilterFormLayout();
 
-		filterForm = new ImmunizationFilterForm();
-		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter()) {
-				navigateTo(null);
-			}
-		});
-
-		filterForm.addResetHandler(e -> {
+		filterFormLayout.addResetHandler(clickEvent -> {
 			ViewModelProviders.of(ImmunizationsView.class).remove(ImmunizationCriteria.class);
 			navigateTo(null, true);
 		});
 
-		filterForm.addApplyHandler(clickEvent -> {
+		filterFormLayout.addApplyHandler(clickEvent -> {
 			grid.reload();
 			statusBarLayout.updateActiveBadge(grid.getItemCount());
 		});
-		filterLayout.addComponent(filterForm);
 
-		return filterLayout;
+		return filterFormLayout;
 	}
 
 	private StatusBarLayout createStatusFilterBar() {
