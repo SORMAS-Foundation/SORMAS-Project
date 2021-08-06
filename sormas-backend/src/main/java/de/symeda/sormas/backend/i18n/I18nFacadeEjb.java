@@ -16,12 +16,15 @@
 package de.symeda.sormas.backend.i18n;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 @Stateless(name = "I18nFacade")
+@TransactionAttribute(value = TransactionAttributeType.SUPPORTS)
 public class I18nFacadeEjb implements I18nFacade {
 
 	@Override
