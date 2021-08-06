@@ -10,7 +10,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
-import de.symeda.sormas.ui.immunization.components.filter.status.StatusBar;
+import de.symeda.sormas.ui.immunization.components.filter.status.StatusBarLayout;
 import de.symeda.sormas.ui.immunization.components.grid.ImmunizationGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
@@ -24,7 +24,7 @@ public class ImmunizationsView extends AbstractView {
 	private final ImmunizationGrid grid;
 
 	private ImmunizationFilterForm filterForm;
-	private StatusBar statusBar;
+	private StatusBarLayout statusBarLayout;
 
 	public ImmunizationsView() {
 		super(VIEW_NAME);
@@ -67,8 +67,8 @@ public class ImmunizationsView extends AbstractView {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
-		statusBar.updateStatusButton(String.valueOf(grid.getItemCount()));
 		filterForm.setValue(criteria);
+		statusBarLayout.updateActiveBadge(grid.getItemCount());
 
 		applyingCriteria = false;
 	}
@@ -93,18 +93,18 @@ public class ImmunizationsView extends AbstractView {
 
 		filterForm.addApplyHandler(clickEvent -> {
 			grid.reload();
-			statusBar.updateStatusButton(String.valueOf(grid.getItemCount()));
+			statusBarLayout.updateActiveBadge(grid.getItemCount());
 		});
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
 	}
 
-	private StatusBar createStatusFilterBar() {
+	private StatusBarLayout createStatusFilterBar() {
 
-		statusBar = new StatusBar();
-		statusBar.addItem(Captions.all, e -> navigateTo(criteria));
+		statusBarLayout = new StatusBarLayout();
+		statusBarLayout.addItem(Captions.all, e -> navigateTo(criteria));
 
-		return statusBar;
+		return statusBarLayout;
 	}
 }
