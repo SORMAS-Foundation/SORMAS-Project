@@ -455,7 +455,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		target.setResponsibleDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
 		target.setResponsibleCommunity(communityService.getByReferenceDto(source.getResponsibleCommunity()));
 		target.setPointOfEntryRegion(regionService.getByReferenceDto(source.getPointOfEntryRegion()));
-		target.setPointOfEntryDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
+		target.setPointOfEntryDistrict(districtService.getByReferenceDto(source.getPointOfEntryDistrict()));
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
