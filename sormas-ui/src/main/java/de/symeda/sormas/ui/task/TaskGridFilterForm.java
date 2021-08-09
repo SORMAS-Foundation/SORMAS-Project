@@ -6,10 +6,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.util.Date;
 import java.util.stream.Stream;
 
-import com.vaadin.server.Page;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
@@ -27,6 +25,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -163,23 +162,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 			}
 			criteria.dateFilterOption(dateFilterOption);
 		} else {
-			if (dateFilterOption == DateFilterOption.DATE) {
-				Notification notification = new Notification(
-					I18nProperties.getString(Strings.headingMissingDateFilter),
-					I18nProperties.getString(Strings.messageMissingDateFilter),
-					Notification.Type.WARNING_MESSAGE,
-					false);
-				notification.setDelayMsec(-1);
-				notification.show(Page.getCurrent());
-			} else {
-				Notification notification = new Notification(
-					I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
-					I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
-					Notification.Type.WARNING_MESSAGE,
-					false);
-				notification.setDelayMsec(-1);
-				notification.show(Page.getCurrent());
-			}
+			ImmunizationFilterForm.setNotifications(dateFilterOption);
 		}
 	}
 

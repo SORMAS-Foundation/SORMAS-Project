@@ -37,12 +37,14 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
+import de.symeda.sormas.api.immunization.ImmunizationDateType;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -467,7 +469,35 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		}
 		filter = andEqualsReferenceDto(cb, joins.getHealthFacility(), filter, criteria.getHealthFacility());
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
+		if (criteria.getImmunizationDateType() != null) {
+			String dateField = getDateFieldFromDateType(criteria.getImmunizationDateType());
+			if (dateField != null) {
+				Path<Object> path = from.get(dateField);
+				filter = applyDateFilter(cb, filter, path, criteria.getFromDate(), criteria.getToDate());
+			}
+		}
 
 		return filter;
+	}
+
+	private Predicate applyDateFilter(CriteriaBuilder cb, Predicate filter, Path path, Date fromDate, Date toDate) {
+		if (fromDate != null && toDate != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(path, fromDate, toDate));
+		} else if (fromDate != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(path, fromDate));
+		} else if (toDate != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(path, toDate));
+		}
+		return filter;
+	}
+
+	private String getDateFieldFromDateType(ImmunizationDateType immunizationDateType) {
+		switch (immunizationDateType) {
+		case REPORT_DATE:
+			return Immunization.REPORT_DATE;
+		case RECOVERY_DATE:
+			return Immunization.RECOVERY_DATE;
+		}
+		return null;
 	}
 }

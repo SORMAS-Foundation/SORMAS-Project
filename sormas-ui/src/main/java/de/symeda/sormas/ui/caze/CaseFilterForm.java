@@ -12,11 +12,9 @@ import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 
-import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -59,6 +57,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
@@ -770,23 +769,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
 			criteria.dateFilterOption(dateFilterOption);
 		} else {
-			if (dateFilterOption == DateFilterOption.DATE) {
-				Notification notification = new Notification(
-					I18nProperties.getString(Strings.headingMissingDateFilter),
-					I18nProperties.getString(Strings.messageMissingDateFilter),
-					Notification.Type.WARNING_MESSAGE,
-					false);
-				notification.setDelayMsec(-1);
-				notification.show(Page.getCurrent());
-			} else {
-				Notification notification = new Notification(
-					I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
-					I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
-					Notification.Type.WARNING_MESSAGE,
-					false);
-				notification.setDelayMsec(-1);
-				notification.show(Page.getCurrent());
-			}
+			ImmunizationFilterForm.setNotifications(dateFilterOption);
 		}
 	}
 

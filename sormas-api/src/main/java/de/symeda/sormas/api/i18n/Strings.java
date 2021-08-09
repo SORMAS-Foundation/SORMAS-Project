@@ -1169,6 +1169,11 @@ public interface Strings {
 	String promptEventsSearchFieldEventParticipants = "promptEventsSearchFieldEventParticipants";
 	String promptExternalIdExternalSurveillanceTool = "promptExternalIdExternalSurveillanceTool";
 	String promptFilterByPeriod = "promptFilterByPeriod";
+	String promptImmunizationDateFrom = "promptImmunizationDateFrom";
+	String promptImmunizationDateTo = "promptImmunizationDateTo";
+	String promptImmunizationDateType = "promptImmunizationDateType";
+	String promptImmunizationEpiWeekFrom = "promptImmunizationEpiWeekFrom";
+	String promptImmunizationEpiWeekTo = "promptImmunizationEpiWeekTo";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";

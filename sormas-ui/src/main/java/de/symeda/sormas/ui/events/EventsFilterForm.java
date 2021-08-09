@@ -41,6 +41,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -387,24 +388,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 			criteria.dateBetween(dateType, fromDate, toDate, eventDateType, dateFilterOption);
 		} else {
-			if (dateFilterOption == DateFilterOption.DATE) {
-				Notification notification = new Notification(
-					I18nProperties.getString(Strings.headingMissingDateFilter),
-					I18nProperties.getString(Strings.messageMissingDateFilter),
-					Notification.Type.WARNING_MESSAGE,
-					false);
-				notification.setDelayMsec(-1);
-				notification.show(Page.getCurrent());
-			} else {
-				Notification notification = new Notification(
-					I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
-					I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
-					Notification.Type.WARNING_MESSAGE,
-					false);
-				notification.setDelayMsec(-1);
-				notification.show(Page.getCurrent());
-			}
-		}
+            ImmunizationFilterForm.setNotifications(dateFilterOption);
+        }
 	}
 
 	private EpiWeekAndDateFilterComponent<?> getEpiWeekAndDateComponent(String location) {

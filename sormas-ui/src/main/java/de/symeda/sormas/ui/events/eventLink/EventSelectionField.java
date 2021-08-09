@@ -49,6 +49,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
@@ -294,24 +295,8 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 				criteria.eventDateBetween(fromDate, toDate, EventCriteriaDateType.EVENT_DATE, dateFilterOption);
 
 			} else {
-				if (dateFilterOption == DateFilterOption.DATE) {
-					Notification notification = new Notification(
-						I18nProperties.getString(Strings.headingMissingDateFilter),
-						I18nProperties.getString(Strings.messageMissingDateFilter),
-						Notification.Type.WARNING_MESSAGE,
-						false);
-					notification.setDelayMsec(-1);
-					notification.show(Page.getCurrent());
-				} else {
-					Notification notification = new Notification(
-						I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
-						I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
-						Notification.Type.WARNING_MESSAGE,
-						false);
-					notification.setDelayMsec(-1);
-					notification.show(Page.getCurrent());
-				}
-			}
+                ImmunizationFilterForm.setNotifications(dateFilterOption);
+            }
 			eventGrid.setCriteria(criteria);
 			eventGrid.getSelectedItems();
 		});
