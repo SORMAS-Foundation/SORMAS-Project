@@ -143,7 +143,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -1280,21 +1279,9 @@ public class PersonFacadeEjb implements PersonFacade {
 			phoneSubQuery.alias(PersonIndexDto.PHONE),
 			emailSubQuery.alias(PersonIndexDto.EMAIL_ADDRESS),
 			person.get(Person.CHANGE_DATE),
-			JurisdictionHelper.booleanSelector(cb, personService.inJurisdictionOrOwned(personQueryContext)));
+			cb.literal(false));
 
-		Predicate filter;
-		if (personUuids != null) {
-			filter = personUuids.isEmpty()
-				? cb.disjunction()
-				: CriteriaBuilderHelper.andInValues(personUuids, null, cb, personQueryContext.getRoot().get(Person.UUID));
-		} else {
-			filter = personService.createUserFilter(personQueryContext, criteria);
-			if (criteria != null) {
-				final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
-				filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-			}
-		}
-
+		Predicate filter = createIndexListFilter(personUuids, criteria, personQueryContext);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -1341,6 +1328,10 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		List<PersonIndexDto> persons = QueryHelper.getResultList(em, cq, first, max);
 
+		// Fetch PersonIndexDto.inJurisdiction information (avoid duplicates with true/false in PersonIndexDto query)
+		List<String> jurisdictionOrOwnedPersonUuids = getJurisdictionOrOwnedPersons(personUuids, criteria);
+		persons.stream().forEach(e -> e.setInJurisdiction(jurisdictionOrOwnedPersonUuids.contains(e.getUuid())));
+
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			PersonIndexDto.class,
@@ -1349,6 +1340,48 @@ public class PersonFacadeEjb implements PersonFacade {
 			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, p.getAgeAndBirthDate(), isInJurisdiction, null));
 
 		return persons;
+	}
+
+	@SuppressWarnings({
+		"rawtypes",
+		"unchecked" })
+	private List<String> getJurisdictionOrOwnedPersons(Set<String> personUuids, PersonCriteria criteria) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<Person> person = cq.from(Person.class);
+
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		((PersonJoins) personQueryContext.getJoins()).configure(criteria);
+
+		cq.multiselect(person.get(Person.UUID));
+		cq.where(
+			CriteriaBuilderHelper
+				.and(cb, createIndexListFilter(personUuids, criteria, personQueryContext), personService.inJurisdictionOrOwned(personQueryContext)));
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	@SuppressWarnings({
+		"rawtypes",
+		"unchecked" })
+	private Predicate createIndexListFilter(Set<String> personUuids, PersonCriteria criteria, PersonQueryContext personQueryContext) {
+
+		CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
+		Predicate filter;
+		if (personUuids != null) {
+			filter = personUuids.isEmpty()
+				? cb.disjunction()
+				: CriteriaBuilderHelper.andInValues(personUuids, null, cb, personQueryContext.getRoot().get(Person.UUID));
+		} else {
+			filter = personService.createUserFilter(personQueryContext, criteria);
+			if (criteria != null) {
+				final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
+				filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+			}
+		}
+		return filter;
 	}
 
 	public Page<PersonIndexDto> getIndexPage(PersonCriteria personCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
