@@ -113,6 +113,7 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 			immunizationCriteria.setDisease(changedImmunization.getDisease());
 			ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria();
 			criteria.setImmunizationCriteria(immunizationCriteria);
+			criteria.setImmunizationUuid(changedImmunization.getUuid());
 			criteria.setPersonUuid(changedImmunization.getPerson().getUuid());
 			criteria.setReportDate(changedImmunization.getReportDate());
 			criteria.setStartDate(changedImmunization.getStartDate());
