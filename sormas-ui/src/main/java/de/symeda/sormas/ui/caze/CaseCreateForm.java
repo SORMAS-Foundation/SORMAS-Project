@@ -318,43 +318,17 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				.updateItems(districtCombo, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		districtCombo.addValueChangeListener(e -> {
-			if (!TypeOfPlace.HOME.equals(facilityOrHome.isRequired() ? facilityOrHome.getValue() : facilityOrHome.getNullableValue())) {
-				FieldHelper.removeItems(facilityCombo);
-			}
 			FieldHelper.removeItems(communityCombo);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(
 				communityCombo,
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-			if (districtDto != null && facilityType.getValue() != null) {
-				FieldHelper.updateItems(
-					facilityCombo,
-					FacadeProvider.getFacilityFacade()
-						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityType.getValue(), true, false));
-			}
 
+			updateFacility();
 			updatePOEs();
 		});
 		communityCombo.addValueChangeListener(e -> {
-			if (!TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
-				FieldHelper.removeItems(facilityCombo);
-			}
-			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
-			if (facilityType.getValue() != null) {
-				FieldHelper.updateItems(
-					facilityCombo,
-					communityDto != null
-						? FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, false)
-						: districtCombo.getValue() != null
-							? FacadeProvider.getFacilityFacade()
-								.getActiveFacilitiesByDistrictAndType(
-									(DistrictReferenceDto) districtCombo.getValue(),
-									(FacilityType) facilityType.getValue(),
-									true,
-									false)
-							: null);
-			}
+			updateFacility();
 		});
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facilityCombo);
@@ -385,30 +359,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.removeItems(facilityCombo);
 			FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
 		});
-		facilityType.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facilityCombo);
-			if (facilityType.getValue() != null && districtCombo.getValue() != null) {
-				if (communityCombo.getValue() != null) {
-					FieldHelper.updateItems(
-						facilityCombo,
-						FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByCommunityAndType(
-								(CommunityReferenceDto) communityCombo.getValue(),
-								(FacilityType) facilityType.getValue(),
-								true,
-								false));
-				} else {
-					FieldHelper.updateItems(
-						facilityCombo,
-						FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByDistrictAndType(
-								(DistrictReferenceDto) districtCombo.getValue(),
-								(FacilityType) facilityType.getValue(),
-								true,
-								false));
-				}
-			}
-		});
+		facilityType.addValueChangeListener(e -> updateFacility());
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		JurisdictionLevel userJurisditionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
@@ -553,6 +504,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			return;
 		}
 
+		FieldHelper.removeItems(facilityCombo);
+
+		if (TypeOfPlace.HOME.equals(facilityOrHome.isRequired() ? facilityOrHome.getValue() : facilityOrHome.getNullableValue())) {
+			return;
+		}
+
 		final DistrictReferenceDto district;
 		final CommunityReferenceDto community;
 
@@ -564,7 +521,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			community = (CommunityReferenceDto) responsibleCommunityCombo.getValue();
 		}
 
-		FieldHelper.removeItems(facilityCombo);
 		if (TypeOfPlace.HOME.equals(facilityOrHome.isRequired() ? facilityOrHome.getValue() : facilityOrHome.getNullableValue())) {
 			FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
 			facilityCombo.addItem(noFacilityRef);
