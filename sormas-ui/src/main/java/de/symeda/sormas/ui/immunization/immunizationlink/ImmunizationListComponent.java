@@ -9,7 +9,12 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -27,23 +32,7 @@ public class ImmunizationListComponent extends VerticalLayout {
 
 	private ImmunizationList immunizationList;
 
-	private ImmunizationCriteria immunizationCriteria;
-	private CaseReferenceDto caseReferenceDto;
-	private PersonReferenceDto personReferenceDto;
-
-	public ImmunizationListComponent(CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
-		this.caseReferenceDto = caseReferenceDto;
-		this.personReferenceDto = personReferenceDto;
-		immunizationCriteria = new ImmunizationCriteria();
-
-		if (caseReferenceDto != null) {
-			immunizationCriteria.caze(caseReferenceDto);
-		}
-
-		if (personReferenceDto != null) {
-			immunizationCriteria.person(personReferenceDto);
-		}
-
+	public ImmunizationListComponent(ImmunizationCriteria immunizationCriteria) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -62,7 +51,7 @@ public class ImmunizationListComponent extends VerticalLayout {
 		immunizationHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(immunizationHeader);
 
-		if (caseReferenceDto != null && UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_CREATE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_CREATE)) {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.immunizationNewImmunization));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
@@ -74,22 +63,36 @@ public class ImmunizationListComponent extends VerticalLayout {
 	}
 
 	public static void addImmunizationListComponent(CustomLayout layout, PersonReferenceDto personReferenceDto) {
-		addImmunizationListComponent(layout, null, personReferenceDto);
+		addImmunizationListComponent(layout, personReferenceDto, null);
 	}
 
-	public static void addImmunizationListComponent(CustomLayout layout, CaseReferenceDto caseReferenceDto) {
-		addImmunizationListComponent(layout, caseReferenceDto, null);
+	public static void addImmunizationListComponent(CustomLayout layout, CaseDataDto caze) {
+		addImmunizationListComponent(layout, caze.getPerson(), caze.getDisease());
 	}
 
-	private static void addImmunizationListComponent(CustomLayout layout, CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
-		VerticalLayout immunizationsLayout = new VerticalLayout();
+	public static void addImmunizationListComponent(CustomLayout layout, ContactDto contact) {
+		addImmunizationListComponent(layout, contact.getPerson(), contact.getDisease());
+	}
+
+	public static void addImmunizationListComponent(CustomLayout layout, EventParticipantDto eventPart) {
+		final EventDto eventDto = FacadeProvider.getEventFacade().getByUuid(eventPart.getEvent().getUuid());
+		final Disease disease = eventDto.getDisease();
+		if (disease != null) {
+			addImmunizationListComponent(layout, eventPart.getPerson().toReference(), disease);
+		}
+	}
+
+	private static void addImmunizationListComponent(CustomLayout layout, PersonReferenceDto personReferenceDto, Disease disease) {
+		final VerticalLayout immunizationsLayout = new VerticalLayout();
 		immunizationsLayout.setMargin(false);
 		immunizationsLayout.setSpacing(false);
 
-		ImmunizationListComponent immunizationList = new ImmunizationListComponent(caseReferenceDto, personReferenceDto);
+		final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
+		immunizationCriteria.setPerson(personReferenceDto);
+		immunizationCriteria.setDisease(disease);
+		ImmunizationListComponent immunizationList = new ImmunizationListComponent(immunizationCriteria);
 		immunizationList.addStyleName(CssStyles.SIDE_COMPONENT);
 		immunizationsLayout.addComponent(immunizationList);
 		layout.addComponent(immunizationsLayout, IMMUNIZATION_LOC);
 	}
-
 }
