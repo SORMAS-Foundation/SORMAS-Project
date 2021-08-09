@@ -60,6 +60,10 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		return inJurisdictionOrOwned(travelEntryQueryContext);
 	}
 
+	public Predicate createActiveTravelEntriesFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
+		return cb.and(cb.isFalse(root.get(TravelEntry.ARCHIVED)), cb.isFalse(root.get(TravelEntry.DELETED)));
+	}
+
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
 		return cb.isFalse(root.get(TravelEntry.DELETED));
 	}
