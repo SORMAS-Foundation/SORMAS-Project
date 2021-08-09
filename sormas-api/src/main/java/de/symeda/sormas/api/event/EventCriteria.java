@@ -51,6 +51,7 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	public static final String FREE_TEXT_EVENT_GROUPS = "freeTextEventGroups";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
+	public static final String SPECIFIC_RISK = "specificRisk";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String DISTRICT = "district";
 	public static final String REGION = "region";
@@ -63,6 +64,7 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
+	private SpecificRisk specificRisk;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
@@ -134,6 +136,19 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 
 	public void setRiskLevel(RiskLevel riskLevel) {
 		this.riskLevel = riskLevel;
+	}
+
+	public SpecificRisk getSpecificRisk() {
+		return specificRisk;
+	}
+
+	public EventCriteria specificRisk(SpecificRisk specificRisk) {
+		this.specificRisk = specificRisk;
+		return this;
+	}
+
+	public void setSpecificRisk(SpecificRisk specificRisk) {
+		this.specificRisk = specificRisk;
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {

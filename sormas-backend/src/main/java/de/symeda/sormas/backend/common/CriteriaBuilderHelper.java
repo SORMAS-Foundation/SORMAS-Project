@@ -158,4 +158,14 @@ public class CriteriaBuilderHelper {
 
 		return predicate;
 	}
+
+	@SafeVarargs
+	public static <T> Expression<T> coalesce(CriteriaBuilder cb, Class<T> type, Expression<T>... expressions) {
+		return cb.function("COALESCE", type, expressions);
+	}
+
+	@SafeVarargs
+	public static Expression<String> coalesce(CriteriaBuilder cb, Expression<String>... expressions) {
+		return coalesce(cb, String.class, expressions);
+	}
 }

@@ -129,6 +129,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private boolean districtRequiredOnDefaultCountry;
 	private boolean skipCountryValueChange;
+	private boolean skipFacilityTypeUpdate;
 
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -142,6 +143,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		return facilityTypeGroup;
 	}
 
+	public ComboBox getFacilityType() {
+		return facilityType;
+	}
+
 	private void setConvertedValue(String propertyId, Object value) {
 		((AbstractField<?>) getField(propertyId)).setConvertedValue(value);
 	}
@@ -153,6 +158,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	public void setFieldsRequirement(boolean required, String... fieldIds) {
 		setRequired(required, fieldIds);
+	}
+
+	public void setSkipFacilityTypeUpdate(boolean skipFacilityTypeUpdate) {
+		this.skipFacilityTypeUpdate = skipFacilityTypeUpdate;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -386,10 +395,13 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 							: null);
 			}
 		});
+		skipFacilityTypeUpdate = false;
 		facilityTypeGroup.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facility);
-			FieldHelper.updateEnumData(facilityType, FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
-			facilityType.setRequired(facilityTypeGroup.getValue() != null);
+			if (!skipFacilityTypeUpdate) {
+				FieldHelper.removeItems(facility);
+				FieldHelper.updateEnumData(facilityType, FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
+				facilityType.setRequired(facilityTypeGroup.getValue() != null);
+			}
 		});
 		facilityType.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
@@ -691,6 +703,21 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			facilityDetails.clear();
 			facilityType.clear();
 			facilityTypeGroup.clear();
+		}
+	}
+
+	public void setFacilityFieldsVisibleExceptTypeGroupField(boolean visible, boolean clearOnHidden) {
+		facility.setVisible(visible);
+		facilityDetails.setVisible(visible && areFacilityDetailsRequired());
+		facilityType.setVisible(visible);
+		facilityTypeGroup.setVisible(false);
+
+		setFacilityContactPersonFieldsVisible(visible && (facilityType.getValue() != null), clearOnHidden);
+
+		if (!visible && clearOnHidden) {
+			facility.clear();
+			facilityDetails.clear();
+			facilityType.clear();
 		}
 	}
 
