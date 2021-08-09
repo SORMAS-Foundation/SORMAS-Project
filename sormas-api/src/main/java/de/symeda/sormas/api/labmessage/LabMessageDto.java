@@ -68,7 +68,7 @@ public class LabMessageDto extends EntityDto {
 	private String personPhone;
 	private String personEmail;
 
-	private List<TestReportDto> testReports;
+	private List<TestReportDto> testReports = new ArrayList<>();
 
 	private String labMessageDetails;
 
