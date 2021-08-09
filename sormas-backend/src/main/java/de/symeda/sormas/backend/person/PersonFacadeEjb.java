@@ -1204,14 +1204,15 @@ public class PersonFacadeEjb implements PersonFacade {
 						SerializationUtils.clone(nullSafeCriteria).personAssociation(e),
 						first,
 						max,
-						sortProperties))
+						sortProperties,
+						false))
 				.map(e -> e.stream().map(p -> p.getUuid()).collect(Collectors.toList()))
 				.forEach(e -> distinctPersonUuids.addAll(e));
 			// Select the first items in total sorting filtered by personUuids
-			result = getIndexList(distinctPersonUuids, null, first, max, sortProperties);
+			result = getIndexList(distinctPersonUuids, null, first, max, sortProperties, true);
 		} else {
 			// Directly fetch for one association
-			result = getIndexList(null, criteria, first, max, sortProperties);
+			result = getIndexList(null, criteria, first, max, sortProperties, true);
 		}
 
 		return result;
@@ -1221,6 +1222,15 @@ public class PersonFacadeEjb implements PersonFacade {
 	 * @param personUuids
 	 *            If set, this method filters by the given {@code personUuids} and
 	 *            <strong>not</strong> listening to the {@code criteria} which was done previously.
+	 * @param criteria
+	 * @param first
+	 * @param max
+	 * @param sortProperties
+	 * @param allAttributes
+	 *            If {@code true}, this method runs additional logic to calculate all attributes.
+	 *            {@code false} serves to provide the {@code personUuids}.
+	 * 
+	 * @return
 	 */
 	@SuppressWarnings({
 		"rawtypes",
@@ -1230,7 +1240,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		PersonCriteria criteria,
 		Integer first,
 		Integer max,
-		List<SortProperty> sortProperties) {
+		List<SortProperty> sortProperties,
+		boolean allAttributes) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
@@ -1328,16 +1339,18 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		List<PersonIndexDto> persons = QueryHelper.getResultList(em, cq, first, max);
 
-		// Fetch PersonIndexDto.inJurisdiction information (avoid duplicates with true/false in PersonIndexDto query)
-		List<String> jurisdictionOrOwnedPersonUuids = getJurisdictionOrOwnedPersons(personUuids, criteria);
-		persons.stream().forEach(e -> e.setInJurisdiction(jurisdictionOrOwnedPersonUuids.contains(e.getUuid())));
+		if (allAttributes) {
+			// Fetch PersonIndexDto.inJurisdiction information (avoid duplicates with true/false in PersonIndexDto query)
+			List<String> jurisdictionOrOwnedPersonUuids = getJurisdictionOrOwnedPersons(personUuids, criteria);
+			persons.stream().forEach(e -> e.setInJurisdiction(jurisdictionOrOwnedPersonUuids.contains(e.getUuid())));
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			PersonIndexDto.class,
-			persons,
-			p -> p.getInJurisdiction(),
-			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, p.getAgeAndBirthDate(), isInJurisdiction, null));
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+			pseudonymizer.pseudonymizeDtoCollection(
+				PersonIndexDto.class,
+				persons,
+				p -> p.getInJurisdiction(),
+				(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, p.getAgeAndBirthDate(), isInJurisdiction, null));
+		}
 
 		return persons;
 	}
