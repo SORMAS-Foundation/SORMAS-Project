@@ -926,11 +926,11 @@ public class ContactFacadeEjb implements ContactFacade {
 				switch (sortProperty.propertyName) {
 				case FollowUpDto.UUID:
 				case ContactFollowUpDto.LAST_CONTACT_DATE:
-				case FollowUpDto.REPORT_DATE:
-					expression = contact.get(Contact.REPORT_DATE_TIME);
-					break;
 				case FollowUpDto.FOLLOW_UP_UNTIL:
 					expression = contact.get(sortProperty.propertyName);
+					break;
+				case FollowUpDto.REPORT_DATE:
+					expression = contact.get(Contact.REPORT_DATE_TIME);
 					break;
 				case FollowUpDto.SYMPTOM_JOURNAL_STATUS:
 					expression = joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS);
