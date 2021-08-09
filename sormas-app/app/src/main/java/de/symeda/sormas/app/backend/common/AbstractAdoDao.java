@@ -46,6 +46,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.util.MetaProperty;
 
 /**
@@ -1314,5 +1315,25 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	 */
 	public ConnectionSource getConnectionSource() {
 		return dao.getConnectionSource();
+	}
+
+	// dao utilities
+
+	protected void addDateFromCriteria(List<Where<Immunization, Long>> whereStatements, Where<Immunization, Long> where, Date dateFrom, String date) throws SQLException {
+		if (dateFrom != null) {
+			whereStatements.add(where.ge(date, DateHelper.getStartOfDay(dateFrom)));
+		}
+	}
+
+	protected void addDateToCriteria(List<Where<Immunization, Long>> whereStatements, Where<Immunization, Long> where, Date dateTo, String date) throws SQLException {
+		if (dateTo != null) {
+			whereStatements.add(where.le(date, DateHelper.getEndOfDay(dateTo)));
+		}
+	}
+
+	protected void addEqualsCriteria(List<Where<Immunization, Long>> whereStatements, Where<Immunization, Long> where, Object criteriaValue, String columnName) throws SQLException {
+		if (criteriaValue != null) {
+			whereStatements.add(where.eq(columnName, criteriaValue));
+		}
 	}
 }

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants"
+    tools:ignore="contentDescription">
+
+    <data>
+
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+
+        <variable
+            name="data"
+            type="de.symeda.sormas.app.immunization.edit.ImmunizationOverlapsDto" />
+
+        <variable
+            name="dismissCallback"
+            type="de.symeda.sormas.app.util.Callback" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="64dp">
+
+            <LinearLayout
+                android:id="@+id/main_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+                android:paddingRight="@dimen/rowListItemHorizontalMargin">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/immunization_startDateExisting"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:value="@={data.startDateExisting}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/immunization_endDateExisting"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:value="@={data.endDateExisting}" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/immunization_startDate"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:value="@={data.startDate}" />
+
+                    <de.symeda.sormas.app.component.controls.ControlDateField
+                        android:id="@+id/immunization_endDate"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:value="@={data.endDate}" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/button_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical">
+
+            <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin" />
+
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/button_dismiss"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/simple_dialog_button_margin"
+                android:layout_marginEnd="@dimen/simple_dialog_button_horizontal_padding"
+                android:layout_marginBottom="@dimen/simple_dialog_button_margin"
+                android:onClickListener="@{(view) -> dismissCallback.call()}"
+                android:text="@string/action_ok"
+                app:buttonType="@{ControlButtonType.PRIMARY}"
+                app:iconStart="@drawable/ic_clear_black_24dp"
+                app:slim="true" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</layout>

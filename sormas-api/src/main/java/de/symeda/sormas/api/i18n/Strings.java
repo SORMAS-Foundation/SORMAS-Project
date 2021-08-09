@@ -620,6 +620,8 @@ public interface Strings {
 	String headingVisitsDeleted = "headingVisitsDeleted";
 	String headingVisualization = "headingVisualization";
 	String headingWrongFileType = "headingWrongFileType";
+	String immunizationRecoveryHeading = "immunizationRecoveryHeading";
+	String immunizationVaccinationHeading = "immunizationVaccinationHeading";
 	String inactive = "inactive";
 	String inColumn = "inColumn";
 	String infoActivityAsCaseInvestigation = "infoActivityAsCaseInvestigation";
@@ -1168,6 +1170,10 @@ public interface Strings {
 	String promptEventsSearchFieldEventParticipants = "promptEventsSearchFieldEventParticipants";
 	String promptExternalIdExternalSurveillanceTool = "promptExternalIdExternalSurveillanceTool";
 	String promptFilterByPeriod = "promptFilterByPeriod";
+	String promptImmunizationDateFrom = "promptImmunizationDateFrom";
+	String promptImmunizationPositiveTestResultDateFrom = "promptImmunizationPositiveTestResultDateFrom";
+	String promptImmunizationRecoveryDateFrom = "promptImmunizationRecoveryDateFrom";
+	String promptImmunizationStartDateFrom = "promptImmunizationStartDateFrom";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";
