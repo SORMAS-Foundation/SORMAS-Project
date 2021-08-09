@@ -716,6 +716,7 @@ public interface Strings {
 	String infoMergingPickDescription = "infoMergingPickDescription";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
+	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
 	String infoNoEventGroups = "infoNoEventGroups";
 	String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	String infoNoPathogenTests = "infoNoPathogenTests";

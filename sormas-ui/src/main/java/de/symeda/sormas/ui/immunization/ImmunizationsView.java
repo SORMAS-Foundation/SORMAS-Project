@@ -1,9 +1,13 @@
 package de.symeda.sormas.ui.immunization;
 
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -13,6 +17,7 @@ import de.symeda.sormas.ui.immunization.components.filter.FilterFormLayout;
 import de.symeda.sormas.ui.immunization.components.filter.status.StatusBarLayout;
 import de.symeda.sormas.ui.immunization.components.grid.ImmunizationGrid;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 public class ImmunizationsView extends AbstractView {
@@ -21,6 +26,7 @@ public class ImmunizationsView extends AbstractView {
 
 	private final ImmunizationCriteria criteria;
 
+	private final Label noDiseaseInfoLabel;
 	private final ImmunizationGrid grid;
 
 	private FilterFormLayout filterFormLayout;
@@ -45,6 +51,10 @@ public class ImmunizationsView extends AbstractView {
 
 		addComponent(gridLayout);
 
+		noDiseaseInfoLabel = new Label(I18nProperties.getString(Strings.infoNoDiseaseSelected));
+		noDiseaseInfoLabel.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.H3, CssStyles.VSPACE_TOP_0, CssStyles.ALIGN_CENTER);
+		addComponent(noDiseaseInfoLabel);
+
 		UserProvider currentUser = UserProvider.getCurrent();
 		if (currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_CREATE)) {
 			final ExpandableButton createButton =
@@ -68,7 +78,19 @@ public class ImmunizationsView extends AbstractView {
 		applyingCriteria = true;
 
 		filterFormLayout.setValue(criteria);
-		statusBarLayout.updateActiveBadge(grid.getItemCount());
+
+		Disease disease = criteria.getDisease();
+		if (disease == null) {
+			statusBarLayout.setVisible(false);
+			grid.setVisible(false);
+			noDiseaseInfoLabel.setVisible(true);
+		} else {
+			statusBarLayout.setVisible(true);
+			grid.setVisible(true);
+			noDiseaseInfoLabel.setVisible(false);
+
+			statusBarLayout.updateActiveBadge(grid.getItemCount());
+		}
 
 		applyingCriteria = false;
 	}
@@ -82,8 +104,20 @@ public class ImmunizationsView extends AbstractView {
 		});
 
 		filterFormLayout.addApplyHandler(clickEvent -> {
-			grid.reload();
-			statusBarLayout.updateActiveBadge(grid.getItemCount());
+			ImmunizationCriteria filterFormValue = filterFormLayout.getValue();
+			Disease disease = filterFormValue.getDisease();
+			if (disease == null) {
+				statusBarLayout.setVisible(false);
+				grid.setVisible(false);
+				noDiseaseInfoLabel.setVisible(true);
+			} else {
+				statusBarLayout.setVisible(true);
+				grid.setVisible(true);
+				noDiseaseInfoLabel.setVisible(false);
+
+				grid.reload();
+				statusBarLayout.updateActiveBadge(grid.getItemCount());
+			}
 		});
 
 		return filterFormLayout;

@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.immunization.components.filter;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.v7.data.Property;
 
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 
@@ -19,12 +18,12 @@ public class FilterFormLayout extends VerticalLayout {
 		addComponent(filterForm);
 	}
 
-	public void setValue(ImmunizationCriteria criteria) {
-		filterForm.setValue(criteria);
+	public ImmunizationCriteria getValue() {
+		return filterForm.getValue();
 	}
 
-	public void addValueChangeListener(Property.ValueChangeListener listener) {
-		filterForm.addValueChangeListener(listener);
+	public void setValue(ImmunizationCriteria criteria) {
+		filterForm.setValue(criteria);
 	}
 
 	public void addResetHandler(Button.ClickListener listener) {
