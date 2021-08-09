@@ -218,6 +218,11 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	@Override
+	public EventParticipantDto getEventParticipantByUuid(String uuid) {
+		return convertToDto(eventParticipantService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+	}
+
+	@Override
 	public Page<EventParticipantIndexDto> getIndexPage(
 		EventParticipantCriteria eventParticipantCriteria,
 		Integer offset,
@@ -226,11 +231,6 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		List<EventParticipantIndexDto> eventParticipantIndexList = getIndexList(eventParticipantCriteria, offset, size, sortProperties);
 		long totalElementCount = count(eventParticipantCriteria);
 		return new Page<>(eventParticipantIndexList, offset, size, totalElementCount);
-	}
-
-	@Override
-	public EventParticipantDto getEventParticipantByUuid(String uuid) {
-		return convertToDto(eventParticipantService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
