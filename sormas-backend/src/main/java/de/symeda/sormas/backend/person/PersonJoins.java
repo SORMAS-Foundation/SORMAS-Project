@@ -23,6 +23,8 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.Immunization;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.location.LocationJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
@@ -33,9 +35,14 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 	private Join<Person, EventParticipant> eventParticipant;
 	private Join<Person, Immunization> immunization;
 	private Join<Person, TravelEntry> travelEntry;
+	private Join<Person, Location> address;
+
+	private final LocationJoins<Person> addressJoins;
 
 	public PersonJoins(From<T, Person> root) {
 		super(root);
+
+		addressJoins = new LocationJoins<>(getAddress());
 	}
 
 	public Join<Person, Case> getCaze() {
@@ -76,5 +83,17 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 
 	public void setTravelEntry(Join<Person, TravelEntry> travelEntry) {
 		this.travelEntry = travelEntry;
+	}
+
+	public LocationJoins<Person> getAddressJoins() {
+		return addressJoins;
+	}
+
+	public Join<Person, Location> getAddress() {
+		return getOrCreate(address, Person.ADDRESS, JoinType.LEFT, this::setAddress);
+	}
+
+	private void setAddress(Join<Person, Location> address) {
+		this.address = address;
 	}
 }

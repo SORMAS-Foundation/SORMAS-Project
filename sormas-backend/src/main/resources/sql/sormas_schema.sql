@@ -7834,6 +7834,12 @@ ALTER TABLE vaccination_history ADD COLUMN vaccinedose text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (394, 'Add missing vaccination columns #4763');
 
+-- 2021-06-30 Add reportId to labMessage #5622
+ALTER TABLE labmessage ADD COLUMN reportid varchar(512);
+ALTER TABLE labmessage_history ADD COLUMN reportid varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (395, 'Add reportId to labMessage #5622');
+
 -- 2021-08-01 Modifications to immunization tables #6025
 ALTER TABLE immunization ALTER COLUMN externalid DROP NOT NULL;
 ALTER TABLE immunization ALTER COLUMN positivetestresultdate DROP NOT NULL;
@@ -7856,6 +7862,6 @@ ALTER TABLE immunization_history ADD COLUMN facilitytype varchar(255);
 ALTER TABLE immunization_history ADD COLUMN validfrom timestamp;
 ALTER TABLE immunization_history ADD COLUMN validuntil timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (395, 'Modifications to immunization tables #6025');
+INSERT INTO schema_version (version_number, comment) VALUES (396, 'Modifications to immunization tables #6025');
 
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
+-- *** Insert new sql commands BEFORE this line ***
