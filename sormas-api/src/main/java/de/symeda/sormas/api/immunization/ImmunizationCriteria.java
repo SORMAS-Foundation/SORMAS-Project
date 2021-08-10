@@ -46,6 +46,7 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String HEALTH_FACILITY = "healthFacility";
+	public static final String ONLY_PERSONS_WITH_OVERDUE_IMMUNIZATION = "onlyPersonsWithOverdueImmunization";
 
 	private Disease disease;
 	private String nameAddressPhoneEmailLike;
@@ -61,6 +62,7 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
 	private FacilityReferenceDto healthFacility;
+	private Boolean onlyPersonsWithOverdueImmunization = Boolean.FALSE;
 
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private ImmunizationDateType immunizationDateType;
@@ -177,6 +179,14 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 
 	public void setHealthFacility(FacilityReferenceDto healthFacility) {
 		this.healthFacility = healthFacility;
+	}
+
+	public Boolean getOnlyPersonsWithOverdueImmunization() {
+		return onlyPersonsWithOverdueImmunization;
+	}
+
+	public void setOnlyPersonsWithOverdueImmunization(Boolean onlyPersonsWithOverdueImmunization) {
+		this.onlyPersonsWithOverdueImmunization = onlyPersonsWithOverdueImmunization;
 	}
 
 	public DateFilterOption getDateFilterOption() {

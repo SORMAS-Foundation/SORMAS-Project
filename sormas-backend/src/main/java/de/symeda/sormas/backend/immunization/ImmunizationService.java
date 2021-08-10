@@ -46,6 +46,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDateType;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.person.PersonIndexDto;
@@ -468,7 +469,11 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.FACILITY_TYPE), criteria.getFacilityType()));
 		}
 		filter = andEqualsReferenceDto(cb, joins.getHealthFacility(), filter, criteria.getHealthFacility());
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
+		if (Boolean.TRUE.equals(criteria.getOnlyPersonsWithOverdueImmunization())) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS), ImmunizationManagementStatus.ONGOING));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), new Date()));
+		}
 		if (criteria.getImmunizationDateType() != null) {
 			String dateField = getDateFieldFromDateType(criteria.getImmunizationDateType());
 			if (dateField != null) {
@@ -476,6 +481,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 				filter = applyDateFilter(cb, filter, path, criteria.getFromDate(), criteria.getToDate());
 			}
 		}
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
 
 		return filter;
 	}

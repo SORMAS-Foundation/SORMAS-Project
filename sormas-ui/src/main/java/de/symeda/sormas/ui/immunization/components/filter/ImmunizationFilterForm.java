@@ -12,6 +12,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
@@ -39,6 +40,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -53,7 +55,8 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 		ImmunizationCriteria.COMMUNITY,
 		ImmunizationCriteria.FACILITY_TYPE_GROUP,
 		ImmunizationCriteria.FACILITY_TYPE,
-		ImmunizationCriteria.HEALTH_FACILITY)
+		ImmunizationCriteria.HEALTH_FACILITY,
+		ImmunizationCriteria.ONLY_PERSONS_WITH_OVERDUE_IMMUNIZATION)
 
 		+ loc(WEEK_AND_DATE_FILTER);
 
@@ -131,6 +134,15 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 		ComboBox facilityField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.HEALTH_FACILITY, 140));
 		facilityField.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
 
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				ImmunizationCriteria.ONLY_PERSONS_WITH_OVERDUE_IMMUNIZATION,
+				I18nProperties.getCaption(Captions.immunizationOnlyPersonsWithOverdueImmunization),
+				null,
+				CssStyles.CHECKBOX_FILTER_INLINE));
+
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
 
@@ -140,7 +152,6 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 
 		final ImmunizationCriteria criteria = getValue();
 
-		final ComboBox regionField = getField(ImmunizationCriteria.REGION);
 		final ComboBox districtField = getField(ImmunizationCriteria.DISTRICT);
 		final ComboBox communityField = getField(ImmunizationCriteria.COMMUNITY);
 		final ComboBox facilityTypeGroupField = getField(ImmunizationCriteria.FACILITY_TYPE_GROUP);

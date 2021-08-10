@@ -1299,6 +1299,7 @@ public interface Captions {
 	String immunizationImmunizationsList = "immunizationImmunizationsList";
 	String immunizationKeepImmunization = "immunizationKeepImmunization";
 	String immunizationNewImmunization = "immunizationNewImmunization";
+	String immunizationOnlyPersonsWithOverdueImmunization = "immunizationOnlyPersonsWithOverdueImmunization";
 	String immunizationOverwriteImmunization = "immunizationOverwriteImmunization";
 	String importCancelImport = "importCancelImport";
 	String importDetailed = "importDetailed";
