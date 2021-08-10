@@ -932,11 +932,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
 		((PersonJoins) personQueryContext.getJoins()).configure(criteria);
 
-		Predicate filter = personService.createUserFilter(personQueryContext, criteria);
-		if (criteria != null) {
-			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
+		Predicate filter = createIndexListFilter(null, criteria, personQueryContext);
 		if (filter != null) {
 			cq.where(filter);
 		}
