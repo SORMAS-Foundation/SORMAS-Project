@@ -57,6 +57,8 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -149,6 +151,8 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -903,6 +907,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public long count(PersonCriteria criteria) {
 
+		long startTime = DateHelper.startTime();
 		final PersonCriteria nullSafeCriteria = Optional.ofNullable(criteria).orElse(new PersonCriteria());
 		final long count;
 		if (nullSafeCriteria.getPersonAssociation() == PersonAssociation.ALL) {
@@ -917,6 +922,11 @@ public class PersonFacadeEjb implements PersonFacade {
 			count = getPersonIds(criteria).size();
 		}
 
+		logger.debug(
+			"count() finished. association={}, count={}, {}ms",
+			nullSafeCriteria.getPersonAssociation().name(),
+			count,
+			DateHelper.durationMillies(startTime));
 		return count;
 	}
 
@@ -1188,6 +1198,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
+		long startTime = DateHelper.startTime();
 		final PersonCriteria nullSafeCriteria = Optional.ofNullable(criteria).orElse(new PersonCriteria());
 		final List<PersonIndexDto> result;
 		if (nullSafeCriteria.getPersonAssociation() == PersonAssociation.ALL) {
@@ -1211,6 +1222,11 @@ public class PersonFacadeEjb implements PersonFacade {
 			result = getIndexList(null, criteria, first, max, sortProperties, true);
 		}
 
+		logger.debug(
+			"getIndexList() finished. association={}, count={}, {}ms",
+			nullSafeCriteria.getPersonAssociation().name(),
+			result.size(),
+			DateHelper.durationMillies(startTime));
 		return result;
 	}
 
