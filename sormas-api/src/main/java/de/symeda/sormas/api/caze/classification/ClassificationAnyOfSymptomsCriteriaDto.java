@@ -50,8 +50,12 @@ public class ClassificationAnyOfSymptomsCriteriaDto extends ClassificationCriter
 	public String buildDescription() {
 		StringBuilder stringBuilder = new StringBuilder();
 
-		stringBuilder.append("<b> ").append(I18nProperties.getString(Strings.classificationSymptomsAnyOf).toUpperCase()).append("</b>");
-		stringBuilder.append(" ").append(I18nProperties.getString(Strings.setTo)).append(" ");
+		stringBuilder.append("<b> ")
+			.append(I18nProperties.getString(Strings.classificationSymptomsAnyOf).toUpperCase())
+			.append("</b>")
+			.append(" ")
+			.append(I18nProperties.getString(Strings.setTo))
+			.append(" ");
 
 		if (symptomState == null) {
 			stringBuilder.append("<b>").append(I18nProperties.getString(Strings.none).toUpperCase()).append("</b>").append("</br>");
@@ -64,6 +68,11 @@ public class ClassificationAnyOfSymptomsCriteriaDto extends ClassificationCriter
 				stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, field.getName())).append("; ");
 			}
 		}
+
+		if (stringBuilder.length() > 0 && stringBuilder.charAt(stringBuilder.length() - 2) == ';') {
+			stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length() - 1);
+		}
+
 		return stringBuilder.toString();
 	}
 }
