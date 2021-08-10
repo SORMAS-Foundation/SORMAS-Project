@@ -1353,8 +1353,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		if (allAttributes) {
 			// Fetch PersonIndexDto.inJurisdiction information (avoid duplicates with true/false in PersonIndexDto query)
-			List<String> jurisdictionOrOwnedPersonUuids = getJurisdictionOrOwnedPersons(personUuids, criteria);
-			persons.stream().forEach(e -> e.setInJurisdiction(jurisdictionOrOwnedPersonUuids.contains(e.getUuid())));
+			List<String> inJurisdictionOrOwnedPersonUuids = getInJurisdictionOrOwnedPersons(personUuids, criteria);
+			persons.stream().forEach(e -> e.setInJurisdiction(inJurisdictionOrOwnedPersonUuids.contains(e.getUuid())));
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			pseudonymizer.pseudonymizeDtoCollection(
@@ -1370,7 +1370,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@SuppressWarnings({
 		"rawtypes",
 		"unchecked" })
-	private List<String> getJurisdictionOrOwnedPersons(Set<String> personUuids, PersonCriteria criteria) {
+	private List<String> getInJurisdictionOrOwnedPersons(Set<String> personUuids, PersonCriteria criteria) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<String> cq = cb.createQuery(String.class);
