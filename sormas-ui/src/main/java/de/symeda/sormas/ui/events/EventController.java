@@ -264,20 +264,22 @@ public class EventController {
 		int casesAlreadyLinkedToEvent = cases.size() - remainingCases.size();
 
 		//Create EventParticipants for the remaining cases
-		List<String> remainingPersonUuids =
-			remainingCases.stream().map(caseDataDto -> caseDataDto.getPerson().getUuid()).collect(Collectors.toList());
-		List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(remainingPersonUuids);
-		HashMap<String, PersonDto> personByUuid = new HashMap<>();
-		remainingPersons.stream().forEach(personDto -> personByUuid.put(personDto.getUuid(), personDto));
+		if (!remainingCases.isEmpty()) {
+			List<String> remainingPersonUuids =
+				remainingCases.stream().map(caseDataDto -> caseDataDto.getPerson().getUuid()).collect(Collectors.toList());
+			List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(remainingPersonUuids);
+			HashMap<String, PersonDto> personByUuid = new HashMap<>();
+			remainingPersons.stream().forEach(personDto -> personByUuid.put(personDto.getUuid(), personDto));
 
-		remainingCases.stream().forEach(caseDataDto -> {
-			EventParticipantDto ep = new EventParticipantDto().buildFromCase(
-				caseDataDto.toReference(),
-				personByUuid.get(caseDataDto.getPerson().getUuid()),
-				eventReferenceDto,
-				UserProvider.getCurrent().getUserReference());
-			FacadeProvider.getEventParticipantFacade().saveEventParticipant(ep);
-		});
+			remainingCases.stream().forEach(caseDataDto -> {
+				EventParticipantDto ep = new EventParticipantDto().buildFromCase(
+					caseDataDto.toReference(),
+					personByUuid.get(caseDataDto.getPerson().getUuid()),
+					eventReferenceDto,
+					UserProvider.getCurrent().getUserReference());
+				FacadeProvider.getEventParticipantFacade().saveEventParticipant(ep);
+			});
+		}
 
 		if (remainingCases.size() > 0) {
 			SormasUI.refreshView();
@@ -311,24 +313,22 @@ public class EventController {
 		Collection<ContactDto> remainingContacts = contactByPersonUuid.values();
 		int contactsAlreadyLinkedToEvent = contacts.size() - remainingContacts.size();
 
-		//Create EventParticipants for the remaining contactss
-		List<String> remainingPersonUuids =
-			remainingContacts.stream().map(caseDataDto -> caseDataDto.getPerson().getUuid()).collect(Collectors.toList());
-		List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(remainingPersonUuids);
-		HashMap<String, PersonDto> personByUuid = new HashMap<>();
-		remainingPersons.stream().forEach(personDto -> personByUuid.put(personDto.getUuid(), personDto));
+		//Create EventParticipants for the remaining contacts
+		if (!remainingContacts.isEmpty()) {
+			List<String> remainingPersonUuids =
+				remainingContacts.stream().map(caseDataDto -> caseDataDto.getPerson().getUuid()).collect(Collectors.toList());
+			List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(remainingPersonUuids);
+			HashMap<String, PersonDto> personByUuid = new HashMap<>();
+			remainingPersons.stream().forEach(personDto -> personByUuid.put(personDto.getUuid(), personDto));
 
-		remainingContacts.stream().forEach(contactDataDto -> {
-			EventParticipantDto ep = new EventParticipantDto().buildFromPerson(
-				personByUuid.get(contactDataDto.getPerson().getUuid()),
-				eventReferenceDto,
-				UserProvider.getCurrent().getUserReference());
-			try {
+			remainingContacts.stream().forEach(contactDataDto -> {
+				EventParticipantDto ep = new EventParticipantDto().buildFromPerson(
+					personByUuid.get(contactDataDto.getPerson().getUuid()),
+					eventReferenceDto,
+					UserProvider.getCurrent().getUserReference());
 				FacadeProvider.getEventParticipantFacade().saveEventParticipant(ep);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
+			});
+		}
 
 		if (remainingContacts.size() > 0) {
 			SormasUI.refreshView();
