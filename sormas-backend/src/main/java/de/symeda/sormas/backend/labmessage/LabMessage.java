@@ -16,15 +16,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
 import de.symeda.sormas.api.Disease;
-
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.sample.PathogenTest;
 
 @Entity(name = "labmessage")
 @Audited
@@ -58,6 +57,7 @@ public class LabMessage extends AbstractDomainObject {
 	public static final String PERSON_EMAIL = "personEmail";
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String STATUS = "status";
+	public static final String REPORT_ID = "reportId";
 
 	private Disease testedDisease;
 	private Date messageDateTime;
@@ -85,10 +85,10 @@ public class LabMessage extends AbstractDomainObject {
 	private String personHouseNumber;
 	private String personPhone;
 	private String personEmail;
-
 	private List<TestReport> testReports;
-
 	private String labMessageDetails;
+	//Lab messages related to each other should have the same reportId
+	private String reportId;
 
 	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 
@@ -336,4 +336,12 @@ public class LabMessage extends AbstractDomainObject {
 		this.testReports = testReports;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getReportId() {
+		return reportId;
+	}
+
+	public void setReportId(String reportId) {
+		this.reportId = reportId;
+	}
 }

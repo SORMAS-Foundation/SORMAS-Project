@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -124,6 +125,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			}
 			target.setTestReports(testReports);
 		}
+		target.setReportId(source.getReportId());
 
 		return target;
 	}
@@ -176,6 +178,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		if (source.getTestReports() != null) {
 			target.setTestReports(source.getTestReports().stream().map(t -> TestReportFacadeEjb.toDto(t)).collect(toList()));
 		}
+		target.setReportId(source.getReportId());
 
 		return target;
 	}
@@ -416,6 +419,22 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@Override
 	public boolean exists(String uuid) {
 		return labMessageService.exists(uuid);
+	}
+
+	@Override
+	public List<LabMessageDto> getByReportId(String reportId) {
+
+		if (reportId == null) {
+			return Collections.emptyList();
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<LabMessage> cq = cb.createQuery(LabMessage.class);
+		Root<LabMessage> from = cq.from(LabMessage.class);
+
+		cq.where(cb.equal(from.get(LabMessage.REPORT_ID), reportId));
+
+		return em.createQuery(cq).getResultList().stream().map(this::toDto).collect(toList());
 	}
 
 	public static LabMessageReferenceDto toReferenceDto(LabMessage entity) {
