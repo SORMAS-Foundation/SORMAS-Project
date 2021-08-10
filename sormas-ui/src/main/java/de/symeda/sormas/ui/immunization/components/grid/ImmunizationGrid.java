@@ -44,7 +44,7 @@ public class ImmunizationGrid extends FilteredGrid<ImmunizationIndexDto, Immuniz
 	private void initColumns() {
 		setColumns(
 			ImmunizationIndexDto.UUID,
-			ImmunizationIndexDto.PERSON_ID,
+			ImmunizationIndexDto.PERSON_UUID,
 			ImmunizationIndexDto.PERSON_FIRST_NAME,
 			ImmunizationIndexDto.PERSON_LAST_NAME,
 			ImmunizationIndexDto.AGE_AND_BIRTH_DATE,
@@ -58,7 +58,7 @@ public class ImmunizationGrid extends FilteredGrid<ImmunizationIndexDto, Immuniz
 			ImmunizationIndexDto.RECOVERY_DATE);
 
 		((Column<ImmunizationIndexDto, String>) getColumn(ImmunizationIndexDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<ImmunizationIndexDto, String>) getColumn(ImmunizationIndexDto.PERSON_ID)).setRenderer(new UuidRenderer());
+		((Column<ImmunizationIndexDto, String>) getColumn(ImmunizationIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 
 		((Column<ImmunizationIndexDto, AgeAndBirthDateDto>) getColumn(ImmunizationIndexDto.AGE_AND_BIRTH_DATE)).setRenderer(
 			value -> value == null

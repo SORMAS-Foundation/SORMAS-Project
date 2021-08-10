@@ -128,7 +128,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 				case ImmunizationIndexDto.RECOVERY_DATE:
 					expression = immunization.get(sortProperty.propertyName);
 					break;
-				case ImmunizationIndexDto.PERSON_ID:
+				case ImmunizationIndexDto.PERSON_UUID:
 					expression = person.get(Person.UUID);
 					break;
 				case ImmunizationIndexDto.PERSON_FIRST_NAME:
