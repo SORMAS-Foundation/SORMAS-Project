@@ -42,7 +42,7 @@ public class LabMessageFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetByReportId() {
+	public void testGetByReportIdWithCornerCaseInput() {
 		String reportId = "123456789";
 		creator.createLabMessage((lm) -> lm.setReportId(reportId));
 
@@ -55,8 +55,19 @@ public class LabMessageFacadeEjbTest extends AbstractBeanTest {
 
 		assertNotNull(list);
 		assertTrue(list.isEmpty());
+	}
 
-		list = getLabMessageFacade().getByReportId(reportId);
+	@Test
+	public void testGetByReportIdWithOneMessage() {
+
+		String reportId = "123456789";
+		creator.createLabMessage((lm) -> lm.setReportId(reportId));
+
+		// create noise
+		creator.createLabMessage(null);
+		creator.createLabMessage((lm) -> lm.setReportId("some-other-id"));
+
+		List<LabMessageDto> list = getLabMessageFacade().getByReportId(reportId);
 
 		assertNotNull(list);
 		assertFalse(list.isEmpty());
