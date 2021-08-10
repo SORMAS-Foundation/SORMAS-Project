@@ -55,6 +55,7 @@ public class Immunization extends PseudonymizableAdo {
 	public static final String TABLE_NAME = "immunization";
 	public static final String I18N_PREFIX = "ImmunizationData";
 
+    public static final String PERSON = "person";
     public static final String DISEASE = "disease";
     public static final String RESPONSIBLE_REGION = "responsibleRegion";
 

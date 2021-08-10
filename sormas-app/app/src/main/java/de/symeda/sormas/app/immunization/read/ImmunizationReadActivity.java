@@ -43,6 +43,10 @@ public class ImmunizationReadActivity extends BaseReadActivity<Immunization> {
         BaseActivity.startActivity(context, ImmunizationReadActivity.class, buildBundle(rootUuid, finishInsteadOfUpNav));
     }
 
+    public static void startActivity(Context context, String rootUuid) {
+        BaseReadActivity.startActivity(context, ImmunizationReadActivity.class, buildBundle(rootUuid));
+    }
+
     public static Bundler buildBundle(String rootUuid) {
         return BaseReadActivity.buildBundle(rootUuid);
     }

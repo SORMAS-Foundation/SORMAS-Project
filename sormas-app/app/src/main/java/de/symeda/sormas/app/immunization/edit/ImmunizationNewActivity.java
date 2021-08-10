@@ -17,12 +17,19 @@ package de.symeda.sormas.app.immunization.edit;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -44,12 +51,58 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 
 	private AsyncTask saveTask;
 
+	private String caseUuid;
+	private String contactUuid;
+	private String eventParticipantUuid;
+
 	public static void startActivity(Context context) {
 		BaseEditActivity.startActivity(context, ImmunizationNewActivity.class, buildBundle());
 	}
 
+	public static void startActivityFromCase(Context fromActivity, String caseUuid) {
+		BaseEditActivity.startActivity(fromActivity, ImmunizationNewActivity.class, buildBundleWithCase(caseUuid));
+	}
+
+	public static void startActivityFromContact(Context fromActivity, String contactUuid) {
+		BaseEditActivity.startActivity(fromActivity, ImmunizationNewActivity.class, buildBundleWithContact(contactUuid));
+	}
+
+	public static void startActivityFromEventParticipant(Context fromActivity, String eventUuid) {
+		BaseEditActivity.startActivity(fromActivity, ImmunizationNewActivity.class, buildBundleWithEvent(eventUuid));
+	}
+
 	public static Bundler buildBundle() {
 		return BaseEditActivity.buildBundle(null);
+	}
+
+	public static Bundler buildBundleWithCase(String caseUuid) {
+		return BaseEditActivity.buildBundle(null).setCaseUuid(caseUuid);
+	}
+
+	public static Bundler buildBundleWithContact(String contactUuid) {
+		return BaseEditActivity.buildBundle(null).setContactUuid(contactUuid);
+	}
+
+	public static Bundler buildBundleWithEvent(String eventUuid) {
+		return BaseEditActivity.buildBundle(null).setEventUuid(eventUuid);
+	}
+
+	@Override
+	protected void onCreateInner(Bundle savedInstanceState) {
+		super.onCreateInner(savedInstanceState);
+		Bundler bundler = new Bundler(savedInstanceState);
+		caseUuid = bundler.getCaseUuid();
+		contactUuid = bundler.getContactUuid();
+		eventParticipantUuid = bundler.getEventUuid();
+	}
+
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState) {
+		super.onSaveInstanceState(outState);
+		Bundler bundler = new Bundler(outState);
+		bundler.setCaseUuid(caseUuid);
+		bundler.setContactUuid(contactUuid);
+		bundler.setEventUuid(eventParticipantUuid);
 	}
 
 	@Override
@@ -59,8 +112,21 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 
 	@Override
 	protected Immunization buildRootEntity() {
-		final Person person = DatabaseHelper.getPersonDao().build();
-		final Immunization immunization = DatabaseHelper.getImmunizationDao().build(person);
+
+		final Immunization immunization;
+		if (!DataHelper.isNullOrEmpty(caseUuid)) {
+			Case _case = DatabaseHelper.getCaseDao().queryUuidBasic(caseUuid);
+			immunization = DatabaseHelper.getImmunizationDao().build(_case.getPerson());
+		} else if (!DataHelper.isNullOrEmpty(contactUuid)) {
+			Contact _contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
+			immunization = DatabaseHelper.getImmunizationDao().build(_contact.getPerson());
+		} else if (!DataHelper.isNullOrEmpty(eventParticipantUuid)) {
+			EventParticipant _eventP = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
+			immunization = DatabaseHelper.getImmunizationDao().build(_eventP.getPerson());
+		} else {
+			final Person person = DatabaseHelper.getPersonDao().build();
+			immunization = DatabaseHelper.getImmunizationDao().build(person);
+		}
 
 		return immunization;
 	}
@@ -68,7 +134,17 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 	@Override
 	protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Immunization activityRootData) {
 		BaseEditFragment fragment;
-		fragment = ImmunizationNewFragment.newInstance(activityRootData);
+
+		if (caseUuid != null) {
+			fragment = ImmunizationNewFragment.newInstanceFromCase(activityRootData, caseUuid);
+		} else if (contactUuid != null) {
+			fragment = ImmunizationNewFragment.newInstanceFromContact(activityRootData, contactUuid);
+		} else if (eventParticipantUuid != null) {
+			fragment = ImmunizationNewFragment.newInstanceFromEventParticipant(activityRootData, eventParticipantUuid);
+		} else {
+			fragment = ImmunizationNewFragment.newInstance(activityRootData);
+		}
+
 		fragment.setLiveValidationDisabled(true);
 		return fragment;
 	}

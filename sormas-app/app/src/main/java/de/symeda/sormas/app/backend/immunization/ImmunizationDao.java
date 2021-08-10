@@ -103,6 +103,7 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 		addEqualsCriteria(whereStatements, where, criteria.getImmunizationManagementStatus(), Immunization.IMMUNIZATION_MANAGEMENT_STATUS);
 		addEqualsCriteria(whereStatements, where, criteria.getMeansOfImmunization(), Immunization.MEANS_OF_IMMUNIZATION);
 		addEqualsCriteria(whereStatements, where, criteria.getDisease(), Immunization.DISEASE);
+		addEqualsCriteria(whereStatements, where, criteria.getPerson(), Immunization.PERSON + "_id");
 
 		if (!whereStatements.isEmpty()) {
 			Where<Immunization, Long> whereStatement = where.and(whereStatements.size());
@@ -195,7 +196,9 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 				where.and()
 					.or(where.isNull(Immunization.END_DATE), where.gt(Immunization.END_DATE, DateHelper.getStartOfDay(criteria.getStartDate())));
 			}
-			where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
+			if (criteria.getPersonUuid() != null) {
+				where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
+			}
 
 			queryBuilder.setWhere(where);
 			queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
