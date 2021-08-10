@@ -54,6 +54,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -222,6 +223,17 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	@Override
+	public Page<EventParticipantIndexDto> getIndexPage(
+		EventParticipantCriteria eventParticipantCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<EventParticipantIndexDto> eventParticipantIndexList = getIndexList(eventParticipantCriteria, offset, size, sortProperties);
+		long totalElementCount = count(eventParticipantCriteria);
+		return new Page<>(eventParticipantIndexList, offset, size, totalElementCount);
+	}
+
+	@Override
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto) {
 		return saveEventParticipant(dto, true, true);
 	}
@@ -271,39 +283,40 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-		Map<String, Optional<User>> responsibleUserByEventUuid = eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
-			eventParticipant.getPerson().getUuid(), event.getDisease(), fromDate);
+		Map<String, Optional<User>> responsibleUserByEventUuid =
+			eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
+				eventParticipant.getPerson().getUuid(),
+				event.getDisease(),
+				fromDate);
 		if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
 			// it means the event participant is only appearing into the current event
 			return;
 		}
 
 		for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
-			entry.getValue()
-				.filter(user -> StringUtils.isNotEmpty(user.getUserEmail()))
-				.ifPresent(user -> {
-					try {
-						messagingService.sendMessage(
-							user,
-							MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
-							String.format(
-								I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
-								DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
-								DataHelper.getShortUuid(eventParticipant.getUuid()),
-								DataHelper.getShortUuid(event.getUuid()),
-								User.buildCaptionForNotification(event.getResponsibleUser()),
-								User.buildCaptionForNotification(userService.getCurrentUser()),
-								buildEventListContentForNotification(responsibleUserByEventUuid)),
-							MessageType.EMAIL,
-							MessageType.SMS);
-					} catch (NotificationDeliveryFailedException e) {
-						logger.error(
-							String.format(
-								"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventPartipant related to other events. "
-									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-								user.getUuid()));
-					}
-				});
+			entry.getValue().filter(user -> StringUtils.isNotEmpty(user.getUserEmail())).ifPresent(user -> {
+				try {
+					messagingService.sendMessage(
+						user,
+						MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+						String.format(
+							I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
+							DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
+							DataHelper.getShortUuid(eventParticipant.getUuid()),
+							DataHelper.getShortUuid(event.getUuid()),
+							User.buildCaptionForNotification(event.getResponsibleUser()),
+							User.buildCaptionForNotification(userService.getCurrentUser()),
+							buildEventListContentForNotification(responsibleUserByEventUuid)),
+						MessageType.EMAIL,
+						MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(
+						String.format(
+							"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventPartipant related to other events. "
+								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+							user.getUuid()));
+				}
+			});
 		}
 	}
 
@@ -371,8 +384,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<EventParticipant, VaccinationInfo> vaccinationInfoJoin = joins.getVaccinationInfo();
 		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
 
-		Expression<Object> inJurisdictionSelector =
-			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdiction(queryContext));
+		Expression<Object> inJurisdictionSelector = JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdiction(queryContext));
 		Expression<Object> inJurisdictionOrOwnedSelector =
 			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(queryContext));
 		cq.multiselect(
@@ -508,10 +520,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			event.get(Event.EVENT_TITLE),
 			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(queryContext)));
 
-		Predicate filter = CriteriaBuilderHelper.and(
-			cb,
-			eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, queryContext),
-			cb.isFalse(event.get(Event.DELETED)));
+		Predicate filter = CriteriaBuilderHelper
+			.and(cb, eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, queryContext), cb.isFalse(event.get(Event.DELETED)));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(eventParticipant.get(EventParticipant.CREATION_DATE)));
@@ -948,7 +958,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventJoin.get(Event.EVENT_STATUS),
 			eventJoin.get(Event.EVENT_TITLE),
 			eventJoin.get(Event.START_DATE),
-				jurisdictionSelector);
+			jurisdictionSelector);
 		cq.groupBy(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),
