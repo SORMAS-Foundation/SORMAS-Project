@@ -6,10 +6,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.util.Date;
 import java.util.stream.Stream;
 
-import com.vaadin.server.Page;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
@@ -287,7 +285,10 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 	@Override
 	protected void applyDependenciesOnNewValue(ImmunizationCriteria criteria) {
 		final UserDto user = currentUserDto();
-		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+
+		UserProvider currentUserProvider = UserProvider.getCurrent();
+		final JurisdictionLevel userJurisdictionLevel =
+			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : null;
 
 		final ComboBox districtField = getField(ImmunizationCriteria.DISTRICT);
 		final ComboBox communityField = getField(ImmunizationCriteria.COMMUNITY);
@@ -451,26 +452,8 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 			criteria.setFromDate(fromDate);
 			criteria.setToDate(toDate);
 		} else {
-			setNotifications(dateFilterOption);
+			weekAndDateFilter.setNotificationsForMissingFilters();
 		}
 	}
 
-	public static void setNotifications(DateFilterOption dateFilterOption) {
-		Notification notification;
-		if (dateFilterOption == DateFilterOption.DATE) {
-			notification = new Notification(
-				I18nProperties.getString(Strings.headingMissingDateFilter),
-				I18nProperties.getString(Strings.messageMissingDateFilter),
-				Notification.Type.WARNING_MESSAGE,
-				false);
-		} else {
-			notification = new Notification(
-				I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
-				I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
-				Notification.Type.WARNING_MESSAGE,
-				false);
-		}
-		notification.setDelayMsec(-1);
-		notification.show(Page.getCurrent());
-	}
 }

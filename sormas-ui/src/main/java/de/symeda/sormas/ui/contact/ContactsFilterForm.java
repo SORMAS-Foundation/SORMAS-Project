@@ -49,7 +49,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
@@ -552,7 +551,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			}
 			criteria.dateFilterOption(dateFilterOption);
 		} else {
-			ImmunizationFilterForm.setNotifications(dateFilterOption);
+			weekAndDateFilter.setNotificationsForMissingFilters();
 		}
 	}
 

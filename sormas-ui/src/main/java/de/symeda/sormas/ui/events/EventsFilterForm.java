@@ -28,21 +28,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.google.common.collect.Sets;
-import com.vaadin.server.Page;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
-
-import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
-import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -388,8 +385,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 			criteria.dateBetween(dateType, fromDate, toDate, eventDateType, dateFilterOption);
 		} else {
-            ImmunizationFilterForm.setNotifications(dateFilterOption);
-        }
+			weekAndDateFilter.setNotificationsForMissingFilters();
+		}
 	}
 
 	private EpiWeekAndDateFilterComponent<?> getEpiWeekAndDateComponent(String location) {
@@ -504,7 +501,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			FieldHelper.setEnabled(false, diseaseVariantField);
 		} else {
 			List<DiseaseVariant> diseaseVariants =
-					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), diseaseVariantField);
 		}

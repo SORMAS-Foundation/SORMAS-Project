@@ -57,7 +57,6 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateTypeHelper;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
@@ -769,7 +768,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
 			criteria.dateFilterOption(dateFilterOption);
 		} else {
-			ImmunizationFilterForm.setNotifications(dateFilterOption);
+			weekAndDateFilter.setNotificationsForMissingFilters();
 		}
 	}
 

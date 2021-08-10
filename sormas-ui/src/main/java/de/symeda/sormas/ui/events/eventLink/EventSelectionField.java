@@ -24,12 +24,10 @@ import java.util.Date;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -49,7 +47,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
@@ -295,8 +292,8 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 				criteria.eventDateBetween(fromDate, toDate, EventCriteriaDateType.EVENT_DATE, dateFilterOption);
 
 			} else {
-                ImmunizationFilterForm.setNotifications(dateFilterOption);
-            }
+				weekAndDateFilter.setNotificationsForMissingFilters();
+			}
 			eventGrid.setCriteria(criteria);
 			eventGrid.getSelectedItems();
 		});

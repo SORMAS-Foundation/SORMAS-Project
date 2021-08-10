@@ -25,7 +25,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
-import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -156,7 +155,7 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 			criteria.reportDateBetween(fromDate, toDate, dateFilterOption);
 		} else {
-			ImmunizationFilterForm.setNotifications(dateFilterOption);
+			weekAndDateFilter.setNotificationsForMissingFilters();
 		}
 	}
 
