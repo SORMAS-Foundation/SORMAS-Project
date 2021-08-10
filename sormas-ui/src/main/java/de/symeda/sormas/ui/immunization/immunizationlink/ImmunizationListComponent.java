@@ -28,17 +28,9 @@ public class ImmunizationListComponent extends VerticalLayout {
 	private ImmunizationList immunizationList;
 
 	private ImmunizationCriteria immunizationCriteria;
-	private CaseReferenceDto caseReferenceDto;
-	private PersonReferenceDto personReferenceDto;
 
-	public ImmunizationListComponent(CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
-		this.caseReferenceDto = caseReferenceDto;
-		this.personReferenceDto = personReferenceDto;
+	public ImmunizationListComponent(PersonReferenceDto personReferenceDto) {
 		immunizationCriteria = new ImmunizationCriteria();
-
-		if (caseReferenceDto != null) {
-			immunizationCriteria.caze(caseReferenceDto);
-		}
 
 		if (personReferenceDto != null) {
 			immunizationCriteria.person(personReferenceDto);
@@ -61,32 +53,14 @@ public class ImmunizationListComponent extends VerticalLayout {
 		Label immunizationHeader = new Label(I18nProperties.getString(Strings.entityImmunization));
 		immunizationHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(immunizationHeader);
-
-		if (caseReferenceDto != null && UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_CREATE)) {
-			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.immunizationNewImmunization));
-			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getImmunizationController().create());
-			componentHeader.addComponent(createButton);
-			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
-		}
-
 	}
 
 	public static void addImmunizationListComponent(CustomLayout layout, PersonReferenceDto personReferenceDto) {
-		addImmunizationListComponent(layout, null, personReferenceDto);
-	}
-
-	public static void addImmunizationListComponent(CustomLayout layout, CaseReferenceDto caseReferenceDto) {
-		addImmunizationListComponent(layout, caseReferenceDto, null);
-	}
-
-	private static void addImmunizationListComponent(CustomLayout layout, CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
 		VerticalLayout immunizationsLayout = new VerticalLayout();
 		immunizationsLayout.setMargin(false);
 		immunizationsLayout.setSpacing(false);
 
-		ImmunizationListComponent immunizationList = new ImmunizationListComponent(caseReferenceDto, personReferenceDto);
+		ImmunizationListComponent immunizationList = new ImmunizationListComponent(personReferenceDto);
 		immunizationList.addStyleName(CssStyles.SIDE_COMPONENT);
 		immunizationsLayout.addComponent(immunizationList);
 		layout.addComponent(immunizationsLayout, IMMUNIZATION_LOC);
