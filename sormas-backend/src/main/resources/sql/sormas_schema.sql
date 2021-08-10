@@ -7834,10 +7834,16 @@ ALTER TABLE vaccination_history ADD COLUMN vaccinedose text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (394, 'Add missing vaccination columns #4763');
 
+-- 2021-06-30 Add reportId to labMessage #5622
+ALTER TABLE labmessage ADD COLUMN reportid varchar(512);
+ALTER TABLE labmessage_history ADD COLUMN reportid varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (395, 'Add reportId to labMessage #5622');
+
 -- 2021-08-05 perosn sex default to UNKNOWN
 UPDATE person SET sex = 'UNKNOWN' WHERE sex IS NULL;
 ALTER TABLE person ALTER COLUMN sex SET DEFAULT 'UNKNOWN';
 
-INSERT INTO schema_version (version_number, comment) VALUES (395, 'sex = UNKNOWN as default #6248');
+INSERT INTO schema_version (version_number, comment) VALUES (396, 'sex = UNKNOWN as default #6248');
 
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
+-- *** Insert new sql commands BEFORE this line ***
