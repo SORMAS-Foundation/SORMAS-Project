@@ -100,6 +100,4 @@ public interface EventFacade {
 	Set<RegionReferenceDto> getAllRegionsRelatedToEventUuids(List<String> uuids);
 
 	void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
-
-	List<String> getLinkedCaseUuidsInEvent(List<String> collect, String uuid);
 }

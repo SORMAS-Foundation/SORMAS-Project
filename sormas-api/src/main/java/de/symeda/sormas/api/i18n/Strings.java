@@ -777,6 +777,7 @@ public interface Strings {
 	String messageAggregateReportFound = "messageAggregateReportFound";
 	String messageAllCampaignFormsValid = "messageAllCampaignFormsValid";
 	String messageAllCasesAlreadyInEvent = "messageAllCasesAlreadyInEvent";
+	String messageAllContactsAlreadyInEvent = "messageAllContactsAlreadyInEvent";
 	String messageAlreadyEventParticipant = "messageAlreadyEventParticipant";
 	String messageAnimalContactsHint = "messageAnimalContactsHint";
 	String messageAreaArchived = "messageAreaArchived";
@@ -786,6 +787,7 @@ public interface Strings {
 	String messageAreasArchivingNotPossible = "messageAreasArchivingNotPossible";
 	String messageAreasDearchived = "messageAreasDearchived";
 	String messageBulkCasesWithDifferentDiseasesSelected = "messageBulkCasesWithDifferentDiseasesSelected";
+	String messageBulkContactsWithDifferentDiseasesSelected = "messageBulkContactsWithDifferentDiseasesSelected";
 	String messageBulkDontShareWithReportingToolWarning = "messageBulkDontShareWithReportingToolWarning";
 	String messageBulkLinkEventHint = "messageBulkLinkEventHint";
 	String messageCampaignArchived = "messageCampaignArchived";
@@ -850,6 +852,7 @@ public interface Strings {
 	String messageCopyPassword = "messageCopyPassword";
 	String messageCountCasesAlreadyInEvent = "messageCountCasesAlreadyInEvent";
 	String messageCountCasesNotDeleted = "messageCountCasesNotDeleted";
+	String messageCountContactsAlreadyInEvent = "messageCountContactsAlreadyInEvent";
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
 	String messageCountEventsNotDeletedExternalSurveillanceTool = "messageCountEventsNotDeletedExternalSurveillanceTool";
 	String messageCountriesArchived = "messageCountriesArchived";

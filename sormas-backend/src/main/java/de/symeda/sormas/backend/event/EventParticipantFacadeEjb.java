@@ -997,7 +997,16 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	@Override
-	public List<EventParticipantReferenceDto> getReferencesByEventAndPersons(String eventUuid, List<String> personUuids) {
-		return null;
+	public List<EventParticipantDto> getByEventAndPersons(String eventUuid, List<String> personUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipant> cq = cb.createQuery(EventParticipant.class);
+		Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
+		Join<EventParticipant, Person> personJoin = eventParticipantRoot.join(Contact.PERSON, JoinType.LEFT);
+		Join<EventParticipant, Event> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.INNER);
+
+		cq.where(cb.and(cb.equal(eventJoin.get(Event.UUID), eventUuid), cb.in(personJoin.get(EventParticipant.UUID)).value(personUuids)));
+
+		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
+		return resultList.stream().map(EventParticipantFacadeEjb::toDto).collect(Collectors.toList());
 	}
 }

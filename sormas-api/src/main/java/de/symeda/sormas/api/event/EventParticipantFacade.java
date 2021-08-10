@@ -88,5 +88,5 @@ public interface EventParticipantFacade {
 
 	List<EventParticipantDto> getByPersonUuids(List<String> personUuids);
 
-	List<EventParticipantReferenceDto> getReferencesByEventAndPersons(String eventUuid, List<String> personUuids);
+	List<EventParticipantDto> getByEventAndPersons(String eventUuid, List<String> personUuids);
 }

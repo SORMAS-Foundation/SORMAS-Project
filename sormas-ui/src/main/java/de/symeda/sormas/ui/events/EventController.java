@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -44,12 +45,12 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
@@ -98,8 +99,8 @@ public class EventController {
 		return eventDto;
 	}
 
-	public EventDto create(List<CaseReferenceDto> caseRefs) {
-		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent(caseRefs);
+	public EventDto createFromCaseList(List<CaseReferenceDto> caseRefs) {
+		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponentForCaseList(caseRefs);
 		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
 		return eventDto;
@@ -107,6 +108,13 @@ public class EventController {
 
 	public EventDto create(ContactDto contact) {
 		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponent(contact);
+		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
+		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
+		return eventDto;
+	}
+
+	public EventDto createFromContactList(List<ContactReferenceDto> contactRefs) {
+		CommitDiscardWrapperComponent<EventDataForm> eventCreateComponent = getEventCreateComponentForContactList(contactRefs);
 		EventDto eventDto = eventCreateComponent.getWrappedComponent().getValue();
 		VaadinUiUtil.showModalPopupWindow(eventCreateComponent, I18nProperties.getString(Strings.headingCreateNewEvent));
 		return eventDto;
@@ -168,7 +176,7 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
-	public void selectOrCreateEvent(List<CaseReferenceDto> caseRefs) {
+	public void selectOrCreateEventForCaseList(List<CaseReferenceDto> caseRefs) {
 
 		List<CaseDataDto> caseDataDtos =
 			FacadeProvider.getCaseFacade().getByUuids(caseRefs.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
@@ -182,27 +190,10 @@ public class EventController {
 		component.addCommitListener(() -> {
 			EventIndexDto selectedEvent = eventSelect.getValue();
 			if (selectedEvent != null) {
-
-				List<String> linkedCaseUuids = FacadeProvider.getEventFacade()
-					.getLinkedCaseUuidsInEvent(caseDataDtos.stream().map(EntityDto::getUuid).collect(Collectors.toList()), selectedEvent.getUuid());
-
 				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
-				if (caseDataDtos.size() > linkedCaseUuids.size()) {
-					int i = linkCasesToEvent(
-						eventReferenceDto,
-						caseDataDtos.stream().filter(c -> linkedCaseUuids.contains(c.getUuid())).collect(Collectors.toList()));
-					SormasUI.refreshView();
-					NotificationHelper.showNotification(
-						I18nProperties.getString(String.format(I18nProperties.getString(Strings.messageCountCasesAlreadyInEvent), i)),
-						Type.HUMANIZED_MESSAGE,
-						10000);
-				} else {
-					SormasUI.refreshView();
-					NotificationHelper
-						.showNotification(I18nProperties.getString(Strings.messageAllCasesAlreadyInEvent), Type.HUMANIZED_MESSAGE, 10000);
-				}
+				linkCasesToEvent(eventReferenceDto, caseDataDtos);
 			} else {
-				create(caseRefs);
+				createFromCaseList(caseRefs);
 				SormasUI.refreshView();
 			}
 		});
@@ -214,43 +205,140 @@ public class EventController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
-	private int linkCasesToEvent(EventReferenceDto eventReferenceDto, List<CaseDataDto> cases) {
-		// Check whether Persons are already enlisted as EventParticipants in this Event
-		List<EventParticipantReferenceDto> eventParticipantRefs = FacadeProvider.getEventParticipantFacade()
-			.getReferencesByEventAndPersons(
-				eventReferenceDto.getUuid(),
-				cases.stream().map(c -> c.getPerson().getUuid()).collect(Collectors.toList()));
-		List<CaseDataDto> leftCases = null;
-		if (eventParticipantRefs != null && !eventParticipantRefs.isEmpty()) {
-			List<EventParticipantDto> eventParticipants = FacadeProvider.getEventParticipantFacade()
-				.getByUuids(eventParticipantRefs.stream().map(EventParticipantReferenceDto::getUuid).collect(Collectors.toList()));
-			// performance problem?
-			eventParticipants.stream().forEach(ep -> {
-				ep.setResultingCase(
-					cases.stream().filter(c -> c.getPerson().getUuid().equals(ep.getPerson().getUuid())).findFirst().get().toReference());
-				FacadeProvider.getEventParticipantFacade().saveEventParticipant(ep);
-			});
-			leftCases = cases.stream()
-				.filter(
-					c -> !eventParticipants.stream().map(e -> e.getPerson().getUuid()).collect(Collectors.toList()).contains(c.getPerson().getUuid()))
-				.collect(Collectors.toList());
+	public void selectOrCreateEventForContactList(List<ContactReferenceDto> contactRefs) {
+
+		List<ContactDto> contactDtos =
+			FacadeProvider.getContactFacade().getByUuids(contactRefs.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
+
+		EventSelectionField eventSelect = new EventSelectionField(
+			contactDtos.stream().findFirst().get().getDisease(),
+			I18nProperties.getString(Strings.infoPickOrCreateEventForContact));
+		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
+
+		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
+		component.addCommitListener(() -> {
+			EventIndexDto selectedEvent = eventSelect.getValue();
+			if (selectedEvent != null) {
+				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
+				linkContactsToEvent(eventReferenceDto, contactDtos);
+			} else {
+				createFromContactList(contactRefs);
+				SormasUI.refreshView();
+			}
+		});
+
+		eventSelect.setSelectionChangeCallback((commitAllowed) -> {
+			component.getCommitButton().setEnabled(commitAllowed);
+		});
+
+		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
+	}
+
+	private void linkCasesToEvent(EventReferenceDto eventReferenceDto, List<CaseDataDto> cases) {
+
+		Map<String, CaseDataDto> caseByPersonUuid = new HashMap<>();
+
+		List<String> personUuids = cases.stream().map(caseDataDto -> {
+			String personUuid = caseDataDto.getPerson().getUuid();
+			if (!caseByPersonUuid.containsKey(personUuid)) {
+				caseByPersonUuid.put(personUuid, caseDataDto);
+			}
+			return personUuid;
+		}).collect(Collectors.toList());
+
+		// Set the resulting case for persons already enlisted as EventParticipants
+		List<EventParticipantDto> eventParticipantDtos =
+			FacadeProvider.getEventParticipantFacade().getByEventAndPersons(eventReferenceDto.getUuid(), personUuids);
+		for (EventParticipantDto eventParticipantDto : eventParticipantDtos) {
+			String personUuid = eventParticipantDto.getPerson().getUuid();
+			if (eventParticipantDto.getResultingCase() != null) {
+				CaseReferenceDto resultingCase = caseByPersonUuid.get(personUuid).toReference();
+				if (resultingCase != null) {
+					eventParticipantDto.setResultingCase(resultingCase);
+				}
+			}
+			caseByPersonUuid.remove(personUuid);
 		}
 
-		// Create new EventParticipants for other Persons
-		if (leftCases != null) {
-			HashMap<CaseDataDto, PersonDto> casePersonMap = new HashMap<>();
-			leftCases.stream().forEach(c -> casePersonMap.put(c, FacadeProvider.getPersonFacade().getPersonByUuid(c.getPerson().getUuid())));
-			cases.stream().forEach(c -> {
-				EventParticipantDto ep = new EventParticipantDto()
-					.buildFromCase(c.toReference(), casePersonMap.get(c), eventReferenceDto, UserProvider.getCurrent().getUserReference());
-				FacadeProvider.getEventParticipantFacade().saveEventParticipant(ep);
-			});
-		}
+		Collection<CaseDataDto> remainingCases = caseByPersonUuid.values();
+		int casesAlreadyLinkedToEvent = cases.size() - remainingCases.size();
 
-		if (eventParticipantRefs != null && !eventParticipantRefs.isEmpty()) {
-			return eventParticipantRefs.size();
+		//Create EventParticipants for the remaining cases
+		List<String> remainingPersonUuids =
+			remainingCases.stream().map(caseDataDto -> caseDataDto.getPerson().getUuid()).collect(Collectors.toList());
+		List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(remainingPersonUuids);
+		HashMap<String, PersonDto> personByUuid = new HashMap<>();
+		remainingPersons.stream().forEach(personDto -> personByUuid.put(personDto.getUuid(), personDto));
+
+		remainingCases.stream().forEach(caseDataDto -> {
+			EventParticipantDto ep = new EventParticipantDto().buildFromCase(
+				caseDataDto.toReference(),
+				personByUuid.get(caseDataDto.getPerson().getUuid()),
+				eventReferenceDto,
+				UserProvider.getCurrent().getUserReference());
+			FacadeProvider.getEventParticipantFacade().saveEventParticipant(ep);
+		});
+
+		if (remainingCases.size() > 0) {
+			SormasUI.refreshView();
+			NotificationHelper.showNotification(
+				String.format(I18nProperties.getString(Strings.messageCountCasesAlreadyInEvent), casesAlreadyLinkedToEvent),
+				Type.HUMANIZED_MESSAGE,
+				10000);
 		} else {
-			return 0;
+			SormasUI.refreshView();
+			NotificationHelper.showNotification(I18nProperties.getString(Strings.messageAllCasesAlreadyInEvent), Type.HUMANIZED_MESSAGE, 10000);
+		}
+	}
+
+	private void linkContactsToEvent(EventReferenceDto eventReferenceDto, List<ContactDto> contacts) {
+
+		Map<String, ContactDto> contactByPersonUuid = new HashMap<>();
+
+		List<String> personUuids = contacts.stream().map(contactDataDto -> {
+			String personUuid = contactDataDto.getPerson().getUuid();
+			if (!contactByPersonUuid.containsKey(personUuid)) {
+				contactByPersonUuid.put(personUuid, contactDataDto);
+			}
+			return personUuid;
+		}).collect(Collectors.toList());
+
+		FacadeProvider.getEventParticipantFacade()
+			.getByEventAndPersons(eventReferenceDto.getUuid(), personUuids)
+			.stream()
+			.forEach(eventParticipant -> contactByPersonUuid.remove(eventParticipant.getPerson().getUuid()));
+
+		Collection<ContactDto> remainingContacts = contactByPersonUuid.values();
+		int contactsAlreadyLinkedToEvent = contacts.size() - remainingContacts.size();
+
+		//Create EventParticipants for the remaining contactss
+		List<String> remainingPersonUuids =
+			remainingContacts.stream().map(caseDataDto -> caseDataDto.getPerson().getUuid()).collect(Collectors.toList());
+		List<PersonDto> remainingPersons = FacadeProvider.getPersonFacade().getByUuids(remainingPersonUuids);
+		HashMap<String, PersonDto> personByUuid = new HashMap<>();
+		remainingPersons.stream().forEach(personDto -> personByUuid.put(personDto.getUuid(), personDto));
+
+		remainingContacts.stream().forEach(contactDataDto -> {
+			EventParticipantDto ep = new EventParticipantDto().buildFromPerson(
+				personByUuid.get(contactDataDto.getPerson().getUuid()),
+				eventReferenceDto,
+				UserProvider.getCurrent().getUserReference());
+			try {
+				FacadeProvider.getEventParticipantFacade().saveEventParticipant(ep);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+
+		if (remainingContacts.size() > 0) {
+			SormasUI.refreshView();
+			NotificationHelper.showNotification(
+				String.format(I18nProperties.getString(Strings.messageCountContactsAlreadyInEvent), contactsAlreadyLinkedToEvent),
+				Type.HUMANIZED_MESSAGE,
+				10000);
+		} else {
+			SormasUI.refreshView();
+			NotificationHelper.showNotification(I18nProperties.getString(Strings.messageAllContactsAlreadyInEvent), Type.HUMANIZED_MESSAGE, 10000);
 		}
 	}
 
@@ -517,7 +605,7 @@ public class EventController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent(List<CaseReferenceDto> caseRefs) {
+	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponentForCaseList(List<CaseReferenceDto> caseRefs) {
 
 		List<CaseDataDto> caseDataDtos =
 			FacadeProvider.getCaseFacade().getByUuids(caseRefs.stream().map(c -> c.getUuid()).collect(Collectors.toList()));
@@ -538,7 +626,33 @@ public class EventController {
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.WARNING_MESSAGE);
 
 				linkCasesToEvent(new EventReferenceDto(dto.getUuid()), finalCaseDataDtos);
-				SormasUI.refreshView();
+			}
+		});
+
+		return editView;
+	}
+
+	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponentForContactList(List<ContactReferenceDto> contactRefs) {
+
+		List<ContactDto> contactDtos =
+			FacadeProvider.getContactFacade().getByUuids(contactRefs.stream().map(c -> c.getUuid()).collect(Collectors.toList()));
+
+		EventDataForm eventCreateForm = new EventDataForm(true, false);
+		eventCreateForm.setValue(createNewEvent(contactDtos.stream().findFirst().get().getDisease()));
+		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
+			eventCreateForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
+			eventCreateForm.getFieldGroup());
+
+		List<ContactDto> finalContactDtos = contactDtos;
+		editView.addCommitListener(() -> {
+			if (!eventCreateForm.getFieldGroup().isModified()) {
+				EventDto dto = eventCreateForm.getValue();
+				FacadeProvider.getEventFacade().saveEvent(dto);
+				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.WARNING_MESSAGE);
+
+				linkContactsToEvent(new EventReferenceDto(dto.getUuid()), finalContactDtos);
 			}
 		});
 

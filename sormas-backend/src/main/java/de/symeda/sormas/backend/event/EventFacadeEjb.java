@@ -1212,15 +1212,6 @@ public class EventFacadeEjb implements EventFacade {
 		eventService.updateExternalData(externalData);
 	}
 
-	@Override
-	public List<String> getLinkedCaseUuidsInEvent(List<String> collect, String uuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<Event> eventRoot = cq.from(Event.class);
-		Join<Event, EventParticipant> locationJoin = eventRoot.join(Event.EVENT_LOCATION, JoinType.INNER);
-		return null;
-	}
-
 	@LocalBean
 	@Stateless
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {

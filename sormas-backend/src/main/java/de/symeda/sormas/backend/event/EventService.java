@@ -222,7 +222,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.REPORT_DATE_TIME), timestamp),
 			eventParticipantService.createActiveEventParticipantsFilter(cb, eventParticipantJoin));
 		cq.where(filter);
-		cq.multiselect(eventRoot.get(Event.UUID), responsibleUserJoin);
+		cq.multiselect(eventRoot.get(Event.UUID), responsibleUserJoin).distinct(true);
 		return em.createQuery(cq)
 			.getResultList()
 			.stream()
@@ -451,10 +451,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			switch (jurisdictionLevel) {
 			case REGION:
 				if (currentUser.getRegion() != null) {
-					filter = CriteriaBuilderHelper.or(
-						cb,
-						filter,
-						cb.equal(eventParticipantPath.get(EventParticipant.REGION).get(Region.ID), currentUser.getRegion().getId()));
+					filter = CriteriaBuilderHelper
+						.or(cb, filter, cb.equal(eventParticipantPath.get(EventParticipant.REGION).get(Region.ID), currentUser.getRegion().getId()));
 				}
 				break;
 			case DISTRICT:

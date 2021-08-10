@@ -740,7 +740,8 @@ public class CasesView extends AbstractView {
 								}
 
 								ControllerProvider.getEventController()
-									.selectOrCreateEvent(selectedCases.stream().map(CaseIndexDto::toReference).collect(Collectors.toList()));
+									.selectOrCreateEventForCaseList(
+										selectedCases.stream().map(CaseIndexDto::toReference).collect(Collectors.toList()));
 							});
 						}));
 					}
