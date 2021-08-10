@@ -495,6 +495,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		switch (immunizationDateType) {
 		case REPORT_DATE:
 			return Immunization.REPORT_DATE;
+		case IMMUNIZATION_END:
+			return Immunization.END_DATE;
+		case VALID_UNTIL:
+			return Immunization.VALID_UNTIL;
 		case RECOVERY_DATE:
 			return Immunization.RECOVERY_DATE;
 		}

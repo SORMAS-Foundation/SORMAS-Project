@@ -1294,6 +1294,8 @@ public interface Captions {
 	String Immunization_reportDate = "Immunization.reportDate";
 	String Immunization_startDate = "Immunization.startDate";
 	String Immunization_uuid = "Immunization.uuid";
+	String Immunization_validFrom = "Immunization.validFrom";
+	String Immunization_validUntil = "Immunization.validUntil";
 	String immunizationImmunizationsList = "immunizationImmunizationsList";
 	String immunizationKeepImmunization = "immunizationKeepImmunization";
 	String immunizationNewImmunization = "immunizationNewImmunization";

@@ -335,6 +335,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		dto.setAdditionalDetails(entity.getAdditionalDetails());
 		dto.setPositiveTestResultDate(entity.getPositiveTestResultDate());
 		dto.setRecoveryDate(entity.getRecoveryDate());
+		dto.setValidFrom(entity.getValidFrom());
+		dto.setValidUntil(entity.getValidUntil());
 		dto.setRelatedCase(CaseFacadeEjb.toReferenceDto(entity.getRelatedCase()));
 
 		List<VaccinationDto> vaccinationDtos = new ArrayList<>();
@@ -376,6 +378,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setPositiveTestResultDate(source.getPositiveTestResultDate());
 		target.setRecoveryDate(source.getRecoveryDate());
+		target.setValidFrom(source.getValidFrom());
+		target.setValidUntil(source.getValidUntil());
 		target.setRelatedCase(caseService.getByReferenceDto(source.getRelatedCase()));
 
 		List<VaccinationEntity> vaccinationEntities = new ArrayList<>();

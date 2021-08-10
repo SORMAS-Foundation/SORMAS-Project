@@ -7842,6 +7842,8 @@ ALTER TABLE immunization ADD COLUMN diseasedetails varchar(512);
 ALTER TABLE immunization ADD COLUMN healthfacility_id bigint;
 ALTER TABLE immunization ADD COLUMN healthfacilitydetails varchar(512);
 ALTER TABLE immunization ADD COLUMN facilitytype varchar(255);
+ALTER TABLE immunization ADD COLUMN validfrom timestamp;
+ALTER TABLE immunization ADD COLUMN validuntil timestamp;
 ALTER TABLE immunization ADD CONSTRAINT fk_immunization_healthfacility_id FOREIGN KEY (healthfacility_id) REFERENCES facility(id);
 
 ALTER TABLE immunization_history ALTER COLUMN externalid DROP NOT NULL;
@@ -7851,6 +7853,8 @@ ALTER TABLE immunization_history ADD COLUMN diseasedetails varchar(512);
 ALTER TABLE immunization_history ADD COLUMN healthfacility_id bigint;
 ALTER TABLE immunization_history ADD COLUMN healthfacilitydetails varchar(512);
 ALTER TABLE immunization_history ADD COLUMN facilitytype varchar(255);
+ALTER TABLE immunization_history ADD COLUMN validfrom timestamp;
+ALTER TABLE immunization_history ADD COLUMN validuntil timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (395, 'Modifications to immunization tables #6025');
 
