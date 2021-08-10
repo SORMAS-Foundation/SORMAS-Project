@@ -107,7 +107,7 @@ public class ImmunizationController {
 		editComponent.addCommitListener(() -> {
 			if (!immunizationDataForm.getFieldGroup().isModified()) {
 				ImmunizationDto immunizationDtoValue = immunizationDataForm.getValue();
-				List<ImmunizationDto> similarImmunizations = findForSimilarImmunizations(immunizationDtoValue);
+				List<ImmunizationDto> similarImmunizations = findSimilarImmunizations(immunizationDtoValue);
 				if (similarImmunizations.isEmpty()) {
 					FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
 					Notification.show(I18nProperties.getString(Strings.messageImmunizationSaved), Notification.Type.WARNING_MESSAGE);
@@ -235,7 +235,7 @@ public class ImmunizationController {
 		}
 	}
 
-	private List<ImmunizationDto> findForSimilarImmunizations(ImmunizationDto immunizationDto) {
+	private List<ImmunizationDto> findSimilarImmunizations(ImmunizationDto immunizationDto) {
 		ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria.Builder().withImmunization(immunizationDto.getUuid())
 			.withDisease(immunizationDto.getDisease())
 			.withStartDate(immunizationDto.getStartDate())
