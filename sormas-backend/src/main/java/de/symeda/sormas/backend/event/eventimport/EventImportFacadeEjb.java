@@ -309,7 +309,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 					if (importFacade.executeDefaultInvoke(pd, currentElement, entry, entryHeaderPath, true)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(EventReferenceDto.class)) {
-						EventDto referencedDto = eventFacade.getEventByUuid(entry);
+						EventDto referencedDto = eventFacade.getEventByUuid(entry, false);
 						if (referencedDto == null) {
 							throw new ImportErrorException(
 								I18nProperties.getValidationError(

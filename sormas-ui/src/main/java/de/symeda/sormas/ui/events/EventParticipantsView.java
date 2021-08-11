@@ -191,7 +191,7 @@ public class EventParticipantsView extends AbstractEventView {
 			bulkActions
 				.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEventParticipantsToContacts), VaadinIcons.HAND, mi -> {
 					grid.bulkActionHandler(items -> {
-						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid());
+						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
 						ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
 					}, true);
 				}));

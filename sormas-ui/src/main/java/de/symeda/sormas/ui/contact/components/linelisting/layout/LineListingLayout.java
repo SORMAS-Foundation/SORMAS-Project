@@ -68,6 +68,37 @@ public class LineListingLayout extends VerticalLayout {
 		addComponent(lineComponent);
 	}
 
+	public LineListingLayout(Window window, EventDto eventDto, Iterable<EventParticipantDto> eventParticipantDtos) {
+		this(window, new SharedInfoField(eventDto));
+
+		for (EventParticipantDto eventParticipantDto : eventParticipantDtos) {
+			PersonFieldDto person = new PersonFieldDto();
+			person.setFirstName(eventParticipantDto.getPerson().getFirstName());
+			person.setLastName(eventParticipantDto.getPerson().getLastName());
+			person.setBirthDate(
+				new BirthDateDto(
+					eventParticipantDto.getPerson().getBirthdateDD(),
+					eventParticipantDto.getPerson().getBirthdateMM(),
+					eventParticipantDto.getPerson().getBirthdateYYYY()));
+			person.setSex(eventParticipantDto.getPerson().getSex());
+
+			ContactLineLayoutDto newLineDto = new ContactLineLayoutDto();
+			newLineDto.lineField = new ContactLineFieldDto();
+			newLineDto.lineField.setPerson(person);
+
+			ContactLineLayout newLine = new ContactLineLayout(lines.size());
+			newLine.enableDelete(false);
+			newLine.enablePersonField(false);
+			newLine.setBean(newLineDto);
+			newLine.setPerson(eventParticipantDto.getPerson());
+
+			lines.add(newLine);
+			lineComponent.addComponent(newLine);
+		}
+
+		addButtons();
+	}
+
 	public LineListingLayout(Window window, CaseDataDto caseReferenceDto) {
 		this(window, new SharedInfoField(caseReferenceDto));
 
@@ -87,36 +118,6 @@ public class LineListingLayout extends VerticalLayout {
 		actionBar.setComponentAlignment(addLine, Alignment.MIDDLE_LEFT);
 
 		addComponent(actionBar);
-
-		addButtons();
-	}
-
-	public LineListingLayout(Window window, EventDto eventDto, Iterable<EventParticipantDto> eventParticipantDtos) {
-		this(window, new SharedInfoField(eventDto));
-
-		for (EventParticipantDto eventParticipantDto : eventParticipantDtos) {
-			PersonFieldDto person = new PersonFieldDto();
-			person.setFirstName(eventParticipantDto.getPerson().getFirstName());
-			person.setLastName(eventParticipantDto.getPerson().getLastName());
-			person.setBirthDate(new BirthDateDto(
-					eventParticipantDto.getPerson().getBirthdateDD(),
-					eventParticipantDto.getPerson().getBirthdateMM(),
-					eventParticipantDto.getPerson().getBirthdateYYYY()));
-			person.setSex(eventParticipantDto.getPerson().getSex());
-
-			ContactLineLayoutDto newLineDto = new ContactLineLayoutDto();
-			newLineDto.lineField = new ContactLineFieldDto();
-			newLineDto.lineField.setPerson(person);
-
-			ContactLineLayout newLine = new ContactLineLayout(lines.size());
-			newLine.enableDelete(false);
-			newLine.enablePersonField(false);
-			newLine.setBean(newLineDto);
-			newLine.setPerson(eventParticipantDto.getPerson());
-
-			lines.add(newLine);
-			lineComponent.addComponent(newLine);
-		}
 
 		addButtons();
 	}

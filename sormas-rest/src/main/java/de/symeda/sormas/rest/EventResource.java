@@ -60,7 +60,7 @@ public class EventResource extends EntityDtoResource {
 	@GET
 	@Path("/{uuid}")
 	public EventDto getByUuid(@PathParam("uuid") String uuid) {
-		return FacadeProvider.getEventFacade().getByUuid(uuid);
+		return FacadeProvider.getEventFacade().getEventByUuid(uuid, true);
 	}
 
 	@POST

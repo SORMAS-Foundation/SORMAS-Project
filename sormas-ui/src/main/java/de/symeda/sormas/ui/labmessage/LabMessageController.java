@@ -325,7 +325,7 @@ public class LabMessageController {
 
 				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
 				if (!eventIndexDtos.contains(selectedEvent)) {
-					createEventParticipant(FacadeProvider.getEventFacade().getEventByUuid(eventReferenceDto.getUuid()), labMessageDto, person);
+					createEventParticipant(FacadeProvider.getEventFacade().getEventByUuid(eventReferenceDto.getUuid(), false), labMessageDto, person);
 				} else {
 					CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(
 						new VerticalLayout(new Label(I18nProperties.getString(Strings.infoEventParticipantAlreadyExisting))));
@@ -681,11 +681,12 @@ public class LabMessageController {
 		}
 		// TODO currently just the first testReport is picked here. That must be temporary. Will be fixed with #5899
 		List<TestReportDto> testReportDtos = FacadeProvider.getTestReportFacade().getAllByLabMessage(labMessageDto.toReference());
-		if(!testReportDtos.isEmpty()) {
+		if (!testReportDtos.isEmpty()) {
 			TestReportDto testReportDto = testReportDtos.get(0);
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(testReportDto.getTestResult());
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(testReportDto.getTestType());
-			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE)).setValue(labMessageDto.getTestedDisease());
+			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE))
+				.setValue(labMessageDto.getTestedDisease());
 			((NullableOptionGroup) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT_VERIFIED))
 				.setValue(testReportDto.isTestResultVerified());
 			((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
@@ -793,7 +794,7 @@ public class LabMessageController {
 		// TODO currently just the first testReport is picked here. That must be temporary.
 		//  #5899 should fix this and also provide better support for handling creation of a new test report
 		List<TestReportDto> testReportDtos = labMessageDto.getTestReports();
-		if	(testReportDtos.isEmpty()) {
+		if (testReportDtos.isEmpty()) {
 			TestReportDto testReportDto = TestReportDto.build();
 			testReportDto.setLabMessage(labMessageDto.toReference());
 			testReportDto.setPathogenTest(pathogenTestDto.toReference());
