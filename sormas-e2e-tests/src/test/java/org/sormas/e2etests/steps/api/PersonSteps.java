@@ -28,6 +28,8 @@ import org.sormas.e2etests.helpers.api.PersonsHelper;
 import org.sormas.e2etests.pojo.api.Person;
 import org.sormas.e2etests.pojo.api.chunks.Address;
 import org.sormas.e2etests.pojo.api.chunks.Country;
+import org.sormas.e2etests.pojo.api.chunks.PersonContactDetailsIdentifier;
+import org.sormas.e2etests.pojo.api.chunks.PersonContactDetailsInformation;
 import org.sormas.e2etests.state.ApiState;
 
 public class PersonSteps implements En {
@@ -45,6 +47,52 @@ public class PersonSteps implements En {
         "API: I create a new person",
         () -> {
           String personUUID = UUID.randomUUID().toString();
+
+          Address address =
+              Address.builder()
+                  .latitude(52.28339547689361)
+                  .longitude(10.5794084300839)
+                  .country(
+                      Country.builder()
+                          .uuid("SUSZ6P-4YQIB3-WMSLMG-IAPRKJ4Y")
+                          .caption("Deutschland")
+                          .externalId(null)
+                          .isoCode("DEU")
+                          .build())
+                  .region("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY")
+                  .continent("W2FUSQ-PXGMRZ-V6ZTOE-6EPIKCSI")
+                  .subcontinent("VMRXWX-EAGV7L-JFKP26-F3DBSBFU")
+                  .district("SZ75BK-5OUMFU-V2DTKG-5BYACHFE")
+                  .community("QWK33J-XYN3DE-5CSXFJ-MMFOKNKM")
+                  .city("Berlin")
+                  .areaType("URBAN")
+                  .postalCode("123")
+                  .houseNumber("50")
+                  .facilityType("CAMPSITE")
+                  .facility("SORMAS-CONSTID-OTHERS-FACILITY")
+                  .facilityDetails("Dummy description")
+                  .details("Dummy text")
+                  .contactPersonFirstName(faker.name().firstName())
+                  .contactPersonLastName(faker.name().lastName())
+                  .contactPersonPhone(faker.phoneNumber().cellPhone())
+                  .contactPersonEmail(faker.internet().emailAddress())
+                  .uuid(personUUID)
+                  .build();
+
+          PersonContactDetailsIdentifier personContactDetailsIdentifier =
+              PersonContactDetailsIdentifier.builder()
+                  .uuid(UUID.randomUUID().toString())
+                  .person(Person.builder().uuid(personUUID).build())
+                  .build();
+
+          PersonContactDetailsInformation personContactDetailsInformation =
+              PersonContactDetailsInformation.builder()
+                  .primaryContact(true)
+                  .thirdParty(false)
+                  .personContactDetailType("PHONE")
+                  .contactInformation(faker.phoneNumber().phoneNumber())
+                  .build();
+
           Person createPersonObject =
               Person.builder()
                   .uuid(personUUID)
@@ -55,36 +103,9 @@ public class PersonSteps implements En {
                   .birthdateYYYY(faker.number().numberBetween(1900, 2005))
                   .sex("MALE")
                   .phone(faker.phoneNumber().phoneNumber())
-                  .address(
-                      Address.builder()
-                          .latitude(52.28339547689361)
-                          .longitude(10.5794084300839)
-                          .country(
-                              Country.builder()
-                                  .uuid("SUSZ6P-4YQIB3-WMSLMG-IAPRKJ4Y")
-                                  .caption("Deutschland")
-                                  .externalId(null)
-                                  .isoCode("DEU")
-                                  .build())
-                          .region("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY")
-                          .continent("W2FUSQ-PXGMRZ-V6ZTOE-6EPIKCSI")
-                          .subcontinent("VMRXWX-EAGV7L-JFKP26-F3DBSBFU")
-                          .district("SZ75BK-5OUMFU-V2DTKG-5BYACHFE")
-                          .community("QWK33J-XYN3DE-5CSXFJ-MMFOKNKM")
-                          .city("Berlin")
-                          .areaType("URBAN")
-                          .postalCode("123")
-                          .houseNumber("50")
-                          .facilityType("CAMPSITE")
-                          .facility("SORMAS-CONSTID-OTHERS-FACILITY")
-                          .facilityDetails("Dummy description")
-                          .details("Dummy text")
-                          .contactPersonFirstName(faker.name().firstName())
-                          .contactPersonLastName(faker.name().lastName())
-                          .contactPersonPhone(faker.phoneNumber().cellPhone())
-                          .contactPersonEmail(faker.internet().emailAddress())
-                          .uuid(personUUID)
-                          .build())
+                  .address(address)
+                  // .personContactDetails(
+                  // Arrays.array(personContactDetailsIdentifier, personContactDetailsInformation)) //TODO to be investigated why is not working as it does in postman call
                   .build();
           // TODO discuss if we'll keep hardcoded the IDs for continent etc, or we'll make API calls
           // to get those values
