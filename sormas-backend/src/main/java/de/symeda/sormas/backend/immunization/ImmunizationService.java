@@ -478,22 +478,11 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			String dateField = getDateFieldFromDateType(criteria.getImmunizationDateType());
 			if (dateField != null) {
 				Path<Object> path = from.get(dateField);
-				filter = applyDateFilter(cb, filter, path, criteria.getFromDate(), criteria.getToDate());
+				filter = CriteriaBuilderHelper.applyDateFilter(cb, filter, path, criteria.getFromDate(), criteria.getToDate());
 			}
 		}
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
 
-		return filter;
-	}
-
-	private Predicate applyDateFilter(CriteriaBuilder cb, Predicate filter, Path path, Date fromDate, Date toDate) {
-		if (fromDate != null && toDate != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(path, fromDate, toDate));
-		} else if (fromDate != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(path, fromDate));
-		} else if (toDate != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(path, toDate));
-		}
 		return filter;
 	}
 
