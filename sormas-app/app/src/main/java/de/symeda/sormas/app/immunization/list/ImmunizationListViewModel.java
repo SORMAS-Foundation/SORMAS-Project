@@ -29,6 +29,7 @@ import java.util.List;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.immunization.ImmunizationCriteria;
 
@@ -50,6 +51,12 @@ public class ImmunizationListViewModel extends ViewModel {
 	public void initializeViewModel(Contact contact) {
 		final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
 		immunizationCriteria.setPerson(contact.getPerson());
+		initializeModel(immunizationCriteria);
+	}
+
+	public void initializeViewModel(EventParticipant eventParticipant) {
+		final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
+		immunizationCriteria.setPerson(eventParticipant.getPerson());
 		initializeModel(immunizationCriteria);
 	}
 

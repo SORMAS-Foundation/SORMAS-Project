@@ -21,14 +21,20 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.EventEditAuthorization;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.event.eventparticipant.EventParticipantSection;
 import de.symeda.sormas.app.event.eventparticipant.edit.EventParticipantEditActivity;
 import de.symeda.sormas.app.util.Bundler;
 
@@ -61,14 +67,38 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 		return DatabaseHelper.getEventParticipantDao().queryUuid(recordUuid);
 	}
 
+
+	@Override
+	public List<PageMenuItem> getPageMenuData() {
+		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(EventParticipantSection.values(), getContext());
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+			menuItems.set(EventParticipantSection.IMMUNIZATIONS.ordinal(), null);
+		}
+		return menuItems;
+	}
+
 	@Override
 	protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, EventParticipant activityRootData) {
-		return EventParticipantReadFragment.newInstance(activityRootData);
+
+		EventParticipantSection section = EventParticipantSection.fromOrdinal(menuItem.getPosition());
+		BaseReadFragment fragment;
+		switch (section) {
+
+			case EVENT_PARTICIPANT_INFO:
+				fragment = EventParticipantReadFragment.newInstance(activityRootData);
+				break;
+			case IMMUNIZATIONS:
+				fragment = EventParticipantReadImmunizationListFragment.newInstance(activityRootData);
+				break;
+			default:
+				throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
+		}
+		return fragment;
 	}
 
 	@Override
 	public void goToEditView() {
-		EventParticipantEditActivity.startActivity(this, getRootUuid(), eventUuid);
+		EventParticipantEditActivity.startActivity(this, getRootUuid(), eventUuid, EventParticipantSection.EVENT_PARTICIPANT_INFO);
 	}
 
 	@Override
