@@ -777,7 +777,9 @@ public interface Strings {
 	String messageAggregateReportFound = "messageAggregateReportFound";
 	String messageAllCampaignFormsValid = "messageAllCampaignFormsValid";
 	String messageAllCasesAlreadyInEvent = "messageAllCasesAlreadyInEvent";
+	String messageAllCasesLinkedToEvent = "messageAllCasesLinkedToEvent";
 	String messageAllContactsAlreadyInEvent = "messageAllContactsAlreadyInEvent";
+	String messageAllContactsLinkedToEvent = "messageAllContactsLinkedToEvent";
 	String messageAlreadyEventParticipant = "messageAlreadyEventParticipant";
 	String messageAnimalContactsHint = "messageAnimalContactsHint";
 	String messageAreaArchived = "messageAreaArchived";

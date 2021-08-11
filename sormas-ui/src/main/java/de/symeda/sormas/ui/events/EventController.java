@@ -281,16 +281,14 @@ public class EventController {
 			});
 		}
 
-		if (remainingCases.size() > 0) {
-			SormasUI.refreshView();
-			NotificationHelper.showNotification(
-				String.format(I18nProperties.getString(Strings.messageCountCasesAlreadyInEvent), casesAlreadyLinkedToEvent),
-				Type.HUMANIZED_MESSAGE,
-				10000);
-		} else {
-			SormasUI.refreshView();
-			NotificationHelper.showNotification(I18nProperties.getString(Strings.messageAllCasesAlreadyInEvent), Type.HUMANIZED_MESSAGE, 10000);
-		}
+		String message = remainingCases.size() == 0
+			? I18nProperties.getString(Strings.messageAllCasesAlreadyInEvent)
+			: casesAlreadyLinkedToEvent == 0
+				? I18nProperties.getString(Strings.messageAllCasesLinkedToEvent)
+				: String.format(I18nProperties.getString(Strings.messageCountCasesAlreadyInEvent), casesAlreadyLinkedToEvent);
+
+		SormasUI.refreshView();
+		NotificationHelper.showNotification(message, Type.HUMANIZED_MESSAGE, 10000);
 	}
 
 	private void linkContactsToEvent(EventReferenceDto eventReferenceDto, List<ContactDto> contacts) {
@@ -330,16 +328,14 @@ public class EventController {
 			});
 		}
 
-		if (remainingContacts.size() > 0) {
-			SormasUI.refreshView();
-			NotificationHelper.showNotification(
-				String.format(I18nProperties.getString(Strings.messageCountContactsAlreadyInEvent), contactsAlreadyLinkedToEvent),
-				Type.HUMANIZED_MESSAGE,
-				10000);
-		} else {
-			SormasUI.refreshView();
-			NotificationHelper.showNotification(I18nProperties.getString(Strings.messageAllContactsAlreadyInEvent), Type.HUMANIZED_MESSAGE, 10000);
-		}
+		String message = remainingContacts.size() == 0
+			? I18nProperties.getString(Strings.messageAllContactsAlreadyInEvent)
+			: contactsAlreadyLinkedToEvent == 0
+				? I18nProperties.getString(Strings.messageAllContactsLinkedToEvent)
+				: String.format(I18nProperties.getString(Strings.messageCountContactsAlreadyInEvent), contactsAlreadyLinkedToEvent);
+
+		SormasUI.refreshView();
+		NotificationHelper.showNotification(message, Type.HUMANIZED_MESSAGE, 10000);
 	}
 
 	public void selectEvent(EventGroupReferenceDto eventGroupReference) {
