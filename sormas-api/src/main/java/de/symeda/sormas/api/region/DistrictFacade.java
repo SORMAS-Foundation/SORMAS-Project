@@ -31,7 +31,9 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface DistrictFacade {
 
-	List<DistrictReferenceDto> getAllActiveByRegion(String regionUuid);
+    List<DistrictReferenceDto> getAllActiveByArea(String areaUuid);
+
+    List<DistrictReferenceDto> getAllActiveByRegion(String regionUuid);
 
 	int getCountByRegion(String regionUuid);
 
