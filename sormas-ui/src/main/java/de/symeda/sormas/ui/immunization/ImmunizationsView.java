@@ -78,19 +78,7 @@ public class ImmunizationsView extends AbstractView {
 		applyingCriteria = true;
 
 		filterFormLayout.setValue(criteria);
-
-		Disease disease = criteria.getDisease();
-		if (disease == null) {
-			statusBarLayout.setVisible(false);
-			grid.setVisible(false);
-			noDiseaseInfoLabel.setVisible(true);
-		} else {
-			statusBarLayout.setVisible(true);
-			grid.setVisible(true);
-			noDiseaseInfoLabel.setVisible(false);
-
-			statusBarLayout.updateActiveBadge(grid.getItemCount());
-		}
+		updateView(criteria.getDisease());
 
 		applyingCriteria = false;
 	}
@@ -106,15 +94,9 @@ public class ImmunizationsView extends AbstractView {
 		filterFormLayout.addApplyHandler(clickEvent -> {
 			ImmunizationCriteria filterFormValue = filterFormLayout.getValue();
 			Disease disease = filterFormValue.getDisease();
-			if (disease == null) {
-				statusBarLayout.setVisible(false);
-				grid.setVisible(false);
-				noDiseaseInfoLabel.setVisible(true);
-			} else {
-				statusBarLayout.setVisible(true);
-				grid.setVisible(true);
-				noDiseaseInfoLabel.setVisible(false);
+			updateView(disease);
 
+			if (disease != null) {
 				grid.reload();
 				statusBarLayout.updateActiveBadge(grid.getItemCount());
 			}
@@ -129,5 +111,17 @@ public class ImmunizationsView extends AbstractView {
 		statusBarLayout.addItem(Captions.all, e -> navigateTo(criteria));
 
 		return statusBarLayout;
+	}
+
+	private void updateView(Disease disease) {
+		if (disease == null) {
+			statusBarLayout.setVisible(false);
+			grid.setVisible(false);
+			noDiseaseInfoLabel.setVisible(true);
+		} else {
+			statusBarLayout.setVisible(true);
+			grid.setVisible(true);
+			noDiseaseInfoLabel.setVisible(false);
+		}
 	}
 }
