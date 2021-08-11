@@ -55,7 +55,7 @@ public class ImmunizationListComponent extends VerticalLayout {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.immunizationNewImmunization));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getImmunizationController().create());
+			createButton.addClickListener(e -> ControllerProvider.getImmunizationController().create(immunizationCriteria.getPerson(), immunizationCriteria.getDisease()));
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}
