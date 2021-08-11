@@ -145,6 +145,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -1249,7 +1250,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			phoneSubQuery.alias(PersonIndexDto.PHONE),
 			emailSubQuery.alias(PersonIndexDto.EMAIL_ADDRESS),
 			person.get(Person.CHANGE_DATE),
-			cb.literal(false));
+			JurisdictionHelper.booleanSelector(cb, personService.inJurisdictionOrOwned(personQueryContext)));
 
 		Predicate filter = createIndexListFilter(criteria, personQueryContext);
 		if (filter != null) {
@@ -1298,10 +1299,6 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		List<PersonIndexDto> persons = QueryHelper.getResultList(em, cq, first, max);
 
-		// Fetch PersonIndexDto.inJurisdiction information (avoid duplicates with true/false in PersonIndexDto query)
-		List<String> inJurisdictionOrOwnedPersonUuids = getInJurisdictionOrOwnedPersons(criteria);
-		persons.stream().forEach(e -> e.setInJurisdiction(inJurisdictionOrOwnedPersonUuids.contains(e.getUuid())));
-
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			PersonIndexDto.class,
@@ -1315,27 +1312,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			persons.size(),
 			DateHelper.durationMillies(startTime));
 		return persons;
-	}
-
-	@SuppressWarnings({
-		"rawtypes",
-		"unchecked" })
-	private List<String> getInJurisdictionOrOwnedPersons(PersonCriteria criteria) {
-
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<String> cq = cb.createQuery(String.class);
-		final Root<Person> person = cq.from(Person.class);
-
-		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
-		((PersonJoins) personQueryContext.getJoins()).configure(criteria);
-
-		cq.multiselect(person.get(Person.UUID));
-		cq.where(
-			CriteriaBuilderHelper
-				.and(cb, createIndexListFilter(criteria, personQueryContext), personService.inJurisdictionOrOwned(personQueryContext)));
-		cq.distinct(true);
-
-		return em.createQuery(cq).getResultList();
 	}
 
 	@SuppressWarnings("rawtypes")
