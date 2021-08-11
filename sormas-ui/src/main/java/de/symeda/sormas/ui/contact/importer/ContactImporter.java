@@ -114,7 +114,7 @@ public class ContactImporter extends DataImporter {
 			values[uuidIndex] = DataHelper.createUuid();
 		}
 
-		final PersonDto newPersonTemp = PersonDto.build();
+		final PersonDto newPersonTemp = PersonDto.buildImportEntity();
 		final ContactDto newContactTemp = caze != null ? ContactDto.build(caze) : ContactDto.build();
 		newContactTemp.setReportingUser(currentUser.toReference());
 

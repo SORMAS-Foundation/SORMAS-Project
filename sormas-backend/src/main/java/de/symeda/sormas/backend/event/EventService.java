@@ -538,6 +538,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		if (eventCriteria.getRiskLevel() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.RISK_LEVEL), eventCriteria.getRiskLevel()));
 		}
+		if (eventCriteria.getSpecificRisk() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.SPECIFIC_RISK), eventCriteria.getSpecificRisk()));
+		}
 		if (eventCriteria.getEventInvestigationStatus() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.get(Event.EVENT_INVESTIGATION_STATUS), eventCriteria.getEventInvestigationStatus()));
@@ -674,7 +677,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				cb.isFalse(joins.getEventParticipants().get(EventParticipant.DELETED)));
 		}
 		if (eventCriteria.getFacilityType() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getFacilityType(), eventCriteria.getFacilityType()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getLocation().get(Location.FACILITY_TYPE), eventCriteria.getFacilityType()));
 		}
 		if (eventCriteria.getFacility() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getFacility().get(Facility.UUID), eventCriteria.getFacility().getUuid()));

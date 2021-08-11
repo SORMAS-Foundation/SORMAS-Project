@@ -111,14 +111,6 @@ public class EventJoins<T> extends AbstractDomainObjectJoins<T, Event> {
 		this.facility = facility;
 	}
 
-	public Join<Location, FacilityType> getFacilityType() {
-		return getOrCreate(facilityType, Location.FACILITY_TYPE, JoinType.LEFT, getLocation(), this::setFacilityType);
-	}
-
-	private void setFacilityType(Join<Location, FacilityType> facilityType) {
-		this.facilityType = facilityType;
-	}
-
 	public Join<Event, EventParticipant> getEventParticipants() {
 		return getOrCreate(eventParticipants, Event.EVENT_PERSONS, JoinType.LEFT, this::setEventParticipants);
 	}

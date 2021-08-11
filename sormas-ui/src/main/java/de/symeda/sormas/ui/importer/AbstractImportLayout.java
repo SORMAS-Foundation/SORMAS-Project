@@ -48,7 +48,7 @@ public class AbstractImportLayout extends VerticalLayout {
 		setMargin(true);
 	}
 
-	protected void addDownloadResourcesComponent(int step, ClassResource importGuideResource, ClassResource dataDictionaryResource) {
+	protected void addDownloadResourcesComponent(int step, ClassResource importGuideResource) {
 		String headline = I18nProperties.getString(Strings.headingDownloadImportGuide);
 		String infoText = I18nProperties.getString(Strings.infoDownloadImportGuide);
 		Resource buttonIcon = VaadinIcons.FILE_PRESENTATION;
@@ -65,10 +65,7 @@ public class AbstractImportLayout extends VerticalLayout {
 			ValoTheme.BUTTON_PRIMARY,
 			CssStyles.VSPACE_TOP_3,
 			CssStyles.VSPACE_2);
-
-		FileDownloader dataDictionaryDownloader = new FileDownloader(dataDictionaryResource);
-		dataDictionaryDownloader.extend(dataDictionaryButton);
-
+		DownloadUtil.attachDataDictionaryDownloader(dataDictionaryButton);
 		addComponent(dataDictionaryButton);
 	}
 

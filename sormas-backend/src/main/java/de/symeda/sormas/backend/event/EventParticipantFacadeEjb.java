@@ -54,6 +54,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -219,6 +220,17 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@Override
 	public EventParticipantDto getEventParticipantByUuid(String uuid) {
 		return convertToDto(eventParticipantService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+	}
+
+	@Override
+	public Page<EventParticipantIndexDto> getIndexPage(
+		EventParticipantCriteria eventParticipantCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<EventParticipantIndexDto> eventParticipantIndexList = getIndexList(eventParticipantCriteria, offset, size, sortProperties);
+		long totalElementCount = count(eventParticipantCriteria);
+		return new Page<>(eventParticipantIndexList, offset, size, totalElementCount);
 	}
 
 	@Override

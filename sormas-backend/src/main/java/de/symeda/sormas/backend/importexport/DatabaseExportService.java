@@ -34,6 +34,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.backend.user.User;
 import org.hibernate.Session;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyManager;
@@ -127,6 +128,8 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(
 			DatabaseTable.CLINICAL_VISIT_SYMPTOMS,
 			new DatabaseExportConfiguration(Symptoms.TABLE_NAME, ClinicalVisit.TABLE_NAME, "id", "symptoms_id"));
+		EXPORT_CONFIGS.put(DatabaseTable.USERS, new DatabaseExportConfiguration(User.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.USER_ROLES, new DatabaseExportConfiguration(User.TABLE_NAME, User.TABLE_NAME_USERROLES, "id", "user_id"));
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());

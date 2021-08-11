@@ -26,6 +26,7 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -51,6 +52,12 @@ public interface EventParticipantFacade {
 		EventParticipantCriteria eventParticipantCriteria,
 		Integer first,
 		Integer max,
+		List<SortProperty> sortProperties);
+
+	Page<EventParticipantIndexDto> getIndexPage(
+		EventParticipantCriteria eventParticipantCriteria,
+		Integer offset,
+		Integer size,
 		List<SortProperty> sortProperties);
 
 	List<EventParticipantListEntryDto> getListEntries(EventParticipantCriteria eventParticipantCriteria, Integer first, Integer max);

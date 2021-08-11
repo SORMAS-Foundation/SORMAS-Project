@@ -96,6 +96,7 @@
                 style="@style/ControlSingleColumnStyle"
                 app:enumClass="@{eventStatusClass}"
                 app:required="true"
+                app:nullable="false"
                 app:value="@={data.eventStatus}"/>
 
 
@@ -115,6 +116,11 @@
                 style="@style/ControlSingleColumnStyle"
                 app:enumClass="@{riskLevelClass}"
                 app:value="@={data.riskLevel}"/>
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/event_specificRisk"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.specificRisk}"/>
 
             <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                 android:id="@+id/event_multiDayEvent"

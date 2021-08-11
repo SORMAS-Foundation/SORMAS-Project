@@ -51,7 +51,10 @@ public enum DatabaseTable {
 	DISTRICTS(DatabaseTableType.INFRASTRUCTURE, null, "districts"),
 	COMMUNITIES(DatabaseTableType.INFRASTRUCTURE, null, "communities"),
 	FACILITIES(DatabaseTableType.INFRASTRUCTURE, null, "facilities"),
-	CUSTOMIZABLE_ENUM_VALUES(DatabaseTableType.CONFIGURATION, null, "customizable_enum_values");
+	CUSTOMIZABLE_ENUM_VALUES(DatabaseTableType.CONFIGURATION, null, "customizable_enum_values"),
+
+	USERS(DatabaseTableType.SORMAS, null, "users"),
+	USER_ROLES(DatabaseTableType.SORMAS, USERS, "user_roles");
 
 	private final DatabaseTableType databaseTableType;
 	private final DatabaseTable parentTable;

@@ -62,6 +62,7 @@ import de.symeda.sormas.api.event.InstitutionalPartnerType;
 import de.symeda.sormas.api.event.LaboratoryDiagnosticEvidenceDetail;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
+import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
@@ -108,8 +109,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private static final String HTML_LAYOUT =
 			loc(EVENT_DATA_HEADING_LOC) +
 					fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
-					fluidRowLocs(EventDto.EVENT_STATUS, EventDto.RISK_LEVEL) +
-					fluidRowLocs(EventDto.EVENT_MANAGEMENT_STATUS, EventDto.EVENT_IDENTIFICATION_SOURCE) +
+					fluidRowLocs(EventDto.EVENT_STATUS, EventDto.EVENT_MANAGEMENT_STATUS) +
+					fluidRowLocs(EventDto.EVENT_IDENTIFICATION_SOURCE) +
+					fluidRowLocs(EventDto.RISK_LEVEL, EventDto.SPECIFIC_RISK) +
 					fluidRowLocs(EventDto.MULTI_DAY_EVENT) +
 					fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
 					fluidRowLocs(EventDto.EVOLUTION_DATE, EventDto.EVOLUTION_COMMENT) +
@@ -231,6 +233,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
 		addField(EventDto.RISK_LEVEL);
+		ComboBox specificRiskField = addField(EventDto.SPECIFIC_RISK, ComboBox.class);
+		specificRiskField.setNullSelectionAllowed(true);
 
 		addField(EventDto.EVENT_MANAGEMENT_STATUS, NullableOptionGroup.class);
 		addField(EventDto.EVENT_IDENTIFICATION_SOURCE, NullableOptionGroup.class);
@@ -412,14 +416,20 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			Collections.singletonList(EventDto.DISEASE_DETAILS),
 			Collections.singletonList(Disease.OTHER));
 
-		// default to invisible; visibility will be recomputed when diseaseField's value change
+		// Customizable enum fields visibilities
 		diseaseVariantField.setVisible(false);
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
 			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
+			// Disease variants
 			List<DiseaseVariant> diseaseVariants =
 				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			diseaseVariantField.setVisible(disease != null && CollectionUtils.isNotEmpty(diseaseVariants));
+			// Specific event risks
+			List<SpecificRisk> specificRiskValues =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, disease);
+			FieldHelper.updateItems(specificRiskField, specificRiskValues);
+			specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 		});
 
 		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_TITLE, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
@@ -598,6 +608,14 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 			epidemiologicalEvidenceCheckBoxTree.initCheckboxes();
 			laboratoryDiagnosticEvidenceCheckBoxTree.initCheckboxes();
+
+			// Initialize specific risk field if disease is null
+			if (getValue().getDisease() == null) {
+				List<SpecificRisk> specificRiskValues =
+					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
+				FieldHelper.updateItems(specificRiskField, specificRiskValues);
+				specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
+			}
 		});
 	}
 
