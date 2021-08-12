@@ -26,6 +26,7 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -53,10 +54,13 @@ public interface EventParticipantFacade {
 		Integer max,
 		List<SortProperty> sortProperties);
 
-	List<EventParticipantListEntryDto> getListEntries(
+	Page<EventParticipantIndexDto> getIndexPage(
 		EventParticipantCriteria eventParticipantCriteria,
-		Integer first,
-		Integer max);
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties);
+
+	List<EventParticipantListEntryDto> getListEntries(EventParticipantCriteria eventParticipantCriteria, Integer first, Integer max);
 
 	EventParticipantDto getByUuid(String uuid);
 
@@ -89,5 +93,7 @@ public interface EventParticipantFacade {
 
 	List<SimilarEventParticipantDto> getMatchingEventParticipants(EventParticipantCriteria criteria);
 
-    List<EventParticipantDto> getByPersonUuids(List<String> personUuids);
+	List<EventParticipantDto> getByPersonUuids(List<String> personUuids);
+
+	List<EventParticipantDto> getByEventAndPersons(String eventUuid, List<String> personUuids);
 }

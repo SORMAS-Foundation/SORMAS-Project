@@ -189,6 +189,7 @@ public interface Captions {
 	String bulkEventType = "bulkEventType";
 	String bulkFacility = "bulkFacility";
 	String bulkInvestigationStatus = "bulkInvestigationStatus";
+	String bulkLinkToEvent = "bulkLinkToEvent";
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	String bulkTaskAssignee = "bulkTaskAssignee";
@@ -1308,6 +1309,7 @@ public interface Captions {
 	String LabMessage_personPostalCode = "LabMessage.personPostalCode";
 	String LabMessage_personSex = "LabMessage.personSex";
 	String LabMessage_personStreet = "LabMessage.personStreet";
+	String labMessage_reportId = "labMessage.reportId";
 	String LabMessage_sampleDateTime = "LabMessage.sampleDateTime";
 	String LabMessage_sampleMaterial = "LabMessage.sampleMaterial";
 	String LabMessage_sampleReceivedDate = "LabMessage.sampleReceivedDate";
