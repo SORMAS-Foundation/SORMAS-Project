@@ -99,10 +99,7 @@ public class CaseListCriteriaBuilder {
 		visitCountSq.where(cb.equal(visitCountRoot.get(AbstractDomainObject.ID), caze.get(AbstractDomainObject.ID)));
 		visitCountSq.select(cb.size(visitCountRoot.get(Case.VISITS)));
 		selectionList.add(visitCountSq);
-		// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
-		Expression<Date> latestChangedDateFunction =
-			cb.function(ExtendedPostgreSQL94Dialect.GREATEST, Date.class, caze.get(Contact.CHANGE_DATE), joins.getPerson().get(Person.CHANGE_DATE));
-		selectionList.add(latestChangedDateFunction);
+
 		if (detailed) {
 			// Events count subquery
 			Subquery<Long> eventCountSq = cq.subquery(Long.class);
@@ -137,6 +134,11 @@ public class CaseListCriteriaBuilder {
 			sampleCountSq.select(cb.countDistinct(sampleCountRoot.get(AbstractDomainObject.ID)));
 			selectionList.add(sampleCountSq);
 		}
+
+		// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
+		Expression<Date> latestChangedDateFunction =
+			cb.function(ExtendedPostgreSQL94Dialect.GREATEST, Date.class, caze.get(Contact.CHANGE_DATE), joins.getPerson().get(Person.CHANGE_DATE));
+		selectionList.add(latestChangedDateFunction);
 
 		cq.multiselect(selectionList);
 		cq.distinct(true);
