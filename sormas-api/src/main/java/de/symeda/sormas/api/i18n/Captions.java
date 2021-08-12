@@ -255,6 +255,7 @@ public interface Captions {
 	String CaseData_caseIdIsm = "CaseData.caseIdIsm";
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
 	String CaseData_caseOrigin = "CaseData.caseOrigin";
+	String CaseData_caseReferenceDefinition = "CaseData.caseReferenceDefinition";
 	String CaseData_classificationComment = "CaseData.classificationComment";
 	String CaseData_classificationDate = "CaseData.classificationDate";
 	String CaseData_classificationUser = "CaseData.classificationUser";
@@ -400,7 +401,6 @@ public interface Captions {
 	String CaseData_vaccineUniiCode = "CaseData.vaccineUniiCode";
 	String CaseData_visits = "CaseData.visits";
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
-	String CaseData_caseReferenceDefinition = "CaseData.caseReferenceDefinition";
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
 	String caseDocuments = "caseDocuments";
