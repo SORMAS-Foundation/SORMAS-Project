@@ -44,7 +44,9 @@ public class PersonsView extends AbstractView {
 	public PersonsView() {
 		super(VIEW_NAME);
 
-		criteria = ViewModelProviders.of(PersonsView.class).get(PersonCriteria.class);
+		// Avoid calling ALL associations at view start because the query tends to take long time
+		PersonCriteria defaultCriteria = new PersonCriteria().personAssociation(PersonAssociation.CASE);
+		criteria = ViewModelProviders.of(PersonsView.class).get(PersonCriteria.class, defaultCriteria);
 		grid = new PersonGrid(criteria);
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -212,10 +214,6 @@ public class PersonsView extends AbstractView {
 			associationFilterLayout.addComponent(associationButton);
 			associationFilterLayout.setComponentAlignment(associationButton, Alignment.MIDDLE_LEFT);
 			associationButtons.put(associationButton, association.toString());
-			if (association == PersonAssociation.CASE && criteria.getPersonAssociation() == null) {
-				activeAssociationButton = associationButton;
-				criteria.setPersonAssociation(association);
-			}
 		}
 
 		Label emptyLabel = new Label("");
