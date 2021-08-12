@@ -14,4 +14,17 @@ public enum PersonAssociation {
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
+
+	/**
+	 * @return All values that map to a single association coming from {@link Person}.
+	 */
+	public static PersonAssociation[] getSingleAssociations() {
+
+		return new PersonAssociation[] {
+			CASE,
+			CONTACT,
+			EVENT_PARTICIPANT,
+			IMMUNIZATION,
+			TRAVEL_ENTRY };
+	}
 }

@@ -39,6 +39,7 @@ import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto.ClassificationAllOfCompactCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
+import de.symeda.sormas.api.caze.classification.ClassificationAnyOfSymptomsCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCaseCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationEpiDataCriteriaDto;
@@ -465,6 +466,7 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				PathogenTestType.SEQUENCING,
 				PathogenTestType.RAPID_TEST));
 
+		// confirmed_no_symptoms = positive test AND at least one symptom set to no AND all covid-relevant symptoms are anything but yes
 		confirmedNoSymptoms = allOf(
 			positiveTestResult(
 				Disease.CORONAVIRUS,
@@ -473,19 +475,10 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				PathogenTestType.ISOLATION,
 				PathogenTestType.SEQUENCING,
 				PathogenTestType.RAPID_TEST),
-			xOf(
-				1,
-				allOfSymptoms(SymptomState.NO, Disease.CORONAVIRUS),
-				xOf(
-					1,
-					symptom(SymptomsDto.FEVER),
-					symptom(SymptomsDto.DIARRHEA),
-					symptom(SymptomsDto.FAST_HEART_RATE),
-					symptom(SymptomsDto.RAPID_BREATHING),
-					symptom(SymptomsDto.OXYGEN_SATURATION_LOWER_94),
-					symptom(SymptomsDto.VOMITING),
-					symptom(SymptomsDto.CHILLS_SWEATS))));
+			anyOfSymptoms(SymptomState.NO, Disease.CORONAVIRUS),
+			noneOf(anyOfSymptoms(SymptomState.YES, Disease.CORONAVIRUS)));
 
+		// confirmed_unknown_symptoms = positive test AND at least one symptom set to null or unknown AND covid-relevant symptoms are anything but yes or no
 		confirmedUnknownSymptoms = allOf(
 			positiveTestResult(
 				Disease.CORONAVIRUS,
@@ -494,7 +487,8 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 				PathogenTestType.ISOLATION,
 				PathogenTestType.SEQUENCING,
 				PathogenTestType.RAPID_TEST),
-			xOf(1, allOfSymptoms(null, Disease.CORONAVIRUS), allOfSymptoms(SymptomState.UNKNOWN, Disease.CORONAVIRUS)));
+			xOf(1, anyOfSymptoms(SymptomState.UNKNOWN, Disease.CORONAVIRUS), anyOfSymptoms(null, Disease.CORONAVIRUS)),
+			noneOf(anyOfSymptoms(SymptomState.NO, Disease.CORONAVIRUS), anyOfSymptoms(SymptomState.YES, Disease.CORONAVIRUS)));
 
 		addCriteria(
 			Disease.CORONAVIRUS,
@@ -612,6 +606,10 @@ public class CaseClassificationFacadeEjb implements CaseClassificationFacade {
 
 	private ClassificationPersonAgeBetweenYearsCriteriaDto personAgeBetweenYears(Integer lowerYearsThreshold, Integer upperYearsThreshold) {
 		return new ClassificationPersonAgeBetweenYearsCriteriaDto(lowerYearsThreshold, upperYearsThreshold);
+	}
+
+	private ClassificationAnyOfSymptomsCriteriaDto anyOfSymptoms(SymptomState symptomState, Disease disease) {
+		return new ClassificationAnyOfSymptomsCriteriaDto(symptomState, disease, configFacade.getCountryLocale());
 	}
 
 	private ClassificationAllSymptomsCriteriaDto allOfSymptoms(SymptomState symptomState, Disease disease) {

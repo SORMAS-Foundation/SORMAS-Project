@@ -7840,6 +7840,12 @@ ALTER TABLE labmessage_history ADD COLUMN reportid varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (395, 'Add reportId to labMessage #5622');
 
+-- 2021-08-05 perosn sex default to UNKNOWN
+UPDATE person SET sex = 'UNKNOWN' WHERE sex IS NULL;
+ALTER TABLE person ALTER COLUMN sex SET DEFAULT 'UNKNOWN';
+
+INSERT INTO schema_version (version_number, comment) VALUES (396, 'sex = UNKNOWN as default #6248');
+
 -- 2021-08-01 Modifications to immunization tables #6025
 ALTER TABLE immunization ALTER COLUMN externalid DROP NOT NULL;
 ALTER TABLE immunization ALTER COLUMN positivetestresultdate DROP NOT NULL;
@@ -7862,6 +7868,6 @@ ALTER TABLE immunization_history ADD COLUMN facilitytype varchar(255);
 ALTER TABLE immunization_history ADD COLUMN validfrom timestamp;
 ALTER TABLE immunization_history ADD COLUMN validuntil timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (396, 'Modifications to immunization tables #6025');
+INSERT INTO schema_version (version_number, comment) VALUES (397, 'Modifications to immunization tables #6025');
 
 -- *** Insert new sql commands BEFORE this line ***
