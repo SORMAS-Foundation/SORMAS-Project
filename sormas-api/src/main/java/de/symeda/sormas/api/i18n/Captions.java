@@ -400,6 +400,7 @@ public interface Captions {
 	String CaseData_vaccineUniiCode = "CaseData.vaccineUniiCode";
 	String CaseData_visits = "CaseData.visits";
 	String CaseData_wasInQuarantineBeforeIsolation = "CaseData.wasInQuarantineBeforeIsolation";
+	String CaseData_caseReferenceDefinition = "CaseData.caseReferenceDefinition";
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
 	String caseDocuments = "caseDocuments";
@@ -512,7 +513,6 @@ public interface Captions {
 	String CasePreviousHospitalization_isolated = "CasePreviousHospitalization.isolated";
 	String CasePreviousHospitalization_otherHospitalizationReason = "CasePreviousHospitalization.otherHospitalizationReason";
 	String CasePreviousHospitalization_prevHospPeriod = "CasePreviousHospitalization.prevHospPeriod";
-	String caseReferenceDefinition = "caseReferenceDefinition";
 	String caseReferToFacility = "caseReferToFacility";
 	String caseSearchCase = "caseSearchCase";
 	String caseSearchSpecificCase = "caseSearchSpecificCase";

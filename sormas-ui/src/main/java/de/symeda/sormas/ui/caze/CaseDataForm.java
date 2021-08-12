@@ -1632,12 +1632,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			differentPlaceOfStayJurisdiction.setValue(Boolean.TRUE);
 		}
 
-//		if (referenceDefinition != null) {
-//			boolean fulfilled = FacadeProvider.getCaseFacade().evaluateFulfilledCondition(newFieldValue);
-//
-//			referenceDefinition.setValue(fulfilled ? CaseReferenceDefinition.FULFILLED.name() : CaseReferenceDefinition.NOT_FULFILLED.name());
-//		}
-
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value
 		discard();
