@@ -81,6 +81,7 @@ public class Immunization extends CoreAdo {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String POSITIVE_TEST_RESULT_DATE = "positiveTestResultDate";
 	public static final String RECOVERY_DATE = "recoveryDate";
+	public static final String VALID_UNTIL = "validUntil";
 	public static final String RELATED_CASE = "relatedCase";
 	public static final String VACCINATIONS = "vaccinations";
 
@@ -114,6 +115,9 @@ public class Immunization extends CoreAdo {
 
 	private Date positiveTestResultDate;
 	private Date recoveryDate;
+
+	private Date validFrom;
+	private Date validUntil;
 
 	private Case relatedCase;
 
@@ -320,6 +324,24 @@ public class Immunization extends CoreAdo {
 
 	public void setRecoveryDate(Date recoveryDate) {
 		this.recoveryDate = recoveryDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getValidFrom() {
+		return validFrom;
+	}
+
+	public void setValidFrom(Date validFrom) {
+		this.validFrom = validFrom;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getValidUntil() {
+		return validUntil;
+	}
+
+	public void setValidUntil(Date validUntil) {
+		this.validUntil = validUntil;
 	}
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

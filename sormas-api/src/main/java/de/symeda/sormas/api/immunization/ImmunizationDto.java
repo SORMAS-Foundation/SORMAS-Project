@@ -78,6 +78,9 @@ public class ImmunizationDto extends PseudonymizableDto {
 	public static final String POSITIVE_TEST_RESULT_DATE = "positiveTestResultDate";
 	public static final String RECOVERY_DATE = "recoveryDate";
 
+	public static final String VALID_FROM = "validFrom";
+	public static final String VALID_UNTIL = "validUntil";
+
 	public static final String COUNTRY = "country";
 
 	public static final String PERSON = "person";
@@ -127,6 +130,8 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	private Date positiveTestResultDate;
 	private Date recoveryDate;
+	private Date validFrom;
+	private Date validUntil;
 
 	private CaseReferenceDto relatedCase;
 
@@ -316,6 +321,22 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	public void setRecoveryDate(Date recoveryDate) {
 		this.recoveryDate = recoveryDate;
+	}
+
+	public Date getValidFrom() {
+		return validFrom;
+	}
+
+	public void setValidFrom(Date validFrom) {
+		this.validFrom = validFrom;
+	}
+
+	public Date getValidUntil() {
+		return validUntil;
+	}
+
+	public void setValidUntil(Date validUntil) {
+		this.validUntil = validUntil;
 	}
 
 	public CaseReferenceDto getRelatedCase() {

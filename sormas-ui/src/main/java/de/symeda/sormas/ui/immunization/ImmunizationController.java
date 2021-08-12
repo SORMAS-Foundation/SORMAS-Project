@@ -25,11 +25,11 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.immunization.components.MainHeaderLayout;
 import de.symeda.sormas.ui.immunization.components.fields.pickorcreate.ImmunizationPickOrCreateField;
 import de.symeda.sormas.ui.immunization.components.fields.popup.SimilarImmunizationPopup;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationCreationForm;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
+import de.symeda.sormas.ui.immunization.components.layout.MainHeaderLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -107,7 +107,7 @@ public class ImmunizationController {
 		editComponent.addCommitListener(() -> {
 			if (!immunizationDataForm.getFieldGroup().isModified()) {
 				ImmunizationDto immunizationDtoValue = immunizationDataForm.getValue();
-				List<ImmunizationDto> similarImmunizations = findForSimilarImmunizations(immunizationDtoValue);
+				List<ImmunizationDto> similarImmunizations = findSimilarImmunizations(immunizationDtoValue);
 				if (similarImmunizations.isEmpty()) {
 					FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
 					Notification.show(I18nProperties.getString(Strings.messageImmunizationSaved), Notification.Type.WARNING_MESSAGE);
@@ -235,7 +235,7 @@ public class ImmunizationController {
 		}
 	}
 
-	private List<ImmunizationDto> findForSimilarImmunizations(ImmunizationDto immunizationDto) {
+	private List<ImmunizationDto> findSimilarImmunizations(ImmunizationDto immunizationDto) {
 		ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria.Builder().withImmunization(immunizationDto.getUuid())
 			.withDisease(immunizationDto.getDisease())
 			.withStartDate(immunizationDto.getStartDate())

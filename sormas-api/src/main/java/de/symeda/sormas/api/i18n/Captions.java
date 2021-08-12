@@ -1294,9 +1294,12 @@ public interface Captions {
 	String Immunization_reportDate = "Immunization.reportDate";
 	String Immunization_startDate = "Immunization.startDate";
 	String Immunization_uuid = "Immunization.uuid";
+	String Immunization_validFrom = "Immunization.validFrom";
+	String Immunization_validUntil = "Immunization.validUntil";
 	String immunizationImmunizationsList = "immunizationImmunizationsList";
 	String immunizationKeepImmunization = "immunizationKeepImmunization";
 	String immunizationNewImmunization = "immunizationNewImmunization";
+	String immunizationOnlyPersonsWithOverdueImmunization = "immunizationOnlyPersonsWithOverdueImmunization";
 	String immunizationOverwriteImmunization = "immunizationOverwriteImmunization";
 	String importCancelImport = "importCancelImport";
 	String importDetailed = "importDetailed";
@@ -1337,6 +1340,7 @@ public interface Captions {
 	String LabMessage_personPostalCode = "LabMessage.personPostalCode";
 	String LabMessage_personSex = "LabMessage.personSex";
 	String LabMessage_personStreet = "LabMessage.personStreet";
+	String labMessage_reportId = "labMessage.reportId";
 	String LabMessage_sampleDateTime = "LabMessage.sampleDateTime";
 	String LabMessage_sampleMaterial = "LabMessage.sampleMaterial";
 	String LabMessage_sampleReceivedDate = "LabMessage.sampleReceivedDate";

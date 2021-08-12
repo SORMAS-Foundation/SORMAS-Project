@@ -718,6 +718,7 @@ public interface Strings {
 	String infoMergingPickDescription = "infoMergingPickDescription";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
+	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
 	String infoNoEventGroups = "infoNoEventGroups";
 	String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	String infoNoPathogenTests = "infoNoPathogenTests";
@@ -1174,6 +1175,10 @@ public interface Strings {
 	String promptImmunizationPositiveTestResultDateFrom = "promptImmunizationPositiveTestResultDateFrom";
 	String promptImmunizationRecoveryDateFrom = "promptImmunizationRecoveryDateFrom";
 	String promptImmunizationStartDateFrom = "promptImmunizationStartDateFrom";
+	String promptImmunizationDateTo = "promptImmunizationDateTo";
+	String promptImmunizationDateType = "promptImmunizationDateType";
+	String promptImmunizationEpiWeekFrom = "promptImmunizationEpiWeekFrom";
+	String promptImmunizationEpiWeekTo = "promptImmunizationEpiWeekTo";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";

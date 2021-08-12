@@ -29,7 +29,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	public static final String I18N_PREFIX = "Immunization";
 
 	public static final String UUID = "uuid";
-	public static final String PERSON_ID = "personId";
+	public static final String PERSON_UUID = "personUuid";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String AGE_AND_BIRTH_DATE = "ageAndBirthDate";
@@ -44,7 +44,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 
 	private String uuid;
 
-	private String personId;
+	private String personUuid;
 	@PersonalData
 	@SensitiveData
 	private String personFirstName;
@@ -63,7 +63,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 
 	public ImmunizationIndexDto(
 		String uuid,
-		String personId,
+		String personUuid,
 		String personFirstName,
 		String personLastName,
 		AgeAndBirthDateDto ageAndBirthDate,
@@ -77,7 +77,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		Date recoveryDate) {
 
 		this.uuid = uuid;
-		this.personId = personId;
+		this.personUuid = personUuid;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
 		this.ageAndBirthDate = ageAndBirthDate;
@@ -99,12 +99,12 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		this.uuid = uuid;
 	}
 
-	public String getPersonId() {
-		return personId;
+	public String getPersonUuid() {
+		return personUuid;
 	}
 
-	public void setPersonId(String personId) {
-		this.personId = personId;
+	public void setPersonUuid(String personUuid) {
+		this.personUuid = personUuid;
 	}
 
 	public String getPersonFirstName() {

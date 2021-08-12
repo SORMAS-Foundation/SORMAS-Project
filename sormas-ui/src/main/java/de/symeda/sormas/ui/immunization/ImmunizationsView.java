@@ -1,24 +1,22 @@
 package de.symeda.sormas.ui.immunization;
 
-import java.util.HashMap;
-
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
+import de.symeda.sormas.ui.immunization.components.filter.FilterFormLayout;
 import de.symeda.sormas.ui.immunization.components.grid.ImmunizationGrid;
+import de.symeda.sormas.ui.immunization.components.status.StatusBarLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
@@ -26,10 +24,13 @@ public class ImmunizationsView extends AbstractView {
 
 	public static final String VIEW_NAME = "immunizations";
 
-	private final ImmunizationGrid grid;
 	private final ImmunizationCriteria criteria;
 
-	private ImmunizationFilterForm filterForm;
+	private final Label noDiseaseInfoLabel;
+	private final ImmunizationGrid grid;
+
+	private FilterFormLayout filterFormLayout;
+	private StatusBarLayout statusBarLayout;
 
 	public ImmunizationsView() {
 		super(VIEW_NAME);
@@ -49,6 +50,10 @@ public class ImmunizationsView extends AbstractView {
 		gridLayout.setStyleName("crud-main-layout");
 
 		addComponent(gridLayout);
+
+		noDiseaseInfoLabel = new Label(I18nProperties.getString(Strings.infoNoDiseaseSelected));
+		noDiseaseInfoLabel.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.H3, CssStyles.VSPACE_TOP_0, CssStyles.ALIGN_CENTER);
+		addComponent(noDiseaseInfoLabel);
 
 		UserProvider currentUser = UserProvider.getCurrent();
 		if (currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_CREATE)) {
@@ -72,59 +77,51 @@ public class ImmunizationsView extends AbstractView {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
-		filterForm.setValue(criteria);
+		filterFormLayout.setValue(criteria);
+		updateView(criteria.getDisease());
 
 		applyingCriteria = false;
 	}
 
-	private VerticalLayout createFilterBar() {
-		VerticalLayout filterLayout = new VerticalLayout();
-		filterLayout.setSpacing(false);
-		filterLayout.setMargin(false);
-		filterLayout.setWidth(100, Unit.PERCENTAGE);
+	private FilterFormLayout createFilterBar() {
+		filterFormLayout = new FilterFormLayout();
 
-		filterForm = new ImmunizationFilterForm();
-		filterForm.addValueChangeListener(e -> {
-			if (!filterForm.hasFilter()) {
-				navigateTo(null);
-			}
-		});
-
-		filterForm.addResetHandler(e -> {
+		filterFormLayout.addResetHandler(clickEvent -> {
 			ViewModelProviders.of(ImmunizationsView.class).remove(ImmunizationCriteria.class);
 			navigateTo(null, true);
 		});
 
-		filterForm.addApplyHandler(clickEvent -> grid.reload());
-		filterLayout.addComponent(filterForm);
+		filterFormLayout.addApplyHandler(clickEvent -> {
+			ImmunizationCriteria filterFormValue = filterFormLayout.getValue();
+			Disease disease = filterFormValue.getDisease();
+			updateView(disease);
 
-		return filterLayout;
+			if (disease != null) {
+				grid.reload();
+				statusBarLayout.updateActiveBadge(grid.getItemCount());
+			}
+		});
+
+		return filterFormLayout;
 	}
 
-	private HorizontalLayout createStatusFilterBar() {
-		HorizontalLayout statusFilterLayout = new HorizontalLayout();
-		statusFilterLayout.setSpacing(true);
-		statusFilterLayout.setMargin(false);
-		statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
-		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
+	private StatusBarLayout createStatusFilterBar() {
 
-		HashMap<Button, String> statusButtons = new HashMap<>();
+		statusBarLayout = new StatusBarLayout();
+		statusBarLayout.addItem(Captions.all, e -> navigateTo(criteria));
 
-		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
-		buttonFilterLayout.setSpacing(true);
+		return statusBarLayout;
+	}
 
-		Button statusAll = ButtonHelper.createButton(Captions.all, e -> {
-			navigateTo(criteria);
-		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
-		statusAll.setCaptionAsHtml(true);
-
-		buttonFilterLayout.addComponent(statusAll);
-
-		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
-		Button activeStatusButton = statusAll;
-
-		statusFilterLayout.addComponent(buttonFilterLayout);
-
-		return statusFilterLayout;
+	private void updateView(Disease disease) {
+		if (disease == null) {
+			statusBarLayout.setVisible(false);
+			grid.setVisible(false);
+			noDiseaseInfoLabel.setVisible(true);
+		} else {
+			statusBarLayout.setVisible(true);
+			grid.setVisible(true);
+			noDiseaseInfoLabel.setVisible(false);
+		}
 	}
 }
