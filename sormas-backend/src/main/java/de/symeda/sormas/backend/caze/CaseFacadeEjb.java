@@ -1169,6 +1169,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
 		Root<Case> root = cq.from(Case.class);
+		cq.distinct(true);
+
 		CaseJoins<Case> joins = new CaseJoins<>(root);
 
 		selectIndexDtoFields(new CaseQueryContext(cb, cq, root));
