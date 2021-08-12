@@ -53,8 +53,8 @@
         <de.symeda.sormas.app.component.controls.ControlTextReadField
             android:id="@+id/exposure_exposureDate"
             android:textAlignment="viewEnd"
-            app:appendValue="@{data.startDate}"
-            app:dateTimeValue="@{data.endDate}"
+            app:dateTimeValue="@{data.startDate}"
+            app:appendValue="@{data.endDate}"
             app:valueFormat='@{@string/date_range_format}'
             style="@style/ControlSingleColumnStyle" />
 

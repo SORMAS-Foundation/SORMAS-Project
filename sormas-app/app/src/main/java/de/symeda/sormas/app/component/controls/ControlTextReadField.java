@@ -450,8 +450,18 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 		"valueFormat",
 		"defaultValue",
 		"appendValue"}, requireAll = false)
-	public static void setDateTimeValue(ControlTextReadField textField, Date dateValue, String valueFormat, String defaultValue, Date appendValue) {
-		setValue(textField, dateValue != null ? DateFormatHelper.formatLocalDateTime(dateValue) : null, appendValue != null ? DateFormatHelper.formatLocalDateTime(appendValue) : null, valueFormat, defaultValue, dateValue);
+	public static void setDateTimeValue(ControlTextReadField textField, Date dateValue, String valueFormat, String defaultValue, Date appendDateValue) {
+		String appendValue = appendDateValue != null ? DateFormatHelper.formatLocalDateTime(appendDateValue) : null;
+		String stringValue;
+		if (dateValue != null) {
+			stringValue = DateFormatHelper.formatLocalDateTime(dateValue);
+		} else {
+			stringValue = appendValue;
+			appendValue = null;
+		}
+
+
+		setValue(textField, stringValue, appendValue, valueFormat, defaultValue, dateValue);
 	}
 
 	// Short uuid
