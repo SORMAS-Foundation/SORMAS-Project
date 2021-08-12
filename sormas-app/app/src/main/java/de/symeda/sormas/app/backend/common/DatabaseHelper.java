@@ -2793,7 +2793,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" meansOfImmunization varchar(255) not null," +
 						" meansOfImmunizationDetails text," +
 						" immunizationManagementStatus varchar(255) not null," +
-						" externalId varchar(255) not null," +
+						" externalId varchar(255)," +
 						" responsibleRegion_id bigint," +
 						" responsibleDistrict_id bigint," +
 						" responsibleCommunity_id bigint," +
