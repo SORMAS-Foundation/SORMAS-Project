@@ -1053,7 +1053,8 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 	public void testNotFulfilledReferenceDefinitionGermanServerSymptoms() {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
 		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
-		caze.getSymptoms().setCough(SymptomState.NO);
+		caze.getSymptoms().setCough(null);
+		caze.getSymptoms().setChillsSweats(SymptomState.YES);
 		caze = getCaseFacade().saveCase(caze);
 		createSampleTestsForAllTestTypesExcept(caze, Disease.CORONAVIRUS, PathogenTestType.ISOLATION);
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
