@@ -178,6 +178,10 @@ public class EventController {
 
 	public void selectOrCreateEventForCaseList(List<CaseReferenceDto> caseRefs) {
 
+		if (caseRefs == null || caseRefs.isEmpty()) {
+			return;
+		}
+
 		List<CaseDataDto> caseDataDtos =
 			FacadeProvider.getCaseFacade().getByUuids(caseRefs.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
 
@@ -198,14 +202,16 @@ public class EventController {
 			}
 		});
 
-		eventSelect.setSelectionChangeCallback((commitAllowed) -> {
-			component.getCommitButton().setEnabled(commitAllowed);
-		});
+		eventSelect.setSelectionChangeCallback(commitAllowed -> component.getCommitButton().setEnabled(commitAllowed));
 
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
 
 	public void selectOrCreateEventForContactList(List<ContactReferenceDto> contactRefs) {
+
+		if (contactRefs == null || contactRefs.isEmpty()) {
+			return;
+		}
 
 		List<ContactDto> contactDtos =
 			FacadeProvider.getContactFacade().getByUuids(contactRefs.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
@@ -227,9 +233,7 @@ public class EventController {
 			}
 		});
 
-		eventSelect.setSelectionChangeCallback((commitAllowed) -> {
-			component.getCommitButton().setEnabled(commitAllowed);
-		});
+		eventSelect.setSelectionChangeCallback(commitAllowed -> component.getCommitButton().setEnabled(commitAllowed));
 
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateEvent));
 	}
@@ -272,7 +276,7 @@ public class EventController {
 			remainingPersons.stream().forEach(personDto -> personByUuid.put(personDto.getUuid(), personDto));
 
 			remainingCases.stream().forEach(caseDataDto -> {
-				EventParticipantDto ep = new EventParticipantDto().buildFromCase(
+				EventParticipantDto ep = EventParticipantDto.buildFromCase(
 					caseDataDto.toReference(),
 					personByUuid.get(caseDataDto.getPerson().getUuid()),
 					eventReferenceDto,
@@ -281,7 +285,7 @@ public class EventController {
 			});
 		}
 
-		String message = remainingCases.size() == 0
+		String message = remainingCases.isEmpty()
 			? I18nProperties.getString(Strings.messageAllCasesAlreadyInEvent)
 			: casesAlreadyLinkedToEvent == 0
 				? I18nProperties.getString(Strings.messageAllCasesLinkedToEvent)
@@ -320,7 +324,7 @@ public class EventController {
 			remainingPersons.stream().forEach(personDto -> personByUuid.put(personDto.getUuid(), personDto));
 
 			remainingContacts.stream().forEach(contactDataDto -> {
-				EventParticipantDto ep = new EventParticipantDto().buildFromPerson(
+				EventParticipantDto ep = EventParticipantDto.buildFromPerson(
 					personByUuid.get(contactDataDto.getPerson().getUuid()),
 					eventReferenceDto,
 					UserProvider.getCurrent().getUserReference());
@@ -328,7 +332,7 @@ public class EventController {
 			});
 		}
 
-		String message = remainingContacts.size() == 0
+		String message = remainingContacts.isEmpty()
 			? I18nProperties.getString(Strings.messageAllContactsAlreadyInEvent)
 			: contactsAlreadyLinkedToEvent == 0
 				? I18nProperties.getString(Strings.messageAllContactsLinkedToEvent)
@@ -609,7 +613,7 @@ public class EventController {
 		EventDataForm eventCreateForm = new EventDataForm(true, false);
 		eventCreateForm.setValue(createNewEvent(caseDataDtos.stream().findFirst().get().getDisease()));
 		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
 			eventCreateForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
 			eventCreateForm.getFieldGroup());
