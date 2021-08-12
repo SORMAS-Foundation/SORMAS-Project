@@ -44,6 +44,7 @@ public interface Strings {
 	String classificationRulesFor = "classificationRulesFor";
 	String classificationSuspect = "classificationSuspect";
 	String classificationSymptomsAllOf = "classificationSymptomsAllOf";
+	String classificationSymptomsAnyOf = "classificationSymptomsAnyOf";
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
 	String comparedTo = "comparedTo";
