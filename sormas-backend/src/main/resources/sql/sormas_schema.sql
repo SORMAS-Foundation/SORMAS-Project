@@ -7853,4 +7853,10 @@ UPDATE location SET continent_id = (SELECT continent.id FROM continent WHERE con
 
 INSERT INTO schema_version (version_number, comment) VALUES (397, 'Sub-continent association change New Caledonia #5774');
 
+-- 2021-08-12 Sub-continent association change Germany #5689
+UPDATE country SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultname = 'Central Europe') WHERE isocode = 'DEU';
+UPDATE location SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultname = 'Central Europe') WHERE location.subcontinent_id IS NOT NULL AND location.country_id = (SELECT country.id FROM country WHERE isocode = 'DEU');
+
+INSERT INTO schema_version (version_number, comment) VALUES (398, 'Sub-continent association change Germany #5689');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
