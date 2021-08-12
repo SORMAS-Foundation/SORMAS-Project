@@ -15,21 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo.api.chunks;
+package org.sormas.e2etests.enums;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
-import org.sormas.e2etests.pojo.api.Person;
+import lombok.Getter;
 
-@Value
-@AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@Builder(toBuilder = true, builderClassName = "builder")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class PersonContactDetailsIdentifier {
+@Getter
+public enum CommunityUUIDs {
+  VoreingestellteGemeinde("QWK33J-XYN3DE-5CSXFJ-MMFOKNKM");
 
-  /** This should be unique/changed each time */
-  String uuid;
+  private final String option;
 
-  Person person;
+  CommunityUUIDs(String option) {
+    this.option = option;
+  }
+
+  @Override
+  public String toString() {
+    return this.option;
+  }
 }

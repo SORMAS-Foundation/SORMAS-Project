@@ -21,15 +21,16 @@ import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import io.restassured.response.Response;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
+import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.helpers.api.PersonsHelper;
 import org.sormas.e2etests.pojo.api.Person;
 import org.sormas.e2etests.pojo.api.chunks.Address;
 import org.sormas.e2etests.pojo.api.chunks.Country;
-import org.sormas.e2etests.pojo.api.chunks.PersonContactDetailsIdentifier;
-import org.sormas.e2etests.pojo.api.chunks.PersonContactDetailsInformation;
+import org.sormas.e2etests.pojo.api.chunks.PersonContactDetails;
 import org.sormas.e2etests.state.ApiState;
 
 public class PersonSteps implements En {
@@ -54,22 +55,23 @@ public class PersonSteps implements En {
                   .longitude(10.5794084300839)
                   .country(
                       Country.builder()
-                          .uuid("SUSZ6P-4YQIB3-WMSLMG-IAPRKJ4Y")
+                          .uuid(CountryUUIDs.Germany.toString())
                           .caption("Deutschland")
                           .externalId(null)
                           .isoCode("DEU")
                           .build())
-                  .region("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY")
-                  .continent("W2FUSQ-PXGMRZ-V6ZTOE-6EPIKCSI")
-                  .subcontinent("VMRXWX-EAGV7L-JFKP26-F3DBSBFU")
-                  .district("SZ75BK-5OUMFU-V2DTKG-5BYACHFE")
-                  .community("QWK33J-XYN3DE-5CSXFJ-MMFOKNKM")
-                  .city("Berlin")
+                  .region(RegionUUIDs.VoreingestellteBundeslander.toString())
+                  .continent(ContinentUUIDs.Europe.toString())
+                  .subcontinent(SubcontinentUUIDs.WesternEurope.toString())
+                  .district(DistrictUUIDs.VoreingestellterLandkreis.toString())
+                  .community(CommunityUUIDs.VoreingestellteGemeinde.toString())
+                  .city(faker.address().cityName())
                   .areaType("URBAN")
-                  .postalCode("123")
-                  .houseNumber("50")
+                  .postalCode(faker.address().zipCode())
+                  .street(faker.address().streetName())
+                  .houseNumber(faker.address().buildingNumber())
                   .facilityType("CAMPSITE")
-                  .facility("SORMAS-CONSTID-OTHERS-FACILITY")
+                  .facility(FacilityUUIDs.OtherFacility.toString())
                   .facilityDetails("Dummy description")
                   .details("Dummy text")
                   .contactPersonFirstName(faker.name().firstName())
@@ -79,14 +81,10 @@ public class PersonSteps implements En {
                   .uuid(personUUID)
                   .build();
 
-          PersonContactDetailsIdentifier personContactDetailsIdentifier =
-              PersonContactDetailsIdentifier.builder()
+          PersonContactDetails personContactDetails =
+              PersonContactDetails.builder()
                   .uuid(UUID.randomUUID().toString())
                   .person(Person.builder().uuid(personUUID).build())
-                  .build();
-
-          PersonContactDetailsInformation personContactDetailsInformation =
-              PersonContactDetailsInformation.builder()
                   .primaryContact(true)
                   .thirdParty(false)
                   .personContactDetailType("PHONE")
@@ -104,11 +102,8 @@ public class PersonSteps implements En {
                   .sex("MALE")
                   .phone(faker.phoneNumber().phoneNumber())
                   .address(address)
-                  // .personContactDetails(
-                  // Arrays.array(personContactDetailsIdentifier, personContactDetailsInformation)) //TODO to be investigated why is not working as it does in postman call
+                  .personContactDetails(Collections.singletonList(personContactDetails))
                   .build();
-          // TODO discuss if we'll keep hardcoded the IDs for continent etc, or we'll make API calls
-          // to get those values
           apiState.setEditPerson(createPersonObject);
           personsHelper.createNewPerson(createPersonObject);
         });

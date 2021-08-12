@@ -19,14 +19,19 @@ package org.sormas.e2etests.pojo.api.chunks;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import org.sormas.e2etests.pojo.api.Person;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PersonContactDetailsInformation {
+public class PersonContactDetails {
 
+  /** This should be unique/changed each time */
+  String uuid;
+
+  Person person;
   boolean primaryContact;
   String personContactDetailType;
   String contactInformation;
