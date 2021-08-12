@@ -687,18 +687,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					.collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.toList()));
 			}
 
-			Map<Long, UserReference> contactUsers = null;
-			if (exportConfiguration == null
-				|| exportConfiguration.getProperties().contains(ContactDto.REPORTING_USER)
-				|| exportConfiguration.getProperties().contains(ContactDto.FOLLOW_UP_STATUS_CHANGE_USER)) {
-				Set<Long> userIds = exportContacts.stream()
-					.map((c -> Arrays.asList(c.getReportingUserId(), c.getFollowUpStatusChangeUserId())))
-					.flatMap(Collection::stream)
-					.filter(Objects::nonNull)
-					.collect(Collectors.toSet());
-				contactUsers =
-					userService.getUserReferencesByIds(userIds).stream().collect(Collectors.toMap(UserReference::getId, Function.identity()));
-			}
+			Map<Long, UserReference> contactUsers = getContactUsersForExport(exportContacts, exportConfiguration);
 
 			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
@@ -760,7 +749,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					});
 				}
 
-				if (contactUsers != null) {
+				if (!contactUsers.isEmpty()) {
 					if (exportContact.getReportingUserId() != null) {
 						UserReference user = contactUsers.get(exportContact.getReportingUserId());
 
@@ -769,7 +758,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					}
 
 					if (exportContact.getFollowUpStatusChangeUserId() != null) {
-						UserReference user = contactUsers.get(exportContact.getReportingUserId());
+						UserReference user = contactUsers.get(exportContact.getFollowUpStatusChangeUserId());
 
 						exportContact.setFollowUpStatusChangeUserName(user.getName());
 						exportContact.setFollowUpStatusChangeUserRoles(user.getUserRoles());
@@ -781,6 +770,23 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		return exportContacts;
+	}
+
+	private Map<Long, UserReference> getContactUsersForExport(List<ContactExportDto> exportContacts, ExportConfigurationDto exportConfiguration) {
+		Map<Long, UserReference> contactUsers = Collections.emptyMap();
+
+		if (exportConfiguration == null
+			|| exportConfiguration.getProperties().contains(ContactDto.REPORTING_USER)
+			|| exportConfiguration.getProperties().contains(ContactDto.FOLLOW_UP_STATUS_CHANGE_USER)) {
+			Set<Long> userIds = exportContacts.stream()
+				.map((c -> Arrays.asList(c.getReportingUserId(), c.getFollowUpStatusChangeUserId())))
+				.flatMap(Collection::stream)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+			contactUsers = userService.getUserReferencesByIds(userIds).stream().collect(Collectors.toMap(UserReference::getId, Function.identity()));
+		}
+
+		return contactUsers;
 	}
 
 	@Override

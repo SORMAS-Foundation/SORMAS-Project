@@ -926,17 +926,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				eventSummaries = eventService.getEventSummaryDetailsByCases(resultCaseIds);
 			}
 
-			Map<Long, UserReference> caseUsers = null;
-			if (exportConfiguration == null
-				|| exportConfiguration.getProperties().contains(CaseDataDto.REPORTING_USER)
-				|| exportConfiguration.getProperties().contains(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER)) {
-				Set<Long> userIds = resultList.stream()
-					.map((c -> Arrays.asList(c.getReportingUserId(), c.getFollowUpStatusChangeUserId())))
-					.flatMap(Collection::stream)
-					.filter(Objects::nonNull)
-					.collect(Collectors.toSet());
-				caseUsers = userService.getUserReferencesByIds(userIds).stream().collect(Collectors.toMap(UserReference::getId, Function.identity()));
-			}
+			Map<Long, UserReference> caseUsers = getCaseUsersForExport(resultList, exportConfiguration);
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
@@ -1078,7 +1068,7 @@ public class CaseFacadeEjb implements CaseFacade {
 						});
 				}
 
-				if (caseUsers != null) {
+				if (!caseUsers.isEmpty()) {
 					if (exportDto.getReportingUserId() != null) {
 						UserReference user = caseUsers.get(exportDto.getReportingUserId());
 
@@ -1087,7 +1077,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					}
 
 					if (exportDto.getFollowUpStatusChangeUserId() != null) {
-						UserReference user = caseUsers.get(exportDto.getReportingUserId());
+						UserReference user = caseUsers.get(exportDto.getFollowUpStatusChangeUserId());
 
 						exportDto.setFollowUpStatusChangeUserName(user.getName());
 						exportDto.setFollowUpStatusChangeUserRoles(user.getUserRoles());
@@ -1108,6 +1098,22 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		caseCriteria.setMustHaveCaseManagementData(previousCaseManagementDataCriteria);
 		return resultList;
+	}
+
+	private Map<Long, UserReference> getCaseUsersForExport(List<CaseExportDto> resultList, ExportConfigurationDto exportConfiguration) {
+		Map<Long, UserReference> caseUsers = Collections.emptyMap();
+		if (exportConfiguration == null
+			|| exportConfiguration.getProperties().contains(CaseDataDto.REPORTING_USER)
+			|| exportConfiguration.getProperties().contains(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER)) {
+			Set<Long> userIds = resultList.stream()
+				.map((c -> Arrays.asList(c.getReportingUserId(), c.getFollowUpStatusChangeUserId())))
+				.flatMap(Collection::stream)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+			caseUsers = userService.getUserReferencesByIds(userIds).stream().collect(Collectors.toMap(UserReference::getId, Function.identity()));
+		}
+
+		return caseUsers;
 	}
 
 	@Override
