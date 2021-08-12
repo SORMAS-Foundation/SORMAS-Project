@@ -239,7 +239,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
 		final From<?, Person> personFrom = personQueryContext.getRoot();
-		final CriteriaQuery<?> cq = personQueryContext.getQuery();
 
 		final Join<Person, Location> location = personFrom.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
