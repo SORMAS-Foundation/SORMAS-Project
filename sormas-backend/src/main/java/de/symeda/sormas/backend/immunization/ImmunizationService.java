@@ -109,6 +109,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			immunization.get(Immunization.START_DATE),
 			immunization.get(Immunization.END_DATE),
 			immunization.get(Immunization.RECOVERY_DATE),
+			immunization.get(Immunization.ID),
 			immunization.get(Immunization.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)));
 

@@ -55,6 +55,7 @@ public class ImmunizationGrid extends FilteredGrid<ImmunizationIndexDto, Immuniz
 			ImmunizationIndexDto.IMMUNIZATION_STATUS,
 			ImmunizationIndexDto.START_DATE,
 			ImmunizationIndexDto.END_DATE,
+			ImmunizationIndexDto.LAST_VACCINE_TYPE,
 			ImmunizationIndexDto.RECOVERY_DATE);
 
 		((Column<ImmunizationIndexDto, String>) getColumn(ImmunizationIndexDto.UUID)).setRenderer(new UuidRenderer());

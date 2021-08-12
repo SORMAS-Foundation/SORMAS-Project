@@ -40,6 +40,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
+	public static final String LAST_VACCINE_TYPE = "lastVaccineType";
 	public static final String RECOVERY_DATE = "recoveryDate";
 
 	private String uuid;
@@ -59,6 +60,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	private ImmunizationStatus immunizationStatus;
 	private Date startDate;
 	private Date endDate;
+	private String lastVaccineType;
 	private Date recoveryDate;
 
 	public ImmunizationIndexDto(
@@ -74,6 +76,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		ImmunizationStatus immunizationStatus,
 		Date startDate,
 		Date endDate,
+		String lastVaccineType,
 		Date recoveryDate) {
 
 		this.uuid = uuid;
@@ -88,6 +91,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		this.immunizationStatus = immunizationStatus;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.lastVaccineType = lastVaccineType;
 		this.recoveryDate = recoveryDate;
 	}
 
@@ -185,6 +189,14 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	public String getLastVaccineType() {
+		return lastVaccineType;
+	}
+
+	public void setLastVaccineType(String lastVaccineType) {
+		this.lastVaccineType = lastVaccineType;
 	}
 
 	public Date getRecoveryDate() {
