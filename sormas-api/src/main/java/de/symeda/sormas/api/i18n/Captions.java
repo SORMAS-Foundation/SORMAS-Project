@@ -420,6 +420,7 @@ public interface Captions {
 	String CaseExport_country = "CaseExport.country";
 	String CaseExport_diseaseFormatted = "CaseExport.diseaseFormatted";
 	String CaseExport_firstName = "CaseExport.firstName";
+	String CaseExport_followUpStatusChangeUserName = "CaseExport.followUpStatusChangeUserName";
 	String CaseExport_followUpStatusChangeUserRoles = "CaseExport.followUpStatusChangeUserRoles";
 	String CaseExport_id = "CaseExport.id";
 	String CaseExport_initialDetectionPlace = "CaseExport.initialDetectionPlace";
@@ -434,6 +435,7 @@ public interface Captions {
 	String CaseExport_numberOfTreatments = "CaseExport.numberOfTreatments";
 	String CaseExport_otherSamples = "CaseExport.otherSamples";
 	String CaseExport_quarantineInformation = "CaseExport.quarantineInformation";
+	String CaseExport_reportingUserName = "CaseExport.reportingUserName";
 	String CaseExport_reportingUserRoles = "CaseExport.reportingUserRoles";
 	String CaseExport_sampleDates = "CaseExport.sampleDates";
 	String CaseExport_sampleDateTime1 = "CaseExport.sampleDateTime1";
@@ -665,11 +667,15 @@ public interface Captions {
 	String ContactExport_directContactConfirmedCase = "ContactExport.directContactConfirmedCase";
 	String ContactExport_directContactProbableCase = "ContactExport.directContactProbableCase";
 	String ContactExport_firstName = "ContactExport.firstName";
+	String ContactExport_followUpStatusChangeUserName = "ContactExport.followUpStatusChangeUserName";
+	String ContactExport_followUpStatusChangeUserRoles = "ContactExport.followUpStatusChangeUserRoles";
 	String ContactExport_lastCooperativeVisitDate = "ContactExport.lastCooperativeVisitDate";
 	String ContactExport_lastCooperativeVisitSymptomatic = "ContactExport.lastCooperativeVisitSymptomatic";
 	String ContactExport_lastCooperativeVisitSymptoms = "ContactExport.lastCooperativeVisitSymptoms";
 	String ContactExport_lastName = "ContactExport.lastName";
 	String ContactExport_quarantineInformation = "ContactExport.quarantineInformation";
+	String ContactExport_reportingUserName = "ContactExport.reportingUserName";
+	String ContactExport_reportingUserRoles = "ContactExport.reportingUserRoles";
 	String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
 	String ContactExport_traveled = "ContactExport.traveled";
 	String ContactExport_travelHistory = "ContactExport.travelHistory";
