@@ -77,6 +77,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.CaseMeasure;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.Language;
@@ -98,6 +99,7 @@ import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CasePersonDto;
+import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
@@ -155,6 +157,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
@@ -1875,12 +1878,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		updateTasksOnCaseChanged(newCase, existingCase);
 
 		// Update case classification if the feature is enabled
+		CaseClassification classification = null;
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
 			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				// calculate classification
 				CaseDataDto newCaseDto = toDto(newCase);
 
-				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto);
+				classification = caseClassificationFacade.getClassification(newCaseDto);
 
 				// only update when classification by system changes - user may overwrite this
 				if (classification != newCase.getSystemCaseClassification()) {
@@ -1894,6 +1898,12 @@ public class CaseFacadeEjb implements CaseFacade {
 					}
 				}
 			}
+		}
+
+		// calculate reference definition for cases
+		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			boolean fulfilled = evaluateFulfilledCondition(toDto(newCase), classification);
+			newCase.setCaseReferenceDefinition(fulfilled ? CaseReferenceDefinition.FULFILLED : CaseReferenceDefinition.NOT_FULFILLED);
 		}
 
 		// Set Yes/No/Unknown fields associated with embedded lists to Yes if the lists
@@ -1980,6 +1990,32 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		if (existingCase != null && syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
+		}
+	}
+
+	public boolean evaluateFulfilledCondition(CaseDataDto newCase, CaseClassification caseClassification) {
+
+		if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
+			List<CaseClassification> fulfilledCaseClassificationOptions =
+				Arrays.asList(CaseClassification.CONFIRMED, CaseClassification.CONFIRMED_NO_SYMPTOMS, CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+
+			if (caseClassification == null) {
+				caseClassification = caseClassificationFacade.getClassification(newCase);
+			}
+
+			List<PathogenTest> casePathogenTests = null;
+			if (fulfilledCaseClassificationOptions.contains(caseClassification)) {
+				casePathogenTests = pathogenTestService.getAllByCase(newCase.getUuid());
+				casePathogenTests = casePathogenTests.stream()
+					.filter(
+						pathogenTest -> (Arrays.asList(PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION, PathogenTestType.SEQUENCING)
+							.contains(pathogenTest.getTestType())
+							&& PathogenTestResultType.POSITIVE.equals(pathogenTest.getTestResult())))
+					.collect(Collectors.toList());
+			}
+			return casePathogenTests != null && !casePathogenTests.isEmpty();
+		} else {
+			return false;
 		}
 	}
 
@@ -2581,6 +2617,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
 		}
 		target.setDontShareWithReportingTool(source.isDontShareWithReportingTool());
+		target.setCaseReferenceDefinition(source.getCaseReferenceDefinition());
 
 		return target;
 	}
@@ -2758,6 +2795,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 		target.setDontShareWithReportingTool(source.isDontShareWithReportingTool());
+		target.setCaseReferenceDefinition(source.getCaseReferenceDefinition());
 
 		return target;
 	}

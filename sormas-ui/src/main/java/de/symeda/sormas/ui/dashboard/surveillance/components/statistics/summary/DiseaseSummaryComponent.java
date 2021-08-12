@@ -25,6 +25,9 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 	// "Contacts converted to cases"
 	private final DiseaseSummaryElementComponent contactsConvertedToCase;
 
+	// Cases for which Reference definition is Fulfilled
+	private final DiseaseSummaryElementComponent casesWithReferenceDefinitionFulfilled;
+
 	public DiseaseSummaryComponent() {
 		fatalitiesSummaryElementComponent = new FatalitiesSummaryElementComponent();
 		addComponent(fatalitiesSummaryElementComponent);
@@ -47,6 +50,9 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 		contactsConvertedToCase = new DiseaseSummaryElementComponent(Strings.headingCasesResultingFromContacts);
 		addComponent(contactsConvertedToCase);
 
+		casesWithReferenceDefinitionFulfilled = new DiseaseSummaryElementComponent(Strings.headingcasesWithReferenceDefinitionFulfilled);
+		addComponent(casesWithReferenceDefinitionFulfilled);
+
 		addStyleName(CssStyles.VSPACE_TOP_4);
 	}
 
@@ -63,5 +69,6 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 		casesInQuarantineByDate.updateTotalLabel(dashboardDataProvider.getCasesInQuarantineCount().toString());
 		casesPlacedInQuarantineByDate.updateTotalLabel(dashboardDataProvider.getCasesPlacedInQuarantineCount().toString());
 		contactsConvertedToCase.updateTotalLabel(dashboardDataProvider.getContactsConvertedToCaseCount().toString());
+		casesWithReferenceDefinitionFulfilled.updateTotalLabel(dashboardDataProvider.getCaseWithReferenceDefinitionFulfilledCount().toString());
 	}
 }
