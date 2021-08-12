@@ -420,6 +420,7 @@ public interface Captions {
 	String CaseExport_country = "CaseExport.country";
 	String CaseExport_diseaseFormatted = "CaseExport.diseaseFormatted";
 	String CaseExport_firstName = "CaseExport.firstName";
+	String CaseExport_followUpStatusChangeUserRoles = "CaseExport.followUpStatusChangeUserRoles";
 	String CaseExport_id = "CaseExport.id";
 	String CaseExport_initialDetectionPlace = "CaseExport.initialDetectionPlace";
 	String CaseExport_labResults = "CaseExport.labResults";
@@ -433,6 +434,7 @@ public interface Captions {
 	String CaseExport_numberOfTreatments = "CaseExport.numberOfTreatments";
 	String CaseExport_otherSamples = "CaseExport.otherSamples";
 	String CaseExport_quarantineInformation = "CaseExport.quarantineInformation";
+	String CaseExport_reportingUserRoles = "CaseExport.reportingUserRoles";
 	String CaseExport_sampleDates = "CaseExport.sampleDates";
 	String CaseExport_sampleDateTime1 = "CaseExport.sampleDateTime1";
 	String CaseExport_sampleDateTime2 = "CaseExport.sampleDateTime2";

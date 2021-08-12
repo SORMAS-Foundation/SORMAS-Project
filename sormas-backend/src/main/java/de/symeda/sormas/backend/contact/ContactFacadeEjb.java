@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -177,6 +178,7 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -555,6 +557,9 @@ public class ContactFacadeEjb implements ContactFacade {
 			contact.get(Contact.QUARANTINE_REDUCED),
 			contact.get(Contact.QUARANTINE_OFFICIAL_ORDER_SENT),
 			contact.get(Contact.QUARANTINE_OFFICIAL_ORDER_SENT_DATE),
+			contact.get(Contact.PROHIBITION_TO_WORK),
+			contact.get(Contact.PROHIBITION_TO_WORK_FROM),
+			contact.get(Contact.PROHIBITION_TO_WORK_UNTIL),
 			joins.getPerson().get(Person.PRESENT_CONDITION),
 			joins.getPerson().get(Person.DEATH_DATE),
 			joins.getAddressRegion().get(Region.NAME),
@@ -603,10 +608,9 @@ public class ContactFacadeEjb implements ContactFacade {
 			joins.getPersonCitizenship().get(Country.ISO_CODE),
 			joins.getPersonCitizenship().get(Country.DEFAULT_NAME),
 			joins.getReportingDistrict().get(District.NAME),
-			joins.getReportingUser().get(User.UUID),
-			joins.getRegion().get(Region.UUID),
-			joins.getDistrict().get(District.UUID),
-			joins.getCommunity().get(Community.UUID),
+			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+			joins.getReportingUser().get(User.ID),
+			joins.getFollowUpStatusChangeUser().get(User.ID),
 			jurisdictionSelector(contactQueryContext));
 
 		cq.distinct(true);
@@ -683,6 +687,19 @@ public class ContactFacadeEjb implements ContactFacade {
 					.collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.toList()));
 			}
 
+			Map<Long, UserReference> contactUsers = null;
+			if (exportConfiguration == null
+				|| exportConfiguration.getProperties().contains(ContactDto.REPORTING_USER)
+				|| exportConfiguration.getProperties().contains(ContactDto.FOLLOW_UP_STATUS_CHANGE_USER)) {
+				Set<Long> userIds = exportContacts.stream()
+					.map((c -> Arrays.asList(c.getReportingUserId(), c.getFollowUpStatusChangeUserId())))
+					.flatMap(Collection::stream)
+					.filter(Objects::nonNull)
+					.collect(Collectors.toSet());
+				contactUsers =
+					userService.getUserReferencesByIds(userIds).stream().collect(Collectors.toMap(UserReference::getId, Function.identity()));
+			}
+
 			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
@@ -741,6 +758,22 @@ public class ContactFacadeEjb implements ContactFacade {
 						exportContact.setLatestEventId(eventSummary.getEventUuid());
 						exportContact.setLatestEventTitle(eventSummary.getEventTitle());
 					});
+				}
+
+				if (contactUsers != null) {
+					if (exportContact.getReportingUserId() != null) {
+						UserReference user = contactUsers.get(exportContact.getReportingUserId());
+
+						exportContact.setReportingUserName(user.getName());
+						exportContact.setReportingUserRoles(user.getUserRoles());
+					}
+
+					if (exportContact.getFollowUpStatusChangeUserId() != null) {
+						UserReference user = contactUsers.get(exportContact.getReportingUserId());
+
+						exportContact.setFollowUpStatusChangeUserName(user.getName());
+						exportContact.setFollowUpStatusChangeUserRoles(user.getUserRoles());
+					}
 				}
 
 				pseudonymizer.pseudonymizeDto(ContactExportDto.class, exportContact, inJurisdiction, null);
