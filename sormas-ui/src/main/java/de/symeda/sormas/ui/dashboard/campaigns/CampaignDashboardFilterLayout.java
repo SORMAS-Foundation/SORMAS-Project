@@ -119,8 +119,8 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		areaFilter.addValueChangeListener(e -> {
 			final Object value = areaFilter.getValue();
 			dashboardDataProvider.setArea((AreaReferenceDto) value);
-			dashboardView.refreshDashboard();
 			updateFiltersBasedOnArea(value);
+			dashboardView.refreshDashboard();
 		});
 		addComponent(areaFilter);
 		dashboardDataProvider.setArea((AreaReferenceDto) areaFilter.getValue());
@@ -132,8 +132,8 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		regionFilter.addValueChangeListener(e -> {
 			final Object value = regionFilter.getValue();
 			dashboardDataProvider.setRegion((RegionReferenceDto) value);
-			dashboardView.refreshDashboard();
 			updateFiltersBasedOnRegion(value);
+			dashboardView.refreshDashboard();
 		});
 		addComponent(regionFilter);
 		dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());
