@@ -7840,9 +7840,15 @@ ALTER TABLE labmessage_history ADD COLUMN reportid varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (395, 'Add reportId to labMessage #5622');
 
+-- 2021-08-05 perosn sex default to UNKNOWN
+UPDATE person SET sex = 'UNKNOWN' WHERE sex IS NULL;
+ALTER TABLE person ALTER COLUMN sex SET DEFAULT 'UNKNOWN';
+
+INSERT INTO schema_version (version_number, comment) VALUES (396, 'sex = UNKNOWN as default #6248');
+
 -- 2021-08-06 - Introduce a reference definition for cases
 ALTER TABLE cases ADD COLUMN casereferencedefinition varchar(255);
 ALTER TABLE cases_history ADD COLUMN casereferencedefinition varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (396, 'Introduce a reference definition for cases #5594');
+INSERT INTO schema_version (version_number, comment) VALUES (397, 'Introduce a reference definition for cases #5594');
 -- *** Insert new sql commands BEFORE this line ***

@@ -216,7 +216,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 							currentEventParticipantHasEntries.setFalse();
 							EventParticipantDto eventParticipantDto =
 								EventParticipantDto.build(new EventReferenceDto(event.getUuid()), currentUserRef);
-							eventParticipantDto.setPerson(PersonDto.build());
+							eventParticipantDto.setPerson(PersonDto.buildImportEntity());
 							eventParticipants.add(eventParticipantDto);
 						}
 						if (!StringUtils.isEmpty(cellData.getValue())) {

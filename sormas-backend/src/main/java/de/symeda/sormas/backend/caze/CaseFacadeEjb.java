@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -145,7 +144,6 @@ import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
-import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -3220,19 +3218,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (!cloning && !DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid())) {
 			PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
 			PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
-			Set primaryContactDetailTypes = new HashSet<>();
-			for (PersonContactDetailDto contactDetailDto : leadPerson.getPersonContactDetails()) {
-				if (contactDetailDto.isPrimaryContact()) {
-					primaryContactDetailTypes.add(contactDetailDto.getPersonContactDetailType());
-				}
-			}
-			for (PersonContactDetailDto contactDetailDto : otherPerson.getPersonContactDetails()) {
-				if (contactDetailDto.isPrimaryContact() && primaryContactDetailTypes.contains(contactDetailDto.getPersonContactDetailType())) {
-					contactDetailDto.setPrimaryContact(false);
-				}
-			}
-			DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
-			personFacade.savePerson(leadPerson);
+			personFacade.mergePerson(leadPerson, otherPerson);
 		} else {
 			assert (DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid()));
 		}

@@ -94,4 +94,6 @@ public interface EventParticipantFacade {
 	List<SimilarEventParticipantDto> getMatchingEventParticipants(EventParticipantCriteria criteria);
 
 	List<EventParticipantDto> getByPersonUuids(List<String> personUuids);
+
+	List<EventParticipantDto> getByEventAndPersons(String eventUuid, List<String> personUuids);
 }
