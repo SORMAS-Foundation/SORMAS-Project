@@ -96,12 +96,13 @@ public class ImmunizationController {
 
 		ImmunizationDto immunizationDto = findImmunization(immunizationUuid);
 
-		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(immunizationUuid, immunizationDto.isPseudonymized());
+		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(immunizationDto.isPseudonymized());
 		immunizationDataForm.setValue(immunizationDto);
 
+		UserProvider currentUserProvider = UserProvider.getCurrent();
 		CommitDiscardWrapperComponent<ImmunizationDataForm> editComponent = new CommitDiscardWrapperComponent<>(
 			immunizationDataForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_EDIT),
+			currentUserProvider != null && currentUserProvider.hasUserRight(UserRight.IMMUNIZATION_EDIT),
 			immunizationDataForm.getFieldGroup());
 
 		editComponent.addCommitListener(() -> {

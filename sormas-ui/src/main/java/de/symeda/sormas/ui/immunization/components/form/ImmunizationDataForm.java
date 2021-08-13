@@ -77,16 +77,13 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 	private final int DAYS_IN_THE_FUTURE = 365;
 
-	private final String immunizationUuid;
-
-	public ImmunizationDataForm(String immunizationUuid, boolean isPseudonymized) {
+	public ImmunizationDataForm(boolean isPseudonymized) {
 		super(
 			ImmunizationDto.class,
 			ImmunizationDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			createFieldAccessCheckers(isPseudonymized, true));
-		this.immunizationUuid = immunizationUuid;
+			UiFieldAccessCheckers.getDefault(isPseudonymized));
 		addFields();
 	}
 
@@ -334,14 +331,6 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			updateFacilityFields(facilityCombo, facilityDetails);
 			this.getValue().setFacilityType((FacilityType) facilityType.getValue());
 		});
-	}
-
-	private static UiFieldAccessCheckers createFieldAccessCheckers(boolean isPseudonymized, boolean withPersonalAndSensitive) {
-		if (withPersonalAndSensitive) {
-			return UiFieldAccessCheckers.getDefault(isPseudonymized);
-		}
-
-		return UiFieldAccessCheckers.getNoop();
 	}
 
 	private boolean shouldShowVaccinationFields(MeansOfImmunization meansOfImmunization) {
