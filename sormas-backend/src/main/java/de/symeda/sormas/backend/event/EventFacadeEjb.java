@@ -404,6 +404,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.SRC_TEL_NO:
 				case EventIndexDto.SRC_TYPE:
 				case EventIndexDto.REPORT_DATE_TIME:
+				case EventIndexDto.EVENT_IDENTIFICATION_SOURCE:
 					expression = event.get(sortProperty.propertyName);
 					break;
 				case EventIndexDto.EVENT_LOCATION:

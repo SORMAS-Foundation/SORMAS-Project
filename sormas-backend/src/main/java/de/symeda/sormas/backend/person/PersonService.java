@@ -29,6 +29,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,7 +50,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -58,6 +59,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
@@ -182,63 +184,61 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		throw new UnsupportedOperationException("Should not be called -> obsolete!");
 	}
 
+	@SuppressWarnings({
+		"rawtypes",
+		"unchecked" })
 	public Predicate createUserFilter(PersonQueryContext personQueryContext, PersonCriteria personCriteria) {
 
 		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
 		final CriteriaQuery cq = personQueryContext.getQuery();
-
 		final PersonJoins joins = (PersonJoins) personQueryContext.getJoins();
 
-		final Join<Object, Case> caseJoin = joins.getCaze();
-		final Join<Object, Contact> contactJoin = joins.getContact();
-		final Join<Object, EventParticipant> eventParticipantJoin = joins.getEventParticipant();
-		final Join<Object, Immunization> immunizationJoin = joins.getImmunization();
-		final Join<Object, TravelEntry> travelEntryJoin = joins.getTravelEntry();
+		// 1. Define filters per association lazy to avoid superfluous joins
+		final Supplier<Predicate> caseFilter = () -> CriteriaBuilderHelper
+			.and(cb, caseService.createUserFilter(cb, cq, joins.getCaze()), caseService.createDefaultFilter(cb, joins.getCaze()));
+		final Supplier<Predicate> contactFilter = () -> CriteriaBuilderHelper
+			.and(cb, contactService.createUserFilter(cb, cq, joins.getContact()), contactService.createDefaultFilter(cb, joins.getContact()));
+		final Supplier<Predicate> eventParticipantFilter = () -> CriteriaBuilderHelper.and(
+			cb,
+			eventParticipantService.createUserFilter(cb, cq, joins.getEventParticipant()),
+			eventParticipantService.createDefaultFilter(cb, joins.getEventParticipant()));
+		final Supplier<Predicate> immunizationFilter = () -> CriteriaBuilderHelper.and(
+			cb,
+			immunizationService.createUserFilter(cb, cq, joins.getImmunization()),
+			immunizationService.createDefaultFilter(cb, joins.getImmunization()));
+		final Supplier<Predicate> travelEntryFilter = () -> CriteriaBuilderHelper.and(
+			cb,
+			travelEntryService.createUserFilter(cb, cq, joins.getTravelEntry()),
+			travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
 
-		final Predicate caseUserFilter = caseService.createUserFilter(cb, cq, caseJoin);
-		final Predicate contactUserFilter = contactService.createUserFilter(cb, cq, contactJoin);
-		final Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantJoin);
-		final Predicate travelEntryUserFilter = travelEntryService.createUserFilter(cb, cq, travelEntryJoin);
-		final Predicate immunizationUserFilter = immunizationService.createUserFilter(cb, cq, immunizationJoin);
-
-		final Predicate caseNotDeleted = caseService.createDefaultFilter(cb, caseJoin);
-		final Predicate contactNotDeleted = contactService.createDefaultFilter(cb, contactJoin);
-		final Predicate eventParticipantNotDeleted = eventParticipantService.createDefaultFilter(cb, eventParticipantJoin);
-		final Predicate immunizationNotDeleted = immunizationService.createDefaultFilter(cb, immunizationJoin);
-		final Predicate travelEntryNotDeleted = travelEntryService.createDefaultFilter(cb, travelEntryJoin);
-
-		final Predicate caseFilter = CriteriaBuilderHelper.and(cb, caseUserFilter, caseNotDeleted);
-		final Predicate contactFilter = CriteriaBuilderHelper.and(cb, contactUserFilter, contactNotDeleted);
-		final Predicate eventParticipantFilter = CriteriaBuilderHelper.and(cb, eventParticipantUserFilter, eventParticipantNotDeleted);
-		final Predicate immunizationFilter = CriteriaBuilderHelper.and(cb, immunizationUserFilter, immunizationNotDeleted);
-		final Predicate travelEntryFilter = CriteriaBuilderHelper.and(cb, travelEntryUserFilter, travelEntryNotDeleted);
-
-		if (personCriteria != null && personCriteria.getPersonAssociation() != null) {
-			switch (personCriteria.getPersonAssociation()) {
+		// 2. Define the Joins on associations where needed
+		PersonAssociation personAssociation =
+			Optional.ofNullable(personCriteria).map(e -> e.getPersonAssociation()).orElse(PersonCriteria.DEFAULT_ASSOCIATION);
+		switch (personAssociation) {
 			case ALL:
-				break;
+			return CriteriaBuilderHelper
+				.or(cb, caseFilter.get(), contactFilter.get(), eventParticipantFilter.get(), immunizationFilter.get(), travelEntryFilter.get());
 			case CASE:
-				return caseFilter;
+			return caseFilter.get();
 			case CONTACT:
-				return contactFilter;
+			return contactFilter.get();
 			case EVENT_PARTICIPANT:
-				return eventParticipantFilter;
+			return eventParticipantFilter.get();
 			case IMMUNIZATION:
-				return immunizationFilter;
+			return immunizationFilter.get();
 			case TRAVEL_ENTRY:
-				return travelEntryFilter;
+			return travelEntryFilter.get();
+		default:
+			throw new IllegalArgumentException(personAssociation.toString());
 			}
-		}
-
-		return CriteriaBuilderHelper.or(cb, caseFilter, contactFilter, eventParticipantFilter, immunizationFilter, travelEntryFilter);
 	}
-	
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, PersonQueryContext personQueryContext) {
 
+		// Hint: personCriteria.getPersonAssociation() is interpreted in createUserFilter, but not again here
+
 		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
 		final From<?, Person> personFrom = personQueryContext.getRoot();
-		final CriteriaQuery<?> cq = personQueryContext.getQuery();
 
 		final Join<Person, Location> location = personFrom.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
@@ -283,45 +283,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		filter = andEqualsReferenceDto(cb, region, filter, personCriteria.getRegion());
 		filter = andEqualsReferenceDto(cb, district, filter, personCriteria.getDistrict());
 		filter = andEqualsReferenceDto(cb, community, filter, personCriteria.getCommunity());
-
-		if (personCriteria.getPersonAssociation() != null) {
-			switch (personCriteria.getPersonAssociation()) {
-
-			case ALL:
-				break;
-			case CASE:
-				final Subquery<Case> caseSubquery = cq.subquery(Case.class);
-				final Root<Case> caseRoot = caseSubquery.from(Case.class);
-				caseSubquery.select(caseRoot.get(Case.ID)).where(cb.equal(caseRoot.get(Case.PERSON), personFrom));
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(caseSubquery));
-				break;
-			case CONTACT:
-				final Subquery<Contact> contactSubquery = cq.subquery(Contact.class);
-				final Root<Contact> contactRoot = contactSubquery.from(Contact.class);
-				contactSubquery.select(contactRoot.get(Contact.ID)).where(cb.equal(contactRoot.get(Contact.PERSON), personFrom));
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(contactSubquery));
-				break;
-			case EVENT_PARTICIPANT:
-				final Subquery<EventParticipant> eventParticipantSubquery = cq.subquery(EventParticipant.class);
-				final Root<EventParticipant> eventParticipantRoot = eventParticipantSubquery.from(EventParticipant.class);
-				eventParticipantSubquery.select(eventParticipantRoot.get(EventParticipant.ID))
-					.where(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON), personFrom));
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(eventParticipantSubquery));
-				break;
-			case IMMUNIZATION:
-				final Subquery<Immunization> immunizationSubquery = cq.subquery(Immunization.class);
-				final Root<Immunization> immunizationRoot = immunizationSubquery.from(Immunization.class);
-				immunizationSubquery.select(immunizationRoot.get(Immunization.ID)).where(cb.equal(immunizationRoot.get(Immunization.PERSON), personFrom));
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(immunizationSubquery));
-				break;
-			case TRAVEL_ENTRY:
-				final Subquery<TravelEntry> travelEntrySubquery = cq.subquery(TravelEntry.class);
-				final Root<TravelEntry> travelEntryRoot = travelEntrySubquery.from(TravelEntry.class);
-				travelEntrySubquery.select(travelEntryRoot.get(TravelEntry.ID)).where(cb.equal(travelEntryRoot.get(TravelEntry.PERSON), personFrom));
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.exists(travelEntrySubquery));
-				break;
-			}
-		}
 
 		return filter;
 	}
@@ -509,30 +470,38 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		// Persons of active cases
 		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
-		Predicate activeCasesFilter = activeEntriesOnly ? caseService.createActiveCasesFilter(cb, personCaseJoin) : null;
+		Predicate activeCasesFilter =
+			activeEntriesOnly ? caseService.createActiveCasesFilter(cb, personCaseJoin) : caseService.createDefaultFilter(cb, personCaseJoin);
 		Predicate caseUserFilter = caseService.createUserFilter(cb, personQuery, personCaseJoin);
 		Predicate personCasePredicate = and(cb, personCaseJoin.get(Case.ID).isNotNull(), activeCasesFilter, caseUserFilter);
 
 		// Persons of active contacts
-		Predicate activeContactsFilter = activeEntriesOnly ? contactService.createActiveContactsFilter(cb, personContactJoin) : null;
+		Predicate activeContactsFilter = activeEntriesOnly
+			? contactService.createActiveContactsFilter(cb, personContactJoin)
+			: contactService.createDefaultFilter(cb, personContactJoin);
 		Predicate contactUserFilter = contactService.createUserFilter(cb, personQuery, personContactJoin);
 		Predicate personContactPredicate = and(cb, personContactJoin.get(Contact.ID).isNotNull(), contactUserFilter, activeContactsFilter);
 
 		// Persons of event participants in active events
-		Predicate activeEventParticipantsFilter =
-			activeEntriesOnly ? eventParticipantService.createActiveEventParticipantsFilter(cb, personEventParticipantJoin) : null;
+		Predicate activeEventParticipantsFilter = activeEntriesOnly
+			? eventParticipantService.createActiveEventParticipantsInActiveEventsFilter(cb, personEventParticipantJoin)
+			: eventParticipantService.createDefaultInUndeletedEventsFilter(cb, personEventParticipantJoin);
 		Predicate eventParticipantUserFilter = eventParticipantService.createUserFilter(cb, personQuery, personEventParticipantJoin);
 		Predicate personEventParticipantPredicate =
 			and(cb, personEventParticipantJoin.get(EventParticipant.ID).isNotNull(), activeEventParticipantsFilter, eventParticipantUserFilter);
 
 		// Persons of active immunizations
-		Predicate activeImmunizationsFilter = activeEntriesOnly ? immunizationService.createDefaultFilter(cb, personImmunizationJoin) : null;
+		Predicate activeImmunizationsFilter = activeEntriesOnly
+			? immunizationService.createActiveImmunizationsFilter(cb, personImmunizationJoin)
+			: immunizationService.createDefaultFilter(cb, personImmunizationJoin);
 		Predicate immunizationUserFilter = immunizationService.createUserFilter(cb, personQuery, personImmunizationJoin);
 		Predicate personImmunizationPredicate =
 			and(cb, personImmunizationJoin.get(Immunization.ID).isNotNull(), immunizationUserFilter, activeImmunizationsFilter);
 
 		// Persons of active travel entries
-		Predicate activeTravelEntriesFilter = activeEntriesOnly ? travelEntryService.createDefaultFilter(cb, personTravelEntryJoin) : null;
+		Predicate activeTravelEntriesFilter = activeEntriesOnly
+			? travelEntryService.createActiveTravelEntriesFilter(cb, personTravelEntryJoin)
+			: travelEntryService.createDefaultFilter(cb, personTravelEntryJoin);
 		Predicate travelEntryUserFilter = travelEntryService.createUserFilter(cb, personQuery, personTravelEntryJoin);
 		Predicate personTravelEntryPredicate =
 			and(cb, personTravelEntryJoin.get(TravelEntry.ID).isNotNull(), travelEntryUserFilter, activeTravelEntriesFilter);

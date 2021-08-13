@@ -70,6 +70,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return inJurisdictionOrOwned(new ImmunizationQueryContext(cb, cq, immunizationPath));
 	}
 
+	public Predicate createActiveImmunizationsFilter(CriteriaBuilder cb, From<?, Immunization> root) {
+		return cb.and(cb.isFalse(root.get(Immunization.ARCHIVED)), cb.isFalse(root.get(Immunization.DELETED)));
+	}
+
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Immunization> root) {
 		return cb.isFalse(root.get(Immunization.DELETED));
 	}

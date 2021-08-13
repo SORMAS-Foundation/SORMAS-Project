@@ -7825,4 +7825,38 @@ ALTER TABLE vaccination_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (393, 'Immunizations II: Vaccination Entity #4763');
 
+-- 2021-08-04 Add missing vaccination columns #4763
+
+ALTER TABLE vaccination ADD COLUMN vaccinetype text;
+ALTER TABLE vaccination ADD COLUMN vaccinedose text;
+ALTER TABLE vaccination_history ADD COLUMN vaccinetype text;
+ALTER TABLE vaccination_history ADD COLUMN vaccinedose text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (394, 'Add missing vaccination columns #4763');
+
+-- 2021-06-30 Add reportId to labMessage #5622
+ALTER TABLE labmessage ADD COLUMN reportid varchar(512);
+ALTER TABLE labmessage_history ADD COLUMN reportid varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (395, 'Add reportId to labMessage #5622');
+
+-- 2021-08-05 perosn sex default to UNKNOWN
+UPDATE person SET sex = 'UNKNOWN' WHERE sex IS NULL;
+ALTER TABLE person ALTER COLUMN sex SET DEFAULT 'UNKNOWN';
+
+INSERT INTO schema_version (version_number, comment) VALUES (396, 'sex = UNKNOWN as default #6248');
+
+-- 2021-08-09 Sub-continent association change New Caledonia #5774
+UPDATE country SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultname = 'Western Europe') WHERE isocode = 'NCL';
+UPDATE location SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultname = 'Western Europe') WHERE location.subcontinent_id IS NOT NULL AND location.country_id = (SELECT country.id FROM country WHERE isocode = 'NCL');
+UPDATE location SET continent_id = (SELECT continent.id FROM continent WHERE continent.defaultname = 'Europe') WHERE location.continent_id IS NOT NULL AND location.country_id = (SELECT country.id FROM country WHERE isocode = 'NCL');
+
+INSERT INTO schema_version (version_number, comment) VALUES (397, 'Sub-continent association change New Caledonia #5774');
+
+-- 2021-08-12 Sub-continent association change Germany #5689
+UPDATE country SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultname = 'Central Europe') WHERE isocode = 'DEU';
+UPDATE location SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultname = 'Central Europe') WHERE location.subcontinent_id IS NOT NULL AND location.country_id = (SELECT country.id FROM country WHERE isocode = 'DEU');
+
+INSERT INTO schema_version (version_number, comment) VALUES (398, 'Sub-continent association change Germany #5689');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
