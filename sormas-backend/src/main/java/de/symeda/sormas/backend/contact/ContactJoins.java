@@ -90,6 +90,8 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 
 	private Join<Contact, SormasToSormasShareInfo> shareInfoContacts;
 
+	private Join<Contact, User> followUpStatusChangeUser;
+
 	public ContactJoins(From<T, Contact> contact) {
 		super(contact);
 
@@ -406,5 +408,13 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 
 	private void setSampleLabs(Join<Sample, Facility> sampleLabs) {
 		this.sampleLabs = sampleLabs;
+	}
+
+	public Join<Contact, User> getFollowUpStatusChangeUser() {
+		return getOrCreate(followUpStatusChangeUser, Contact.FOLLOW_UP_STATUS_CHANGE_USER, JoinType.LEFT, this::setFollowUpStatusChangeUser);
+	}
+
+	private void setFollowUpStatusChangeUser(Join<Contact, User> followUpStatusChangeUser) {
+		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 }

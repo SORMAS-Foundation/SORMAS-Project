@@ -126,6 +126,9 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String INVESTIGATED_DATE = "investigatedDate";
 	public static final String DISTRICT_LEVEL_DATE = "districtLevelDate";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String CLINICIAN_NAME = "clinicianName";
+	public static final String CLINICIAN_PHONE = "clinicianPhone";
+	public static final String CLINICIAN_EMAIL = "clinicianEmail";
 	public static final String CASE_OFFICER = "caseOfficer";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String TASKS = "tasks";
@@ -178,6 +181,9 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
 	public static final String INFECTION_SETTING = "infectionSetting";
+	public static final String PROHIBITION_TO_WORK = "prohibitionToWork";
+	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
+	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";

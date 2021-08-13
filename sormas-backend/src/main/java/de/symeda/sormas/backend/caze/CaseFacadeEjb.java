@@ -291,6 +291,7 @@ import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb.TreatmentFacadeEjbLoc
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -663,10 +664,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.PREGNANT), joins.getPerson().get(Person.APPROXIMATE_AGE),
 				joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE), joins.getPerson().get(Person.BIRTHDATE_DD),
 				joins.getPerson().get(Person.BIRTHDATE_MM), joins.getPerson().get(Person.BIRTHDATE_YYYY),
-				caseRoot.get(Case.REPORT_DATE), joins.getReportingUser().get(User.UUID),
-				joins.getRegion().get(Region.UUID), joins.getRegion().get(Region.NAME),
-				joins.getDistrict().get(District.UUID), joins.getDistrict().get(District.NAME),
-				joins.getCommunity().get(Community.UUID), joins.getCommunity().get(Community.NAME),
+				caseRoot.get(Case.REPORT_DATE), joins.getRegion().get(Region.NAME),
+				joins.getDistrict().get(District.NAME), joins.getCommunity().get(Community.NAME),
 				caseRoot.get(Case.FACILITY_TYPE),
 				joins.getFacility().get(Facility.NAME), joins.getFacility().get(Facility.UUID), caseRoot.get(Case.HEALTH_FACILITY_DETAILS),
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
@@ -675,13 +674,17 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.NOT_A_CASE_REASON_NEGATIVE_TEST),
 				caseRoot.get(Case.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION), caseRoot.get(Case.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN),
 				caseRoot.get(Case.NOT_A_CASE_REASON_OTHER), caseRoot.get(Case.NOT_A_CASE_REASON_DETAILS),
-				caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME), caseRoot.get(Case.OUTCOME_DATE),
+				caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.INVESTIGATED_DATE),
+				caseRoot.get(Case.OUTCOME), caseRoot.get(Case.OUTCOME_DATE),
+				caseRoot.get(Case.SEQUELAE), caseRoot.get(Case.SEQUELAE_DETAILS),
 				caseRoot.get(Case.BLOOD_ORGAN_OR_TISSUE_DONATED),
 				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
 				caseRoot.get(Case.NOSOCOMIAL_OUTBREAK), caseRoot.get(Case.INFECTION_SETTING),
+				caseRoot.get(Case.PROHIBITION_TO_WORK), caseRoot.get(Case.PROHIBITION_TO_WORK_FROM), caseRoot.get(Case.PROHIBITION_TO_WORK_UNTIL),
 				caseRoot.get(Case.RE_INFECTION), caseRoot.get(Case.PREVIOUS_INFECTION_DATE),
 				// quarantine
 				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_TYPE_DETAILS), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
+				caseRoot.get(Case.QUARANTINE_HELP_NEEDED),
 				caseRoot.get(Case.QUARANTINE_ORDERED_VERBALLY),
 				caseRoot.get(Case.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
 				caseRoot.get(Case.QUARANTINE_ORDERED_VERBALLY_DATE),
@@ -732,6 +735,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getResponsibleRegion().get(Region.NAME),
 				joins.getResponsibleDistrict().get(District.NAME),
 				joins.getResponsibleCommunity().get(Community.NAME),
+				caseRoot.get(Case.CLINICIAN_NAME),
+				caseRoot.get(Case.CLINICIAN_PHONE),
+				caseRoot.get(Case.CLINICIAN_EMAIL),
+				joins.getReportingUser().get(User.ID),
+				joins.getFollowUpStatusChangeUser().get(User.ID),
 				JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 		//@formatter:on
 
@@ -877,7 +885,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				Root<Sample> samplesRoot = samplesCq.from(Sample.class);
 				Join<Sample, Case> samplesCaseJoin = samplesRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 				Expression<String> caseIdsExpr = samplesCaseJoin.get(Case.ID);
-				samplesCq.where(caseIdsExpr.in(resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList())));
+				samplesCq.where(caseIdsExpr.in(resultCaseIds));
 				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedCase().getId()));
 			}
@@ -894,11 +902,9 @@ public class CaseFacadeEjb implements CaseFacade {
 				Join<Case, Visit> visitsJoin = visitsCqRoot.join(Case.VISITS, JoinType.LEFT);
 				Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-				List<Long> exportCaseIds = resultList.stream().map(e -> e.getId()).collect(Collectors.toList());
-
 				visitsCq.where(
 					CriteriaBuilderHelper
-						.and(cb, visitsCqRoot.get(AbstractDomainObject.ID).in(exportCaseIds), cb.isNotEmpty(visitsCqRoot.get(Case.VISITS))));
+						.and(cb, visitsCqRoot.get(AbstractDomainObject.ID).in(resultCaseIds), cb.isNotEmpty(visitsCqRoot.get(Case.VISITS))));
 				visitsCq.multiselect(
 					visitsCqRoot.get(AbstractDomainObject.ID),
 					visitsJoin.get(Visit.VISIT_DATE_TIME),
@@ -919,6 +925,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 				eventSummaries = eventService.getEventSummaryDetailsByCases(resultCaseIds);
 			}
+
+			Map<Long, UserReference> caseUsers = getCaseUsersForExport(resultList, exportConfiguration);
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
@@ -1060,6 +1068,22 @@ public class CaseFacadeEjb implements CaseFacade {
 						});
 				}
 
+				if (!caseUsers.isEmpty()) {
+					if (exportDto.getReportingUserId() != null) {
+						UserReference user = caseUsers.get(exportDto.getReportingUserId());
+
+						exportDto.setReportingUserName(user.getName());
+						exportDto.setReportingUserRoles(user.getUserRoles());
+					}
+
+					if (exportDto.getFollowUpStatusChangeUserId() != null) {
+						UserReference user = caseUsers.get(exportDto.getFollowUpStatusChangeUserId());
+
+						exportDto.setFollowUpStatusChangeUserName(user.getName());
+						exportDto.setFollowUpStatusChangeUserRoles(user.getUserRoles());
+					}
+				}
+
 				pseudonymizer.pseudonymizeDto(CaseExportDto.class, exportDto, inJurisdiction, (c) -> {
 					pseudonymizer.pseudonymizeDto(BirthDateDto.class, c.getBirthdate(), inJurisdiction, null);
 					pseudonymizer.pseudonymizeDto(EmbeddedSampleExportDto.class, c.getSample1(), inJurisdiction, null);
@@ -1074,6 +1098,22 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		caseCriteria.setMustHaveCaseManagementData(previousCaseManagementDataCriteria);
 		return resultList;
+	}
+
+	private Map<Long, UserReference> getCaseUsersForExport(List<CaseExportDto> resultList, ExportConfigurationDto exportConfiguration) {
+		Map<Long, UserReference> caseUsers = Collections.emptyMap();
+		if (exportConfiguration == null
+			|| exportConfiguration.getProperties().contains(CaseDataDto.REPORTING_USER)
+			|| exportConfiguration.getProperties().contains(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER)) {
+			Set<Long> userIds = resultList.stream()
+				.map((c -> Arrays.asList(c.getReportingUserId(), c.getFollowUpStatusChangeUserId())))
+				.flatMap(Collection::stream)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+			caseUsers = userService.getUserReferencesByIds(userIds).stream().collect(Collectors.toMap(UserReference::getId, Function.identity()));
+		}
+
+		return caseUsers;
 	}
 
 	@Override
