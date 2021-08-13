@@ -111,7 +111,7 @@ public class PersonSteps implements En {
     When("API: I receive all person ids", personsHelper::getAllPersonUuid);
 
     Then(
-        "API: I check that POST person call body has is {string}",
+        "API: I check that POST person call body is {string}",
         (String expectedBody) -> {
           Response response =
               personsHelper.getPersonBasedOnUUID(apiState.getEditPerson().getUuid());
