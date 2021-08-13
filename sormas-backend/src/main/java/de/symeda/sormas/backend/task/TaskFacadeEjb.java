@@ -607,9 +607,11 @@ public class TaskFacadeEjb implements TaskFacade {
 		List<TaskExportDto> tasks = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(TaskExportDto.class, tasks, TaskExportDto::isInJurisdiction, (t, inJurisdiction) -> {
-			pseudonymizer.pseudonymizeDto(BirthDateDto.class, t.getPersonBirthDate(), inJurisdiction, null);
-		});
+		pseudonymizer.pseudonymizeDtoCollection(
+			TaskExportDto.class,
+			tasks,
+			TaskExportDto::isInJurisdiction,
+			(t, inJurisdiction) -> pseudonymizer.pseudonymizeDto(BirthDateDto.class, t.getPersonBirthDate(), inJurisdiction, null));
 
 		return tasks;
 	}
