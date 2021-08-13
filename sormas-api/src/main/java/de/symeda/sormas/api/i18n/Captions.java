@@ -189,6 +189,7 @@ public interface Captions {
 	String bulkEventType = "bulkEventType";
 	String bulkFacility = "bulkFacility";
 	String bulkInvestigationStatus = "bulkInvestigationStatus";
+	String bulkLinkToEvent = "bulkLinkToEvent";
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	String bulkTaskAssignee = "bulkTaskAssignee";
@@ -1281,6 +1282,7 @@ public interface Captions {
 	String Immunization_immunizationPeriod = "Immunization.immunizationPeriod";
 	String Immunization_immunizationStatus = "Immunization.immunizationStatus";
 	String Immunization_lastInfectionDate = "Immunization.lastInfectionDate";
+	String Immunization_lastVaccineType = "Immunization.lastVaccineType";
 	String Immunization_managementStatus = "Immunization.managementStatus";
 	String Immunization_meansOfImmunization = "Immunization.meansOfImmunization";
 	String Immunization_meansOfImmunizationDetails = "Immunization.meansOfImmunizationDetails";
@@ -1295,10 +1297,13 @@ public interface Captions {
 	String Immunization_reportDate = "Immunization.reportDate";
 	String Immunization_startDate = "Immunization.startDate";
 	String Immunization_uuid = "Immunization.uuid";
+	String Immunization_validFrom = "Immunization.validFrom";
+	String Immunization_validUntil = "Immunization.validUntil";
 	String immunizationImmunizationsList = "immunizationImmunizationsList";
 	String immunizationKeepImmunization = "immunizationKeepImmunization";
 	String immunizationNewImmunization = "immunizationNewImmunization";
 	String immunizationNoImmunizationsForPerson = "immunizationNoImmunizationsForPerson";
+	String immunizationOnlyPersonsWithOverdueImmunization = "immunizationOnlyPersonsWithOverdueImmunization";
 	String immunizationOverwriteImmunization = "immunizationOverwriteImmunization";
 	String importCancelImport = "importCancelImport";
 	String importDetailed = "importDetailed";
@@ -1339,6 +1344,7 @@ public interface Captions {
 	String LabMessage_personPostalCode = "LabMessage.personPostalCode";
 	String LabMessage_personSex = "LabMessage.personSex";
 	String LabMessage_personStreet = "LabMessage.personStreet";
+	String labMessage_reportId = "labMessage.reportId";
 	String LabMessage_sampleDateTime = "LabMessage.sampleDateTime";
 	String LabMessage_sampleMaterial = "LabMessage.sampleMaterial";
 	String LabMessage_sampleReceivedDate = "LabMessage.sampleReceivedDate";

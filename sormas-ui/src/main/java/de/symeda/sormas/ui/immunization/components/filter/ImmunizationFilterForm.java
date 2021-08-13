@@ -1,8 +1,18 @@
 package de.symeda.sormas.ui.immunization.components.filter;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
+import java.util.Date;
+import java.util.stream.Stream;
+
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -14,7 +24,7 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
-import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationDateType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -23,16 +33,33 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCriteria> {
 
+	private static final String WEEK_AND_DATE_FILTER = "weekAndDateFilter";
+
+	private static final String MORE_FILTERS_HTML = filterLocs(
+		ImmunizationCriteria.REGION,
+		ImmunizationCriteria.DISTRICT,
+		ImmunizationCriteria.COMMUNITY,
+		ImmunizationCriteria.FACILITY_TYPE_GROUP,
+		ImmunizationCriteria.FACILITY_TYPE,
+		ImmunizationCriteria.HEALTH_FACILITY,
+		ImmunizationCriteria.ONLY_PERSONS_WITH_OVERDUE_IMMUNIZATION)
+
+		+ loc(WEEK_AND_DATE_FILTER);
+
 	public ImmunizationFilterForm() {
-		super(ImmunizationCriteria.class, ImmunizationDto.I18N_PREFIX);
+		super(ImmunizationCriteria.class, ImmunizationCriteria.I18N_PREFIX);
 	}
 
 	@Override
@@ -45,18 +72,17 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 			ImmunizationCriteria.BIRTHDATE_DD,
 			ImmunizationCriteria.MEANS_OF_IMMUNIZATION,
 			ImmunizationCriteria.MANAGEMENT_STATUS,
-			ImmunizationCriteria.IMMUNIZATION_STATUS,
-			ImmunizationCriteria.REGION,
-			ImmunizationCriteria.DISTRICT,
-			ImmunizationCriteria.COMMUNITY,
-			ImmunizationCriteria.FACILITY_TYPE_GROUP,
-			ImmunizationCriteria.FACILITY_TYPE,
-			ImmunizationCriteria.HEALTH_FACILITY };
+			ImmunizationCriteria.IMMUNIZATION_STATUS };
+	}
+
+	@Override
+	protected String createMoreFiltersHtmlLayout() {
+		return MORE_FILTERS_HTML;
 	}
 
 	@Override
 	protected void addFields() {
-		addField(FieldConfiguration.pixelSized(ImmunizationDto.DISEASE, 140));
+		addField(FieldConfiguration.pixelSized(ImmunizationCriteria.DISEASE, 140));
 
 		final TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(
@@ -79,29 +105,43 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 		birthDateDD.setWidth(140, Unit.PIXELS);
 
 		addFields(
-			FieldConfiguration.pixelSized(ImmunizationDto.MEANS_OF_IMMUNIZATION, 140),
-			FieldConfiguration.pixelSized(ImmunizationDto.MANAGEMENT_STATUS, 140),
-			FieldConfiguration.pixelSized(ImmunizationDto.IMMUNIZATION_STATUS, 140));
+			FieldConfiguration.pixelSized(ImmunizationCriteria.MEANS_OF_IMMUNIZATION, 140),
+			FieldConfiguration.pixelSized(ImmunizationCriteria.MANAGEMENT_STATUS, 140),
+			FieldConfiguration.pixelSized(ImmunizationCriteria.IMMUNIZATION_STATUS, 140));
+	}
 
-		final ComboBox regionFilter = addField(getContent(), FieldConfiguration.pixelSized(ImmunizationCriteria.REGION, 140));
+	@Override
+	public void addMoreFilters(CustomLayout moreFiltersContainer) {
+		final ComboBox regionFilter = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.REGION, 140));
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
-		final ComboBox districtFilter = addField(getContent(), FieldConfiguration.pixelSized(ImmunizationCriteria.DISTRICT, 140));
+		final ComboBox districtFilter = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.DISTRICT, 140));
 		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 
-		addField(getContent(), FieldConfiguration.pixelSized(ImmunizationCriteria.COMMUNITY, 140));
+		addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.COMMUNITY, 140));
 
-		ComboBox typeGroup = addField(getContent(), FieldConfiguration.pixelSized(ImmunizationCriteria.FACILITY_TYPE_GROUP, 140));
+		ComboBox typeGroup = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.FACILITY_TYPE_GROUP, 140));
 		typeGroup.setInputPrompt(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		typeGroup.removeAllItems();
 		FieldHelper.updateEnumData(typeGroup, FacilityTypeGroup.getAccomodationGroups());
 
-		ComboBox type = addField(getContent(), FieldConfiguration.pixelSized(ImmunizationCriteria.FACILITY_TYPE, 140));
+		ComboBox type = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.FACILITY_TYPE, 140));
 		type.setInputPrompt(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
 		type.removeAllItems();
 
-		ComboBox facilityField = addField(getContent(), FieldConfiguration.pixelSized(ImmunizationCriteria.HEALTH_FACILITY, 140));
+		ComboBox facilityField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(ImmunizationCriteria.HEALTH_FACILITY, 140));
 		facilityField.setDescription(I18nProperties.getDescription(Descriptions.descFacilityFilter));
+
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				ImmunizationCriteria.ONLY_PERSONS_WITH_OVERDUE_IMMUNIZATION,
+				I18nProperties.getCaption(Captions.immunizationOnlyPersonsWithOverdueImmunization),
+				null,
+				CssStyles.CHECKBOX_FILTER_INLINE));
+
+		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
 
 	@Override
@@ -110,7 +150,6 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 
 		final ImmunizationCriteria criteria = getValue();
 
-		final ComboBox regionField = getField(ImmunizationCriteria.REGION);
 		final ComboBox districtField = getField(ImmunizationCriteria.DISTRICT);
 		final ComboBox communityField = getField(ImmunizationCriteria.COMMUNITY);
 		final ComboBox facilityTypeGroupField = getField(ImmunizationCriteria.FACILITY_TYPE_GROUP);
@@ -246,7 +285,10 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 	@Override
 	protected void applyDependenciesOnNewValue(ImmunizationCriteria criteria) {
 		final UserDto user = currentUserDto();
-		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+
+		UserProvider currentUserProvider = UserProvider.getCurrent();
+		final JurisdictionLevel userJurisdictionLevel =
+			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : null;
 
 		final ComboBox districtField = getField(ImmunizationCriteria.DISTRICT);
 		final ComboBox communityField = getField(ImmunizationCriteria.COMMUNITY);
@@ -332,5 +374,86 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 			birthDateDD.clear();
 			birthDateDD.setEnabled(false);
 		}
+
+		// Date/Epi week filter
+		HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);
+		@SuppressWarnings("unchecked")
+		EpiWeekAndDateFilterComponent<ImmunizationDateType> weekAndDateFilter =
+			(EpiWeekAndDateFilterComponent<ImmunizationDateType>) dateFilterLayout.getComponent(0);
+
+		ImmunizationDateType immunizationDateType = criteria.getImmunizationDateType();
+		weekAndDateFilter.getDateTypeSelector().setValue(immunizationDateType);
+		weekAndDateFilter.getDateFilterOptionFilter().setValue(criteria.getDateFilterOption());
+		Date dateFrom = criteria.getFromDate();
+		Date dateTo = criteria.getToDate();
+
+		if (DateFilterOption.EPI_WEEK.equals(criteria.getDateFilterOption())) {
+			weekAndDateFilter.getWeekFromFilter().setValue(dateFrom == null ? null : DateHelper.getEpiWeek(dateFrom));
+			weekAndDateFilter.getWeekToFilter().setValue(dateTo == null ? null : DateHelper.getEpiWeek(dateTo));
+		} else {
+			weekAndDateFilter.getDateFromFilter().setValue(dateFrom);
+			weekAndDateFilter.getDateToFilter().setValue(dateTo);
+		}
 	}
+
+	@Override
+	protected Stream<Field> streamFieldsForEmptyCheck(CustomLayout layout) {
+		HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);
+		EpiWeekAndDateFilterComponent<ImmunizationDateType> weekAndDateFilter =
+			(EpiWeekAndDateFilterComponent<ImmunizationDateType>) dateFilterLayout.getComponent(0);
+
+		return super.streamFieldsForEmptyCheck(layout).filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter());
+	}
+
+	private HorizontalLayout buildWeekAndDateFilter() {
+
+		EpiWeekAndDateFilterComponent<ImmunizationDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(
+			false,
+			false,
+			null,
+			ImmunizationDateType.values(),
+			I18nProperties.getString(Strings.promptImmunizationDateType),
+			null,
+			this);
+		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptImmunizationEpiWeekFrom));
+		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptImmunizationEpiWeekTo));
+		weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptImmunizationDateFrom));
+		weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptImmunizationDateTo));
+
+		addApplyHandler(e -> onApplyClick(weekAndDateFilter));
+
+		HorizontalLayout dateFilterRowLayout = new HorizontalLayout();
+		dateFilterRowLayout.setSpacing(true);
+		dateFilterRowLayout.setSizeUndefined();
+
+		dateFilterRowLayout.addComponent(weekAndDateFilter);
+
+		return dateFilterRowLayout;
+	}
+
+	private void onApplyClick(EpiWeekAndDateFilterComponent<ImmunizationDateType> weekAndDateFilter) {
+		ImmunizationCriteria criteria = getValue();
+
+		DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
+		Date fromDate, toDate;
+		if (dateFilterOption == DateFilterOption.DATE) {
+			Date dateFrom = weekAndDateFilter.getDateFromFilter().getValue();
+			fromDate = dateFrom != null ? DateHelper.getStartOfDay(dateFrom) : null;
+			Date dateTo = weekAndDateFilter.getDateToFilter().getValue();
+			toDate = dateFrom != null ? DateHelper.getEndOfDay(dateTo) : null;
+		} else {
+			fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
+			toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
+		}
+		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
+			criteria.setDateFilterOption(dateFilterOption);
+			ImmunizationDateType immunizationDateType = (ImmunizationDateType) weekAndDateFilter.getDateTypeSelector().getValue();
+			criteria.setImmunizationDateType(immunizationDateType);
+			criteria.setFromDate(fromDate);
+			criteria.setToDate(toDate);
+		} else {
+			weekAndDateFilter.setNotificationsForMissingFilters();
+		}
+	}
+
 }

@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.immunization;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -26,9 +27,12 @@ import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class ImmunizationCriteria extends BaseCriteria implements Serializable, Cloneable {
+
+	public static final String I18N_PREFIX = "Immunization";
 
 	public static final String DISEASE = "disease";
 	public static final String NAME_ADDRESS_PHONE_EMAIL_LIKE = "nameAddressPhoneEmailLike";
@@ -44,6 +48,7 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String HEALTH_FACILITY = "healthFacility";
+	public static final String ONLY_PERSONS_WITH_OVERDUE_IMMUNIZATION = "onlyPersonsWithOverdueImmunization";
 
 	private Disease disease;
 	private String nameAddressPhoneEmailLike;
@@ -59,6 +64,12 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
 	private FacilityReferenceDto healthFacility;
+	private Boolean onlyPersonsWithOverdueImmunization = Boolean.FALSE;
+
+	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
+	private ImmunizationDateType immunizationDateType;
+	private Date fromDate;
+	private Date toDate;
 	private CaseReferenceDto relatedCase;
 	private PersonReferenceDto person;
 
@@ -172,6 +183,46 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 
 	public void setHealthFacility(FacilityReferenceDto healthFacility) {
 		this.healthFacility = healthFacility;
+	}
+
+	public Boolean getOnlyPersonsWithOverdueImmunization() {
+		return onlyPersonsWithOverdueImmunization;
+	}
+
+	public void setOnlyPersonsWithOverdueImmunization(Boolean onlyPersonsWithOverdueImmunization) {
+		this.onlyPersonsWithOverdueImmunization = onlyPersonsWithOverdueImmunization;
+	}
+
+	public DateFilterOption getDateFilterOption() {
+		return dateFilterOption;
+	}
+
+	public void setDateFilterOption(DateFilterOption dateFilterOption) {
+		this.dateFilterOption = dateFilterOption;
+	}
+
+	public ImmunizationDateType getImmunizationDateType() {
+		return immunizationDateType;
+	}
+
+	public void setImmunizationDateType(ImmunizationDateType immunizationDateType) {
+		this.immunizationDateType = immunizationDateType;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
 	}
 
 	public CaseReferenceDto getRelatedCase() {

@@ -174,7 +174,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 315;
+	public static final int DATABASE_VERSION = 318;
 
 	private static DatabaseHelper instance = null;
 
@@ -2772,6 +2772,26 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 314:
 				currentVersion = 314;
+				getDao(Person.class).executeRaw("UPDATE person SET sex = 'UNKNOWN' WHERE sex IS NULL;");
+
+			case 315:
+				currentVersion = 315;
+				getDao(Country.class).executeRaw(
+					"UPDATE country SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultName = 'Western Europe') WHERE isoCode = 'NCL';");
+				getDao(Location.class).executeRaw(
+					"UPDATE location SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultname = 'Western Europe') WHERE location.subcontinent_id IS NOT NULL AND location.country_id = (SELECT country.id FROM country WHERE isocode = 'NCL');");
+				getDao(Location.class).executeRaw(
+					"UPDATE location SET continent_id = (SELECT continent.id FROM continent WHERE continent.defaultName = 'Europe') WHERE location.continent_id IS NOT NULL AND location.country_id = (SELECT country.id FROM country WHERE isoCode = 'NCL');");
+
+			case 316:
+				currentVersion = 316;
+				getDao(Country.class).executeRaw(
+					"UPDATE country SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultName = 'Central Europe') WHERE isoCode = 'DEU';");
+				getDao(Location.class).executeRaw(
+					"UPDATE location SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultname = 'Central Europe') WHERE location.subcontinent_id IS NOT NULL AND location.country_id = (SELECT country.id FROM country WHERE isocode = 'DEU');");
+
+			case 317:
+				currentVersion = 317;
 				getDao(Immunization.class).executeRaw("DROP TABLE immunization");
 				//@formatter:off
 				getDao(Immunization.class).executeRaw("CREATE TABLE immunization (" +

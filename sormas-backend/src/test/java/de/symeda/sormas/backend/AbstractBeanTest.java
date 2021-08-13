@@ -63,6 +63,7 @@ import de.symeda.sormas.api.labmessage.LabMessageFacade;
 import de.symeda.sormas.api.labmessage.TestReportFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.region.AreaFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.ContinentFacade;
 import de.symeda.sormas.api.region.CountryFacade;
@@ -137,6 +138,7 @@ import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.Hospita
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ExportFacadeEjb;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
+import de.symeda.sormas.backend.importexport.parser.ImportParserService;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
@@ -146,6 +148,7 @@ import de.symeda.sormas.backend.labmessage.TestReportService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.region.AreaFacadeEjb.AreaFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.ContinentFacadeEjb;
@@ -683,5 +686,13 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public TestReportService getTestReportService() {
 		return getBean(TestReportService.class);
+	}
+
+	public ImportParserService getImportParserService() {
+		return getBean(ImportParserService.class);
+	}
+
+	public AreaFacade getAreaFacade() {
+		return getBean(AreaFacadeEjbLocal.class);
 	}
 }

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -280,7 +281,9 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+		Map<String, String> lastVaccinationTypes = vaccinationFacade.getLastVaccinationType();
 		return immunizationService.getIndexList(criteria, first, max, sortProperties).stream().map(result -> {
+			String immunizationId = result[17].toString();
 			Integer age = result[4] != null ? (int) result[4] : null;
 			ApproximateAgeType approximateAgeType = (ApproximateAgeType) result[5];
 			Integer birthdateDD = result[6] != null ? (int) result[6] : null;
@@ -299,8 +302,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 				(ImmunizationStatus) result[13],
 				(Date) result[14],
 				(Date) result[15],
-				(Date) result[16],
-				(Disease) result[19]);
+				lastVaccinationTypes.get(immunizationId),
+				(Date) result[16]);
 		}).collect(Collectors.toList());
 	}
 
@@ -337,6 +340,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		dto.setAdditionalDetails(entity.getAdditionalDetails());
 		dto.setPositiveTestResultDate(entity.getPositiveTestResultDate());
 		dto.setRecoveryDate(entity.getRecoveryDate());
+		dto.setValidFrom(entity.getValidFrom());
+		dto.setValidUntil(entity.getValidUntil());
 		dto.setRelatedCase(CaseFacadeEjb.toReferenceDto(entity.getRelatedCase()));
 
 		List<VaccinationDto> vaccinationDtos = new ArrayList<>();
@@ -378,6 +383,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 		target.setPositiveTestResultDate(source.getPositiveTestResultDate());
 		target.setRecoveryDate(source.getRecoveryDate());
+		target.setValidFrom(source.getValidFrom());
+		target.setValidUntil(source.getValidUntil());
 		target.setRelatedCase(caseService.getByReferenceDto(source.getRelatedCase()));
 
 		List<VaccinationEntity> vaccinationEntities = new ArrayList<>();

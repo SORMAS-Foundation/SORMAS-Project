@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.immunization.components.filter.status;
+package de.symeda.sormas.ui.immunization.components.status;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

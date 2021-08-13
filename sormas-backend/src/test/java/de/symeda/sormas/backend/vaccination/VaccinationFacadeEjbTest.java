@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.vaccination;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 
 import org.junit.Test;
 
@@ -25,6 +27,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 
 	@Override
 	public void init() {
+
 		super.init();
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 		nationalUser = creator.createUser(
@@ -35,11 +38,11 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 			"Nat",
 			"User",
 			UserRole.NATIONAL_USER);
-
 	}
 
 	@Test
 	public void testSave() {
+
 		loginWith(nationalUser);
 
 		PersonDto person = creator.createPerson("John", "Doe");
@@ -61,11 +64,11 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 			healthConditions);
 
 		VaccinationEntity actualVaccinationEntity = getVaccinationService().getByUuid(vaccinationDto.getUuid());
-		assertEquals(vaccinationDto.getUuid(), actualVaccinationEntity.getUuid());
-		assertEquals(vaccinationDto.getHealthConditions().getOtherConditions(), "PEBMAC");
+		assertThat(actualVaccinationEntity.getUuid(), equalTo(vaccinationDto.getUuid()));
+		assertThat(vaccinationDto.getHealthConditions().getOtherConditions(), equalTo("PEBMAC"));
 
 		ImmunizationDto actualImmunization = getImmunizationFacade().getByUuid(immunizationDto.getUuid());
-		assertEquals(actualImmunization.getVaccinations().size(), 1);
-		assertEquals(actualImmunization.getVaccinations().get(0).getUuid(), vaccinationDto.getUuid());
+		assertThat(actualImmunization.getVaccinations(), hasSize(1));
+		assertThat(actualImmunization.getVaccinations().get(0).getUuid(), equalTo(vaccinationDto.getUuid()));
 	}
 }

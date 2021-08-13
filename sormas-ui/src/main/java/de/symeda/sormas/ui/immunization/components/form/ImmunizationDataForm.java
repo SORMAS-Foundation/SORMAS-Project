@@ -65,6 +65,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(FACILITY_TYPE_GROUP_LOC, ImmunizationDto.FACILITY_TYPE)
 		+ fluidRowLocs(ImmunizationDto.HEALTH_FACILITY, ImmunizationDto.HEALTH_FACILITY_DETAILS)
 		+ fluidRowLocs(ImmunizationDto.START_DATE, ImmunizationDto.END_DATE)
+		+ fluidRowLocs(ImmunizationDto.VALID_FROM, ImmunizationDto.VALID_UNTIL)
 		+ fluidRowLocs(ImmunizationDto.REPORTING_USER, ImmunizationDto.PREVIOUS_INFECTION, ImmunizationDto.LAST_INFECTION_DATE)
 		+ fluidRowLocs(ImmunizationDto.ADDITIONAL_DETAILS)
 		+ fluidRowLocs(VACCINATION_HEADING_LOC)
@@ -76,16 +77,13 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 	private final int DAYS_IN_THE_FUTURE = 365;
 
-	private final String immunizationUuid;
-
-	public ImmunizationDataForm(String immunizationUuid, boolean isPseudonymized) {
+	public ImmunizationDataForm(boolean isPseudonymized) {
 		super(
 			ImmunizationDto.class,
 			ImmunizationDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			createFieldAccessCheckers(isPseudonymized, true));
-		this.immunizationUuid = immunizationUuid;
+			UiFieldAccessCheckers.getDefault(isPseudonymized));
 		addFields();
 	}
 
@@ -150,6 +148,9 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		addField(ImmunizationDto.START_DATE, DateField.class);
 		addDateField(ImmunizationDto.END_DATE, DateField.class, DAYS_IN_THE_FUTURE);
+
+		addField(ImmunizationDto.VALID_FROM, DateField.class);
+		addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, DAYS_IN_THE_FUTURE);
 
 		MeansOfImmunization meansOfImmunizationValue = (MeansOfImmunization) meansOfImmunizationField.getValue();
 
@@ -330,14 +331,6 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			updateFacilityFields(facilityCombo, facilityDetails);
 			this.getValue().setFacilityType((FacilityType) facilityType.getValue());
 		});
-	}
-
-	private static UiFieldAccessCheckers createFieldAccessCheckers(boolean isPseudonymized, boolean withPersonalAndSensitive) {
-		if (withPersonalAndSensitive) {
-			return UiFieldAccessCheckers.getDefault(isPseudonymized);
-		}
-
-		return UiFieldAccessCheckers.getNoop();
 	}
 
 	private boolean shouldShowVaccinationFields(MeansOfImmunization meansOfImmunization) {
