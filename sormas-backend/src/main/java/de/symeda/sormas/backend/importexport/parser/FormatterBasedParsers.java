@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,21 +13,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.event.eventimport;
+package de.symeda.sormas.backend.importexport.parser;
 
-import javax.ejb.Remote;
+import java.util.Map;
+import java.util.Optional;
 
-import de.symeda.sormas.api.importexport.ImportLineResultDto;
+import de.symeda.sormas.api.importexport.format.ImportExportFormat;
 
-@Remote
-public interface EventImportFacade {
+public class FormatterBasedParsers extends ImportExportParsers<ImportExportFormat> {
 
-	ImportLineResultDto<EventImportEntities> importEventData(
-		String[] values,
-		String[] entityClasses,
-		String[] entityProperties,
-		String[][] entityPropertyPaths,
-		boolean ignoreEmptyEntries);
+	public FormatterBasedParsers(Map<ImportExportFormat, Parser<?>> parsers) {
+		super(parsers);
+	}
 
-	ImportLineResultDto<EventImportEntities> saveImportedEntities(EventImportEntities entities);
+	@Override
+	Optional<? extends Parser<?>> getParser(ImportExportFormat type) {
+		return Optional.ofNullable(get(type));
+	}
+
+	@Override
+	boolean hasParser(ImportExportFormat formatter) {
+		return types().contains(formatter);
+	}
 }

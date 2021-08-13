@@ -511,34 +511,35 @@ public class ContactsView extends AbstractView {
 				}
 
 				if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
-					bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkLinkToEvent), VaadinIcons.PHONE, mi -> {
-						grid.bulkActionHandler(items -> {
-							List<ContactIndexDto> selectedContacts =
-								grid.asMultiSelect().getSelectedItems().stream().map(item -> (ContactIndexDto) item).collect(Collectors.toList());
+					bulkActions.add(
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkLinkToEvent),
+							VaadinIcons.PHONE,
+							mi -> grid.bulkActionHandler(items -> {
+								List<ContactIndexDto> selectedContacts =
+									grid.asMultiSelect().getSelectedItems().stream().map(item -> (ContactIndexDto) item).collect(Collectors.toList());
 
-							if (selectedContacts.size() == 0) {
-								new Notification(
-									I18nProperties.getString(Strings.headingNoContactsSelected),
-									I18nProperties.getString(Strings.messageNoContactsSelected),
-									Notification.Type.WARNING_MESSAGE,
-									false).show(Page.getCurrent());
+								if (selectedContacts.isEmpty()) {
+									new Notification(
+										I18nProperties.getString(Strings.headingNoContactsSelected),
+										I18nProperties.getString(Strings.messageNoContactsSelected),
+										Notification.Type.WARNING_MESSAGE,
+										false).show(Page.getCurrent());
+									return;
+								}
 
-								return;
-							}
+								if (!selectedContacts.stream()
+									.allMatch(contact -> contact.getDisease().equals(selectedContacts.stream().findAny().get().getDisease()))) {
+									new Notification(
+										I18nProperties.getString(Strings.messageBulkContactsWithDifferentDiseasesSelected),
+										Notification.Type.WARNING_MESSAGE).show(Page.getCurrent());
+									return;
+								}
 
-							if (!selectedContacts.stream()
-								.allMatch(contact -> contact.getDisease().equals(selectedContacts.stream().findAny().get().getDisease()))) {
-								new Notification(
-									I18nProperties.getString(Strings.messageBulkContactsWithDifferentDiseasesSelected),
-									Notification.Type.WARNING_MESSAGE).show(Page.getCurrent());
-								return;
-							}
-
-							ControllerProvider.getEventController()
-								.selectOrCreateEventForContactList(
-									selectedContacts.stream().map(ContactIndexDto::toReference).collect(Collectors.toList()));
-						});
-					}));
+								ControllerProvider.getEventController()
+									.selectOrCreateEventForContactList(
+										selectedContacts.stream().map(ContactIndexDto::toReference).collect(Collectors.toList()));
+							})));
 				}
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);

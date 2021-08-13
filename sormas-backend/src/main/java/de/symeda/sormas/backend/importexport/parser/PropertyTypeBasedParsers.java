@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,21 +13,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.event.eventimport;
+package de.symeda.sormas.backend.importexport.parser;
 
-import javax.ejb.Remote;
+import java.util.Map;
+import java.util.Optional;
 
-import de.symeda.sormas.api.importexport.ImportLineResultDto;
+public class PropertyTypeBasedParsers extends ImportExportParsers<Class<?>> {
 
-@Remote
-public interface EventImportFacade {
+	public PropertyTypeBasedParsers(Map<Class<?>, Parser<?>> parsers) {
+		super(parsers);
+	}
 
-	ImportLineResultDto<EventImportEntities> importEventData(
-		String[] values,
-		String[] entityClasses,
-		String[] entityProperties,
-		String[][] entityPropertyPaths,
-		boolean ignoreEmptyEntries);
+	public Optional<? extends Parser<?>> getParser(Class<?> type) {
+		return types().stream().filter(c -> c.isAssignableFrom(type)).map(this::get).findFirst();
+	}
 
-	ImportLineResultDto<EventImportEntities> saveImportedEntities(EventImportEntities entities);
+	public boolean hasParser(Class<?> type) {
+		return types().stream().anyMatch(c -> c.isAssignableFrom(type));
+	}
 }
