@@ -7859,4 +7859,11 @@ UPDATE location SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent 
 
 INSERT INTO schema_version (version_number, comment) VALUES (398, 'Sub-continent association change Germany #5689');
 
+-- 2021-08-13 Make reporting user id not null #4763
+
+ALTER TABLE vaccination ALTER COLUMN reportinguser_id SET NOT NULL;
+ALTER TABLE vaccination_history ALTER COLUMN reportinguser_id SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (399, 'Add missing vaccination columns #4763');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
