@@ -29,6 +29,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -231,7 +232,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		AuthProvider authProvider = mock(AuthProvider.class);
 
 		MockedStatic<AuthProvider> mockAuthProvider = mockStatic(AuthProvider.class);
-		mockAuthProvider.when(AuthProvider::getProvider).thenReturn(authProvider);
+		Mockito.when(AuthProvider.getProvider(any())).thenReturn(authProvider);
 		when(authProvider.isUsernameCaseSensitive()).thenReturn(true);
 
 		RDCF rdcf = creator.createRDCF();

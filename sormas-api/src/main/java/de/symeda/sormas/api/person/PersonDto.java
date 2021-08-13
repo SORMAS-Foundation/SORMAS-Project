@@ -151,6 +151,7 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	private String namesOfGuardians;
 	@Outbreaks
+	@Required
 	private Sex sex;
 	@Outbreaks
 	@PersonalData
@@ -326,6 +327,13 @@ public class PersonDto extends PseudonymizableDto {
 		PersonDto person = new PersonDto();
 		person.setUuid(DataHelper.createUuid());
 		person.setAddress(LocationDto.build());
+		return person;
+	}
+
+	public static PersonDto buildImportEntity() {
+
+		PersonDto person = build();
+		person.setSex(Sex.UNKNOWN);
 		return person;
 	}
 

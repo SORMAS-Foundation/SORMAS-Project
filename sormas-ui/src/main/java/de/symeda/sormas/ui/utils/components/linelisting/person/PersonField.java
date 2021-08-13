@@ -31,6 +31,7 @@ public class PersonField extends CustomField<PersonFieldDto> {
 
 	@Override
 	protected Component initContent() {
+		setValue(new PersonFieldDto());
 		HorizontalLayout layout = new HorizontalLayout();
 
 		firstname.setId("firstName");

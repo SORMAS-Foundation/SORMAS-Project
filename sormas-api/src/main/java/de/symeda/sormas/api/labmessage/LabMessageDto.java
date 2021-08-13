@@ -40,6 +40,7 @@ public class LabMessageDto extends EntityDto {
 	public static final String PERSON_HOUSE_NUMBER = "personHouseNumber";
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
+	public static final String REPORT_ID = "reportId";
 
 	private Disease testedDisease;
 	private Date messageDateTime;
@@ -68,9 +69,10 @@ public class LabMessageDto extends EntityDto {
 	private String personPhone;
 	private String personEmail;
 
-	private List<TestReportDto> testReports;
+	private List<TestReportDto> testReports = new ArrayList<>();
 
 	private String labMessageDetails;
+	private String reportId;
 
 	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 
@@ -299,6 +301,14 @@ public class LabMessageDto extends EntityDto {
 
 	public void setStatus(LabMessageStatus status) {
 		this.status = status;
+	}
+
+	public String getReportId() {
+		return reportId;
+	}
+
+	public void setReportId(String reportId) {
+		this.reportId = reportId;
 	}
 
 	public static LabMessageDto build() {
