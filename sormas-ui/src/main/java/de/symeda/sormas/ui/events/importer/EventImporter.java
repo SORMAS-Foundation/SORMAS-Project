@@ -40,7 +40,6 @@ import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
-import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.SimilarPersonDto;
@@ -99,7 +98,7 @@ public class EventImporter extends DataImporter {
 		String[] entityProperties,
 		String[][] entityPropertyPaths,
 		boolean firstLine)
-		throws IOException, InvalidColumnException, InterruptedException {
+		throws IOException, InterruptedException {
 
 		ImportLineResultDto<EventImportEntities> importResult =
 			eventImportFacade.importEventData(values, entityClasses, entityProperties, entityPropertyPaths, !firstLine);

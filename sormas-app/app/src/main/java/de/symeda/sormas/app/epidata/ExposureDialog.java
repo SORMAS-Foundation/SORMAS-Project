@@ -106,8 +106,8 @@ public class ExposureDialog extends FormDialog {
 
 	@Override
 	protected void initializeContentView(ViewDataBinding rootBinding, ViewDataBinding buttonPanelBinding) {
-		contentBinding.exposureStartDate.initializeDateField(getFragmentManager());
-		contentBinding.exposureEndDate.initializeDateField(getFragmentManager());
+		contentBinding.exposureStartDate.initializeDateTimeField(getFragmentManager());
+		contentBinding.exposureEndDate.initializeDateTimeField(getFragmentManager());
 
 		if (data.getId() == null) {
 			setLiveValidationDisabled(true);
