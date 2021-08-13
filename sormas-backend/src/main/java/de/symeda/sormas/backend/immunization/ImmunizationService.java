@@ -37,13 +37,16 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
+import de.symeda.sormas.api.immunization.ImmunizationDateType;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.person.PersonIndexDto;
@@ -106,6 +109,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			immunization.get(Immunization.START_DATE),
 			immunization.get(Immunization.END_DATE),
 			immunization.get(Immunization.RECOVERY_DATE),
+			immunization.get(Immunization.ID),
 			immunization.get(Immunization.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)),
 			immunization.get(Immunization.DISEASE));
@@ -126,7 +130,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 				case ImmunizationIndexDto.RECOVERY_DATE:
 					expression = immunization.get(sortProperty.propertyName);
 					break;
-				case ImmunizationIndexDto.PERSON_ID:
+				case ImmunizationIndexDto.PERSON_UUID:
 					expression = person.get(Person.UUID);
 					break;
 				case ImmunizationIndexDto.PERSON_FIRST_NAME:
@@ -179,6 +183,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> immunizationPath) {
 		return createUserFilter(new ImmunizationQueryContext(cb, cq, immunizationPath));
+	}
+
+	public Predicate createActiveImmunizationsFilter(CriteriaBuilder cb, From<?, Immunization> root) {
+		return cb.and(cb.isFalse(root.get(Immunization.ARCHIVED)), cb.isFalse(root.get(Immunization.DELETED)));
 	}
 
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Immunization> root) {
@@ -472,8 +480,34 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.FACILITY_TYPE), criteria.getFacilityType()));
 		}
 		filter = andEqualsReferenceDto(cb, joins.getHealthFacility(), filter, criteria.getHealthFacility());
+		if (Boolean.TRUE.equals(criteria.getOnlyPersonsWithOverdueImmunization())) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS), ImmunizationManagementStatus.ONGOING));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), new Date()));
+		}
+		if (criteria.getImmunizationDateType() != null) {
+			String dateField = getDateFieldFromDateType(criteria.getImmunizationDateType());
+			if (dateField != null) {
+				Path<Object> path = from.get(dateField);
+				filter = CriteriaBuilderHelper.applyDateFilter(cb, filter, path, criteria.getFromDate(), criteria.getToDate());
+			}
+		}
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
 
 		return filter;
+	}
+
+	private String getDateFieldFromDateType(ImmunizationDateType immunizationDateType) {
+		switch (immunizationDateType) {
+		case REPORT_DATE:
+			return Immunization.REPORT_DATE;
+		case IMMUNIZATION_END:
+			return Immunization.END_DATE;
+		case VALID_UNTIL:
+			return Immunization.VALID_UNTIL;
+		case RECOVERY_DATE:
+			return Immunization.RECOVERY_DATE;
+		}
+		return null;
 	}
 }

@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.immunization.components.filter.status;
+package de.symeda.sormas.ui.immunization.components.status;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;

@@ -7,7 +7,7 @@ import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 
 public class FilterFormLayout extends VerticalLayout {
 
-	private ImmunizationFilterForm filterForm;
+	private final ImmunizationFilterForm filterForm;
 
 	public FilterFormLayout() {
 		setSpacing(false);

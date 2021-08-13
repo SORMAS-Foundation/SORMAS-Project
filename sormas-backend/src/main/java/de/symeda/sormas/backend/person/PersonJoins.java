@@ -15,10 +15,14 @@
 
 package de.symeda.sormas.backend.person;
 
+import java.util.Optional;
+
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
+import de.symeda.sormas.api.person.PersonAssociation;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -30,6 +34,7 @@ import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
 public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 
+	private PersonAssociation personAssociation;
 	private Join<Person, Case> caze;
 	private Join<Person, Contact> contact;
 	private Join<Person, EventParticipant> eventParticipant;
@@ -45,8 +50,24 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 		addressJoins = new LocationJoins<>(getAddress());
 	}
 
+	public void configure(PersonCriteria criteria) {
+
+		this.personAssociation = Optional.ofNullable(criteria).map(e -> e.getPersonAssociation()).orElse(PersonCriteria.DEFAULT_ASSOCIATION);
+	}
+
+	/**
+	 * @param personAssociation
+	 *            The association from the {@link Person} to build a join for.
+	 * @return Do INNER join on that association that is relevant, default to LEFT if not.<br />
+	 *         Other joins have to be kept LEFT join for jurisdiction checks.
+	 */
+	private JoinType getJoinType(PersonAssociation personAssociation) {
+
+		return this.personAssociation == personAssociation ? JoinType.INNER : JoinType.LEFT;
+	}
+
 	public Join<Person, Case> getCaze() {
-		return getOrCreate(caze, Person.CASES, JoinType.LEFT, this::setCaze);
+		return getOrCreate(caze, Person.CASES, getJoinType(PersonAssociation.CASE), this::setCaze);
 	}
 
 	private void setCaze(Join<Person, Case> caze) {
@@ -54,7 +75,7 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 	}
 
 	public Join<Person, Contact> getContact() {
-		return getOrCreate(contact, Person.CONTACTS, JoinType.LEFT, this::setContact);
+		return getOrCreate(contact, Person.CONTACTS, getJoinType(PersonAssociation.CONTACT), this::setContact);
 	}
 
 	private void setContact(Join<Person, Contact> contact) {
@@ -62,7 +83,7 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 	}
 
 	public Join<Person, EventParticipant> getEventParticipant() {
-		return getOrCreate(eventParticipant, Person.EVENT_PARTICIPANTS, JoinType.LEFT, this::setEventParticipant);
+		return getOrCreate(eventParticipant, Person.EVENT_PARTICIPANTS, getJoinType(PersonAssociation.EVENT_PARTICIPANT), this::setEventParticipant);
 	}
 
 	private void setEventParticipant(Join<Person, EventParticipant> eventParticipant) {
@@ -70,7 +91,7 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 	}
 
 	public Join<Person, Immunization> getImmunization() {
-		return getOrCreate(immunization, Person.IMMUNIZATIONS, JoinType.LEFT, this::setImmunization);
+		return getOrCreate(immunization, Person.IMMUNIZATIONS, getJoinType(PersonAssociation.IMMUNIZATION), this::setImmunization);
 	}
 
 	public void setImmunization(Join<Person, Immunization> immunization) {
@@ -78,7 +99,7 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 	}
 
 	public Join<Person, TravelEntry> getTravelEntry() {
-		return getOrCreate(travelEntry, Person.TRAVEL_ENTRIES, JoinType.LEFT, this::setTravelEntry);
+		return getOrCreate(travelEntry, Person.TRAVEL_ENTRIES, getJoinType(PersonAssociation.TRAVEL_ENTRY), this::setTravelEntry);
 	}
 
 	public void setTravelEntry(Join<Person, TravelEntry> travelEntry) {
