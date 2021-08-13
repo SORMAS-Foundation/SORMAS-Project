@@ -102,7 +102,9 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 						   CaseClassification caseClassification, String caseRegionName, String caseDistrictName,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
 						   String externalID, String externalToken, String internalToken, boolean isInJurisdiction, boolean isCaseInJurisdiction,
-						   int visitCount) {
+						   int visitCount,
+						   Date latestChangedDate // unused, only here for TypedQuery mapping
+	) {
 	//@formatter:on
 
 		this.uuid = uuid;
