@@ -7859,4 +7859,10 @@ UPDATE location SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent 
 
 INSERT INTO schema_version (version_number, comment) VALUES (398, 'Sub-continent association change Germany #5689');
 
+-- 2021-08-06 - Introduce a reference definition for cases
+ALTER TABLE cases ADD COLUMN casereferencedefinition varchar(255);
+ALTER TABLE cases_history ADD COLUMN casereferencedefinition varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (399, 'Introduce a reference definition for cases #5594');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

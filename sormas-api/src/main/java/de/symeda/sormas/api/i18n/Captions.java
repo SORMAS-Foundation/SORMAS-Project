@@ -255,6 +255,7 @@ public interface Captions {
 	String CaseData_caseIdIsm = "CaseData.caseIdIsm";
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
 	String CaseData_caseOrigin = "CaseData.caseOrigin";
+	String CaseData_caseReferenceDefinition = "CaseData.caseReferenceDefinition";
 	String CaseData_classificationComment = "CaseData.classificationComment";
 	String CaseData_classificationDate = "CaseData.classificationDate";
 	String CaseData_classificationUser = "CaseData.classificationUser";
@@ -463,6 +464,7 @@ public interface Captions {
 	String caseFilterOnlyCasesNotSharedWithExternalSurvTool = "caseFilterOnlyCasesNotSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesSharedWithExternalSurvToo = "caseFilterOnlyCasesSharedWithExternalSurvToo";
 	String caseFilterOnlyCasesWithDontShareWithExternalSurvTool = "caseFilterOnlyCasesWithDontShareWithExternalSurvTool";
+	String caseFilterOnlyCasesWithFulfilledReferenceDefinition = "caseFilterOnlyCasesWithFulfilledReferenceDefinition";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";

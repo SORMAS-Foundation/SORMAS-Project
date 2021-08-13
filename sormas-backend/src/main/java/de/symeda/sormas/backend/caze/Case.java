@@ -48,6 +48,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.ContactTracingContactType;
 import de.symeda.sormas.api.caze.DengueFeverType;
@@ -237,6 +238,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
 	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
 	public static final String DONT_SHARE_WITH_REPORTING_TOOL = "dontShareWithReportingTool";
+	public static final String CASE_REFERENCE_DEFINITION = "caseReferenceDefinition";
 
 	private Person person;
 	private String description;
@@ -413,6 +415,8 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<ShareInfoCase> shareInfoCases = new ArrayList<>(0);
 	private List<ExternalShareInfo> externalShares = new ArrayList<>(0);
+
+	private CaseReferenceDefinition caseReferenceDefinition;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -1266,7 +1270,9 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 
 	/**
 	 * Extra setter for externalID needed to comply with the HasExternalData interface
-	 * @param externalId the value to be set for externalID
+	 * 
+	 * @param externalId
+	 *            the value to be set for externalID
 	 */
 	public void setExternalId(String externalId) {
 		this.externalID = externalId;
@@ -1759,5 +1765,14 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 
 	public void setDontShareWithReportingTool(boolean dontShareWithReportingTool) {
 		this.dontShareWithReportingTool = dontShareWithReportingTool;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CaseReferenceDefinition getCaseReferenceDefinition() {
+		return caseReferenceDefinition;
+	}
+
+	public void setCaseReferenceDefinition(CaseReferenceDefinition caseReferenceDefinition) {
+		this.caseReferenceDefinition = caseReferenceDefinition;
 	}
 }
