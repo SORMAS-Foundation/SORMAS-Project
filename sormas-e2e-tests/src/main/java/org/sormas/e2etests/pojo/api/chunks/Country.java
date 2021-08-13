@@ -15,30 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pojo.api;
+package org.sormas.e2etests.pojo.api.chunks;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.List;
 import lombok.*;
 import lombok.Builder;
 import lombok.Value;
-import org.sormas.e2etests.pojo.api.chunks.Address;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Person {
-  String firstName;
-  String lastName;
-  Integer birthdateDD;
-  Integer birthdateMM;
-  Integer birthdateYYYY;
-  String phone;
-  String sex;
+public class Country {
   String uuid;
-  Boolean covidCodeDelivered;
-  Address address;
-  List<Object> personContactDetails;
+  String caption;
+  String externalId;
+  String isoCode;
 }
