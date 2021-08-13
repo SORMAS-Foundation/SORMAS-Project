@@ -154,6 +154,9 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	@Override
 	public void onAfterLayoutBinding(final FragmentImmunizationEditLayoutBinding contentBinding) {
 
+		InfrastructureDaoHelper
+				.initializeHealthFacilityDetailsFieldVisibility(contentBinding.immunizationHealthFacility, contentBinding.immunizationHealthFacilityDetails);
+
 		// Initialize ControlSpinnerFields
 		contentBinding.immunizationDisease.initializeSpinner(diseaseList);
 		contentBinding.immunizationImmunizationStatus.initializeSpinner(immunizationStatusList);

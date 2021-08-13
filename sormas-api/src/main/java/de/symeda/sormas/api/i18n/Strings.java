@@ -1184,13 +1184,13 @@ public interface Strings {
 	String promptExternalIdExternalSurveillanceTool = "promptExternalIdExternalSurveillanceTool";
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptImmunizationDateFrom = "promptImmunizationDateFrom";
-	String promptImmunizationPositiveTestResultDateFrom = "promptImmunizationPositiveTestResultDateFrom";
-	String promptImmunizationRecoveryDateFrom = "promptImmunizationRecoveryDateFrom";
-	String promptImmunizationStartDateFrom = "promptImmunizationStartDateFrom";
 	String promptImmunizationDateTo = "promptImmunizationDateTo";
 	String promptImmunizationDateType = "promptImmunizationDateType";
 	String promptImmunizationEpiWeekFrom = "promptImmunizationEpiWeekFrom";
 	String promptImmunizationEpiWeekTo = "promptImmunizationEpiWeekTo";
+	String promptImmunizationPositiveTestResultDateFrom = "promptImmunizationPositiveTestResultDateFrom";
+	String promptImmunizationRecoveryDateFrom = "promptImmunizationRecoveryDateFrom";
+	String promptImmunizationStartDateFrom = "promptImmunizationStartDateFrom";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";

@@ -106,7 +106,7 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		sexList = DataUtils.getEnumItems(Sex.class, true);
 
 		initialFacilities =
-				InfrastructureDaoHelper.loadFacilities(record.getResponsibleDistrict(), record.getResponsibleCommunity(), record.getFacilityType());
+			InfrastructureDaoHelper.loadFacilities(record.getResponsibleDistrict(), record.getResponsibleCommunity(), record.getFacilityType());
 
 		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.FOR_CASES, true);
 		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
@@ -119,31 +119,31 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
 		InfrastructureDaoHelper.initializeFacilityFields(
-				record,
-				contentBinding.immunizationResponsibleRegion,
-				initialResponsibleRegions,
-				record.getResponsibleRegion(),
-				contentBinding.immunizationResponsibleDistrict,
-				initialResponsibleDistricts,
-				record.getResponsibleDistrict(),
-				contentBinding.immunizationResponsibleCommunity,
-				initialResponsibleCommunities,
-				record.getResponsibleCommunity(),
-				contentBinding.facilityOrHome,
-				facilityOrHomeList,
-				contentBinding.facilityTypeGroup,
-				facilityTypeGroupList,
-				contentBinding.immunizationFacilityType,
-				null,
-				contentBinding.immunizationHealthFacility,
-				initialFacilities,
-				record.getHealthFacility(),
-				contentBinding.immunizationHealthFacilityDetails,
-				null,
-				null,
-				null,
-				false,
-				() -> false);
+			record,
+			contentBinding.immunizationResponsibleRegion,
+			initialResponsibleRegions,
+			record.getResponsibleRegion(),
+			contentBinding.immunizationResponsibleDistrict,
+			initialResponsibleDistricts,
+			record.getResponsibleDistrict(),
+			contentBinding.immunizationResponsibleCommunity,
+			initialResponsibleCommunities,
+			record.getResponsibleCommunity(),
+			contentBinding.facilityOrHome,
+			facilityOrHomeList,
+			contentBinding.facilityTypeGroup,
+			facilityTypeGroupList,
+			contentBinding.immunizationFacilityType,
+			null,
+			contentBinding.immunizationHealthFacility,
+			initialFacilities,
+			record.getHealthFacility(),
+			contentBinding.immunizationHealthFacilityDetails,
+			null,
+			null,
+			null,
+			false,
+			() -> false);
 
 		// Initialize ControlSpinnerFields
 		contentBinding.immunizationDisease.initializeSpinner(diseaseList);
@@ -179,6 +179,10 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 
 	@Override
 	protected void onAfterLayoutBinding(FragmentImmunizationNewLayoutBinding contentBinding) {
+
+		InfrastructureDaoHelper.initializeHealthFacilityDetailsFieldVisibility(
+			contentBinding.immunizationHealthFacility,
+			contentBinding.immunizationHealthFacilityDetails);
 
 		contentBinding.immunizationMeansOfImmunization.addValueChangedListener(e -> {
 			if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
