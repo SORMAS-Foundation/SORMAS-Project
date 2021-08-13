@@ -225,6 +225,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
 		final Root<Sample> root = cq.from(Sample.class);
+		cq.distinct(true);
 
 		SampleJoins<Sample> joins = new SampleJoins<>(root);
 

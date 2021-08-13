@@ -93,7 +93,8 @@ public class DashboardService {
 				person.get(Person.PRESENT_CONDITION),
 				person.get(Person.CAUSE_OF_DEATH_DISEASE),
 				caze.get(Case.QUARANTINE_FROM),
-				caze.get(Case.QUARANTINE_TO));
+				caze.get(Case.QUARANTINE_TO),
+				caze.get(Case.CASE_REFERENCE_DEFINITION));
 
 			result = em.createQuery(cq).getResultList();
 		} else {
