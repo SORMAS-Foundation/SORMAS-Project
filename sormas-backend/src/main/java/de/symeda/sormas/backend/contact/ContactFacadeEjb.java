@@ -1613,6 +1613,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SimilarContactDto> cq = cb.createQuery(SimilarContactDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
+		cq.distinct(true);
 
 		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contactRoot);
 		ContactJoins<Contact> joins = (ContactJoins<Contact>) contactQueryContext.getJoins();
