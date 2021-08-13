@@ -29,6 +29,7 @@ import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -42,6 +43,7 @@ import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
@@ -303,7 +305,6 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 				(Date) result[14],
 				(Date) result[15],
 				lastVaccinationTypes.get(immunizationId),
-				(Date) result[16]);
 				(Date) result[16],
 				(Disease) result[19]);
 		}).collect(Collectors.toList());

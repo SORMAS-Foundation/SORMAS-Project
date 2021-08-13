@@ -81,7 +81,6 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		Date startDate,
 		Date endDate,
 		String lastVaccineType,
-		Date recoveryDate) {
 		Date recoveryDate,
 		Disease disease) {
 
