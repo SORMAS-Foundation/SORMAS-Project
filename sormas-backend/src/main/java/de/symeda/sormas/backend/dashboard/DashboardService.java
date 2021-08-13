@@ -405,6 +405,9 @@ public class DashboardService {
 				.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
 		}
 
+		// Exclude deleted cases. Archived cases should stay included
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Case.DELETED)));
+
 		return filter;
 	}
 
@@ -435,6 +438,9 @@ public class DashboardService {
 		}
 
 		filter = CriteriaBuilderHelper.and(cb, filter, createEventDateFilter(eventQueryContext.getQuery(), cb, from, dashboardCriteria));
+
+		// Exclude deleted events. Archived events should stay included
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Event.DELETED)));
 
 		return filter;
 	}

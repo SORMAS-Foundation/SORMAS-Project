@@ -784,8 +784,11 @@ public final class InfrastructureDaoHelper {
 				if (selectedType != null) {
 					facilityField
 						.setSpinnerData(loadFacilities((District) districtField.getValue(), (Community) communityField.getValue(), selectedType));
-				} else {
-					facilityField.setSpinnerData(null);
+				} else if (facilityField.getValue() != null) {
+					Facility noneFacility = DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID);
+					if (!facilityField.getValue().equals(noneFacility)) {
+						facilityField.setSpinnerData(null);
+					}
 				}
 			});
 		}

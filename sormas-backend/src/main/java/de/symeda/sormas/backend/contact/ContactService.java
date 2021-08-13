@@ -610,10 +610,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter = createUserFilter(cb, cq, contact);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, contactQueryContext);
+		Predicate notDeleted = cb.isFalse(contact.get(Contact.DELETED));
 		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
+			filter = cb.and(filter, criteriaFilter, notDeleted);
 		} else {
-			filter = criteriaFilter;
+			filter = cb.and(criteriaFilter, notDeleted);
 		}
 
 		if (filter != null) {
@@ -636,10 +637,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter = createUserFilter(cb, cq, contact);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, contactQueryContext);
+		Predicate notDeleted = cb.isFalse(contact.get(Contact.DELETED));
 		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
+			filter = cb.and(filter, criteriaFilter, notDeleted);
 		} else {
-			filter = criteriaFilter;
+			filter = cb.and(criteriaFilter, notDeleted);
 		}
 
 		if (filter != null) {
@@ -662,10 +664,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter = createUserFilter(cb, cq, contact);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, contactQueryContext);
+		Predicate notDeleted = cb.isFalse(contact.get(Contact.DELETED));
 		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
+			filter = cb.and(filter, criteriaFilter, notDeleted);
 		} else {
-			filter = criteriaFilter;
+			filter = cb.and(criteriaFilter, notDeleted);
 		}
 
 		if (filter != null) {
@@ -902,7 +905,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public Predicate createUserFilterWithoutCase(ContactQueryContext qc, ContactCriteria contactCriteria) {
-
 
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		CriteriaQuery cq = qc.getQuery();

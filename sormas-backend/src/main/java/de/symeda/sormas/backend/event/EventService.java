@@ -222,7 +222,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			CriteriaBuilderHelper.greaterThanAndNotNull(cb, eventRoot.get(Event.REPORT_DATE_TIME), timestamp),
 			eventParticipantService.createActiveEventParticipantsFilter(cb, eventParticipantJoin));
 		cq.where(filter);
-		cq.multiselect(eventRoot.get(Event.UUID), responsibleUserJoin);
+		cq.multiselect(eventRoot.get(Event.UUID), responsibleUserJoin).distinct(true);
 		return em.createQuery(cq)
 			.getResultList()
 			.stream()

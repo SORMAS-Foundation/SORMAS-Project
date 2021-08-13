@@ -120,7 +120,7 @@ public class EventParticipantImporter extends DataImporter {
 			values[personUuidIndex] = DataHelper.createUuid();
 		}
 
-		final PersonDto newPersonTemp = PersonDto.build();
+		final PersonDto newPersonTemp = PersonDto.buildImportEntity();
 		final EventParticipantDto newEventParticipantTemp = EventParticipantDto.build(event, currentUser.toReference());
 		newEventParticipantTemp.setPerson(newPersonTemp);
 
