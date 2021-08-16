@@ -171,7 +171,7 @@ public class VaccinationEntity extends PseudonymizableAdo {
 	}
 
 	public void setVaccineManufacturerDetails(String vaccineManufacturerDetails) {
-		vaccineManufacturerDetails = vaccineManufacturerDetails;
+		this.vaccineManufacturerDetails = vaccineManufacturerDetails;
 	}
 
 	public String getVaccineType() {

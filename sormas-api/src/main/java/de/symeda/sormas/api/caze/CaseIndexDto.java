@@ -145,7 +145,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo,
 				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccination, changeDate, facilityId,
 				responsibleRegionUuid, responsibleDistrictUuid, responsibleDistrictName, isInJurisdiction,
-				null
+				null, null
 		);
 	}
 	//@formatter:on
@@ -162,7 +162,8 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 						// responsible jurisdiction
 						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleDistrictName, boolean isInJurisdiction,
 						// others
-						Integer visitCount
+						Integer visitCount,
+						Date latestChangedDate // unused, only here for TypedQuery mapping
 	) {
 		//@formatter:on
 

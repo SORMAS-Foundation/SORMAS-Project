@@ -15,7 +15,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.immunization.components.filter.FilterFormLayout;
 import de.symeda.sormas.ui.immunization.components.grid.ImmunizationGrid;
-import de.symeda.sormas.ui.immunization.components.status.StatusBarLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
@@ -30,7 +29,6 @@ public class ImmunizationsView extends AbstractView {
 	private final ImmunizationGrid grid;
 
 	private FilterFormLayout filterFormLayout;
-	private StatusBarLayout statusBarLayout;
 
 	public ImmunizationsView() {
 		super(VIEW_NAME);
@@ -40,7 +38,6 @@ public class ImmunizationsView extends AbstractView {
 
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(grid);
 
 		gridLayout.setMargin(true);
@@ -98,28 +95,17 @@ public class ImmunizationsView extends AbstractView {
 
 			if (disease != null) {
 				grid.reload();
-				statusBarLayout.updateActiveBadge(grid.getItemCount());
 			}
 		});
 
 		return filterFormLayout;
 	}
 
-	private StatusBarLayout createStatusFilterBar() {
-
-		statusBarLayout = new StatusBarLayout();
-		statusBarLayout.addItem(Captions.all, e -> navigateTo(criteria));
-
-		return statusBarLayout;
-	}
-
 	private void updateView(Disease disease) {
 		if (disease == null) {
-			statusBarLayout.setVisible(false);
 			grid.setVisible(false);
 			noDiseaseInfoLabel.setVisible(true);
 		} else {
-			statusBarLayout.setVisible(true);
 			grid.setVisible(true);
 			noDiseaseInfoLabel.setVisible(false);
 		}

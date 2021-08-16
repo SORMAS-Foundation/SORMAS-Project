@@ -65,6 +65,7 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -321,7 +322,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		dto.setDiseaseDetails(entity.getDiseaseDetails());
 		dto.setPerson(PersonFacadeEjb.toReferenceDto(entity.getPerson()));
 		dto.setReportDate(entity.getReportDate());
-		dto.setReportingUser(entity.getReportingUser().toReference());
+		dto.setReportingUser(UserFacadeEjb.toReferenceDto(entity.getReportingUser()));
 		dto.setArchived(entity.isArchived());
 		dto.setImmunizationStatus(entity.getImmunizationStatus());
 		dto.setMeansOfImmunization(entity.getMeansOfImmunization());
