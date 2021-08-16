@@ -192,6 +192,10 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 	@Override
 	protected void onAfterLayoutBinding(FragmentImmunizationNewLayoutBinding contentBinding) {
 
+		InfrastructureDaoHelper.initializeHealthFacilityDetailsFieldVisibility(
+			contentBinding.immunizationHealthFacility,
+			contentBinding.immunizationHealthFacilityDetails);
+
 		contentBinding.immunizationMeansOfImmunization.addValueChangedListener(e -> {
 			if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
 				contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);

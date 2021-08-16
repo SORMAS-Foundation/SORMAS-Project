@@ -55,17 +55,6 @@
             app:defaultValue='@{@string/value_not_available}' />
 
         <TextView
-            android:id="@+id/disease"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="top"
-            android:textSize="@dimen/row_entry_secondary_text_size"
-            android:textColor="@color/row_entry_secondary_text"
-            app:enumValue="@{data.disease}"
-            app:valueCaption="@{I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.DISEASE)}"
-            app:defaultValue='@{@string/value_not_available}' />
-
-        <TextView
             android:id="@+id/immunization_meansOfImmunization"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -108,46 +97,6 @@
             app:value="@{data.externalId}"
             app:valueCaption="@{I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.EXTERNAL_ID)}"
             app:defaultValue='@{@string/value_not_available}' />
-
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="horizontal">-->
-
-<!--            <TextView-->
-<!--                android:id="@+id/immunization_responsibleRegion"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:gravity="top"-->
-<!--                android:textSize="@dimen/row_entry_secondary_text_size"-->
-<!--                android:textColor="@color/row_entry_secondary_text"-->
-<!--                app:value="@{data.responsibleRegion}"-->
-<!--                app:valueCaption="@{I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.RESPONSIBLE_REGION)}"-->
-<!--                app:defaultValue='@{@string/value_not_available}' />-->
-
-<!--            <TextView-->
-<!--                android:id="@+id/immunization_responsibleDistrict"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:gravity="top"-->
-<!--                android:textSize="@dimen/row_entry_secondary_text_size"-->
-<!--                android:textColor="@color/row_entry_secondary_text"-->
-<!--                app:value="@{data.responsibleDistrict}"-->
-<!--                app:valueCaption="@{I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.RESPONSIBLE_DISTRICT)}"-->
-<!--                app:defaultValue='@{@string/value_not_available}' />-->
-
-<!--        </LinearLayout>-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/immunization_responsibleCommunity"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:gravity="top"-->
-<!--            android:textSize="@dimen/row_entry_secondary_text_size"-->
-<!--            android:textColor="@color/row_entry_secondary_text"-->
-<!--            app:value="@{data.responsibleCommunity}"-->
-<!--            app:valueCaption="@{I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.RESPONSIBLE_COMMUNITY)}"-->
-<!--            app:defaultValue='@{@string/value_not_available}' />-->
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -98,7 +98,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.ONLY_CASES_WITH_EVENTS,
 			CaseCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
 			CaseCriteria.ONLY_CASES_WITH_REINFECTION,
-			CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS)
+			CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS,
+			CaseCriteria.ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION)
 		+ filterLocsCss(
 			VSPACE_3,
 			CaseCriteria.ONLY_ENTITIES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL,
@@ -327,6 +328,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CaseCriteria.ONLY_CASES_WITH_REINFECTION,
 					I18nProperties.getCaption(Captions.caseFilterCasesWithReinfection),
 					I18nProperties.getDescription(Descriptions.descCaseFilterCasesWithReinfection),
+					CssStyles.CHECKBOX_FILTER_INLINE));
+
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION,
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesWithFulfilledReferenceDefinition),
+					I18nProperties.getDescription(Descriptions.descCaseFilterOnlyCasesWithFulfilledReferenceDefinition),
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 

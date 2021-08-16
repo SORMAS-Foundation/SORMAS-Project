@@ -99,6 +99,20 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.FilterDateField
+                android:id="@+id/valid_from_filter"
+                app:hint="@{I18nProperties.getString(Strings.promptImmunizationValidFrom)}"
+                app:showCaption="false"
+                app:value="@={criteria.validFrom}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.FilterDateField
+                android:id="@+id/valid_to_filter"
+                app:hint="@{I18nProperties.getString(Strings.promptDateTo)}"
+                app:showCaption="false"
+                app:value="@={criteria.validUntil}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.FilterDateField
                 android:id="@+id/positive_test_result_date_from_filter"
                 app:hint="@{I18nProperties.getString(Strings.promptImmunizationPositiveTestResultDateFrom)}"
                 app:showCaption="false"

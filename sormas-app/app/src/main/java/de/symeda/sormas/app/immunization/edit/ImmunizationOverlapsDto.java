@@ -20,12 +20,15 @@ package de.symeda.sormas.app.immunization.edit;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.Disease;
+
 public class ImmunizationOverlapsDto {
 
     private Date startDateExisting;
     private Date endDateExisting;
     private Date startDate;
     private Date endDate;
+    private Disease disease;
 
     public Date getStartDateExisting() {
         return startDateExisting;
@@ -57,5 +60,13 @@ public class ImmunizationOverlapsDto {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public Disease getDisease() {
+        return disease;
+    }
+
+    public void setDisease(Disease disease) {
+        this.disease = disease;
     }
 }

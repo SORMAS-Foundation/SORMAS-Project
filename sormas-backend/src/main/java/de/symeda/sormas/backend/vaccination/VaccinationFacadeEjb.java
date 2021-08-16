@@ -31,6 +31,7 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -148,7 +149,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		dto.setImmunization(ImmunizationFacadeEjb.toReferenceDto(entity.getImmunization()));
 		dto.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(entity.getHealthConditions()));
 		dto.setReportDate(entity.getReportDate());
-		dto.setReportingUser(entity.getReportingUser().toReference());
+		dto.setReportingUser(UserFacadeEjb.toReferenceDto(entity.getReportingUser()));
 		dto.setVaccinationDate(entity.getVaccinationDate());
 		dto.setVaccineName(entity.getVaccineName());
 		dto.setOtherVaccineName(entity.getOtherVaccineName());

@@ -344,6 +344,7 @@ public interface Strings {
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
 	String headingCasesResultingFromContacts = "headingCasesResultingFromContacts";
 	String headingCaseStatusMap = "headingCaseStatusMap";
+	String headingcasesWithReferenceDefinitionFulfilled = "headingcasesWithReferenceDefinitionFulfilled";
 	String headingCaution = "headingCaution";
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
 	String headingChangePathogenTestResult = "headingChangePathogenTestResult";
@@ -1191,6 +1192,7 @@ public interface Strings {
 	String promptImmunizationPositiveTestResultDateFrom = "promptImmunizationPositiveTestResultDateFrom";
 	String promptImmunizationRecoveryDateFrom = "promptImmunizationRecoveryDateFrom";
 	String promptImmunizationStartDateFrom = "promptImmunizationStartDateFrom";
+	String promptImmunizationValidFrom = "promptImmunizationValidFrom";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";

@@ -157,6 +157,23 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/immunization_validFrom"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:value="@{data.validFrom}" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/immunization_validUntil"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:value="@{data.validUntil}" />
+
+            </LinearLayout>
+
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/immunization_numberOfDoses"
                 style="@style/ControlSingleColumnStyle"

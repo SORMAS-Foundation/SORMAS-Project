@@ -20,6 +20,7 @@ import android.os.AsyncTask;
 
 import java.util.List;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
@@ -110,8 +111,9 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 
 			final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
 			immunizationCriteria.setResponsibleRegion(changedImmunization.getResponsibleRegion());
-			immunizationCriteria.setDisease(changedImmunization.getDisease());
-			ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria();
+			final Disease disease = changedImmunization.getDisease();
+			immunizationCriteria.setDisease(disease);
+			final ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria();
 			criteria.setImmunizationCriteria(immunizationCriteria);
 			criteria.setImmunizationUuid(changedImmunization.getUuid());
 			criteria.setPersonUuid(changedImmunization.getPerson().getUuid());
@@ -122,12 +124,14 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 			List<Immunization> similarImmunizations = DatabaseHelper.getImmunizationDao().getSimilarImmunizations(criteria);
 
 			if (!similarImmunizations.isEmpty()) {
-				ImmunizationOverlapsDto immunizationOverlapsDto = new ImmunizationOverlapsDto();
+				final ImmunizationOverlapsDto immunizationOverlapsDto = new ImmunizationOverlapsDto();
 				immunizationOverlapsDto.setStartDate(changedImmunization.getStartDate());
 				immunizationOverlapsDto.setEndDate(changedImmunization.getEndDate());
 				final Immunization existingSimilarImmunization = similarImmunizations.get(0);
 				immunizationOverlapsDto.setStartDateExisting(existingSimilarImmunization.getStartDate());
 				immunizationOverlapsDto.setEndDateExisting(existingSimilarImmunization.getEndDate());
+				immunizationOverlapsDto.setDisease(disease);
+
 				InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_immunization_overlaps_layout, immunizationOverlapsDto);
 				infoDialog.show();
 			} else {

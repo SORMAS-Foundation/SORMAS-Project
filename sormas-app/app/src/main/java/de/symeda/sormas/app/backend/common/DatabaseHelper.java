@@ -2804,15 +2804,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" modified SMALLINT DEFAULT 0," +
 						" snapshot SMALLINT DEFAULT 0,"  +
 						" pseudonymized SMALLINT,"  +
-						" disease varchar(255) not null," +
-						" person_id bigint not null REFERENCES person(id)," +
+						" disease varchar(255)," +
+						" person_id bigint REFERENCES person(id)," +
 						" reportDate timestamp not null," +
-						" reportingUser_id bigint not null REFERENCES users(id)," +
+						" reportingUser_id bigint REFERENCES users(id)," +
 						" archived boolean DEFAULT false," +
-						" immunizationStatus varchar(255) not null," +
-						" meansOfImmunization varchar(255) not null," +
+						" immunizationStatus varchar(255)," +
+						" meansOfImmunization varchar(255)," +
 						" meansOfImmunizationDetails text," +
-						" immunizationManagementStatus varchar(255) not null," +
+						" immunizationManagementStatus varchar(255)," +
 						" externalId varchar(255)," +
 						" responsibleRegion_id bigint," +
 						" responsibleDistrict_id bigint," +
@@ -2823,6 +2823,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" healthFacilityDetails varchar(512)," +
 						" startDate timestamp," +
 						" endDate timestamp," +
+						" validFrom timestamp," +
+						" validUntil timestamp," +
 						" numberOfDoses int," +
 						" previousInfection varchar(255)," +
 						" lastInfectionDate timestamp," +
