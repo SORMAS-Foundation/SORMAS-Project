@@ -15,27 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.steps.api;
+package org.sormas.e2etests.pojo.api;
 
-import cucumber.api.java8.En;
-import javax.inject.Inject;
-import org.sormas.e2etests.helpers.api.ContactHelper;
-import org.sormas.e2etests.pojo.api.Contact;
-import org.sormas.e2etests.services.api.ContactApiService;
-import org.sormas.e2etests.state.ApiState;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
 
-public class ContactSteps implements En {
-
-  @Inject
-  public ContactSteps(
-      ContactHelper contactHelper, ContactApiService contactApiService, ApiState apiState) {
-
-    When(
-        "API: I create a new contact",
-        () -> {
-          Contact contact = contactApiService.buildGeneratedContact(apiState.getCreatedPerson());
-          contactHelper.push(contact);
-          apiState.setCreatedContact(contact);
-        });
-  }
+@Value
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderClassName = "builder")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class Immunization {
+  String uuid;
+  Boolean pseudonymized;
+  String disease;
+  Person person;
+  Long reportDate;
+  Long positiveTestResultDate;
+  Long recoveryDate;
+  Long startDate;
+  Long endDate;
+  String externalId;
+  String reportingUser;
+  Boolean archived;
+  String immunizationStatus;
+  String meansOfImmunization;
+  String immunizationManagementStatus;
+  String responsibleRegion;
+  String responsibleDistrict;
+  String responsibleCommunity;
 }

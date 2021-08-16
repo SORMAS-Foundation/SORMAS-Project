@@ -22,12 +22,7 @@ import io.restassured.response.Response;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Contact;
-import org.sormas.e2etests.pojo.api.Event;
-import org.sormas.e2etests.pojo.api.Person;
-import org.sormas.e2etests.pojo.api.Sample;
-import org.sormas.e2etests.pojo.api.Task;
+import org.sormas.e2etests.pojo.api.*;
 import org.sormas.e2etests.pojo.web.Action;
 
 @ScenarioScoped
@@ -38,7 +33,8 @@ public class ApiState {
   String casesAllSince;
   String communitiesAllSince;
   String facilitiesFromRegion;
-  Person editPerson;
+  Person createdPerson;
+  Immunization createdImmunization;
   Case createdCase;
   List<Case> createdCases;
   List<Sample> createdSamples;

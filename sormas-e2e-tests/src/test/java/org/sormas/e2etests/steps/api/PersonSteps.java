@@ -104,7 +104,7 @@ public class PersonSteps implements En {
                   .address(address)
                   .personContactDetails(Collections.singletonList(personContactDetails))
                   .build();
-          apiState.setEditPerson(createPersonObject);
+          apiState.setCreatedPerson(createPersonObject);
           personsHelper.createNewPerson(createPersonObject);
         });
 
@@ -114,7 +114,7 @@ public class PersonSteps implements En {
         "API: I check that POST person call body is {string}",
         (String expectedBody) -> {
           Response response =
-              personsHelper.getPersonBasedOnUUID(apiState.getEditPerson().getUuid());
+              personsHelper.getPersonBasedOnUUID(apiState.getCreatedPerson().getUuid());
           String responseBody = response.getBody().toString();
           Truth.assertThat(expectedBody.equals(String.valueOf(responseBody)));
         });

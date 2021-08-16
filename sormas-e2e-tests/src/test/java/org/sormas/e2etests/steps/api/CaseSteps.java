@@ -129,7 +129,7 @@ public class CaseSteps implements En {
     When(
         "API: I create a new case",
         () -> {
-          Case caze = caseApiService.buildGeneratedCase(apiState.getEditPerson());
+          Case caze = caseApiService.buildGeneratedCase(apiState.getCreatedPerson());
           caseHelper.createCase(caze);
           apiState.setCreatedCase(caze);
         });
