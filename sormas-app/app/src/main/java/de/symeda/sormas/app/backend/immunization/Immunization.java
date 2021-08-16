@@ -62,6 +62,8 @@ public class Immunization extends PseudonymizableAdo {
     public static final String REPORT_DATE = "reportDate";
     public static final String START_DATE = "startDate";
     public static final String END_DATE = "endDate";
+    public static final String VALID_FROM = "validFrom";
+    public static final String VALID_UNTIL = "validUntil";
     public static final String IMMUNIZATION_STATUS = "immunizationStatus";
     public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
     public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
@@ -109,6 +111,10 @@ public class Immunization extends PseudonymizableAdo {
 	private Date startDate;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date endDate;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date validFrom;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date validUntil;
 	@DatabaseField
 	private Integer numberOfDoses;
 	@Enumerated(EnumType.STRING)
@@ -345,6 +351,22 @@ public class Immunization extends PseudonymizableAdo {
 		this.healthFacilityDetails = healthFacilityDetails;
 	}
 
+	public Date getValidFrom() {
+		return validFrom;
+	}
+
+	public void setValidFrom(Date validFrom) {
+		this.validFrom = validFrom;
+	}
+
+	public Date getValidUntil() {
+		return validUntil;
+	}
+
+	public void setValidUntil(Date validUntil) {
+		this.validUntil = validUntil;
+	}
+
 	@Override
     public String getI18nPrefix() {
         return I18N_PREFIX;
@@ -376,5 +398,9 @@ public class Immunization extends PseudonymizableAdo {
         this.setFacilityType(immunization.getFacilityType());
         this.setHealthFacility(immunization.getHealthFacility());
         this.setHealthFacilityDetails(immunization.getHealthFacilityDetails());
+        this.setStartDate(immunization.getStartDate());
+        this.setEndDate(immunization.getEndDate());
+        this.setValidFrom(immunization.getValidFrom());
+        this.setValidUntil(immunization.getValidUntil());
     }
 }

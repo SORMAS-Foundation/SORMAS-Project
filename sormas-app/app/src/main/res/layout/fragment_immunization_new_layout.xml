@@ -192,6 +192,25 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/immunization_validFrom"
+                    style="@style/ControlFirstOfTwoColumnsStyle"
+                    app:allowedDaysInFuture="365"
+                    app:value="@={data.validFrom}" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/immunization_validTo"
+                    style="@style/ControlSecondOfTwoColumnsStyle"
+                    app:allowedDaysInFuture="365"
+                    app:value="@={data.validUntil}" />
+
+            </LinearLayout>
+
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/immunization_numberOfDoses"
                 style="@style/ControlSingleColumnStyle"

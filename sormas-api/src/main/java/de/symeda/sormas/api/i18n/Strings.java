@@ -1192,6 +1192,7 @@ public interface Strings {
 	String promptImmunizationPositiveTestResultDateFrom = "promptImmunizationPositiveTestResultDateFrom";
 	String promptImmunizationRecoveryDateFrom = "promptImmunizationRecoveryDateFrom";
 	String promptImmunizationStartDateFrom = "promptImmunizationStartDateFrom";
+	String promptImmunizationValidFrom = "promptImmunizationValidFrom";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";

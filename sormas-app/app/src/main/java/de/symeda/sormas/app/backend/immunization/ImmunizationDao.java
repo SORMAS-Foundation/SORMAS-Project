@@ -99,6 +99,9 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 		addDateFromCriteria(whereStatements, where, criteria.getStartDateFrom(), Immunization.START_DATE);
 		addDateToCriteria(whereStatements, where, criteria.getEndDateTo(), Immunization.END_DATE);
 
+		addDateFromCriteria(whereStatements, where, criteria.getValidFrom(), Immunization.VALID_FROM);
+		addDateToCriteria(whereStatements, where, criteria.getValidUntil(), Immunization.VALID_UNTIL);
+
 		addEqualsCriteria(whereStatements, where, criteria.getImmunizationStatus(), Immunization.IMMUNIZATION_STATUS);
 		addEqualsCriteria(whereStatements, where, criteria.getImmunizationManagementStatus(), Immunization.IMMUNIZATION_MANAGEMENT_STATUS);
 		addEqualsCriteria(whereStatements, where, criteria.getMeansOfImmunization(), Immunization.MEANS_OF_IMMUNIZATION);
@@ -166,7 +169,6 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 			ImmunizationCriteria immunizationCriteria = criteria.getImmunizationCriteria();
 			where.and().ne(Immunization.UUID, criteria.getImmunizationUuid());
 			where.and().eq(Immunization.DISEASE, immunizationCriteria.getDisease());
-			where.and().eq(Immunization.RESPONSIBLE_REGION + "_id", criteria.getImmunizationCriteria().getResponsibleRegion());
 			if (criteria.getStartDate() != null && criteria.getEndDate() != null) {
 				Where<Immunization, Long> betweenCombination = where.or(
 					where.between(

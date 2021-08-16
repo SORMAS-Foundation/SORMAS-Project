@@ -38,6 +38,9 @@ public class ImmunizationCriteria implements Serializable {
     private Date reportDateFrom;
     private Date reportDateTo;
 
+    private Date validFrom;
+    private Date validUntil;
+
     private Date startDateFrom;
     private Date endDateTo;
 
@@ -87,6 +90,22 @@ public class ImmunizationCriteria implements Serializable {
 
     public void setMeansOfImmunization(MeansOfImmunization meansOfImmunization) {
         this.meansOfImmunization = meansOfImmunization;
+    }
+
+    public Date getValidFrom() {
+        return validFrom;
+    }
+
+    public void setValidFrom(Date validFrom) {
+        this.validFrom = validFrom;
+    }
+
+    public Date getValidUntil() {
+        return validUntil;
+    }
+
+    public void setValidUntil(Date validUntil) {
+        this.validUntil = validUntil;
     }
 
     public Date getReportDateFrom() {

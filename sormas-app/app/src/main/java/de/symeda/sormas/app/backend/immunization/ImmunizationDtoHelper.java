@@ -95,6 +95,8 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 		target.setCountry(DatabaseHelper.getCountryDao().getByReferenceDto(source.getCountry()));
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
+		target.setValidFrom(source.getValidFrom());
+		target.setValidUntil(source.getValidUntil());
 		target.setNumberOfDoses(source.getNumberOfDoses());
 		target.setPreviousInfection(source.getPreviousInfection());
 		target.setLastInfectionDate(source.getLastInfectionDate());
@@ -160,6 +162,8 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
+		target.setValidFrom(source.getValidFrom());
+		target.setValidUntil(source.getValidUntil());
 		target.setNumberOfDoses(source.getNumberOfDoses());
 		target.setPreviousInfection(source.getPreviousInfection());
 		target.setLastInfectionDate(source.getLastInfectionDate());
