@@ -140,7 +140,7 @@ public class EventController {
 
 		EventSelectionField eventSelect =
 			new EventSelectionField(caseDataDto.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForCase));
-		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
+		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
 		component.addCommitListener(() -> {
@@ -188,7 +188,7 @@ public class EventController {
 		EventSelectionField eventSelect = new EventSelectionField(
 			caseDataDtos.stream().findFirst().get().getDisease(),
 			I18nProperties.getString(Strings.infoPickOrCreateEventForCases));
-		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
+		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
 		component.addCommitListener(() -> {
@@ -219,7 +219,7 @@ public class EventController {
 		EventSelectionField eventSelect = new EventSelectionField(
 			contactDtos.stream().findFirst().get().getDisease(),
 			I18nProperties.getString(Strings.infoPickOrCreateEventForContact));
-		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
+		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
 		component.addCommitListener(() -> {
@@ -372,7 +372,7 @@ public class EventController {
 
 		EventSelectionField eventSelect =
 			new EventSelectionField(contact.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForContact));
-		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
+		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
 		component.addCommitListener(() -> {
@@ -409,7 +409,7 @@ public class EventController {
 
 		EventDto superordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(superordinateEventRef.getUuid());
 		EventSelectionField selectionField = new EventSelectionField(superordinateEvent, excludedUuids, false);
-		selectionField.setWidth(1024, Sizeable.Unit.PIXELS);
+		selectionField.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
 		component.addCommitListener(() -> {
@@ -438,7 +438,7 @@ public class EventController {
 
 		EventDto subordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(subordinateEventRef.getUuid());
 		EventSelectionField selectionField = new EventSelectionField(subordinateEvent, excludedUuids, true);
-		selectionField.setWidth(1024, Sizeable.Unit.PIXELS);
+		selectionField.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
 		component.addCommitListener(() -> {
