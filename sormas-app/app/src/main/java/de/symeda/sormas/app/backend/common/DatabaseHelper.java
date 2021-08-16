@@ -2823,6 +2823,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" healthFacilityDetails varchar(512)," +
 						" startDate timestamp," +
 						" endDate timestamp," +
+						" validFrom timestamp," +
+						" validUntil timestamp," +
 						" numberOfDoses int," +
 						" previousInfection varchar(255)," +
 						" lastInfectionDate timestamp," +
