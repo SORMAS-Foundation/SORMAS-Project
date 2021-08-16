@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.facility;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,6 +156,34 @@ public enum FacilityType {
 		}
 		return accomodationTypesByGroup.get(group);
 	}
+
+	public static final List<FacilityType> FOR_FACILITY_23_IFSG_GERMANY = Arrays.asList(
+		HOSPITAL,
+		AMBULATORY_SURGERY_FACILITY,
+		REHAB_FACILITY,
+		DIALYSIS_FACILITY,
+		DAY_HOSPITAL,
+		MATERNITY_FACILITY,
+		OTHER_MEDICAL_FACILITY,
+		MEDICAL_PRACTICE,
+		DENTAL_PRACTICE,
+		OTHER_MEDICAL_PRACTICE,
+		DIAGNOSTIC_PREVENTATIVE_THERAPEUTIC_FACILITY,
+		MOBILE_NURSING_SERVICE,
+		EMERGENCY_MEDICAL_SERVICES);
+	public static final List<FacilityType> FOR_COMMUNITY_FACILITY_GERMANY =
+		Arrays.asList(KINDERGARTEN, CHILDRENS_DAY_CARE, SCHOOL, CHILDRENS_HOME, HOLIDAY_CAMP, AFTER_SCHOOL, OTHER_EDUCATIONAL_FACILITY);
+	public static final List<FacilityType> FOR_FACILITY_36_IFSG_GERMANY = Arrays.asList(
+		OTHER_CARE_FACILITY,
+		ELDERLY_CARE_FACILITY,
+		DISABLED_PERSON_HABITATION,
+		CARE_RECIPIENT_HABITATION,
+		HOMELESS_SHELTER,
+		REFUGEE_ACCOMMODATION,
+		MASS_ACCOMMODATION,
+		CORRECTIONAL_FACILITY,
+		MOBILE_NURSING_SERVICE,
+		VISITING_AMBULATORY_AID);
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

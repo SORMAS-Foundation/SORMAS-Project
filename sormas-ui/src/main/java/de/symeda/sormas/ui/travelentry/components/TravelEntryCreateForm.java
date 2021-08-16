@@ -17,12 +17,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.vaadin.v7.data.util.converter.Converter;
-import de.symeda.sormas.ui.travelentry.DEAFormBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
@@ -32,6 +31,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.i18n.Captions;
@@ -52,6 +52,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.travelentry.DEAFormBuilder;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
@@ -232,10 +233,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		UserProvider currentUserProvider = UserProvider.getCurrent();
 		JurisdictionLevel userJurisditionLevel =
 			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : JurisdictionLevel.NONE;
-		if (userJurisditionLevel == JurisdictionLevel.COMMUNITY) {
-			regionCombo.setReadOnly(true);
-			districtCombo.setReadOnly(true);
-		} else if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
+		if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			regionCombo.setReadOnly(true);
 			districtCombo.setReadOnly(true);
 		}
@@ -319,6 +317,53 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		person.setPassportNumber((String) getField(PersonDto.PASSPORT_NUMBER).getValue());
 
 		return person;
+	}
+
+	public void setPerson(PersonDto person) {
+
+		if (person != null) {
+			((TextField) getField(PersonDto.FIRST_NAME)).setValue(person.getFirstName());
+			((TextField) getField(PersonDto.LAST_NAME)).setValue(person.getLastName());
+			((ComboBox) getField(PersonDto.BIRTH_DATE_YYYY)).setValue(person.getBirthdateYYYY());
+			((ComboBox) getField(PersonDto.BIRTH_DATE_MM)).setValue(person.getBirthdateMM());
+			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
+			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
+			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
+			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
+			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
+		} else {
+			getField(PersonDto.FIRST_NAME).clear();
+			getField(PersonDto.LAST_NAME).clear();
+			getField(PersonDto.BIRTH_DATE_DD).clear();
+			getField(PersonDto.BIRTH_DATE_MM).clear();
+			getField(PersonDto.BIRTH_DATE_YYYY).clear();
+			getField(PersonDto.SEX).clear();
+			getField(PersonDto.PRESENT_CONDITION).clear();
+			getField(PersonDto.PHONE).clear();
+			getField(PersonDto.EMAIL_ADDRESS).clear();
+		}
+	}
+
+	public void setPersonalDetailsReadOnlyIfNotEmpty(boolean readOnly) {
+
+		getField(PersonDto.FIRST_NAME).setEnabled(!readOnly);
+		getField(PersonDto.LAST_NAME).setEnabled(!readOnly);
+		if (getField(PersonDto.SEX).getValue() != null) {
+			getField(PersonDto.SEX).setEnabled(!readOnly);
+		}
+		if (getField(PersonDto.BIRTH_DATE_YYYY).getValue() != null) {
+			getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(!readOnly);
+		}
+		if (getField(PersonDto.BIRTH_DATE_MM).getValue() != null) {
+			getField(PersonDto.BIRTH_DATE_MM).setEnabled(!readOnly);
+		}
+		if (getField(PersonDto.BIRTH_DATE_DD).getValue() != null) {
+			getField(PersonDto.BIRTH_DATE_DD).setEnabled(!readOnly);
+		}
+	}
+
+	public void setDiseaseReadOnly(boolean readOnly) {
+		getField(CaseDataDto.DISEASE).setEnabled(!readOnly);
 	}
 
 	private void getPointsOfEntryForDistrict(DistrictReferenceDto districtDto) {

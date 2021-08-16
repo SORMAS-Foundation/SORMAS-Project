@@ -41,7 +41,7 @@ public class EventImportLayout extends AbstractImportLayout {
 
 		ImportFacade importFacade = FacadeProvider.getImportFacade();
 
-		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Event_Import_Guide.pdf"), new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Event_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(2, importFacade.getEventImportTemplateFilePath(), importFacade.getEventImportTemplateFileName());
 		addImportCsvComponent(3, new ImportReceiver("_event_import_", file -> {
 			resetDownloadErrorReportButton();

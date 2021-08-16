@@ -99,7 +99,7 @@ public class TravelEntryImporter extends DataImporter {
 				PERSON_SELECT_LOCK.wasNotified = false;
 				if (consumer.result != null) {
 					resultOption = consumer.result.getResultOption();
-					pickedPersonUuid = consumer.result.getMatchingPerson().getUuid();
+					pickedPersonUuid = consumer.result.getMatchingPerson() != null ? consumer.result.getMatchingPerson().getUuid() : null;
 				}
 			}
 
@@ -109,9 +109,14 @@ public class TravelEntryImporter extends DataImporter {
 			} else if (resultOption == ImportSimilarityResultOption.CANCEL) {
 				cancelImport();
 				return ImportLineResult.SKIPPED;
-			} else if (resultOption == ImportSimilarityResultOption.PICK) {
-				ImportLineResultDto<TravelEntryImportEntities> saveResult =
-					importFacade.importDataWithExistingPerson(pickedPersonUuid, values, entityClasses, entityPropertyPaths);
+			} else {
+				ImportLineResultDto<TravelEntryImportEntities> saveResult;
+				if (resultOption == ImportSimilarityResultOption.PICK && pickedPersonUuid != null) {
+					saveResult = importFacade.importDataWithExistingPerson(pickedPersonUuid, values, entityClasses, entityPropertyPaths);
+				} else {
+					saveResult = importFacade.saveImportedEntities(entities);
+				}
+
 				if (saveResult.isError()) {
 					writeImportError(values, importResult.getMessage());
 					return ImportLineResult.ERROR;

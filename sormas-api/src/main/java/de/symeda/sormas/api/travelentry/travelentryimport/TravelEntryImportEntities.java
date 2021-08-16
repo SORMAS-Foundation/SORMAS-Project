@@ -29,7 +29,7 @@ public class TravelEntryImportEntities implements Serializable {
 	private final PersonDto person;
 
 	public TravelEntryImportEntities(UserReferenceDto reportingUser) {
-		person = PersonDto.build();
+		person = PersonDto.buildImportEntity();
 		travelEntry = TravelEntryDto.build(person.toReference());
 		travelEntry.setReportingUser(reportingUser);
 	}

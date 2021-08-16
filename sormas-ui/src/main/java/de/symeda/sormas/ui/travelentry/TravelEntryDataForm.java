@@ -106,6 +106,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 	private CheckBox quarantineReduced;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
+	private CheckBox differentPointOfEntryJurisdiction;
 	private DEAFormBuilder deaFormBuilder;
 
 	public TravelEntryDataForm(String travelEntryUuid, boolean isPseudonymized) {
@@ -161,7 +162,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrictCombo, responsibleCommunityCombo);
 
-		CheckBox differentPointOfEntryJurisdiction = addCustomField(DIFFERENT_POINT_OF_ENTRY_JURISDICTION, Boolean.class, CheckBox.class);
+		differentPointOfEntryJurisdiction = addCustomField(DIFFERENT_POINT_OF_ENTRY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPointOfEntryJurisdiction.addStyleName(VSPACE_3);
 
 		Label placeOfStayHeadingLabel = new Label(I18nProperties.getCaption(Captions.travelEntryPointOfEntry));
@@ -451,6 +452,11 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 	@Override
 	public void setValue(TravelEntryDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		if ((newFieldValue.getPointOfEntryRegion() != null && !newFieldValue.getPointOfEntryRegion().equals(newFieldValue.getResponsibleRegion()))
+			|| newFieldValue.getPointOfEntryDistrict() != null
+				&& !newFieldValue.getPointOfEntryDistrict().equals(newFieldValue.getResponsibleDistrict())) {
+			differentPointOfEntryJurisdiction.setValue(Boolean.TRUE);
+		}
 		super.setValue(newFieldValue);
 		buildDeaContent(newFieldValue);
 	}

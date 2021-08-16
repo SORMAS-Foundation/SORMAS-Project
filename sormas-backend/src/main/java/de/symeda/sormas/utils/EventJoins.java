@@ -19,7 +19,6 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventGroup;
@@ -43,7 +42,6 @@ public class EventJoins<T> extends AbstractDomainObjectJoins<T, Event> {
 	private Join<Location, District> district;
 	private Join<Location, Community> community;
 	private Join<Location, Facility> facility;
-	private Join<Location, FacilityType> facilityType;
 
 	private Join<Event, EventParticipant> eventParticipants;
 	private Join<EventParticipant, Person> eventParticipantPersons;
@@ -109,14 +107,6 @@ public class EventJoins<T> extends AbstractDomainObjectJoins<T, Event> {
 
 	private void setFacility(Join<Location, Facility> facility) {
 		this.facility = facility;
-	}
-
-	public Join<Location, FacilityType> getFacilityType() {
-		return getOrCreate(facilityType, Location.FACILITY_TYPE, JoinType.LEFT, getLocation(), this::setFacilityType);
-	}
-
-	private void setFacilityType(Join<Location, FacilityType> facilityType) {
-		this.facilityType = facilityType;
 	}
 
 	public Join<Event, EventParticipant> getEventParticipants() {

@@ -19,6 +19,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -101,8 +102,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		String[] entityClasses,
 		String[] entityProperties,
 		String[][] entityPropertyPaths,
-		boolean ignoreEmptyEntries)
-		throws InvalidColumnException {
+		boolean ignoreEmptyEntries) {
 
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
@@ -179,8 +179,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		String[] entityClasses,
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries,
-		EventImportEntities entities)
-		throws InvalidColumnException {
+		EventImportEntities entities) {
 
 		final UserReferenceDto currentUserRef = userService.getCurrentUser().toReference();
 
@@ -216,7 +215,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 							currentEventParticipantHasEntries.setFalse();
 							EventParticipantDto eventParticipantDto =
 								EventParticipantDto.build(new EventReferenceDto(event.getUuid()), currentUserRef);
-							eventParticipantDto.setPerson(PersonDto.build());
+							eventParticipantDto.setPerson(PersonDto.buildImportEntity());
 							eventParticipants.add(eventParticipantDto);
 						}
 						if (!StringUtils.isEmpty(cellData.getValue())) {
@@ -253,13 +252,13 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		String[] entityClasses,
 		String[][] entityPropertyPaths,
 		boolean ignoreEmptyEntries,
-		Function<ImportCellData, Exception> insertCallback)
-		throws InvalidColumnException {
+		Function<ImportCellData, Exception> insertCallback) {
 
 		String importError = null;
+		List<String> invalidColumns = new ArrayList<>();
 
 		for (int i = 0; i < values.length; i++) {
-			String value = values[i];
+			String value = StringUtils.trimToNull(values[i]);
 			if (ignoreEmptyEntries && (value == null || value.isEmpty())) {
 				continue;
 			}
@@ -278,10 +277,14 @@ public class EventImportFacadeEjb implements EventImportFacade {
 						importError = exception.getMessage();
 						break;
 					} else if (exception instanceof InvalidColumnException) {
-						throw (InvalidColumnException) exception;
+						invalidColumns.add(((InvalidColumnException) exception).getColumnName());
 					}
 				}
 			}
+		}
+
+		if (invalidColumns.size() > 0) {
+			LOGGER.warn("Unhandled columns [{}]", String.join(", ", invalidColumns));
 		}
 
 		return importError != null ? ImportLineResultDto.errorResult(importError) : ImportLineResultDto.successResult();

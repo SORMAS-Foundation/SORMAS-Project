@@ -20,6 +20,7 @@ public class ExtendedPostgreSQL94Dialect extends PostgreSQL94Dialect {
 	public final static String ILIKE = "ilike";
 	public final static String WINDOW_FIRST_VALUE_DESC = "window_first_value_desc";
 	public final static String WINDOW_COUNT = "window_count";
+	public final static String GREATEST = "greatest";
 
 	public ExtendedPostgreSQL94Dialect() {
 		super();
@@ -42,5 +43,6 @@ public class ExtendedPostgreSQL94Dialect extends PostgreSQL94Dialect {
 			new SQLFunctionTemplate(
 				StandardBasicTypes.LONG,
 				"COUNT(?1) OVER (PARTITION BY ?2 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)"));
+		registerFunction(GREATEST, new StandardSQLFunction(GREATEST));
 	}
 }

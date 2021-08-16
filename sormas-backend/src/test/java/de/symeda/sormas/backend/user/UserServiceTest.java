@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -24,6 +25,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.user.UserDto;
@@ -41,7 +43,7 @@ public class UserServiceTest extends AbstractBeanTest {
 		AuthProvider authProvider = mock(AuthProvider.class);
 		mockAuthProvider = mockStatic(AuthProvider.class);
 		assertNotNull(mockAuthProvider);
-		mockAuthProvider.when(AuthProvider::getProvider).thenReturn(authProvider);
+		Mockito.when(AuthProvider.getProvider(any())).thenReturn(authProvider);
 		when(authProvider.isUsernameCaseSensitive()).thenReturn(true);
 	}
 

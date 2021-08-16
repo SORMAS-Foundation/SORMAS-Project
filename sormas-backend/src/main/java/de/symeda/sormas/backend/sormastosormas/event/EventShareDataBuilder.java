@@ -100,8 +100,7 @@ public class EventShareDataBuilder implements ShareDataBuilder<Event, SormasToSo
 	}
 
 	@Override
-	public List<ShareData<Event, SormasToSormasEventDto>> buildShareData(User user, SormasToSormasShareInfo shareInfo)
-		throws SormasToSormasException {
+	public List<ShareData<Event, SormasToSormasEventDto>> buildShareData(User user, SormasToSormasShareInfo shareInfo) {
 		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(user, shareInfo);
 
 		return shareInfo.getEvents().stream().map(shareInfoEvent -> {

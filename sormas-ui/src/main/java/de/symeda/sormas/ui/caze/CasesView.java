@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -380,6 +377,7 @@ public class CasesView extends AbstractView {
 					customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCaseCustom));
 					customExportWindow.setContent(customExportsLayout);
 					UI.getCurrent().addWindow(customExportWindow);
+					exportPopupButton.setPopupVisible(false);
 				}, ValoTheme.BUTTON_PRIMARY);
 				btnCustomCaseExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
 				btnCustomCaseExport.setWidth(100, Unit.PERCENTAGE);
@@ -611,8 +609,7 @@ public class CasesView extends AbstractView {
 		actionButtonsLayout.setSpacing(true);
 		{
 			// Show active/archived/all dropdown
-			if (Objects.nonNull(UserProvider.getCurrent())
-					&& UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+			if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 				int daysAfterCaseGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterCaseGetsArchived();
 				if (daysAfterCaseGetsArchived > 0) {
 					relevanceStatusInfoLabel = new Label(
@@ -709,7 +706,6 @@ public class CasesView extends AbstractView {
 											I18nProperties.getString(Strings.messageNoCasesSelected),
 											Notification.Type.WARNING_MESSAGE,
 											false).show(Page.getCurrent());
-
 										return;
 									}
 
@@ -717,6 +713,38 @@ public class CasesView extends AbstractView {
 										.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CASE);
 								});
 							}));
+					}
+
+					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+						menuBarItems.add(
+							new MenuBarHelper.MenuBarItem(
+								I18nProperties.getCaption(Captions.bulkLinkToEvent),
+								VaadinIcons.PHONE,
+								mi -> grid.bulkActionHandler(items -> {
+									List<CaseIndexDto> selectedCases =
+										caseGrid.asMultiSelect().getSelectedItems().stream().collect(Collectors.toList());
+
+									if (selectedCases.isEmpty()) {
+										new Notification(
+											I18nProperties.getString(Strings.headingNoCasesSelected),
+											I18nProperties.getString(Strings.messageNoCasesSelected),
+											Notification.Type.WARNING_MESSAGE,
+											false).show(Page.getCurrent());
+										return;
+									}
+
+									if (!selectedCases.stream()
+										.allMatch(caze -> caze.getDisease().equals(selectedCases.stream().findAny().get().getDisease()))) {
+										new Notification(
+											I18nProperties.getString(Strings.messageBulkCasesWithDifferentDiseasesSelected),
+											Notification.Type.WARNING_MESSAGE).show(Page.getCurrent());
+										return;
+									}
+
+									ControllerProvider.getEventController()
+										.selectOrCreateEventForCaseList(
+											selectedCases.stream().map(CaseIndexDto::toReference).collect(Collectors.toList()));
+								})));
 					}
 
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuBarItems);

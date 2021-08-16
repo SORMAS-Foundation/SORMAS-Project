@@ -72,6 +72,8 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	@EJB
 	private UserService userService;
 	@EJB
+	private AreaService areaService;
+	@EJB
 	private RegionService regionService;
 	@EJB
 	private PopulationDataFacadeEjbLocal populationDataFacade;
@@ -79,6 +81,13 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	@Override
 	public List<DistrictReferenceDto> getAllActiveAsReference() {
 		return districtService.getAllActive(District.NAME, true).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<DistrictReferenceDto> getAllActiveByArea(String areaUuid) {
+
+		Area area = areaService.getByUuid(areaUuid);
+		return districtService.getAllActiveByArea(area).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override

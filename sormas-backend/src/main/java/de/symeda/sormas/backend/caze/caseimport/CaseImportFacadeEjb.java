@@ -168,7 +168,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		if (personUuid != null) {
 			person = personFacade.getPersonByUuid(personUuid);
 		} else {
-			person = PersonDto.build();
+			person = PersonDto.buildImportEntity();
 		}
 
 		final CaseDataDto caze;
@@ -351,7 +351,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		List<String> invalidColumns = new ArrayList<>();
 
 		for (int i = 0; i < values.length; i++) {
-			String value = values[i];
+			String value = StringUtils.trimToNull(values[i]);
 			if (ignoreEmptyEntries && (value == null || value.isEmpty())) {
 				continue;
 			}

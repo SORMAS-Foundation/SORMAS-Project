@@ -18,6 +18,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
@@ -59,6 +60,10 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		return inJurisdictionOrOwned(travelEntryQueryContext);
 	}
 
+	public Predicate createActiveTravelEntriesFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
+		return cb.and(cb.isFalse(root.get(TravelEntry.ARCHIVED)), cb.isFalse(root.get(TravelEntry.DELETED)));
+	}
+
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
 		return cb.isFalse(root.get(TravelEntry.DELETED));
 	}
@@ -69,6 +74,7 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		final CriteriaBuilder cb = travelEntryQueryContext.getCriteriaBuilder();
 		final From<?, TravelEntry> from = travelEntryQueryContext.getRoot();
 		Join<TravelEntry, Person> person = joins.getPerson();
+		Join<TravelEntry, Case> resultingCase = joins.getResultingCase();
 
 		Predicate filter = null;
 
@@ -90,6 +96,10 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 
 		if (criteria.getPerson() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
+		}
+
+		if (criteria.getCase() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(resultingCase.get(Case.UUID), criteria.getCase().getUuid()));
 		}
 
 		if (criteria.getRelevanceStatus() != null) {
@@ -146,6 +156,18 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		cq.where(filter);
 		cq.orderBy(cb.desc(from.get(TravelEntry.CHANGE_DATE)));
 		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<TravelEntry> getAllByResultingCase(Case caze) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<TravelEntry> cq = cb.createQuery(getElementClass());
+		Root<TravelEntry> from = cq.from(getElementClass());
+
+		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(TravelEntry.RESULTING_CASE), caze)));
+		cq.orderBy(cb.desc(from.get(TravelEntry.REPORT_DATE)));
 
 		return em.createQuery(cq).getResultList();
 	}

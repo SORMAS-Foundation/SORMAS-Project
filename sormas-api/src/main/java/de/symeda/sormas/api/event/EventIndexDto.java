@@ -39,6 +39,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
+	public static final String SPECIFIC_RISK = "specificRisk";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
 	public static final String PARTICIPANT_COUNT = "participantCount";
@@ -78,6 +79,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private String internalToken;
 	private EventStatus eventStatus;
 	private RiskLevel riskLevel;
+	private SpecificRisk specificRisk;
 	private EventInvestigationStatus eventInvestigationStatus;
 	private EventManagementStatus eventManagementStatus;
 	private long participantCount;
@@ -125,6 +127,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String internalToken,
 		EventStatus eventStatus,
 		RiskLevel riskLevel,
+		SpecificRisk specificRisk,
 		EventInvestigationStatus eventInvestigationStatus,
 		EventManagementStatus eventManagementStatus,
 		Disease disease,
@@ -168,6 +171,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.internalToken = internalToken;
 		this.eventStatus = eventStatus;
 		this.riskLevel = riskLevel;
+		this.specificRisk = specificRisk;
 		this.eventInvestigationStatus = eventInvestigationStatus;
 		this.eventManagementStatus = eventManagementStatus;
 		this.disease = disease;
@@ -246,6 +250,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setRiskLevel(RiskLevel riskLevel) {
 		this.riskLevel = riskLevel;
+	}
+
+	public SpecificRisk getSpecificRisk() {
+		return specificRisk;
+	}
+
+	public void setSpecificRisk(SpecificRisk specificRisk) {
+		this.specificRisk = specificRisk;
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {

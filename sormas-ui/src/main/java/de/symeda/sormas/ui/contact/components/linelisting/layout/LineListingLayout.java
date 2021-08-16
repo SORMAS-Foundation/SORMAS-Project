@@ -98,7 +98,8 @@ public class LineListingLayout extends VerticalLayout {
 			PersonFieldDto person = new PersonFieldDto();
 			person.setFirstName(eventParticipantDto.getPerson().getFirstName());
 			person.setLastName(eventParticipantDto.getPerson().getLastName());
-			person.setBirthDate(new BirthDateDto(
+			person.setBirthDate(
+				new BirthDateDto(
 					eventParticipantDto.getPerson().getBirthdateDD(),
 					eventParticipantDto.getPerson().getBirthdateMM(),
 					eventParticipantDto.getPerson().getBirthdateYYYY()));
@@ -187,9 +188,11 @@ public class LineListingLayout extends VerticalLayout {
 				person = PersonDto.build();
 				person.setFirstName(layoutBean.getLineField().getPerson().getFirstName());
 				person.setLastName(layoutBean.getLineField().getPerson().getLastName());
-				person.setBirthdateYYYY(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthYYYY());
-				person.setBirthdateMM(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthMM());
-				person.setBirthdateDD(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthDD());
+				if (layoutBean.getLineField().getPerson().getBirthDate() != null) {
+					person.setBirthdateYYYY(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthYYYY());
+					person.setBirthdateMM(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthMM());
+					person.setBirthdateDD(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthDD());
+				}
 				person.setSex(layoutBean.getLineField().getPerson().getSex());
 			}
 			result.setPerson(person);
@@ -210,6 +213,7 @@ public class LineListingLayout extends VerticalLayout {
 			ContactLineLayoutDto lastLineDto = lines.get(lines.size() - 1).getBean();
 			newLineDto.setLineField(lastLineDto.getLineField());
 		} else {
+			newLineDto.setLineField(new ContactLineFieldDto());
 			newLine.enableDelete(false);
 		}
 
@@ -262,7 +266,7 @@ public class LineListingLayout extends VerticalLayout {
 		}
 
 		public boolean hasErrors() {
-			return sharedInfoField.hasErrors() | contactLineField.hasErrors();
+			return sharedInfoField.hasErrors() || contactLineField.hasErrors();
 		}
 
 		public void enableDelete(boolean shouldEnable) {
