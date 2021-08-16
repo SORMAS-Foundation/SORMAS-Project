@@ -124,6 +124,7 @@ public interface Validations {
 	String noPastDateAllowed = "noPastDateAllowed";
 	String noResponsibleCommunityInResponsibleDistrict = "noResponsibleCommunityInResponsibleDistrict";
 	String noResponsibleDistrictInResponsibleRegion = "noResponsibleDistrictInResponsibleRegion";
+	String notAccomodationFacilityType = "notAccomodationFacilityType";
 	String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
 	String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
 	String onlyNumbersAllowed = "onlyNumbersAllowed";
@@ -181,6 +182,8 @@ public interface Validations {
 	String validEventTitle = "validEventTitle";
 	String validFacility = "validFacility";
 	String validFacilityType = "validFacilityType";
+	String validHealthConditions = "validHealthConditions";
+	String validImmunization = "validImmunization";
 	String validLocation = "validLocation";
 	String validPerson = "validPerson";
 	String validPhoneNumber = "validPhoneNumber";

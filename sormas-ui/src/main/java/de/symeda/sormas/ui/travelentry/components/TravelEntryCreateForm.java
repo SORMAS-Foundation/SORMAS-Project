@@ -17,8 +17,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.vaadin.v7.data.util.converter.Converter;
-import de.symeda.sormas.ui.travelentry.DEAFormBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -228,17 +226,24 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 				.updateItems(districtCombo, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		districtCombo.addValueChangeListener(e -> {
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			getPointsOfEntryForDistrict(districtDto);
+			if (differentPointOfEntryJurisdiction.getValue()) {
+				DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+				getPointsOfEntryForDistrict(districtDto);
+			}
+		});
+
+		differentPointOfEntryJurisdiction.addValueChangeListener(v -> {
+			if (differentPointOfEntryJurisdiction.getValue()) {
+				cbPointOfEntry.removeAllItems();
+			} else {
+				getPointsOfEntryForDistrict((DistrictReferenceDto) responsibleDistrictCombo.getValue());
+			}
 		});
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
 		JurisdictionLevel userJurisditionLevel =
 			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : JurisdictionLevel.NONE;
-		if (userJurisditionLevel == JurisdictionLevel.COMMUNITY) {
-			regionCombo.setReadOnly(true);
-			districtCombo.setReadOnly(true);
-		} else if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
+		if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			regionCombo.setReadOnly(true);
 			districtCombo.setReadOnly(true);
 		}

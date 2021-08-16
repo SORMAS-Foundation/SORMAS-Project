@@ -214,13 +214,18 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 	@Override
 	public long count(TravelEntryCriteria criteria) {
+		return count(criteria, false);
+	}
+
+	@Override
+	public long count(TravelEntryCriteria criteria, boolean ignoreUserFilter) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
 
 		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
 
-		Predicate filter = travelEntryService.createUserFilter(travelEntryQueryContext);
+		Predicate filter = ignoreUserFilter ? null : travelEntryService.createUserFilter(travelEntryQueryContext);
 		if (criteria != null) {
 			final Predicate criteriaFilter = travelEntryService.buildCriteriaFilter(criteria, travelEntryQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
@@ -455,7 +460,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		target.setResponsibleDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
 		target.setResponsibleCommunity(communityService.getByReferenceDto(source.getResponsibleCommunity()));
 		target.setPointOfEntryRegion(regionService.getByReferenceDto(source.getPointOfEntryRegion()));
-		target.setPointOfEntryDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
+		target.setPointOfEntryDistrict(districtService.getByReferenceDto(source.getPointOfEntryDistrict()));
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));

@@ -7784,4 +7784,85 @@ ALTER TABLE events_history ADD COLUMN specificrisk TEXT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (392, 'Add SpecificRisk field into events #5940');
 
--- *** Insert new sql commands BEFORE this line ***
+-- 2021-07-13 Immunizations II: Vaccination Entity #4763
+CREATE TABLE vaccination (
+                              id bigint not null,
+                              uuid varchar(36) not null unique,
+                              changedate timestamp not null,
+                              creationdate timestamp not null,
+                              immunization_id bigint not null,
+                              healthconditions_id bigint not null,
+                              reportdate timestamp not null,
+                              reportinguser_id bigint,
+                              vaccinationDate timestamp,
+                              vaccinename varchar(255),
+                              othervaccinename text,
+                              vaccinenamedetails text,
+                              vaccinemanufacturer varchar(255),
+                              othervaccinemanufacturer text,
+                              vaccinemanufacturerdetails text,
+                              vaccineinn text,
+                              vaccinebatchnumber text,
+                              vaccineuniicode text,
+                              vaccineatccode text,
+                              vaccinationinfosource varchar(255),
+                              pregnant varchar(255),
+                              trimester varchar(255),
+                              sys_period tstzrange not null,
+                              primary key(id));
+ALTER TABLE vaccination OWNER TO sormas_user;
+
+ALTER TABLE vaccination ADD CONSTRAINT fk_vaccination_immunization_id FOREIGN KEY (immunization_id) REFERENCES immunization(id);
+ALTER TABLE vaccination ADD CONSTRAINT fk_vaccination_reportinguser_id FOREIGN KEY (reportinguser_id) REFERENCES users(id);
+ALTER TABLE vaccination ADD CONSTRAINT fk_vaccination_healthconditions_id FOREIGN KEY (healthconditions_id) REFERENCES healthconditions(id);
+
+
+CREATE TABLE vaccination_history (LIKE vaccination);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON vaccination
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'vaccination_history', true);
+ALTER TABLE vaccination_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (393, 'Immunizations II: Vaccination Entity #4763');
+
+-- 2021-08-04 Add missing vaccination columns #4763
+
+ALTER TABLE vaccination ADD COLUMN vaccinetype text;
+ALTER TABLE vaccination ADD COLUMN vaccinedose text;
+ALTER TABLE vaccination_history ADD COLUMN vaccinetype text;
+ALTER TABLE vaccination_history ADD COLUMN vaccinedose text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (394, 'Add missing vaccination columns #4763');
+
+-- 2021-06-30 Add reportId to labMessage #5622
+ALTER TABLE labmessage ADD COLUMN reportid varchar(512);
+ALTER TABLE labmessage_history ADD COLUMN reportid varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (395, 'Add reportId to labMessage #5622');
+
+-- 2021-08-05 perosn sex default to UNKNOWN
+UPDATE person SET sex = 'UNKNOWN' WHERE sex IS NULL;
+ALTER TABLE person ALTER COLUMN sex SET DEFAULT 'UNKNOWN';
+
+INSERT INTO schema_version (version_number, comment) VALUES (396, 'sex = UNKNOWN as default #6248');
+
+-- 2021-08-09 Sub-continent association change New Caledonia #5774
+UPDATE country SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultname = 'Western Europe') WHERE isocode = 'NCL';
+UPDATE location SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultname = 'Western Europe') WHERE location.subcontinent_id IS NOT NULL AND location.country_id = (SELECT country.id FROM country WHERE isocode = 'NCL');
+UPDATE location SET continent_id = (SELECT continent.id FROM continent WHERE continent.defaultname = 'Europe') WHERE location.continent_id IS NOT NULL AND location.country_id = (SELECT country.id FROM country WHERE isocode = 'NCL');
+
+INSERT INTO schema_version (version_number, comment) VALUES (397, 'Sub-continent association change New Caledonia #5774');
+
+-- 2021-08-12 Sub-continent association change Germany #5689
+UPDATE country SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultname = 'Central Europe') WHERE isocode = 'DEU';
+UPDATE location SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultname = 'Central Europe') WHERE location.subcontinent_id IS NOT NULL AND location.country_id = (SELECT country.id FROM country WHERE isocode = 'DEU');
+
+INSERT INTO schema_version (version_number, comment) VALUES (398, 'Sub-continent association change Germany #5689');
+
+-- 2021-08-06 - Introduce a reference definition for cases
+ALTER TABLE cases ADD COLUMN casereferencedefinition varchar(255);
+ALTER TABLE cases_history ADD COLUMN casereferencedefinition varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (399, 'Introduce a reference definition for cases #5594');
+
+-- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

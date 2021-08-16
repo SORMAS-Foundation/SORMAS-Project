@@ -94,11 +94,11 @@ import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
-import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRightsFacade;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
+import de.symeda.sormas.api.vaccination.VaccinationFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visualization.VisualizationFacade;
 
@@ -132,6 +132,10 @@ public class FacadeProvider {
 
 	public static ImmunizationFacade getImmunizationFacade() {
 		return get().lookupEjbRemote(ImmunizationFacade.class);
+	}
+
+	public static VaccinationFacade getVaccinationFacade() {
+		return get().lookupEjbRemote(VaccinationFacade.class);
 	}
 
 	public static TravelEntryFacade getTravelEntryFacade() {
@@ -377,6 +381,7 @@ public class FacadeProvider {
 	public static SormasToSormasLabMessageFacade getSormasToSormasLabMessageFacade() {
 		return get().lookupEjbRemote(SormasToSormasLabMessageFacade.class);
 	}
+
 	public static SormasToSormasEncryptionFacade getSormasToSormasEncryptionFacade() {
 		return get().lookupEjbRemote(SormasToSormasEncryptionFacade.class);
 	}
