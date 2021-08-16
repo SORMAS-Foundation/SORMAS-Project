@@ -157,7 +157,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		addField(ImmunizationDto.START_DATE, DateField.class);
 		addDateField(ImmunizationDto.END_DATE, DateField.class, DAYS_IN_THE_FUTURE);
 
-		addField(ImmunizationDto.VALID_FROM, DateField.class);
+		addDateField(ImmunizationDto.VALID_FROM, DateField.class, DAYS_IN_THE_FUTURE);
 		addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, DAYS_IN_THE_FUTURE);
 
 		TextField numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
