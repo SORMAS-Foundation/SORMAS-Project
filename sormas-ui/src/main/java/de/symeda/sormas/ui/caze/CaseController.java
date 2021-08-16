@@ -1554,7 +1554,7 @@ public class CaseController {
 			newCase.setResponsibleDistrict(caseLineDto.getDistrict());
 			newCase.setReportDate(DateHelper8.toDate(caseLineDto.getDateOfReport()));
 			newCase.setEpidNumber(caseLineDto.getEpidNumber());
-			newCase.setCommunity(caseLineDto.getCommunity());
+			newCase.setResponsibleCommunity(caseLineDto.getCommunity());
 			newCase.setFacilityType(caseLineDto.getFacilityType());
 			newCase.setHealthFacility(caseLineDto.getFacility());
 			newCase.setHealthFacilityDetails(caseLineDto.getFacilityDetails());
