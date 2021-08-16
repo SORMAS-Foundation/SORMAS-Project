@@ -100,7 +100,6 @@
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/immunization_externalID"
                 style="@style/ControlSingleColumnStyle"
-                app:required="true"
                 app:value="@={data.externalId}" />
 
             <LinearLayout

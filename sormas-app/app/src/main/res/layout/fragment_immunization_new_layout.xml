@@ -78,16 +78,16 @@
                 app:required="true"
                 app:value="@={data.meansOfImmunizationDetails}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/immunization_immunizationManagementStatus"
-                style="@style/ControlSingleColumnStyle"
-                app:value="@={data.immunizationManagementStatus}" />
-
             <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                 android:id="@+id/overwrite_immunization_management_status_checkBox"
                 style="@style/ControlSingleColumnStyle"
                 android:visibility="gone"
                 app:caption="@string/caption_overwrite_immunization_management_status" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/immunization_immunizationManagementStatus"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.immunizationManagementStatus}" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/immunization_immunizationStatus"
@@ -97,7 +97,6 @@
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/immunization_externalID"
                 style="@style/ControlSingleColumnStyle"
-                app:required="true"
                 app:value="@={data.externalId}" />
 
             <TextView

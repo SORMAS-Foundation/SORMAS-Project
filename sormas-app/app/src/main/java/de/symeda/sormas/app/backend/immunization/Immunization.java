@@ -45,7 +45,6 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = Immunization.TABLE_NAME)
@@ -83,7 +82,7 @@ public class Immunization extends PseudonymizableAdo {
     private ImmunizationStatus immunizationStatus;
     @Enumerated(EnumType.STRING)
     private MeansOfImmunization meansOfImmunization;
-    @Column(length = COLUMN_LENGTH_BIG)
+    @Column(columnDefinition = "text")
     private String meansOfImmunizationDetails;
     @Enumerated(EnumType.STRING)
     private ImmunizationManagementStatus immunizationManagementStatus;
@@ -117,7 +116,7 @@ public class Immunization extends PseudonymizableAdo {
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date lastInfectionDate;
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(columnDefinition = "text")
 	private String additionalDetails;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -374,5 +373,8 @@ public class Immunization extends PseudonymizableAdo {
         this.setPositiveTestResultDate(immunization.getPositiveTestResultDate());
         this.setRecoveryDate(immunization.getRecoveryDate());
         this.setRelatedCase(immunization.getRelatedCase());
+        this.setFacilityType(immunization.getFacilityType());
+        this.setHealthFacility(immunization.getHealthFacility());
+        this.setHealthFacilityDetails(immunization.getHealthFacilityDetails());
     }
 }
