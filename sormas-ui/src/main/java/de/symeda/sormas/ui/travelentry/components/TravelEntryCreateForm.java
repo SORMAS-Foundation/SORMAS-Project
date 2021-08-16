@@ -228,8 +228,18 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 				.updateItems(districtCombo, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		districtCombo.addValueChangeListener(e -> {
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			getPointsOfEntryForDistrict(districtDto);
+			if (differentPointOfEntryJurisdiction.getValue()) {
+				DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+				getPointsOfEntryForDistrict(districtDto);
+			}
+		});
+
+		differentPointOfEntryJurisdiction.addValueChangeListener(v -> {
+			if (differentPointOfEntryJurisdiction.getValue()) {
+				cbPointOfEntry.removeAllItems();
+			} else {
+				getPointsOfEntryForDistrict((DistrictReferenceDto) responsibleDistrictCombo.getValue());
+			}
 		});
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
