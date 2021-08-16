@@ -162,7 +162,7 @@ public class PreviousHospitalizationDialog extends FormDialog {
 			data.setDistrict(null);
 		}
 		if (InfrastructureDaoHelper.isUnknownFacility(data.getHealthFacility())) {
-			data.setRegion(null);
+			data.setHealthFacility(null);
 		}
 
 		super.setCloseOnPositiveButtonClick(true);

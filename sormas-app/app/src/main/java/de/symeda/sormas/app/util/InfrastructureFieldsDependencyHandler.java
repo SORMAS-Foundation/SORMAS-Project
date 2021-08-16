@@ -526,12 +526,13 @@ public class InfrastructureFieldsDependencyHandler {
 						newFacilities.add(facilityItem);
 					}
 				} else {
-					newFacilities = addUnknownItem(null, unknownFacility);
+					newFacilities = addUnknownItem(itemsWithEmpty(), unknownFacility);
 				}
 
 				Facility selectedFacility = (Facility) facilityField.getValue();
-				facilityField
-					.setSpinnerData(addUnknownItem(newFacilities, unknownFacility), isUnknownFacility(selectedFacility) ? null : selectedDistrict);
+				facilityField.setSpinnerData(
+					addUnknownItem(newFacilities, unknownFacility),
+					isUnknownFacility(selectedFacility) && !isUnknownFacility(initialFacility) ? null : selectedFacility);
 
 				communityField.setSpinnerData(newCommunities, communityField.getValue());
 				if (pointOfEntryField != null) {
@@ -576,6 +577,13 @@ public class InfrastructureFieldsDependencyHandler {
 				} else {
 					facilityField.setSpinnerData(addUnknownItem(itemsWithEmpty(), unknownFacility));
 				}
+//				TODO - re-iterate #6260
+//				} else if (facilityField.getValue() != null) {
+//					Facility noneFacility = DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID);
+//					if (!facilityField.getValue().equals(noneFacility)) {
+//						facilityField.setSpinnerData(addUnknownItem(itemsWithEmpty(), unknownFacility));
+//					}
+//				}
 			});
 		}
 	}
@@ -592,10 +600,11 @@ public class InfrastructureFieldsDependencyHandler {
 				newDistricts.add(initialDistrictItem);
 			}
 			District selectedDistrict = (District) districtField.getValue();
-			districtField
-				.setSpinnerData(addUnknownItem(newDistricts, unknownDistrict), isUnknownDistrict(selectedDistrict) ? null : selectedDistrict);
+			districtField.setSpinnerData(
+				addUnknownItem(newDistricts, unknownDistrict),
+				isUnknownDistrict(selectedDistrict) && !isUnknownDistrict(initialDistrict) ? null : selectedDistrict);
 		} else {
-			districtField.setSpinnerData(addUnknownItem(null, unknownDistrict));
+			districtField.setSpinnerData(addUnknownItem(itemsWithEmpty(), unknownDistrict));
 		}
 	}
 
@@ -633,12 +642,12 @@ public class InfrastructureFieldsDependencyHandler {
 					newFacilities.add(facilityItem);
 				}
 			} else {
-				newFacilities = null;
+				newFacilities = itemsWithEmpty();
 			}
 		}
 
-		Facility selectedFacility = (Facility)facilityField.getValue();
-		if(isEmptyFacility(selectedFacility) && !isEmptyDistrict(selectedDistrict)){
+		Facility selectedFacility = (Facility) facilityField.getValue();
+		if (isEmptyFacility(selectedFacility) && !isEmptyFacility(initialFacility) && !isEmptyDistrict(selectedDistrict)) {
 			selectedFacility = null;
 		}
 
