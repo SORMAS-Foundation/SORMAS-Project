@@ -1304,6 +1304,9 @@ public interface Captions {
 	String Immunization_previousInfection = "Immunization.previousInfection";
 	String Immunization_recoveryDate = "Immunization.recoveryDate";
 	String Immunization_reportDate = "Immunization.reportDate";
+	String Immunization__responsibleCommunity = "Immunization.responsibleCommunity";
+	String Immunization_responsibleDistrict = "Immunization.responsibleDistrict";
+	String Immunization_responsibleRegion = "Immunization.responsibleRegion";
 	String Immunization_startDate = "Immunization.startDate";
 	String Immunization_uuid = "Immunization.uuid";
 	String Immunization_validFrom = "Immunization.validFrom";
