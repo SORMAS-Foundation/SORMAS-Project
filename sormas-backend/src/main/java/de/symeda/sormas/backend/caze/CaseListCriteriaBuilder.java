@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -30,8 +31,10 @@ import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -132,6 +135,11 @@ public class CaseListCriteriaBuilder {
 			selectionList.add(sampleCountSq);
 		}
 
+		// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
+		Expression<Date> latestChangedDateFunction =
+			cb.function(ExtendedPostgreSQL94Dialect.GREATEST, Date.class, caze.get(Contact.CHANGE_DATE), joins.getPerson().get(Person.CHANGE_DATE));
+		selectionList.add(latestChangedDateFunction);
+
 		cq.multiselect(selectionList);
 		cq.distinct(true);
 
@@ -146,7 +154,7 @@ public class CaseListCriteriaBuilder {
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
+			cq.orderBy(cb.desc(latestChangedDateFunction));
 		}
 
 		CaseUserFilterCriteria caseUserFilterCriteria = new CaseUserFilterCriteria();

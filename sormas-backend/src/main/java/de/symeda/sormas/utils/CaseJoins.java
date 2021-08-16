@@ -76,6 +76,7 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 	private Join<Case, District> reportingDistrict;
 	private Join<Case, SormasToSormasShareInfo> shareInfoCases;
 	private Join<Case, ExternalShareInfo> externalShareInfo;
+	private Join<Case, User> followUpStatusChangeUser;
 
 	public CaseJoins(From<T, Case> caze) {
 		super(caze);
@@ -319,5 +320,13 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 
 	private void setExternalShareInfo(Join<Case, ExternalShareInfo> externalShareInfo) {
 		this.externalShareInfo = externalShareInfo;
+	}
+
+	public Join<Case, User> getFollowUpStatusChangeUser() {
+		return getOrCreate(followUpStatusChangeUser, Case.FOLLOW_UP_STATUS_CHANGE_USER, JoinType.LEFT, this::setFollowUpStatusChangeUser);
+	}
+
+	private void setFollowUpStatusChangeUser(Join<Case, User> followUpStatusChangeUser) {
+		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 }

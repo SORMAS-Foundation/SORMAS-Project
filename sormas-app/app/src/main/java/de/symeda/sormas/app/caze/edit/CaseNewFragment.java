@@ -202,11 +202,11 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		contentBinding.caseDataDifferentPlaceOfStayJurisdiction.addValueChangedListener(f -> {
 			if (Boolean.FALSE.equals(f.getValue())) {
 				InfrastructureFieldsDependencyHandler.instance.handleCommunityChange(
-						contentBinding.caseDataResponsibleCommunity,
-						contentBinding.caseDataResponsibleDistrict,
-						contentBinding.caseDataHealthFacility,
-						contentBinding.caseDataFacilityType,
-						initialHealthFacility);
+					contentBinding.caseDataResponsibleCommunity,
+					contentBinding.caseDataResponsibleDistrict,
+					contentBinding.caseDataHealthFacility,
+					contentBinding.caseDataFacilityType,
+					initialHealthFacility);
 			}
 		});
 
@@ -245,16 +245,12 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 
 		contentBinding.personPresentCondition.initializeSpinner(presentConditionList);
 
-		contentBinding.facilityOrHome.initializeSpinner(facilityOrHomeList);
 		contentBinding.facilityOrHome.addValueChangedListener(e -> {
 			if (e.getValue() == TypeOfPlace.FACILITY) {
 				contentBinding.facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				contentBinding.caseDataFacilityType.setValue(FacilityType.HOSPITAL);
-			} else if (e.getValue() == TypeOfPlace.HOME) {
-				contentBinding.caseDataHealthFacility.setValue(TypeOfPlace.HOME);
 			}
 		});
-		contentBinding.facilityTypeGroup.initializeSpinner(facilityTypeGroupList);
 	}
 
 	@Override

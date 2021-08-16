@@ -93,7 +93,8 @@ public class DashboardService {
 				person.get(Person.PRESENT_CONDITION),
 				person.get(Person.CAUSE_OF_DEATH_DISEASE),
 				caze.get(Case.QUARANTINE_FROM),
-				caze.get(Case.QUARANTINE_TO));
+				caze.get(Case.QUARANTINE_TO),
+				caze.get(Case.CASE_REFERENCE_DEFINITION));
 
 			result = em.createQuery(cq).getResultList();
 		} else {
@@ -405,6 +406,9 @@ public class DashboardService {
 				.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
 		}
 
+		// Exclude deleted cases. Archived cases should stay included
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Case.DELETED)));
+
 		return filter;
 	}
 
@@ -435,6 +439,9 @@ public class DashboardService {
 		}
 
 		filter = CriteriaBuilderHelper.and(cb, filter, createEventDateFilter(eventQueryContext.getQuery(), cb, from, dashboardCriteria));
+
+		// Exclude deleted events. Archived events should stay included
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Event.DELETED)));
 
 		return filter;
 	}

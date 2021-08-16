@@ -245,13 +245,13 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		// Initialize ControlDateFields
 		contentBinding.eventReportDateTime.initializeDateField(getFragmentManager());
 
-		contentBinding.eventStartDate.initializeDateField(getFragmentManager());
+		contentBinding.eventStartDate.initializeDateTimeField(getFragmentManager());
 		String startDateCaption = Boolean.TRUE.equals(contentBinding.eventMultiDayEvent.getValue())
 			? I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.START_DATE)
 			: I18nProperties.getCaption(Captions.singleDayEventDate);
 		contentBinding.eventStartDate.setCaption(startDateCaption);
 
-		contentBinding.eventEndDate.initializeDateField(getFragmentManager());
+		contentBinding.eventEndDate.initializeDateTimeField(getFragmentManager());
 
 		contentBinding.eventEventInvestigationStartDate.initializeDateField(getFragmentManager());
 		contentBinding.eventEventInvestigationEndDate.initializeDateField(getFragmentManager());

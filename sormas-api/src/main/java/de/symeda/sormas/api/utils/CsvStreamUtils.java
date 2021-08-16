@@ -39,6 +39,9 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportEntity;
 import de.symeda.sormas.api.importexport.ExportProperty;
+import de.symeda.sormas.api.importexport.format.ExportFormat;
+import de.symeda.sormas.api.importexport.format.FormatterProvider;
+import de.symeda.sormas.api.importexport.format.IExportFormatter;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 
 public class CsvStreamUtils {
@@ -140,7 +143,16 @@ public class CsvStreamUtils {
 							// Sub entity might be null
 							Object value = entity != null ? method.invoke(entity) : null;
 
-							labels[i] = DataHelper.valueToString(value);
+							String formattedValue;
+							ExportFormat formatterAnnotation = method.getAnnotation(ExportFormat.class);
+							if (formatterAnnotation != null) {
+								IExportFormatter<Object> formatter = FormatterProvider.getExportFormatter(formatterAnnotation.value());
+								formattedValue = formatter.format(value);
+							} else {
+								formattedValue = DataHelper.valueToString(value);
+							}
+
+							labels[i] = formattedValue;
 						}
 						writer.writeNext(labels);
 					}
