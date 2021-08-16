@@ -574,16 +574,12 @@ public class InfrastructureFieldsDependencyHandler {
 				if (selectedType != null && !isEmptyDistrict(selectedDistrict)) {
 					facilityField.setSpinnerData(
 						addUnknownItem(loadFacilities(selectedDistrict, (Community) communityField.getValue(), selectedType), unknownFacility));
-				} else {
-					facilityField.setSpinnerData(addUnknownItem(itemsWithEmpty(), unknownFacility));
+				} else if (facilityField.getValue() != null) {
+					Facility noneFacility = DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID);
+					if (!facilityField.getValue().equals(noneFacility)) {
+						facilityField.setSpinnerData(addUnknownItem(itemsWithEmpty(), unknownFacility));
+					}
 				}
-//				TODO - re-iterate #6260
-//				} else if (facilityField.getValue() != null) {
-//					Facility noneFacility = DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID);
-//					if (!facilityField.getValue().equals(noneFacility)) {
-//						facilityField.setSpinnerData(addUnknownItem(itemsWithEmpty(), unknownFacility));
-//					}
-//				}
 			});
 		}
 	}
@@ -647,11 +643,15 @@ public class InfrastructureFieldsDependencyHandler {
 		}
 
 		Facility selectedFacility = (Facility) facilityField.getValue();
-		if (isEmptyFacility(selectedFacility) && !isEmptyFacility(initialFacility) && !isEmptyDistrict(selectedDistrict)) {
-			selectedFacility = null;
-		}
+		if (selectedFacility == null) {
+			facilityField.setSpinnerData(addUnknownItem(newFacilities, unknownFacility));
+		} else {
+			if (isEmptyFacility(selectedFacility) && !isEmptyFacility(initialFacility) && !isEmptyDistrict(selectedDistrict)) {
+				selectedFacility = null;
+			}
 
-		facilityField.setSpinnerData(addUnknownItem(newFacilities, unknownFacility), selectedFacility);
+			facilityField.setSpinnerData(addUnknownItem(newFacilities, unknownFacility), selectedFacility);
+		}
 	}
 
 	private List<Item> addUnknownItem(List<Item> items, Object unknownItem) {
