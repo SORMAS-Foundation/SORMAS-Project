@@ -178,7 +178,8 @@ public class PersonsView extends AbstractView {
 			if (association == PersonAssociation.IMMUNIZATION
 				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT)
 				|| association == PersonAssociation.TRAVEL_ENTRY
-					&& !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+					&& (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.TRAVEL_ENTRIES)
+						|| !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY))
 				|| association == PersonAssociation.CONTACT
 					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CONTACT_TRACING)
 				|| association == PersonAssociation.CASE
