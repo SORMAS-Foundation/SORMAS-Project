@@ -481,7 +481,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 						.getByDistrictAndRole(changedCase.getResponsibleDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
 				}
 
-				if (districtOfficers.size() == 0) {
+				if (districtOfficers.size() == 0 && changedCase.getDistrict() != null) {
 					districtOfficers =
 						DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
 				}

@@ -39,6 +39,13 @@ public class District extends InfrastructureAdo {
 	public static final String EPID_CODE = "epidCode";
 	public static final String REGION = "region";
 
+	public District() {
+	}
+
+	public District(String uuid) {
+		setUuid(uuid);
+	}
+
 	@Column
 	private String name;
 
