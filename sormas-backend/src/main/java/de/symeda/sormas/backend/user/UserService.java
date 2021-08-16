@@ -276,6 +276,16 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return resultList;
 	}
 
+	public List<UserReference> getUserReferencesByIds(Collection<Long> userIds) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<UserReference> cq = cb.createQuery(UserReference.class);
+		Root<UserReference> root = cq.from(UserReference.class);
+
+		cq.where(root.get(UserReference.ID).in(userIds));
+
+		return em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+	}
+
 	public User getRandomUser(District district, UserRole... userRoles) {
 
 		return getRandomUser(getReferenceList(null, Arrays.asList(district.getUuid()), false, false, true, userRoles));

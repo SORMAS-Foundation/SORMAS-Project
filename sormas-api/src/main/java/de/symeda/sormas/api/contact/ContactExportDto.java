@@ -17,11 +17,15 @@ package de.symeda.sormas.api.contact;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.Vaccine;
@@ -32,6 +36,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
+import de.symeda.sormas.api.importexport.ExportTarget;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
@@ -41,6 +46,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -175,6 +182,11 @@ public class ContactExportDto implements Serializable {
 	private boolean quarantineReduced;
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
+
+	private YesNoUnknown prohibitionToWork;
+	private Date prohibitionToWorkFrom;
+	private Date prohibitionToWorkUntil;
+
 	private YesNoUnknown returningTraveler;
 
 	private Vaccination vaccination;
@@ -206,10 +218,15 @@ public class ContactExportDto implements Serializable {
 
 	private String reportingDistrict;
 
-	private String reportingUserUuid;
-	private String regionUuid;
-	private String districtUuid;
-	private String communityUuid;
+	private SymptomJournalStatus symptomJournalStatus;
+
+	private Long reportingUserId;
+	private Long followUpStatusChangeUserId;
+
+	private String reportingUserName;
+	private String reportingUserRoles;
+	private String followUpStatusChangeUserName;
+	private String followUpStatusChangeUserRoles;
 
 	private Boolean isInJurisdiction;
 
@@ -225,6 +242,7 @@ public class ContactExportDto implements Serializable {
 							QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
 							boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate, Date quarantineOrderedOfficialDocumentDate,
 							boolean quarantineExtended, boolean quarantineReduced, boolean quarantineOfficialOrderSent, Date quarantineOfficialOrderSentDate,
+							YesNoUnknown prohibitionToWork, Date prohibitionToWorkFrom, Date prohibitionToWorkUntil,
 							PresentCondition presentCondition, Date deathDate,
 							String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 							String facility, String facilityUuid, String facilityDetails,
@@ -239,7 +257,10 @@ public class ContactExportDto implements Serializable {
 							String externalID, String externalToken, String internalToken,
 							String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 							String reportingDistrict,
-							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid, boolean isInJurisdiction
+							SymptomJournalStatus symptomJournalStatus,
+							// users
+							Long reportingUserId, Long followUpStatusChangeUserId,
+							boolean isInJurisdiction
 	) {
 	//@formatter:on
 
@@ -285,6 +306,9 @@ public class ContactExportDto implements Serializable {
 		this.quarantineReduced = quarantineReduced;
 		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
+		this.prohibitionToWork = prohibitionToWork;
+		this.prohibitionToWorkFrom = prohibitionToWorkFrom;
+		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
 		this.presentCondition = presentCondition;
 		this.deathDate = deathDate;
 		this.addressRegion = addressRegion;
@@ -336,10 +360,10 @@ public class ContactExportDto implements Serializable {
 		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
 		this.reportingDistrict = reportingDistrict;
 
-		this.reportingUserUuid = reportingUserUuid;
-		this.regionUuid = regionUuid;
-		this.districtUuid = districtUuid;
-		this.communityUuid = communityUuid;
+		this.symptomJournalStatus = symptomJournalStatus;
+
+		this.reportingUserId = reportingUserId;
+		this.followUpStatusChangeUserId = followUpStatusChangeUserId;
 
 		this.isInJurisdiction = isInJurisdiction;
 	}
@@ -701,6 +725,27 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(44)
+	@ExportProperty(value = ContactDto.PROHIBITION_TO_WORK, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public YesNoUnknown getProhibitionToWork() {
+		return prohibitionToWork;
+	}
+
+	@Order(45)
+	@ExportProperty(value = ContactDto.PROHIBITION_TO_WORK, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public Date getProhibitionToWorkFrom() {
+		return prohibitionToWorkFrom;
+	}
+
+	@Order(46)
+	@ExportProperty(value = ContactDto.PROHIBITION_TO_WORK, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public Date getProhibitionToWorkUntil() {
+		return prohibitionToWorkUntil;
+	}
+
+	@Order(47)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.PRESENT_CONDITION })
@@ -709,7 +754,7 @@ public class ContactExportDto implements Serializable {
 		return presentCondition;
 	}
 
-	@Order(45)
+	@Order(48)
 	@ExportProperty({
 		CaseDataDto.PERSON,
 		PersonDto.DEATH_DATE })
@@ -1160,6 +1205,79 @@ public class ContactExportDto implements Serializable {
 		return internalToken;
 	}
 
+	@Order(121)
+	@ExportProperty({
+		ContactDto.PERSON,
+		PersonDto.SYMPTOM_JOURNAL_STATUS })
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public Long getReportingUserId() {
+		return reportingUserId;
+	}
+
+	public Long getFollowUpStatusChangeUserId() {
+		return followUpStatusChangeUserId;
+	}
+
+	@Order(174)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(value = ContactDto.REPORTING_USER, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public String getReportingUserName() {
+		return reportingUserName;
+	}
+
+	public void setReportingUserName(String reportingUserName) {
+		this.reportingUserName = reportingUserName;
+	}
+
+	@Order(175)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(value = ContactDto.REPORTING_USER, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public String getReportingUserRoles() {
+		return reportingUserRoles;
+	}
+
+	public void setReportingUserRoles(Set<UserRole> roles) {
+		this.reportingUserRoles = StringUtils.join(roles, ", ");
+	}
+
+	@Order(176)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(value = ContactDto.FOLLOW_UP_STATUS_CHANGE_USER, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public String getFollowUpStatusChangeUserName() {
+		return followUpStatusChangeUserName;
+	}
+
+	public void setFollowUpStatusChangeUserName(String followUpStatusChangeUserName) {
+		this.followUpStatusChangeUserName = followUpStatusChangeUserName;
+	}
+
+	@Order(177)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(value = ContactDto.FOLLOW_UP_STATUS_CHANGE_USER, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public String getFollowUpStatusChangeUserRoles() {
+		return followUpStatusChangeUserRoles;
+	}
+
+	public void setFollowUpStatusChangeUserRoles(Set<UserRole> roles) {
+		this.followUpStatusChangeUserRoles = StringUtils.join(roles, ", ");
+	}
+
 	public void setEventCount(Long eventCount) {
 		this.eventCount = eventCount;
 	}
@@ -1302,22 +1420,6 @@ public class ContactExportDto implements Serializable {
 
 	public void setEpiDataId(long epiDataId) {
 		this.epiDataId = epiDataId;
-	}
-
-	public String getReportingUserUuid() {
-		return reportingUserUuid;
-	}
-
-	public String getRegionUuid() {
-		return regionUuid;
-	}
-
-	public String getDistrictUuid() {
-		return districtUuid;
-	}
-
-	public String getCommunityUuid() {
-		return communityUuid;
 	}
 
 	public void setFacility(String facility) {

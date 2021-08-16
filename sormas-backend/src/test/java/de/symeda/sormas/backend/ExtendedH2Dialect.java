@@ -18,6 +18,7 @@ public class ExtendedH2Dialect extends H2Dialect {
 	public final static String ARRAY_TO_STRING = "array_to_string";
 	public final static String ARRAY_AGG = "array_agg";
 	public final static String CONCAT_FUNCTION = "concat_function";
+	public final static String GREATEST = "greatest";
 
 	public ExtendedH2Dialect() {
 		super();
@@ -41,5 +42,6 @@ public class ExtendedH2Dialect extends H2Dialect {
 			new SQLFunctionTemplate(
 				StandardBasicTypes.LONG,
 				"COUNT(?1) OVER (PARTITION BY ?2 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)"));
+		registerFunction(GREATEST, new StandardSQLFunction(GREATEST));
 	}
 }

@@ -944,6 +944,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SimilarEventParticipantDto> cq = cb.createQuery(SimilarEventParticipantDto.class);
 		final Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
+		cq.distinct(true);
+
 		Join<Object, Object> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.LEFT);
 		Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
 

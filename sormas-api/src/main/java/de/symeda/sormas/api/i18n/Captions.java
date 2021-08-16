@@ -255,6 +255,7 @@ public interface Captions {
 	String CaseData_caseIdIsm = "CaseData.caseIdIsm";
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
 	String CaseData_caseOrigin = "CaseData.caseOrigin";
+	String CaseData_caseReferenceDefinition = "CaseData.caseReferenceDefinition";
 	String CaseData_classificationComment = "CaseData.classificationComment";
 	String CaseData_classificationDate = "CaseData.classificationDate";
 	String CaseData_classificationUser = "CaseData.classificationUser";
@@ -420,6 +421,8 @@ public interface Captions {
 	String CaseExport_country = "CaseExport.country";
 	String CaseExport_diseaseFormatted = "CaseExport.diseaseFormatted";
 	String CaseExport_firstName = "CaseExport.firstName";
+	String CaseExport_followUpStatusChangeUserName = "CaseExport.followUpStatusChangeUserName";
+	String CaseExport_followUpStatusChangeUserRoles = "CaseExport.followUpStatusChangeUserRoles";
 	String CaseExport_id = "CaseExport.id";
 	String CaseExport_initialDetectionPlace = "CaseExport.initialDetectionPlace";
 	String CaseExport_labResults = "CaseExport.labResults";
@@ -433,6 +436,8 @@ public interface Captions {
 	String CaseExport_numberOfTreatments = "CaseExport.numberOfTreatments";
 	String CaseExport_otherSamples = "CaseExport.otherSamples";
 	String CaseExport_quarantineInformation = "CaseExport.quarantineInformation";
+	String CaseExport_reportingUserName = "CaseExport.reportingUserName";
+	String CaseExport_reportingUserRoles = "CaseExport.reportingUserRoles";
 	String CaseExport_sampleDates = "CaseExport.sampleDates";
 	String CaseExport_sampleDateTime1 = "CaseExport.sampleDateTime1";
 	String CaseExport_sampleDateTime2 = "CaseExport.sampleDateTime2";
@@ -459,6 +464,7 @@ public interface Captions {
 	String caseFilterOnlyCasesNotSharedWithExternalSurvTool = "caseFilterOnlyCasesNotSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesSharedWithExternalSurvToo = "caseFilterOnlyCasesSharedWithExternalSurvToo";
 	String caseFilterOnlyCasesWithDontShareWithExternalSurvTool = "caseFilterOnlyCasesWithDontShareWithExternalSurvTool";
+	String caseFilterOnlyCasesWithFulfilledReferenceDefinition = "caseFilterOnlyCasesWithFulfilledReferenceDefinition";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
@@ -663,11 +669,15 @@ public interface Captions {
 	String ContactExport_directContactConfirmedCase = "ContactExport.directContactConfirmedCase";
 	String ContactExport_directContactProbableCase = "ContactExport.directContactProbableCase";
 	String ContactExport_firstName = "ContactExport.firstName";
+	String ContactExport_followUpStatusChangeUserName = "ContactExport.followUpStatusChangeUserName";
+	String ContactExport_followUpStatusChangeUserRoles = "ContactExport.followUpStatusChangeUserRoles";
 	String ContactExport_lastCooperativeVisitDate = "ContactExport.lastCooperativeVisitDate";
 	String ContactExport_lastCooperativeVisitSymptomatic = "ContactExport.lastCooperativeVisitSymptomatic";
 	String ContactExport_lastCooperativeVisitSymptoms = "ContactExport.lastCooperativeVisitSymptoms";
 	String ContactExport_lastName = "ContactExport.lastName";
 	String ContactExport_quarantineInformation = "ContactExport.quarantineInformation";
+	String ContactExport_reportingUserName = "ContactExport.reportingUserName";
+	String ContactExport_reportingUserRoles = "ContactExport.reportingUserRoles";
 	String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
 	String ContactExport_traveled = "ContactExport.traveled";
 	String ContactExport_travelHistory = "ContactExport.travelHistory";
@@ -1288,8 +1298,8 @@ public interface Captions {
 	String Immunization_numberOfDoses = "Immunization.numberOfDoses";
 	String Immunization_overwriteImmunizationManagementStatus = "Immunization.overwriteImmunizationManagementStatus";
 	String Immunization_personFirstName = "Immunization.personFirstName";
-	String Immunization_personId = "Immunization.personId";
 	String Immunization_personLastName = "Immunization.personLastName";
+	String Immunization_personUuid = "Immunization.personUuid";
 	String Immunization_positiveTestResultDate = "Immunization.positiveTestResultDate";
 	String Immunization_previousInfection = "Immunization.previousInfection";
 	String Immunization_recoveryDate = "Immunization.recoveryDate";
