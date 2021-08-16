@@ -1576,6 +1576,7 @@ public interface Captions {
 	String personsUpdated = "personsUpdated";
 	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
+	String PointOfEntry_archived = "PointOfEntry.archived";
 	String PointOfEntry_externalID = "PointOfEntry.externalID";
 	String PointOfEntry_latitude = "PointOfEntry.latitude";
 	String PointOfEntry_longitude = "PointOfEntry.longitude";
