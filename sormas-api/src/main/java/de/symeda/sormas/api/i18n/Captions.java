@@ -2168,6 +2168,7 @@ public interface Captions {
 	String TravelEntry_person = "TravelEntry.person";
 	String TravelEntry_personFirstName = "TravelEntry.personFirstName";
 	String TravelEntry_personLastName = "TravelEntry.personLastName";
+	String TravelEntry_pointOfEntryDetails = "TravelEntry.pointOfEntryDetails";
 	String TravelEntry_pointOfEntryDistrict = "TravelEntry.pointOfEntryDistrict";
 	String TravelEntry_pointOfEntryName = "TravelEntry.pointOfEntryName";
 	String TravelEntry_pointOfEntryRegion = "TravelEntry.pointOfEntryRegion";
@@ -2226,6 +2227,7 @@ public interface Captions {
 	String TreatmentExport_caseUuid = "TreatmentExport.caseUuid";
 	String treatmentNewTreatment = "treatmentNewTreatment";
 	String treatmentOpenPrescription = "treatmentOpenPrescription";
+	String unknown = "unknown";
 	String User = "User";
 	String User_active = "User.active";
 	String User_address = "User.address";

@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -29,9 +28,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +46,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
@@ -121,6 +118,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Override
 	public void revokeShare(String shareInfoUuid) throws SormasToSormasException {
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByUuid(shareInfoUuid);
+
+		if (shareInfo.getRequestStatus() != ShareRequestStatus.PENDING) {
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRevokeNotPending);
+		}
 
 		sormasToSormasRestClient
 			.post(shareInfo.getOrganizationId(), REVOKE_REQUEST_ENDPOINT, Collections.singletonList(shareInfo.getRequestUuid()), null);
