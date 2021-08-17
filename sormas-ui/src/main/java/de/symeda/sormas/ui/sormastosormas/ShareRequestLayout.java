@@ -56,7 +56,9 @@ public class ShareRequestLayout extends VerticalLayout {
 				});
 			});
 
-			casesGrid.getSelectionModel().select(cases.get(0));
+			if (cases.size() > 0) {
+				casesGrid.getSelectionModel().select(cases.get(0));
+			}
 		}
 
 		if (dataType == ShareRequestDataType.CONTACT) {
@@ -79,13 +81,15 @@ public class ShareRequestLayout extends VerticalLayout {
 
 			eventsGrid.getSelectionModel().addSelectionListener(event -> {
 				event.getFirstSelectedItem().ifPresent(eventPreview -> {
-					if(eventPreview.getEventParticipants() != null) {
+					if (eventPreview.getEventParticipants() != null) {
 						eventParticipantsGrid.setItems(eventPreview.getEventParticipants());
 					}
 				});
 			});
 
-			eventsGrid.getSelectionModel().select(events.get(0));
+			if (events.size() > 0) {
+				eventsGrid.getSelectionModel().select(events.get(0));
+			}
 
 		}
 	}

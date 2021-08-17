@@ -145,7 +145,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		shareRequests.forEach(shareRequest -> {
 			shareRequest.setChangeDate(new Date());
-			shareRequest.setStatus(ShareRequestStatus.REVOKED);
+			shareRequest.setRevoked();
 			shareRequestFacade.saveShareRequest(shareRequest);
 		});
 	}
