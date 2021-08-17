@@ -119,6 +119,14 @@ public class CaseResource extends EntityDtoResource {
 		return FacadeProvider.getCaseFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
+	/**
+	 * 
+	 * @param criteriaWithSorting
+	 *            - The criteria object inside criteriaWithSorting the cannot be null! Use instead an empty criteria!
+	 * @param offset
+	 * @param size
+	 * @return
+	 */
 	@POST
 	@Path("/detailedIndexList")
 	public Page<CaseIndexDetailedDto> getIndexDetailedList(

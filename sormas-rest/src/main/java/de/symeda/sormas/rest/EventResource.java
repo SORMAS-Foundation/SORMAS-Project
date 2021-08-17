@@ -102,6 +102,14 @@ public class EventResource extends EntityDtoResource {
 		return FacadeProvider.getEventFacade().getDeletedUuidsSince(new Date(since));
 	}
 
+	/**
+	 * 
+	 * @param criteriaWithSorting
+	 *            The criteria object inside criteriaWithSorting the cannot be null! Use instead an empty criteria!
+	 * @param offset
+	 * @param size
+	 * @return
+	 */
 	@POST
 	@Path("/indexList")
 	public Page<EventIndexDto> getIndexList(
