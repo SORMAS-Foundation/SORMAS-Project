@@ -226,7 +226,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
 
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
-//		sormasToSormasRestClient.post(organizationId, requestRejectEndpoint, uuid, null);
+		sormasToSormasRestClient.post(organizationId, requestRejectEndpoint, uuid, null);
 
 		shareRequest.setChangeDate(new Date());
 		shareRequest.setRejected();
