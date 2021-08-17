@@ -42,6 +42,8 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.rest.security.oidc.ClientCredentials;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path(SormasToSormasApiConstants.RESOURCE_PATH)
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
@@ -49,6 +51,8 @@ import de.symeda.sormas.rest.security.oidc.ClientCredentials;
 @ClientCredentials
 @RolesAllowed(UserRole._SORMAS_TO_SORMAS_CLIENT)
 public class SormasToSormasResource {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasResource.class);
 
 	@POST
 	@Path(SormasToSormasApiConstants.CASE_REQUEST_ENDPOINT)
@@ -185,6 +189,7 @@ public class SormasToSormasResource {
 			X509Certificate ownCert = encryptionFacade.getOwnCertificate();
 			return Response.ok(ownCert.getEncoded(), MediaType.APPLICATION_OCTET_STREAM).build();
 		} catch (CertificateException | KeyStoreException | IOException | NoSuchAlgorithmException | SormasToSormasException e) {
+			LOGGER.error("Could not load own S2S certificate: %s", e);
 			return Response.serverError().build();
 		}
 	}
@@ -213,7 +218,9 @@ public class SormasToSormasResource {
 		} catch (SormasToSormasValidationException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(null, null, e.getErrors(), null)).build();
 		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new SormasToSormasErrorResponse(e.getMessage(), e.getI18nTag(), e.getErrors(), e.getArgs())).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+				.entity(new SormasToSormasErrorResponse(e.getMessage(), e.getI18nTag(), e.getErrors(), e.getArgs()))
+				.build();
 		}
 
 		return Response.noContent().build();
@@ -226,7 +233,9 @@ public class SormasToSormasResource {
 		} catch (SormasToSormasValidationException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(null, null, e.getErrors(), null)).build();
 		} catch (SormasToSormasException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new SormasToSormasErrorResponse(e.getMessage(), e.getI18nTag(), e.getErrors(), e.getArgs())).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+				.entity(new SormasToSormasErrorResponse(e.getMessage(), e.getI18nTag(), e.getErrors(), e.getArgs()))
+				.build();
 		}
 
 		return Response.ok().entity(response).build();
