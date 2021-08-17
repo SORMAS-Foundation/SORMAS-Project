@@ -61,7 +61,7 @@ public interface EventFacade {
 
 	List<EventIndexDto> getIndexList(EventCriteria eventCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	Page<EventIndexDto> getIndexPage(EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
+	Page<EventIndexDto> getIndexPage(@NotNull EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	List<EventExportDto> getExportList(EventCriteria eventCriteria, Collection<String> selectedRows, Integer first, Integer max);
 

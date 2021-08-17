@@ -25,6 +25,7 @@ import java.util.Random;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -66,7 +67,11 @@ public interface CaseFacade {
 
 	Page<CaseIndexDto> getIndexPage(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	Page<CaseIndexDetailedDto> getIndexDetailedPage(CaseCriteria caseCriteria, Integer offset, Integer max, List<SortProperty> sortProperties);
+	Page<CaseIndexDetailedDto> getIndexDetailedPage(
+		@NotNull CaseCriteria caseCriteria,
+		Integer offset,
+		Integer max,
+		List<SortProperty> sortProperties);
 
 	List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer offset, Integer max, List<SortProperty> sortProperties);
 
