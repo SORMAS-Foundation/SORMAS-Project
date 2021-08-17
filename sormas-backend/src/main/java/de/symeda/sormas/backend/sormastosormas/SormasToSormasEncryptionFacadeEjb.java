@@ -126,10 +126,11 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasCertNotGenerated);
 		}
 
-		X509Certificate rootCA = (X509Certificate) getTruststore().getCertificate(configFacadeEjb.getS2SConfig().getRootCaAlias());
+		final String rootCaAlias = configFacadeEjb.getS2SConfig().getRootCaAlias();
+		X509Certificate rootCA = (X509Certificate) getTruststore().getCertificate(rootCaAlias);
 
 		if (rootCA == null) {
-			LOGGER.error("Unable to load CA root certificate.");
+			LOGGER.error("Unable to load CA root certificate for alias {}", rootCaAlias);
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasCertNotGenerated);
 		}
 
