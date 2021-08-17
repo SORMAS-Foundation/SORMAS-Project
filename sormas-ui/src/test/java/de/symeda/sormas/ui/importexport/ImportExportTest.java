@@ -21,15 +21,11 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNull;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,14 +33,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.person.PersonCriteria;
-import de.symeda.sormas.api.person.PersonIndexDto;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
-import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import com.vaadin.server.StreamResource;
 
@@ -59,13 +51,14 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -364,13 +357,5 @@ public class ImportExportTest extends AbstractBeanTest {
 		assertThat(importedPerson.getAddress().getStreet(), is("test street"));
 		assertThat(importedPerson.getAddress().getHouseNumber(), is("test house number"));
 		assertThat(importedPerson.getAddress().getAdditionalInformation(), is("test additional information"));
-	}
-
-	private CSVReader getCsvReader(InputStream inputStream) {
-		CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
-		BOMInputStream bomInputStream = new BOMInputStream(inputStream);
-		Reader reader = new InputStreamReader(bomInputStream, decoder);
-		BufferedReader bufferedReader = new BufferedReader(reader);
-		return CSVUtils.createCSVReader(bufferedReader, ',');
 	}
 }

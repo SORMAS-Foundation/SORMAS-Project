@@ -54,6 +54,7 @@ import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 import de.symeda.sormas.app.util.LocationService;
 
 public class LocationDialog extends FormDialog {
@@ -129,7 +130,7 @@ public class LocationDialog extends FormDialog {
 			}
 		}
 
-		InfrastructureDaoHelper.initializeFacilityFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			data,
 			this.contentBinding.locationContinent,
 			initialContinents,

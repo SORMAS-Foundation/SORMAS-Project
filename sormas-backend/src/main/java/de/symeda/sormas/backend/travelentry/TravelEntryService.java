@@ -60,6 +60,10 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		return inJurisdictionOrOwned(travelEntryQueryContext);
 	}
 
+	public Predicate createActiveTravelEntriesFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
+		return cb.and(cb.isFalse(root.get(TravelEntry.ARCHIVED)), cb.isFalse(root.get(TravelEntry.DELETED)));
+	}
+
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
 		return cb.isFalse(root.get(TravelEntry.DELETED));
 	}
@@ -152,6 +156,18 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		cq.where(filter);
 		cq.orderBy(cb.desc(from.get(TravelEntry.CHANGE_DATE)));
 		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<TravelEntry> getAllByResultingCase(Case caze) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<TravelEntry> cq = cb.createQuery(getElementClass());
+		Root<TravelEntry> from = cq.from(getElementClass());
+
+		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(TravelEntry.RESULTING_CASE), caze)));
+		cq.orderBy(cb.desc(from.get(TravelEntry.REPORT_DATE)));
 
 		return em.createQuery(cq).getResultList();
 	}

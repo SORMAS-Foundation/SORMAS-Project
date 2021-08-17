@@ -168,7 +168,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		if (personUuid != null) {
 			person = personFacade.getPersonByUuid(personUuid);
 		} else {
-			person = PersonDto.build();
+			person = PersonDto.buildImportEntity();
 		}
 
 		final CaseDataDto caze;

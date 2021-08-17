@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import org.jboss.weld.exceptions.UnsupportedOperationException;
 import org.junit.Before;
 import org.junit.Test;
@@ -1038,6 +1039,52 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 		assertEquals(CaseClassification.SUSPECT, caze.getCaseClassification());
 	}
 
+	@Test
+	public void testFulfilledReferenceDefinitionGermanServer() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
+		caze = getCaseFacade().saveCase(caze);
+		createSampleTestsForAllTestTypesExcept(caze, Disease.CORONAVIRUS, PathogenTestType.ISOLATION);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseReferenceDefinition.FULFILLED, caze.getCaseReferenceDefinition());
+	}
+
+	@Test
+	public void testNotFulfilledReferenceDefinitionGermanServerSymptoms() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
+		caze.getSymptoms().setCough(null);
+		caze.getSymptoms().setChillsSweats(SymptomState.YES);
+		caze = getCaseFacade().saveCase(caze);
+		createSampleTestsForAllTestTypesExcept(caze, Disease.CORONAVIRUS, PathogenTestType.ISOLATION);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseReferenceDefinition.NOT_FULFILLED, caze.getCaseReferenceDefinition());
+	}
+
+	@Test
+	public void testNotFulfilledReferenceDefinitionGermanServerCorrectPathogenTestesMissing() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
+		caze = getCaseFacade().saveCase(caze);
+		createSampleTestsForAllTestTypesExcept(
+			caze,
+			Disease.CORONAVIRUS,
+			PathogenTestType.ISOLATION,
+			PathogenTestType.PCR_RT_PCR,
+			PathogenTestType.SEQUENCING);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(CaseReferenceDefinition.NOT_FULFILLED, caze.getCaseReferenceDefinition());
+	}
+
+	@Test
+	public void testCalculationReferenceDefinitionNonGermanServer() {
+		CaseDataDto caze = buildSuspectCase(Disease.CORONAVIRUS);
+		caze = getCaseFacade().saveCase(caze);
+		createSampleTestsForAllTestTypesExcept(caze, Disease.CORONAVIRUS, PathogenTestType.ISOLATION);
+		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(null, caze.getCaseReferenceDefinition());
+	}
+
 	/**
 	 * Sets all symptoms with the SymptomState type to YES.
 	 */
@@ -1108,6 +1155,8 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			caze.setPlagueType(PlagueType.BUBONIC);
 			caze.getSymptoms().setFever(SymptomState.YES);
 			break;
+		case CORONAVIRUS:
+			break;
 		default:
 			throw new IllegalArgumentException();
 		}
@@ -1154,6 +1203,9 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			break;
 		case PLAGUE:
 			caze.getSymptoms().setPainfulLymphadenitis(SymptomState.YES);
+			break;
+		case CORONAVIRUS:
+			caze.getSymptoms().setCough(SymptomState.YES);
 			break;
 		default:
 			throw new IllegalArgumentException();

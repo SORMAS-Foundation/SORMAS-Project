@@ -1,7 +1,9 @@
 package de.symeda.sormas.backend.person;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
@@ -11,6 +13,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -30,9 +33,15 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.api.person.PersonAssociation;
+import de.symeda.sormas.api.person.PersonContactDetailDto;
+import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
+import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -40,10 +49,124 @@ import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
+
+	/**
+	 * Test all {@link PersonAssociation} variants if they work. Also serves to review the generated SQL.
+	 */
+	@Test
+	public void testCountAndGetIndexListWithAssociations() {
+
+		PersonFacade cut = getPersonFacade();
+		Integer offset = null;
+		Integer limit = null;
+		List<SortProperty> sortProperties = null;
+
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf.region.getUuid(), null, null, null, "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		loginWith(user);
+
+		// 1a. Test for all available PersonAssociations
+		for (PersonAssociation pa : PersonAssociation.values()) {
+			PersonCriteria criteria = new PersonCriteria().personAssociation(pa);
+			assertThat("Failed for testing association on count: " + pa.name(), cut.count(criteria), equalTo(0L));
+			assertThat(criteria.getPersonAssociation(), equalTo(pa));
+			assertThat(
+				"Failed for testing association on getIndexList: " + pa.name(),
+				cut.getIndexList(criteria, offset, limit, sortProperties),
+				is(empty()));
+			assertThat(criteria.getPersonAssociation(), equalTo(pa));
+		}
+
+		// 1b. Test that calling with "null" as criteria also works
+		assertThat(cut.count(null), equalTo(0L));
+		assertThat(cut.getIndexList(null, offset, limit, sortProperties), is(empty()));
+
+		// 2. Test paging windows
+		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
+		final CaseDataDto case1 = creator
+			.createCase(
+			user.toReference(),
+			person1.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		final PersonDto person2 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1920, 1, 1);
+		final ContactDto contact2 =
+			creator.createContact(user.toReference(), user.toReference(), person2.toReference(), null, new Date(), new Date(), Disease.EVD, rdcf);
+
+		// 2a. count
+		assertThat(cut.count(new PersonCriteria().personAssociation(PersonAssociation.ALL)), equalTo(2L));
+		assertThat(cut.count(new PersonCriteria().personAssociation(PersonAssociation.CASE)), equalTo(1L));
+		assertThat(cut.count(new PersonCriteria().personAssociation(PersonAssociation.CONTACT)), equalTo(1L));
+
+		// 2b. getIndexList with all persons in the paging window
+		assertPersonsFound(case1, contact2, cut, offset, limit, sortProperties);
+		offset = 0;
+		limit = 2;
+		assertPersonsFound(case1, contact2, cut, offset, limit, sortProperties);
+		offset = 0;
+		limit = 1;
+		assertPersonsFound(case1, contact2, cut, offset, limit, sortProperties);
+
+		// 2c. getIndexList [PersonAssociation.ALL] with only the contact person in the paging window (default sorting by changeDate)
+		offset = 1;
+		limit = 2;
+		assertPersonsFound(null, null, Arrays.asList(contact2.getPerson()), cut, offset, limit, sortProperties);
+	}
+
+	private static void assertPersonsFound(
+		CaseDataDto caze,
+		ContactDto contact,
+		PersonFacade cut,
+		Integer offset,
+		Integer limit,
+		List<SortProperty> sortProperties) {
+
+		assertPersonsFound(caze, contact, Arrays.asList(caze.getPerson(), contact.getPerson()), cut, offset, limit, sortProperties);
+	}
+
+	private static void assertPersonsFound(
+		CaseDataDto caze,
+		ContactDto contact,
+		List<PersonReferenceDto> allPersons,
+		PersonFacade cut,
+		Integer offset,
+		Integer limit,
+		List<SortProperty> sortProperties) {
+
+		List<String> casePersonUuids = caze == null ? Collections.emptyList() : Collections.singletonList(caze.getPerson().getUuid());
+		List<String> contactPersonUuids = contact == null ? Collections.emptyList() : Collections.singletonList(contact.getPerson().getUuid());
+		int allCount = Math.min(allPersons.size(), limit != null ? limit : Integer.MAX_VALUE);
+
+		// single association
+		List<PersonIndexDto> caseList =
+			cut.getIndexList(new PersonCriteria().personAssociation(PersonAssociation.CASE), offset, limit, sortProperties);
+		assertThat(caseList, hasSize(casePersonUuids.size()));
+		List<PersonIndexDto> contactList =
+			cut.getIndexList(new PersonCriteria().personAssociation(PersonAssociation.CONTACT), offset, limit, sortProperties);
+		assertThat(contactList, hasSize(contactPersonUuids.size()));
+		assertThat(
+			cut.getIndexList(new PersonCriteria().personAssociation(PersonAssociation.EVENT_PARTICIPANT), offset, limit, sortProperties),
+			is(empty()));
+		assertThat(
+			cut.getIndexList(new PersonCriteria().personAssociation(PersonAssociation.IMMUNIZATION), offset, limit, sortProperties),
+			is(empty()));
+		assertThat(
+			cut.getIndexList(new PersonCriteria().personAssociation(PersonAssociation.TRAVEL_ENTRY), offset, limit, sortProperties),
+			is(empty()));
+
+		// ALL
+		List<PersonIndexDto> allList = cut.getIndexList(new PersonCriteria().personAssociation(PersonAssociation.ALL), offset, limit, sortProperties);
+		assertThat(allList, hasSize(allCount));
+	}
 
 	@Test
 	public void testGetIndexListByPresentCondition() {
@@ -548,6 +671,35 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	}
 
+	@Test
+	public void testMergePerson() {
+		PersonDto leadPerson = creator.createPerson("Alex", "Miller");
+		PersonDto otherPerson = creator.createPerson("Max", "Smith");
+
+		PersonContactDetailDto leadContactDetail =
+			creator.createPersonContactDetail(leadPerson.toReference(), true, PersonContactDetailType.PHONE, "123");
+		PersonContactDetailDto otherContactDetail =
+			creator.createPersonContactDetail(otherPerson.toReference(), true, PersonContactDetailType.PHONE, "456");
+
+		leadPerson.setPersonContactDetails(Collections.singletonList(leadContactDetail));
+		otherPerson.setPersonContactDetails(Collections.singletonList(otherContactDetail));
+
+		leadPerson = getPersonFacade().savePerson(leadPerson);
+		otherPerson = getPersonFacade().savePerson(otherPerson);
+
+		getPersonFacade().mergePerson(leadPerson, otherPerson);
+
+		assertThat(leadPerson.getPersonContactDetails().size(), is(2));
+		assertThat(
+			leadPerson.getPersonContactDetails()
+				.stream()
+				.filter(PersonContactDetailDto::isPrimaryContact)
+				.collect(Collectors.toList())
+				.get(0)
+				.getContactInformation(),
+			is("123"));
+	}
+
 	private void updateFollowUpStatus(ContactDto contact, FollowUpStatus status) {
 		contact = getContactFacade().getContactByUuid(contact.getUuid());
 		contact.setFollowUpStatus(status);
@@ -558,5 +710,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		caze.setFollowUpStatus(status);
 		getCaseFacade().saveCase(caze);
+	}
+
+	@Test
+	public void testSetMissingGeoCoordinates() {
+
+		assertThat(getPersonFacade().setMissingGeoCoordinates(false), equalTo(0L));
 	}
 }

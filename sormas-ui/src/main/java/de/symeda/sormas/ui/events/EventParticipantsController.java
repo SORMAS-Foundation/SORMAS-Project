@@ -88,6 +88,7 @@ public class EventParticipantsController {
 					final PersonDto person = PersonDto.build();
 					person.setFirstName(createForm.getPersonFirstName());
 					person.setLastName(createForm.getPersonLastName());
+					person.setSex(createForm.getPersonSex());
 
 					ControllerProvider.getPersonController()
 						.selectOrCreatePerson(
