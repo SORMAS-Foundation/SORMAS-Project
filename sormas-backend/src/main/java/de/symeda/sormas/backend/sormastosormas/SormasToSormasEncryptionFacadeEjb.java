@@ -103,7 +103,13 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 		throws SormasToSormasException, CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException {
 		String ownId = configFacadeEjb.getS2SConfig().getId();
 		KeyStore keystore = getKeystore();
-		return (X509Certificate) keystore.getCertificate(ownId);
+		X509Certificate cert = (X509Certificate) keystore.getCertificate(ownId);
+		if (cert == null) {
+			LOGGER.error("The own certificate is not contained in the provided keystore.");
+			throw new CertificateException("Unable to load own certificate.");
+		}
+		LOGGER.info("Successfully loaded own certificate.");
+		return cert;
 	}
 
 	private X509Certificate getOtherCertificate(String otherId)
@@ -115,15 +121,25 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 		CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
 		X509Certificate receivedCert = (X509Certificate) certificateFactory.generateCertificate(certStream);
 
+		if (receivedCert == null) {
+			LOGGER.error("The received certificate from {} is invalid.", otherId);
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasCertNotGenerated);
+		}
+
 		X509Certificate rootCA = (X509Certificate) getTruststore().getCertificate(configFacadeEjb.getS2SConfig().getRootCaAlias());
+
+		if (rootCA == null) {
+			LOGGER.error("Unable to load CA root certificate.");
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasCertNotGenerated);
+		}
 
 		try {
 			receivedCert.verify(rootCA.getPublicKey());
 		} catch (CertificateException | NoSuchAlgorithmException | InvalidKeyException | NoSuchProviderException | SignatureException e) {
-			LOGGER.error(MessageFormat.format("Verification of received certificate failed: {0}", e.toString()));
+			LOGGER.error(MessageFormat.format("Verification of received certificate failed: {}", e.toString()));
 			throw new CertificateException(e);
 		}
-
+		LOGGER.info("The certificate for {} has been retrieved successfully", otherId);
 		return receivedCert;
 	}
 
@@ -143,10 +159,6 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 		PrivateKey ownKey = (PrivateKey) keystore.getKey(ownId, sormasToSormasConfig.getKeystorePass().toCharArray());
 		X509Certificate otherCert = getOtherCertificate(otherId);
 
-		if (otherCert == null) {
-			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasCertNotGenerated);
-		}
-
 		switch (mode) {
 		case ENCRYPTION:
 			return CmsCreator.signAndEncrypt(data, ownCert, ownKey, otherCert, true);
@@ -159,6 +171,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 
 	@Override
 	public SormasToSormasEncryptedDataDto signAndEncrypt(Object entities, String recipientId) throws SormasToSormasException {
+		LOGGER.info("Sign and encrypt data for {}", recipientId);
 		try {
 			byte[] encryptedData = cipher(Mode.ENCRYPTION, objectMapper.writeValueAsBytes(entities), recipientId);
 			return new SormasToSormasEncryptedDataDto(configFacadeEjb.getS2SConfig().getId(), encryptedData);
@@ -170,6 +183,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 
 	@Override
 	public <T> T decryptAndVerify(SormasToSormasEncryptedDataDto encryptedData, Class<T> dataType) throws SormasToSormasException {
+		LOGGER.info("Decrypt and verify data from {}", encryptedData.getSenderId());
 		try {
 			byte[] decryptedData = cipher(Mode.DECRYPTION, encryptedData.getData(), encryptedData.getSenderId());
 			return objectMapper.readValue(decryptedData, dataType);
