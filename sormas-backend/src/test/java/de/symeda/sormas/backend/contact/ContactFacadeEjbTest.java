@@ -170,10 +170,13 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		final List<SimilarContactDto> matchingContacts = getContactFacade().getMatchingContacts(contactSimilarityCriteria);
 		Assert.assertNotNull(matchingContacts);
 		Assert.assertEquals(2, matchingContacts.size());
+		ArrayList<String> uuids = new ArrayList<>();
+		uuids.add(contact1.getUuid());
+		uuids.add(contact2.getUuid());
 		final SimilarContactDto similarContactDto1 = matchingContacts.get(0);
-		Assert.assertEquals(contact1.getUuid(), similarContactDto1.getUuid());
+		assertTrue(uuids.contains(similarContactDto1.getUuid()));
 		final SimilarContactDto similarContactDto2 = matchingContacts.get(1);
-		Assert.assertEquals(contact2.getUuid(), similarContactDto2.getUuid());
+		assertTrue(uuids.contains(similarContactDto2.getUuid()));
 	}
 
 	@Test
