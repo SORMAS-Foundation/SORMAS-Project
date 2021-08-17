@@ -87,15 +87,6 @@ public class CommonModule extends PrivateModule {
     return objectMapper;
   }
 
-  /*  @Provides
-    @Exposed
-    RequestSpecification provideRestAssured(
-        @Named("NATIONAL_USER") String userName,
-        @Named("NATIONAL_USER_PASSWORD") String userPassword) {
-      return RestAssured.given().auth().preemptive().basic(userName, userPassword);
-    }
-  }*/
-
   @Provides
   @Exposed
   RequestSpecification provideRestAssured(

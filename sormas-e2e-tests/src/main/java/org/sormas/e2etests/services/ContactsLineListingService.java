@@ -18,7 +18,7 @@
 
 package org.sormas.e2etests.services;
 
-import static org.sormas.e2etests.enums.Disease.*;
+import static org.sormas.e2etests.enums.DiseaseUiValues.*;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;

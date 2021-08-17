@@ -48,6 +48,9 @@ public class ImmunizationHelper {
   public void getAllImmunizationsUUIDs() {
     restAssuredClient.sendRequest(
         Request.builder().method(Method.GET).path(IMMUNIZATIONS_PATH + UUIDS_PATH).build());
+    int totalImmunizations =
+        apiState.getResponse().getBody().asString().replaceAll("\"", "").split(",").length;
+    System.out.println("Total immunizations: " + totalImmunizations);
   }
 
   public Response getImmunizationBasedOnUUID(String immunizationUUID) {

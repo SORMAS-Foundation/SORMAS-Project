@@ -24,10 +24,10 @@ import io.restassured.response.Response;
 import java.util.Calendar;
 import java.util.UUID;
 import javax.inject.Inject;
-import org.sormas.e2etests.enums.CommunityUUIDs;
-import org.sormas.e2etests.enums.DistrictUUIDs;
-import org.sormas.e2etests.enums.RegionUUIDs;
-import org.sormas.e2etests.enums.TestDataUser;
+import org.sormas.e2etests.enums.*;
+import org.sormas.e2etests.enums.immunizations.ImmunizationManagementStatusValues;
+import org.sormas.e2etests.enums.immunizations.ImmunizationStatusValues;
+import org.sormas.e2etests.enums.immunizations.MeansOfImmunizationValues;
 import org.sormas.e2etests.helpers.api.ImmunizationHelper;
 import org.sormas.e2etests.pojo.api.Immunization;
 import org.sormas.e2etests.pojo.api.Person;
@@ -44,9 +44,8 @@ public class ImmunizationSteps implements En {
           String lastCreatedUserUUID = apiState.getCreatedPerson().getUuid();
           Person person = Person.builder().uuid(lastCreatedUserUUID).build();
           int immunizationAttempts = 1;
-          do {
+          while (immunizationAttempts <= numberOfImmunizations) {
             String immunizationUUID = UUID.randomUUID().toString();
-
             Immunization createImmunizationObject =
                 Immunization.builder()
                     .uuid(immunizationUUID)
@@ -60,10 +59,11 @@ public class ImmunizationSteps implements En {
                     .externalId(faker.number().digits(9))
                     .reportingUser(TestDataUser.NATIONAL_USER.getUuid())
                     .archived(false)
-                    .disease("CORONAVIRUS") // TODO change values
-                    .immunizationStatus("ACQUIRED") // TODO change values
-                    .meansOfImmunization("VACCINATION") // TODO change values
-                    .immunizationManagementStatus("COMPLETED") // TODO change values
+                    .disease(DiseaseApiValues.getRandomDiseaseValue())
+                    .immunizationStatus(ImmunizationStatusValues.getRandomImmunizationStatus())
+                    .meansOfImmunization(MeansOfImmunizationValues.getRandomMeansOfImmunization())
+                    .immunizationManagementStatus(
+                        ImmunizationManagementStatusValues.getRandomImmunizationManagementStatus())
                     .responsibleRegion(RegionUUIDs.VoreingestellteBundeslander.toString())
                     .responsibleDistrict(DistrictUUIDs.VoreingestellterLandkreis.toString())
                     .responsibleCommunity(CommunityUUIDs.VoreingestellteGemeinde.toString())
@@ -71,8 +71,10 @@ public class ImmunizationSteps implements En {
             apiState.setCreatedImmunization(createImmunizationObject);
             immunizationHelper.createNewImmunization(createImmunizationObject);
             immunizationAttempts++;
-          } while (immunizationAttempts == numberOfImmunizations);
+          }
         });
+
+    When("API: I receive all immunizations ids", immunizationHelper::getAllImmunizationsUUIDs);
 
     Then(
         "API: I check that POST immunization call body is {string}",

@@ -22,36 +22,27 @@ import java.util.Random;
 import lombok.Getter;
 
 @Getter
-public enum Disease {
-  AFP("Acute Flaccid Paralysis"),
-  ANTHRAX("Anthrax"),
-  CORONAVIRUS("COVID-19"),
-  CHOLERA("Cholera"),
-  DENGUE("Dengue Fever"),
-  EVD("Ebola Virus Disease"),
-  GUINEA_WORM("Guinea Worm"),
-  RABIES("Human Rabies"),
-  NEW_INFLUENZA("Influenza (New subtype)"),
-  LASSA("Lassa"),
-  MEASLES("Measles"),
-  CSM("Meningitis (CSM)"),
-  MONKEYPOX("Monkeypox"),
-  UNSPECIFIED_VHF("Unspecified VHF"),
-  YELLOW_FEVER("Yellow Fever");
+public enum DiseaseApiValues {
+  AFP("AFP"),
+  ANTHRAX("ANTHRAX"),
+  CORONAVIRUS("CORONAVIRUS"),
+  GUINEA_WORM("GUINEA_WORM"),
+  MEASLES("MEASLES"),
+  POLIO("POLIO"),
+  CSM("CSM"),
+  YELLOW_FEVER("YELLOW_FEVER"),
+  RABIES("RABIES"),
+  UNSPECIFIED_VHF("UNSPECIFIED_VHF"),
+  OTHER("OTHER");
 
   private final String disease;
 
-  Disease(String aDisease) {
+  DiseaseApiValues(String aDisease) {
     disease = aDisease;
-  }
-
-  public static String getRandomDisease() {
-    Random random = new Random();
-    return String.valueOf(Disease.values()[random.nextInt(values().length)]);
   }
 
   public static String getRandomDiseaseValue() {
     Random random = new Random();
-    return String.valueOf(Disease.values()[random.nextInt(values().length)].disease);
+    return String.valueOf(DiseaseApiValues.values()[random.nextInt(values().length)].disease);
   }
 }

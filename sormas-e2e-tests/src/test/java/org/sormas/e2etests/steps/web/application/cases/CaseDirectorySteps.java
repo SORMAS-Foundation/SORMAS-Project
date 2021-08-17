@@ -29,7 +29,7 @@ import org.openqa.selenium.By;
 import org.sormas.e2etests.common.*;
 import org.sormas.e2etests.enums.CaseClasification;
 import org.sormas.e2etests.enums.CaseOutcome;
-import org.sormas.e2etests.enums.Disease;
+import org.sormas.e2etests.enums.DiseaseUiValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -165,7 +165,7 @@ public class CaseDirectorySteps implements En {
     Then(
         "^I check the displayed Disease filter dropdown",
         () ->
-            Arrays.stream(Disease.values())
+            Arrays.stream(DiseaseUiValues.values())
                 .forEach(
                     aDisease -> {
                       webDriverHelpers.selectFromCombobox(
