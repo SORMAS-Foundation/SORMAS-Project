@@ -47,9 +47,9 @@ public class CustomExportController {
 			ExportType.CONTACT,
 			ImportExportUtils.getContactExportProperties(ContactDownloadUtil::getPropertyCaption),
 			customExportWindow::close);
-		customExportsLayout.setExportCallback((exportConfig) -> {
-			Page.getCurrent().open(ContactDownloadUtil.createContactExportResource(contactCriteria, selectedRows, exportConfig), null, true);
-		});
+		customExportsLayout.setExportCallback(
+			exportConfig -> Page.getCurrent()
+				.open(ContactDownloadUtil.createContactExportResource(contactCriteria, selectedRows, exportConfig), null, true));
 		customExportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
 		customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));
 		customExportWindow.setContent(customExportsLayout);
@@ -62,9 +62,8 @@ public class CustomExportController {
 			ExportType.TASK,
 			ImportExportUtils.getTaskExportProperties(TaskDownloadUtil::getPropertyCaption),
 			customExportWindow::close);
-		customExportsLayout.setExportCallback((exportConfig) -> {
-			Page.getCurrent().open(TaskDownloadUtil.createTaskExportResource(taskCriteria, selectedRows, exportConfig), null, true);
-		});
+		customExportsLayout.setExportCallback(
+			exportConfig -> Page.getCurrent().open(TaskDownloadUtil.createTaskExportResource(taskCriteria, selectedRows, exportConfig), null, true));
 		customExportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
 		customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCustom));
 		customExportWindow.setContent(customExportsLayout);

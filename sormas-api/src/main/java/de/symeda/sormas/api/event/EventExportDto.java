@@ -20,14 +20,18 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.importexport.ExportEntity;
 import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
+import de.symeda.sormas.api.importexport.format.ExportFormat;
+import de.symeda.sormas.api.importexport.format.ImportExportFormat;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
+@ExportEntity(EventDto.class)
 public class EventExportDto implements Serializable {
 
 	public static final String I18N_PREFIX = "EventExport";
@@ -310,6 +314,7 @@ public class EventExportDto implements Serializable {
 	@Order(11)
 	@ExportProperty(EventDto.START_DATE)
 	@ExportGroup(ExportGroupType.CORE)
+	@ExportFormat(ImportExportFormat.DATE_TIME)
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -321,6 +326,7 @@ public class EventExportDto implements Serializable {
 	@Order(12)
 	@ExportProperty(EventDto.END_DATE)
 	@ExportGroup(ExportGroupType.CORE)
+	@ExportFormat(ImportExportFormat.DATE_TIME)
 	public Date getEndDate() {
 		return endDate;
 	}
@@ -420,7 +426,10 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(23)
-	@ExportProperty(LocationDto.REGION)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventDto.EVENT_LOCATION,
+		LocationDto.REGION })
 	@ExportGroup(ExportGroupType.LOCATION)
 	public String getRegion() {
 		return region;
@@ -431,7 +440,10 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(24)
-	@ExportProperty(LocationDto.DISTRICT)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventDto.EVENT_LOCATION,
+		LocationDto.DISTRICT })
 	@ExportGroup(ExportGroupType.LOCATION)
 	public String getDistrict() {
 		return district;
@@ -442,7 +454,10 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(25)
-	@ExportProperty(LocationDto.COMMUNITY)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventDto.EVENT_LOCATION,
+		LocationDto.COMMUNITY })
 	@ExportGroup(ExportGroupType.LOCATION)
 	public String getCommunity() {
 		return community;
@@ -453,7 +468,10 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(26)
-	@ExportProperty(LocationDto.CITY)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventDto.EVENT_LOCATION,
+		LocationDto.CITY })
 	@ExportGroup(ExportGroupType.LOCATION)
 	public String getCity() {
 		return city;
@@ -464,7 +482,10 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(27)
-	@ExportProperty(LocationDto.STREET)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventDto.EVENT_LOCATION,
+		LocationDto.STREET })
 	@ExportGroup(ExportGroupType.LOCATION)
 	public String getStreet() {
 		return street;
@@ -475,7 +496,10 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(28)
-	@ExportProperty(LocationDto.HOUSE_NUMBER)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventDto.EVENT_LOCATION,
+		LocationDto.HOUSE_NUMBER })
 	@ExportGroup(ExportGroupType.LOCATION)
 	public String getHouseNumber() {
 		return houseNumber;
@@ -486,7 +510,10 @@ public class EventExportDto implements Serializable {
 	}
 
 	@Order(29)
-	@ExportProperty(LocationDto.ADDITIONAL_INFORMATION)
+	@ExportEntity(LocationDto.class)
+	@ExportProperty({
+		EventDto.EVENT_LOCATION,
+		LocationDto.ADDITIONAL_INFORMATION })
 	@ExportGroup(ExportGroupType.LOCATION)
 	public String getAdditionalInformation() {
 		return additionalInformation;

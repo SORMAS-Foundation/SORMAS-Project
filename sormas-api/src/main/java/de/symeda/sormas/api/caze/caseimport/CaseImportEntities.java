@@ -35,7 +35,7 @@ public class CaseImportEntities implements Serializable {
 	private final List<PathogenTestDto> pathogenTests;
 
 	public CaseImportEntities(UserReferenceDto reportingUser) {
-		person = PersonDto.build();
+		person = PersonDto.buildImportEntity();
 		caze = createCase(person, reportingUser);
 
 		samples = new ArrayList<>();

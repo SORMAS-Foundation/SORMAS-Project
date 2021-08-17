@@ -189,6 +189,7 @@ public interface Captions {
 	String bulkEventType = "bulkEventType";
 	String bulkFacility = "bulkFacility";
 	String bulkInvestigationStatus = "bulkInvestigationStatus";
+	String bulkLinkToEvent = "bulkLinkToEvent";
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
 	String bulkTaskAssignee = "bulkTaskAssignee";
@@ -254,6 +255,7 @@ public interface Captions {
 	String CaseData_caseIdIsm = "CaseData.caseIdIsm";
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
 	String CaseData_caseOrigin = "CaseData.caseOrigin";
+	String CaseData_caseReferenceDefinition = "CaseData.caseReferenceDefinition";
 	String CaseData_classificationComment = "CaseData.classificationComment";
 	String CaseData_classificationDate = "CaseData.classificationDate";
 	String CaseData_classificationUser = "CaseData.classificationUser";
@@ -419,6 +421,8 @@ public interface Captions {
 	String CaseExport_country = "CaseExport.country";
 	String CaseExport_diseaseFormatted = "CaseExport.diseaseFormatted";
 	String CaseExport_firstName = "CaseExport.firstName";
+	String CaseExport_followUpStatusChangeUserName = "CaseExport.followUpStatusChangeUserName";
+	String CaseExport_followUpStatusChangeUserRoles = "CaseExport.followUpStatusChangeUserRoles";
 	String CaseExport_id = "CaseExport.id";
 	String CaseExport_initialDetectionPlace = "CaseExport.initialDetectionPlace";
 	String CaseExport_labResults = "CaseExport.labResults";
@@ -432,6 +436,8 @@ public interface Captions {
 	String CaseExport_numberOfTreatments = "CaseExport.numberOfTreatments";
 	String CaseExport_otherSamples = "CaseExport.otherSamples";
 	String CaseExport_quarantineInformation = "CaseExport.quarantineInformation";
+	String CaseExport_reportingUserName = "CaseExport.reportingUserName";
+	String CaseExport_reportingUserRoles = "CaseExport.reportingUserRoles";
 	String CaseExport_sampleDates = "CaseExport.sampleDates";
 	String CaseExport_sampleDateTime1 = "CaseExport.sampleDateTime1";
 	String CaseExport_sampleDateTime2 = "CaseExport.sampleDateTime2";
@@ -458,6 +464,7 @@ public interface Captions {
 	String caseFilterOnlyCasesNotSharedWithExternalSurvTool = "caseFilterOnlyCasesNotSharedWithExternalSurvTool";
 	String caseFilterOnlyCasesSharedWithExternalSurvToo = "caseFilterOnlyCasesSharedWithExternalSurvToo";
 	String caseFilterOnlyCasesWithDontShareWithExternalSurvTool = "caseFilterOnlyCasesWithDontShareWithExternalSurvTool";
+	String caseFilterOnlyCasesWithFulfilledReferenceDefinition = "caseFilterOnlyCasesWithFulfilledReferenceDefinition";
 	String caseFilterOnlyFromOtherInstances = "caseFilterOnlyFromOtherInstances";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterRelatedToEvent = "caseFilterRelatedToEvent";
@@ -662,11 +669,15 @@ public interface Captions {
 	String ContactExport_directContactConfirmedCase = "ContactExport.directContactConfirmedCase";
 	String ContactExport_directContactProbableCase = "ContactExport.directContactProbableCase";
 	String ContactExport_firstName = "ContactExport.firstName";
+	String ContactExport_followUpStatusChangeUserName = "ContactExport.followUpStatusChangeUserName";
+	String ContactExport_followUpStatusChangeUserRoles = "ContactExport.followUpStatusChangeUserRoles";
 	String ContactExport_lastCooperativeVisitDate = "ContactExport.lastCooperativeVisitDate";
 	String ContactExport_lastCooperativeVisitSymptomatic = "ContactExport.lastCooperativeVisitSymptomatic";
 	String ContactExport_lastCooperativeVisitSymptoms = "ContactExport.lastCooperativeVisitSymptoms";
 	String ContactExport_lastName = "ContactExport.lastName";
 	String ContactExport_quarantineInformation = "ContactExport.quarantineInformation";
+	String ContactExport_reportingUserName = "ContactExport.reportingUserName";
+	String ContactExport_reportingUserRoles = "ContactExport.reportingUserRoles";
 	String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
 	String ContactExport_traveled = "ContactExport.traveled";
 	String ContactExport_travelHistory = "ContactExport.travelHistory";
@@ -2123,6 +2134,7 @@ public interface Captions {
 	String TravelEntry_person = "TravelEntry.person";
 	String TravelEntry_personFirstName = "TravelEntry.personFirstName";
 	String TravelEntry_personLastName = "TravelEntry.personLastName";
+	String TravelEntry_pointOfEntryDetails = "TravelEntry.pointOfEntryDetails";
 	String TravelEntry_pointOfEntryDistrict = "TravelEntry.pointOfEntryDistrict";
 	String TravelEntry_pointOfEntryName = "TravelEntry.pointOfEntryName";
 	String TravelEntry_pointOfEntryRegion = "TravelEntry.pointOfEntryRegion";
@@ -2181,6 +2193,7 @@ public interface Captions {
 	String TreatmentExport_caseUuid = "TreatmentExport.caseUuid";
 	String treatmentNewTreatment = "treatmentNewTreatment";
 	String treatmentOpenPrescription = "treatmentOpenPrescription";
+	String unknown = "unknown";
 	String User = "User";
 	String User_active = "User.active";
 	String User_address = "User.address";

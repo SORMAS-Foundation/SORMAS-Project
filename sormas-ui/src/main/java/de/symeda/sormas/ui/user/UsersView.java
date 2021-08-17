@@ -154,7 +154,7 @@ public class UsersView extends AbstractView {
 			addHeaderComponent(exportUserRightsButton);
 		}
 
-		if (AuthProvider.getProvider().isUserSyncSupported()) {
+		if (AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isUserSyncSupported()) {
 			syncButton = ButtonHelper.createIconButton(Captions.syncUsers, VaadinIcons.REFRESH, e -> ControllerProvider.getUserController().sync());
 
 			addHeaderComponent(syncButton);

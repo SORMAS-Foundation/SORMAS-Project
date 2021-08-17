@@ -44,7 +44,9 @@ public class PersonsView extends AbstractView {
 	public PersonsView() {
 		super(VIEW_NAME);
 
-		criteria = ViewModelProviders.of(PersonsView.class).get(PersonCriteria.class);
+		// Avoid calling ALL associations at view start because the query tends to take long time
+		PersonCriteria defaultCriteria = new PersonCriteria().personAssociation(PersonAssociation.CASE);
+		criteria = ViewModelProviders.of(PersonsView.class).get(PersonCriteria.class, defaultCriteria);
 		grid = new PersonGrid(criteria);
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -176,7 +178,8 @@ public class PersonsView extends AbstractView {
 			if (association == PersonAssociation.IMMUNIZATION
 				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT)
 				|| association == PersonAssociation.TRAVEL_ENTRY
-					&& !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+					&& (FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.TRAVEL_ENTRIES)
+						|| !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY))
 				|| association == PersonAssociation.CONTACT
 					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CONTACT_TRACING)
 				|| association == PersonAssociation.CASE
@@ -212,10 +215,6 @@ public class PersonsView extends AbstractView {
 			associationFilterLayout.addComponent(associationButton);
 			associationFilterLayout.setComponentAlignment(associationButton, Alignment.MIDDLE_LEFT);
 			associationButtons.put(associationButton, association.toString());
-			if (association == PersonAssociation.CASE && criteria.getPersonAssociation() == null) {
-				activeAssociationButton = associationButton;
-				criteria.setPersonAssociation(association);
-			}
 		}
 
 		Label emptyLabel = new Label("");

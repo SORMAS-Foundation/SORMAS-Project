@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
@@ -38,6 +39,7 @@ import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 
 public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
@@ -97,8 +99,12 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		addField(FacilityDto.AREA_TYPE, ComboBox.class);
 		addField(FacilityDto.CONTACT_PERSON_FIRST_NAME, TextField.class);
 		addField(FacilityDto.CONTACT_PERSON_LAST_NAME, TextField.class);
-		addField(FacilityDto.CONTACT_PERSON_PHONE, TextField.class);
-		addField(FacilityDto.CONTACT_PERSON_EMAIL, TextField.class);
+		TextField contactPersonPhone = addField(FacilityDto.CONTACT_PERSON_PHONE, TextField.class);
+		contactPersonPhone
+			.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, contactPersonPhone.getCaption())));
+		TextField contactPersonEmail = addField(FacilityDto.CONTACT_PERSON_EMAIL, TextField.class);
+		contactPersonEmail
+			.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, contactPersonEmail.getCaption())));
 		AccessibleTextField latitude = addField(FacilityDto.LATITUDE, AccessibleTextField.class);
 		latitude.setConverter(new StringToAngularLocationConverter());
 		latitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, latitude.getCaption()));

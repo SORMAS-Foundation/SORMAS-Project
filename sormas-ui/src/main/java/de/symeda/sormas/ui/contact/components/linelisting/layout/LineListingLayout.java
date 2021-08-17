@@ -68,37 +68,6 @@ public class LineListingLayout extends VerticalLayout {
 		addComponent(lineComponent);
 	}
 
-	public LineListingLayout(Window window, EventDto eventDto, Iterable<EventParticipantDto> eventParticipantDtos) {
-		this(window, new SharedInfoField(eventDto));
-
-		for (EventParticipantDto eventParticipantDto : eventParticipantDtos) {
-			PersonFieldDto person = new PersonFieldDto();
-			person.setFirstName(eventParticipantDto.getPerson().getFirstName());
-			person.setLastName(eventParticipantDto.getPerson().getLastName());
-			person.setBirthDate(
-				new BirthDateDto(
-					eventParticipantDto.getPerson().getBirthdateDD(),
-					eventParticipantDto.getPerson().getBirthdateMM(),
-					eventParticipantDto.getPerson().getBirthdateYYYY()));
-			person.setSex(eventParticipantDto.getPerson().getSex());
-
-			ContactLineLayoutDto newLineDto = new ContactLineLayoutDto();
-			newLineDto.lineField = new ContactLineFieldDto();
-			newLineDto.lineField.setPerson(person);
-
-			ContactLineLayout newLine = new ContactLineLayout(lines.size());
-			newLine.enableDelete(false);
-			newLine.enablePersonField(false);
-			newLine.setBean(newLineDto);
-			newLine.setPerson(eventParticipantDto.getPerson());
-
-			lines.add(newLine);
-			lineComponent.addComponent(newLine);
-		}
-
-		addButtons();
-	}
-
 	public LineListingLayout(Window window, CaseDataDto caseReferenceDto) {
 		this(window, new SharedInfoField(caseReferenceDto));
 
@@ -118,6 +87,37 @@ public class LineListingLayout extends VerticalLayout {
 		actionBar.setComponentAlignment(addLine, Alignment.MIDDLE_LEFT);
 
 		addComponent(actionBar);
+
+		addButtons();
+	}
+
+	public LineListingLayout(Window window, EventDto eventDto, Iterable<EventParticipantDto> eventParticipantDtos) {
+		this(window, new SharedInfoField(eventDto));
+
+		for (EventParticipantDto eventParticipantDto : eventParticipantDtos) {
+			PersonFieldDto personField = new PersonFieldDto();
+			personField.setFirstName(eventParticipantDto.getPerson().getFirstName());
+			personField.setLastName(eventParticipantDto.getPerson().getLastName());
+			personField.setBirthDate(
+				new BirthDateDto(
+					eventParticipantDto.getPerson().getBirthdateDD(),
+					eventParticipantDto.getPerson().getBirthdateMM(),
+					eventParticipantDto.getPerson().getBirthdateYYYY()));
+			personField.setSex(eventParticipantDto.getPerson().getSex());
+
+			ContactLineLayoutDto newLineDto = new ContactLineLayoutDto();
+			newLineDto.setLineField(new ContactLineFieldDto());
+			newLineDto.getLineField().setPerson(personField);
+
+			ContactLineLayout newLine = new ContactLineLayout(lines.size());
+			newLine.enableDelete(false);
+			newLine.enablePersonField(false);
+			newLine.setPerson(eventParticipantDto.getPerson());
+			newLine.setBean(newLineDto);
+
+			lines.add(newLine);
+			lineComponent.addComponent(newLine);
+		}
 
 		addButtons();
 	}
@@ -188,9 +188,11 @@ public class LineListingLayout extends VerticalLayout {
 				person = PersonDto.build();
 				person.setFirstName(layoutBean.getLineField().getPerson().getFirstName());
 				person.setLastName(layoutBean.getLineField().getPerson().getLastName());
-				person.setBirthdateYYYY(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthYYYY());
-				person.setBirthdateMM(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthMM());
-				person.setBirthdateDD(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthDD());
+				if (layoutBean.getLineField().getPerson().getBirthDate() != null) {
+					person.setBirthdateYYYY(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthYYYY());
+					person.setBirthdateMM(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthMM());
+					person.setBirthdateDD(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthDD());
+				}
 				person.setSex(layoutBean.getLineField().getPerson().getSex());
 			}
 			result.setPerson(person);
@@ -211,6 +213,7 @@ public class LineListingLayout extends VerticalLayout {
 			ContactLineLayoutDto lastLineDto = lines.get(lines.size() - 1).getBean();
 			newLineDto.setLineField(lastLineDto.getLineField());
 		} else {
+			newLineDto.setLineField(new ContactLineFieldDto());
 			newLine.enableDelete(false);
 		}
 
