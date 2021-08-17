@@ -62,20 +62,20 @@ public class SessionFilter implements Filter {
 				return cp;
 			});
 
-		sessionFilterBean.doFilter((req, resp) -> {
-			Language userLanguage =
-				Optional.of(FacadeProvider.getUserFacade()).map(UserFacade::getCurrentUser).map(UserDto::getLanguage).orElse(null);
-			I18nProperties.setUserLanguage(userLanguage);
-			FacadeProvider.getI18nFacade().setUserLanguage(userLanguage);
-			try {
+		try {
+			sessionFilterBean.doFilter((req, resp) -> {
+				Language userLanguage =
+					Optional.of(FacadeProvider.getUserFacade()).map(UserFacade::getCurrentUser).map(UserDto::getLanguage).orElse(null);
+				I18nProperties.setUserLanguage(userLanguage);
+				FacadeProvider.getI18nFacade().setUserLanguage(userLanguage);
+
 				try (Closeable bc = BaseControllerProvider.requestStart(controllerProvider)) {
 					chain.doFilter(req, response);
 				}
-			} finally {
-				I18nProperties.removeUserLanguage();
-				FacadeProvider.getI18nFacade().removeUserLanguage();
-			}
-
-		}, request, response);
+			}, request, response);
+		} finally {
+			I18nProperties.removeUserLanguage();
+			FacadeProvider.getI18nFacade().removeUserLanguage();
+		}
 	}
 }

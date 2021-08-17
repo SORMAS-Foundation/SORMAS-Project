@@ -24,7 +24,6 @@ import de.symeda.sormas.api.i18n.I18nFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 @Stateless(name = "I18nFacade")
-@TransactionAttribute(value = TransactionAttributeType.SUPPORTS)
 public class I18nFacadeEjb implements I18nFacade {
 
 	@Override
