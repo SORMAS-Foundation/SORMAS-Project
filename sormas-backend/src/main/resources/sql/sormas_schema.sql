@@ -7865,4 +7865,9 @@ ALTER TABLE cases_history ADD COLUMN casereferencedefinition varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (399, 'Introduce a reference definition for cases #5594');
 
+ALTER TABLE testreport ADD COLUMN typingId text;
+ALTER TABLE testreport_history ADD COLUMN typingId text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (400, 'Add typingId to TestReport #5917');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
