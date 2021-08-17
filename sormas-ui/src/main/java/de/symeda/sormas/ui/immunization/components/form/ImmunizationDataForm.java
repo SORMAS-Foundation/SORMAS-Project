@@ -11,8 +11,10 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.StringToIntegerConverter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -45,6 +47,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
+import de.symeda.sormas.ui.vaccination.VaccinationsField;
 
 public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
@@ -70,6 +73,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(ImmunizationDto.ADDITIONAL_DETAILS)
 		+ fluidRowLocs(VACCINATION_HEADING_LOC)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.NUMBER_OF_DOSES))
+		+ fluidRowLocs(ImmunizationDto.VACCINATIONS)
 		+ fluidRowLocs(RECOVERY_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, ImmunizationDto.RECOVERY_DATE)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY));
@@ -162,6 +166,15 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		TextField numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
 		numberOfDosesField.setConverter(new StringToIntegerConverter());
 		numberOfDosesField.setVisible(shouldShowVaccinationFields(meansOfImmunizationValue));
+
+		VaccinationsField vaccinationsField = addField(ImmunizationDto.VACCINATIONS, VaccinationsField.class);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ImmunizationDto.VACCINATIONS,
+			ImmunizationDto.MEANS_OF_IMMUNIZATION,
+			Arrays.asList(MeansOfImmunization.VACCINATION, MeansOfImmunization.VACCINATION_RECOVERY),
+			false);
+		vaccinationsField.addValueChangeListener(this::updateImmunizationStatus);
 
 		Label recoveryHeadingLabel = new Label(I18nProperties.getString(Strings.headingRecovery));
 		recoveryHeadingLabel.addStyleName(H3);
@@ -339,6 +352,23 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 	private boolean shouldShowRecoveryFields(MeansOfImmunization meansOfImmunization) {
 		return MeansOfImmunization.RECOVERY.equals(meansOfImmunization) || MeansOfImmunization.VACCINATION_RECOVERY.equals(meansOfImmunization);
+	}
+
+	private void updateImmunizationStatus(Property.ValueChangeEvent valueChangeEvent) {
+		ImmunizationDto immunizationDto = getValue();
+		Integer numberOfDoses = immunizationDto.getNumberOfDoses();
+		int vaccinationCount = ((VaccinationsField) getField(ImmunizationDto.VACCINATIONS)).getValue().size();
+
+		if (numberOfDoses != null) {
+			Date startDate = ((DateField) getField(ImmunizationDto.START_DATE)).getValue();
+			if (System.currentTimeMillis() > startDate.getTime() && vaccinationCount >= 1 && vaccinationCount < numberOfDoses) {
+				((ComboBox) getField(ImmunizationDto.MANAGEMENT_STATUS)).setValue(ImmunizationManagementStatus.ONGOING);
+				((ComboBox) getField(ImmunizationDto.IMMUNIZATION_STATUS)).setValue(ImmunizationStatus.PENDING);
+			} else if (vaccinationCount >= numberOfDoses) {
+				((ComboBox) getField(ImmunizationDto.MANAGEMENT_STATUS)).setValue(ImmunizationManagementStatus.COMPLETED);
+				((ComboBox) getField(ImmunizationDto.IMMUNIZATION_STATUS)).setValue(ImmunizationStatus.ACQUIRED);
+			}
+		}
 	}
 
 	private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {
