@@ -43,7 +43,7 @@ public interface EventFacade {
 
 	Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria);
 
-	EventDto getEventByUuid(String uuid);
+	EventDto getEventByUuid(String uuid, boolean detailedReferences);
 
 	EventDto saveEvent(@Valid @NotNull EventDto dto);
 
@@ -54,8 +54,6 @@ public interface EventFacade {
 	List<String> getAllActiveUuids();
 
 	List<EventDto> getByUuids(List<String> uuids);
-
-	EventDto getByUuid(String uuid);
 
 	void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException;
 

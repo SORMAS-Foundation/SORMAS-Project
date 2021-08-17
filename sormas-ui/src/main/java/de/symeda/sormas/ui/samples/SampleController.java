@@ -284,7 +284,7 @@ public class SampleController {
 			if (eventParticipantRef != null) {
 				EventParticipantDto eventParticipant =
 					FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
-				final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+				final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 				Disease testedDisease = pathogenTest.getTestedDisease();
 				if (Objects.equals(event.getDisease(), testedDisease)) {
 					savedSample.setPathogenTestResult(testResult);

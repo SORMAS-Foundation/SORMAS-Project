@@ -64,6 +64,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventDetailedReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventFacade;
@@ -184,12 +185,6 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public EventDto getByUuid(String uuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return convertToDto(eventService.getByUuid(uuid), pseudonymizer);
-	}
-
-	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
@@ -206,8 +201,10 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public EventDto getEventByUuid(String uuid) {
-		return convertToDto(eventService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+	public EventDto getEventByUuid(String uuid, boolean detailedReferences) {
+		return (detailedReferences)
+			? convertToDetailedReferenceDto(eventService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight))
+			: convertToDto(eventService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -1037,6 +1034,14 @@ public class EventFacadeEjb implements EventFacade {
 		return eventDto;
 	}
 
+	public EventDto convertToDetailedReferenceDto(Event source, Pseudonymizer pseudonymizer) {
+		EventDto eventDto = toDto(source);
+		eventDto.setSuperordinateEvent(EventFacadeEjb.toDetailedReferenceDto(source.getSuperordinateEvent()));
+		pseudonymizeDto(source, eventDto, pseudonymizer);
+
+		return eventDto;
+	}
+
 	private void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
 			boolean inJurisdiction = eventService.inJurisdictionOrOwned(event);
@@ -1062,6 +1067,20 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		return new EventReferenceDto(entity.getUuid(), entity.toString());
+	}
+
+	public static EventReferenceDto toDetailedReferenceDto(Event entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		return new EventDetailedReferenceDto(
+			entity.getUuid(),
+			entity.toString(),
+			entity.getEventStatus(),
+			entity.getEventTitle(),
+			entity.getReportDateTime());
 	}
 
 	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {
