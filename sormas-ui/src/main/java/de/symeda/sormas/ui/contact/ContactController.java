@@ -240,7 +240,7 @@ public class ContactController {
 
 	public void create(EventParticipantReferenceDto eventParticipantRef) {
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
-		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 
 		if (event.getDisease() == null) {
 			new Notification(
@@ -459,7 +459,7 @@ public class ContactController {
 		if (eventParticipant.getResultingCase() != null) {
 			disease = FacadeProvider.getCaseFacade().getCaseDataByUuid(eventParticipant.getResultingCase().getUuid()).getDisease();
 		} else {
-			disease = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()).getDisease();
+			disease = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false).getDisease();
 		}
 		createForm = new ContactCreateForm(disease, false, false);
 

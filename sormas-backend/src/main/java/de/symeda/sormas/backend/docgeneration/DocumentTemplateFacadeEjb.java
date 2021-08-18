@@ -403,7 +403,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 				} else if (PointOfEntryReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return pointOfEntryFacade.getByUuid(uuid);
 				} else if (EventReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
-					return eventFacade.getEventByUuid(uuid);
+					return eventFacade.getEventByUuid(uuid, false);
 				} else if (EventParticipantReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return eventParticipantFacade.getByUuid(uuid);
 				} else if (SampleReferenceDto.class.isAssignableFrom(referenceDtoClass)) {

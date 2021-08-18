@@ -15,11 +15,12 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import java.io.Serializable;
 import java.util.List;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 
-public class ShareRequestData<P> {
+public class ShareRequestData<P> implements Serializable {
 
 	private String requestUuid;
 

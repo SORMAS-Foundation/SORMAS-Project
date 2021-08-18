@@ -82,7 +82,7 @@ public class SormasToSormasDiscoveryService {
 			LOGGER.error("Could not load Etcd CA cert: %s", e);
 			return null;
 		}
-
+		LOGGER.info("Etcd client created successfully.");
 		return client.getKvClient();
 	}
 
@@ -113,7 +113,9 @@ public class SormasToSormasDiscoveryService {
 			String key = String.format(configFacadeEjb.getS2SConfig().getKeyPrefixTemplate(), id);
 			KeyValue result = etcd.get(ByteString.copyFromUtf8(key)).sync().getKvsList().get(0);
 
-			return buildSormasServerDescriptor(result);
+			SormasServerDescriptor descriptor = buildSormasServerDescriptor(result);
+			LOGGER.info("Fetched SormasServerDescriptor for {}", id);
+			return descriptor;
 
 		} catch (Exception e) {
 			LOGGER.error((I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
@@ -137,7 +139,7 @@ public class SormasToSormasDiscoveryService {
 
 			final String ownKey = String.format(sormasToSormasConfig.getKeyPrefixTemplate(), sormasToSormasConfig.getId());
 			final String keyPrefix = String.format(sormasToSormasConfig.getKeyPrefixTemplate(), "");
-			return etcd.get(ByteString.copyFromUtf8(keyPrefix))
+			List<SormasServerDescriptor> availableServers = etcd.get(ByteString.copyFromUtf8(keyPrefix))
 				.asPrefix()
 				.sync()
 				.getKvsList()
@@ -149,6 +151,8 @@ public class SormasToSormasDiscoveryService {
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 
+			LOGGER.info("All available SormasServerDescriptors have been collected.");
+			return availableServers;
 		} catch (Exception e) {
 			LOGGER.error("Unexpected error while reading sormas to sormas server list", e);
 			return Collections.emptyList();

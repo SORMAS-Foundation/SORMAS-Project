@@ -17,6 +17,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.vaadin.v7.data.util.converter.Converter;
+import de.symeda.sormas.api.travelentry.DeaContentEntry;
+import de.symeda.sormas.ui.travelentry.DEAFormBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -425,8 +428,9 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 	}
 
 	private void buildDeaContent(TravelEntryDto newFieldValue) {
-		if (newFieldValue.getDeaContent() != null) {
-			deaFormBuilder = new DEAFormBuilder(newFieldValue.getDeaContent(), true);
+		final List<DeaContentEntry> deaContent = newFieldValue.getDeaContent();
+		if (CollectionUtils.isNotEmpty(deaContent)) {
+			deaFormBuilder = new DEAFormBuilder(deaContent, true);
 			deaFormBuilder.buildForm();
 			getContent().addComponent(deaFormBuilder.getLayout(), DEA_CONTENT_LOC);
 		}

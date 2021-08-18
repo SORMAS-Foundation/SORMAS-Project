@@ -202,7 +202,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 				} else {
 					mockSecondServerAccess();
 				}
-				X509Certificate cert = getSormasToSormasEncryptionFacade().getOwnCertificate();
+				X509Certificate cert = getSormasToSormasEncryptionFacade().loadOwnCertificate();
 				if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ID)) {
 					mockSecondServerAccess();
 				} else {

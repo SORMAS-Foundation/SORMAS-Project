@@ -229,7 +229,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		sormasToSormasRestClient.post(organizationId, requestRejectEndpoint, uuid, null);
 
 		shareRequest.setChangeDate(new Date());
-		shareRequest.setStatus(ShareRequestStatus.REJECTED);
+		shareRequest.setRejected();
 
 		shareRequestFacade.saveShareRequest(shareRequest);
 	}
