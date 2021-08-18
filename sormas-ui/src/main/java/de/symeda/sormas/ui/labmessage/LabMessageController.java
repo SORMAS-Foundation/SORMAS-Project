@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
+import com.vaadin.v7.ui.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -691,6 +692,11 @@ public class LabMessageController {
 				.setValue(testReportDto.isTestResultVerified());
 			((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
 				.setValue(testReportDto.getTestDateTime());
+			if (testReportDto.getTypingId() != null) {
+				Field typingIdField = sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID);
+				typingIdField.setValue(testReportDto.getTypingId());
+				typingIdField.setVisible(true);
+			}
 		}
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE))
@@ -709,9 +715,15 @@ public class LabMessageController {
 		Window window = VaadinUiUtil.createPopupWindow();
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
 			getPathogenTestCreateComponent(sampleDto, labMessageDto, pathogenTestDto, window);
+		// set custom predefined field values and visibilities
 		CheckBox viaLimsCheckbox = pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.VIA_LIMS);
 		viaLimsCheckbox.setValue(Boolean.TRUE);
 		viaLimsCheckbox.setEnabled(false);
+		if (pathogenTestDto.getTypingId() != null) {
+			Field typingIdField = pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID);
+			typingIdField.setValue(pathogenTestDto.getTypingId());
+			typingIdField.setVisible(true);
+		}
 
 		showFormWithLabMessage(
 			labMessageDto,
@@ -733,6 +745,7 @@ public class LabMessageController {
 			pathogenTestDto.setTestResultVerified(testReportDto.isTestResultVerified());
 			pathogenTestDto.setTestDateTime(testReportDto.getTestDateTime());
 			pathogenTestDto.setTestResultText(testReportDto.getTestResultText());
+			pathogenTestDto.setTypingId(testReportDto.getTypingId());
 		}
 
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
