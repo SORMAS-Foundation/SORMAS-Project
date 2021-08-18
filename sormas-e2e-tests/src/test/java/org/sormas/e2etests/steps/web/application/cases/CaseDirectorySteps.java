@@ -102,7 +102,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               CASE_GRID_RESULTS_ROWS, maximumNumberOfRows);
           webDriverHelpers.fillAndSubmitInWebElement(
-              NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getCreatedPerson().getFirstName());
+              NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getLastCreatedPerson().getFirstName());
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getCreatedCases().size());
@@ -169,10 +169,10 @@ public class CaseDirectorySteps implements En {
                 .forEach(
                     aDisease -> {
                       webDriverHelpers.selectFromCombobox(
-                          CASE_DISEASE_FILTER_COMBOBOX, aDisease.getDisease());
+                          CASE_DISEASE_FILTER_COMBOBOX, aDisease.getDiseaseName());
                       webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
                       webDriverHelpers.waitUntilAListOfElementsHasText(
-                          CASE_GRID_RESULTS_ROWS, aDisease.getDisease());
+                          CASE_GRID_RESULTS_ROWS, aDisease.getDiseaseName());
                       assertHelpers.assertWithPoll15Second(
                           () ->
                               Truth.assertThat(

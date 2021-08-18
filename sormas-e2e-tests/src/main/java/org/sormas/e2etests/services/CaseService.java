@@ -102,7 +102,7 @@ public class CaseService {
 
   public Case buildCaseForLineListingFeature() {
     return Case.builder()
-        .disease(DiseasesValues.MONKEYPOX_UI_VALUE.getDisease())
+        .disease(DiseasesValues.MONKEYPOX.getDiseaseName())
         .region("Voreingestellte")
         .district("Voreingestellter Landkreis")
         .facilityCategory("Accommodation")

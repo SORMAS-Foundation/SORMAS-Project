@@ -24,7 +24,11 @@ import io.restassured.response.Response;
 import java.util.Calendar;
 import java.util.UUID;
 import javax.inject.Inject;
-import org.sormas.e2etests.enums.*;
+import org.sormas.e2etests.enums.CommunityUUIDs;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictUUIDs;
+import org.sormas.e2etests.enums.RegionUUIDs;
+import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.enums.immunizations.ImmunizationManagementStatusValues;
 import org.sormas.e2etests.enums.immunizations.ImmunizationStatusValues;
 import org.sormas.e2etests.enums.immunizations.MeansOfImmunizationValues;
@@ -41,7 +45,7 @@ public class ImmunizationSteps implements En {
     When(
         "API: I create {int} new immunizations for last created person",
         (Integer numberOfImmunizations) -> {
-          String lastCreatedUserUUID = apiState.getCreatedPerson().getUuid();
+          String lastCreatedUserUUID = apiState.getLastCreatedPerson().getUuid();
           Person person = Person.builder().uuid(lastCreatedUserUUID).build();
           int immunizationAttempts = 1;
           while (immunizationAttempts <= numberOfImmunizations) {
@@ -59,7 +63,7 @@ public class ImmunizationSteps implements En {
                     .externalId(faker.number().digits(9))
                     .reportingUser(TestDataUser.NATIONAL_USER.getUuid())
                     .archived(false)
-                    .disease(DiseasesValues.getRandomAPIDiseaseValue())
+                    .disease(DiseasesValues.getRandomDiseaseName())
                     .immunizationStatus(ImmunizationStatusValues.getRandomImmunizationStatus())
                     .meansOfImmunization(MeansOfImmunizationValues.getRandomMeansOfImmunization())
                     .immunizationManagementStatus(

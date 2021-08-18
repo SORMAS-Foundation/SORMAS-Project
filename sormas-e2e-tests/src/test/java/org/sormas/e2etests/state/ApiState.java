@@ -33,7 +33,7 @@ public class ApiState {
   String casesAllSince;
   String communitiesAllSince;
   String facilitiesFromRegion;
-  Person createdPerson;
+  Person lastCreatedPerson;
   Immunization createdImmunization;
   Case createdCase;
   List<Case> createdCases;

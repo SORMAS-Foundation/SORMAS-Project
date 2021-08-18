@@ -18,62 +18,45 @@
 
 package org.sormas.e2etests.enums;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 import lombok.Getter;
 
 @Getter
 public enum DiseasesValues {
-  AFP_UI_VALUE("Acute Flaccid Paralysis"),
-  ANTHRAX_UI_VALUE("Anthrax"),
-  CORONAVIRUS_UI_VALUE("COVID-19"),
-  CHOLERA_UI_VALUE("Cholera"),
-  DENGUE_UI_VALUE("Dengue Fever"),
-  EVD_UI_VALUE("Ebola Virus Disease"),
-  GUINEA_WORM_UI_VALUE("Guinea Worm"),
-  RABIES_UI_VALUE("Human Rabies"),
-  NEW_INFLUENZA_UI_VALUE("Influenza (New subtype)"),
-  LASSA_UI_VALUE("Lassa"),
-  MEASLES_UI_VALUE("Measles"),
-  CSM_UI_VALUE("Meningitis (CSM)"),
-  MONKEYPOX_UI_VALUE("Monkeypox"),
-  UNSPECIFIED_VHF_UI_VALUE("Unspecified VHF"),
-  YELLOW_FEVER_UI_VALUE("Yellow Fever"),
+  AFP("AFP", "Acute Flaccid Paralysis"),
+  ANTHRAX("ANTHRAX", "Anthrax"),
+  CORONAVIRUS("CORONAVIRUS", "COVID-19"),
+  CHOLERA("CHOLERA", "Cholera"),
+  DENGUE("DENGUE", "Dengue Fever"),
+  EVD("EVD", "Ebola Virus Disease"),
+  GUINEA_WORM("GUINEA_WORM", "Guinea Worm"),
+  RABIES("RABIES", "Human Rabies"),
+  NEW_INFLUENZA("NEW_INFLUENZA", "Influenza (New subtype)"),
+  LASSA("LASSA", "Lassa"),
+  MEASLES("MEASLES", "Measles"),
+  CSM("CSM", "Meningitis (CSM)"),
+  MONKEYPOX("MONKEYPOX", "Monkeypox"),
+  UNSPECIFIED_VHF("UNSPECIFIED_VHF", "Unspecified VHF"),
+  POLIO("POLIO", "Poliomyelitis"),
+  OTHER("OTHER", "Other Epidemic Disease"),
+  YELLOW_FEVER("YELLOW_FEVER", "Yellow Fever");
 
-  AFP_API_VALUE("AFP"),
-  ANTHRAX_API_VALUE("ANTHRAX"),
-  CORONAVIRUS_API_VALUE("CORONAVIRUS"),
-  GUINEA_WORM_API_VALUE("GUINEA_WORM"),
-  MEASLES_API_VALUE("MEASLES"),
-  POLIO_API_VALUE("POLIO"),
-  CSM_API_VALUE("CSM"),
-  YELLOW_FEVER_API_VALUE("YELLOW_FEVER"),
-  RABIES_API_VALUE("RABIES"),
-  UNSPECIFIED_VHF_API_VALUE("UNSPECIFIED_VHF"),
-  OTHER_API_VALUE("OTHER");
-
-  private final String disease;
+  private final String diseaseName;
+  private final String diseaseCaption;
   private static Random random = new Random();
 
-  DiseasesValues(String aDisease) {
-    disease = aDisease;
+  DiseasesValues(String aDisease, String aDiseaseCaption) {
+    diseaseName = aDisease;
+    diseaseCaption = aDiseaseCaption;
   }
 
-  public static String getRandomUiDiseaseValue() {
-    List<DiseasesValues> uiDiseasesList =
-        Arrays.stream(DiseasesValues.values())
-            .filter(disease -> disease.getDisease().contains("UI_VALUE"))
-            .collect(Collectors.toList());
-    return uiDiseasesList.get(random.nextInt(uiDiseasesList.size())).disease;
+  /** Returns values used for UI tests */
+  public static String getRandomDiseaseCaption() {
+    return String.valueOf(DiseasesValues.values()[random.nextInt(values().length)].diseaseCaption);
   }
 
-  public static String getRandomAPIDiseaseValue() {
-    List<DiseasesValues> apiDiseasesList =
-        Arrays.stream(DiseasesValues.values())
-            .filter(disease -> disease.name().contains("API_VALUE"))
-            .collect(Collectors.toList());
-    return apiDiseasesList.get(random.nextInt(apiDiseasesList.size())).disease;
+  /** Returns values used for API tests */
+  public static String getRandomDiseaseName() {
+    return String.valueOf(DiseasesValues.values()[random.nextInt(values().length)].diseaseName);
   }
 }

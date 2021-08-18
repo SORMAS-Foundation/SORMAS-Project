@@ -65,14 +65,14 @@ public class BusinessFlows implements En {
                     .uuid(UUID.randomUUID().toString())
                     .lastName(faker.name().lastName())
                     .build();
-            apiState.setCreatedPerson(person);
+            apiState.setLastCreatedPerson(person);
             personsHelper.createNewPerson(person);
 
-            Case caze = caseApiService.buildGeneratedCase(apiState.getCreatedPerson());
+            Case caze = caseApiService.buildGeneratedCase(apiState.getLastCreatedPerson());
             caze =
                 caze.toBuilder()
                     .outcome(CaseOutcome.getRandomOutcome())
-                    .disease(DiseasesValues.getRandomAPIDiseaseValue())
+                    .disease(DiseasesValues.getRandomDiseaseName())
                     .caseClassification(CaseClasification.getRandomClassification())
                     .build();
             caseHelper.createCase(caze);
@@ -94,10 +94,10 @@ public class BusinessFlows implements En {
                     .uuid(UUID.randomUUID().toString())
                     .lastName(faker.name().lastName())
                     .build();
-            apiState.setCreatedPerson(person);
+            apiState.setLastCreatedPerson(person);
             personsHelper.createNewPerson(person);
 
-            Case caze = caseApiService.buildGeneratedCase(apiState.getCreatedPerson());
+            Case caze = caseApiService.buildGeneratedCase(apiState.getLastCreatedPerson());
             caseHelper.createCase(caze);
             apiState.setCreatedCase(caze);
 
