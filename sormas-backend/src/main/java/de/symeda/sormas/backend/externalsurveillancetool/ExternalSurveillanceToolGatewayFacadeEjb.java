@@ -27,6 +27,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -79,7 +80,6 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 		Response response = ClientBuilder.newBuilder()
 			.connectTimeout(30, TimeUnit.SECONDS)
-			.readTimeout(60, TimeUnit.SECONDS)
 			.build()
 			.target(serviceUrl)
 			.path("export")
@@ -105,7 +105,14 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		case HttpServletResponse.SC_BAD_REQUEST:
 			throw new ExternalSurveillanceToolException(Strings.ExternalSurveillanceToolGateway_notificationEntryNotSent);
 		default:
-			throw new ExternalSurveillanceToolException(Strings.ExternalSurveillanceToolGateway_notificationErrorSending);
+			ExternalSurveillanceToolResponse externalSurveillanceToolResponse = response.readEntity(ExternalSurveillanceToolResponse.class);
+			if (externalSurveillanceToolResponse == null) {
+				throw new ExternalSurveillanceToolException(Strings.ExternalSurveillanceToolGateway_notificationErrorSending);
+			}
+
+			if(StringUtils.isNotBlank(externalSurveillanceToolResponse.getErrorCode())) {
+
+			}
 		}
 	}
 
