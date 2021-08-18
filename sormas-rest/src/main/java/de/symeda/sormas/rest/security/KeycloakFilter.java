@@ -44,7 +44,6 @@ import java.net.URL;
 public class KeycloakFilter extends KeycloakOIDCFilter {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-
 	private boolean enabled = false;
 
 	@Inject
@@ -71,10 +70,11 @@ public class KeycloakFilter extends KeycloakOIDCFilter {
 		if (enabled) {
 			boolean s2sRequest = false;
 			if (req instanceof HttpServletRequest) {
-				String urlString = ((HttpServletRequest) req).getRequestURL().toString();
-				URL url = new URL(urlString);
+				final String urlString = ((HttpServletRequest) req).getRequestURL().toString();
+				final URL url = new URL(urlString);
 				// S2S auth will be handled by S2SAuthFilter
-				if (url.getPath().startsWith(SormasToSormasApiConstants.RESOURCE_PATH)) {
+				final String s2S_RESOURCE_PATH = SormasToSormasApiConstants.SORMAS_REST_PATH + SormasToSormasApiConstants.RESOURCE_PATH;
+				if (url.getPath().startsWith(s2S_RESOURCE_PATH)) {
 					s2sRequest = true;
 				}
 			}
