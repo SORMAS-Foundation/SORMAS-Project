@@ -48,8 +48,6 @@ import de.symeda.sormas.backend.crypt.CmsPlaintext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
@@ -113,6 +111,19 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 		return cert;
 	}
 
+	private PrivateKey loadOwnPrivateKey()
+		throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException {
+		KeyStore keystore = getKeystore();
+		SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
+		PrivateKey privKey = (PrivateKey) keystore.getKey(sormasToSormasConfig.getId(), sormasToSormasConfig.getKeystorePass().toCharArray());
+		if (privKey == null) {
+			LOGGER.error("Could not load private key.");
+			throw new KeyStoreException("Unable to load private key.");
+		}
+		LOGGER.info("Successfully loaded private key.");
+		return privKey;
+	}
+
 	private X509Certificate loadOtherCertificate(String otherId)
 		throws CertificateException, SormasToSormasException, KeyStoreException, IOException, NoSuchAlgorithmException {
 
@@ -147,23 +158,26 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 
 	private class S2SCertificateConfig extends CmsCertificateConfig {
 
-		private S2SCertificateConfig(String otherId)
-			throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, SormasToSormasException,
-			UnrecoverableKeyException {
+		private S2SCertificateConfig(String otherId) throws SormasToSormasException {
 			SormasToSormasConfig sormasToSormasConfig = configFacadeEjb.getS2SConfig();
 
 			this.ownId = sormasToSormasConfig.getId();
 			this.otherId = otherId;
 
-			KeyStore keystore = getKeystore();
-
-			this.ownCertificate = loadOwnCertificate();
-			this.ownPrivateKey = (PrivateKey) keystore.getKey(ownId, sormasToSormasConfig.getKeystorePass().toCharArray());
-			this.otherCertificate = loadOtherCertificate(otherId);
-
-			if (this.otherCertificate == null) {
+			try {
+				this.ownCertificate = loadOwnCertificate();
+				this.ownPrivateKey = loadOwnPrivateKey();
+				this.otherCertificate = loadOtherCertificate(otherId);
+			} catch (SormasToSormasException
+				| CertificateException
+				| KeyStoreException
+				| IOException
+				| NoSuchAlgorithmException
+				| UnrecoverableKeyException e) {
+				LOGGER.error("Could not create the S2S certificate config for this instance: %s", e);
 				throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasCertNotGenerated);
 			}
+
 		}
 	}
 
@@ -173,7 +187,7 @@ public class SormasToSormasEncryptionFacadeEjb implements SormasToSormasEncrypti
 		try {
 			final String ownId = configFacadeEjb.getS2SConfig().getId();
 			CmsPlaintext plaintext = new CmsPlaintext(ownId, recipientId, entities);
-			S2SCertificateConfig config = new S2SCertificateConfig(plaintext.getReceiverId());
+			S2SCertificateConfig config = new S2SCertificateConfig(recipientId);
 			byte[] encryptedData = CmsCreator.signAndEncrypt(plaintext, config, true);
 
 			return new SormasToSormasEncryptedDataDto(ownId, encryptedData);

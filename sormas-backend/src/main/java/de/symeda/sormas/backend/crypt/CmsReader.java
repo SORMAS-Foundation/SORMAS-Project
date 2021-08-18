@@ -82,7 +82,7 @@ public class CmsReader {
 
 		if (!plaintext.getSenderId().equals(certificateConfig.getOtherId())) {
 			LOGGER.error("Wrong sender: Expected {}, was {}", certificateConfig.getOtherId(), plaintext.getSenderId());
-			throw new SecurityException("The send of the message is not correct!");
+			throw new SecurityException("The sender of the message is not correct!");
 		}
 
 		return plaintext.getMessage();
