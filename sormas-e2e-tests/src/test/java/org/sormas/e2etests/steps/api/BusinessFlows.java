@@ -72,7 +72,7 @@ public class BusinessFlows implements En {
             caze =
                 caze.toBuilder()
                     .outcome(CaseOutcome.getRandomOutcome())
-                    .disease(DiseaseUiValues.getRandomDisease())
+                    .disease(DiseasesValues.getRandomAPIDiseaseValue())
                     .caseClassification(CaseClasification.getRandomClassification())
                     .build();
             caseHelper.createCase(caze);

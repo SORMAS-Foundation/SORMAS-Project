@@ -22,7 +22,7 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.util.UUID;
-import org.sormas.e2etests.enums.DiseaseUiValues;
+import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.pojo.web.Case;
 
 public class CaseService {
@@ -102,7 +102,7 @@ public class CaseService {
 
   public Case buildCaseForLineListingFeature() {
     return Case.builder()
-        .disease(DiseaseUiValues.MONKEYPOX.getDisease())
+        .disease(DiseasesValues.MONKEYPOX_UI_VALUE.getDisease())
         .region("Voreingestellte")
         .district("Voreingestellter Landkreis")
         .facilityCategory("Accommodation")

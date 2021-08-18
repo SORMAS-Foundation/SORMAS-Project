@@ -59,7 +59,7 @@ public class ImmunizationSteps implements En {
                     .externalId(faker.number().digits(9))
                     .reportingUser(TestDataUser.NATIONAL_USER.getUuid())
                     .archived(false)
-                    .disease(DiseaseApiValues.getRandomDiseaseValue())
+                    .disease(DiseasesValues.getRandomAPIDiseaseValue())
                     .immunizationStatus(ImmunizationStatusValues.getRandomImmunizationStatus())
                     .meansOfImmunization(MeansOfImmunizationValues.getRandomMeansOfImmunization())
                     .immunizationManagementStatus(
