@@ -7,8 +7,6 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.Serializable;
-
 /**
  * Naive Sign-then-Encrypt is not secure, read
  * https://theworld.com/~dtd/sign_encrypt/sign_encrypt7.html

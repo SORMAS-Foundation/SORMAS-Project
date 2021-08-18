@@ -1,7 +1,6 @@
 package de.symeda.sormas.api.sormastosormas;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
