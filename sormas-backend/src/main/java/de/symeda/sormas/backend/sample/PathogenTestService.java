@@ -276,43 +276,4 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 
 		em.createQuery(cu).executeUpdate();
 	}
-
-	public Predicate buildPathogenCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, Root<PathogenTest> pathogenJoins) {
-
-		Predicate filter = null;
-		From<Sample, Sample> sampleJoin = pathogenJoins.join(PathogenTest.SAMPLE, JoinType.LEFT);
-		SampleJoins joins = new SampleJoins(sampleJoin);
-
-		if (criteria.getRegion() != null) {
-			Expression<Object> regionExpression = cb.selectCase()
-					.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(Region.UUID))
-					.otherwise(
-							cb.selectCase()
-									.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.UUID))
-									.otherwise(
-											cb.selectCase()
-													.when(cb.isNotNull(joins.getContactCaseRegion()), joins.getContactCaseRegion().get(Region.UUID))
-													.otherwise(joins.getEventRegion().get(Region.UUID))));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(regionExpression, criteria.getRegion().getUuid()));
-		}
-
-		if (criteria.getPathogenTestResult() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pathogenJoins.get(PathogenTest.TEST_RESULT), criteria.getPathogenTestResult()));
-		}
-
-		if (criteria.getDisease() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pathogenJoins.get(PathogenTest.TESTED_DISEASE), criteria.getDisease()));
-		}
-
-		if (criteria.getSampleReportDateFrom() != null && criteria.getSampleReportDateTo() != null) {
-			filter =
-					CriteriaBuilderHelper.and(cb, filter, cb.between(pathogenJoins.get(PathogenTest.TEST_DATE_TIME), criteria.getSampleReportDateFrom(), criteria.getSampleReportDateTo()));
-		}
-
-		if (criteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(pathogenJoins.get(PathogenTest.DELETED), criteria.getDeleted()));
-		}
-
-		return filter;
-	}
 }

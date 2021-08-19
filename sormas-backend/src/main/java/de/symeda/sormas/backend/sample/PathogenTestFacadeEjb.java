@@ -523,22 +523,4 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	@Stateless
 	public static class PathogenTestFacadeEjbLocal extends PathogenTestFacadeEjb {
 	}
-
-	@Override
-	public long count(SampleCriteria sampleCriteria) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		final Root<PathogenTest> pathogenRoot = cq.from(PathogenTest.class);
-
-		Predicate filter = null;
-
-		if (sampleCriteria != null) {
-			filter = pathogenTestService.buildPathogenCriteriaFilter(sampleCriteria, cb, pathogenRoot);
-			cq.where(filter);
-		}
-		cq.select(cb.count(pathogenRoot));
-
-		Long count = em.createQuery(cq).getSingleResult();
-		return count;
-	}
 }
