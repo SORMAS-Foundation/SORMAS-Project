@@ -15,43 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
 package org.sormas.e2etests.enums;
 
-import java.util.Random;
 import lombok.Getter;
 
 @Getter
-public enum Disease {
-  AFP("Acute Flaccid Paralysis"),
-  ANTHRAX("Anthrax"),
-  CORONAVIRUS("COVID-19"),
-  CHOLERA("Cholera"),
-  DENGUE("Dengue Fever"),
-  EVD("Ebola Virus Disease"),
-  GUINEA_WORM("Guinea Worm"),
-  RABIES("Human Rabies"),
-  NEW_INFLUENZA("Influenza (New subtype)"),
-  LASSA("Lassa"),
-  MEASLES("Measles"),
-  CSM("Meningitis (CSM)"),
-  MONKEYPOX("Monkeypox"),
-  UNSPECIFIED_VHF("Unspecified VHF"),
-  YELLOW_FEVER("Yellow Fever");
+public enum CommunityUUIDs {
+  VoreingestellteGemeinde("QWK33J-XYN3DE-5CSXFJ-MMFOKNKM");
 
-  private final String disease;
+  private final String option;
 
-  Disease(String aDisease) {
-    disease = aDisease;
+  CommunityUUIDs(String option) {
+    this.option = option;
   }
 
-  public static String getRandomDisease() {
-    Random random = new Random();
-    return String.valueOf(Disease.values()[random.nextInt(values().length)]);
-  }
-
-  public static String getRandomDiseaseValue() {
-    Random random = new Random();
-    return String.valueOf(Disease.values()[random.nextInt(values().length)].disease);
+  @Override
+  public String toString() {
+    return this.option;
   }
 }

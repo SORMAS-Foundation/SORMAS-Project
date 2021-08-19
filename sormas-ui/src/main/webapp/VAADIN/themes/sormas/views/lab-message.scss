@@ -1,0 +1,21 @@
+@mixin sormas-lab-message-view {
+
+  .lab-message-details {
+    word-break: break-word;
+    user-select: text;
+  }
+
+  .lab-message-processable,
+  .lab-message-slider {
+    .lab-message-details {
+      height: calc(100vh - 230px) !important;
+    }
+  }
+
+  .lab-message-processing,
+  .lab-message-not-processable {
+    .lab-message-details {
+      height: calc(100vh - 197px) !important;
+    }
+  }
+}

@@ -146,7 +146,9 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 					ObjectMapper mapper = new ObjectMapper();
 					casesList = Arrays.asList(mapper.readValue(cases, SormasToSormasCasePreview[].class));
 				} catch (IOException e) {
-					throw new ValidationRuntimeException("Content of cases could not be parsed to List<SormasToSormasCasePreview> - ID: " + getId());
+					throw new ValidationRuntimeException(
+						"Content of cases could not be parsed to List<SormasToSormasCasePreview> - ID: " + getId(),
+						e);
 				}
 			}
 		}

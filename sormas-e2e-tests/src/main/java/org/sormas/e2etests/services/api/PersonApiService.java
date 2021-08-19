@@ -36,6 +36,8 @@ public class PersonApiService {
         .uuid(UUID.randomUUID().toString())
         .firstName(faker.name().firstName())
         .lastName(faker.name().lastName())
+        .sex("Male")
+        .phone(faker.phoneNumber().phoneNumber())
         .build();
   }
 }

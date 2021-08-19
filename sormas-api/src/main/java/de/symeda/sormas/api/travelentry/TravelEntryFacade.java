@@ -21,7 +21,7 @@ public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntr
 
 	Boolean isTravelEntryEditAllowed(String travelEntryUuid);
 
-	public long count(TravelEntryCriteria criteria, boolean ignoreUserFilter);
+	long count(TravelEntryCriteria criteria, boolean ignoreUserFilter);
 
 	boolean exists(String uuid);
 

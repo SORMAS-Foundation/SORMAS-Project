@@ -88,6 +88,7 @@ public class EventParticipantsController {
 					final PersonDto person = PersonDto.build();
 					person.setFirstName(createForm.getPersonFirstName());
 					person.setLastName(createForm.getPersonLastName());
+					person.setSex(createForm.getPersonSex());
 
 					ControllerProvider.getPersonController()
 						.selectOrCreatePerson(
@@ -150,7 +151,7 @@ public class EventParticipantsController {
 
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		EventParticipantEditForm editForm = new EventParticipantEditForm(
-			FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()),
+			FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false),
 			false,
 			eventParticipant.getPerson().isPseudonymized());
 		editForm.setValue(eventParticipant);
@@ -212,7 +213,7 @@ public class EventParticipantsController {
 
 	public CommitDiscardWrapperComponent<?> getEventParticipantDataEditComponent(String eventParticipantUuid) {
 		final EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
-		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 
 		final EventParticipantEditForm editForm =
 			new EventParticipantEditForm(event, eventParticipant.isPseudonymized(), eventParticipant.getPerson().isPseudonymized());
@@ -244,7 +245,7 @@ public class EventParticipantsController {
 			if (!editForm.getFieldGroup().isModified()) {
 
 				EventParticipantDto dto = editForm.getValue();
-				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(dto.getEvent().getUuid());
+				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(dto.getEvent().getUuid(), false);
 				UserDto user = UserProvider.getCurrent().getUser();
 
 				RegionReferenceDto userRegion = user.getRegion();
@@ -310,7 +311,7 @@ public class EventParticipantsController {
 	}
 
 	public VerticalLayout getEventParticipantViewTitleLayout(EventParticipantDto eventParticipant) {
-		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 
 		VerticalLayout titleLayout = new VerticalLayout();
 		titleLayout.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_4);

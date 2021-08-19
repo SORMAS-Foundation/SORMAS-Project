@@ -43,6 +43,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -126,10 +127,13 @@ public class LabMessageController {
 		layout.addComponent(form);
 
 		if (newDto.getStatus().isProcessable()) {
+			layout.addStyleName("lab-message-processable");
 			layout.addComponent(getLabMessageButtonsPanel(newDto, () -> {
 				window.close();
 				onFormActionPerformed.run();
 			}));
+		} else {
+			layout.addStyleName("lab-message-not-processable");
 		}
 
 		form.setValue(newDto);
@@ -322,7 +326,7 @@ public class LabMessageController {
 
 				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
 				if (!eventIndexDtos.contains(selectedEvent)) {
-					createEventParticipant(FacadeProvider.getEventFacade().getEventByUuid(eventReferenceDto.getUuid()), labMessageDto, person);
+					createEventParticipant(FacadeProvider.getEventFacade().getEventByUuid(eventReferenceDto.getUuid(), false), labMessageDto, person);
 				} else {
 					CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(
 						new VerticalLayout(new Label(I18nProperties.getString(Strings.infoEventParticipantAlreadyExisting))));
@@ -678,15 +682,22 @@ public class LabMessageController {
 		}
 		// TODO currently just the first testReport is picked here. That must be temporary. Will be fixed with #5899
 		List<TestReportDto> testReportDtos = FacadeProvider.getTestReportFacade().getAllByLabMessage(labMessageDto.toReference());
-		if(!testReportDtos.isEmpty()) {
+		if (!testReportDtos.isEmpty()) {
 			TestReportDto testReportDto = testReportDtos.get(0);
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(testReportDto.getTestResult());
+			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(SampleDto.PATHOGEN_TEST_RESULT)).setValue(testReportDto.getTestResult());
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(testReportDto.getTestType());
-			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE)).setValue(labMessageDto.getTestedDisease());
+			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE))
+				.setValue(labMessageDto.getTestedDisease());
 			((NullableOptionGroup) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT_VERIFIED))
 				.setValue(testReportDto.isTestResultVerified());
 			((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
 				.setValue(testReportDto.getTestDateTime());
+			if (testReportDto.getTypingId() != null) {
+				Field typingIdField = sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID);
+				typingIdField.setValue(testReportDto.getTypingId());
+				typingIdField.setVisible(true);
+			}
 		}
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE))
@@ -705,9 +716,15 @@ public class LabMessageController {
 		Window window = VaadinUiUtil.createPopupWindow();
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
 			getPathogenTestCreateComponent(sampleDto, labMessageDto, pathogenTestDto, window);
+		// set custom predefined field values and visibilities
 		CheckBox viaLimsCheckbox = pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.VIA_LIMS);
 		viaLimsCheckbox.setValue(Boolean.TRUE);
 		viaLimsCheckbox.setEnabled(false);
+		if (pathogenTestDto.getTypingId() != null) {
+			Field typingIdField = pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID);
+			typingIdField.setValue(pathogenTestDto.getTypingId());
+			typingIdField.setVisible(true);
+		}
 
 		showFormWithLabMessage(
 			labMessageDto,
@@ -729,6 +746,7 @@ public class LabMessageController {
 			pathogenTestDto.setTestResultVerified(testReportDto.isTestResultVerified());
 			pathogenTestDto.setTestDateTime(testReportDto.getTestDateTime());
 			pathogenTestDto.setTestResultText(testReportDto.getTestResultText());
+			pathogenTestDto.setTypingId(testReportDto.getTypingId());
 		}
 
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
@@ -768,6 +786,7 @@ public class LabMessageController {
 		horizontalSplitPanel.setFirstComponent(form);
 		horizontalSplitPanel.setSecondComponent(createComponent);
 		horizontalSplitPanel.setSplitPosition(569, Sizeable.Unit.PIXELS); // This is just the position it needs to avoid vertical scroll bars.
+		horizontalSplitPanel.addStyleName("lab-message-processing");
 
 		Panel panel = new Panel();
 		panel.setHeightFull();
@@ -789,7 +808,7 @@ public class LabMessageController {
 		// TODO currently just the first testReport is picked here. That must be temporary.
 		//  #5899 should fix this and also provide better support for handling creation of a new test report
 		List<TestReportDto> testReportDtos = labMessageDto.getTestReports();
-		if	(testReportDtos.isEmpty()) {
+		if (testReportDtos.isEmpty()) {
 			TestReportDto testReportDto = TestReportDto.build();
 			testReportDto.setLabMessage(labMessageDto.toReference());
 			testReportDto.setPathogenTest(pathogenTestDto.toReference());

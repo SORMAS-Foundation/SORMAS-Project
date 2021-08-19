@@ -352,7 +352,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		// Set requirements that don't need visibility changes and read only status
 
 		setReadOnly(true, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE);
-		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
+		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 		setVisible(
 			false,
 			PersonDto.OCCUPATION_DETAILS,

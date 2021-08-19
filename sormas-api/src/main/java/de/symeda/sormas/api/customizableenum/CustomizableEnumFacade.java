@@ -62,6 +62,17 @@ public interface CustomizableEnumFacade {
 	<T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease);
 
 	/**
+	 * Indicates if the specified type has any entry in the database for a specific disease.
+	 *
+	 * @param type
+	 *            The type for which to retrieve the enum values
+	 * @param disease
+	 *            The disease for which to retrieve the enum values. If null, all enum values that are disease-independent are retrieved
+	 * @return true if the type has any entry in the database
+	 */
+	boolean hasEnumValues(CustomizableEnumType type, Disease disease);
+
+	/**
 	 * Clears the caches and reloads the customizable enum values from the database. Does not load enum values by language
 	 * or disease as those are retrieved on demand by using {@link #getEnumValue(CustomizableEnumType, String)} and
 	 * {@link #getEnumValues(CustomizableEnumType, Disease)}. Exposed to this facade to allow reloading the caches without

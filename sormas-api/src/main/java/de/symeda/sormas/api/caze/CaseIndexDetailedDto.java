@@ -86,7 +86,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								YesNoUnknown reInfection, String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								String reportingUserUuid, String reportingUserFirstName, String reportingUserLastName, Date symptomOnsetDate,
 								String responsibleRegion, String responsibleCommunity,
-								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount) {
+								int visitCount, long eventCount, Date latestSampleDateTime, long sampleCount, Date latestChangedDate) {
 		super(id, uuid, epidNumber, externalID, externalToken, internalToken, personFirstName, personLastName,
 				disease, diseaseVariant, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, creationDate,
@@ -94,7 +94,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 				healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,
 				quarantineTo, completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccination, changeDate, facilityId,
-				responsibleRegionUuid, responsibleDistrictUuid, responsibleDistrictName, isInJurisdiction, visitCount);
+				responsibleRegionUuid, responsibleDistrictUuid, responsibleDistrictName, isInJurisdiction, visitCount, latestChangedDate);
 		//@formatter:on
 
 		this.reInfection = reInfection;

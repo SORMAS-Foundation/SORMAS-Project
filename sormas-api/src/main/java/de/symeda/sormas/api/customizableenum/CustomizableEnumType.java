@@ -16,13 +16,15 @@
 package de.symeda.sormas.api.customizableenum;
 
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.event.SpecificRisk;
 
 /**
  * An enum storing all enumerations that support customization.
  */
 public enum CustomizableEnumType {
 
-	DISEASE_VARIANT(DiseaseVariant.class);
+	DISEASE_VARIANT(DiseaseVariant.class),
+	SPECIFIC_EVENT_RISK(SpecificRisk.class);
 
 	private final Class<? extends CustomizableEnum> enumClass;
 

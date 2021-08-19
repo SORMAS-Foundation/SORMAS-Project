@@ -25,8 +25,8 @@ import java.util.List;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
-
 import com.vaadin.ui.Notification;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -74,7 +74,7 @@ public class EventGroupList extends PaginationList<EventGroupIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(this.event.getUuid());
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(this.event.getUuid(), false);
 		List<EventGroupIndexDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			EventGroupIndexDto eventGroup = displayedEntries.get(i);
@@ -92,10 +92,7 @@ public class EventGroupList extends PaginationList<EventGroupIndexDto> {
 						return;
 					}
 
-					ControllerProvider.getEventGroupController()
-						.unlinkEventGroup(
-							this.event,
-							listEntry.getEventGroup().toReference());
+					ControllerProvider.getEventGroupController().unlinkEventGroup(this.event, listEntry.getEventGroup().toReference());
 					reload();
 				});
 			}

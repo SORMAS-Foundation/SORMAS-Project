@@ -349,10 +349,15 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					facilityCombo.setRequired(true);
 				}
 				updateFacilityFields(facilityCombo, facilityDetails);
-			} else {
+			} else if (TypeOfPlace.HOME.equals(facilityOrHome.getValue())
+				|| ((facilityOrHome.getValue() instanceof java.util.Set) && TypeOfPlace.HOME.equals(facilityOrHome.getNullableValue()))) {
 				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
 				facilityCombo.addItem(noFacilityRef);
 				facilityCombo.setValue(noFacilityRef);
+			} else {
+				facilityCombo.removeAllItems();
+				facilityCombo.setValue(null);
+				updateFacilityFields(facilityCombo, facilityDetails);
 			}
 		});
 		facilityTypeGroup.addValueChangeListener(e -> {
@@ -581,7 +586,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			if (!visibleAndRequired) {
 				tfFacilityDetails.clear();
 			}
-		} else if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
+		} else if (((facilityOrHome.getValue() instanceof java.util.Set)
+			&& (facilityOrHome.getNullableValue() == null || TypeOfPlace.FACILITY.equals(facilityOrHome.getNullableValue())))
+			|| TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
 			tfFacilityDetails.setVisible(false);
 			tfFacilityDetails.setRequired(false);
 			tfFacilityDetails.clear();
