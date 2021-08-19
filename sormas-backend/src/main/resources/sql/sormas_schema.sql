@@ -7870,4 +7870,37 @@ ALTER TABLE testreport_history ADD COLUMN typingId text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (400, 'Add typingId to TestReport #5917');
 
+-- 2021-08-03 Update history tables #6269
+ALTER TABLE campaignformmeta_history DROP COLUMN archived;
+ALTER TABLE campaignformmeta_history DROP COLUMN creatinguser_id;
+ALTER TABLE campaignformmeta_history DROP COLUMN deleted;
+ALTER TABLE campaignformmeta_history DROP COLUMN description;
+ALTER TABLE campaignformmeta_history DROP COLUMN name;
+ALTER TABLE campaignformmeta_history DROP COLUMN enddate;
+ALTER TABLE campaignformmeta_history DROP COLUMN startdate;
+ALTER TABLE campaignformmeta_history ADD COLUMN languagecode varchar(255);
+ALTER TABLE campaignformmeta_history ADD COLUMN formid varchar(255);
+
+ALTER TABLE cases_history ADD COLUMN responsiblecommunity_id BIGINT;
+ALTER TABLE cases_history DROP COLUMN reportingdistrict_id;
+
+ALTER TABLE contact_history ADD COLUMN healthconditions_id BIGINT;
+
+ALTER TABLE labmessage_history ADD COLUMN pathogentest_id BIGINT;
+ALTER TABLE labmessage_history DROP COLUMN processed;
+
+ALTER TABLE location_history DROP COLUMN person_id;
+
+ALTER TABLE pathogentest_history RENAME COLUMN testeddiseasevariant_id TO testeddiseasevariant;
+ALTER TABLE pathogentest_history ALTER COLUMN testeddiseasevariant TYPE text USING testeddiseasevariant::text;
+
+ALTER TABLE person_history ADD COLUMN changedateofembeddedlists timestamp without time zone;
+
+ALTER TABLE samples_history DROP COLUMN suggestedtypeoftest;
+ALTER TABLE samples_history ADD COLUMN shipped boolean;
+ALTER TABLE samples_history ADD COLUMN received boolean;
+ALTER TABLE samples_history ADD COLUMN referredto_id BIGINT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (401, 'Update history tables #6269');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
