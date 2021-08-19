@@ -88,6 +88,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private static final String EVENT_WEEK_AND_DATE_FILTER = "eventWeekDateFilter";
 	private static final String EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER = "eventSignalEvolutionWeekDateFilter";
+	private static final String ACTION_CHANGE_WEEK_AND_DATE_FILTER = "actionChangeWeekDateFilter";
 	private static final String ACTION_WEEK_AND_DATE_FILTER = "actionWeekDateFilter";
 	private static final String FACILITY_TYPE_GROUP_FILTER = "facilityTypeGroupFilter";
 
@@ -110,6 +111,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			EventCriteria.ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL)
 		+ loc(EVENT_WEEK_AND_DATE_FILTER)
 		+ loc(EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER)
+		+ loc(ACTION_CHANGE_WEEK_AND_DATE_FILTER)
 		+ loc(ACTION_WEEK_AND_DATE_FILTER);
 
 	private final boolean hideEventStatusFilter;
@@ -128,6 +130,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private void updateFields() {
 		if (hideActionFilters) {
+			getEpiWeekAndDateComponent(ACTION_CHANGE_WEEK_AND_DATE_FILTER).getParent().setVisible(false);
 			getEpiWeekAndDateComponent(ACTION_WEEK_AND_DATE_FILTER).getParent().setVisible(false);
 		}
 		if (hideEventStatusFilter) {
@@ -224,6 +227,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		moreFiltersContainer.addComponent(
 			buildWeekAndDateFilter(EventCriteria.DateType.EVENT_SIGNAL_EVOLUTION, isExternalShareEnabled),
 			EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER);
+		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION_CHANGE, isExternalShareEnabled), ACTION_CHANGE_WEEK_AND_DATE_FILTER);
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION, isExternalShareEnabled), ACTION_WEEK_AND_DATE_FILTER);
 
 		ComboBox facilityTypeGroupField = ComboBoxHelper.createComboBoxV7();
@@ -344,6 +348,14 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEvolutionDateFrom));
 			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEvolutionDateTo));
 			break;
+		case ACTION_CHANGE:
+			weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(false, false, null, this);
+
+			weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptActionChangeEpiWeekFrom));
+			weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptActionChangeEpiWeekTo));
+			weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptActionChangeDateFrom));
+			weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptActionChangeDateTo));
+			break;
 		case ACTION:
 			weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(false, false, null, this);
 
@@ -418,6 +430,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		Set<Component> dateFilterOptionComponents = Sets.newHashSet(
 			getEpiWeekAndDateComponent(EVENT_WEEK_AND_DATE_FILTER).getDateFilterOptionFilter(),
 			getEpiWeekAndDateComponent(EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER).getDateFilterOptionFilter(),
+			getEpiWeekAndDateComponent(ACTION_CHANGE_WEEK_AND_DATE_FILTER).getDateFilterOptionFilter(),
 			getEpiWeekAndDateComponent(ACTION_WEEK_AND_DATE_FILTER).getDateFilterOptionFilter());
 
 		return super.streamFieldsForEmptyCheck(layout).filter(f -> !dateFilterOptionComponents.contains(f));
@@ -494,10 +507,16 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			criteria.getEventEvolutionDateTo());
 
 		applyDateDependencyOnNewValue(
-			ACTION_WEEK_AND_DATE_FILTER,
+			ACTION_CHANGE_WEEK_AND_DATE_FILTER,
 			criteria.getActionChangeDateFilterOption(),
 			criteria.getActionChangeDateFrom(),
 			criteria.getActionChangeDateTo());
+
+		applyDateDependencyOnNewValue(
+				ACTION_WEEK_AND_DATE_FILTER,
+				criteria.getActionDateFilterOption(),
+				criteria.getActionDateFrom(),
+				criteria.getActionDateTo());
 
 		RegionReferenceDto region = criteria.getRegion();
 		DistrictReferenceDto district = criteria.getDistrict();

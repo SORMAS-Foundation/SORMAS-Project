@@ -1118,6 +1118,10 @@ public interface Strings {
 	String populationDataByDistrict = "populationDataByDistrict";
 	String populationDataByRegion = "populationDataByRegion";
 	String previousPeriod = "previousPeriod";
+	String promptActionChangeDateFrom = "promptActionChangeDateFrom";
+	String promptActionChangeDateTo = "promptActionChangeDateTo";
+	String promptActionChangeEpiWeekFrom = "promptActionChangeEpiWeekFrom";
+	String promptActionChangeEpiWeekTo = "promptActionChangeEpiWeekTo";
 	String promptActionDateFrom = "promptActionDateFrom";
 	String promptActionDateTo = "promptActionDateTo";
 	String promptActionEpiWeekFrom = "promptActionEpiWeekFrom";

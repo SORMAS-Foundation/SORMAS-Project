@@ -230,7 +230,17 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(action.get(Action.CHANGE_DATE), criteria.getActionChangeDateFrom()));
 		} else if (criteria.getActionChangeDateTo() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(event.get(Event.START_DATE), criteria.getActionChangeDateTo()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(action.get(Action.CHANGE_DATE), criteria.getActionChangeDateTo()));
+		}
+
+		if (criteria.getActionDateFrom() != null && criteria.getActionDateTo() != null) {
+			filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.between(action.get(Action.DATE), criteria.getActionDateFrom(), criteria.getActionDateTo()));
+		} else if (criteria.getActionDateFrom() != null) {
+			filter =
+					CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(action.get(Action.DATE), criteria.getActionDateFrom()));
+		} else if (criteria.getActionChangeDateTo() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(action.get(Action.DATE), criteria.getActionDateTo()));
 		}
 
 		if (criteria.getActionStatus() != null) {
@@ -291,6 +301,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			action.get(Action.TITLE),
 			action.get(Action.CREATION_DATE),
 			action.get(Action.CHANGE_DATE),
+			action.get(Action.DATE),
 			action.get(Action.ACTION_STATUS),
 			action.get(Action.PRIORITY),
 			lastModifiedBy.get(User.UUID),
@@ -430,6 +441,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			action.get(Action.TITLE),
 			action.get(Action.CREATION_DATE),
 			action.get(Action.CHANGE_DATE),
+			action.get(Action.DATE),
 			action.get(Action.ACTION_STATUS),
 			action.get(Action.PRIORITY),
 			lastModifiedBy.get(User.UUID),
