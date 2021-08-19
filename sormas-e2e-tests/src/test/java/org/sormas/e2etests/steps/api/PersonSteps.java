@@ -20,12 +20,17 @@ package org.sormas.e2etests.steps.api;
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
-import io.restassured.response.Response;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
-import org.sormas.e2etests.enums.*;
+import org.sormas.e2etests.enums.CommunityUUIDs;
+import org.sormas.e2etests.enums.ContinentUUIDs;
+import org.sormas.e2etests.enums.CountryUUIDs;
+import org.sormas.e2etests.enums.DistrictUUIDs;
+import org.sormas.e2etests.enums.FacilityUUIDs;
+import org.sormas.e2etests.enums.RegionUUIDs;
+import org.sormas.e2etests.enums.SubcontinentUUIDs;
 import org.sormas.e2etests.helpers.api.PersonsHelper;
 import org.sormas.e2etests.pojo.api.Person;
 import org.sormas.e2etests.pojo.api.chunks.Address;
@@ -113,10 +118,15 @@ public class PersonSteps implements En {
     Then(
         "API: I check that POST person call body is {string}",
         (String expectedBody) -> {
-          Response response =
-              personsHelper.getPersonBasedOnUUID(apiState.getLastCreatedPerson().getUuid());
-          String responseBody = response.getBody().toString();
+          String responseBody = apiState.getResponse().getBody().toString();
           Truth.assertThat(expectedBody.equals(String.valueOf(responseBody)));
+        });
+
+    Then(
+        "API: I check that POST person call status code is {int}",
+        (Integer expectedStatus) -> {
+          int responseStatusCode = apiState.getResponse().getStatusCode();
+          Truth.assertThat(expectedStatus).isEqualTo(responseStatusCode);
         });
   }
 }
