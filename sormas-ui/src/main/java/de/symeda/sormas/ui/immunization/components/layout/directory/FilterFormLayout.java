@@ -34,8 +34,4 @@ public class FilterFormLayout extends VerticalLayout {
 	public void addApplyHandler(Button.ClickListener listener) {
 		filterForm.addApplyHandler(listener);
 	}
-
-	public boolean hasFilter() {
-		return filterForm.hasFilter();
-	}
 }
