@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
-import com.vaadin.v7.ui.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +43,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -685,6 +685,7 @@ public class LabMessageController {
 		if (!testReportDtos.isEmpty()) {
 			TestReportDto testReportDto = testReportDtos.get(0);
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(testReportDto.getTestResult());
+			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(SampleDto.PATHOGEN_TEST_RESULT)).setValue(testReportDto.getTestResult());
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(testReportDto.getTestType());
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE))
 				.setValue(labMessageDto.getTestedDisease());
