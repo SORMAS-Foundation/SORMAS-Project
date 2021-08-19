@@ -401,7 +401,8 @@ public final class DataHelper {
 				userLanguage);
 		} else if (value instanceof BirthDateDto) {
 			BirthDateDto birthDate = (BirthDateDto) value;
-			return PersonHelper.formatBirthdate(birthDate.getDateOfBirthDD(), birthDate.getDateOfBirthMM(), birthDate.getDateOfBirthYYYY(), userLanguage);
+			return PersonHelper
+				.formatBirthdate(birthDate.getDateOfBirthDD(), birthDate.getDateOfBirthMM(), birthDate.getDateOfBirthYYYY(), userLanguage);
 		} else {
 			return value.toString();
 		}
@@ -433,5 +434,13 @@ public final class DataHelper {
 		}
 
 		return StringUtils.join(notEmptyValues, separator);
+	}
+
+	public static String getEmailValidationRegex() {
+		return "^([a-zA-Z0-9_\\.\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$";
+	}
+
+	public static String getPhoneNumberValidationRegex() {
+		return ".*[a-zA-Z].*";
 	}
 }

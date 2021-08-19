@@ -23,6 +23,8 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.springframework.util.CollectionUtils;
+
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -44,6 +46,10 @@ public class SormasToSormasShareRequestService extends AdoServiceWithUserFilter<
 		Predicate filter = null;
 		if (criteria.getStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(SormasToSormasShareRequest.STATUS), criteria.getStatus()));
+		}
+
+		if (!CollectionUtils.isEmpty(criteria.getStatusesExcepted())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.not(root.get(SormasToSormasShareRequest.STATUS).in(criteria.getStatusesExcepted())));
 		}
 
 		return filter;

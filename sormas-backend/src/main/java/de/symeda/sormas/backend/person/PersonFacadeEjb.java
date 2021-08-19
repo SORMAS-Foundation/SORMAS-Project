@@ -78,6 +78,7 @@ import de.symeda.sormas.api.contact.FollowUpStatusDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -124,17 +125,20 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipant
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.CountryFacadeEjb;
 import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
@@ -198,6 +202,12 @@ public class PersonFacadeEjb implements PersonFacade {
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
+	@EJB
+	private DistrictFacadeEjbLocal districtFacade;
+	@EJB
+	private CommunityFacadeEjbLocal communityFacade;
+	@EJB
+	private FacilityFacadeEjbLocal facilityFacade;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -513,6 +523,68 @@ public class PersonFacadeEjb implements PersonFacade {
 			.count()
 			> 1) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.personMultiplePrimaryEmailAddresses));
+		}
+		if (StringUtils.isNotBlank(source.getEmailAddress()) && !source.getEmailAddress().matches(DataHelper.getEmailValidationRegex())) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.validEmailAddress,
+					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.EMAIL_ADDRESS)));
+		}
+		if (StringUtils.isNotBlank(source.getPhone()) && source.getPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.validPhoneNumber, I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE)));
+		}
+		if (source.getAddress().getRegion() != null
+			&& source.getAddress().getDistrict() != null
+			&& !districtFacade.getDistrictByUuid(source.getAddress().getDistrict().getUuid()).getRegion().equals(source.getAddress().getRegion())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressDistrictInAddressRegion));
+		}
+		if (source.getAddress().getDistrict() != null
+			&& source.getAddress().getCommunity() != null
+			&& !communityFacade.getByUuid(source.getAddress().getCommunity().getUuid()).getDistrict().equals(source.getAddress().getDistrict())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressCommunityInAddressDistrict));
+		}
+		if ((source.getAddress().getDistrict() != null || source.getAddress().getFacility() != null) && source.getAddress().getRegion() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
+		}
+		if (source.getAddress().getFacility() != null) {
+			FacilityDto healthFacility = facilityFacade.getByUuid(source.getAddress().getFacility().getUuid());
+
+			if (source.getAddress().getCommunity() == null
+				&& healthFacility.getDistrict() != null
+				&& !healthFacility.getDistrict().equals(source.getAddress().getDistrict())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressDistrict));
+			}
+			if (source.getAddress().getCommunity() != null
+				&& healthFacility.getCommunity() != null
+				&& !source.getAddress().getCommunity().equals(healthFacility.getCommunity())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressCommunity));
+			}
+			if (healthFacility.getRegion() != null && !source.getAddress().getRegion().equals(healthFacility.getRegion())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressRegion));
+			}
+		}
+		if (!StringUtils.isAllBlank(
+			source.getAddress().getContactPersonFirstName(),
+			source.getAddress().getContactPersonLastName(),
+			source.getAddress().getContactPersonEmail(),
+			source.getAddress().getContactPersonPhone()) && source.getAddress().getFacilityType() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPersonContactDetailsWithoutFacilityType));
+		}
+		if (StringUtils.isNotBlank(source.getAddress().getContactPersonEmail())
+			&& !source.getAddress().getContactPersonEmail().matches(DataHelper.getEmailValidationRegex())) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.validEmailAddress,
+					I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_EMAIL)));
+		}
+		if (StringUtils.isNotBlank(source.getAddress().getContactPersonPhone())
+			&& source.getAddress().getContactPersonPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.validPhoneNumber,
+					I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_PHONE)));
 		}
 
 		// Validate birth date

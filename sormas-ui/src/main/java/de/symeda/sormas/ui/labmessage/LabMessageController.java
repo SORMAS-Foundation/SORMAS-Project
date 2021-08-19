@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.naming.CannotProceedException;
 import javax.naming.NamingException;
 
+import com.vaadin.v7.ui.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -325,7 +326,7 @@ public class LabMessageController {
 
 				EventReferenceDto eventReferenceDto = new EventReferenceDto(selectedEvent.getUuid());
 				if (!eventIndexDtos.contains(selectedEvent)) {
-					createEventParticipant(FacadeProvider.getEventFacade().getEventByUuid(eventReferenceDto.getUuid()), labMessageDto, person);
+					createEventParticipant(FacadeProvider.getEventFacade().getEventByUuid(eventReferenceDto.getUuid(), false), labMessageDto, person);
 				} else {
 					CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent = new CommitDiscardWrapperComponent<>(
 						new VerticalLayout(new Label(I18nProperties.getString(Strings.infoEventParticipantAlreadyExisting))));
@@ -681,15 +682,21 @@ public class LabMessageController {
 		}
 		// TODO currently just the first testReport is picked here. That must be temporary. Will be fixed with #5899
 		List<TestReportDto> testReportDtos = FacadeProvider.getTestReportFacade().getAllByLabMessage(labMessageDto.toReference());
-		if(!testReportDtos.isEmpty()) {
+		if (!testReportDtos.isEmpty()) {
 			TestReportDto testReportDto = testReportDtos.get(0);
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(testReportDto.getTestResult());
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(testReportDto.getTestType());
-			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE)).setValue(labMessageDto.getTestedDisease());
+			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE))
+				.setValue(labMessageDto.getTestedDisease());
 			((NullableOptionGroup) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT_VERIFIED))
 				.setValue(testReportDto.isTestResultVerified());
 			((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
 				.setValue(testReportDto.getTestDateTime());
+			if (testReportDto.getTypingId() != null) {
+				Field typingIdField = sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID);
+				typingIdField.setValue(testReportDto.getTypingId());
+				typingIdField.setVisible(true);
+			}
 		}
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE))
@@ -708,9 +715,15 @@ public class LabMessageController {
 		Window window = VaadinUiUtil.createPopupWindow();
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
 			getPathogenTestCreateComponent(sampleDto, labMessageDto, pathogenTestDto, window);
+		// set custom predefined field values and visibilities
 		CheckBox viaLimsCheckbox = pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.VIA_LIMS);
 		viaLimsCheckbox.setValue(Boolean.TRUE);
 		viaLimsCheckbox.setEnabled(false);
+		if (pathogenTestDto.getTypingId() != null) {
+			Field typingIdField = pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID);
+			typingIdField.setValue(pathogenTestDto.getTypingId());
+			typingIdField.setVisible(true);
+		}
 
 		showFormWithLabMessage(
 			labMessageDto,
@@ -732,6 +745,7 @@ public class LabMessageController {
 			pathogenTestDto.setTestResultVerified(testReportDto.isTestResultVerified());
 			pathogenTestDto.setTestDateTime(testReportDto.getTestDateTime());
 			pathogenTestDto.setTestResultText(testReportDto.getTestResultText());
+			pathogenTestDto.setTypingId(testReportDto.getTypingId());
 		}
 
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
@@ -793,7 +807,7 @@ public class LabMessageController {
 		// TODO currently just the first testReport is picked here. That must be temporary.
 		//  #5899 should fix this and also provide better support for handling creation of a new test report
 		List<TestReportDto> testReportDtos = labMessageDto.getTestReports();
-		if	(testReportDtos.isEmpty()) {
+		if (testReportDtos.isEmpty()) {
 			TestReportDto testReportDto = TestReportDto.build();
 			testReportDto.setLabMessage(labMessageDto.toReference());
 			testReportDto.setPathogenTest(pathogenTestDto.toReference());
