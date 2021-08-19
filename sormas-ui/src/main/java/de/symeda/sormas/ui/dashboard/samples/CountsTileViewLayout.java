@@ -60,21 +60,25 @@ public class CountsTileViewLayout extends CssLayout {
 			SampleCountType.INDETERMINATE,
 			SampleCountType.PENDING,
 			SampleCountType.NEGATIVE,
-			SampleCountType.POSITIVE };
+			SampleCountType.POSITIVE
+		};
 
 		SampleCountType[] conditionCol = {
 			SampleCountType.ADEQUATE,
-			SampleCountType.INADEQUATE };
+			SampleCountType.INADEQUATE
+		};
 
 		SampleCountType[] shipmentCol = {
 			SampleCountType.SHIPPED,
 			SampleCountType.NOT_SHIPED,
 			SampleCountType.RECEIVED,
-			SampleCountType.NOT_RECEIVED };
+			SampleCountType.NOT_RECEIVED
+		};
 
 		SampleCountType[] recievedCol = {
 			SampleCountType.RECEIVED,
-			SampleCountType.NOT_SHIPED };
+			SampleCountType.NOT_SHIPED
+		};
 
 		HorizontalLayout totalHorizontalLayout = new HorizontalLayout();
 		totalHorizontalLayout.setWidth(500, Unit.PIXELS);
