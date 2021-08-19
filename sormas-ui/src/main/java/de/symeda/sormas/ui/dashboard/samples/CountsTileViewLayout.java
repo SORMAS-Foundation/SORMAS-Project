@@ -53,7 +53,8 @@ public class CountsTileViewLayout extends CssLayout {
 		this.removeAllComponents();
 
 		SampleCountType[] totalCol = {
-			SampleCountType.TOTAL };
+			SampleCountType.COLLECTED
+		};
 
 		SampleCountType[] resultTypeCol = {
 			SampleCountType.INDETERMINATE,
