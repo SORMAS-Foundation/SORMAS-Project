@@ -21,6 +21,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.sample.SampleDateType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -155,7 +156,7 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 		}
 
 		if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
-			criteria.reportDateBetween(fromDate, toDate, dateFilterOption);
+			criteria.sampleDateBetween(fromDate, toDate, SampleDateType.REPORT, dateFilterOption);
 		} else {
 			if (dateFilterOption == DateFilterOption.DATE) {
 				Notification notification = new Notification(
@@ -218,8 +219,8 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 		weekAndDateFilter = (EpiWeekAndDateFilterComponent<DateFilterOption>) dateFilterLayout.getComponent(0);
 
 		weekAndDateFilter.getDateFilterOptionFilter().setValue(criteria.getDateFilterOption());
-		Date sampleDateFrom = criteria.getSampleReportDateFrom();
-		Date sampleDateTo = criteria.getSampleReportDateTo();
+		Date sampleDateFrom = criteria.getSampleDateFrom();
+		Date sampleDateTo = criteria.getSampleDateTo();
 
 		if (DateFilterOption.EPI_WEEK.equals(criteria.getDateFilterOption())) {
 			weekAndDateFilter.getWeekFromFilter().setValue(sampleDateFrom == null ? null : DateHelper.getEpiWeek(sampleDateFrom));
