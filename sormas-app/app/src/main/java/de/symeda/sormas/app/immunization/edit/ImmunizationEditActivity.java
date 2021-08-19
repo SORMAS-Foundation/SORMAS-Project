@@ -90,6 +90,9 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 		case IMMUNIZATION_INFO:
 			fragment = ImmunizationEditFragment.newInstance(activityRootData);
 			break;
+		case VACCINATIONS_INFO:
+			fragment = ImmunizationEditVaccinationListFragment.newInstance(activityRootData);
+			break;
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
 		}

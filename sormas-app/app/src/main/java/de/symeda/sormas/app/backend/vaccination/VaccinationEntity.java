@@ -15,16 +15,16 @@
 
 package de.symeda.sormas.app.backend.vaccination;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -44,6 +44,7 @@ public class VaccinationEntity extends PseudonymizableAdo {
 
 	public static final String TABLE_NAME = "vaccination";
 	public static final String I18N_PREFIX = "vaccination";
+	public static final String IMMUNIZATION = "immunization";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Immunization immunization;

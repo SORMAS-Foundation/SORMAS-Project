@@ -15,9 +15,17 @@
 
 package de.symeda.sormas.app.backend.vaccination;
 
+import android.util.Log;
+
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
+import java.sql.SQLException;
+import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 public class VaccinationDao extends AbstractAdoDao<VaccinationEntity> {
 
@@ -33,6 +41,38 @@ public class VaccinationDao extends AbstractAdoDao<VaccinationEntity> {
 	@Override
 	public String getTableName() {
 		return VaccinationEntity.TABLE_NAME;
+	}
+
+
+	public long countByCriteria(VaccinationCriteria criteria) {
+		try {
+			return buildQueryBuilder(criteria).countOf();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform countByCriteria on Vaccination");
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<VaccinationEntity> queryByCriteria(VaccinationCriteria criteria, long offset, long limit) {
+		try {
+			return buildQueryBuilder(criteria).orderBy(VaccinationEntity.CREATION_DATE, true).offset(offset).limit(limit).query();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform queryByCriteria on Vaccination");
+			throw new RuntimeException(e);
+		}
+	}
+
+
+	private QueryBuilder<VaccinationEntity, Long> buildQueryBuilder(VaccinationCriteria criteria) throws SQLException {
+		QueryBuilder<VaccinationEntity, Long> queryBuilder = queryBuilder();
+		Where<VaccinationEntity, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+
+		if (criteria.getImmunization() != null) {
+			where.and().eq(VaccinationEntity.IMMUNIZATION + "_id", criteria.getImmunization());
+		}
+
+		queryBuilder.setWhere(where);
+		return queryBuilder;
 	}
 
 }

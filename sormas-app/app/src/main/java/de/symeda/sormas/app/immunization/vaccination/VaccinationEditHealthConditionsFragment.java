@@ -13,35 +13,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.caze.edit;
+package de.symeda.sormas.app.immunization.vaccination;
 
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
-import de.symeda.sormas.app.BaseEditHealthConditionsFragment;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.app.BaseEditHealthConditionsFragment;
 
-public class CaseEditHealthConditionsFragment extends BaseEditHealthConditionsFragment<Case> {
+public class VaccinationEditHealthConditionsFragment extends BaseEditHealthConditionsFragment<VaccinationEntity> {
 
-	public static final String TAG = CaseEditHealthConditionsFragment.class.getSimpleName();
+	public static final String TAG = VaccinationEditHealthConditionsFragment.class.getSimpleName();
 
-	private Case caze;
+	private VaccinationEntity vaccination;
 
-	public static CaseEditHealthConditionsFragment newInstance(Case activityRootData) {
+	public static VaccinationEditHealthConditionsFragment newInstance(VaccinationEntity activityRootData) {
 		return newInstanceWithFieldCheckers(
-			CaseEditHealthConditionsFragment.class,
-			null,
-			activityRootData,
-			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
-				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
-	}
-
-	public static CaseEditHealthConditionsFragment newInstance(VaccinationEntity activityRootData) {
-		return newInstanceWithFieldCheckers(
-			CaseEditHealthConditionsFragment.class,
+			VaccinationEditHealthConditionsFragment.class,
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getImmunization().getDisease())
@@ -51,8 +40,8 @@ public class CaseEditHealthConditionsFragment extends BaseEditHealthConditionsFr
 
 	@Override
 	protected void prepareFragmentData() {
-		Case activityRootData = getActivityRootData();
-		caze = activityRootData;
-		record = caze.getClinicalCourse().getHealthConditions();
+		VaccinationEntity activityRootData = getActivityRootData();
+		vaccination = activityRootData;
+		record = vaccination.getHealthConditions();
 	}
 }

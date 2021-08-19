@@ -68,6 +68,9 @@ public class ImmunizationReadActivity extends BaseReadActivity<Immunization> {
             case PERSON_INFO:
                 fragment = PersonReadFragment.newInstance(activityRootData);
                 break;
+            case VACCINATIONS_INFO:
+                fragment = ImmunizationReadVaccinationListFragment.newInstance(activityRootData);
+                break;
             default:
                 throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
         }

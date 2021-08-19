@@ -32,7 +32,7 @@ import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.util.Bundler;
 
-public abstract class PagedBaseListFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements OnListItemClickListener {
+public abstract class  PagedBaseListFragment<TListAdapter extends RecyclerView.Adapter> extends BaseFragment implements OnListItemClickListener {
 
 	private AsyncTask jobTask;
 	private PagedBaseListActivity baseListActivity;

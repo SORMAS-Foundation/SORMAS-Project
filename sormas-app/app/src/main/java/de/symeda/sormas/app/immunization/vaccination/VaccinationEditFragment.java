@@ -1,0 +1,89 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package de.symeda.sormas.app.immunization.vaccination;
+
+import java.util.List;
+
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.app.BaseEditFragment;
+import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.databinding.FragmentVaccinationEditLayoutBinding;
+import de.symeda.sormas.app.util.DataUtils;
+
+public class VaccinationEditFragment extends BaseEditFragment<FragmentVaccinationEditLayoutBinding, VaccinationEntity, VaccinationEntity> {
+
+	public static final String TAG = VaccinationEditFragment.class.getSimpleName();
+
+	private VaccinationEntity record;
+
+	// Enum lists
+
+	private List<Item> vaccineManufacturerList;
+	private List<Item> vaccineList;
+
+	public static VaccinationEditFragment newInstance(VaccinationEntity activityRootData) {
+		return newInstanceWithFieldCheckers(
+			VaccinationEditFragment.class,
+			null,
+			activityRootData,
+			null,
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+	}
+
+	@Override
+	public VaccinationEntity getPrimaryData() {
+		return record;
+	}
+
+	@Override
+	protected void prepareFragmentData() {
+		record = getActivityRootData();
+
+		vaccineManufacturerList = DataUtils.getEnumItems(VaccineManufacturer.class, true);
+		vaccineList = DataUtils.getEnumItems(Vaccine.class, true);
+	}
+
+	@Override
+	public void onLayoutBinding(FragmentVaccinationEditLayoutBinding contentBinding) {
+		contentBinding.setData(record);
+	}
+
+	@Override
+	public void onAfterLayoutBinding(FragmentVaccinationEditLayoutBinding contentBinding) {
+
+		// Initialize fields
+		contentBinding.vaccinationVaccineName.initializeSpinner(vaccineList);
+		contentBinding.vaccinationVaccineManufacturer.initializeSpinner(vaccineManufacturerList);
+		contentBinding.immunizationReportDate.initializeDateField(getFragmentManager());
+		contentBinding.vaccinationVaccinationDate.initializeDateTimeField(getFragmentManager());
+	}
+
+	@Override
+	public int getEditLayout() {
+		return R.layout.fragment_vaccination_edit_layout;
+	}
+
+	@Override
+	protected String getSubHeadingTitle() {
+		return record.getId() != null
+			? getResources().getString(R.string.heading_vaccination_edit)
+			: getResources().getString(R.string.heading_vaccination_new);
+	}
+}
