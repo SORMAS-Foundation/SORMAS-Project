@@ -186,7 +186,6 @@ public class SampleCreateForm extends AbstractSampleForm {
 			defaultValueChangeListener();
 			final NullableOptionGroup samplePurposeField = (NullableOptionGroup) getField(SampleDto.SAMPLE_PURPOSE);
 			samplePurposeField.setValue(SamplePurpose.EXTERNAL);
-			getField(SampleDto.PATHOGEN_TEST_RESULT).setVisible(false);
 		});
 	}
 
