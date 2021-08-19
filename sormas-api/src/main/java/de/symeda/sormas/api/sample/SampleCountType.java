@@ -35,7 +35,7 @@ public enum SampleCountType {
 	NOT_SHIPED,
 
 	RECEIVED,
-	NOT_RECEIVED,;
+	NOT_RECEIVED;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
