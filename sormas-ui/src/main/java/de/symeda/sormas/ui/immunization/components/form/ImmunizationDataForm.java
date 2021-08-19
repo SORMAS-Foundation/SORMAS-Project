@@ -304,7 +304,6 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		});
 
 		facilityTypeGroup.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facilityCombo);
 			FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
 		});
 		facilityType.addValueChangeListener(e -> {
@@ -335,6 +334,15 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		facilityCombo.addValueChangeListener(e -> {
 			updateFacilityFields(facilityCombo, facilityDetails);
 			this.getValue().setFacilityType((FacilityType) facilityType.getValue());
+		});
+
+		addValueChangeListener(e -> {
+			FacilityType facilityTypeValue = getValue().getFacilityType();
+			if (facilityTypeValue != null) {
+				facilityTypeGroup.setValue(facilityTypeValue.getFacilityTypeGroup());
+				facilityCombo.setValue(getValue().getHealthFacility());
+				facilityDetails.setValue(getValue().getHealthFacilityDetails());
+			}
 		});
 	}
 
