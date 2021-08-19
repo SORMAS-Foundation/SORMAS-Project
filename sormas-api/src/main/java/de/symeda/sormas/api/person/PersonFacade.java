@@ -79,6 +79,8 @@ public interface PersonFacade {
 
 	List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer offset, Integer limit, List<SortProperty> sortProperties);
 
+	List<PersonExportDto> getExportList(PersonCriteria criteria, int first, int max);
+
 	Page<PersonIndexDto> getIndexPage(PersonCriteria personCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	long count(PersonCriteria criteria);
