@@ -475,6 +475,9 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		if (criteria.getLaboratory() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getLab().get(Facility.UUID), criteria.getLaboratory().getUuid()));
 		}
+		if (criteria.getSamplePurpose() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.SAMPLE_PURPOSE), criteria.getSamplePurpose()));
+		}
 		if (criteria.getShipped() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(sample.get(Sample.SHIPPED), criteria.getShipped()));
 		}
