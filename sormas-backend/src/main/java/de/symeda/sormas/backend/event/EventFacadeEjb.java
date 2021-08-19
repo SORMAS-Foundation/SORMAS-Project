@@ -612,6 +612,8 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.SPECIFIC_RISK),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
+			event.get(Event.EVENT_INVESTIGATION_START_DATE),
+			event.get(Event.EVENT_INVESTIGATION_END_DATE),
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_VARIANT),
 			event.get(Event.DISEASE_DETAILS),
