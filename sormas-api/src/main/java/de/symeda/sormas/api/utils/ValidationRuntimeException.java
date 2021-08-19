@@ -33,4 +33,8 @@ public class ValidationRuntimeException extends RuntimeException {
 	public ValidationRuntimeException(String message) {
 		super(message);
 	}
+
+	public ValidationRuntimeException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

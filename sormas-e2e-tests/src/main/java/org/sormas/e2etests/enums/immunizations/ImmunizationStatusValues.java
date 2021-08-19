@@ -16,42 +16,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.enums;
+package org.sormas.e2etests.enums.immunizations;
 
 import java.util.Random;
 import lombok.Getter;
 
 @Getter
-public enum Disease {
-  AFP("Acute Flaccid Paralysis"),
-  ANTHRAX("Anthrax"),
-  CORONAVIRUS("COVID-19"),
-  CHOLERA("Cholera"),
-  DENGUE("Dengue Fever"),
-  EVD("Ebola Virus Disease"),
-  GUINEA_WORM("Guinea Worm"),
-  RABIES("Human Rabies"),
-  NEW_INFLUENZA("Influenza (New subtype)"),
-  LASSA("Lassa"),
-  MEASLES("Measles"),
-  CSM("Meningitis (CSM)"),
-  MONKEYPOX("Monkeypox"),
-  UNSPECIFIED_VHF("Unspecified VHF"),
-  YELLOW_FEVER("Yellow Fever");
+public enum ImmunizationStatusValues {
+  PENDING("PENDING"),
+  ACQUIRED("ACQUIRED"),
+  NOT_ACQUIRED("NOT_ACQUIRED"),
+  EXPIRED("EXPIRED");
 
-  private final String disease;
+  private final String value;
 
-  Disease(String aDisease) {
-    disease = aDisease;
+  ImmunizationStatusValues(String value) {
+    this.value = value;
   }
 
-  public static String getRandomDisease() {
+  public static String getRandomImmunizationStatus() {
     Random random = new Random();
-    return String.valueOf(Disease.values()[random.nextInt(values().length)]);
-  }
-
-  public static String getRandomDiseaseValue() {
-    Random random = new Random();
-    return String.valueOf(Disease.values()[random.nextInt(values().length)].disease);
+    return String.valueOf(ImmunizationStatusValues.values()[random.nextInt(values().length)].value);
   }
 }

@@ -15,28 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.steps.api;
 
-import cucumber.api.java8.En;
-import javax.inject.Inject;
-import org.sormas.e2etests.helpers.api.ContactHelper;
-import org.sormas.e2etests.pojo.api.Contact;
-import org.sormas.e2etests.services.api.ContactApiService;
-import org.sormas.e2etests.state.ApiState;
+package org.sormas.e2etests.enums.immunizations;
 
-public class ContactSteps implements En {
+import java.util.Random;
+import lombok.Getter;
 
-  @Inject
-  public ContactSteps(
-      ContactHelper contactHelper, ContactApiService contactApiService, ApiState apiState) {
+@Getter
+public enum MeansOfImmunizationValues {
+  VACCINATION("VACCINATION"),
+  RECOVERY("RECOVERY"),
+  VACCINATION_RECOVERY("VACCINATION_RECOVERY"),
+  OTHER("OTHER");
 
-    When(
-        "API: I create a new contact",
-        () -> {
-          Contact contact =
-              contactApiService.buildGeneratedContact(apiState.getLastCreatedPerson());
-          contactHelper.push(contact);
-          apiState.setCreatedContact(contact);
-        });
+  private final String value;
+
+  MeansOfImmunizationValues(String value) {
+    this.value = value;
+  }
+
+  public static String getRandomMeansOfImmunization() {
+    Random random = new Random();
+    return String.valueOf(
+        MeansOfImmunizationValues.values()[random.nextInt(values().length)].value);
   }
 }
