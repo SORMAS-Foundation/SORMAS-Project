@@ -72,11 +72,11 @@ public class CaseDetailedTableViewSteps implements En {
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.FIRST_NAME.toString()))
-              .containsIgnoringCase(apiState.getEditPerson().getFirstName());
+              .containsIgnoringCase(apiState.getLastCreatedPerson().getFirstName());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.LAST_NAME.toString()))
-              .containsIgnoringCase(apiState.getEditPerson().getLastName());
+              .containsIgnoringCase(apiState.getLastCreatedPerson().getLastName());
           softly
               .assertThat(
                   detailedCaseDTableRow.get(
