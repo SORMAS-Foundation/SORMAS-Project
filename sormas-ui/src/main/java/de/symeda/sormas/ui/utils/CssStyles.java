@@ -413,7 +413,7 @@ public final class CssStyles {
 	 */
 	public static String getSampleCountColor(SampleCountType count) {
 		switch (count) {
-			case TOTAL:
+			case COLLECTED:
 				return "background-sample-count-total";
 			case INDETERMINATE:
 				return "background-sample-count-indeterminate";

@@ -935,7 +935,7 @@ public class SampleFacadeEjb implements SampleFacade {
 						.samplePurpose(SamplePurpose.EXTERNAL));
 
 		Map<SampleCountType, Long> map = new HashMap<SampleCountType, Long>();
-		map.put(SampleCountType.TOTAL, total);
+		map.put(SampleCountType.COLLECTED, total);
 		map.put(SampleCountType.INDETERMINATE, indeterminateCount);
 		map.put(SampleCountType.PENDING, pendingCount);
 		map.put(SampleCountType.POSITIVE, positiveCount);
