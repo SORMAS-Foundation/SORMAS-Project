@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.immunization;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.user.UserRight;
@@ -65,7 +64,8 @@ public class ImmunizationsView extends AbstractView {
 		applyingCriteria = true;
 
 		filterFormLayout.setValue(criteria);
-		dataLayout.updateView(criteria.getDisease());
+		boolean shouldShowGrid = criteria.getDisease() != null;
+		dataLayout.toggleView(shouldShowGrid);
 
 		applyingCriteria = false;
 	}
@@ -80,10 +80,10 @@ public class ImmunizationsView extends AbstractView {
 
 		filterFormLayout.addApplyHandler(clickEvent -> {
 			ImmunizationCriteria filterFormValue = filterFormLayout.getValue();
-			Disease disease = filterFormValue.getDisease();
-			dataLayout.updateView(disease);
+			boolean shouldShowGrid = filterFormValue.getDisease() != null;
+			dataLayout.toggleView(shouldShowGrid);
 
-			if (disease != null) {
+			if (shouldShowGrid) {
 				dataLayout.refreshGrid();
 			}
 		});

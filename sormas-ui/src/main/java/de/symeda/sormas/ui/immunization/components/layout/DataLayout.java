@@ -3,7 +3,6 @@ package de.symeda.sormas.ui.immunization.components.layout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
@@ -29,14 +28,9 @@ public class DataLayout extends VerticalLayout {
 		setExpandRatio(grid, 1);
 	}
 
-	public void updateView(Disease disease) {
-		if (disease == null) {
-			grid.setVisible(false);
-			noDiseaseInfoLabel.setVisible(true);
-		} else {
-			noDiseaseInfoLabel.setVisible(false);
-			grid.setVisible(true);
-		}
+	public void toggleView(boolean shouldShowGrid) {
+		grid.setVisible(shouldShowGrid);
+		noDiseaseInfoLabel.setVisible(!shouldShowGrid);
 	}
 
 	public void refreshGrid() {
