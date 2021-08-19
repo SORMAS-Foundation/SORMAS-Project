@@ -124,6 +124,14 @@ public class TemplateEngine {
 			for (Object key : properties.keySet()) {
 				if (key instanceof String) {
 					Object property = properties.get(key);
+
+					// Sanitize property to avoid XML parsing errors
+					if (property instanceof Enum<?> && property.toString() != null) {
+						property = returnSanitizedString(property.toString());
+					} else if (property instanceof String) {
+						property = returnSanitizedString((String) property);
+					}
+
 					if (property != null && !(property instanceof String && ((String) property).isEmpty())) {
 						context.put((String) key, property);
 					}
@@ -136,6 +144,10 @@ public class TemplateEngine {
 		} catch (IOException | XDocReportException | VelocityException e) {
 			throw new DocumentTemplateException(String.format(I18nProperties.getString(Strings.errorDocumentGeneration), templateFile.getName()));
 		}
+	}
+
+	private String returnSanitizedString(String value) {
+		return value.replaceAll("&", "&amp;").replaceAll("\"", "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("'", "&apos;");
 	}
 
 	public String generateDocumentTxt(Properties properties, File templateFile) {

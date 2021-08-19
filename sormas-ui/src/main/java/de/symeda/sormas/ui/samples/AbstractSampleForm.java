@@ -37,6 +37,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -71,12 +72,12 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 	protected static final String REQUESTED_ADDITIONAL_TESTS_READ_LOC = "requestedAdditionalTestsReadLoc";
 
 	//@formatter:off
-   protected static final String SAMPLE_COMMON_HTML_LAYOUT =
-                    fluidRowLocs(SampleDto.UUID, SampleDto.REPORTING_USER) +
+    protected static final String SAMPLE_COMMON_HTML_LAYOUT =
+            fluidRowLocs(SampleDto.UUID, SampleDto.REPORTING_USER) +
                     fluidRowLocs(SampleDto.SAMPLE_PURPOSE) +
                     fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL) +
                     fluidRowLocs("", SampleDto.SAMPLE_MATERIAL_TEXT) +
-					fluidRowLocs(SampleDto.SAMPLING_REASON, SampleDto.SAMPLING_REASON_DETAILS) +
+                    fluidRowLocs(SampleDto.SAMPLING_REASON, SampleDto.SAMPLING_REASON_DETAILS) +
                     fluidRowLocs(SampleDto.SAMPLE_SOURCE, "") +
                     fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, "") +
                     fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS) +
@@ -151,7 +152,8 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SHIPPED, CheckBox.class);
 		addField(SampleDto.RECEIVED, CheckBox.class);
 
-		addField(SampleDto.PATHOGEN_TEST_RESULT, ComboBox.class);
+		ComboBox testResultField = addField(SampleDto.PATHOGEN_TEST_RESULT, ComboBox.class);
+		testResultField.removeItem(PathogenTestResultType.NOT_DONE);
 
 		addFields(SampleDto.SAMPLING_REASON, SampleDto.SAMPLING_REASON_DETAILS);
 		FieldHelper.setVisibleWhen(

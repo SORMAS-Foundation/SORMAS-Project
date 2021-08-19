@@ -51,6 +51,13 @@ public class Facility extends InfrastructureAdo {
 	public static final String NAME = "name";
 	public static final String TYPE = "type";
 
+	public Facility() {
+	}
+
+	public Facility(String uuid) {
+		setUuid(uuid);
+	}
+
 	@Column
 	private String name;
 

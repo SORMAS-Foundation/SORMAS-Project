@@ -358,7 +358,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		cu.where(
 			cb.and(
 				cb.equal(root.get(Immunization.IMMUNIZATION_STATUS), ImmunizationStatus.ACQUIRED),
-				cb.lessThanOrEqualTo(root.get(Immunization.END_DATE), new Date())));
+				cb.lessThanOrEqualTo(root.get(Immunization.VALID_UNTIL), new Date())));
 
 		em.createQuery(cu).executeUpdate();
 	}

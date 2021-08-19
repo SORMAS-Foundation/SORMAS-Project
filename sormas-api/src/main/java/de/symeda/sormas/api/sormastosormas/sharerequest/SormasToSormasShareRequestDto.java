@@ -92,6 +92,20 @@ public class SormasToSormasShareRequestDto extends EntityDto {
 		this.events = events;
 	}
 
+	public void setRejected() {
+		setStatus(ShareRequestStatus.REJECTED);
+		setCases(null);
+		setContacts(null);
+		setEvents(null);
+	}
+
+	public void setRevoked() {
+		setStatus(ShareRequestStatus.REVOKED);
+		setCases(null);
+		setContacts(null);
+		setEvents(null);
+	}
+
 	public static SormasToSormasShareRequestDto build() {
 		SormasToSormasShareRequestDto dto = new SormasToSormasShareRequestDto();
 

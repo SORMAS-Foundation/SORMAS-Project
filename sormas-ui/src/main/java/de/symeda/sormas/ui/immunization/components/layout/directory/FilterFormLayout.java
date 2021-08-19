@@ -1,9 +1,10 @@
-package de.symeda.sormas.ui.immunization.components.filter;
+package de.symeda.sormas.ui.immunization.components.layout.directory;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
+import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm;
 
 public class FilterFormLayout extends VerticalLayout {
 
@@ -32,9 +33,5 @@ public class FilterFormLayout extends VerticalLayout {
 
 	public void addApplyHandler(Button.ClickListener listener) {
 		filterForm.addApplyHandler(listener);
-	}
-
-	public boolean hasFilter() {
-		return filterForm.hasFilter();
 	}
 }

@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import java.util.List;
+
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class ShareRequestCriteria extends BaseCriteria {
@@ -23,11 +26,22 @@ public class ShareRequestCriteria extends BaseCriteria {
 
 	private ShareRequestStatus status;
 
+	private List<ShareRequestStatus> statusesExcepted;
+
 	public ShareRequestStatus getStatus() {
 		return status;
 	}
 
 	public void setStatus(ShareRequestStatus status) {
 		this.status = status;
+	}
+
+	@IgnoreForUrl
+	public List<ShareRequestStatus> getStatusesExcepted() {
+		return statusesExcepted;
+	}
+
+	public void setStatusesExcepted(List<ShareRequestStatus> statusesExcepted) {
+		this.statusesExcepted = statusesExcepted;
 	}
 }

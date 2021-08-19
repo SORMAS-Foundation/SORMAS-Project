@@ -1708,8 +1708,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getHealthFacility() != null) {
 			FacilityDto healthFacility = facilityFacade.getByUuid(caze.getHealthFacility().getUuid());
 
-			if (caze.getFacilityType() == null && !FacilityDto.NONE_FACILITY_UUID.equals(caze.getHealthFacility().getUuid())) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityType));
+			if (caze.getFacilityType() == null) {
+				if (!FacilityDto.NONE_FACILITY_UUID.equals(caze.getHealthFacility().getUuid())) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityType));
+				}
+			} else if (!caze.getFacilityType().isAccommodation()) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(Validations.notAccomodationFacilityType, caze.getFacilityType()));
 			}
 
 			if (caze.getRegion() == null) {

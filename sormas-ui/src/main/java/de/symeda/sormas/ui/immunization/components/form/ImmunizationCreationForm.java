@@ -157,13 +157,8 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		addField(ImmunizationDto.START_DATE, DateField.class);
 		addDateField(ImmunizationDto.END_DATE, DateField.class, DAYS_IN_THE_FUTURE);
 
-		addField(ImmunizationDto.VALID_FROM, DateField.class);
+		addDateField(ImmunizationDto.VALID_FROM, DateField.class, DAYS_IN_THE_FUTURE);
 		addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, DAYS_IN_THE_FUTURE);
-
-		Label vaccinationHeadingLabel = new Label(I18nProperties.getString(Strings.headingVaccination));
-		vaccinationHeadingLabel.addStyleName(H3);
-		getContent().addComponent(vaccinationHeadingLabel, VACCINATION_HEADING_LOC);
-		vaccinationHeadingLabel.setVisible(false);
 
 		TextField numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
 		numberOfDosesField.setConverter(new StringToIntegerConverter());
@@ -279,7 +274,6 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 			}
 			boolean isVaccinationVisible =
 				MeansOfImmunization.VACCINATION.equals(meansOfImmunization) || MeansOfImmunization.VACCINATION_RECOVERY.equals(meansOfImmunization);
-			vaccinationHeadingLabel.setVisible(isVaccinationVisible);
 			numberOfDosesField.setVisible(isVaccinationVisible);
 			if (!isVaccinationVisible) {
 				numberOfDosesField.setValue(null);

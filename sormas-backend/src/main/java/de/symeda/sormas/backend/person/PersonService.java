@@ -172,7 +172,38 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		eventPersonsQuery.distinct(true);
 		List<String> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
 
-		return Stream.of(lgaResultList, casePersonsResultList, contactPersonsResultList, eventPersonsResultList)
+		// persons by immunization
+		CriteriaQuery<String> immunizationPersonsQuery = cb.createQuery(String.class);
+		Root<Immunization> immunizationPersonsRoot = immunizationPersonsQuery.from(Immunization.class);
+		Join<Immunization, Person> immunizationPersonsSelect = immunizationPersonsRoot.join(Immunization.PERSON);
+		immunizationPersonsQuery.select(immunizationPersonsSelect.get(Person.UUID));
+		Predicate immunizationPersonsFilter = immunizationService.createUserFilter(cb, immunizationPersonsQuery, immunizationPersonsRoot);
+		if (immunizationPersonsFilter != null) {
+			immunizationPersonsQuery.where(immunizationPersonsFilter);
+		}
+		immunizationPersonsQuery.distinct(true);
+		List<String> immunizationPersonsResultList = em.createQuery(immunizationPersonsQuery).getResultList();
+
+		// persons by travel entry
+		CriteriaQuery<String> travelEntryPersonsQuery = cb.createQuery(String.class);
+		Root<TravelEntry> travelEntryPersonsRoot = travelEntryPersonsQuery.from(TravelEntry.class);
+		Join<TravelEntry, Person> travelEntryPersonsSelect = travelEntryPersonsRoot.join(TravelEntry.PERSON);
+		travelEntryPersonsQuery.select(travelEntryPersonsSelect.get(Person.UUID));
+		Predicate travelEntryPersonsFilter = travelEntryService.createUserFilter(cb, travelEntryPersonsQuery, travelEntryPersonsRoot);
+		if (travelEntryPersonsFilter != null) {
+			travelEntryPersonsQuery.where(travelEntryPersonsFilter);
+		}
+		travelEntryPersonsQuery.distinct(true);
+		List<String> travelEntryPersonsResultList = em.createQuery(travelEntryPersonsQuery).getResultList();
+
+		return Stream
+			.of(
+				lgaResultList,
+				casePersonsResultList,
+				contactPersonsResultList,
+				eventPersonsResultList,
+				immunizationPersonsResultList,
+				travelEntryPersonsResultList)
 			.flatMap(List<String>::stream)
 			.distinct()
 			.collect(Collectors.toList());
@@ -215,22 +246,22 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		PersonAssociation personAssociation =
 			Optional.ofNullable(personCriteria).map(e -> e.getPersonAssociation()).orElse(PersonCriteria.DEFAULT_ASSOCIATION);
 		switch (personAssociation) {
-			case ALL:
+		case ALL:
 			return CriteriaBuilderHelper
 				.or(cb, caseFilter.get(), contactFilter.get(), eventParticipantFilter.get(), immunizationFilter.get(), travelEntryFilter.get());
-			case CASE:
+		case CASE:
 			return caseFilter.get();
-			case CONTACT:
+		case CONTACT:
 			return contactFilter.get();
-			case EVENT_PARTICIPANT:
+		case EVENT_PARTICIPANT:
 			return eventParticipantFilter.get();
-			case IMMUNIZATION:
+		case IMMUNIZATION:
 			return immunizationFilter.get();
-			case TRAVEL_ENTRY:
+		case TRAVEL_ENTRY:
 			return travelEntryFilter.get();
 		default:
 			throw new IllegalArgumentException(personAssociation.toString());
-			}
+		}
 	}
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, PersonQueryContext personQueryContext) {

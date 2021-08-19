@@ -187,7 +187,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					regions = getCaseRegions(caseDto);
 				}
 			} else if (taskDto.getEvent() != null) {
-				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
+				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid(), false);
 
 				districts = DataHelper.asListNullable(eventDto.getEventLocation().getDistrict());
 				regions = DataHelper.asListNullable(eventDto.getEventLocation().getRegion());

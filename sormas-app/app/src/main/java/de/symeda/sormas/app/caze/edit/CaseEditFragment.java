@@ -83,6 +83,7 @@ import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBinding, Case, Case> {
 
@@ -452,7 +453,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		Facility initialHealthFacility = record.getHealthFacility();
 
-		InfrastructureDaoHelper.initializeRegionFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeRegionFields(
 			contentBinding.caseDataResponsibleRegion,
 			initialRegions,
 			record.getResponsibleRegion(),
@@ -463,7 +464,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			initialResponsibleCommunities,
 			record.getResponsibleCommunity());
 
-		InfrastructureDaoHelper.initializeRegionFieldListeners(
+		InfrastructureFieldsDependencyHandler.instance.initializeRegionFieldListeners(
 			contentBinding.caseDataResponsibleRegion,
 			contentBinding.caseDataResponsibleDistrict,
 			record.getResponsibleDistrict(),
@@ -479,7 +480,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		InfrastructureDaoHelper
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
-		InfrastructureDaoHelper.initializeFacilityFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			record,
 			contentBinding.caseDataRegion,
 			initialRegions,
@@ -509,7 +510,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		// trigger responsible jurisdiction change handlers removing place of stay region/district/community
 		contentBinding.caseDataDifferentPlaceOfStayJurisdiction.addValueChangedListener(f -> {
 			if (Boolean.FALSE.equals(f.getValue())) {
-				InfrastructureDaoHelper.handleCommunityChange(
+				InfrastructureFieldsDependencyHandler.instance.handleCommunityChange(
 					contentBinding.caseDataResponsibleCommunity,
 					contentBinding.caseDataResponsibleDistrict,
 					contentBinding.caseDataHealthFacility,
