@@ -864,75 +864,106 @@ public class SampleFacadeEjb implements SampleFacade {
 			Disease disease,
 			Date from,
 			Date to) {
-		long total =
-				count((new SampleCriteria()).region(regionRef).district(districtRef).disease(disease).reportDateBetween(from, to, DateFilterOption.DATE));
+		
+		long total = count(
+			new SampleCriteria()
+				.region(regionRef)
+				.district(districtRef)
+				.disease(disease)
+				.sampleDateBetween(from, to, SampleDateType.COLLECTION, DateFilterOption.DATE)
+		);
 
-		long indeterminateCount = pathogenTestFacade.count(
-				(new SampleCriteria()).region(regionRef)
-						.district(districtRef)
-						.disease(disease)
-						.reportDateBetween(from, to, DateFilterOption.DATE)
-						.pathogenTestResult(PathogenTestResultType.INDETERMINATE));
-		long pendingCount = pathogenTestFacade.count(
-				(new SampleCriteria()).region(regionRef)
-						.district(districtRef)
-						.disease(disease)
-						.reportDateBetween(from, to, DateFilterOption.DATE)
-						.pathogenTestResult(PathogenTestResultType.PENDING));
-		long negativeCount = pathogenTestFacade.count(
-				(new SampleCriteria()).region(regionRef)
-						.district(districtRef)
-						.disease(disease)
-						.reportDateBetween(from, to, DateFilterOption.DATE)
-						.pathogenTestResult(PathogenTestResultType.NEGATIVE));
-		long positiveCount = pathogenTestFacade.count(
-				(new SampleCriteria()).region(regionRef)
-						.district(districtRef)
-						.disease(disease)
-						.reportDateBetween(from, to, DateFilterOption.DATE)
-						.pathogenTestResult(PathogenTestResultType.POSITIVE));
+		long indeterminateCount = count(
+			new SampleCriteria()
+				.region(regionRef)
+				.district(districtRef)
+				.disease(disease)
+				.sampleDateBetween(from, to, SampleDateType.RESULT, DateFilterOption.DATE)
+				.pathogenTestResult(PathogenTestResultType.INDETERMINATE)
+		);
+		
+		long pendingCount = count(
+			new SampleCriteria()
+				.region(regionRef)
+				.district(districtRef)
+				.disease(disease)
+				.sampleDateBetween(from, to, SampleDateType.RESULT, DateFilterOption.DATE)
+				.pathogenTestResult(PathogenTestResultType.PENDING)
+		);
+		
+		long negativeCount = count(
+			new SampleCriteria()
+				.region(regionRef)
+				.district(districtRef)
+				.disease(disease)
+				.sampleDateBetween(from, to, SampleDateType.RESULT, DateFilterOption.DATE)
+				.pathogenTestResult(PathogenTestResultType.NEGATIVE)
+		);
+		
+		long positiveCount = count(
+			new SampleCriteria()
+				.region(regionRef)
+				.district(districtRef)
+				.disease(disease)
+				.sampleDateBetween(from, to, SampleDateType.RESULT, DateFilterOption.DATE)
+				.pathogenTestResult(PathogenTestResultType.POSITIVE)
+		);
 
 		long adequateCount = count(
-				(new SampleCriteria()).region(regionRef)
-						.district(districtRef)
-						.disease(disease)
-						.reportDateBetween(from, to, DateFilterOption.DATE)
-						.specimenCondition(SpecimenCondition.ADEQUATE));
+			new SampleCriteria()
+				.region(regionRef)
+				.district(districtRef)
+				.disease(disease)
+				.sampleDateBetween(from, to, SampleDateType.RECEIVED, DateFilterOption.DATE)
+				.specimenCondition(SpecimenCondition.ADEQUATE)
+		);
+		
 		long inadequateCount = count(
-				(new SampleCriteria()).region(regionRef)
-						.district(districtRef)
-						.disease(disease)
-						.reportDateBetween(from, to, DateFilterOption.DATE)
-						.specimenCondition(SpecimenCondition.NOT_ADEQUATE));
+			new SampleCriteria()
+				.region(regionRef)
+				.district(districtRef)
+				.disease(disease)
+				.sampleDateBetween(from, to, SampleDateType.RECEIVED, DateFilterOption.DATE)
+				.specimenCondition(SpecimenCondition.NOT_ADEQUATE)
+		);
 
 		long shippedCount = count(
-				(new SampleCriteria()).region(regionRef)
-						.district(districtRef)
-						.disease(disease)
-						.reportDateBetween(from, to, DateFilterOption.DATE)
-						.shipped(true)
-						.samplePurpose(SamplePurpose.EXTERNAL));
+			new SampleCriteria()
+				.region(regionRef)
+				.district(districtRef)
+				.disease(disease)
+				.sampleDateBetween(from, to, SampleDateType.SHIPPED, DateFilterOption.DATE)
+				.shipped(true)
+		);
+		
 		long notShippedCount = count(
-				(new SampleCriteria()).region(regionRef)
-						.district(districtRef)
-						.disease(disease)
-						.reportDateBetween(from, to, DateFilterOption.DATE)
-						.shipped(false)
-						.samplePurpose(SamplePurpose.EXTERNAL));
+			new SampleCriteria()
+				.region(regionRef)
+				.district(districtRef)
+				.disease(disease)
+				.sampleDateBetween(from, to, SampleDateType.COLLECTION, DateFilterOption.DATE)
+				.samplePurpose(SamplePurpose.EXTERNAL)
+				.shipped(false)
+		);
+		
 		long receivedCount = count(
-				(new SampleCriteria()).region(regionRef)
-						.district(districtRef)
-						.disease(disease)
-						.reportDateBetween(from, to, DateFilterOption.DATE)
-						.received(true)
-						.samplePurpose(SamplePurpose.EXTERNAL));
+			new SampleCriteria()
+				.region(regionRef)
+				.district(districtRef)
+				.disease(disease)
+				.sampleDateBetween(from, to, SampleDateType.RECEIVED, DateFilterOption.DATE)
+				.received(true)
+		);
+		
 		long notReceivedCount = count(
-				(new SampleCriteria()).region(regionRef)
-						.district(districtRef)
-						.disease(disease)
-						.reportDateBetween(from, to, DateFilterOption.DATE)
-						.received(false)
-						.samplePurpose(SamplePurpose.EXTERNAL));
+			new SampleCriteria()
+				.region(regionRef)
+				.district(districtRef)
+				.disease(disease)
+				.sampleDateBetween(from, to, SampleDateType.SHIPPED, DateFilterOption.DATE)
+				.shipped(true)
+				.received(false)
+		);
 
 		Map<SampleCountType, Long> map = new HashMap<SampleCountType, Long>();
 		map.put(SampleCountType.COLLECTED, total);
