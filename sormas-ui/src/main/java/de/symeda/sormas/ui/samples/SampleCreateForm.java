@@ -12,6 +12,8 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -42,8 +44,11 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String HORIZONTAL_RULE = "horizontalRule";
+
 	private static final String HTML_LAYOUT = SAMPLE_COMMON_HTML_LAYOUT
 		+ fluidRowLocs(Captions.sampleIncludeTestOnCreation)
+		+ fluidRowLocs(HORIZONTAL_RULE)
 		+ fluidRowLocs(PathogenTestDto.REPORT_DATE, PathogenTestDto.VIA_LIMS)
 		+ fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED)
 		+ fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.PCR_TEST_SPECIFICATION)
@@ -61,9 +66,12 @@ public class SampleCreateForm extends AbstractSampleForm {
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
-
 		addCommonFields();
 		includeTestField = addCustomField(Captions.sampleIncludeTestOnCreation, Boolean.class, CheckBox.class);
+		Label horizontalRule = new Label("<br><hr /><br>", ContentMode.HTML);
+		horizontalRule.setWidth(100f, Unit.PERCENTAGE);
+		horizontalRule.setVisible(false);
+		getContent().addComponent(horizontalRule, HORIZONTAL_RULE);
 		ComboBox pathogenTestResultField = addCustomField(PathogenTestDto.TEST_RESULT, PathogenTestResultType.class, ComboBox.class);
 		pathogenTestResultField.removeItem(PathogenTestResultType.NOT_DONE);
 		NullableOptionGroup testVerifiedField = addCustomField(PathogenTestDto.TEST_RESULT_VERIFIED, Boolean.class, NullableOptionGroup.class);
@@ -173,6 +181,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 
 		includeTestField.addValueChangeListener(e -> {
 			final Boolean includeTest = (Boolean) e.getProperty().getValue();
+			horizontalRule.setVisible(includeTest);
 			if (includeTest) {
 				pathogenTestResultField.setNullSelectionAllowed(false);
 				pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
