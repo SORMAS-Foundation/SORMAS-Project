@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.immunization.components.layout;
+package de.symeda.sormas.ui.immunization.components.layout.directory;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;

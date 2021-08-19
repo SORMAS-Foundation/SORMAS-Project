@@ -9,8 +9,8 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.immunization.components.filter.FilterFormLayout;
-import de.symeda.sormas.ui.immunization.components.layout.DataLayout;
+import de.symeda.sormas.ui.immunization.components.layout.directory.DataLayout;
+import de.symeda.sormas.ui.immunization.components.layout.directory.FilterFormLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
