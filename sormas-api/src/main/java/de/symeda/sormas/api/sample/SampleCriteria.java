@@ -66,8 +66,9 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private SampleAssociationType sampleAssociationType;
 	private SamplePurpose samplePurpose;
 
-	private Date sampleReportDateFrom;
-	private Date sampleReportDateTo;
+	private Date sampleDateFrom;
+	private Date sampleDateTo;
+	private SampleDateType sampleDateType;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 
 	private List<String> caseUuids;
@@ -135,36 +136,45 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public SampleCriteria reportDateBetween(Date reportDateFrom, Date reportDateTo, DateFilterOption dateFilterOption) {
-		this.sampleReportDateFrom = reportDateFrom;
-		this.sampleReportDateTo = reportDateTo;
+	public SampleCriteria sampleDateBetween (Date dateFrom, Date dateTo, SampleDateType dateType, DateFilterOption dateFilterOption) {
+		this.sampleDateFrom = dateFrom;
+		this.sampleDateTo = dateTo;
+		this.sampleDateType = dateType;
 		this.dateFilterOption = dateFilterOption;
 		return this;
 	}
 
+	public SampleDateType getSampleDateType() {
+		return sampleDateType;
+	}
+	
+	public void setSampleDateType(SampleDateType dateType) {
+		this.sampleDateType = dateType;
+	}
+	
 	public SampleCriteria dateFilterOption(DateFilterOption dateFilterOption) {
 		this.dateFilterOption = dateFilterOption;
 		return this;
 	}
-
+	
 	public DateFilterOption getDateFilterOption() {
 		return dateFilterOption;
 	}
 
-	public Date getSampleReportDateFrom() {
-		return sampleReportDateFrom;
+	public Date getSampleDateFrom() {
+		return sampleDateFrom;
 	}
 
-	public void setSampleReportDateFrom(Date sampleReportDateFrom) {
-		this.sampleReportDateFrom = sampleReportDateFrom;
+	public void setSampleDateFrom(Date sampleDateFrom) {
+		this.sampleDateFrom = sampleDateFrom;
 	}
 
-	public Date getSampleReportDateTo() {
-		return sampleReportDateTo;
+	public Date getSampleDateTo() {
+		return sampleDateTo;
 	}
 
-	public void setSampleReportDateTo(Date sampleReportDateTo) {
-		this.sampleReportDateTo = sampleReportDateTo;
+	public void setSampleDateTo(Date sampleDateTo) {
+		this.sampleDateTo = sampleDateTo;
 	}
 
 	public PathogenTestResultType getPathogenTestResult() {
