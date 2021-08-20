@@ -28,6 +28,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolResponse;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -91,27 +92,25 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		case HttpServletResponse.SC_OK:
 		case HttpServletResponse.SC_NO_CONTENT:
 			if (params.getCaseUuids() != null) {
-				caseService.getByUuids(params.getCaseUuids()).forEach(caze -> {
-					shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.SHARED);
-				});
+				caseService.getByUuids(params.getCaseUuids())
+					.forEach(caze -> shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.SHARED));
 			}
 
 			if (params.getEventUuids() != null) {
-				eventService.getByUuids(params.getEventUuids()).forEach(event -> {
-					shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
-				});
+				eventService.getByUuids(params.getEventUuids())
+					.forEach(event -> shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED));
 			}
 			return;
 		case HttpServletResponse.SC_BAD_REQUEST:
-			throw new ExternalSurveillanceToolException(Strings.ExternalSurveillanceToolGateway_notificationEntryNotSent);
+			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotSent));
 		default:
-			ExternalSurveillanceToolResponse externalSurveillanceToolResponse = response.readEntity(ExternalSurveillanceToolResponse.class);
-			if (externalSurveillanceToolResponse == null) {
-				throw new ExternalSurveillanceToolException(Strings.ExternalSurveillanceToolGateway_notificationErrorSending);
-			}
-
-			if(StringUtils.isNotBlank(externalSurveillanceToolResponse.getErrorCode())) {
-
+			ExternalSurveillanceToolResponse entity = response.readEntity(ExternalSurveillanceToolResponse.class);
+			if (entity == null || StringUtils.isBlank(entity.getMessage())) {
+				throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorSending));
+			} else if (StringUtils.isNotBlank(entity.getErrorCode())) {
+				throw new ExternalSurveillanceToolException(entity.getMessage(), entity.getErrorCode());
+			} else {
+				throw new ExternalSurveillanceToolException(entity.getMessage());
 			}
 		}
 	}
@@ -169,9 +168,9 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		case HttpServletResponse.SC_NO_CONTENT:
 			return;
 		case HttpServletResponse.SC_BAD_REQUEST:
-			throw new ExternalSurveillanceToolException(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted);
+			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted));
 		default:
-			throw new ExternalSurveillanceToolException(Strings.ExternalSurveillanceToolGateway_notificationErrorDeleting);
+			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorDeleting));
 		}
 	}
 
