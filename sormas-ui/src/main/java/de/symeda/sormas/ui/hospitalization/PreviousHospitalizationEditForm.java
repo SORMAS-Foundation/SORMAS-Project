@@ -77,11 +77,14 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 	private final DistrictReferenceDto unknownDistrict;
 	private final FacilityReferenceDto unknownFacility;
 
+	private final boolean create;
+
 	public PreviousHospitalizationEditForm(
 		boolean create,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
 		UiFieldAccessCheckers fieldAccessCheckers) {
 		super(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX, false, fieldVisibilityCheckers, fieldAccessCheckers);
+		this.create = create;
 		unknownRegion = new RegionReferenceDto("uuid-unknown-region", I18nProperties.getCaption(Captions.unknown), null);
 		unknownDistrict = new DistrictReferenceDto("uuid-unknown-district", I18nProperties.getCaption(Captions.unknown), null);
 		unknownFacility = new FacilityReferenceDto("uuid-unknown-facility", I18nProperties.getCaption(Captions.unknown), null);
@@ -290,7 +293,7 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 	public void setValue(PreviousHospitalizationDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
-		if (newFieldValue != null && newFieldValue.getCreationDate() != null) {
+		if (!create && newFieldValue != null) {
 			if (newFieldValue.getRegion() == null) {
 				regionCombo.setValue(unknownRegion);
 			}

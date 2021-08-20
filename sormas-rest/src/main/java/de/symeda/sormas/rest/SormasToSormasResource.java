@@ -21,8 +21,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-import java.util.List;
-
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -186,7 +184,7 @@ public class SormasToSormasResource {
 	public Response getCertificate() {
 		SormasToSormasEncryptionFacade encryptionFacade = FacadeProvider.getSormasToSormasEncryptionFacade();
 		try {
-			X509Certificate ownCert = encryptionFacade.getOwnCertificate();
+			X509Certificate ownCert = encryptionFacade.loadOwnCertificate();
 			return Response.ok(ownCert.getEncoded(), MediaType.APPLICATION_OCTET_STREAM).build();
 		} catch (CertificateException | KeyStoreException | IOException | NoSuchAlgorithmException | SormasToSormasException e) {
 			LOGGER.error("Could not load own S2S certificate: %s", e);

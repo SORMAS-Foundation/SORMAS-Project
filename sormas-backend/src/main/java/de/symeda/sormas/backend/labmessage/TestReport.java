@@ -53,6 +53,7 @@ public class TestReport extends CoreAdo {
 	private PathogenTestResultType testResult;
 	private Boolean testResultVerified;
 	private String testResultText;
+	private String typingId;
 
 	private PathogenTest pathogenTest;
 
@@ -154,5 +155,13 @@ public class TestReport extends CoreAdo {
 
 	public void setPathogenTest(PathogenTest pathogenTest) {
 		this.pathogenTest = pathogenTest;
+	}
+
+	public String getTypingId() {
+		return typingId;
+	}
+
+	public void setTypingId(String typingId) {
+		this.typingId = typingId;
 	}
 }
