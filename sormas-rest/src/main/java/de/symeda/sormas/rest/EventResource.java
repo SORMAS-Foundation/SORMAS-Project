@@ -105,7 +105,7 @@ public class EventResource extends EntityDtoResource {
 	/**
 	 * 
 	 * @param criteriaWithSorting
-	 *            The criteria object inside criteriaWithSorting the cannot be null! Use instead an empty criteria!
+	 *            - The criteria object inside criteriaWithSorting cannot be null. Use an empty criteria instead.
 	 * @param offset
 	 * @param size
 	 * @return
