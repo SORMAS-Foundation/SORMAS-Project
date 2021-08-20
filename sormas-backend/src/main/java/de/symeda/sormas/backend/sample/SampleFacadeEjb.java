@@ -1222,13 +1222,15 @@ public class SampleFacadeEjb implements SampleFacade {
 	private void onSampleChanged(SampleDto existingSample, Sample newSample, boolean syncShares) {
 
 		// Change pathogenTestResultChangeDate if the pathogen test result has changed
-		if (existingSample != null
-			&& existingSample.getPathogenTestResult() != null
-			&& existingSample.getPathogenTestResult() != newSample.getPathogenTestResult()) {
+		if (existingSample == null
+				|| existingSample.getPathogenTestResult() != newSample.getPathogenTestResult()) {
+			
 			Date latestPathogenTestDate = pathogenTestFacade.getLatestPathogenTestDate(newSample.getUuid());
-			if (latestPathogenTestDate != null) {
-				newSample.setPathogenTestResultChangeDate(latestPathogenTestDate);
-			}
+			Date changeDate = latestPathogenTestDate != null
+									? latestPathogenTestDate
+									: newSample.getSampleDateTime();
+			
+			newSample.setPathogenTestResultChangeDate(changeDate);
 		}
 
 		handleAssotiatedObjectChanges(newSample, syncShares);
