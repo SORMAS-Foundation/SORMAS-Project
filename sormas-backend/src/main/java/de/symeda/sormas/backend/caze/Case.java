@@ -48,6 +48,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.ContactTracingContactType;
 import de.symeda.sormas.api.caze.DengueFeverType;
@@ -126,6 +127,9 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String INVESTIGATED_DATE = "investigatedDate";
 	public static final String DISTRICT_LEVEL_DATE = "districtLevelDate";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String CLINICIAN_NAME = "clinicianName";
+	public static final String CLINICIAN_PHONE = "clinicianPhone";
+	public static final String CLINICIAN_EMAIL = "clinicianEmail";
 	public static final String CASE_OFFICER = "caseOfficer";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String TASKS = "tasks";
@@ -178,6 +182,9 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
 	public static final String INFECTION_SETTING = "infectionSetting";
+	public static final String PROHIBITION_TO_WORK = "prohibitionToWork";
+	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
+	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
@@ -204,6 +211,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String VISITS = "visits";
 	public static final String FACILITY_TYPE = "facilityType";
+	public static final String CONTACTS = "contacts";
 	public static final String CONVERTED_FROM_CONTACT = "convertedContact";
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
 	public static final String SHARE_INFO_CASES = "shareInfoCases";
@@ -230,6 +238,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
 	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
 	public static final String DONT_SHARE_WITH_REPORTING_TOOL = "dontShareWithReportingTool";
+	public static final String CASE_REFERENCE_DEFINITION = "caseReferenceDefinition";
 
 	private Person person;
 	private String description;
@@ -367,6 +376,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	private Set<Sample> samples = new HashSet<>();
 	private Set<Visit> visits = new HashSet<>();
 	private Set<EventParticipant> eventParticipants;
+	private List<Contact> contacts;
 	private List<Contact> convertedContact;
 
 	private Integer caseIdIsm;
@@ -405,6 +415,8 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<ShareInfoCase> shareInfoCases = new ArrayList<>(0);
 	private List<ExternalShareInfo> externalShares = new ArrayList<>(0);
+
+	private CaseReferenceDefinition caseReferenceDefinition;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -832,6 +844,15 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.portHealthInfo = portHealthInfo;
 	}
 
+	@OneToMany(mappedBy = Contact.CAZE, fetch = FetchType.LAZY)
+	public List<Contact> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(List<Contact> contacts) {
+		this.contacts = contacts;
+	}
+
 	@OneToMany(mappedBy = Contact.RESULTING_CASE, fetch = FetchType.LAZY)
 	public List<Contact> getConvertedContact() {
 		return convertedContact;
@@ -1249,7 +1270,9 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 
 	/**
 	 * Extra setter for externalID needed to comply with the HasExternalData interface
-	 * @param externalId the value to be set for externalID
+	 * 
+	 * @param externalId
+	 *            the value to be set for externalID
 	 */
 	public void setExternalId(String externalId) {
 		this.externalID = externalId;
@@ -1742,5 +1765,14 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 
 	public void setDontShareWithReportingTool(boolean dontShareWithReportingTool) {
 		this.dontShareWithReportingTool = dontShareWithReportingTool;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CaseReferenceDefinition getCaseReferenceDefinition() {
+		return caseReferenceDefinition;
+	}
+
+	public void setCaseReferenceDefinition(CaseReferenceDefinition caseReferenceDefinition) {
+		this.caseReferenceDefinition = caseReferenceDefinition;
 	}
 }

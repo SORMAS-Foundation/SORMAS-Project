@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.contact;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -249,6 +251,10 @@ public class ContactListCriteriaBuilder {
 
 		List<Selection<?>> selections = new ArrayList<>(selectionProvider.apply(contact, contactQueryContext));
 		selections.add(cb.size(contact.get(Contact.VISITS)));
+		// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
+		Expression<Date> latestChangedDateFunction =
+			cb.function(ExtendedPostgreSQL94Dialect.GREATEST, Date.class, contact.get(Contact.CHANGE_DATE), joins.getPerson().get(Person.CHANGE_DATE));
+		selections.add(latestChangedDateFunction);
 
 		Predicate filter = buildContactFilter(contactCriteria, contactQueryContext);
 
@@ -260,7 +266,7 @@ public class ContactListCriteriaBuilder {
 		cq.distinct(true);
 
 		if (sortProperties == null || sortProperties.size() == 0) {
-			cq.orderBy(cb.desc(contact.get(Contact.CHANGE_DATE)));
+			cq.orderBy(cb.desc(latestChangedDateFunction));
 		} else {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {

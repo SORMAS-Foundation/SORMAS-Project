@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -47,8 +48,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.caze.CaseQueryContext;
-import de.symeda.sormas.backend.contact.ContactQueryContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,13 +81,14 @@ import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactJoins;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -103,7 +103,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.utils.CaseJoins;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "VisitFacade")
 public class VisitFacadeEjb implements VisitFacade {
@@ -343,12 +343,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			cq.orderBy(cb.desc(visit.get(Visit.VISIT_DATE_TIME)));
 		}
 
-		final List<VisitIndexDto> indexList;
-		if (first != null && max != null) {
-			indexList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			indexList = em.createQuery(cq).getResultList();
-		}
+		List<VisitIndexDto> indexList = QueryHelper.getResultList(em, cq, first, max);
 
 		if (indexList.size() > 0) {
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
@@ -423,8 +418,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		}
 		cq.orderBy(cb.desc(visitRoot.get(Visit.VISIT_DATE_TIME)), cb.desc(visitRoot.get(Case.ID)));
 
-		List<VisitExportDto> resultList =
-			em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).setFirstResult(first).setMaxResults(max).getResultList();
+		List<VisitExportDto> resultList = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!resultList.isEmpty()) {
 
@@ -462,7 +456,11 @@ public class VisitFacadeEjb implements VisitFacade {
 		return resultList;
 	}
 
-	private Expression<Object> jurisdictionSelector(CriteriaQuery cq, CriteriaBuilder cb, Join<Visit, Case> caseJoin, Join<Visit, Contact> contactJoin) {
+	private Expression<Object> jurisdictionSelector(
+		CriteriaQuery cq,
+		CriteriaBuilder cb,
+		Join<Visit, Case> caseJoin,
+		Join<Visit, Contact> contactJoin) {
 		return JurisdictionHelper.booleanSelector(
 			cb,
 			cb.or(
@@ -624,7 +622,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	private void updateContactVisitAssociations(VisitDto existingVisit, Visit visit) {
 
-		if (existingVisit != null && existingVisit.getVisitDateTime() == visit.getVisitDateTime()) {
+		if (existingVisit != null && Objects.equals(existingVisit.getVisitDateTime(), visit.getVisitDateTime())) {
 			// No need to update the associations
 			return;
 		}
@@ -639,7 +637,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	private void updateCaseVisitAssociations(VisitDto existingVisit, Visit visit) {
 
 		if (existingVisit != null
-			&& existingVisit.getVisitDateTime() == visit.getVisitDateTime()
+			&& Objects.equals(existingVisit.getVisitDateTime(), visit.getVisitDateTime())
 			&& existingVisit.getPerson().equals(visit.getPerson())) {
 			// No need to update the associations
 			return;

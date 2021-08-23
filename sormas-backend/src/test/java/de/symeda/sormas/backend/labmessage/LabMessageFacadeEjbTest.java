@@ -18,6 +18,12 @@ package de.symeda.sormas.backend.labmessage;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.Test;
 
@@ -25,12 +31,47 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
 public class LabMessageFacadeEjbTest extends AbstractBeanTest {
-	@Test
-	public void deleteLabMessage() {
-		LabMessageDto labMessage = creator.createLabMessage(null);
 
+	@Test
+	public void testDeleteLabMessage() {
+
+		LabMessageDto labMessage = creator.createLabMessage(null);
 		getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
 
 		assertThat(getLabMessageFacade().getByUuid(labMessage.getUuid()), is(nullValue()));
+	}
+
+	@Test
+	public void testGetByReportIdWithCornerCaseInput() {
+		String reportId = "123456789";
+		creator.createLabMessage((lm) -> lm.setReportId(reportId));
+
+		List<LabMessageDto> list = getLabMessageFacade().getByReportId(null);
+
+		assertNotNull(list);
+		assertTrue(list.isEmpty());
+
+		list = getLabMessageFacade().getByReportId("");
+
+		assertNotNull(list);
+		assertTrue(list.isEmpty());
+	}
+
+	@Test
+	public void testGetByReportIdWithOneMessage() {
+
+		String reportId = "123456789";
+		creator.createLabMessage((lm) -> lm.setReportId(reportId));
+
+		// create noise
+		creator.createLabMessage(null);
+		creator.createLabMessage((lm) -> lm.setReportId("some-other-id"));
+
+		List<LabMessageDto> list = getLabMessageFacade().getByReportId(reportId);
+
+		assertNotNull(list);
+		assertFalse(list.isEmpty());
+		assertEquals(1, list.size());
+		assertEquals(reportId, list.get(0).getReportId());
 	}
 }

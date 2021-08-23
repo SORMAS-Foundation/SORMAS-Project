@@ -15,27 +15,59 @@
 
 package de.symeda.sormas.backend.person;
 
+import java.util.Optional;
+
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
+import de.symeda.sormas.api.person.PersonAssociation;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.immunization.Immunization;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.location.LocationJoins;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
 public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 
+	private PersonAssociation personAssociation;
 	private Join<Person, Case> caze;
 	private Join<Person, Contact> contact;
 	private Join<Person, EventParticipant> eventParticipant;
+	private Join<Person, Immunization> immunization;
+	private Join<Person, TravelEntry> travelEntry;
+	private Join<Person, Location> address;
+
+	private final LocationJoins<Person> addressJoins;
 
 	public PersonJoins(From<T, Person> root) {
 		super(root);
+
+		addressJoins = new LocationJoins<>(getAddress());
+	}
+
+	public void configure(PersonCriteria criteria) {
+
+		this.personAssociation = Optional.ofNullable(criteria).map(e -> e.getPersonAssociation()).orElse(PersonCriteria.DEFAULT_ASSOCIATION);
+	}
+
+	/**
+	 * @param personAssociation
+	 *            The association from the {@link Person} to build a join for.
+	 * @return Do INNER join on that association that is relevant, default to LEFT if not.<br />
+	 *         Other joins have to be kept LEFT join for jurisdiction checks.
+	 */
+	private JoinType getJoinType(PersonAssociation personAssociation) {
+
+		return this.personAssociation == personAssociation ? JoinType.INNER : JoinType.LEFT;
 	}
 
 	public Join<Person, Case> getCaze() {
-		return getOrCreate(caze, Person.CASES, JoinType.LEFT, this::setCaze);
+		return getOrCreate(caze, Person.CASES, getJoinType(PersonAssociation.CASE), this::setCaze);
 	}
 
 	private void setCaze(Join<Person, Case> caze) {
@@ -43,18 +75,46 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 	}
 
 	public Join<Person, Contact> getContact() {
-		return getOrCreate(contact, Person.CONTACTS, JoinType.LEFT, this::setContact);
+		return getOrCreate(contact, Person.CONTACTS, getJoinType(PersonAssociation.CONTACT), this::setContact);
 	}
 
-	public void setContact(Join<Person, Contact> contact) {
+	private void setContact(Join<Person, Contact> contact) {
 		this.contact = contact;
 	}
 
 	public Join<Person, EventParticipant> getEventParticipant() {
-		return getOrCreate(eventParticipant, Person.EVENT_PARTICIPANTS, JoinType.LEFT, this::setEventParticipant);
+		return getOrCreate(eventParticipant, Person.EVENT_PARTICIPANTS, getJoinType(PersonAssociation.EVENT_PARTICIPANT), this::setEventParticipant);
 	}
 
-	public void setEventParticipant(Join<Person, EventParticipant> eventParticipant) {
+	private void setEventParticipant(Join<Person, EventParticipant> eventParticipant) {
 		this.eventParticipant = eventParticipant;
+	}
+
+	public Join<Person, Immunization> getImmunization() {
+		return getOrCreate(immunization, Person.IMMUNIZATIONS, getJoinType(PersonAssociation.IMMUNIZATION), this::setImmunization);
+	}
+
+	public void setImmunization(Join<Person, Immunization> immunization) {
+		this.immunization = immunization;
+	}
+
+	public Join<Person, TravelEntry> getTravelEntry() {
+		return getOrCreate(travelEntry, Person.TRAVEL_ENTRIES, getJoinType(PersonAssociation.TRAVEL_ENTRY), this::setTravelEntry);
+	}
+
+	public void setTravelEntry(Join<Person, TravelEntry> travelEntry) {
+		this.travelEntry = travelEntry;
+	}
+
+	public LocationJoins<Person> getAddressJoins() {
+		return addressJoins;
+	}
+
+	public Join<Person, Location> getAddress() {
+		return getOrCreate(address, Person.ADDRESS, JoinType.LEFT, this::setAddress);
+	}
+
+	private void setAddress(Join<Person, Location> address) {
+		this.address = address;
 	}
 }

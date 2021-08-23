@@ -22,12 +22,16 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.maxBy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,7 +55,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -65,8 +72,10 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
+import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -78,6 +87,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.JournalPersonDto;
+import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonCriteria;
@@ -106,7 +116,12 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -133,9 +148,12 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -150,6 +168,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private ContactService contactService;
+	@EJB
+	private ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private FacilityService facilityService;
 	@EJB
@@ -174,6 +194,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	private UserFacadeEjbLocal userFacade;
 	@EJB
 	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
+	@EJB
+	private EventParticipantService eventParticipantService;
+	@EJB
+	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -367,6 +391,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	 *             if the passed source person to be saved contains invalid data
 	 */
 	public PersonDto savePerson(PersonDto source, boolean checkChangeDate) throws ValidationRuntimeException {
+		return savePerson(source, checkChangeDate, true);
+	}
+
+	public PersonDto savePerson(PersonDto source, boolean checkChangeDate, boolean syncShares) throws ValidationRuntimeException {
 		Person person = personService.getByUuid(source.getUuid());
 
 		PersonDto existingPerson = toDto(person);
@@ -384,7 +412,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		personService.ensurePersisted(person);
 
-		onPersonChanged(existingPerson, person);
+		onPersonChanged(existingPerson, person, syncShares);
 
 		return convertToDto(
 			person,
@@ -879,22 +907,52 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public long count(PersonCriteria criteria) {
+
+		long startTime = DateHelper.startTime();
+		final PersonCriteria nullSafeCriteria = Optional.ofNullable(criteria).orElse(new PersonCriteria());
+		final long count;
+		if (nullSafeCriteria.getPersonAssociation() == PersonAssociation.ALL) {
+			// Fetch Person.id per association and find the distinct count.
+			Set<Long> distinctPersonIds = new HashSet<>();
+			Arrays.stream(PersonAssociation.getSingleAssociations())
+				.map(e -> getPersonIds(SerializationUtils.clone(nullSafeCriteria).personAssociation(e)))
+				.forEach(e -> distinctPersonIds.addAll(e));
+			count = distinctPersonIds.size();
+		} else {
+			// Directly fetch the count for the only required association
+			count = getPersonIds(criteria).size();
+		}
+
+		logger.debug(
+			"count() finished. association={}, count={}, {}ms",
+			nullSafeCriteria.getPersonAssociation().name(),
+			count,
+			DateHelper.durationMillies(startTime));
+		return count;
+	}
+
+	@SuppressWarnings({
+		"rawtypes",
+		"unchecked" })
+	private List<Long> getPersonIds(PersonCriteria criteria) {
+
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Person> person = cq.from(Person.class);
 
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		((PersonJoins) personQueryContext.getJoins()).configure(criteria);
 
-		Predicate filter = personService.createUserFilter(cb, cq, person);
-		if (criteria != null) {
-			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
+		Predicate filter = createIndexListFilter(criteria, personQueryContext);
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.select(cb.countDistinct(person));
-		return em.createQuery(cq).getSingleResult();
+
+		cq.select(person.get(Person.ID));
+		cq.distinct(true);
+
+		List<Long> result = em.createQuery(cq).getResultList();
+		return result;
 	}
 
 	@Override
@@ -955,13 +1013,32 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	public void onPersonChanged(PersonDto existingPerson, Person newPerson) {
+		onPersonChanged(existingPerson, newPerson, true);
+	}
+
+	public void onPersonChanged(PersonDto existingPerson, Person newPerson, boolean syncShares) {
 
 		List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
 		// Call onCaseChanged once for every case to update case classification
 		// Attention: this may lead to infinite recursion when not properly implemented
 		for (Case personCase : personCases) {
 			CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
-			caseFacade.onCaseChanged(existingCase, personCase);
+			caseFacade.onCaseChanged(existingCase, personCase, syncShares);
+		}
+
+		List<Contact> personContacts = contactService.findBy(new ContactCriteria().setPerson(new PersonReferenceDto(newPerson.getUuid())), null);
+		// Call onContactChanged once for every contact
+		// Attention: this may lead to infinite recursion when not properly implemented
+		for (Contact personContact : personContacts) {
+			contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(personContact), syncShares);
+		}
+
+		List<EventParticipant> personEventParticipants =
+			eventParticipantService.findBy(new EventParticipantCriteria().withPerson(new PersonReferenceDto(newPerson.getUuid())), null);
+		// Call onEventParticipantChange once for every event participant
+		// Attention: this may lead to infinite recursion when not properly implemented
+		for (EventParticipant personEventParticipant : personEventParticipants) {
+			eventParticipantFacade.onEventParticipantChanged(EventFacadeEjbLocal.toDto(personEventParticipant.getEvent()), syncShares);
 		}
 
 		// get the updated personCases
@@ -992,7 +1069,7 @@ public class PersonFacadeEjb implements PersonFacade {
 						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 						personCase.setOutcome(CaseOutcome.DECEASED);
 						personCase.setOutcomeDate(newPerson.getDeathDate());
-						caseFacade.onCaseChanged(existingCase, personCase);
+						caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 					}
 				} else if (!newPerson.getPresentCondition().isDeceased()
 					&& (existingPerson.getPresentCondition() == PresentCondition.DEAD
@@ -1010,12 +1087,12 @@ public class PersonFacadeEjb implements PersonFacade {
 						CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 						personCase.setOutcome(CaseOutcome.NO_OUTCOME);
 						personCase.setOutcomeDate(null);
-						caseFacade.onCaseChanged(existingCase, personCase);
+						caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 					}
 				}
 			} else if (newPerson.getPresentCondition() != null
 				&& newPerson.getPresentCondition().isDeceased()
-				&& newPerson.getDeathDate() != existingPerson.getDeathDate()
+				&& !Objects.equals(newPerson.getDeathDate(), existingPerson.getDeathDate())
 				&& newPerson.getDeathDate() != null) {
 				// only Deathdate has changed
 				// update the latest associated case to the new deathdate, if causeOfDeath matches
@@ -1025,7 +1102,7 @@ public class PersonFacadeEjb implements PersonFacade {
 					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE) {
 					CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 					personCase.setOutcomeDate(newPerson.getDeathDate());
-					caseFacade.onCaseChanged(existingCase, personCase);
+					caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 				}
 			}
 		}
@@ -1057,8 +1134,13 @@ public class PersonFacadeEjb implements PersonFacade {
 						personCase.setCaseAge(0);
 					}
 				}
-				caseFacade.onCaseChanged(existingCase, personCase);
+				caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 			}
+		}
+
+		// For newly created persons, assume no registration in external journals
+		if (existingPerson == null && newPerson.getSymptomJournalStatus() == null) {
+			newPerson.setSymptomJournalStatus(SymptomJournalStatus.UNREGISTERED);
 		}
 
 		// Update case pregnancy information if sex has changed
@@ -1069,7 +1151,7 @@ public class PersonFacadeEjb implements PersonFacade {
 					personCase.setPregnant(null);
 					personCase.setTrimester(null);
 					personCase.setPostpartum(null);
-					caseFacade.onCaseChanged(existingCase, personCase);
+					caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 				}
 			}
 		}
@@ -1083,43 +1165,50 @@ public class PersonFacadeEjb implements PersonFacade {
 		final CriteriaQuery<String> cq = cb.createQuery(String.class);
 		final Root<Person> person = cq.from(Person.class);
 
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+
 		cq.select(person.get(Person.UUID));
 		if (!allowPersonsWithCoordinates) {
 			// filter persons by those which have no latitude or longitude given
 			final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 			Predicate noLatitude = cb.isNull(location.get(Location.LATITUDE));
 			Predicate noLongitude = cb.isNull(location.get(Location.LONGITUDE));
-			cq.where(cb.and(personService.createUserFilter(cb, cq, person), cb.or(noLatitude, noLongitude)));
+			cq.where(cb.and(personService.createUserFilter(personQueryContext, null), cb.or(noLatitude, noLongitude)));
 		} else {
-			cq.where(personService.createUserFilter(cb, cq, person));
+			cq.where(personService.createUserFilter(personQueryContext, null));
 		}
 		cq.orderBy(cb.desc(person.get(Person.UUID)));
 
 		// repeat the query as often as necessary until all data is retrieved
-		final int BATCH_SIZE = batchSize == null ? 100 : batchSize;
+		final int max = batchSize == null ? 100 : batchSize;
 		int first = 0;
 		int sizeOfLastBatch = 0;
 		List<String> personUuids = new ArrayList<>();
 		do {
 			// By using LIMIT and OFFSET, timeouts and overflowing caches are somewhat prevented
-			List<String> newPersonUuids = em.createQuery(cq).setFirstResult(first).setMaxResults(BATCH_SIZE).getResultList();
+			List<String> newPersonUuids = QueryHelper.getResultList(em, cq, first, max);
 			sizeOfLastBatch = newPersonUuids.size();
 			first += sizeOfLastBatch;
 			personUuids = Stream.concat(personUuids.stream(), newPersonUuids.stream()).collect(Collectors.toList());
 		}
-		while (sizeOfLastBatch >= BATCH_SIZE);
+		while (sizeOfLastBatch >= max);
 
 		return personUuids;
 	}
 
 	@Override
+	@SuppressWarnings({
+		"rawtypes",
+		"unchecked" })
 	public List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
+		long startTime = DateHelper.startTime();
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
 		final Root<Person> person = cq.from(Person.class);
 
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		((PersonJoins) personQueryContext.getJoins()).configure(criteria);
 
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
@@ -1142,7 +1231,6 @@ public class PersonFacadeEjb implements PersonFacade {
 				cb.equal(emailRoot.get(PersonContactDetail.PERSON_CONTACT_DETAIL_TYPE), PersonContactDetailType.EMAIL)));
 		emailSubQuery.select(emailRoot.get(PersonContactDetail.CONTACT_INFORMATION));
 
-
 		// make sure to check the sorting by the multi-select order if you extend the selections here
 		cq.multiselect(
 			person.get(Person.UUID),
@@ -1164,12 +1252,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			person.get(Person.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, personService.inJurisdictionOrOwned(personQueryContext)));
 
-		Predicate filter = personService.createUserFilter(cb, cq, person);
-		if (criteria != null) {
-			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
-
+		Predicate filter = createIndexListFilter(criteria, personQueryContext);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -1214,12 +1297,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			cq.orderBy(cb.desc(person.get(Person.CHANGE_DATE)));
 		}
 
-		List<PersonIndexDto> persons;
-		if (first != null && max != null) {
-			persons = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			persons = em.createQuery(cq).getResultList();
-		}
+		List<PersonIndexDto> persons = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
@@ -1228,7 +1306,26 @@ public class PersonFacadeEjb implements PersonFacade {
 			p -> p.getInJurisdiction(),
 			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, p.getAgeAndBirthDate(), isInJurisdiction, null));
 
+		logger.debug(
+			"getIndexList() finished. association={}, count={}, {}ms",
+			Optional.ofNullable(criteria).orElse(new PersonCriteria()).getPersonAssociation().name(),
+			persons.size(),
+			DateHelper.durationMillies(startTime));
 		return persons;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Predicate createIndexListFilter(PersonCriteria criteria, PersonQueryContext personQueryContext) {
+
+		CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
+		Predicate filter;
+		filter = personService.createUserFilter(personQueryContext, criteria);
+		if (criteria != null) {
+			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		return filter;
 	}
 
 	public Page<PersonIndexDto> getIndexPage(PersonCriteria personCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
@@ -1283,8 +1380,6 @@ public class PersonFacadeEjb implements PersonFacade {
 						isInJurisdiction));
 		}
 	}
-
-
 
 	public static PersonReferenceDto toReferenceDto(Person entity) {
 
@@ -1412,6 +1507,24 @@ public class PersonFacadeEjb implements PersonFacade {
 			.nationalHealthId(referencePerson.getNationalHealthId());
 
 		return checkMatchingNameInDatabase(userFacade.getCurrentUser().toReference(), criteria);
+	}
+
+	@Override
+	public void mergePerson(PersonDto leadPerson, PersonDto otherPerson) {
+		// Make sure the resulting person does not have multiple primary contact details
+		Set primaryContactDetailTypes = new HashSet<>();
+		for (PersonContactDetailDto contactDetailDto : leadPerson.getPersonContactDetails()) {
+			if (contactDetailDto.isPrimaryContact()) {
+				primaryContactDetailTypes.add(contactDetailDto.getPersonContactDetailType());
+			}
+		}
+		for (PersonContactDetailDto contactDetailDto : otherPerson.getPersonContactDetails()) {
+			if (contactDetailDto.isPrimaryContact() && primaryContactDetailTypes.contains(contactDetailDto.getPersonContactDetailType())) {
+				contactDetailDto.setPrimaryContact(false);
+			}
+		}
+		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
+		savePerson(leadPerson);
 	}
 
 	@LocalBean

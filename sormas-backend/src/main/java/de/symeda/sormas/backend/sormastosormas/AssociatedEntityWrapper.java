@@ -32,7 +32,8 @@ public class AssociatedEntityWrapper<T extends SormasToSormasEntity> {
 
 	private final T entity;
 	private final BiConsumer<SormasToSormasShareInfo, T> shareInfoAssociatedObjectFn;
-	private final BiFunction<SormasToSormasShareInfo, T, Boolean> associatedObjectFindFn;
+	private final BiFunction<SormasToSormasShareInfo, T, Boolean> shareInfoFindFn;
+	private final BiFunction<SormasToSormasOriginInfo, T, Boolean> originInfoFindFn;
 
 	public static List<AssociatedEntityWrapper<?>> forContacts(List<Contact> contacts) {
 		return contacts.stream()
@@ -42,7 +43,8 @@ public class AssociatedEntityWrapper<T extends SormasToSormasEntity> {
 					(s, c) -> s.getContacts().add(new ShareInfoContact(s, c)),
 					(shareInfo, contactToFind) -> shareInfo.getContacts()
 						.stream()
-						.anyMatch(c -> contactToFind.getUuid().equals(c.getContact().getUuid()))))
+						.anyMatch(c -> contactToFind.getUuid().equals(c.getContact().getUuid())),
+					(originInfo, contactToFind) -> originInfo.getContacts().stream().anyMatch(c -> contactToFind.getUuid().equals(c.getUuid()))))
 			.collect(Collectors.toList());
 	}
 
@@ -54,7 +56,8 @@ public class AssociatedEntityWrapper<T extends SormasToSormasEntity> {
 					(s, ep) -> s.getEventParticipants().add(new ShareInfoEventParticipant(s, ep)),
 					(shareInfo, epToFind) -> shareInfo.getEventParticipants()
 						.stream()
-						.anyMatch(ep -> epToFind.getUuid().equals(ep.getEventParticipant().getUuid()))))
+						.anyMatch(ep -> epToFind.getUuid().equals(ep.getEventParticipant().getUuid())),
+					(originInfo, epToFind) -> originInfo.getEventParticipants().stream().anyMatch(ep -> epToFind.getUuid().equals(ep.getUuid()))))
 			.collect(Collectors.toList());
 	}
 
@@ -66,17 +69,20 @@ public class AssociatedEntityWrapper<T extends SormasToSormasEntity> {
 					(shareInfo, s) -> shareInfo.getSamples().add(new ShareInfoSample(shareInfo, sample)),
 					(shareInfo, sampleToFind) -> shareInfo.getSamples()
 						.stream()
-						.anyMatch(c -> sampleToFind.getUuid().equals(c.getSample().getUuid()))))
+						.anyMatch(s -> sampleToFind.getUuid().equals(s.getSample().getUuid())),
+					(originInfo, sampleToFind) -> originInfo.getSamples().stream().anyMatch(s -> sampleToFind.getUuid().equals(s.getUuid()))))
 			.collect(Collectors.toList());
 	}
 
 	private AssociatedEntityWrapper(
 		T entity,
 		BiConsumer<SormasToSormasShareInfo, T> shareInfoAssociatedObjectFn,
-		BiFunction<SormasToSormasShareInfo, T, Boolean> associatedObjectFindFn) {
+		BiFunction<SormasToSormasShareInfo, T, Boolean> shareInfoFindFn,
+		BiFunction<SormasToSormasOriginInfo, T, Boolean> originInfoFindFn) {
 		this.entity = entity;
 		this.shareInfoAssociatedObjectFn = shareInfoAssociatedObjectFn;
-		this.associatedObjectFindFn = associatedObjectFindFn;
+		this.shareInfoFindFn = shareInfoFindFn;
+		this.originInfoFindFn = originInfoFindFn;
 	}
 
 	public T getEntity() {
@@ -88,6 +94,10 @@ public class AssociatedEntityWrapper<T extends SormasToSormasEntity> {
 	}
 
 	public boolean isAddedToShareInfo(SormasToSormasShareInfo shareInfo) {
-		return associatedObjectFindFn.apply(shareInfo, entity);
+		return shareInfoFindFn.apply(shareInfo, entity);
+	}
+
+	public boolean isAddedToOriginInfo(SormasToSormasOriginInfo originInfo) {
+		return originInfoFindFn.apply(originInfo, entity);
 	}
 }

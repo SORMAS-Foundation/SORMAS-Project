@@ -11,7 +11,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -29,6 +28,7 @@ import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SystemEventFacade")
 public class SystemEventFacadeEjb implements SystemEventFacade {
@@ -58,12 +58,7 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 		cq.where(cb.equal(systemEventRoot.get(SystemEvent.STATUS), SystemEventStatus.SUCCESS));
 		cq.orderBy(cb.desc(systemEventRoot.get(SystemEvent.START_DATE)));
 
-		try {
-			SystemEvent systemEvent = em.createQuery(cq).setMaxResults(1).getSingleResult();
-			return toDto(systemEvent);
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getFirstResult(em, cq, this::toDto);
 	}
 
 	@Override

@@ -34,7 +34,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -83,6 +82,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -195,11 +195,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		Join<Sample, Sample> referredJoin = from.join(Sample.REFERRED_TO, JoinType.LEFT);
 
 		cq.where(cb.equal(referredJoin.get(AbstractDomainObject.UUID), sampleUuid));
-		try {
-			return em.createQuery(cq).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getSingleResult(em, cq);
 	}
 
 	public List<String> getDeletedUuidsSince(User user, Date since) {

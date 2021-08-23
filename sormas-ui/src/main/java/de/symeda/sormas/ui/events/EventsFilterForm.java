@@ -1,3 +1,17 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
@@ -7,6 +21,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -26,11 +41,18 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import org.apache.commons.collections.CollectionUtils;
+
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -79,7 +101,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		LocationDto.FACILITY_TYPE,
 		LocationDto.FACILITY,
 		EventDto.EVENT_INVESTIGATION_STATUS,
-		EventDto.EVENT_MANAGEMENT_STATUS)
+		EventDto.EVENT_MANAGEMENT_STATUS,
+		EventDto.EVENT_IDENTIFICATION_SOURCE)
 		+ filterLocsCss(
 			VSPACE_3,
 			EventCriteria.ONLY_ENTITIES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL,
@@ -118,7 +141,9 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		return new String[] {
 			EventCriteria.EVENT_STATUS,
 			EventCriteria.RISK_LEVEL,
+			EventCriteria.SPECIFIC_RISK,
 			EventIndexDto.DISEASE,
+			EventIndexDto.DISEASE_VARIANT,
 			EventCriteria.REPORTING_USER_ROLE,
 			EventCriteria.RESPONSIBLE_USER,
 			EventCriteria.FREE_TEXT,
@@ -131,7 +156,16 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 		addField(FieldConfiguration.pixelSized(EventCriteria.EVENT_STATUS, 140));
 		addField(FieldConfiguration.pixelSized(EventCriteria.RISK_LEVEL, 140));
+
+		List<SpecificRisk> specificRisks = FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.SPECIFIC_EVENT_RISK, null);
+		if (!specificRisks.isEmpty()) {
+			ComboBox specificRiskField = addField(FieldConfiguration.pixelSized(EventCriteria.SPECIFIC_RISK, 140), ComboBox.class);
+			FieldHelper.updateItems(specificRiskField, specificRisks);
+		}
+
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE, 140));
+		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE_VARIANT, 140), ComboBox.class);
+
 		addField(FieldConfiguration.withCaptionAndPixelSized(EventCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
 		addField(FieldConfiguration.pixelSized(EventCriteria.RESPONSIBLE_USER, 140));
 
@@ -163,7 +197,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			FieldConfiguration.pixelSized(EventDto.SRC_TYPE, 140),
 			FieldConfiguration.pixelSized(EventDto.TYPE_OF_PLACE, 140),
 			FieldConfiguration.pixelSized(EventDto.EVENT_INVESTIGATION_STATUS, 140),
-			FieldConfiguration.pixelSized(EventDto.EVENT_MANAGEMENT_STATUS, 140));
+			FieldConfiguration.pixelSized(EventDto.EVENT_MANAGEMENT_STATUS, 140),
+			FieldConfiguration.pixelSized(EventDto.EVENT_IDENTIFICATION_SOURCE, 140));
 
 		ComboBox regionField = addField(
 			moreFiltersContainer,
@@ -415,6 +450,9 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		case EventDto.TYPE_OF_PLACE:
 			applyFacilityFieldsDependencies();
 			break;
+		case CaseDataDto.DISEASE:
+			Disease disease = (Disease) event.getProperty().getValue();
+			applyDiseaseFilterDependency(disease);
 		}
 	}
 
@@ -468,6 +506,23 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		applyFacilityFieldsDependencies(criteria.getTypeOfPlace(), criteria.getDistrict(), criteria.getCommunity());
 
 		updateResponsibleUserFieldItems(criteria.getDistrict(), criteria.getRegion());
+
+		ComboBox diseaseField = getField(CaseDataDto.DISEASE);
+		Disease disease = (Disease) diseaseField.getValue();
+		applyDiseaseFilterDependency(disease);
+	}
+
+	private void applyDiseaseFilterDependency(Disease disease) {
+		ComboBox diseaseVariantField = getField(CaseDataDto.DISEASE_VARIANT);
+		if (disease == null) {
+			FieldHelper.updateItems(diseaseVariantField, Collections.emptyList());
+			FieldHelper.setEnabled(false, diseaseVariantField);
+		} else {
+			List<DiseaseVariant> diseaseVariants =
+					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+			FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), diseaseVariantField);
+		}
 	}
 
 	private void applyDateDependencyOnNewValue(String componentId, DateFilterOption dateFilterOption, Date dateFrom, Date dateTo) {

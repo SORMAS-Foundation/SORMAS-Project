@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -25,9 +25,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
+import de.symeda.sormas.api.event.EventIdentificationSource;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -40,9 +46,11 @@ import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.MedicallyAssociatedTransmissionMode;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.RiskLevel;
+import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfo;
@@ -63,6 +71,7 @@ public class Event extends PseudonymizableAdo {
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String RISK_LEVEL = "riskLevel";
 	public static final String EVENT_MANAGEMENT_STATUS = "eventManagementStatus";
+	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 	public static final String EVENT_INVESTIGATION_STATUS = "eventInvestigationStatus";
 	public static final String EVENT_INVESTIGATION_START_DATE = "eventInvestigationStartDate";
 	public static final String EVENT_INVESTIGATION_END_DATE = "eventInvestigationEndDate";
@@ -103,6 +112,10 @@ public class Event extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private RiskLevel riskLevel;
+
+	@Column(name = "specificRisk")
+	private String specificRiskString;
+	private SpecificRisk specificRisk;
 
 	@Enumerated(EnumType.STRING)
 	private EventInvestigationStatus eventInvestigationStatus;
@@ -200,6 +213,10 @@ public class Event extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private Disease disease;
 
+	@Column(name = "diseaseVariant")
+	private String diseaseVariantString;
+	private DiseaseVariant diseaseVariant;
+
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String diseaseDetails;
 
@@ -230,6 +247,9 @@ public class Event extends PseudonymizableAdo {
 	private EventManagementStatus eventManagementStatus;
 
 	@Enumerated(EnumType.STRING)
+	private EventIdentificationSource eventIdentificationSource;
+
+	@Enumerated(EnumType.STRING)
 	private InfectionPathCertainty infectionPathCertainty;
 	@Enumerated(EnumType.STRING)
 	private HumanTransmissionMode humanTransmissionMode;
@@ -255,6 +275,32 @@ public class Event extends PseudonymizableAdo {
 
 	public void setRiskLevel(RiskLevel riskLevel) {
 		this.riskLevel = riskLevel;
+	}
+
+	public String getSpecificRiskString() {
+		return specificRiskString;
+	}
+
+	public void setSpecificRiskString(String specificRiskString) {
+		this.specificRiskString = specificRiskString;
+	}
+
+	@Transient
+	public SpecificRisk getSpecificRisk() {
+		if (StringUtils.isBlank(specificRiskString)) {
+			return null;
+		} else {
+			return DatabaseHelper.getCustomizableEnumValueDao().getEnumValue(CustomizableEnumType.SPECIFIC_EVENT_RISK, specificRiskString);
+		}
+	}
+
+	public void setSpecificRisk(SpecificRisk specificRisk) {
+		this.specificRisk = specificRisk;
+		if (specificRisk == null) {
+			specificRiskString = null;
+		} else {
+			specificRiskString = specificRisk.getValue();
+		}
 	}
 
 	public EventInvestigationStatus getEventInvestigationStatus() {
@@ -489,6 +535,32 @@ public class Event extends PseudonymizableAdo {
 		this.disease = disease;
 	}
 
+	public String getDiseaseVariantString() {
+		return diseaseVariantString;
+	}
+
+	public void setDiseaseVariantString(String diseaseVariantString) {
+		this.diseaseVariantString = diseaseVariantString;
+	}
+
+	@Transient
+	public DiseaseVariant getDiseaseVariant() {
+		if (StringUtils.isBlank(diseaseVariantString)) {
+			return null;
+		} else {
+			return DatabaseHelper.getCustomizableEnumValueDao().getEnumValue(CustomizableEnumType.DISEASE_VARIANT, diseaseVariantString);
+		}
+	}
+
+	public void setDiseaseVariant(DiseaseVariant diseaseVariant) {
+		this.diseaseVariant = diseaseVariant;
+		if (diseaseVariant == null) {
+			diseaseVariantString = null;
+		} else {
+			diseaseVariantString = diseaseVariant.getValue();
+		}
+	}
+
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
@@ -617,6 +689,14 @@ public class Event extends PseudonymizableAdo {
 
 	public void setEventManagementStatus(EventManagementStatus eventManagementStatus) {
 		this.eventManagementStatus = eventManagementStatus;
+	}
+
+	public EventIdentificationSource getEventIdentificationSource() {
+		return eventIdentificationSource;
+	}
+
+	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
+		this.eventIdentificationSource = eventIdentificationSource;
 	}
 
 	public InfectionPathCertainty getInfectionPathCertainty() {

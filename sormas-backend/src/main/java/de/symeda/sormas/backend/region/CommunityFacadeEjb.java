@@ -56,6 +56,7 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CommunityFacade")
 public class CommunityFacadeEjb implements CommunityFacade {
@@ -184,17 +185,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		//				region.get(Region.UUID), region.get(Region.NAME),
 		//				district.get(District.UUID), district.get(District.NAME));
 
-		if (first != null && max != null) {
-			return em.createQuery(cq)
-				.setFirstResult(first)
-				.setMaxResults(max)
-				.getResultList()
-				.stream()
-				.map(f -> toDto(f))
-				.collect(Collectors.toList());
-		} else {
-			return em.createQuery(cq).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
-		}
+		return QueryHelper.getResultList(em, cq, first, max, this::toDto);
 	}
 
 	public Page<CommunityDto> getIndexPage(CommunityCriteria communityCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
@@ -343,7 +334,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 		cq.select(root.get(Community.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	public static CommunityReferenceDto toReferenceDto(Community entity) {

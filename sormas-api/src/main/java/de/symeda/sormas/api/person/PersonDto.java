@@ -151,6 +151,7 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	private String namesOfGuardians;
 	@Outbreaks
+	@Required
 	private Sex sex;
 	@Outbreaks
 	@PersonalData
@@ -329,6 +330,13 @@ public class PersonDto extends PseudonymizableDto {
 		return person;
 	}
 
+	public static PersonDto buildImportEntity() {
+
+		PersonDto person = build();
+		person.setSex(Sex.UNKNOWN);
+		return person;
+	}
+
 	public Integer getBirthdateDD() {
 		return birthdateDD;
 	}
@@ -465,17 +473,19 @@ public class PersonDto extends PseudonymizableDto {
 		this.deathDate = deathDate;
 	}
 
-	private void setPersonContactInformation(String contactInfo, PersonContactDetailType personContactDetailType) {
+	private void setPersonContactInformation(String contactInfo, PersonContactDetailType personContactDetailType, boolean primary) {
 		for (PersonContactDetailDto contactDetailDto : getPersonContactDetails()) {
 			if (contactDetailDto.getPersonContactDetailType() == personContactDetailType && contactDetailDto.isPrimaryContact()) {
 				if (contactInfo.equals(contactDetailDto.getContactInformation())) {
 					return;
 				}
-				contactDetailDto.setPrimaryContact(false);
+				if (primary) {
+					contactDetailDto.setPrimaryContact(false);
+				}
 			}
 		}
 		final PersonContactDetailDto pcd =
-			PersonContactDetailDto.build(this.toReference(), true, personContactDetailType, null, null, contactInfo, null, false, null, null);
+			PersonContactDetailDto.build(this.toReference(), primary, personContactDetailType, null, null, contactInfo, null, false, null, null);
 		getPersonContactDetails().add(pcd);
 	}
 
@@ -529,12 +539,19 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	/**
-	 * 
 	 * @param phone
 	 *            is automatically set as primary phone number, removing the primary status from another phone number if necessary.
 	 */
 	public void setPhone(String phone) {
-		setPersonContactInformation(phone, PersonContactDetailType.PHONE);
+		setPersonContactInformation(phone, PersonContactDetailType.PHONE, true);
+	}
+
+	/**
+	 * @param phone
+	 *            is set as an additional non-primary phone number
+	 */
+	public void setAdditionalPhone(String phone) {
+		setPersonContactInformation(phone, PersonContactDetailType.PHONE, false);
 	}
 
 	/**
@@ -592,7 +609,7 @@ public class PersonDto extends PseudonymizableDto {
 	 *            is automatically set as primary email address, removing the primary status from another email address if necessary.
 	 */
 	public void setEmailAddress(String email) {
-		setPersonContactInformation(email, PersonContactDetailType.EMAIL);
+		setPersonContactInformation(email, PersonContactDetailType.EMAIL, true);
 	}
 
 	private String getPersonContactInformation(PersonContactDetailType personContactDetailType) {

@@ -13,12 +13,16 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -40,7 +44,9 @@ public class PersonsView extends AbstractView {
 	public PersonsView() {
 		super(VIEW_NAME);
 
-		criteria = ViewModelProviders.of(PersonsView.class).get(PersonCriteria.class);
+		// Avoid calling ALL associations at view start because the query tends to take long time
+		PersonCriteria defaultCriteria = new PersonCriteria().personAssociation(PersonAssociation.CASE);
+		criteria = ViewModelProviders.of(PersonsView.class).get(PersonCriteria.class, defaultCriteria);
 		grid = new PersonGrid(criteria);
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -168,22 +174,39 @@ public class PersonsView extends AbstractView {
 		associationFilterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		associationButtons = new HashMap<>();
-
-		Button statusAll = ButtonHelper.createButton(Captions.all, e -> {
-			criteria.personAssociation(null);
-			navigateTo(criteria);
-		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
-		statusAll.setCaptionAsHtml(true);
-
-		associationFilterLayout.addComponent(statusAll);
-		associationFilterLayout.setComponentAlignment(statusAll, Alignment.MIDDLE_LEFT);
-		associationButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
-		activeAssociationButton = statusAll;
-
 		for (PersonAssociation association : PersonAssociation.values()) {
+			if (association == PersonAssociation.IMMUNIZATION
+				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+				|| association == PersonAssociation.TRAVEL_ENTRY
+					&& !FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+				|| association == PersonAssociation.CONTACT
+					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CONTACT_TRACING)
+				|| association == PersonAssociation.CASE
+					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CASE_SURVEILANCE)
+				|| association == PersonAssociation.EVENT_PARTICIPANT
+					&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EVENT_SURVEILLANCE)) {
+				continue;
+			}
+
 			Button associationButton = ButtonHelper.createButton(association.toString(), e -> {
-				criteria.personAssociation(association);
-				navigateTo(criteria);
+				if (!UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER) && association == PersonAssociation.ALL) {
+					Label contentLabel = new Label(I18nProperties.getString(Strings.confirmationSeeAllPersons));
+					VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getString(Strings.headingSeeAllPersons),
+						contentLabel,
+						I18nProperties.getString(Strings.yes),
+						I18nProperties.getString(Strings.no),
+						640,
+						ee -> {
+							if (ee.booleanValue() == true) {
+								criteria.personAssociation(association);
+								navigateTo(criteria);
+							}
+						});
+				} else {
+					criteria.personAssociation(association);
+					navigateTo(criteria);
+				}
 			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
 			associationButton.setData(association);
 			associationButton.setCaptionAsHtml(true);

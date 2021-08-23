@@ -1,7 +1,7 @@
 
 # Development Environment Setup
 
-This step-by-step guide explains how to set up your development environment, using either Eclipse or Intellij for the backend and web UI and Android Studio for the mobile app. Please follow it strictly to make sure that development will run as smoothly as possible and your code adheres to our guidelines.
+This step-by-step guide explains how to set up your development environment, using either Eclipse or IntelliJ for the backend and web UI and Android Studio for the mobile app. Please follow it strictly to make sure that development will run as smoothly as possible and your code adheres to our guidelines.
 
 **Please note that these instructions are optimized for Windows and Linux systems.** If you're developing on a Mac and, we would be glad to get your feedback about how this guide can be extended with OS-specific instructions in our developer chat on [Gitter](https://gitter.im/SORMAS-Project).
 
@@ -11,19 +11,21 @@ Please follow the [Server Setup Instructions](SERVER_SETUP.md) to set up a local
 ## Step 2: Check Out the SORMAS Repository
 - [Download and install the latest Git version](https://git-scm.com/downloads) for your operating system
 - *Optional:* Install a Git client such as [TortoiseGit](https://tortoisegit.org/) or [GitHub Desktop](https://desktop.github.com/) if you don't want to handle version control from the command line or within your IDE
-- *Optional:* Clone the SORMAS-Open repository with `git clone https://github.com/hzi-braunschweig/SORMAS-Project.git`; if you want to use Git from within your IDE, you can also clone the repository in Step 4
+- *Optional:* Clone the SORMAS-Project repository with `git clone https://github.com/hzi-braunschweig/SORMAS-Project.git`; if you want to use Git from within your IDE, you can also clone the repository in Step 4
 - Open Git Bash and execute the following command to ensure that rebase is used when pulling the development branch rather than merge: `git config --global branch.development.rebase true`
 
 ## Step 3: Install Java
-Download and install the **Java 11 JDK** (not JRE) for your operating system. We suggest using [Zulu OpenJDK](https://www.azul.com/downloads/?version=java-11-lts&package=jdk). If you're running Linux, please refer to the [official documentation](https://docs.azul.com/zulu/zuludocs/ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm) on how to install Zulu OpenJDK on your system.
+Download and install the **Java 11 JDK** (not JRE) for your operating system.
+We suggest using [Zulu OpenJDK](https://www.azul.com/downloads/?version=java-11-lts&package=jdk). If you're running Linux, please refer to the [official documentation](https://docs.azul.com/zulu/zuludocs/ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm) on how to install Zulu OpenJDK on your system.
+If you plan to work on the Android App as well, you will also need the **Java 8 JDK** to use with Android Studio.
 
 ## Step 4: Install and Configure Your IDE
 
 ### IntelliJ
-- Download and install the latest [IntelliJ IDEA Ultimate](https://www.jetbrains.com/lp/intellij-frameworks/); (newer than version of 2020-04-15 to enable debugging, see https://youtrack.jetbrains.com/issue/IDEA-216528)
+- Download and install the latest [IntelliJ IDEA Ultimate](https://www.jetbrains.com/lp/intellij-frameworks/); (newer than version of 2020-04-15 to enable debugging, see <https://youtrack.jetbrains.com/issue/IDEA-216528>)
 - Set the project SDK to the installed JDK
-- *Optional:* Clone the SORMAS-Open repository if you haven't done so already
-- Open the project in Intellij; make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
+- *Optional:* Clone the SORMAS-Project repository if you haven't done so already
+- Open the project in IntelliJ; make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
 - Navigate to `File -> Settings -> Plugins` and make sure that Glassfish & Ant integrations are enabled
 - Install the [Vaadin 6-8 plugin](https://plugins.jetbrains.com/plugin/13199-vaadin-6-8); the commercial Vaadin Designer is not needed
 - Make a copy of `sormas-base/build.properties.example`, rename it to `build.properties` and set `glassfish.domain.root` to the location of the SORMAS domain inside your Payara installation
@@ -46,8 +48,8 @@ Download and install the **Java 11 JDK** (not JRE) for your operating system. We
 ### Eclipse
 - Download and install the latest [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages)
 - Set the default JRE of Eclipse to the installed JDK: [Assigning the default JRE for the workbench](https://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Ftasks%2Ftask-assign_default_jre.htm)
-- *Optional:* Clone the SORMAS-Open repository if you haven't done so already via `File -> Import -> Git -> Projects from Git` and cancel the process when you're asked to create a new project from the cloned repository
-- Import the projects from the SORMAS-Open repository into your workspace via `File -> Import -> Maven -> Existing Maven Projects`
+- *Optional:* Clone the SORMAS-Project repository if you haven't done so already via `File -> Import -> Git -> Projects from Git` and cancel the process when you're asked to create a new project from the cloned repository
+- Import the projects from the SORMAS-Project repository into your workspace via `File -> Import -> Maven -> Existing Maven Projects`
 - Install the [Payara Tools plugin](https://marketplace.eclipse.org/content/payara-tools)
 - Install the [Vaadin Plugin for Eclipse](https://marketplace.eclipse.org/content/vaadin-plugin-eclipse); the commercial UI designer is not needed
 - Add a Payara server to Eclipse and enter the credentials you specified when setting up the local SORMAS server
@@ -65,8 +67,9 @@ Download and install the **Java 11 JDK** (not JRE) for your operating system. We
 - Download and install the latest [Android Studio version](https://developer.android.com/studio)
   - Please make sure to run the installer with admin rights if you're using Windows
   - Ensure that the Android SDK installation path does not contain whitespaces; you can also change this later via `Tools -> SDK Manager -> Android SDK Location`
-- Open Android Studio and import the `sormas-app` module from the SORMAS-Open repository
+- Open Android Studio and import the `sormas-app` module from the SORMAS-Project repository
 - Make a copy of `keystore.properties.example` and rename it to `keystore.properties`
+- Make sure to use the JDK version 8 (`File -> Project Structure -> SDK Location -> JDK Location`)
 - Build the Android Studio project by executing the Gradle build (this may be done automatically)
 - Add an emulator and set the SDK version to the `minSdkVersion` or `targetSdkVersion` from `build.gradle`; we suggest to test your code on both, but `minSdkVersion` should be preferred to ensure compatibility to the minimum supported SDK
 - Click on `Run 'app'` to install and run the app on your emulator; enter `http://10.0.2.2:6080/sormas-rest` as the server URL when you start the newly installed app for the first time
@@ -76,8 +79,8 @@ Download and install the **Java 11 JDK** (not JRE) for your operating system. We
 ## Step 5: Configure Code Formatting and Import Settings
 In order to ensure a consistent code style and prevent so-called edit wars, we have set up custom configuration files for automatic code formatting and import ordering. Please make sure to adhere to the following steps for your IDE(s) before you start developing.
 
-### IntelliJ and Android Studio
-- Install the [Eclipse Code Formatter for Intellij/Android Studio plugin](https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
+### IntelliJ and Android Studio Settings
+- Install the [Eclipse Code Formatter for IntelliJ/Android Studio plugin](https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
 - Open the plugin settings via `File -> Settings -> Other Settings -> Eclipse Code Formatter` and select `Use the Eclipse Code Formatter`
 - Under `Eclipse formatter config`, choose `Eclipse workspace/project folder or config file` and select `sormas-base/java-formatter-profile.xml`
 - Check `Optimize Imports`
@@ -90,7 +93,7 @@ Optional, but strongly recommended:
 - Install the [Save Actions plugin](https://plugins.jetbrains.com/plugin/7642-save-actions) that automatically applies code formatting and import reordering whenever you save a file - otherwise you will manually have to do so (by default with Ctrl+Alt+L)
 - Open the plugin settings via `File -> Settings -> Other Settings -> Save Actions` and make sure that the *first three checkboxes* under `General` and the *first two checkboxes* under `Formatting Actions` are selected
 
-### Eclipse
+### Eclipse Settings
 - Open `Window -> Preferences`
 - Navigate to `Java -> Code Style -> Formatter`, import `sormas-base/java-formatter-profile.xml` and apply the changes
 - Navigate to `Java -> Code Style -> Organize Imports` and import `sormas-base/java-importorder-profile.importorder`
@@ -118,4 +121,4 @@ Optional, but strongly recommended:
 
 6. M2_HOME need to be set. By default, for newer version, it is set to MAVEN_HOME. But Ant script is looking for M2_HOME
 
-7. For eclipse formatted plugin, there is an issue for Idea: https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter - `cannot save settings Path to custom eclipse folder is not valid` - it works only when settings were saved from down to up. And not vice versa.
+7. For eclipse formatted plugin, there is an issue for Idea: <https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter> - `cannot save settings Path to custom eclipse folder is not valid` - it works only when settings were saved from down to up. And not vice versa.

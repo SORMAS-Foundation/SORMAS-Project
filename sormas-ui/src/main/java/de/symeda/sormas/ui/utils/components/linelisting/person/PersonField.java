@@ -32,7 +32,6 @@ public class PersonField extends CustomField<PersonFieldDto> {
 	@Override
 	protected Component initContent() {
 		setValue(new PersonFieldDto());
-
 		HorizontalLayout layout = new HorizontalLayout();
 
 		firstname.setId("firstName");
@@ -62,6 +61,15 @@ public class PersonField extends CustomField<PersonFieldDto> {
 	@Override
 	public PersonFieldDto getValue() {
 		return binder.getBean();
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		firstname.setEnabled(enabled);
+		lastname.setEnabled(enabled);
+		birthDate.setEnabled(enabled);
+		sex.setEnabled(enabled);
 	}
 
 	public BinderValidationStatus<PersonFieldDto> validate() {

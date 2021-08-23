@@ -107,7 +107,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.AreaDto;
-import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.ContinentDto;
@@ -123,22 +122,24 @@ import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.importexport.parser.ImportParserService;
 import de.symeda.sormas.backend.region.AreaFacadeEjb.AreaFacadeEjbLocal;
-import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.region.CountryFacadeEjb;
+import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "ImportFacade")
 public class ImportFacadeEjb implements ImportFacade {
@@ -179,13 +180,17 @@ public class ImportFacadeEjb implements ImportFacade {
 	@EJB
 	private CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 	@EJB
-	private UserService userService;
-	@EJB
 	private UserFacadeEjbLocal userFacade;
 	@EJB
 	private AreaFacadeEjbLocal areaFacade;
 	@EJB
-	private RegionFacadeEjbLocal regionFacade;
+	private EnumService enumService;
+	@EJB
+	private RegionService regionService;
+	@EJB
+	private CountryFacadeEjbLocal countryFacade;
+	@EJB
+	private ImportParserService importParserService;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = "import_case_template.csv";
 	private static final String EVENT_IMPORT_TEMPLATE_FILE_NAME = "import_event_template.csv";
@@ -204,6 +209,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String FACILITY_IMPORT_TEMPLATE_FILE_NAME = "import_facility_template.csv";
 	private static final String CONTACT_IMPORT_TEMPLATE_FILE_NAME = "import_contact_template.csv";
 	private static final String CAMPAIGN_FORM_IMPORT_TEMPLATE_FILE_NAME = "import_campaign_form_data_template.csv";
+	private static final String TRAVEL_ENTRY_IMPORT_TEMPLATE_FILE_NAME = "import_travel_entry_template.csv";
 
 	private static final String ALL_COUNTRIES_IMPORT_FILE_NAME = "sormas_import_all_countries.csv";
 	private static final String ALL_SUBCONTINENTS_IMPORT_FILE_NAME = "sormas_import_all_subcontinents.csv";
@@ -848,83 +854,28 @@ public class ImportFacadeEjb implements ImportFacade {
 		return true;
 	}
 
-	public boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
-		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException {
+	public boolean executeDefaultInvoke(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath, boolean allowForeignRegions)
+		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException, EnumService.InvalidEnumCaptionException {
 		Class<?> propertyType = pd.getPropertyType();
 
-		if (propertyType.isEnum()) {
-			pd.getWriteMethod().invoke(element, Enum.valueOf((Class<? extends Enum>) propertyType, entry.toUpperCase()));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(Date.class)) {
-			// If the string is smaller than the length of the expected date format, throw an exception
-			if (entry.length() < 10) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(
-						Validations.importInvalidDate,
-						buildEntityProperty(entryHeaderPath),
-						DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
-			} else {
-				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));
-				return true;
+		if (importParserService.hasParser(pd)) {
+			Object parsedValue = importParserService.parseValue(pd, entry, entryHeaderPath);
+			pd.getWriteMethod().invoke(element, parsedValue);
+
+			if (propertyType.isAssignableFrom(RegionReferenceDto.class) && !allowForeignRegions && parsedValue != null) {
+
+				Region region = regionService.getByUuid(((RegionReferenceDto) parsedValue).getUuid());
+				CountryReferenceDto serverCountry = countryFacade.getServerCountry();
+
+				if (region.getCountry() != null && !CountryFacadeEjb.toReferenceDto(region.getCountry()).equals(serverCountry)) {
+					throw new ImportErrorException(
+						I18nProperties.getValidationError(Validations.importRegionNotInServerCountry, entry, buildEntityProperty(entryHeaderPath)));
+				}
 			}
-		}
-		if (propertyType.isAssignableFrom(Integer.class)) {
-			pd.getWriteMethod().invoke(element, Integer.parseInt(entry));
+
 			return true;
 		}
-		if (propertyType.isAssignableFrom(Double.class)) {
-			pd.getWriteMethod().invoke(element, Double.parseDouble(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(Float.class)) {
-			pd.getWriteMethod().invoke(element, Float.parseFloat(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(boolean.class)) {
-			pd.getWriteMethod().invoke(element, Boolean.parseBoolean(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(AreaReferenceDto.class)) {
-			List<AreaReferenceDto> areas = areaFacade.getByName(entry, false);
-			if (areas.isEmpty()) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (areas.size() > 1) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importAreaNotUnique, entry, buildEntityProperty(entryHeaderPath)));
-			} else {
-				pd.getWriteMethod().invoke(element, areas.get(0));
-				return true;
-			}
-		}
-		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<RegionReferenceDto> region = regionFacade.getReferencesByName(entry, false);
-			if (region.isEmpty()) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (region.size() > 1) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildEntityProperty(entryHeaderPath)));
-			} else {
-				pd.getWriteMethod().invoke(element, region.get(0));
-				return true;
-			}
-		}
-		if (propertyType.isAssignableFrom(UserReferenceDto.class)) {
-			UserDto user = userFacade.getByUserName(entry);
-			if (user != null) {
-				pd.getWriteMethod().invoke(element, user.toReference());
-				return true;
-			} else {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			}
-		}
-		if (propertyType.isAssignableFrom(String.class)) {
-			pd.getWriteMethod().invoke(element, entry);
-			return true;
-		}
+
 
 		return false;
 	}

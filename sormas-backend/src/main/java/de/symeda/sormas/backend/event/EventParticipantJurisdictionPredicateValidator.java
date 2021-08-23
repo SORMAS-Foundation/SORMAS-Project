@@ -2,15 +2,13 @@ package de.symeda.sormas.backend.event;
 
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
-import java.util.Collections;
-
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -19,7 +17,6 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
-import de.symeda.sormas.utils.EventJoins;
 import de.symeda.sormas.utils.EventParticipantJoins;
 
 public class EventParticipantJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
@@ -42,8 +39,8 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
-			cb.isNotNull(joins.getEventParticipantReportingUser()),
-			cb.equal(joins.getEventParticipantReportingUser().get(User.UUID), currentUser.getUuid()));
+			cb.isNotNull(joins.getRoot().get(EventParticipant.REPORTING_USER)),
+			cb.equal(joins.getRoot().get(EventParticipant.REPORTING_USER).get(User.ID), currentUser.getId()));
 		return cb.or(reportedByCurrentUser, isInJurisdiction());
 	}
 
@@ -66,26 +63,27 @@ public class EventParticipantJurisdictionPredicateValidator extends PredicateJur
 	protected Predicate whenRegionalLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getEventParticipantResponsibleRegion().get(Region.ID), currentUser.getRegion().getId()),
-			cb.equal(joins.getEventAddressRegion().get(Region.ID), currentUser.getRegion().getId()));
+			cb.equal(joins.getRoot().get(EventParticipant.REGION).get(Region.ID), currentUser.getRegion().getId()),
+			cb.equal(joins.getEventAddress().get(Location.REGION).get(Region.ID), currentUser.getRegion().getId()));
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
 		return CriteriaBuilderHelper.or(
 			cb,
-			cb.equal(joins.getEventParticipantResponsibleDistrict().get(District.ID), currentUser.getDistrict().getId()),
-			cb.equal(joins.getEventAddressDistrict().get(District.ID), currentUser.getDistrict().getId()));
+			cb.equal(joins.getRoot().get(EventParticipant.DISTRICT).get(District.ID), currentUser.getDistrict().getId()),
+			cb.equal(joins.getEventAddress().get(Location.DISTRICT).get(District.ID), currentUser.getDistrict().getId()));
 	}
 
 	@Override
 	protected Predicate whenCommunityLevel() {
-		return CriteriaBuilderHelper.or(cb, cb.equal(joins.getEventAddressCommunity().get(Community.ID), currentUser.getCommunity().getId()));
+		return CriteriaBuilderHelper
+			.or(cb, cb.equal(joins.getEventAddress().get(Location.COMMUNITY).get(Community.ID), currentUser.getCommunity().getId()));
 	}
 
 	@Override
 	protected Predicate whenFacilityLevel() {
-		return cb.equal(joins.getAddressFacility().get(Facility.ID), currentUser.getHealthFacility().getId());
+		return cb.equal(joins.getAddress().get(Location.FACILITY).get(Facility.ID), currentUser.getHealthFacility().getId());
 	}
 
 	@Override

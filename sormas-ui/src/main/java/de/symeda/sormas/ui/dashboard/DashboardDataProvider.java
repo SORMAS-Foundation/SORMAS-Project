@@ -31,6 +31,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
@@ -84,6 +85,8 @@ public class DashboardDataProvider {
 	private Long casesInQuarantineCount = 0L;
 	private Long casesPlacedInQuarantineCount = 0L;
 	private Long contactsConvertedToCaseCount = 0L;
+	private Long caseWithReferenceDefinitionFulfilledCount = 0L;
+	
 	private Map<SampleCountType, Long> sampleCount = new HashMap<SampleCountType, Long>();
 	private Map<SampleCountType, Long> previousSampleCount = new HashMap<SampleCountType, Long>();
 
@@ -172,6 +175,12 @@ public class DashboardDataProvider {
 		setContactsConvertedToCaseCount(FacadeProvider.getDashboardFacade().countCasesConvertedFromContacts(dashboardCriteria));
 	}
 
+	private void refreshDataForCasesWithReferenceDefinitionFulfilled() {
+		List<DashboardCaseDto> casesWithReferenceDefinitionFulfilled =
+			getCases().stream().filter(cases -> cases.getCaseReferenceDefinition() == CaseReferenceDefinition.FULFILLED).collect(Collectors.toList());
+		setCaseWithReferenceDefinitionFulfilledCount(Long.valueOf(casesWithReferenceDefinitionFulfilled.size()));
+	}
+
 	private void refreshDataForSelectedDisease() {
 
 		// Update the entities lists according to the filters
@@ -229,6 +238,7 @@ public class DashboardDataProvider {
 
 		refreshDataForQuarantinedCases();
 		refreshDataForConvertedContactsToCase();
+		refreshDataForCasesWithReferenceDefinitionFulfilled();
 	}
 
 	public List<DashboardCaseDto> getCases() {
@@ -452,6 +462,10 @@ public class DashboardDataProvider {
 		this.contactsConvertedToCaseCount = contactsConvertedToCaseCount;
 	}
 
+	public void setCaseWithReferenceDefinitionFulfilledCount(Long caseWithReferenceDefinitionFulfilledCount) {
+		this.caseWithReferenceDefinitionFulfilledCount = caseWithReferenceDefinitionFulfilledCount;
+	}
+
 	public Map<SampleCountType, Long> getSampleCount() {
 		return sampleCount;
 	}
@@ -466,5 +480,9 @@ public class DashboardDataProvider {
 
 	public void setPreviousSampleCount(Map<SampleCountType, Long> previousSampleCount) {
 		this.previousSampleCount = previousSampleCount;
+	}
+	
+	public Long getCaseWithReferenceDefinitionFulfilledCount() {
+		return caseWithReferenceDefinitionFulfilledCount;
 	}
 }

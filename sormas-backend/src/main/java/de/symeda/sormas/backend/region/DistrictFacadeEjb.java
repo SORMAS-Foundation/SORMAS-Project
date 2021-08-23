@@ -59,6 +59,7 @@ import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.Populatio
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "DistrictFacade")
 public class DistrictFacadeEjb implements DistrictFacade {
@@ -71,6 +72,8 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	@EJB
 	private UserService userService;
 	@EJB
+	private AreaService areaService;
+	@EJB
 	private RegionService regionService;
 	@EJB
 	private PopulationDataFacadeEjbLocal populationDataFacade;
@@ -78,6 +81,13 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	@Override
 	public List<DistrictReferenceDto> getAllActiveAsReference() {
 		return districtService.getAllActive(District.NAME, true).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<DistrictReferenceDto> getAllActiveByArea(String areaUuid) {
+
+		Area area = areaService.getByUuid(areaUuid);
+		return districtService.getAllActiveByArea(area).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -167,17 +177,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		cq.select(district);
 
-		if (first != null && max != null) {
-			return em.createQuery(cq)
-				.setFirstResult(first)
-				.setMaxResults(max)
-				.getResultList()
-				.stream()
-				.map(f -> toIndexDto(f))
-				.collect(Collectors.toList());
-		} else {
-			return em.createQuery(cq).getResultList().stream().map(f -> toIndexDto(f)).collect(Collectors.toList());
-		}
+		return QueryHelper.getResultList(em, cq, first, max, this::toIndexDto);
 	}
 
 	public Page<DistrictIndexDto> getIndexPage(DistrictCriteria districtCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
@@ -362,7 +362,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		cq.select(root.get(District.ID));
 
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	public static DistrictReferenceDto toReferenceDto(District entity) {

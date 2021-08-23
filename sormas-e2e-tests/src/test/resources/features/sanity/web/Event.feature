@@ -1,4 +1,4 @@
-@Sanity @Event
+@UI @Sanity @Event @UI
 Feature: Create events
 
   Scenario: Create a new event

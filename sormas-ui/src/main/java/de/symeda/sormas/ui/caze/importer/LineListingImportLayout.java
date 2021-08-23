@@ -28,10 +28,7 @@ public class LineListingImportLayout extends AbstractImportLayout {
 
 		ImportFacade importFacade = FacadeProvider.getImportFacade();
 
-		addDownloadResourcesComponent(
-			1,
-			new ClassResource("/SORMAS_Line_Listing_Import_Guide.pdf"),
-			new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Line_Listing_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(
 			2,
 			importFacade.getCaseLineListingImportTemplateFilePath(),

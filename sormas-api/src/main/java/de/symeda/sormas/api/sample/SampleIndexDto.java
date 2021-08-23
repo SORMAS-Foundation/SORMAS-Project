@@ -59,6 +59,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	public static final String REFERRED = "referred";
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	public static final String ADDITIONAL_TESTING_STATUS = "additionalTestingStatus";
+	public static final String PATHOGEN_TEST_COUNT = "pathogenTestCount";
 
 	private String uuid;
 	@EmbeddedPersonalData
@@ -92,8 +93,12 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	private AdditionalTestingStatus additionalTestingStatus;
 	private SamplingReason samplingReason;
 	private String samplingReasonDetails;
+	private Long pathogenTestCount;
+	private PathogenTestType typeOfLastTest;
+	private Float lastTestCqValue;
 
 	private SampleJurisdictionFlagsDto sampleJurisdictionFlagsDto;
+
 	//@formatter:off
 	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
 						  boolean shipped, Date shipmentDate, boolean received, Date receivedDate,
@@ -104,7 +109,8 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 						  String associatedContactUuid, String associatedContactFirstName, String associatedContactLastName,
 						  String associatedEventParticipantUuid, String associatedEventParticipantFirstName, String associatedEventParticipantLastName,
 						  Disease disease, String diseaseDetails, PathogenTestResultType pathogenTestResult, Boolean additionalTestingRequested, Boolean additionalTestPerformed,
-						  String districtName, String labUuid, boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
+						  String districtName, String labUuid, Long pathogenTestCount,
+						  boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
 	//@formatter:on
 
 		this.uuid = uuid;
@@ -142,13 +148,18 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 			: (Boolean.TRUE.equals(additionalTestingRequested) ? AdditionalTestingStatus.REQUESTED : AdditionalTestingStatus.NOT_REQUESTED);
 		this.samplingReason = samplingReason;
 		this.samplingReasonDetails = samplingReasonDetails;
+		this.pathogenTestCount = pathogenTestCount;
+
+		// These attributes will be set later
+		this.typeOfLastTest = null;
+		this.lastTestCqValue = null;
 
 		this.sampleJurisdictionFlagsDto = new SampleJurisdictionFlagsDto(
-				isInJurisdiction,
-				isCaseInJurisdiction,
-				isContactInJurisdiction,
-				isContactCaseInJurisdiction,
-				isEventParticipantInJurisdiction);
+			isInJurisdiction,
+			isCaseInJurisdiction,
+			isContactInJurisdiction,
+			isContactCaseInJurisdiction,
+			isEventParticipantInJurisdiction);
 	}
 
 	public String getUuid() {
@@ -347,6 +358,30 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 
 	public SampleJurisdictionFlagsDto getSampleJurisdictionFlagsDto() {
 		return sampleJurisdictionFlagsDto;
+	}
+
+	public Long getPathogenTestCount() {
+		return pathogenTestCount;
+	}
+
+	public void setPathogenTestCount(Long pathogenTestCount) {
+		this.pathogenTestCount = pathogenTestCount;
+	}
+
+	public PathogenTestType getTypeOfLastTest() {
+		return typeOfLastTest;
+	}
+
+	public void setTypeOfLastTest(PathogenTestType typeOfLastTest) {
+		this.typeOfLastTest = typeOfLastTest;
+	}
+
+	public Float getLastTestCqValue() {
+		return lastTestCqValue;
+	}
+
+	public void setLastTestCqValue(Float lastTestCqValue) {
+		this.lastTestCqValue = lastTestCqValue;
 	}
 
 	public String toString() {

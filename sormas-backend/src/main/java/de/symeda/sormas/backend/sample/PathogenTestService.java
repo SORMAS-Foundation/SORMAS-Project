@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.sample;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -41,6 +42,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -122,7 +124,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		Root<PathogenTest> from = cq.from(getElementClass());
 
 		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(PathogenTest.SAMPLE), sample)));
-		return !em.createQuery(cq).setMaxResults(1).getResultList().isEmpty();
+		return QueryHelper.getFirstResult(em, cq) != null;
 	}
 
 	public List<PathogenTest> getAllByCase(String caseUuid) {
@@ -177,6 +179,10 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		}
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public List<PathogenTest> getBySampleUuid(String sampleUuid, boolean ordered) {
+		return getBySampleUuids(Collections.singletonList(sampleUuid), ordered);
 	}
 
 	public List<String> getDeletedUuidsSince(Date since) {

@@ -58,7 +58,6 @@ public class SormasErrorHandler implements ErrorHandler {
 	@Override
 	public void error(ErrorEvent event) {
 		handleError(event);
-		event.getThrowable().printStackTrace();
 	}
 
 	public static void handleError(ErrorEvent event) {

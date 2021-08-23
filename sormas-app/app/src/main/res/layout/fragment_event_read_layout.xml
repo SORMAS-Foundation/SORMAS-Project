@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
-  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~ Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -73,9 +73,19 @@
                 app:value="@{data.eventManagementStatus}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_eventIdentificationSource"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.eventIdentificationSource}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_riskLevel"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@{data.riskLevel}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_specificRisk"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@{data.specificRisk}" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -85,13 +95,13 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_startDate"
                     style="@style/ControlFirstOfTwoColumnsStyle"
-                    app:value="@{data.startDate}" />
+                    app:dateTimeValue="@{data.startDate}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_endDate"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     android:visibility="@{multiDayEvent? View.VISIBLE : View.GONE}"
-                    app:value="@{data.endDate}" />
+                    app:dateTimeValue="@{data.endDate}" />
 
             </LinearLayout>
 
@@ -204,11 +214,16 @@
                     app:valueFormat="@string/two_strings_with_hyphen_format" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/event_responsibleUser"
-                    style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:value="@{data.responsibleUser}" />
+                    android:id="@+id/event_diseaseVariant"
+                    app:value="@{data.diseaseVariant}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/event_responsibleUser"
+                app:value="@{data.responsibleUser}"
+                style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout
                 android:layout_width="match_parent"

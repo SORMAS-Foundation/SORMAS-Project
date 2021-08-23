@@ -73,7 +73,6 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 		final Page page = Page.getCurrent();
 		cleanupDashboard(page);
-		dataProvider.refreshDashboardData();
 
 		final VerticalLayout tabLayout = new VerticalLayout();
 		tabLayout.setSizeFull();
@@ -84,7 +83,10 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		dashboardLayout.setExpandRatio(tabLayout, 1);
 
 		final OptionGroup tabSwitcher = new OptionGroup();
+		tabSwitcher.setWidthFull();
+
 		final VerticalLayout tabSwitcherLayout = new VerticalLayout(tabSwitcher);
+		tabSwitcherLayout.setWidthFull();
 		tabSwitcherLayout.setMargin(new MarginInfo(false, false, false, true));
 		tabSwitcherLayout.setSpacing(false);
 		tabLayout.addComponent(tabSwitcherLayout);
@@ -161,9 +163,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 	private void refreshDiagrams(Page page, VerticalLayout layout, String tabId, String subTabId) {
 		final Page.Styles styles = page.getStyles();
 
-		dataProvider.refreshDiagramsData(tabId, subTabId);
-
-		Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>> campaignFormDataMap = dataProvider.getCampaignFormDataMap();
+		Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>> campaignFormDataMap = dataProvider.getCampaignFormDataMap(tabId, subTabId);
 
 		if (campaignFormDataMap != null && !campaignFormDataMap.isEmpty()) {
 			final List<CampaignDashboardElement> dashboardElements =
@@ -201,7 +201,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 				final CampaignDashboardDiagramComponent diagramComponent = new CampaignDashboardDiagramComponent(
 					campaignDiagramDefinitionDto,
 					diagramData,
-					dataProvider.getCampaignFormTotalsMap().get(campaignDashboardDiagramDto),
+					dataProvider.getCampaignFormTotalsMap(tabId, subTabId).get(campaignDashboardDiagramDto),
 					dataProvider.getCampaignJurisdictionLevelGroupBy());
 				styles.add(createDiagramStyle(diagramCssClass, diagramId));
 				diagramComponent.setStyleName(diagramCssClass);

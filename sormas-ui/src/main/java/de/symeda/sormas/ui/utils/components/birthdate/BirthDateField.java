@@ -35,7 +35,6 @@ public class BirthDateField extends CustomField<BirthDateDto> {
 	@Override
 	protected Component initContent() {
 		setValue(new BirthDateDto());
-
 		HorizontalLayout layout = new HorizontalLayout();
 
 		dateOfBirthYear.setId("dateOfBirthYear");
@@ -114,6 +113,14 @@ public class BirthDateField extends CustomField<BirthDateDto> {
 	@Override
 	public BirthDateDto getValue() {
 		return binder.getBean();
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		dateOfBirthYear.setEnabled(enabled);
+		dateOfBirthMonth.setEnabled(enabled);
+		dateOfBirthDay.setEnabled(enabled);
 	}
 
 	private void setItemCaptionsForMonths(ComboBox<Integer> comboBox) {

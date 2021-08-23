@@ -20,6 +20,12 @@ package de.symeda.sormas.ui;
 
 import static org.mockito.Mockito.when;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,21 +33,21 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.event.EventFacade;
-import de.symeda.sormas.api.event.EventParticipantFacade;
-import de.symeda.sormas.backend.event.EventFacadeEjb;
-import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
-import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
-import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import org.apache.commons.io.input.BOMInputStream;
 import org.junit.Before;
+
+import com.opencsv.CSVReader;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
@@ -50,14 +56,19 @@ import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
+import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
@@ -66,9 +77,10 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import info.novatec.beantest.api.BaseBeanTest;
 
-public class AbstractBeanTest extends BaseBeanTest {
+public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator();
 
@@ -82,7 +94,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 		initH2Functions();
 
 		I18nProperties.setUserLanguage(Language.EN);
-		UserDto user = creator.createUser(null, null, null, "ad", "min", Language.EN, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(null, null, null, null, "ad", "min", Language.EN, UserRole.ADMIN, UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 	}
 
@@ -118,6 +130,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public CaseFacade getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
+	}
+
+	public ImmunizationFacade getImmunizationFacade() {
+		return getBean(ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal.class);
+	}
+
+	public TravelEntryFacade getTravelEntryFacade() {
+		return getBean(TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal.class);
 	}
 
 	public ContactFacade getContactFacade() {
@@ -175,4 +195,13 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public SampleFacade getSampleFacade() {
 		return getBean(SampleFacadeEjb.SampleFacadeEjbLocal.class);
 	}
+
+	public CSVReader getCsvReader(InputStream inputStream) {
+		CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+		BOMInputStream bomInputStream = new BOMInputStream(inputStream);
+		Reader reader = new InputStreamReader(bomInputStream, decoder);
+		BufferedReader bufferedReader = new BufferedReader(reader);
+		return CSVUtils.createCSVReader(bufferedReader, ',');
+	}
+
 }

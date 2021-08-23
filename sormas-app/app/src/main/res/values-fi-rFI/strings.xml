@@ -113,6 +113,9 @@
     <string name="action_save_pathogen_test">Tallenna patogeenitesti</string>
     <string name="action_edit_pathogen_test">Muokkaa patogeenitesti</string>
     <string name="action_submit_case_numbers">Syötä potilasnumeroita</string>
+    <string name="action_kex_lbds">LBDS Key Exchange</string>
+    <string name="action_sync_person_lbds">LBDS Sync Persons</string>
+    <string name="action_sync_case_lbds">LBDS Sync Cases</string>
     <string name="caption_address">Osoite</string>
     <string name="caption_age">Ikä</string>
     <string name="caption_attended_by">Osallistunut</string>
@@ -227,6 +230,7 @@
     <string name="caption_visit_time">Käyntiaika</string>
     <string name="caption_year">Vuosi</string>
     <string name="caption_latest_submission">Viimeisin lähetys: %1$s</string>
+    <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
     <string name="confirmation_action">Haluatko varmasti tehdä tämän?</string>
     <string name="confirmation_delete">Oletko varma, että haluat poistaa tämän tietueen?</string>
     <string name="confirmation_pick_gps">Oletteko tässä paikassa juuri nyt?</string>
@@ -410,6 +414,7 @@
     <string name="hint_weekly_report_no_data">Tietoja ei ole saatavilla tälle epidemiaviikolle.</string>
     <string name="hint_case_numbers_not_submitted">Potilaiden lukumäärää ei ole vielä lähetetty</string>
     <string name="hint_contact_text_filter">Kontaktin tunniste tai kontaktihenkilön nimi</string>
+    <string name="hint_settings_debug_url_lbds">e.g. https://localhost:6070/sormas-rest/</string>
     <string name="indicator_error">Virhe</string>
     <string name="indicator_required">*</string>
     <string name="indicator_soft_required">*</string>
@@ -420,6 +425,10 @@
     <string name="info_create_event">If you could <b>not</b> find the Event in the list above, click the \"Create\" button.</string>
     <string name="info_epidemiological_info">Merkitse, jos mikään seuraavista piti paikkansa potilaan osalta sairauden tai sen itämisen aikana.</string>
     <string name="info_initial_synchronization">Alkusynkronointi SORMAS-palvelimen kanssa.\nPerusrakenteen tietojen siirto vie muutaman minuutin.</string>
+    <string name="info_lbds_key_exchange_started">LBDS Sync: Key Exchange started</string>
+    <string name="info_lbds_key_exchange_successful">LBDS Sync: Key Exchange successful</string>
+    <string name="info_lbds_no_case_to_transfer">LBDS Sync. No case to transfer</string>
+    <string name="info_lbds_no_person_to_transfer">LBDS Sync. No person to transfer</string>
     <string name="info_no_additional_test">Tälle näytteelle ei ole vielä tehty lisätestejä</string>
     <string name="info_no_sample_test">Näytettä ei ole vielä testattu</string>
     <string name="info_pick_person">Tarkista tämä henkilölista. <b>Jos olet varma</b>, että syöttämäsi henkilötiedot vastaavat jotain näistä henkilöistä, valitse kyseinen henkilö napauttamalla ja klikkaa sitten \"Valitse\"-painiketta alla.</string>

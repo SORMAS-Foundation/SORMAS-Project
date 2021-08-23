@@ -15,8 +15,9 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 
 public interface ProcessedDataPersister<P> {
 
@@ -24,5 +25,5 @@ public interface ProcessedDataPersister<P> {
 
 	void persistReturnedData(P processedData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException;
 
-	void persistSyncData(P processedData) throws SormasToSormasValidationException;
+	void persistSyncData(P processedData, ShareTreeCriteria shareTreeCriteria) throws SormasToSormasValidationException;
 }

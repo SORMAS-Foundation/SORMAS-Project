@@ -373,7 +373,7 @@ public abstract class DataImporter {
 	@SuppressWarnings({
 		"unchecked",
 		"rawtypes" })
-	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
+	protected boolean executeDefaultInvoke(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
 		throws InvocationTargetException, IllegalAccessException, ImportErrorException {
 		Class<?> propertyType = pd.getPropertyType();
 
@@ -534,7 +534,7 @@ public abstract class DataImporter {
 		List<String> invalidColumns = new ArrayList<>();
 
 		for (int i = 0; i < values.length; i++) {
-			String value = values[i];
+			String value = StringUtils.trimToNull(values[i]);
 			if (ignoreEmptyEntries && (value == null || value.isEmpty())) {
 				continue;
 			}

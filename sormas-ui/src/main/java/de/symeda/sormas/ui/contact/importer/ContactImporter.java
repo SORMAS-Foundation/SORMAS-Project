@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -26,7 +23,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -46,12 +42,14 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.contact.ContactSelectionField;
@@ -116,7 +114,7 @@ public class ContactImporter extends DataImporter {
 			values[uuidIndex] = DataHelper.createUuid();
 		}
 
-		final PersonDto newPersonTemp = PersonDto.build();
+		final PersonDto newPersonTemp = PersonDto.buildImportEntity();
 		final ContactDto newContactTemp = caze != null ? ContactDto.build(caze) : ContactDto.build();
 		newContactTemp.setReportingUser(currentUser.toReference());
 
@@ -175,7 +173,7 @@ public class ContactImporter extends DataImporter {
 						newPerson,
 						result -> consumer.onImportResult(result, personSelectLock),
 						(person, similarityResultOption) -> new ContactImportSimilarityResult(person, null, similarityResultOption),
-						Strings.infoSelectOrCreatePersonForContactImport,
+						Strings.infoSelectOrCreatePersonForImport,
 						currentUI);
 
 					try {
@@ -313,14 +311,11 @@ public class ContactImporter extends DataImporter {
 
 					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 					// according to the types of the contact or person fields
-					if (executeDefaultInvokings(pd, currentElement, entry, entryHeaderPath)) {
+					if (executeDefaultInvoke(pd, currentElement, entry, entryHeaderPath)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 						List<DistrictReferenceDto> district = FacadeProvider.getDistrictFacade()
-							.getByName(
-								entry,
-								ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), contact, person, currentElement),
-								false);
+							.getByName(entry, ImporterPersonHelper.getRegionBasedOnDistrict(pd.getName(), contact, person, currentElement), false);
 						if (district.isEmpty()) {
 							throw new ImportErrorException(
 								I18nProperties
@@ -332,8 +327,13 @@ public class ContactImporter extends DataImporter {
 							pd.getWriteMethod().invoke(currentElement, district.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
-						List<CommunityReferenceDto> community =
-							FacadeProvider.getCommunityFacade().getByName(entry, ImporterPersonHelper.getPersonDistrict(pd.getName(), person), false);
+
+						DistrictReferenceDto district = currentElement instanceof ContactDto
+							? ((ContactDto) currentElement).getDistrict()
+							: (currentElement instanceof LocationDto ? ((LocationDto) currentElement).getDistrict() : null);
+						List<CommunityReferenceDto> community = FacadeProvider.getCommunityFacade()
+							.getByName(entry, district != null ? district : ImporterPersonHelper.getPersonDistrict(pd.getName(), person), false);
+
 						if (community.isEmpty()) {
 							throw new ImportErrorException(
 								I18nProperties.getValidationError(

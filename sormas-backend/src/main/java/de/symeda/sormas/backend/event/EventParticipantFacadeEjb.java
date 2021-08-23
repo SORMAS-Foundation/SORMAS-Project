@@ -54,6 +54,8 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
@@ -88,6 +90,7 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -112,6 +115,7 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
 import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb.VaccinationInfoFacadeEjbLocal;
 import de.symeda.sormas.utils.EventParticipantJoins;
@@ -126,6 +130,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	@EJB
 	private EventService eventService;
+	@EJB
+	private EventFacadeEjbLocal eventFacade;
 	@EJB
 	private EventParticipantService eventParticipantService;
 	@EJB
@@ -217,11 +223,22 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	@Override
-	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto) {
-		return saveEventParticipant(dto, true);
+	public Page<EventParticipantIndexDto> getIndexPage(
+		EventParticipantCriteria eventParticipantCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<EventParticipantIndexDto> eventParticipantIndexList = getIndexList(eventParticipantCriteria, offset, size, sortProperties);
+		long totalElementCount = count(eventParticipantCriteria);
+		return new Page<>(eventParticipantIndexList, offset, size, totalElementCount);
 	}
 
-	public EventParticipantDto saveEventParticipant(EventParticipantDto dto, boolean checkChangeDate) {
+	@Override
+	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto) {
+		return saveEventParticipant(dto, true, true);
+	}
+
+	public EventParticipantDto saveEventParticipant(EventParticipantDto dto, boolean checkChangeDate, boolean syncShares) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? eventParticipantService.getByUuid(dto.getUuid()) : null;
 		EventParticipantDto existingDto = toDto(existingParticipant);
 
@@ -251,7 +268,13 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			notifyEventResponsibleUsersOfCommonEventParticipant(entity, event);
 		}
 
+		onEventParticipantChanged(EventFacadeEjbLocal.toDto(entity.getEvent()), syncShares);
+
 		return convertToDto(entity, pseudonymizer);
+	}
+
+	public void onEventParticipantChanged(EventDto event, boolean syncShares) {
+		eventFacade.onEventChange(event, syncShares);
 	}
 
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {
@@ -260,39 +283,40 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-		Map<String, Optional<User>> responsibleUserByEventUuid = eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
-			eventParticipant.getPerson().getUuid(), event.getDisease(), fromDate);
+		Map<String, Optional<User>> responsibleUserByEventUuid =
+			eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
+				eventParticipant.getPerson().getUuid(),
+				event.getDisease(),
+				fromDate);
 		if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
 			// it means the event participant is only appearing into the current event
 			return;
 		}
 
 		for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
-			entry.getValue()
-				.filter(user -> StringUtils.isNotEmpty(user.getUserEmail()))
-				.ifPresent(user -> {
-					try {
-						messagingService.sendMessage(
-							user,
-							MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
-							String.format(
-								I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
-								DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
-								DataHelper.getShortUuid(eventParticipant.getUuid()),
-								DataHelper.getShortUuid(event.getUuid()),
-								User.buildCaptionForNotification(event.getResponsibleUser()),
-								User.buildCaptionForNotification(userService.getCurrentUser()),
-								buildEventListContentForNotification(responsibleUserByEventUuid)),
-							MessageType.EMAIL,
-							MessageType.SMS);
-					} catch (NotificationDeliveryFailedException e) {
-						logger.error(
-							String.format(
-								"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventPartipant related to other events. "
-									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-								user.getUuid()));
-					}
-				});
+			entry.getValue().filter(user -> StringUtils.isNotEmpty(user.getUserEmail())).ifPresent(user -> {
+				try {
+					messagingService.sendMessage(
+						user,
+						MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+						String.format(
+							I18nProperties.getString(MessagingService.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
+							DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
+							DataHelper.getShortUuid(eventParticipant.getUuid()),
+							DataHelper.getShortUuid(event.getUuid()),
+							User.buildCaptionForNotification(event.getResponsibleUser()),
+							User.buildCaptionForNotification(userService.getCurrentUser()),
+							buildEventListContentForNotification(responsibleUserByEventUuid)),
+						MessageType.EMAIL,
+						MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(
+						String.format(
+							"NotificationDeliveryFailedException when trying to notify event responsible user about a newly created EventPartipant related to other events. "
+								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+							user.getUuid()));
+				}
+			});
 		}
 	}
 
@@ -360,8 +384,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<EventParticipant, VaccinationInfo> vaccinationInfoJoin = joins.getVaccinationInfo();
 		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
 
-		Expression<Object> inJurisdictionSelector =
-			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdiction(queryContext));
+		Expression<Object> inJurisdictionSelector = JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdiction(queryContext));
 		Expression<Object> inJurisdictionOrOwnedSelector =
 			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(queryContext));
 		cq.multiselect(
@@ -460,12 +483,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			cq.orderBy(cb.desc(person.get(Person.LAST_NAME)));
 		}
 
-		List<EventParticipantIndexDto> indexList;
-		if (first != null && max != null) {
-			indexList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			indexList = em.createQuery(cq).getResultList();
-		}
+		List<EventParticipantIndexDto> indexList = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!indexList.isEmpty()) {
 			Map<String, Long> eventParticipantContactCount = getContactCountPerEventParticipant(
@@ -502,20 +520,13 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			event.get(Event.EVENT_TITLE),
 			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(queryContext)));
 
-		Predicate filter = CriteriaBuilderHelper.and(
-			cb,
-			eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, queryContext),
-			cb.isFalse(event.get(Event.DELETED)));
+		Predicate filter = CriteriaBuilderHelper
+			.and(cb, eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, queryContext), cb.isFalse(event.get(Event.DELETED)));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(eventParticipant.get(EventParticipant.CREATION_DATE)));
 
-		List<EventParticipantListEntryDto> result;
-		if (first != null && max != null) {
-			result = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			result = em.createQuery(cq).getResultList();
-		}
+		List<EventParticipantListEntryDto> result = QueryHelper.getResultList(em, cq, first, max);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(EventParticipantListEntryDto.class, result, p -> p.getInJurisdiction(), null);
@@ -631,7 +642,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, eventParticipant.get(EventParticipant.UUID));
 		cq.where(filter);
 
-		List<EventParticipantExportDto> eventParticipantResultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		List<EventParticipantExportDto> eventParticipantResultList = QueryHelper.getResultList(em, cq, first, max);
 
 		if (!eventParticipantResultList.isEmpty()) {
 			Map<String, Long> eventParticipantContactCount = getContactCountPerEventParticipant(
@@ -933,6 +944,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SimilarEventParticipantDto> cq = cb.createQuery(SimilarEventParticipantDto.class);
 		final Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
+		cq.distinct(true);
+
 		Join<Object, Object> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.LEFT);
 		Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
 
@@ -947,7 +960,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			eventJoin.get(Event.EVENT_STATUS),
 			eventJoin.get(Event.EVENT_TITLE),
 			eventJoin.get(Event.START_DATE),
-				jurisdictionSelector);
+			jurisdictionSelector);
 		cq.groupBy(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),
@@ -995,5 +1008,19 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@Override
 	public List<EventParticipantDto> getByPersonUuids(List<String> personUuids) {
 		return eventParticipantService.getByPersonUuids(personUuids).stream().map(EventParticipantFacadeEjb::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<EventParticipantDto> getByEventAndPersons(String eventUuid, List<String> personUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipant> cq = cb.createQuery(EventParticipant.class);
+		Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
+		Join<EventParticipant, Person> personJoin = eventParticipantRoot.join(Contact.PERSON, JoinType.LEFT);
+		Join<EventParticipant, Event> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.INNER);
+
+		cq.where(cb.and(cb.equal(eventJoin.get(Event.UUID), eventUuid), cb.in(personJoin.get(EventParticipant.UUID)).value(personUuids)));
+
+		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
+		return resultList.stream().map(EventParticipantFacadeEjb::toDto).collect(Collectors.toList());
 	}
 }

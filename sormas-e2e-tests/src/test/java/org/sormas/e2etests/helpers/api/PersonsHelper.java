@@ -17,10 +17,11 @@
  */
 package org.sormas.e2etests.helpers.api;
 
-import static org.sormas.e2etests.constants.api.Endpoints.PERSONS;
+import static org.sormas.e2etests.constants.api.Endpoints.PERSONS_PATH;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
+import io.restassured.response.Response;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 import javax.inject.Inject;
@@ -28,21 +29,31 @@ import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.pojo.api.Person;
 import org.sormas.e2etests.pojo.api.Request;
+import org.sormas.e2etests.state.ApiState;
 
 public class PersonsHelper {
 
   private final RestAssuredClient restAssuredClient;
+  private final ApiState apiState;
   private final ObjectMapper objectMapper;
 
   @Inject
-  public PersonsHelper(RestAssuredClient restAssuredClient, ObjectMapper objectMapper) {
+  public PersonsHelper(
+      RestAssuredClient restAssuredClient, ObjectMapper objectMapper, ApiState apiState) {
     this.restAssuredClient = restAssuredClient;
     this.objectMapper = objectMapper;
+    this.apiState = apiState;
   }
 
   public void getAllPersonUuid() {
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.GET).path(PERSONS + "uuids").build());
+        Request.builder().method(Method.GET).path(PERSONS_PATH + "uuids").build());
+  }
+
+  public Response getPersonBasedOnUUID(String personUUID) {
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.GET).path(PERSONS_PATH + "personUUID").build());
+    return apiState.getResponse();
   }
 
   @SneakyThrows
@@ -51,6 +62,16 @@ public class PersonsHelper {
     List<Person> personBody = List.of(person);
     objectMapper.writeValue(out, personBody);
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.POST).body(out.toString()).path(PERSONS + "push").build());
+        Request.builder()
+            .method(Method.POST)
+            .body(out.toString())
+            .path(PERSONS_PATH + "push")
+            .build());
+  }
+
+  public void pushPerson(String specificPath, String jsonBody) {
+    final String json = jsonBody;
+    restAssuredClient.sendRequest(
+        Request.builder().method(Method.POST).path(PERSONS_PATH + specificPath).body(json).build());
   }
 }

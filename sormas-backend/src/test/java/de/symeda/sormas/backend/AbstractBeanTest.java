@@ -23,11 +23,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.backend.user.CurrentUser;
-import de.symeda.sormas.backend.user.CurrentUserService;
-import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
-import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
-import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -41,6 +36,7 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
+import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
@@ -58,13 +54,16 @@ import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
 import de.symeda.sormas.api.labmessage.LabMessageFacade;
+import de.symeda.sormas.api.labmessage.TestReportFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.region.AreaFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.ContinentFacade;
 import de.symeda.sormas.api.region.CountryFacade;
@@ -77,6 +76,7 @@ import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.share.ExternalShareInfoFacade;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasLabMessageFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
@@ -88,11 +88,13 @@ import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
+import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRightsFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
+import de.symeda.sormas.api.vaccination.VaccinationFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.action.ActionFacadeEjb;
 import de.symeda.sormas.backend.bagexport.BAGExportFacadeEjb;
@@ -104,6 +106,8 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseStatisticsFacadeEjb.CaseStatisticsFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb.ClinicalVisitFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -131,15 +135,20 @@ import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.geocoding.GeocodingService;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ExportFacadeEjb;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
+import de.symeda.sormas.backend.importexport.parser.ImportParserService;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
+import de.symeda.sormas.backend.labmessage.TestReportFacadeEjb;
+import de.symeda.sormas.backend.labmessage.TestReportService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.region.AreaFacadeEjb.AreaFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.ContinentFacadeEjb;
@@ -161,12 +170,13 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfoFacadeEjb.ExternalShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.labmessage.SormasToSormasLabMessageFacadeEjb.SormasToSormasLabMessageFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
 import de.symeda.sormas.backend.sormastosormas.sharerequest.SormasToSormasShareRequestService;
@@ -179,15 +189,20 @@ import de.symeda.sormas.backend.therapy.PrescriptionService;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb.TreatmentFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.TreatmentService;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.user.CurrentUser;
+import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRightsFacadeEjb.UserRightsFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 import info.novatec.beantest.api.BaseBeanTest;
 
-public class AbstractBeanTest extends BaseBeanTest {
+public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator(this);
 
@@ -254,6 +269,22 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public CaseService getCaseService() {
 		return getBean(CaseService.class);
+	}
+
+	public ImmunizationFacade getImmunizationFacade() {
+		return getBean(ImmunizationFacadeEjbLocal.class);
+	}
+
+	public VaccinationFacade getVaccinationFacade() {
+		return getBean(VaccinationFacadeEjb.VaccinationFacadeEjbLocal.class);
+	}
+
+	public VaccinationService getVaccinationService() {
+		return getBean(VaccinationService.class);
+	}
+
+	public TravelEntryFacade getTravelEntryFacade() {
+		return getBean(TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal.class);
 	}
 
 	public CaseStatisticsFacade getCaseStatisticsFacade() {
@@ -508,6 +539,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SormasToSormasFacadeEjbLocal.class);
 	}
 
+	public SormasToSormasShareInfoFacadeEjbLocal getSormasToSormasShareInfoFacade() {
+		return getBean(SormasToSormasShareInfoFacadeEjbLocal.class);
+	}
+
 	public SormasToSormasCaseFacade getSormasToSormasCaseFacade() {
 		return getBean(SormasToSormasCaseFacadeEjbLocal.class);
 	}
@@ -532,8 +567,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SormasToSormasShareInfoService.class);
 	}
 
-	public SormasToSormasEncryptionService getSormasToSormasEncryptionService() {
-		return getBean(SormasToSormasEncryptionService.class);
+	public SormasToSormasEncryptionFacade getSormasToSormasEncryptionFacade() {
+		return getBean(SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal.class);
 	}
 
 	public GeocodingService getGeocodingService() {
@@ -643,5 +678,21 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public SormasToSormasShareRequestService getSormasToSormasShareRequestService() {
 		return getBean(SormasToSormasShareRequestService.class);
+	}
+
+	public TestReportFacade getTestReportFacade() {
+		return getBean(TestReportFacadeEjb.TestReportFacadeEjbLocal.class);
+	}
+
+	public TestReportService getTestReportService() {
+		return getBean(TestReportService.class);
+	}
+
+	public ImportParserService getImportParserService() {
+		return getBean(ImportParserService.class);
+	}
+
+	public AreaFacade getAreaFacade() {
+		return getBean(AreaFacadeEjbLocal.class);
 	}
 }

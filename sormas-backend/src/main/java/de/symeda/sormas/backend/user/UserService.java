@@ -42,7 +42,6 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.backend.region.Community;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.AuthProvider;
@@ -58,9 +57,11 @@ import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -72,6 +73,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 	@EJB
 	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	public UserService() {
 		super(User.class);
@@ -101,7 +104,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 		Expression<String> userNameExpression = from.get(User.USER_NAME);
 		String userNameParamValue = userName;
-		if (!AuthProvider.getProvider().isUsernameCaseSensitive()) {
+		if (!AuthProvider.getProvider(configFacade).isUsernameCaseSensitive()) {
 			userNameExpression = cb.lower(userNameExpression);
 			userNameParamValue = userName.toLowerCase();
 		}
@@ -269,8 +272,18 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		cq.distinct(true);
 		cq.orderBy(cb.asc(root.get(User.ID)));
 
-		List<UserReference> resultList = em.createQuery(cq).getResultList();
+		List<UserReference> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 		return resultList;
+	}
+
+	public List<UserReference> getUserReferencesByIds(Collection<Long> userIds) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<UserReference> cq = cb.createQuery(UserReference.class);
+		Root<UserReference> root = cq.from(UserReference.class);
+
+		cq.where(root.get(UserReference.ID).in(userIds));
+
+		return em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 	}
 
 	public User getRandomUser(District district, UserRole... userRoles) {
@@ -381,7 +394,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 		Expression<String> userNameExpression = from.get(User.USER_NAME);
 		String userNameParamValue = userName;
-		if (!AuthProvider.getProvider().isUsernameCaseSensitive()) {
+		if (!AuthProvider.getProvider(configFacade).isUsernameCaseSensitive()) {
 			userNameExpression = cb.lower(userNameExpression);
 			userNameParamValue = userName.toLowerCase();
 		}

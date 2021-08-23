@@ -54,6 +54,12 @@ public class SampleResource extends EntityDtoResource {
 		return FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/{uuid}")
+	public SampleDto getByUuid(@PathParam("uuid") String uuid) {
+		return FacadeProvider.getSampleFacade().getSampleByUuid(uuid);
+	}
+
 	@POST
 	@Path("/query")
 	public List<SampleDto> getByUuids(List<String> uuids) {

@@ -16,7 +16,9 @@
 package de.symeda.sormas.backend.sormastosormas.shareinfo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
@@ -28,20 +30,28 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 
 @Stateless
 @LocalBean
 public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<SormasToSormasShareInfo> {
+
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 
 	public SormasToSormasShareInfoService() {
 		super(SormasToSormasShareInfo.class);
@@ -205,6 +215,32 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 
 	public List<String> getEventUuidsWithPendingOwnershipHandOver(List<Event> events) {
 		return getUuidsWithPendingOwnershipHandOver(SormasToSormasShareInfo.EVENTS, ShareInfoEvent.EVENT, events);
+	}
+
+	public void handleOwnershipChangeInExternalSurvTool(SormasToSormasOriginInfo originInfo)
+		throws ExternalSurveillanceToolException {
+		handleOwnershipChangeInExternalSurvTool(originInfo.isOwnershipHandedOver(), originInfo.getCases(), originInfo.getEvents());
+	}
+
+	public void handleOwnershipChangeInExternalSurvTool(SormasToSormasShareInfo shareInfo)
+		throws ExternalSurveillanceToolException {
+		handleOwnershipChangeInExternalSurvTool(
+			shareInfo.isOwnershipHandedOver(),
+			shareInfo.getCases().stream().map(ShareInfoCase::getCaze).collect(Collectors.toList()),
+			shareInfo.getEvents().stream().map(ShareInfoEvent::getEvent).collect(Collectors.toList()));
+	}
+
+	private void handleOwnershipChangeInExternalSurvTool(boolean isOwnershipHandedOver, List<Case> cases, List<Event> events)
+		throws ExternalSurveillanceToolException {
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && isOwnershipHandedOver) {
+			if (cases.size() > 0) {
+				externalSurveillanceToolGatewayFacade.deleteCases(cases.stream().map(CaseFacadeEjb::toDto).collect(Collectors.toList()));
+			}
+
+			if (events.size() > 0) {
+				externalSurveillanceToolGatewayFacade.deleteEvents(events.stream().map(EventFacadeEjb::toDto).collect(Collectors.toList()));
+			}
+		}
 	}
 
 	private <ADO extends AbstractDomainObject> List<String> getUuidsWithPendingOwnershipHandOver(

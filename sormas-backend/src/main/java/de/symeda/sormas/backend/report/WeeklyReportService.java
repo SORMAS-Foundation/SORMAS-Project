@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -46,6 +45,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -110,11 +110,7 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 		filter = cb.and(filter, cb.equal(from.get(WeeklyReport.REPORTING_USER), user));
 
 		cq.where(filter);
-		try {
-			return em.createQuery(cq).getSingleResult();
-		} catch (NoResultException e) {
-			return null;
-		}
+		return QueryHelper.getSingleResult(em, cq);
 	}
 
 	/**

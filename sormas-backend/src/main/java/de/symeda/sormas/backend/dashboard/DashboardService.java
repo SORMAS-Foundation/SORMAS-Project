@@ -12,9 +12,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -24,6 +22,8 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -50,6 +50,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.utils.CaseJoins;
 import de.symeda.sormas.utils.EventJoins;
 
@@ -92,7 +93,8 @@ public class DashboardService {
 				person.get(Person.PRESENT_CONDITION),
 				person.get(Person.CAUSE_OF_DEATH_DISEASE),
 				caze.get(Case.QUARANTINE_FROM),
-				caze.get(Case.QUARANTINE_TO));
+				caze.get(Case.QUARANTINE_TO),
+				caze.get(Case.CASE_REFERENCE_DEFINITION));
 
 			result = em.createQuery(cq).getResultList();
 		} else {
@@ -177,12 +179,7 @@ public class DashboardService {
 		order.add(cb.desc(caze.get(Case.CREATION_DATE)));
 		cq.orderBy(order);
 
-		TypedQuery<String> query = em.createQuery(cq).setMaxResults(1);
-		try {
-			return query.getSingleResult();
-		} catch (NoResultException e) {
-			return "";
-		}
+		return QueryHelper.getFirstResult(em, cq, t -> t == null ? StringUtils.EMPTY : t);
 	}
 
 	public Map<Disease, District> getLastReportedDistrictByDisease(DashboardCriteria dashboardCriteria) {
@@ -409,6 +406,9 @@ public class DashboardService {
 				.and(cb, filter, cb.notEqual(caseQueryContext.getRoot().get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE));
 		}
 
+		// Exclude deleted cases. Archived cases should stay included
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Case.DELETED)));
+
 		return filter;
 	}
 
@@ -439,6 +439,9 @@ public class DashboardService {
 		}
 
 		filter = CriteriaBuilderHelper.and(cb, filter, createEventDateFilter(eventQueryContext.getQuery(), cb, from, dashboardCriteria));
+
+		// Exclude deleted events. Archived events should stay included
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Event.DELETED)));
 
 		return filter;
 	}

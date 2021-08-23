@@ -65,11 +65,13 @@ import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.immunization.Immunization;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
 
 @Entity
 @Audited
@@ -132,7 +134,9 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	public static final String CASES = "cases";
 	public static final String CONTACTS = "contacts";
 	public static final String EVENT_PARTICIPANTS = "eventParticipants";
+	public static final String IMMUNIZATIONS = "immunizations";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String TRAVEL_ENTRIES = "travelEntries";
 
 	private String firstName;
 	private String lastName;
@@ -204,6 +208,8 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	private List<Case> cases = new ArrayList<>();
 	private List<Contact> contacts = new ArrayList<>();
 	private List<EventParticipant> eventParticipants = new ArrayList<>();
+	private List<Immunization> immunizations = new ArrayList<>();
+	private List<TravelEntry> travelEntries = new ArrayList<>();
 
 	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
@@ -707,6 +713,24 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 
 	public void setEventParticipants(List<EventParticipant> eventParticipants) {
 		this.eventParticipants = eventParticipants;
+	}
+
+	@OneToMany(mappedBy = Immunization.PERSON, fetch = FetchType.LAZY)
+	public List<Immunization> getImmunizations() {
+		return immunizations;
+	}
+
+	public void setImmunizations(List<Immunization> immunizations) {
+		this.immunizations = immunizations;
+	}
+
+	@OneToMany(mappedBy = TravelEntry.PERSON, fetch = FetchType.LAZY)
+	public List<TravelEntry> getTravelEntries() {
+		return travelEntries;
+	}
+
+	public void setTravelEntries(List<TravelEntry> travelEntries) {
+		this.travelEntries = travelEntries;
 	}
 
 	@OneToMany(mappedBy = Contact.PERSON, fetch = FetchType.LAZY)
