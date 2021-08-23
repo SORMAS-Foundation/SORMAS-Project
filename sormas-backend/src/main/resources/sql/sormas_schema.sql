@@ -7903,4 +7903,10 @@ ALTER TABLE samples_history ADD COLUMN referredto_id BIGINT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (401, 'Update history tables #6269');
 
+-- 2021-08-23 set symptomatic to null when visit was performed unsuccessfully
+
+UPDATE symptoms SET symptomatic=null FROM visit WHERE visit.symptoms_id = symptoms.id AND visit.visitstatus!='COOPERATIVE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (402, 'Update symptomatic-status for visits #6466');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
