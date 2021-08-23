@@ -500,7 +500,7 @@ public class CasesView extends AbstractView {
 
 		TextField searchField = new TextField();
 		Runnable confirmCallback = () -> {
-			String foundCaseUuid = FacadeProvider.getCaseFacade().getUuidByUuidEpidNumberOrExternalId(searchField.getValue());
+			String foundCaseUuid = FacadeProvider.getCaseFacade().getUuidByUuidEpidNumberOrExternalId(searchField.getValue(), null);
 
 			if (foundCaseUuid != null) {
 				ControllerProvider.getCaseController().navigateToCase(foundCaseUuid);

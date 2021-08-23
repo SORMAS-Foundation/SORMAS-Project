@@ -472,8 +472,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
-		return caseService.getUuidByUuidEpidNumberOrExternalId(searchTerm);
+	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria) {
+		return caseService.getUuidByUuidEpidNumberOrExternalId(searchTerm, caseCriteria);
 	}
 
 	@Override

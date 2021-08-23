@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.immunization;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +29,12 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
@@ -44,6 +49,8 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -62,6 +69,8 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -93,6 +102,12 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	private CountryService countryService;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
+	@EJB
+	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
+	@EJB
+	private PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal pathogenTestFacade;
 
 	public static ImmunizationReferenceDto toReferenceDto(Immunization entity) {
 		if (entity == null) {
@@ -404,6 +419,56 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	public void updateImmunizationStatuses() {
 		immunizationService.updateImmunizationStatuses();
 	}
+
+	@Override
+	public Boolean linkRecoveryImmunizationToCaseSearchCaseIncluded(String specificCaseSearchValue, ImmunizationDto immunization){
+
+		CaseCriteria criteria = new CaseCriteria();
+		criteria.setPerson(immunization.getPerson());
+		criteria.setDisease(immunization.getDisease());
+		criteria.setOutcome(CaseOutcome.RECOVERED);
+
+		String foundCaseUuid = caseFacade.getUuidByUuidEpidNumberOrExternalId(specificCaseSearchValue, criteria);
+
+		if (foundCaseUuid != null) {
+			CaseDataDto caseDataDto = caseFacade.getCaseDataByUuid(foundCaseUuid);
+			List<String> samples = sampleFacade
+					.getByCaseUuids(Collections.singletonList(caseDataDto.getUuid()))
+					.stream()
+					.map(EntityDto::getUuid)
+					.collect(Collectors.toList());
+			List<PathogenTestDto> pathogenTestDto = pathogenTestFacade.getBySampleUuids(samples);
+			PathogenTestDto relevantPathogenTest = pathogenTestDto.stream()
+					.filter(
+							pathogenTest -> pathogenTest.getTestedDisease().equals(caseDataDto.getDisease())
+									&& PathogenTestResultType.POSITIVE.equals(pathogenTest.getTestResult()))
+					.sorted(Comparator.comparing(PathogenTestDto::getTestDateTime))
+					.findFirst()
+					.orElse(null);
+
+			immunization.setRelatedCase(new CaseReferenceDto(foundCaseUuid));
+			if (relevantPathogenTest != null) {
+				Date latestPositiveTestResultDate = relevantPathogenTest.getTestDateTime();
+
+				if (latestPositiveTestResultDate != null) {
+					immunization.setPositiveTestResultDate(latestPositiveTestResultDate);
+				}
+
+				Date onsetDate = caseDataDto.getSymptoms().getOnsetDate();
+				if (onsetDate != null) {
+					immunization.setLastInfectionDate(onsetDate);
+				}
+
+				Date outcomeDate = caseDataDto.getOutcomeDate();
+				if (outcomeDate != null) {
+					immunization.setRecoveryDate(outcomeDate);
+				}
+			}
+			this.save(immunization);
+			return true;
+		}
+		return false;
+	};
 
 	@LocalBean
 	@Stateless

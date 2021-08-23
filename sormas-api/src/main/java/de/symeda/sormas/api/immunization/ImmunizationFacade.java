@@ -46,4 +46,6 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 	List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria);
 
 	void updateImmunizationStatuses();
+
+	Boolean linkRecoveryImmunizationToCaseSearchCaseIncluded(String specificCaseSearchValue, ImmunizationDto immunization);
 }

@@ -37,6 +37,7 @@
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
     </data>
 
     <ScrollView
@@ -264,6 +265,61 @@
                     android:id="@+id/immunization_recoveryDate"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.recoveryDate}" />
+
+<!--                <de.symeda.sormas.app.component.controls.ControlButton-->
+<!--                    android:id="@+id/immunization_link_case"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:buttonType="@{ControlButtonType.FILTER_PRIMARY}"-->
+<!--                    app:iconStart="@drawable/ic_format_list_bulleted_black_24dp"-->
+<!--                    app:rounded="true"-->
+<!--                    android:text="@string/action_show_classification_rules" />-->
+
+                <LinearLayout
+                    android:id="@+id/task_buttons_panel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/background_full_width_border"
+                    android:paddingLeft="@dimen/buttonPanelHorizontalMargin"
+                    android:paddingRight="@dimen/buttonPanelHorizontalMargin"
+                    android:paddingTop="@dimen/buttonPanelVerticalMargin"
+                    android:paddingBottom="@dimen/buttonPanelVerticalMargin"
+                    android:elevation="16dp">
+
+                    <de.symeda.sormas.app.component.controls.ControlButton
+                        android:id="@+id/open_linked_case"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/controlHalfMarginBottom"
+                        android:text="@string/action_open_linked_case"
+                        app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
+                        app:rounded="true"
+                        app:iconStart="@drawable/ic_open_case_black_24dp" />
+
+                    <de.symeda.sormas.app.component.controls.ControlButton
+                        android:id="@+id/link_case"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/controlHalfMarginBottom"
+                        android:text="@string/action_link_case"
+                        app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
+                        app:rounded="true"
+                        app:iconStart="@drawable/ic_create_case_black_24dp"/>
+<!--                        app:userViewRight="@{UserRight.CASE_CREATE}" -->
+
+<!--                    <de.symeda.sormas.app.component.controls.ControlButton-->
+<!--                        android:id="@+id/open_resulting_case"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="@string/action_open_resulting_case"-->
+<!--                        app:buttonType="@{ControlButtonType.LINE_PRIMARY}"-->
+<!--                        app:rounded="true"-->
+<!--                        app:iconStart="@drawable/ic_open_case_black_24dp" />-->
+
+                </LinearLayout>
+
+
             </LinearLayout>
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField

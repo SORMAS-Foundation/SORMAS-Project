@@ -101,7 +101,7 @@ public interface CaseFacade {
 
 	CaseDataDto getByUuid(String uuid);
 
-	String getUuidByUuidEpidNumberOrExternalId(String searchTerm);
+	String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria);
 
 	List<MapCaseDto> getCasesForMap(
 		RegionReferenceDto regionRef,

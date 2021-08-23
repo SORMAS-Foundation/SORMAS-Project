@@ -16,25 +16,48 @@
 package de.symeda.sormas.app.immunization.edit;
 
 import android.view.View;
+import android.webkit.WebView;
 
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseCriteria;
+import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.immunization.Immunization;
+import de.symeda.sormas.app.backend.sample.PathogenTest;
+import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.caze.edit.CaseEditFragment;
+import de.symeda.sormas.app.caze.edit.CaseNewActivity;
+import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.dialog.InfoDialog;
+import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentImmunizationEditLayoutBinding;
+import de.symeda.sormas.app.immunization.read.ImmunizationSearchCaseDialog;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
@@ -118,6 +141,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	@Override
 	protected void onLayoutBinding(FragmentImmunizationEditLayoutBinding contentBinding) {
 		contentBinding.setData(record);
+		setUpControlListeners(contentBinding);
 
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
@@ -186,6 +210,13 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 				contentBinding.immunizationRecoveryLayout.setVisibility(View.VISIBLE);
 				contentBinding.immunizationRecoveryDate.setEnabled(true);
 				contentBinding.immunizationPositiveTestResultDate.setEnabled(true);
+
+				if (record.getRelatedCase() != null) {
+					contentBinding.linkCase.setVisibility(View.GONE);
+				} else {
+					contentBinding.openLinkedCase.setVisibility(View.GONE);
+				}
+
 			} else {
 				contentBinding.immunizationRecoveryLayout.setVisibility(View.GONE);
 			}
@@ -222,4 +253,68 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		return false;
 	}
 
+	private void setUpControlListeners(FragmentImmunizationEditLayoutBinding contentBinding) {
+
+		contentBinding.linkCase.setOnClickListener((v) -> {
+			linkRecoveryImmunizationToCaseSearchCaseIncluded(record);
+		});
+
+		contentBinding.openLinkedCase.setOnClickListener(v -> CaseReadActivity.startActivity(getActivity(), record.getRelatedCase().getUuid(), true));
+	}
+
+	private void linkRecoveryImmunizationToCaseSearchCaseIncluded(Immunization immunization){
+
+		ImmunizationSearchCaseDialog.searchCaseToLinkImmunization(ImmunizationEditActivity.getActiveActivity(), caseSearchField -> {
+					CaseCriteria criteria = new CaseCriteria();
+					criteria.setPerson(immunization.getPerson());
+					criteria.setDisease(immunization.getDisease());
+					criteria.setOutcome(CaseOutcome.RECOVERED);
+
+					criteria.setTextFilter(caseSearchField);
+
+					List<Case> cases = DatabaseHelper.getCaseDao().queryByCriteria(criteria, 0, 1);
+
+					Case foundCase = cases.get(0);
+
+					if (foundCase != null) {
+
+						immunization.setRelatedCase(foundCase);
+						List<Sample> samples = DatabaseHelper.getSampleDao().queryByCase(foundCase);
+						PathogenTest relevantPathogenTest = null;
+						for (Sample sample : samples) {
+							List<PathogenTest> pathogenTests = DatabaseHelper.getSampleTestDao().queryBySample(sample);
+
+							for (PathogenTest pathogenTest : pathogenTests) {
+								if (pathogenTest.getTestedDisease().equals(foundCase.getDisease()) && PathogenTestResultType.POSITIVE.equals(pathogenTest.getTestResult())) {
+									if (relevantPathogenTest == null) {
+										relevantPathogenTest = pathogenTest;
+									} else if (relevantPathogenTest.getTestDateTime().before(pathogenTest.getTestDateTime())) {
+										relevantPathogenTest = pathogenTest;
+									}
+								}
+							}
+						}
+						if (relevantPathogenTest != null) {
+							Date latestPositiveTestResultDate = relevantPathogenTest.getTestDateTime();
+
+							if (latestPositiveTestResultDate != null) {
+								immunization.setPositiveTestResultDate(latestPositiveTestResultDate);
+							}
+
+							Date onsetDate = foundCase.getSymptoms().getOnsetDate();
+							if (onsetDate != null) {
+								immunization.setLastInfectionDate(onsetDate);
+							}
+
+							Date outcomeDate = foundCase.getOutcomeDate();
+							if (outcomeDate != null) {
+								immunization.setRecoveryDate(outcomeDate);
+							}
+						}
+						final ImmunizationEditActivity activity = (ImmunizationEditActivity) ImmunizationEditFragment.this.getActivity();
+						activity.saveData();
+					}
+				}
+		);
+	}
 }

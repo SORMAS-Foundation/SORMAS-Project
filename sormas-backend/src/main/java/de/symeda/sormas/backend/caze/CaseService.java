@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Filter;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -413,7 +414,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return QueryHelper.getFirstResult(query);
 	}
 
-	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
+	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria) {
 
 		if (StringUtils.isEmpty(searchTerm)) {
 			return null;
@@ -423,12 +424,20 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> root = cq.from(Case.class);
 
-		Predicate filter = cb.or(
+		Predicate filter =null;
+		if(caseCriteria!=null){
+			final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
+			filter = createCriteriaFilter(caseCriteria, caseQueryContext);
+			// Userfilter
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria()));
+		}
+
+		filter = cb.and(filter, cb.or(
 			cb.equal(cb.lower(root.get(Case.UUID)), searchTerm.toLowerCase()),
 			cb.equal(cb.lower(root.get(Case.EPID_NUMBER)), searchTerm.toLowerCase()),
 			cb.equal(cb.lower(root.get(Case.EXTERNAL_TOKEN)), searchTerm.toLowerCase()),
 			cb.equal(cb.lower(root.get(Case.INTERNAL_TOKEN)), searchTerm.toLowerCase()),
-			cb.equal(cb.lower(root.get(Case.EXTERNAL_ID)), searchTerm.toLowerCase()));
+			cb.equal(cb.lower(root.get(Case.EXTERNAL_ID)), searchTerm.toLowerCase())));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(root.get(Case.REPORT_DATE)));
