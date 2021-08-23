@@ -76,8 +76,6 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, ImmunizationDto.RECOVERY_DATE);
 	//@formatter:on
 
-	private final int DAYS_IN_THE_FUTURE = 365;
-
 	public ImmunizationDataForm(boolean isPseudonymized) {
 		super(
 			ImmunizationDto.class,
@@ -161,10 +159,10 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		facilityDetails.setVisible(false);
 
 		addField(ImmunizationDto.START_DATE, DateField.class);
-		addDateField(ImmunizationDto.END_DATE, DateField.class, DAYS_IN_THE_FUTURE);
+		addDateField(ImmunizationDto.END_DATE, DateField.class, -1);
 
-		addDateField(ImmunizationDto.VALID_FROM, DateField.class, DAYS_IN_THE_FUTURE);
-		addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, DAYS_IN_THE_FUTURE);
+		addDateField(ImmunizationDto.VALID_FROM, DateField.class, -1);
+		addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, -1);
 
 		MeansOfImmunization meansOfImmunizationValue = (MeansOfImmunization) meansOfImmunizationField.getValue();
 
