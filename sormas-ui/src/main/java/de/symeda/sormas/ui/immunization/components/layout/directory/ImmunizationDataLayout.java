@@ -9,12 +9,12 @@ import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.ui.immunization.components.grid.ImmunizationGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class DataLayout extends VerticalLayout {
+public class ImmunizationDataLayout extends VerticalLayout {
 
 	private final Label noDiseaseInfoLabel;
 	private final ImmunizationGrid grid;
 
-	public DataLayout(ImmunizationCriteria criteria) {
+	public ImmunizationDataLayout(ImmunizationCriteria criteria) {
 		noDiseaseInfoLabel = new Label(I18nProperties.getString(Strings.infoNoDiseaseSelected));
 		noDiseaseInfoLabel.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.H3, CssStyles.VSPACE_TOP_0, CssStyles.ALIGN_CENTER);
 		addComponent(noDiseaseInfoLabel);
