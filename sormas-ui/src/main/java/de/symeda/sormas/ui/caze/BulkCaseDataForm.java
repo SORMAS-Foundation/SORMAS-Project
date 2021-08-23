@@ -38,9 +38,11 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseBulkEditData;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -184,6 +186,10 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		getContent().addComponent(outcomeCheckBox, OUTCOME_CHECKBOX);
 		NullableOptionGroup caseClassification = addField(CaseBulkEditData.CASE_CLASSIFICATION, NullableOptionGroup.class);
 		caseClassification.setEnabled(false);
+		if (!isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			caseClassification.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+			caseClassification.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+		}
 		NullableOptionGroup investigationStatus = addField(CaseBulkEditData.INVESTIGATION_STATUS, NullableOptionGroup.class);
 		investigationStatus.setEnabled(false);
 		NullableOptionGroup outcome = addField(CaseBulkEditData.OUTCOME, NullableOptionGroup.class);
