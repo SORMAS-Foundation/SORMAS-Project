@@ -1096,34 +1096,38 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	public void onPersonChanged(PersonDto existingPerson, Person newPerson, boolean syncShares) {
 
-		List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
-		// Call onCaseChanged once for every case to update case classification
-		// Attention: this may lead to infinite recursion when not properly implemented
-		for (Case personCase : personCases) {
-			CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
-			caseFacade.onCaseChanged(existingCase, personCase, syncShares);
-		}
-
-		List<Contact> personContacts = contactService.findBy(new ContactCriteria().setPerson(new PersonReferenceDto(newPerson.getUuid())), null);
-		// Call onContactChanged once for every contact
-		// Attention: this may lead to infinite recursion when not properly implemented
-		for (Contact personContact : personContacts) {
-			contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(personContact), syncShares);
-		}
-
-		List<EventParticipant> personEventParticipants =
-			eventParticipantService.findBy(new EventParticipantCriteria().withPerson(new PersonReferenceDto(newPerson.getUuid())), null);
-		// Call onEventParticipantChange once for every event participant
-		// Attention: this may lead to infinite recursion when not properly implemented
-		for (EventParticipant personEventParticipant : personEventParticipants) {
-			eventParticipantFacade.onEventParticipantChanged(EventFacadeEjbLocal.toDto(personEventParticipant.getEvent()), syncShares);
-		}
-
-		// get the updated personCases
-		personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
+		List<Case> personCases = null;
 
 		// Update cases if present condition has changed
+		// Do not bother to update existing cases/contacts/eventparticipants on new Persons, as none should exist yet
 		if (existingPerson != null) {
+
+			personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
+			// Call onCaseChanged once for every case to update case classification
+			// Attention: this may lead to infinite recursion when not properly implemented
+			for (Case personCase : personCases) {
+				CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
+				caseFacade.onCaseChanged(existingCase, personCase, syncShares);
+			}
+
+			List<Contact> personContacts = contactService.findBy(new ContactCriteria().setPerson(new PersonReferenceDto(newPerson.getUuid())), null);
+			// Call onContactChanged once for every contact
+			// Attention: this may lead to infinite recursion when not properly implemented
+			for (Contact personContact : personContacts) {
+				contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(personContact), syncShares);
+			}
+
+			List<EventParticipant> personEventParticipants =
+				eventParticipantService.findBy(new EventParticipantCriteria().withPerson(new PersonReferenceDto(newPerson.getUuid())), null);
+			// Call onEventParticipantChange once for every event participant
+			// Attention: this may lead to infinite recursion when not properly implemented
+			for (EventParticipant personEventParticipant : personEventParticipants) {
+				eventParticipantFacade.onEventParticipantChanged(EventFacadeEjbLocal.toDto(personEventParticipant.getEvent()), syncShares);
+			}
+
+			// get the updated personCases
+			personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
+
 			// sort cases based on recency
 			Collections.sort(
 				personCases,
@@ -1195,8 +1199,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 
 		// Update caseAge of all associated cases when approximateAge has changed
-		if ((existingPerson == null && newPerson.getApproximateAge() != null)
-			|| (existingPerson != null && existingPerson.getApproximateAge() != newPerson.getApproximateAge())) {
+		if (existingPerson != null && existingPerson.getApproximateAge() != newPerson.getApproximateAge()) {
 			// Update case list after previous onCaseChanged
 			personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
 			for (Case personCase : personCases) {
