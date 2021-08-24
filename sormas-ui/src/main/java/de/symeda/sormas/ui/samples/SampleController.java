@@ -22,7 +22,6 @@ import static de.symeda.sormas.ui.samples.PathogenTestController.showCaseUpdateW
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -53,9 +52,9 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -242,19 +241,14 @@ public class SampleController {
 			SampleDto savedSample = FacadeProvider.getSampleFacade().saveSample(newSample);
 			PathogenTestDto savedPathogenTest = FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
 
-			final CaseReferenceDto associatedCase = newSample.getAssociatedCase();
-
 			// Handle test results
+			// if the test result of the pathogentest differs from that of the sample, show popup to confirm/deny changing the sample result
+			// a) case-sample
+			final CaseReferenceDto associatedCase = newSample.getAssociatedCase();
 			if (associatedCase != null && pathogenTest.getTestResultVerified()) {
 				CaseDataDto postSaveCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 
-				if (postSaveCaseDto.getDisease() == pathogenTest.getTestedDisease()
-					&& DataHelper.equal(postSaveCaseDto.getDiseaseVariant(), pathogenTest.getTestedDiseaseVariant())) {
-
-					// Handle test results for the same disease & variant
-					savedSample.setPathogenTestResult(pathogenTest.getTestResult());
-					savedSample = FacadeProvider.getSampleFacade().saveSample(savedSample);
-				} else if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
+				if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
 					&& postSaveCaseDto.getDisease() != pathogenTest.getTestedDisease()) {
 
 					// Handle positive test results for different diseases
@@ -280,15 +274,31 @@ public class SampleController {
 			}
 
 			consumer.accept(savedSample, savedPathogenTest);
+
+			// b) contact-sample
+			final ContactReferenceDto contactRef = savedSample.getAssociatedContact();
+			if (contactRef != null) {
+				if (savedPathogenTest.getTestResult() != savedSample.getPathogenTestResult()) {
+					showChangePathogenTestResultWindow(createView, savedSample.getUuid(), savedPathogenTest.getTestResult(), () -> {
+					});
+				}
+				if (testResult.equals(PathogenTestResultType.POSITIVE) && testResultVerified) {
+					ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
+					ControllerProvider.getPathogenTestController().showConvertContactToCaseDialog(contact);
+				}
+			}
+			// TBD: investigate overlap between a, b, and c and possibly call methods related to differing pathogentest- and sample-result
+			// TBD: Potentially put the conversion-popups into the callback of showChangePathogenTestResultWindow, and only execute if the sample was declared positive
+
+			// c) eventparticipant-sample
 			final EventParticipantReferenceDto eventParticipantRef = savedSample.getAssociatedEventParticipant();
 			if (eventParticipantRef != null) {
 				EventParticipantDto eventParticipant =
 					FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
-				final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 				Disease testedDisease = pathogenTest.getTestedDisease();
-				if (Objects.equals(event.getDisease(), testedDisease)) {
-					savedSample.setPathogenTestResult(testResult);
-					FacadeProvider.getSampleFacade().saveSample(savedSample);
+				if (savedPathogenTest.getTestResult() != savedSample.getPathogenTestResult()) {
+					showChangePathogenTestResultWindow(createView, savedSample.getUuid(), savedPathogenTest.getTestResult(), () -> {
+					});
 				}
 				if (testResult.equals(PathogenTestResultType.POSITIVE) && testResultVerified) {
 					ControllerProvider.getPathogenTestController().showConvertEventParticipantToCaseDialog(eventParticipant, testedDisease);
