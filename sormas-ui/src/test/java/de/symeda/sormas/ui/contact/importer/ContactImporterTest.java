@@ -34,6 +34,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonNameDto;
@@ -217,11 +218,11 @@ public class ContactImporterTest extends AbstractBeanTest {
 		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
 		public ContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) {
-			super(inputFile, hasEntityClassRow, currentUser, caze);
+			super(inputFile, hasEntityClassRow, currentUser, caze, ValueSeparator.DEFAULT);
 		}
 
 		public ContactImporterExtension(File inputFile, UserDto currentUser) {
-			super(inputFile, false, currentUser, null);
+			super(inputFile, false, currentUser, null, ValueSeparator.DEFAULT);
 		}
 
 		@Override

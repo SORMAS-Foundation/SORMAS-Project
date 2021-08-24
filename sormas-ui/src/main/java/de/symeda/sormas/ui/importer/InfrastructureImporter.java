@@ -15,6 +15,7 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.region.AreaDto;
@@ -36,12 +37,12 @@ public class InfrastructureImporter extends DataImporter {
 	private final InfrastructureType type;
 	protected final boolean allowOverwrite;
 
-	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type) {
-		this(inputFile, currentUser, type, false);
+	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type, ValueSeparator csvSeparator) {
+		this(inputFile, currentUser, type, false, csvSeparator);
 	}
 
-	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type, boolean allowOverwrite) {
-		super(inputFile, false, currentUser);
+	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type, boolean allowOverwrite, ValueSeparator csvSeparator) {
+		super(inputFile, false, currentUser, csvSeparator);
 		this.type = type;
 		this.allowOverwrite = allowOverwrite;
 	}

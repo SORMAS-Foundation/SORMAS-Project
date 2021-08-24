@@ -34,6 +34,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonNameDto;
@@ -352,7 +353,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 	private static class EventParticipantImporterExtension extends EventParticipantImporter {
 
 		private EventParticipantImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event) {
-			super(inputFile, hasEntityClassRow, currentUser, event);
+			super(inputFile, hasEntityClassRow, currentUser, event, ValueSeparator.DEFAULT);
 		}
 
 		@Override

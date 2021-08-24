@@ -14,6 +14,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -26,6 +27,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -40,6 +42,7 @@ public class AbstractImportLayout extends VerticalLayout {
 	protected final UserDto currentUser;
 	protected final UI currentUI;
 	protected ImportReceiver generatedReceiver;
+	protected ComboBox separator;
 
 	public AbstractImportLayout() {
 		currentUser = UserProvider.getCurrent().getUser();
@@ -98,12 +101,24 @@ public class AbstractImportLayout extends VerticalLayout {
 		String headline = I18nProperties.getString(Strings.headingImportCsvFile);
 		String infoText = I18nProperties.getString(Strings.infoImportCsvFile);
 		ImportLayoutComponent importCsvComponent = new ImportLayoutComponent(step, headline, infoText, null, null);
+		CssStyles.style(importCsvComponent, CssStyles.VSPACE_3);
 		addComponent(importCsvComponent);
+		addComponent(createSeparatorComboBox());
 		upload = new Upload("", receiver);
 		upload.setButtonCaption(I18nProperties.getCaption(Captions.importImportData));
 		CssStyles.style(upload, CssStyles.VSPACE_2);
 		upload.addSucceededListener(receiver);
 		addComponent(upload);
+	}
+
+	private ComboBox createSeparatorComboBox() {
+		ComboBox comboBox = new ComboBox();
+		comboBox.setCaption(I18nProperties.getCaption(Captions.importValueSeparator));
+		comboBox.setItems(ValueSeparator.values());
+		comboBox.setValue(ValueSeparator.DEFAULT);
+		comboBox.setItemCaptionGenerator(item -> I18nProperties.getEnumCaption(ValueSeparator.valueOf(item.toString())));
+		separator = comboBox;
+		return comboBox;
 	}
 
 	protected void addImportCsvComponentWithOverwrite(int step, Function<Boolean, ImportReceiver> receiverGenerator) {
@@ -126,7 +141,9 @@ public class AbstractImportLayout extends VerticalLayout {
 		checkboxBar.addComponent(allowOverwrite);
 		Label labelInfo = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		checkboxBar.addComponent(labelInfo);
+		CssStyles.style(checkboxBar, CssStyles.VSPACE_3);
 		addComponent(checkboxBar);
+		addComponent(createSeparatorComboBox());
 		addComponent(upload);
 
 		allowOverwrite.addValueChangeListener(e -> {

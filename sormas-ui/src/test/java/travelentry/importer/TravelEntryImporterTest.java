@@ -30,6 +30,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.opencsv.exceptions.CsvValidationException;
 
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
@@ -61,7 +62,7 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 		public StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
 		public TravelEntryImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
-			super(inputFile, hasEntityClassRow, currentUser);
+			super(inputFile, hasEntityClassRow, currentUser, ValueSeparator.DEFAULT);
 		}
 
 		@Override
