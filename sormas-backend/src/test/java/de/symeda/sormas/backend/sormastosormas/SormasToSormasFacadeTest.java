@@ -68,7 +68,7 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
@@ -286,9 +286,9 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return rdcf;
 	}
 
-	protected static class MappableRdcf {
+	public static class MappableRdcf {
 
-		protected TestDataCreator.RDCF remoteRdcf;
-		protected TestDataCreator.RDCF localRdcf;
+		public TestDataCreator.RDCF remoteRdcf;
+		public TestDataCreator.RDCF localRdcf;
 	}
 }

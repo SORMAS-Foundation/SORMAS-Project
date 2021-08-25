@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import static de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
+import static de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -104,11 +104,11 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEvent;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoHelper;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEvent;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
