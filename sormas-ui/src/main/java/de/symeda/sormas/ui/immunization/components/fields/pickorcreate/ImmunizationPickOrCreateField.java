@@ -15,7 +15,7 @@ import de.symeda.sormas.ui.immunization.components.fields.info.ImmunizationInfo;
 import de.symeda.sormas.ui.immunization.components.fields.info.InfoLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class ImmunizationPickOrCreateField extends CustomField<ImmunizationDto> {
+public class ImmunizationPickOrCreateField extends CustomField<String> {
 
 	public static final String KEEP_IMMUNIZATION = "keepImmunization";
 	public static final String OVERWRITE_IMMUNIZATION = "overwriteImmunization";
@@ -23,7 +23,7 @@ public class ImmunizationPickOrCreateField extends CustomField<ImmunizationDto> 
 	private final ImmunizationDto newImmunization;
 	private final ImmunizationDto similarImmunization;
 
-	private ImmunizationDto selectedValue;
+	private String selectedImmunizationUuid;
 
 	private Consumer<Boolean> selectionChangeCallback;
 
@@ -64,7 +64,7 @@ public class ImmunizationPickOrCreateField extends CustomField<ImmunizationDto> 
 		keepImmunization.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
 				overwriteImmunization.setValue(null);
-				doSetValue(similarImmunization);
+				doSetValue(newImmunization.getUuid());
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(true);
 				}
@@ -74,7 +74,7 @@ public class ImmunizationPickOrCreateField extends CustomField<ImmunizationDto> 
 		overwriteImmunization.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
 				keepImmunization.setValue(null);
-				doSetValue(newImmunization);
+				doSetValue(similarImmunization.getUuid());
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(true);
 				}
@@ -85,13 +85,13 @@ public class ImmunizationPickOrCreateField extends CustomField<ImmunizationDto> 
 	}
 
 	@Override
-	protected void doSetValue(ImmunizationDto immunizationDto) {
-		this.selectedValue = immunizationDto;
+	protected void doSetValue(String selectedImmunizationUuid) {
+		this.selectedImmunizationUuid = selectedImmunizationUuid;
 	}
 
 	@Override
-	public ImmunizationDto getValue() {
-		return this.selectedValue;
+	public String getValue() {
+		return this.selectedImmunizationUuid;
 	}
 
 	public void setSelectionChangeCallback(Consumer<Boolean> callback) {

@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.immunization;
 
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -76,12 +77,12 @@ public class ImmunizationController {
 							if (selectedPerson != null) {
 								dto.setPerson(selectedPerson);
 								selectOrCreateImmunization(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
-									if (uuid.equals(dto.getUuid())) {
+									if (!uuid.equals(dto.getUuid())) {
+										dto.setUuid(uuid);
+										dto.setChangeDate(new Date());
 										FacadeProvider.getImmunizationFacade().save(dto);
-										navigateToImmunization(dto.getUuid());
-									} else {
-										navigateToImmunization(uuid);
 									}
+									navigateToImmunization(uuid);
 								});
 							}
 						}, true);
@@ -224,8 +225,7 @@ public class ImmunizationController {
 			component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 			component.getCommitButton().setEnabled(false);
 			component.addCommitListener(() -> {
-				ImmunizationDto pickedImmunization = pickOrCreateField.getValue();
-				selectedImmunizationUuidConsumer.accept(pickedImmunization.getUuid());
+				selectedImmunizationUuidConsumer.accept(pickOrCreateField.getValue());
 			});
 
 			pickOrCreateField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
