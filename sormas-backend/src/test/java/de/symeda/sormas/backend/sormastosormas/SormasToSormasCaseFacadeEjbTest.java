@@ -35,6 +35,8 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.backend.sormastosormas.entities.SyncDataDto;
+import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -88,11 +90,11 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.sormastosormas.caze.CaseShareRequestData;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoSample;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.entities.caze.CaseShareRequestData;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoCase;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoContact;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoSample;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
