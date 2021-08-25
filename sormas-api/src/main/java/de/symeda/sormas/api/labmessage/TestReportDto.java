@@ -35,6 +35,7 @@ public class TestReportDto extends EntityDto {
 	private PathogenTestResultType testResult;
 	private Boolean testResultVerified;
 	private String testResultText;
+	private String typingId;
 
 	private PathogenTestReferenceDto pathogenTest;
 
@@ -130,5 +131,13 @@ public class TestReportDto extends EntityDto {
 
 	public void setPathogenTest(PathogenTestReferenceDto pathogenTest) {
 		this.pathogenTest = pathogenTest;
+	}
+
+	public String getTypingId() {
+		return typingId;
+	}
+
+	public void setTypingId(String typingId) {
+		this.typingId = typingId;
 	}
 }

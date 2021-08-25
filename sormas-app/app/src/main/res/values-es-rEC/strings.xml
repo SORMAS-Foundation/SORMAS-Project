@@ -555,6 +555,7 @@
     <string name="validation_visit_date_time_after_followup">La visita no puede ser mayor de %d días después del final de la duración del seguimiento.</string>
     <string name="validation_visit_date_time_before_contact_date">La visita no puede ser más de %d días antes de la última fecha de contacto.</string>
     <string name="validation_visit_date_time_before_report_date">La visita no puede ser más de %d días antes de la fecha de reporte de contacto.</string>
+    <string name="value_unknown">Unknown</string>
     <string name="value_age_unknown">Edad N/A</string>
     <string name="value_blood_pressure_unknown">Presión sanguínea N/D</string>
     <string name="value_case_uuid_unknown">ID de Caso N/D</string>

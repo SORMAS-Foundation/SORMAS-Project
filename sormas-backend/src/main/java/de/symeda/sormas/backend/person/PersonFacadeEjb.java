@@ -66,6 +66,7 @@ import com.google.i18n.phonenumbers.Phonenumber;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -78,6 +79,7 @@ import de.symeda.sormas.api.contact.FollowUpStatusDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -92,6 +94,7 @@ import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonExportDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -123,23 +126,30 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
+import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.CountryFacadeEjb;
 import de.symeda.sormas.backend.region.CountryService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
+import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -198,6 +208,12 @@ public class PersonFacadeEjb implements PersonFacade {
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
+	@EJB
+	private DistrictFacadeEjbLocal districtFacade;
+	@EJB
+	private CommunityFacadeEjbLocal communityFacade;
+	@EJB
+	private FacilityFacadeEjbLocal facilityFacade;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -513,6 +529,68 @@ public class PersonFacadeEjb implements PersonFacade {
 			.count()
 			> 1) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.personMultiplePrimaryEmailAddresses));
+		}
+		if (StringUtils.isNotBlank(source.getEmailAddress()) && !source.getEmailAddress().matches(DataHelper.getEmailValidationRegex())) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.validEmailAddress,
+					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.EMAIL_ADDRESS)));
+		}
+		if (StringUtils.isNotBlank(source.getPhone()) && source.getPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.validPhoneNumber, I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE)));
+		}
+		if (source.getAddress().getRegion() != null
+			&& source.getAddress().getDistrict() != null
+			&& !districtFacade.getDistrictByUuid(source.getAddress().getDistrict().getUuid()).getRegion().equals(source.getAddress().getRegion())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressDistrictInAddressRegion));
+		}
+		if (source.getAddress().getDistrict() != null
+			&& source.getAddress().getCommunity() != null
+			&& !communityFacade.getByUuid(source.getAddress().getCommunity().getUuid()).getDistrict().equals(source.getAddress().getDistrict())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressCommunityInAddressDistrict));
+		}
+		if ((source.getAddress().getDistrict() != null || source.getAddress().getFacility() != null) && source.getAddress().getRegion() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
+		}
+		if (source.getAddress().getFacility() != null) {
+			FacilityDto healthFacility = facilityFacade.getByUuid(source.getAddress().getFacility().getUuid());
+
+			if (source.getAddress().getCommunity() == null
+				&& healthFacility.getDistrict() != null
+				&& !healthFacility.getDistrict().equals(source.getAddress().getDistrict())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressDistrict));
+			}
+			if (source.getAddress().getCommunity() != null
+				&& healthFacility.getCommunity() != null
+				&& !source.getAddress().getCommunity().equals(healthFacility.getCommunity())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressCommunity));
+			}
+			if (healthFacility.getRegion() != null && !source.getAddress().getRegion().equals(healthFacility.getRegion())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressRegion));
+			}
+		}
+		if (!StringUtils.isAllBlank(
+			source.getAddress().getContactPersonFirstName(),
+			source.getAddress().getContactPersonLastName(),
+			source.getAddress().getContactPersonEmail(),
+			source.getAddress().getContactPersonPhone()) && source.getAddress().getFacilityType() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPersonContactDetailsWithoutFacilityType));
+		}
+		if (StringUtils.isNotBlank(source.getAddress().getContactPersonEmail())
+			&& !source.getAddress().getContactPersonEmail().matches(DataHelper.getEmailValidationRegex())) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.validEmailAddress,
+					I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_EMAIL)));
+		}
+		if (StringUtils.isNotBlank(source.getAddress().getContactPersonPhone())
+			&& source.getAddress().getContactPersonPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.validPhoneNumber,
+					I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_PHONE)));
 		}
 
 		// Validate birth date
@@ -1311,6 +1389,110 @@ public class PersonFacadeEjb implements PersonFacade {
 			Optional.ofNullable(criteria).orElse(new PersonCriteria()).getPersonAssociation().name(),
 			persons.size(),
 			DateHelper.durationMillies(startTime));
+		return persons;
+	}
+
+	@Override
+	public List<PersonExportDto> getExportList(PersonCriteria criteria, int first, int max) {
+		long startTime = DateHelper.startTime();
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<PersonExportDto> cq = cb.createQuery(PersonExportDto.class);
+		final Root<Person> person = cq.from(Person.class);
+
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		PersonJoins joins = (PersonJoins) personQueryContext.getJoins();
+		joins.configure(criteria);
+
+		cq.multiselect(
+			person.get(Person.UUID),
+			person.get(Person.FIRST_NAME),
+			person.get(Person.LAST_NAME),
+			person.get(Person.SALUTATION),
+			person.get(Person.OTHER_SALUTATION),
+			person.get(Person.SEX),
+
+			person.get(Person.APPROXIMATE_AGE),
+			person.get(Person.APPROXIMATE_AGE_TYPE),
+			person.get(Person.BIRTHDATE_DD),
+			person.get(Person.BIRTHDATE_MM),
+			person.get(Person.BIRTHDATE_YYYY),
+
+			person.get(Person.NICKNAME),
+			person.get(Person.MOTHERS_NAME),
+			person.get(Person.MOTHERS_MAIDEN_NAME),
+			person.get(Person.FATHERS_NAME),
+			person.get(Person.NAMES_OF_GUARDIANS),
+
+			person.get(Person.PRESENT_CONDITION),
+			person.get(Person.DEATH_DATE),
+			person.get(Person.CAUSE_OF_DEATH),
+			person.get(Person.CAUSE_OF_DEATH_DETAILS),
+			person.get(Person.CAUSE_OF_DEATH_DISEASE),
+
+			joins.getAddressJoins().getRegion().get(Region.NAME),
+			joins.getAddressJoins().getDistrict().get(District.NAME),
+			joins.getAddressJoins().getCommunity().get(Community.NAME),
+			joins.getAddress().get(Location.STREET),
+			joins.getAddress().get(Location.HOUSE_NUMBER),
+			joins.getAddress().get(Location.POSTAL_CODE),
+			joins.getAddress().get(Location.CITY),
+			joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
+			joins.getAddressJoins().getFacility().get(Facility.NAME),
+			joins.getAddress().get(Location.FACILITY_DETAILS),
+
+			personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
+			personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_OWNER_SUBQUERY),
+			personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
+			personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY),
+
+			person.get(Person.EDUCATION_TYPE),
+			person.get(Person.EDUCATION_DETAILS),
+			person.get(Person.OCCUPATION_TYPE),
+			person.get(Person.OCCUPATION_DETAILS),
+			person.get(Person.ARMED_FORCES_RELATION_TYPE),
+
+			person.get(Person.PASSPORT_NUMBER),
+			person.get(Person.NATIONAL_HEALTH_ID),
+
+			person.get(Person.HAS_COVID_APP),
+			person.get(Person.COVID_CODE_DELIVERED),
+
+			person.get(Person.SYMPTOM_JOURNAL_STATUS),
+
+			person.get(Person.EXTERNAL_ID),
+			person.get(Person.EXTERNAL_TOKEN),
+			person.get(Person.INTERNAL_TOKEN),
+
+			joins.getBirthCountry().get(Country.ISO_CODE),
+			joins.getBirthCountry().get(Country.DEFAULT_NAME),
+			joins.getCitizenship().get(Country.ISO_CODE),
+			joins.getCitizenship().get(Country.DEFAULT_NAME),
+
+			person.get(Person.ADDITIONAL_DETAILS),
+
+			JurisdictionHelper.booleanSelector(cb, personService.inJurisdictionOrOwned(personQueryContext)));
+
+		Predicate filter = createIndexListFilter(criteria, personQueryContext);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.distinct(true);
+
+		List<PersonExportDto> persons = QueryHelper.getResultList(em, cq, first, max);
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(
+			PersonExportDto.class,
+			persons,
+			PersonExportDto::getInJurisdiction,
+			(p, isInJurisdiction) -> pseudonymizer.pseudonymizeDto(BirthDateDto.class, p.getBirthdate(), isInJurisdiction, null));
+
+		logger.debug(
+			"getExportList() finished. association={}, count={}, {}ms",
+			Optional.ofNullable(criteria).orElse(new PersonCriteria()).getPersonAssociation().name(),
+			persons.size(),
+			DateHelper.durationMillies(startTime));
+
 		return persons;
 	}
 

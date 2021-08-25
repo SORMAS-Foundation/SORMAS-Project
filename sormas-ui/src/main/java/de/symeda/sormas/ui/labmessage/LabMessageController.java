@@ -43,6 +43,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -684,6 +685,7 @@ public class LabMessageController {
 		if (!testReportDtos.isEmpty()) {
 			TestReportDto testReportDto = testReportDtos.get(0);
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_RESULT)).setValue(testReportDto.getTestResult());
+			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(SampleDto.PATHOGEN_TEST_RESULT)).setValue(testReportDto.getTestResult());
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_TYPE)).setValue(testReportDto.getTestType());
 			((ComboBox) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TESTED_DISEASE))
 				.setValue(labMessageDto.getTestedDisease());
@@ -691,6 +693,11 @@ public class LabMessageController {
 				.setValue(testReportDto.isTestResultVerified());
 			((DateTimeField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TEST_DATE_TIME))
 				.setValue(testReportDto.getTestDateTime());
+			if (testReportDto.getTypingId() != null) {
+				Field typingIdField = sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID);
+				typingIdField.setValue(testReportDto.getTypingId());
+				typingIdField.setVisible(true);
+			}
 		}
 		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			((DateField) sampleCreateComponent.getWrappedComponent().getField(PathogenTestDto.REPORT_DATE))
@@ -709,9 +716,15 @@ public class LabMessageController {
 		Window window = VaadinUiUtil.createPopupWindow();
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
 			getPathogenTestCreateComponent(sampleDto, labMessageDto, pathogenTestDto, window);
+		// set custom predefined field values and visibilities
 		CheckBox viaLimsCheckbox = pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.VIA_LIMS);
 		viaLimsCheckbox.setValue(Boolean.TRUE);
 		viaLimsCheckbox.setEnabled(false);
+		if (pathogenTestDto.getTypingId() != null) {
+			Field typingIdField = pathogenTestCreateComponent.getWrappedComponent().getField(PathogenTestDto.TYPING_ID);
+			typingIdField.setValue(pathogenTestDto.getTypingId());
+			typingIdField.setVisible(true);
+		}
 
 		showFormWithLabMessage(
 			labMessageDto,
@@ -733,6 +746,7 @@ public class LabMessageController {
 			pathogenTestDto.setTestResultVerified(testReportDto.isTestResultVerified());
 			pathogenTestDto.setTestDateTime(testReportDto.getTestDateTime());
 			pathogenTestDto.setTestResultText(testReportDto.getTestResultText());
+			pathogenTestDto.setTypingId(testReportDto.getTypingId());
 		}
 
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());

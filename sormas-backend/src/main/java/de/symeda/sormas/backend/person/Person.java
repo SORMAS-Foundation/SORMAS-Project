@@ -95,6 +95,8 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
+	public static final String CAUSE_OF_DEATH = "causeOfDeath";
+	public static final String CAUSE_OF_DEATH_DETAILS = "causeOfDeathDetails";
 	public static final String CAUSE_OF_DEATH_DISEASE = "causeOfDeathDisease";
 	public static final String DEATH_PLACE_TYPE = "deathPlaceType";
 	public static final String DEATH_PLACE_DESCRIPTION = "deathPlaceDescription";
@@ -112,6 +114,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	public static final String ARMED_FORCES_RELATION_TYPE = "armedForcesRelationType";
 	public static final String FATHERS_NAME = "fathersName";
 	public static final String MOTHERS_NAME = "mothersName";
+	public static final String NAMES_OF_GUARDIANS = "namesOfGuardians";
 	public static final String PLACE_OF_BIRTH_REGION = "placeOfBirthRegion";
 	public static final String PLACE_OF_BIRTH_DISTRICT = "placeOfBirthDistrict";
 	public static final String PLACE_OF_BIRTH_COMMUNITY = "placeOfBirthCommunity";
@@ -124,6 +127,9 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
 	public static final String PERSON_CONTACT_DETAILS = "personContactDetails";
+
+	public static final String HAS_COVID_APP = "hasCovidApp";
+	public static final String COVID_CODE_DELIVERED = "covidCodeDelivered";
 
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String EXTERNAL_ID = "externalId";
