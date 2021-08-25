@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package de.symeda.sormas.backend.sormastosormas.data.received;
+package de.symeda.sormas.backend.sormastosormas.crypto;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;

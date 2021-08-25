@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas.entities;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayWithSize;
@@ -35,6 +35,7 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
 import de.symeda.sormas.backend.sormastosormas.entities.SyncDataDto;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
 import org.junit.Test;

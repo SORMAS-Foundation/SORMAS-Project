@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas.rest;
 
 import static de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient.SORMAS_REST_URL_TEMPLATE;
 import static org.hamcrest.MatcherAssert.assertThat;

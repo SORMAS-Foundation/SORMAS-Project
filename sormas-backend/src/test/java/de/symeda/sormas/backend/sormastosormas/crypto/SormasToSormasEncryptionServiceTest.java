@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas.crypto;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.nullValue;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
