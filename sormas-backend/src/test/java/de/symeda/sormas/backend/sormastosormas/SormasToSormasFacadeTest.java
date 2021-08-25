@@ -286,7 +286,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return rdcf;
 	}
 
-	protected static class MappableRdcf {
+	public static class MappableRdcf {
 
 		public TestDataCreator.RDCF remoteRdcf;
 		public TestDataCreator.RDCF localRdcf;

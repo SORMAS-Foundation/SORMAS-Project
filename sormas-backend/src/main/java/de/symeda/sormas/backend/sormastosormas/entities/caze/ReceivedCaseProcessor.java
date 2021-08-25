@@ -45,9 +45,9 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePrevie
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
-import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper.InfrastructureData;
 
 @Stateless
 @LocalBean
@@ -58,6 +58,8 @@ public class ReceivedCaseProcessor
 	private ReceivedDataProcessorHelper dataProcessorHelper;
 	@EJB
 	private ContactFacadeEjbLocal contactFacade;
+	@EJB
+	private InfrastructureValidator infraValidator;
 
 	@Override
 	public ProcessedCaseData processReceivedData(SormasToSormasCaseDto receivedCase, CaseDataDto existingCaseData)
@@ -105,7 +107,7 @@ public class ReceivedCaseProcessor
 
 		ValidationErrors caseValidationErrors = new ValidationErrors();
 
-		DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
+		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors = infraValidator.loadLocalInfrastructure(
 			preview.getRegion(),
 			preview.getDistrict(),
 			preview.getCommunity(),
@@ -115,7 +117,7 @@ public class ReceivedCaseProcessor
 			preview.getPointOfEntry(),
 			preview.getPointOfEntryDetails());
 
-		dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
+		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
 			preview.setRegion(infrastructureData.getRegion());
 			preview.setDistrict(infrastructureData.getDistrict());
 			preview.setCommunity(infrastructureData.getCommunity());
@@ -154,9 +156,9 @@ public class ReceivedCaseProcessor
 		caze.setPerson(person.toReference());
 		dataProcessorHelper.updateReportingUser(caze, existingCaseData);
 
-		DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(caze);
+		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors = infraValidator.loadLocalInfrastructure(caze);
 
-		dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
+		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
 			caze.setResponsibleRegion(infrastructureData.getResponsibleRegion());
 			caze.setResponsibleDistrict(infrastructureData.getResponsibleDistrict());
 			caze.setResponsibleCommunity(infrastructureData.getResponsibleCommunity());
@@ -182,7 +184,7 @@ public class ReceivedCaseProcessor
 
 			caze.getHospitalization().getPreviousHospitalizations().forEach(ph -> {
 
-				DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> phInfrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
+				DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> phInfrastructureAndErrors = infraValidator.loadLocalInfrastructure(
 					ph.getRegion(),
 					ph.getDistrict(),
 					ph.getCommunity(),
@@ -192,7 +194,7 @@ public class ReceivedCaseProcessor
 					null,
 					null);
 
-				dataProcessorHelper.handleInfraStructure(
+				infraValidator.handleInfraStructure(
 					phInfrastructureAndErrors,
 					Captions.CaseHospitalization_previousHospitalizations,
 					validationErrors,
@@ -209,12 +211,12 @@ public class ReceivedCaseProcessor
 		MaternalHistoryDto maternalHistory = caze.getMaternalHistory();
 		if (maternalHistory != null) {
 
-			DataHelper.Pair<InfrastructureData, List<ValidationErrorMessage>> rashExposureInfrastructureAndErrors = dataProcessorHelper.loadLocalInfrastructure(
+			DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> rashExposureInfrastructureAndErrors = infraValidator.loadLocalInfrastructure(
 				maternalHistory.getRashExposureRegion(),
 				maternalHistory.getRashExposureDistrict(),
 				maternalHistory.getRashExposureCommunity());
 
-			dataProcessorHelper.handleInfraStructure(
+			infraValidator.handleInfraStructure(
 				rashExposureInfrastructureAndErrors,
 				Captions.MaternalHistory_rashExposure,
 				validationErrors,

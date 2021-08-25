@@ -38,6 +38,7 @@ import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
 import de.symeda.sormas.backend.user.UserService;
@@ -50,6 +51,8 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 	private UserService userService;
 	@EJB
 	private ReceivedDataProcessorHelper dataProcessorHelper;
+	@EJB
+	private InfrastructureValidator infraValidator;
 
 	@Override
 	public ProcessedEventData processReceivedData(SormasToSormasEventDto receivedEvent, EventDto existingEvent)
@@ -96,7 +99,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 
 		ValidationErrors eventValidationErrors = new ValidationErrors();
 
-		dataProcessorHelper.processLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
+		infraValidator.processLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
 
 		if (eventValidationErrors.hasError()) {
 			validationErrors.add(new ValidationErrors(buildEventValidationGroupName(preview), eventValidationErrors));
@@ -126,8 +129,8 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 		}
 
 		LocationDto eventLocation = event.getEventLocation();
-		DataHelper.Pair<ReceivedDataProcessorHelper.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-			dataProcessorHelper.loadLocalInfrastructure(
+		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
+				infraValidator.loadLocalInfrastructure(
 				eventLocation.getContinent(),
 				eventLocation.getSubcontinent(),
 				eventLocation.getCountry(),
@@ -140,7 +143,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 				null,
 				null);
 
-		dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, validationErrors, infrastructureData -> {
+		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, validationErrors, infrastructureData -> {
 			eventLocation.setContinent(infrastructureData.getContinent());
 			eventLocation.setSubcontinent(infrastructureData.getSubcontinent());
 			eventLocation.setCountry(infrastructureData.getCountry());
@@ -162,9 +165,9 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 			ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(eventParticipant.getPerson());
 			validationErrors.addAll(personValidationErrors);
 
-			DataHelper.Pair<ReceivedDataProcessorHelper.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-				dataProcessorHelper.loadLocalInfrastructure(eventParticipant.getRegion(), eventParticipant.getDistrict(), null);
-			dataProcessorHelper.handleInfraStructure(infrastructureAndErrors, Captions.EventParticipant, validationErrors, (infrastructureData -> {
+			DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
+					infraValidator.loadLocalInfrastructure(eventParticipant.getRegion(), eventParticipant.getDistrict(), null);
+			infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.EventParticipant, validationErrors, (infrastructureData -> {
 				eventParticipant.setRegion(infrastructureData.getRegion());
 				eventParticipant.setDistrict(infrastructureData.getDistrict());
 			}));
