@@ -260,6 +260,9 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 
 		overwriteImmunizationManagementStatus.addValueChangeListener(e -> {
 			boolean selectedValue = (boolean) e.getProperty().getValue();
+			if (!selectedValue) {
+				managementStatusField.setValue(ImmunizationManagementStatus.SCHEDULED);
+			}
 			managementStatusField.setEnabled(selectedValue);
 		});
 
