@@ -101,6 +101,8 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 					.forEach(event -> shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED));
 			}
 			return;
+		case HttpServletResponse.SC_NOT_FOUND:
+			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorSending));
 		case HttpServletResponse.SC_BAD_REQUEST:
 			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotSent));
 		default:
