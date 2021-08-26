@@ -9,8 +9,8 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.immunization.components.layout.directory.DataLayout;
 import de.symeda.sormas.ui.immunization.components.layout.directory.FilterFormLayout;
+import de.symeda.sormas.ui.immunization.components.layout.directory.ImmunizationDataLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
@@ -21,22 +21,22 @@ public class ImmunizationsView extends AbstractView {
 	private final ImmunizationCriteria criteria;
 
 	private FilterFormLayout filterFormLayout;
-	private final DataLayout dataLayout;
+	private final ImmunizationDataLayout immunizationDataLayout;
 
 	public ImmunizationsView() {
 		super(VIEW_NAME);
 
 		criteria = ViewModelProviders.of(ImmunizationsView.class).get(ImmunizationCriteria.class);
-		dataLayout = new DataLayout(criteria);
+		immunizationDataLayout = new ImmunizationDataLayout(criteria);
 
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(dataLayout);
+		gridLayout.addComponent(immunizationDataLayout);
 
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
-		gridLayout.setExpandRatio(dataLayout, 1);
+		gridLayout.setExpandRatio(immunizationDataLayout, 1);
 		gridLayout.setStyleName("crud-main-layout");
 
 		addComponent(gridLayout);
@@ -65,7 +65,7 @@ public class ImmunizationsView extends AbstractView {
 
 		filterFormLayout.setValue(criteria);
 		boolean shouldShowGrid = criteria.getDisease() != null;
-		dataLayout.toggleView(shouldShowGrid);
+		immunizationDataLayout.toggleView(shouldShowGrid);
 
 		applyingCriteria = false;
 	}
@@ -81,10 +81,10 @@ public class ImmunizationsView extends AbstractView {
 		filterFormLayout.addApplyHandler(clickEvent -> {
 			ImmunizationCriteria filterFormValue = filterFormLayout.getValue();
 			boolean shouldShowGrid = filterFormValue.getDisease() != null;
-			dataLayout.toggleView(shouldShowGrid);
+			immunizationDataLayout.toggleView(shouldShowGrid);
 
 			if (shouldShowGrid) {
-				dataLayout.refreshGrid();
+				immunizationDataLayout.refreshGrid();
 			}
 		});
 

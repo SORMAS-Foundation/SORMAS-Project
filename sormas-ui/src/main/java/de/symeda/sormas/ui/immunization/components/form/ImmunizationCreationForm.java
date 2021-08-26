@@ -82,8 +82,6 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		+ fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 	//@formatter:on
 
-	private final int DAYS_IN_THE_FUTURE = 365;
-
 	private ComboBox birthDateDay;
 
 	public ImmunizationCreationForm() {
@@ -155,10 +153,10 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		facilityDetails.setVisible(false);
 
 		addField(ImmunizationDto.START_DATE, DateField.class);
-		addDateField(ImmunizationDto.END_DATE, DateField.class, DAYS_IN_THE_FUTURE);
+		addDateField(ImmunizationDto.END_DATE, DateField.class, -1);
 
-		addDateField(ImmunizationDto.VALID_FROM, DateField.class, DAYS_IN_THE_FUTURE);
-		addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, DAYS_IN_THE_FUTURE);
+		addDateField(ImmunizationDto.VALID_FROM, DateField.class, -1);
+		addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, -1);
 
 		TextField numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
 		numberOfDosesField.setConverter(new StringToIntegerConverter());
@@ -262,6 +260,9 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 
 		overwriteImmunizationManagementStatus.addValueChangeListener(e -> {
 			boolean selectedValue = (boolean) e.getProperty().getValue();
+			if (!selectedValue) {
+				managementStatusField.setValue(ImmunizationManagementStatus.SCHEDULED);
+			}
 			managementStatusField.setEnabled(selectedValue);
 		});
 
