@@ -1646,7 +1646,6 @@ public interface Captions {
 	String remove = "remove";
 	String reportingUser = "reportingUser";
 	String Sample = "Sample";
-	String Sample_name = "Sample.name";
 	String Sample_additionalTestingRequested = "Sample.additionalTestingRequested";
 	String Sample_additionalTestingStatus = "Sample.additionalTestingStatus";
 	String Sample_associatedCase = "Sample.associatedCase";
@@ -1663,6 +1662,7 @@ public interface Captions {
 	String Sample_labDetails = "Sample.labDetails";
 	String Sample_labSampleID = "Sample.labSampleID";
 	String Sample_labUser = "Sample.labUser";
+	String Sample_name = "Sample.name";
 	String Sample_noTestPossibleReason = "Sample.noTestPossibleReason";
 	String Sample_otherLab = "Sample.otherLab";
 	String Sample_pathogenTestCount = "Sample.pathogenTestCount";
@@ -1686,9 +1686,9 @@ public interface Captions {
 	String Sample_sampleMaterialText = "Sample.sampleMaterialText";
 	String Sample_samplePurpose = "Sample.samplePurpose";
 	String Sample_sampleSource = "Sample.sampleSource";
-	String Sample_shipment = "Sample.shipment";
 	String Sample_samplingReason = "Sample.samplingReason";
 	String Sample_samplingReasonDetails = "Sample.samplingReasonDetails";
+	String Sample_shipment = "Sample.shipment";
 	String Sample_shipmentDate = "Sample.shipmentDate";
 	String Sample_shipmentDetails = "Sample.shipmentDetails";
 	String Sample_shipped = "Sample.shipped";
@@ -2301,6 +2301,7 @@ public interface Captions {
 	String View_contacts_visits = "View.contacts.visits";
 	String View_dashboard_campaigns = "View.dashboard.campaigns";
 	String View_dashboard_contacts = "View.dashboard.contacts";
+	String View_dashboard_samples = "View.dashboard.samples";
 	String View_dashboard_surveillance = "View.dashboard.surveillance";
 	String View_events = "View.events";
 	String View_events_archive = "View.events.archive";
