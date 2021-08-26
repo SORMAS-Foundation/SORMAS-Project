@@ -49,7 +49,23 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 		UserDto user = creator.createPointOfEntryUser(rdp.region.getUuid(), rdp.district.getUuid(), rdp.pointOfEntry.getUuid());
 
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_test.csv").toURI());
-		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user);
+		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user, ValueSeparator.DEFAULT);
+		ImportResultStatus importResult = importer.runImport();
+
+		assertEquals(ImportResultStatus.COMPLETED, importResult);
+		assertEquals(1, getTravelEntryFacade().count(null));
+	}
+
+	@Test
+	public void testImportAllTravelEntriesSeparatedWithTab()
+		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+
+		TestDataCreator tdc = new TestDataCreator();
+		TestDataCreator.RDP rdp = tdc.createRDP();
+		UserDto user = creator.createPointOfEntryUser(rdp.region.getUuid(), rdp.district.getUuid(), rdp.pointOfEntry.getUuid());
+
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_test_tab.csv").toURI());
+		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user, ValueSeparator.TAB);
 		ImportResultStatus importResult = importer.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -61,8 +77,8 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 		public StringBuilder stringBuilder = new StringBuilder("");
 		public StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
-		public TravelEntryImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
-			super(inputFile, hasEntityClassRow, currentUser, ValueSeparator.DEFAULT);
+		public TravelEntryImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator separator) {
+			super(inputFile, hasEntityClassRow, currentUser, separator);
 		}
 
 		@Override

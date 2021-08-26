@@ -4,23 +4,22 @@ import de.symeda.sormas.api.FacadeProvider;
 
 public enum ValueSeparator {
 
-	DEFAULT,
-	COMMA,
-	SEMICOLON,
-	TAB;
+	DEFAULT(null),
+	COMMA(','),
+	SEMICOLON(';'),
+	TAB('\t');
+
+	private final Character separator;
+
+	ValueSeparator(Character separator) {
+		this.separator = separator;
+	}
+
+	private char getSeparator() {
+		return separator;
+	}
 
 	public static char getSeparator(ValueSeparator value) {
-		switch (value) {
-		case DEFAULT:
-			return FacadeProvider.getConfigFacade().getCsvSeparator();
-		case COMMA:
-			return ',';
-		case SEMICOLON:
-			return ';';
-		case TAB:
-			return '\t';
-		default:
-			throw new IllegalArgumentException();
-		}
+		return value == DEFAULT ? FacadeProvider.getConfigFacade().getCsvSeparator() : value.getSeparator();
 	}
 }

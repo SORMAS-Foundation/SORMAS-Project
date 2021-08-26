@@ -101,13 +101,14 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(2, templateFilePath, templateFileName);
 
+		ValueSeparator valueSeparator = (ValueSeparator) separator.getValue();
+
 		if (infrastructureType == InfrastructureType.POPULATION_DATA) {
 			addImportCsvComponent(3, new ImportReceiver(fileNameAddition, file -> {
 				resetDownloadErrorReportButton();
 
 				try {
-					DataImporter importer =
-						new PopulationDataImporter(file, currentUser, dfCollectionDate.getValue(), (ValueSeparator) separator.getValue());
+					DataImporter importer = new PopulationDataImporter(file, currentUser, dfCollectionDate.getValue(), valueSeparator);
 					importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
 				} catch (IOException | CsvValidationException e) {
 					new Notification(
@@ -126,71 +127,31 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 					DataImporter importer;
 					switch (infrastructureType) {
 					case COMMUNITY:
-						importer = new InfrastructureImporter(
-							file,
-							currentUser,
-							InfrastructureType.COMMUNITY,
-							allowOverwrite,
-							(ValueSeparator) separator.getValue());
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.COMMUNITY, allowOverwrite, valueSeparator);
 						break;
 					case DISTRICT:
-						importer = new InfrastructureImporter(
-							file,
-							currentUser,
-							InfrastructureType.DISTRICT,
-							allowOverwrite,
-							(ValueSeparator) separator.getValue());
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.DISTRICT, allowOverwrite, valueSeparator);
 						break;
 					case FACILITY:
-						importer = new InfrastructureImporter(
-							file,
-							currentUser,
-							InfrastructureType.FACILITY,
-							allowOverwrite,
-							(ValueSeparator) separator.getValue());
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.FACILITY, allowOverwrite, valueSeparator);
 						break;
 					case POINT_OF_ENTRY:
-						importer = new InfrastructureImporter(
-							file,
-							currentUser,
-							InfrastructureType.POINT_OF_ENTRY,
-							allowOverwrite,
-							(ValueSeparator) separator.getValue());
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.POINT_OF_ENTRY, allowOverwrite, valueSeparator);
 						break;
 					case COUNTRY:
-						importer = new CountryImporter(file, currentUser, allowOverwrite, (ValueSeparator) separator.getValue());
+						importer = new CountryImporter(file, currentUser, allowOverwrite, valueSeparator);
 						break;
 					case REGION:
-						importer = new InfrastructureImporter(
-							file,
-							currentUser,
-							InfrastructureType.REGION,
-							allowOverwrite,
-							(ValueSeparator) separator.getValue());
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.REGION, allowOverwrite, valueSeparator);
 						break;
 					case AREA:
-						importer = new InfrastructureImporter(
-							file,
-							currentUser,
-							InfrastructureType.AREA,
-							allowOverwrite,
-							(ValueSeparator) separator.getValue());
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.AREA, allowOverwrite, valueSeparator);
 						break;
 					case SUBCONTINENT:
-						importer = new InfrastructureImporter(
-							file,
-							currentUser,
-							InfrastructureType.SUBCONTINENT,
-							allowOverwrite,
-							(ValueSeparator) separator.getValue());
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.SUBCONTINENT, allowOverwrite, valueSeparator);
 						break;
 					case CONTINENT:
-						importer = new InfrastructureImporter(
-							file,
-							currentUser,
-							InfrastructureType.CONTINENT,
-							allowOverwrite,
-							(ValueSeparator) separator.getValue());
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.CONTINENT, allowOverwrite, valueSeparator);
 						break;
 					default:
 						throw new UnsupportedOperationException(
