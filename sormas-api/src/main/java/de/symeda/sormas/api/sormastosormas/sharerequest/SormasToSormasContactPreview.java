@@ -24,9 +24,9 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.region.community.CommunityReferenceDto;
-import de.symeda.sormas.api.region.district.DistrictReferenceDto;
-import de.symeda.sormas.api.region.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
 public class SormasToSormasContactPreview implements HasUuid, Serializable {
 

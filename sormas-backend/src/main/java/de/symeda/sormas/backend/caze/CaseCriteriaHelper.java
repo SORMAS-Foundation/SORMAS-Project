@@ -18,9 +18,9 @@ package de.symeda.sormas.backend.caze;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.api.region.community.CommunityReferenceDto;
-import de.symeda.sormas.api.region.district.DistrictReferenceDto;
-import de.symeda.sormas.api.region.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;

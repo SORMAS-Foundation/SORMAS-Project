@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.symeda.sormas.api.region.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
 public class CommunityFacadeEjbTest extends AbstractBeanTest {

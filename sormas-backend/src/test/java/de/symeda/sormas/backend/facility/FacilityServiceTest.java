@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;

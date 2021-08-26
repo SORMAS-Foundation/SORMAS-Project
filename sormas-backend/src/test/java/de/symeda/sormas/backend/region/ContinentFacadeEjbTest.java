@@ -7,12 +7,12 @@ import java.util.List;
 import org.junit.Test;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.region.continent.ContinentCriteria;
-import de.symeda.sormas.api.region.continent.ContinentDto;
-import de.symeda.sormas.api.region.subcontinent.SubcontinentCriteria;
-import de.symeda.sormas.api.region.subcontinent.SubcontinentDto;
-import de.symeda.sormas.api.region.subcontinent.SubcontinentIndexDto;
-import de.symeda.sormas.api.region.subcontinent.SubcontinentReferenceDto;
+import de.symeda.sormas.api.infrastructure.continent.ContinentCriteria;
+import de.symeda.sormas.api.infrastructure.continent.ContinentDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentCriteria;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentIndexDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 

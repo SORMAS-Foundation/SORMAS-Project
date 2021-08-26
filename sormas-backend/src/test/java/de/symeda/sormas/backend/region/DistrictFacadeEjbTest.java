@@ -13,8 +13,8 @@ import java.util.Map;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseLogic;
-import de.symeda.sormas.api.region.district.DistrictDto;
-import de.symeda.sormas.api.region.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
 public class DistrictFacadeEjbTest extends AbstractBeanTest {

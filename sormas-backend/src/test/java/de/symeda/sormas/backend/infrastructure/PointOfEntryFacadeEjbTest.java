@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;

@@ -21,10 +21,10 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.region.area.AreaCriteria;
-import de.symeda.sormas.api.region.area.AreaDto;
-import de.symeda.sormas.api.region.area.AreaFacade;
-import de.symeda.sormas.api.region.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
+import de.symeda.sormas.api.infrastructure.area.AreaFacade;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;

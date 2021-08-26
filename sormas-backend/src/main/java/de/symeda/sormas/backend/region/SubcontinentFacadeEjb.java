@@ -24,12 +24,12 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.region.country.CountryReferenceDto;
-import de.symeda.sormas.api.region.subcontinent.SubcontinentCriteria;
-import de.symeda.sormas.api.region.subcontinent.SubcontinentDto;
-import de.symeda.sormas.api.region.subcontinent.SubcontinentFacade;
-import de.symeda.sormas.api.region.subcontinent.SubcontinentIndexDto;
-import de.symeda.sormas.api.region.subcontinent.SubcontinentReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentCriteria;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentIndexDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;
