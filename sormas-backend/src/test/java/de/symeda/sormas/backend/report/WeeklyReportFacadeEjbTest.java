@@ -27,7 +27,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.report.WeeklyReportOfficerSummaryDto;
 import de.symeda.sormas.api.report.WeeklyReportRegionSummaryDto;

@@ -15,10 +15,10 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
-import de.symeda.sormas.api.region.CountryCriteria;
-import de.symeda.sormas.api.region.CountryDto;
-import de.symeda.sormas.api.region.CountryIndexDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryCriteria;
+import de.symeda.sormas.api.infrastructure.country.CountryDto;
+import de.symeda.sormas.api.infrastructure.country.CountryIndexDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;

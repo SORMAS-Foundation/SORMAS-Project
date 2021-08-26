@@ -21,7 +21,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;

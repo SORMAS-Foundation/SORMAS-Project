@@ -9,7 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
-import de.symeda.sormas.api.infrastructure.PointOfEntryType;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
