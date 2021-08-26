@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.district.DistrictReferenceDto;
+import de.symeda.sormas.api.region.region.RegionReferenceDto;
 
 public class PointOfEntryDto extends EntityDto {
 

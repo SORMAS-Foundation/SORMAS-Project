@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.region.region.RegionDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
 public class RegionFacadeEjbTest extends AbstractBeanTest {

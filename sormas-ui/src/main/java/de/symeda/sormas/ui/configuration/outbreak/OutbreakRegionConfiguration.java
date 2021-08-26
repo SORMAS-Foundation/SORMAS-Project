@@ -21,8 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.district.DistrictReferenceDto;
+import de.symeda.sormas.api.region.region.RegionReferenceDto;
 
 public class OutbreakRegionConfiguration {
 

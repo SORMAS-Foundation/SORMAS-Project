@@ -24,8 +24,8 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.community.CommunityReferenceDto;
+import de.symeda.sormas.api.region.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 

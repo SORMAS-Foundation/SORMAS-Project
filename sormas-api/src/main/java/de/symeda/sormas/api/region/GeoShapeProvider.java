@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
+import de.symeda.sormas.api.region.district.DistrictReferenceDto;
+import de.symeda.sormas.api.region.region.RegionReferenceDto;
+
 import javax.ejb.Remote;
 
 @Remote

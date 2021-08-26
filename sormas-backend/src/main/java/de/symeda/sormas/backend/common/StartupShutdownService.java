@@ -68,7 +68,7 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
-import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.region.country.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultUserHelper;

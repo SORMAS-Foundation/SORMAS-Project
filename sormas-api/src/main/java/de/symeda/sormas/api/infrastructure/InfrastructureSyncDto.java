@@ -9,13 +9,13 @@ import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
-import de.symeda.sormas.api.region.AreaDto;
-import de.symeda.sormas.api.region.CommunityDto;
-import de.symeda.sormas.api.region.ContinentDto;
-import de.symeda.sormas.api.region.CountryDto;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.SubcontinentDto;
+import de.symeda.sormas.api.region.area.AreaDto;
+import de.symeda.sormas.api.region.community.CommunityDto;
+import de.symeda.sormas.api.region.continent.ContinentDto;
+import de.symeda.sormas.api.region.country.CountryDto;
+import de.symeda.sormas.api.region.district.DistrictDto;
+import de.symeda.sormas.api.region.region.RegionDto;
+import de.symeda.sormas.api.region.subcontinent.SubcontinentDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRoleConfigDto;
 

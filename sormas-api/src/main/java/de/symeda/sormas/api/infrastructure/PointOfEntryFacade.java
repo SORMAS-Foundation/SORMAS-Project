@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 

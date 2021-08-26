@@ -7,7 +7,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
-import de.symeda.sormas.api.region.ContinentReferenceDto;
+import de.symeda.sormas.api.region.continent.ContinentReferenceDto;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 
 @Entity

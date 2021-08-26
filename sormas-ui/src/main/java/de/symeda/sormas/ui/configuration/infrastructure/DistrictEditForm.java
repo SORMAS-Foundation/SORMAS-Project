@@ -23,8 +23,8 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.region.district.DistrictDto;
+import de.symeda.sormas.api.region.region.RegionDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 
 public class DistrictEditForm extends AbstractEditForm<DistrictDto> {

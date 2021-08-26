@@ -20,9 +20,9 @@ package de.symeda.sormas.api.facility;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.HasUuid;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.region.community.CommunityReferenceDto;
+import de.symeda.sormas.api.region.district.DistrictReferenceDto;
+import de.symeda.sormas.api.region.region.RegionReferenceDto;
 
 public class FacilityIndexDto implements Serializable, HasUuid {
 
