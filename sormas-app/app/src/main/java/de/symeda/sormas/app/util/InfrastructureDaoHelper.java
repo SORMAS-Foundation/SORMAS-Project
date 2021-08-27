@@ -31,7 +31,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;

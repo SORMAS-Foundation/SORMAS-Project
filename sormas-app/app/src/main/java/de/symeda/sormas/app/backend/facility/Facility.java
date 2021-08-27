@@ -30,7 +30,7 @@ import androidx.databinding.Bindable;
 
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.location.AreaType;
+import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
