@@ -38,7 +38,7 @@ public class VaccinationService extends BaseAdoService<VaccinationEntity> {
 		String queryString =
 			"select v.immunization_id, vaccinetype from vaccination v inner join (select immunization_id, max(vaccinationdate) maxdate from vaccination group by immunization_id) maxdates on v.immunization_id=maxdates.immunization_id and v.vaccinationdate=maxdates.maxdate";
 		Query query = em.createNativeQuery(queryString);
-		((Stream<Object[]>) query.getResultStream()).forEach(item -> result.put(((Number) item[0]).toString(), (String) item[1]));
+		((Stream<Object[]>) query.getResultStream()).forEach(item -> result.put(item[0].toString(), item[1].toString()));
 		return result;
 	}
 }
