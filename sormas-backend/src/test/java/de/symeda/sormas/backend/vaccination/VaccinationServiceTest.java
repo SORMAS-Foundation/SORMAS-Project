@@ -57,7 +57,7 @@ public class VaccinationServiceTest extends AbstractBeanTest {
 		PersonDto person2 = creator.createPerson("Jane", "Doe");
 		ImmunizationDto immunizationDto2 = creator.createImmunization(
 			Disease.CORONAVIRUS,
-			person1.toReference(),
+			person2.toReference(),
 			nationalUser.toReference(),
 			ImmunizationStatus.ACQUIRED,
 			MeansOfImmunization.VACCINATION,
