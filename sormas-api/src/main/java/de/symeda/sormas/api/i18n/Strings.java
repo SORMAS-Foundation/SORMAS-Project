@@ -1091,6 +1091,7 @@ public interface Strings {
 	String notificationTaskAssociatedCaseLink = "notificationTaskAssociatedCaseLink";
 	String notificationTaskAssociatedContactLink = "notificationTaskAssociatedContactLink";
 	String notificationTaskAssociatedEventLink = "notificationTaskAssociatedEventLink";
+	String notificationTaskAssociatedTravelEntryLink = "notificationTaskAssociatedTravelEntryLink";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";
 	String notificationTaskStartGeneral = "notificationTaskStartGeneral";

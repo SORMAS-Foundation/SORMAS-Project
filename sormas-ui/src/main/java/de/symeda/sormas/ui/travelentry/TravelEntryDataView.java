@@ -7,10 +7,13 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
+import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -23,6 +26,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/data";
 	public static final String TRAVEL_ENTRY_LOC = "travelEntry";
 	public static final String CASE_LOC = "case";
+	public static final String TASKS_LOC = "tasks";
 
 	private CommitDiscardWrapperComponent<TravelEntryDataForm> editComponent;
 
@@ -39,8 +43,10 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 	protected void initView(String params) {
 		setHeightUndefined();
 
-		String htmlLayout =
-			LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, TRAVEL_ENTRY_LOC), LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC));
+		String htmlLayout = LayoutUtil.fluidRow(
+			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, TRAVEL_ENTRY_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -76,6 +82,12 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 		}
 
 		setTravelEntryEditPermission(container);
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
+			TaskListComponent taskList = new TaskListComponent(TaskContext.TRAVEL_ENTRY, getTravelEntryRef());
+			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(taskList, TASKS_LOC);
+		}
 	}
 
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {

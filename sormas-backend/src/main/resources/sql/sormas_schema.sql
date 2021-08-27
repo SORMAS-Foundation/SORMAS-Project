@@ -7903,4 +7903,11 @@ ALTER TABLE samples_history ADD COLUMN referredto_id BIGINT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (401, 'Update history tables #6269');
 
+-- 2021-08-30 - Add TravelEntries to tasks #5844
+ALTER TABLE task ADD COLUMN travelentry_id bigint;
+ALTER TABLE task ADD CONSTRAINT fk_task_travelentry_id FOREIGN KEY (travelentry_id) REFERENCES travelentry (id);
+ALTER TABLE task_history ADD COLUMN travelentry_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (402, 'Add TravelEntries to tasks #5844');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

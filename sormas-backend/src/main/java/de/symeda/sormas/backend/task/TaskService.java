@@ -65,6 +65,9 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
+import de.symeda.sormas.backend.travelentry.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -81,6 +84,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	private EventService eventService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private TravelEntryService travelEntryService;
 
 	public TaskService() {
 		super(Task.class);
@@ -272,6 +277,10 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		if (taskCriteria.getEvent() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getEvent().get(Event.UUID), taskCriteria.getEvent().getUuid()));
 		}
+		if (taskCriteria.getTravelEntry() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getTravelEntry().get(TravelEntry.UUID), taskCriteria.getTravelEntry().getUuid()));
+		}
 		if (taskCriteria.getDueDateFrom() != null && taskCriteria.getDueDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Task.DUE_DATE), taskCriteria.getDueDateFrom()));
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThan(from.get(Task.DUE_DATE), taskCriteria.getDueDateTo()));
@@ -340,7 +349,11 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getContactPerson().get(Person.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getEvent().get(Event.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getEvent().get(Event.INTERNAL_TOKEN), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getEvent().get(Event.EVENT_TITLE), textFilter));
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getEvent().get(Event.EVENT_TITLE), textFilter),
+					CriteriaBuilderHelper.ilike(cb, joins.getTravelEntry().get(TravelEntry.UUID), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getTravelEntryPerson().get(Person.LAST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getTravelEntryPerson().get(Person.FIRST_NAME), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getTravelEntryPerson().get(Person.INTERNAL_TOKEN), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
@@ -509,7 +522,12 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getEvent()),
-					eventService.inJurisdictionOrOwned(new EventQueryContext<>(cb, qc.getQuery(), joins.getEvent())))));
+					eventService.inJurisdictionOrOwned(new EventQueryContext<>(cb, qc.getQuery(), joins.getEvent())))),
+			JurisdictionHelper.booleanSelector(
+				cb,
+				cb.and(
+					cb.isNotNull(joins.getTravelEntry()),
+					travelEntryService.inJurisdictionOrOwned(new TravelEntryQueryContext(cb, qc.getQuery(), joins.getTravelEntry())))));
 	}
 
 	public Predicate inJurisdictionOrOwned(TaskQueryContext qc) {
