@@ -77,11 +77,14 @@ public class ImmunizationController {
 							if (selectedPerson != null) {
 								dto.setPerson(selectedPerson);
 								selectOrCreateImmunization(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+									if (uuid == null) {
+										return;
+									}
 									if (!uuid.equals(dto.getUuid())) {
 										dto.setUuid(uuid);
 										dto.setChangeDate(new Date());
-										FacadeProvider.getImmunizationFacade().save(dto);
 									}
+									FacadeProvider.getImmunizationFacade().save(dto);
 									navigateToImmunization(uuid);
 								});
 							}
