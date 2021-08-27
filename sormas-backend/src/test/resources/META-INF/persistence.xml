@@ -15,16 +15,16 @@
 		<class>de.symeda.sormas.backend.event.Event</class>
 		<class>de.symeda.sormas.backend.event.EventParticipant</class>
 		<class>de.symeda.sormas.backend.event.EventGroup</class>
-		<class>de.symeda.sormas.backend.facility.Facility</class>
+		<class>de.symeda.sormas.backend.infrastructure.facility.Facility</class>
 		<class>de.symeda.sormas.backend.hospitalization.Hospitalization</class>
 		<class>de.symeda.sormas.backend.hospitalization.PreviousHospitalization</class>
 		<class>de.symeda.sormas.backend.location.Location</class>
 		<class>de.symeda.sormas.backend.outbreak.Outbreak</class>
 		<class>de.symeda.sormas.backend.person.Person</class>
-		<class>de.symeda.sormas.backend.region.Community</class>
-		<class>de.symeda.sormas.backend.region.District</class>
-		<class>de.symeda.sormas.backend.region.Region</class>
-		<class>de.symeda.sormas.backend.region.Country</class>
+		<class>de.symeda.sormas.backend.infrastructure.community.Community</class>
+		<class>de.symeda.sormas.backend.infrastructure.district.District</class>
+		<class>de.symeda.sormas.backend.infrastructure.region.Region</class>
+		<class>de.symeda.sormas.backend.infrastructure.country.Country</class>
 		<class>de.symeda.sormas.backend.report.WeeklyReport</class>
 		<class>de.symeda.sormas.backend.report.WeeklyReportEntry</class>
 		<class>de.symeda.sormas.backend.sample.Sample</class>
@@ -44,7 +44,7 @@
 		<class>de.symeda.sormas.backend.sample.AdditionalTest</class>
 		<class>de.symeda.sormas.backend.disease.DiseaseConfiguration</class>
 		<class>de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory</class>
-		<class>de.symeda.sormas.backend.infrastructure.PointOfEntry</class>
+		<class>de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry</class>
 		<class>de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo</class>
 		<class>de.symeda.sormas.backend.importexport.ExportConfiguration</class>
 		<class>de.symeda.sormas.backend.infrastructure.PopulationData</class>
@@ -52,7 +52,7 @@
 		<class>de.symeda.sormas.backend.report.AggregateReport</class>
 		<class>de.symeda.sormas.backend.campaign.Campaign</class>
 		<class>de.symeda.sormas.backend.campaign.form.CampaignFormMeta</class>
-		<class>de.symeda.sormas.backend.region.Area</class>
+		<class>de.symeda.sormas.backend.infrastructure.area.Area</class>
 		<class>de.symeda.sormas.backend.campaign.data.CampaignFormData</class>
 		<class>de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition</class>
 		<class>de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo</class>
@@ -73,8 +73,8 @@
 		<class>de.symeda.sormas.backend.activityascase.ActivityAsCase</class>
 		<class>de.symeda.sormas.backend.share.ExternalShareInfo</class>
 		<class>de.symeda.sormas.backend.person.PersonContactDetail</class>
-		<class>de.symeda.sormas.backend.region.Continent</class>
-		<class>de.symeda.sormas.backend.region.Subcontinent</class>
+		<class>de.symeda.sormas.backend.infrastructure.continent.Continent</class>
+		<class>de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent</class>
 		<class>de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequest</class>
 		<class>de.symeda.sormas.backend.customizableenum.CustomizableEnumValue</class>
 		<class>de.symeda.sormas.backend.immunization.Immunization</class>

@@ -52,7 +52,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {

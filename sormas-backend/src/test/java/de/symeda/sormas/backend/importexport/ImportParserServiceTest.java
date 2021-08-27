@@ -39,7 +39,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.region.Country;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 
 public class ImportParserServiceTest extends AbstractBeanTest {
 
