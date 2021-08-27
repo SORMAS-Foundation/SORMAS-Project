@@ -21,6 +21,11 @@ import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
@@ -34,15 +39,16 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
@@ -215,6 +221,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	@Outbreaks
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	@Diseases({
 		Disease.PLAGUE })
@@ -235,6 +242,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@HideForCountries(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String epidNumber;
 	@Outbreaks
 	@Required
@@ -259,6 +267,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private Date classificationDate;
 	@Outbreaks
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String classificationComment;
 
 	private YesNoUnknown clinicalConfirmation;
@@ -276,6 +285,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private Date outcomeDate;
 	private YesNoUnknown sequelae;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String sequelaeDetails;
 
 	private RegionReferenceDto responsibleRegion;
@@ -306,6 +316,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@Outbreaks
 	@PersonalData
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 	private YesNoUnknown pregnant;
 	@Diseases({
@@ -384,12 +395,14 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private Vaccine vaccineName;
 	@Diseases({
 		Disease.CORONAVIRUS })
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String otherVaccineName;
 	@Diseases({
 		Disease.CORONAVIRUS, })
 	private VaccineManufacturer vaccineManufacturer;
 	@Diseases({
 		Disease.CORONAVIRUS, })
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String otherVaccineManufacturer;
 	@Diseases({
 		Disease.AFP,
@@ -403,6 +416,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		Disease.ANTHRAX,
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String vaccineInn;
 	@Diseases({
 		Disease.AFP,
@@ -416,6 +430,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		Disease.ANTHRAX,
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String vaccineBatchNumber;
 	@Diseases({
 		Disease.AFP,
@@ -429,6 +444,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		Disease.ANTHRAX,
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String vaccineUniiCode;
 	@Diseases({
 		Disease.AFP,
@@ -442,6 +458,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		Disease.ANTHRAX,
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String vaccineAtcCode;
 	@Diseases({
 		Disease.AFP,
@@ -450,6 +467,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		Disease.RABIES,
 		Disease.OTHER })
 	@Outbreaks
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String vaccine;
 	@Diseases({
 		Disease.MONKEYPOX })
@@ -461,10 +479,13 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@SensitiveData
 	private UserReferenceDto surveillanceOfficer;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String clinicianName;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String clinicianPhone;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String clinicianEmail;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
@@ -472,25 +493,38 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String notifyingClinicDetails;
 	@Deprecated
 	@SensitiveData
 	private UserReferenceDto caseOfficer;
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)
+	@Min(value = -90, message = Validations.numberTooSmall)
+	@Max(value = 90, message = Validations.numberTooBig)
 	private Double reportLat;
 	@SensitiveData
 	@Pseudonymizer(LongitudePseudonymizer.class)
+	@Min(value = -180, message = Validations.numberTooSmall)
+	@Max(value = 180, message = Validations.numberTooBig)
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	@Valid
 	private HospitalizationDto hospitalization;
+	@Valid
 	private SymptomsDto symptoms;
+	@Valid
 	private EpiDataDto epiData;
+	@Valid
 	private TherapyDto therapy;
+	@Valid
 	private ClinicalCourseDto clinicalCourse;
+	@Valid
 	private MaternalHistoryDto maternalHistory;
+	@Size(max = 32, message = Validations.textTooLong)
 	private String creationVersion;
 	@SensitiveData
+	@Valid
 	private PortHealthInfoDto portHealthInfo;
 	private CaseOrigin caseOrigin;
 	@PersonalData(mandatoryField = true)
@@ -498,14 +532,19 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private PointOfEntryReferenceDto pointOfEntry;
 	@PersonalData
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String pointOfEntryDetails;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String additionalDetails;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 	private boolean sharedToCountry;
 	@HideForCountriesExcept
@@ -514,10 +553,12 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private InfectionSetting infectionSetting;
 	private QuarantineType quarantine;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHelpNeeded;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
@@ -539,11 +580,13 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private YesNoUnknown quarantineHomePossible;
 	@HideForCountriesExcept
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHomePossibleComment;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
 	private boolean quarantineReduced;
@@ -558,9 +601,11 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 	private FollowUpStatus followUpStatus;
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
+	@Valid
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
 
@@ -576,11 +621,13 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private QuarantineReason quarantineReasonBeforeIsolation;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String quarantineReasonBeforeIsolationDetails;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private EndOfIsolationReason endOfIsolationReason;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String endOfIsolationReasonDetails;
 
 	@HideForCountriesExcept
@@ -615,6 +662,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private boolean notACaseReasonOther;
 
 	@HideForCountriesExcept
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String notACaseReasonDetails;
 	private Date followUpStatusChangeDate;
 	private UserReferenceDto followUpStatusChangeUser;

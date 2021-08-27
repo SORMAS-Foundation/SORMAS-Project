@@ -220,7 +220,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	public ExternalVisitDto saveExternalVisit(final ExternalVisitDto dto) {
+	public ExternalVisitDto saveExternalVisit(@Valid final ExternalVisitDto dto) {
 
 		final String personUuid = dto.getPersonUuid();
 		final UserReferenceDto currentUser = new UserReferenceDto(userService.getCurrentUser().getUuid());

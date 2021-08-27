@@ -19,6 +19,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -156,7 +157,7 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 	}
 
 	@Override
-	public void savePopulationData(List<PopulationDataDto> populationDataList) throws ValidationRuntimeException {
+	public void savePopulationData(@Valid List<PopulationDataDto> populationDataList) throws ValidationRuntimeException {
 
 		for (PopulationDataDto populationData : populationDataList) {
 			validate(populationData);

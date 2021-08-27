@@ -22,6 +22,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -171,12 +172,12 @@ public class CountryFacadeEjb implements CountryFacade {
 	}
 
 	@Override
-	public String saveCountry(CountryDto dto) throws ValidationRuntimeException {
+	public String saveCountry(@Valid CountryDto dto) throws ValidationRuntimeException {
 		return saveCountry(dto, false);
 	}
 
 	@Override
-	public String saveCountry(CountryDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public String saveCountry(@Valid CountryDto dto, boolean allowMerge) throws ValidationRuntimeException {
 		if (StringUtils.isBlank(dto.getIsoCode())) {
 			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
 		}

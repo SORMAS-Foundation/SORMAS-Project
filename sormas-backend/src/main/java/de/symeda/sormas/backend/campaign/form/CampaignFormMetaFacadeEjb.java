@@ -14,6 +14,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -79,7 +80,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	}
 
 	@Override
-	public CampaignFormMetaDto saveCampaignFormMeta(CampaignFormMetaDto campaignFormMetaDto) throws ValidationRuntimeException {
+	public CampaignFormMetaDto saveCampaignFormMeta(@Valid CampaignFormMetaDto campaignFormMetaDto) throws ValidationRuntimeException {
 		validateAndClean(campaignFormMetaDto);
 
 		CampaignFormMeta campaignFormMeta = fromDto(campaignFormMetaDto, true);

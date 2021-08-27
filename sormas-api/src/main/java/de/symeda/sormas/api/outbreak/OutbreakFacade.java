@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -44,7 +45,7 @@ public interface OutbreakFacade {
 
 	boolean hasOutbreak(DistrictReferenceDto district, Disease disease);
 
-	OutbreakDto saveOutbreak(OutbreakDto outbreakDto);
+	OutbreakDto saveOutbreak(@Valid OutbreakDto outbreakDto);
 
 	void deleteOutbreak(OutbreakDto outbreakDto);
 

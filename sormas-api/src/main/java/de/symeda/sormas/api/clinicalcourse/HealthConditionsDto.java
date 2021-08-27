@@ -1,6 +1,9 @@
 package de.symeda.sormas.api.clinicalcourse;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
@@ -107,6 +110,7 @@ public class HealthConditionsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	private YesNoUnknown immunodeficiencyIncludingHiv;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String otherConditions;
 
 	public static HealthConditionsDto build() {

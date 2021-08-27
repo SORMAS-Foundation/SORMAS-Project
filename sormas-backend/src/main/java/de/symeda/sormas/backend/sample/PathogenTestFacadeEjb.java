@@ -196,7 +196,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		return savePathogenTest(dto, true, true);
 	}
 
-	public PathogenTestDto savePathogenTest(PathogenTestDto dto, boolean checkChangeDate, boolean syncShares) {
+	public PathogenTestDto savePathogenTest(@Valid PathogenTestDto dto, boolean checkChangeDate, boolean syncShares) {
 		PathogenTest existingSampleTest = pathogenTestService.getByUuid(dto.getUuid());
 		PathogenTestDto existingSampleTestDto = toDto(existingSampleTest);
 

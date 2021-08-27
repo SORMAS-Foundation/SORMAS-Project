@@ -39,6 +39,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.Page;
@@ -337,12 +338,12 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	@Override
-	public void saveRegion(RegionDto dto) throws ValidationRuntimeException {
+	public void saveRegion(@Valid RegionDto dto) throws ValidationRuntimeException {
 		saveRegion(dto, false);
 	}
 
 	@Override
-	public void saveRegion(RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public void saveRegion(@Valid RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		Region region = regionService.getByUuid(dto.getUuid());
 

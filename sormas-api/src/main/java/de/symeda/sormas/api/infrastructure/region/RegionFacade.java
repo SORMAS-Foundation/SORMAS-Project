@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -56,9 +57,9 @@ public interface RegionFacade {
 
 	List<RegionDto> getByUuids(List<String> uuids);
 
-	void saveRegion(RegionDto dto) throws ValidationRuntimeException;
+	void saveRegion(@Valid RegionDto dto) throws ValidationRuntimeException;
 
-	void saveRegion(RegionDto dto, boolean allowMerge) throws ValidationRuntimeException;
+	void saveRegion(@Valid RegionDto dto, boolean allowMerge) throws ValidationRuntimeException;
 
 	List<RegionReferenceDto> getReferencesByName(String name, boolean includeArchivedEntities);
 

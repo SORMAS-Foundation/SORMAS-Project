@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -22,9 +23,9 @@ public interface PointOfEntryFacade {
 
 	PointOfEntryDto getByUuid(String uuid);
 
-	void save(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException;
+	void save(@Valid PointOfEntryDto pointOfEntry) throws ValidationRuntimeException;
 
-	void save(PointOfEntryDto dto, boolean allowMerge) throws ValidationRuntimeException;
+	void save(@Valid PointOfEntryDto dto, boolean allowMerge) throws ValidationRuntimeException;
 
 	List<PointOfEntryDto> getIndexList(PointOfEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 

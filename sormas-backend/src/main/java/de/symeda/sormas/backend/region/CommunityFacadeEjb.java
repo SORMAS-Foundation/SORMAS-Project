@@ -39,6 +39,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -265,12 +266,12 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	}
 
 	@Override
-	public void saveCommunity(CommunityDto dto) throws ValidationRuntimeException {
+	public void saveCommunity(@Valid CommunityDto dto) throws ValidationRuntimeException {
 		saveCommunity(dto, false);
 	}
 
 	@Override
-	public void saveCommunity(CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public void saveCommunity(@Valid CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		if (dto.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));

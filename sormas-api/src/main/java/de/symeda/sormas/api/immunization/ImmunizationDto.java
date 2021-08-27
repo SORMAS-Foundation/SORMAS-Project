@@ -19,13 +19,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.Outbreaks;
@@ -51,8 +55,10 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private boolean archived;
 	private ImmunizationStatus immunizationStatus;
 	private MeansOfImmunization meansOfImmunization;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String meansOfImmunizationDetails;
 	private ImmunizationManagementStatus immunizationManagementStatus;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String externalId;
 
 	private RegionReferenceDto responsibleRegion;
@@ -66,6 +72,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private YesNoUnknown previousInfection;
 
 	private Date lastInfectionDate;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String additionalDetails;
 
 	private Date positiveTestResultDate;
@@ -73,6 +80,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	private CaseReferenceDto relatedCase;
 
+	@Valid
 	private List<VaccinationDto> vaccinations = new ArrayList<>();
 
 	public Disease getDisease() {

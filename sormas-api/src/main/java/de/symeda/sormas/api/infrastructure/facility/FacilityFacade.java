@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -70,9 +71,9 @@ public interface FacilityFacade {
 
 	List<String> getAllUuids();
 
-	void saveFacility(FacilityDto value) throws ValidationRuntimeException;
+	void saveFacility(@Valid FacilityDto value) throws ValidationRuntimeException;
 
-	void saveFacility(FacilityDto value, boolean allowMerge) throws ValidationRuntimeException;
+	void saveFacility(@Valid FacilityDto value, boolean allowMerge) throws ValidationRuntimeException;
 
 	List<FacilityReferenceDto> getByNameAndType(
 		String name,

@@ -41,6 +41,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.ValidationException;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -353,7 +354,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public UserDto saveUser(UserDto dto) {
+	public UserDto saveUser(@Valid UserDto dto) {
 
 		User oldUser = null;
 		if (dto.getCreationDate() != null) {

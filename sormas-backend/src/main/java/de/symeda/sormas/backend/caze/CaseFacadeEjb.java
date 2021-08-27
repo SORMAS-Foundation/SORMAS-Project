@@ -127,9 +127,6 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
@@ -139,6 +136,13 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
@@ -148,10 +152,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -271,9 +271,9 @@ import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoCase;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
@@ -1437,7 +1437,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	public void saveBulkCase(
 		List<String> caseUuidList,
-		CaseBulkEditData updatedCaseBulkEditData,
+		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
 		boolean classificationChange,
 		boolean investigationStatusChange,
@@ -1463,7 +1463,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	public void saveBulkEditWithFacilities(
 		List<String> caseUuidList,
-		CaseBulkEditData updatedCaseBulkEditData,
+		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
 		boolean classificationChange,
 		boolean investigationStatusChange,
@@ -1544,12 +1544,12 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges, boolean checkChangeDate) throws ValidationRuntimeException {
+	private CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate) throws ValidationRuntimeException {
 
 		return saveCase(dto, handleChanges, checkChangeDate, true);
 	}
 
-	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean syncShares)
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean syncShares)
 		throws ValidationRuntimeException {
 
 		Case caze = caseService.getByUuid(dto.getUuid());
@@ -1559,7 +1559,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	private CaseDataDto caseSave(
-		CaseDataDto dto,
+		@Valid CaseDataDto dto,
 		boolean handleChanges,
 		Case caze,
 		CaseDataDto existingCaseDto,
@@ -3737,7 +3737,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * @return list of duplicate cases
 	 */
 	@Override
-	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson, int reportDateThreshold) {
+	public List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson, int reportDateThreshold) {
 
 		CaseDataDto searchCaze = casePerson.getCaze();
 		PersonDto searchPerson = casePerson.getPerson();
@@ -3856,7 +3856,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
+	public List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson) {
 		return getDuplicates(casePerson, 0);
 	}
 
@@ -3872,7 +3872,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		caseService.updateExternalData(externalData);
 	}
 

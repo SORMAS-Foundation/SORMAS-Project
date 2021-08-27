@@ -131,12 +131,15 @@ public interface Validations {
 	String noResponsibleCommunityInResponsibleDistrict = "noResponsibleCommunityInResponsibleDistrict";
 	String noResponsibleDistrictInResponsibleRegion = "noResponsibleDistrictInResponsibleRegion";
 	String notAccomodationFacilityType = "notAccomodationFacilityType";
+	String numberTooBig = "numberTooBig";
+	String numberTooSmall = "numberTooSmall";
 	String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
 	String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
 	String onlyNumbersAllowed = "onlyNumbersAllowed";
 	String patchNoSuchFieldException = "patchNoSuchFieldException";
 	String patchUnsupportedCollectionFieldType = "patchUnsupportedCollectionFieldType";
 	String patchWrongUuid = "patchWrongUuid";
+	String patternNotMatching = "patternNotMatching";
 	String personMultiplePrimaryEmailAddresses = "personMultiplePrimaryEmailAddresses";
 	String personMultiplePrimaryPhoneNumbers = "personMultiplePrimaryPhoneNumbers";
 	String phoneNumberValidation = "phoneNumberValidation";
@@ -174,6 +177,7 @@ public interface Validations {
 	String taskMissingCaseLink = "taskMissingCaseLink";
 	String taskMissingContactLink = "taskMissingContactLink";
 	String taskMissingEventLink = "taskMissingEventLink";
+	String textSizeNotInRange = "textSizeNotInRange";
 	String textTooLong = "textTooLong";
 	String userNameNotUnique = "userNameNotUnique";
 	String vaccineDosesFormat = "vaccineDosesFormat";

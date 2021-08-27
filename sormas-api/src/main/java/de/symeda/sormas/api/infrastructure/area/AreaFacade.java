@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.utils.SortProperty;
 
@@ -19,9 +20,9 @@ public interface AreaFacade {
 
 	long count(AreaCriteria criteria);
 
-	void saveArea(AreaDto area);
+	void saveArea(@Valid AreaDto area);
 
-	void saveArea(AreaDto area, boolean allowMerge);
+	void saveArea(@Valid AreaDto area, boolean allowMerge);
 
 	boolean isUsedInOtherInfrastructureData(Collection<String> areaUuids);
 

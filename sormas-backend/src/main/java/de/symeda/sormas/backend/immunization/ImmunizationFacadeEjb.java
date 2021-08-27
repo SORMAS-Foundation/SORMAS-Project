@@ -15,9 +15,9 @@
 
 package de.symeda.sormas.backend.immunization;
 
-import java.util.ArrayList;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +33,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -167,7 +168,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
-	public ImmunizationDto save(ImmunizationDto dto) {
+	public ImmunizationDto save(@Valid ImmunizationDto dto) {
 		Immunization existingImmunization = dto.getUuid() != null ? immunizationService.getByUuid(dto.getUuid()) : null;
 		ImmunizationDto existingDto = toDto(existingImmunization);
 

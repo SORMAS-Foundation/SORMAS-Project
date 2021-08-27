@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -58,9 +59,9 @@ public interface DistrictFacade {
 
 	List<DistrictDto> getByUuids(List<String> uuids);
 
-	void saveDistrict(DistrictDto dto) throws ValidationRuntimeException;
+	void saveDistrict(@Valid DistrictDto dto) throws ValidationRuntimeException;
 
-	void saveDistrict(DistrictDto dto, boolean allowMerge) throws ValidationRuntimeException;
+	void saveDistrict(@Valid DistrictDto dto, boolean allowMerge) throws ValidationRuntimeException;
 
 	List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef, boolean includeArchivedEntities);
 
