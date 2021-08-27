@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.person;
 
 import static java.util.Comparator.comparing;
@@ -541,56 +541,60 @@ public class PersonFacadeEjb implements PersonFacade {
 				I18nProperties
 					.getValidationError(Validations.validPhoneNumber, I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE)));
 		}
-		if (source.getAddress().getRegion() != null
-			&& source.getAddress().getDistrict() != null
-			&& !districtFacade.getDistrictByUuid(source.getAddress().getDistrict().getUuid()).getRegion().equals(source.getAddress().getRegion())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressDistrictInAddressRegion));
-		}
-		if (source.getAddress().getDistrict() != null
-			&& source.getAddress().getCommunity() != null
-			&& !communityFacade.getByUuid(source.getAddress().getCommunity().getUuid()).getDistrict().equals(source.getAddress().getDistrict())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressCommunityInAddressDistrict));
-		}
-		if ((source.getAddress().getDistrict() != null || source.getAddress().getFacility() != null) && source.getAddress().getRegion() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
-		}
-		if (source.getAddress().getFacility() != null) {
-			FacilityDto healthFacility = facilityFacade.getByUuid(source.getAddress().getFacility().getUuid());
+		if (source.getAddress() != null) {
+			if (source.getAddress().getRegion() != null
+				&& source.getAddress().getDistrict() != null
+				&& !districtFacade.getDistrictByUuid(source.getAddress().getDistrict().getUuid())
+					.getRegion()
+					.equals(source.getAddress().getRegion())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressDistrictInAddressRegion));
+			}
+			if (source.getAddress().getDistrict() != null
+				&& source.getAddress().getCommunity() != null
+				&& !communityFacade.getByUuid(source.getAddress().getCommunity().getUuid()).getDistrict().equals(source.getAddress().getDistrict())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressCommunityInAddressDistrict));
+			}
+			if ((source.getAddress().getDistrict() != null || source.getAddress().getFacility() != null) && source.getAddress().getRegion() == null) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
+			}
+			if (source.getAddress().getFacility() != null) {
+				FacilityDto healthFacility = facilityFacade.getByUuid(source.getAddress().getFacility().getUuid());
 
-			if (source.getAddress().getCommunity() == null
-				&& healthFacility.getDistrict() != null
-				&& !healthFacility.getDistrict().equals(source.getAddress().getDistrict())) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressDistrict));
+				if (source.getAddress().getCommunity() == null
+					&& healthFacility.getDistrict() != null
+					&& !healthFacility.getDistrict().equals(source.getAddress().getDistrict())) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressDistrict));
+				}
+				if (source.getAddress().getCommunity() != null
+					&& healthFacility.getCommunity() != null
+					&& !source.getAddress().getCommunity().equals(healthFacility.getCommunity())) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressCommunity));
+				}
+				if (healthFacility.getRegion() != null && !source.getAddress().getRegion().equals(healthFacility.getRegion())) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressRegion));
+				}
 			}
-			if (source.getAddress().getCommunity() != null
-				&& healthFacility.getCommunity() != null
-				&& !source.getAddress().getCommunity().equals(healthFacility.getCommunity())) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressCommunity));
+			if (!StringUtils.isAllBlank(
+				source.getAddress().getContactPersonFirstName(),
+				source.getAddress().getContactPersonLastName(),
+				source.getAddress().getContactPersonEmail(),
+				source.getAddress().getContactPersonPhone()) && source.getAddress().getFacilityType() == null) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPersonContactDetailsWithoutFacilityType));
 			}
-			if (healthFacility.getRegion() != null && !source.getAddress().getRegion().equals(healthFacility.getRegion())) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressRegion));
+			if (StringUtils.isNotBlank(source.getAddress().getContactPersonEmail())
+				&& !source.getAddress().getContactPersonEmail().matches(DataHelper.getEmailValidationRegex())) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(
+						Validations.validEmailAddress,
+						I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_EMAIL)));
 			}
-		}
-		if (!StringUtils.isAllBlank(
-			source.getAddress().getContactPersonFirstName(),
-			source.getAddress().getContactPersonLastName(),
-			source.getAddress().getContactPersonEmail(),
-			source.getAddress().getContactPersonPhone()) && source.getAddress().getFacilityType() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPersonContactDetailsWithoutFacilityType));
-		}
-		if (StringUtils.isNotBlank(source.getAddress().getContactPersonEmail())
-			&& !source.getAddress().getContactPersonEmail().matches(DataHelper.getEmailValidationRegex())) {
-			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(
-					Validations.validEmailAddress,
-					I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_EMAIL)));
-		}
-		if (StringUtils.isNotBlank(source.getAddress().getContactPersonPhone())
-			&& source.getAddress().getContactPersonPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
-			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(
-					Validations.validPhoneNumber,
-					I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_PHONE)));
+			if (StringUtils.isNotBlank(source.getAddress().getContactPersonPhone())
+				&& source.getAddress().getContactPersonPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(
+						Validations.validPhoneNumber,
+						I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_PHONE)));
+			}
 		}
 
 		// Validate birth date
