@@ -15,13 +15,14 @@
 
 package de.symeda.sormas.backend.vaccination;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.common.BaseAdoService;
 
@@ -34,11 +35,12 @@ public class VaccinationService extends BaseAdoService<VaccinationEntity> {
 	}
 
 	public Map<String, String> getLastVaccinationType() {
-		Map<String, String> result = new HashMap<>();
-		String queryString =
-			"select v.immunization_id, vaccinetype from vaccination v inner join (select immunization_id, max(vaccinationdate) maxdate from vaccination group by immunization_id) maxdates on v.immunization_id=maxdates.immunization_id and v.vaccinationdate=maxdates.maxdate";
-		Query query = em.createNativeQuery(queryString);
-		((Stream<Object[]>) query.getResultStream()).forEach(item -> result.put(item[0].toString(), item[1].toString()));
-		return result;
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<LastVaccineType> lastVaccineTypes = cq.from(LastVaccineType.class);
+
+		cq.multiselect(lastVaccineTypes.get(LastVaccineType.IMMUNIZATION_ID), lastVaccineTypes.get(LastVaccineType.VACCINE_TYPE));
+
+		return em.createQuery(cq).getResultStream().collect(Collectors.toMap(item -> item[0].toString(), item -> item[1].toString()));
 	}
 }
