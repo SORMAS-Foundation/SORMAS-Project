@@ -57,6 +57,7 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.immunization.tramsformes.ImmunizationIndexDtoResultTransformer;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
@@ -79,7 +80,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		super(Immunization.class);
 	}
 
-	public List<Object[]> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Immunization> immunization = cq.from(Immunization.class);
@@ -156,7 +157,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		cq.distinct(true);
 
-		return QueryHelper.getResultList(em, cq, first, max);
+		return QueryHelper.createQuery(em, cq, first, max)
+			.unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new ImmunizationIndexDtoResultTransformer())
+			.getResultList();
 	}
 
 	public long count(ImmunizationCriteria criteria) {

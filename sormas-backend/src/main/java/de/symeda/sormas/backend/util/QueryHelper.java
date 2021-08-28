@@ -116,6 +116,33 @@ public final class QueryHelper {
 	}
 
 	/**
+	 * Creates a query to be used to fetch data from the database. Can be selected down to a definite batch
+	 * starting at {@code first} and limited by {@code max}.
+	 *
+	 * @param <T>
+	 *            Entity, DTO or simple type for the returned list.
+	 * @param em
+	 *            The {@link EntityManager} to be invoked.
+	 * @param cq
+	 *            The {@link CriteriaQuery} to be executed.
+	 * @param first
+	 *            The first entity to be returned (optional).
+	 * @param max
+	 *            The maximum number of entries to be fetched (optional).
+	 * @return
+	 *         The created query
+	 */
+	public static <T> TypedQuery<T> createQuery(EntityManager em, CriteriaQuery<T> cq, Integer first, Integer max) {
+
+		final TypedQuery<T> query = em.createQuery(cq);
+		if (first != null && max != null) {
+			query.setFirstResult(first).setMaxResults(max).getResultList();
+		}
+
+		return query;
+	}
+
+	/**
 	 * Executes a query and returns the result. Can be selected down to a definite batch
 	 * starting at {@code first} and limited by {@code max}.
 	 * 

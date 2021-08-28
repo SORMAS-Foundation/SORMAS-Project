@@ -27,7 +27,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
@@ -39,9 +38,7 @@ import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
-import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -280,28 +277,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		return immunizationService.getIndexList(criteria, first, max, sortProperties).stream().map(result -> {
-			Integer age = result[4] != null ? (int) result[4] : null;
-			ApproximateAgeType approximateAgeType = (ApproximateAgeType) result[5];
-			Integer birthdateDD = result[6] != null ? (int) result[6] : null;
-			Integer birthdateMM = result[7] != null ? (int) result[7] : null;
-			Integer birthdateYYYY = result[8] != null ? (int) result[8] : null;
-			return new ImmunizationIndexDto(
-				(String) result[0],
-				(String) result[1],
-				(String) result[2],
-				(String) result[3],
-				new AgeAndBirthDateDto(age, approximateAgeType, birthdateDD, birthdateMM, birthdateYYYY),
-				(Sex) result[9],
-				(String) result[10],
-				(MeansOfImmunization) result[11],
-				(ImmunizationManagementStatus) result[12],
-				(ImmunizationStatus) result[13],
-				(Date) result[14],
-				(Date) result[15],
-				(String) result[16],
-				(Date) result[17]);
-		}).collect(Collectors.toList());
+		return immunizationService.getIndexList(criteria, first, max, sortProperties);
 	}
 
 	public ImmunizationDto toDto(Immunization entity) {
