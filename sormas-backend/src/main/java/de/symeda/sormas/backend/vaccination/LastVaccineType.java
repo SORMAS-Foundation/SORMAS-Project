@@ -1,8 +1,14 @@
 package de.symeda.sormas.backend.vaccination;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.Subselect;
+import org.hibernate.annotations.Synchronize;
+
+import de.symeda.sormas.backend.immunization.Immunization;
 
 @Entity
 @Subselect("SELECT v.immunization_id, vaccinetype FROM vaccination v INNER JOIN (SELECT immunization_id, MAX(vaccinationdate) maxdate FROM vaccination GROUP BY immunization_id) maxdates ON v.immunization_id=maxdates.immunization_id AND v.vaccinationdate=maxdates.maxdate")
