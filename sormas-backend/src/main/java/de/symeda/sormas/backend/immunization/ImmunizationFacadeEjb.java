@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -281,9 +280,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		Map<String, String> lastVaccinationTypes = vaccinationFacade.getLastVaccinationType();
 		return immunizationService.getIndexList(criteria, first, max, sortProperties).stream().map(result -> {
-			String immunizationId = result[17].toString();
 			Integer age = result[4] != null ? (int) result[4] : null;
 			ApproximateAgeType approximateAgeType = (ApproximateAgeType) result[5];
 			Integer birthdateDD = result[6] != null ? (int) result[6] : null;
@@ -302,8 +299,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 				(ImmunizationStatus) result[13],
 				(Date) result[14],
 				(Date) result[15],
-				lastVaccinationTypes.get(immunizationId),
-				(Date) result[16]);
+				(String) result[16],
+				(Date) result[17]);
 		}).collect(Collectors.toList());
 	}
 

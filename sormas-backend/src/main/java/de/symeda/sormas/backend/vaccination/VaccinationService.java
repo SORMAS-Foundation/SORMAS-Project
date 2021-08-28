@@ -15,14 +15,8 @@
 
 package de.symeda.sormas.backend.vaccination;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.common.BaseAdoService;
 
@@ -32,15 +26,5 @@ public class VaccinationService extends BaseAdoService<VaccinationEntity> {
 
 	public VaccinationService() {
 		super(VaccinationEntity.class);
-	}
-
-	public Map<String, String> getLastVaccinationType() {
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<LastVaccineType> lastVaccineTypes = cq.from(LastVaccineType.class);
-
-		cq.multiselect(lastVaccineTypes.get(LastVaccineType.IMMUNIZATION_ID), lastVaccineTypes.get(LastVaccineType.VACCINE_TYPE));
-
-		return em.createQuery(cq).getResultStream().collect(Collectors.toMap(item -> item[0].toString(), item -> item[1].toString()));
 	}
 }

@@ -65,6 +65,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.vaccination.LastVaccineType;
 import de.symeda.sormas.backend.vaccination.VaccinationEntity;
 
 @Stateless
@@ -91,6 +92,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 
+		final Join<Immunization, LastVaccineType> lastVaccineType = immunization.join(Immunization.LAST_VACCINE_TYPE, JoinType.LEFT);
+
 		cq.multiselect(
 			immunization.get(Immunization.UUID),
 			person.get(Person.UUID),
@@ -108,8 +111,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			immunization.get(Immunization.IMMUNIZATION_STATUS),
 			immunization.get(Immunization.START_DATE),
 			immunization.get(Immunization.END_DATE),
+			lastVaccineType.get(LastVaccineType.VACCINE_TYPE),
 			immunization.get(Immunization.RECOVERY_DATE),
-			immunization.get(Immunization.ID),
 			immunization.get(Immunization.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)));
 

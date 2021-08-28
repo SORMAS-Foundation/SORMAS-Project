@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.backend.vaccination;
 
-import java.util.Map;
-
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -106,11 +104,6 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		if (vaccinationDto.getReportDate() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
 		}
-	}
-
-	@Override
-	public Map<String, String> getLastVaccinationType() {
-		return vaccinationService.getLastVaccinationType();
 	}
 
 	private VaccinationEntity fillOrBuildEntity(@NotNull VaccinationDto source, VaccinationEntity target, boolean checkChangeDate) {

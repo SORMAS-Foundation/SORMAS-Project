@@ -50,6 +50,7 @@ import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.vaccination.LastVaccineType;
 import de.symeda.sormas.backend.vaccination.VaccinationEntity;
 
 @Entity(name = "immunization")
@@ -84,6 +85,7 @@ public class Immunization extends CoreAdo {
 	public static final String VALID_UNTIL = "validUntil";
 	public static final String RELATED_CASE = "relatedCase";
 	public static final String VACCINATIONS = "vaccinations";
+	public static final String LAST_VACCINE_TYPE = "lastVaccineType";
 
 	private Disease disease;
 	private String diseaseDetails;
@@ -124,6 +126,8 @@ public class Immunization extends CoreAdo {
 	private Country country;
 
 	private List<VaccinationEntity> vaccinations = new ArrayList<>();
+
+	private LastVaccineType lastVaccineType;
 
 	@Enumerated(EnumType.STRING)
 	public Disease getDisease() {
@@ -396,5 +400,15 @@ public class Immunization extends CoreAdo {
 
 	public void setVaccinations(List<VaccinationEntity> vaccinations) {
 		this.vaccinations = vaccinations;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, optional = false)
+	@JoinColumn(name = "id", referencedColumnName = "immunization_id")
+	public LastVaccineType getLastVaccineType() {
+		return lastVaccineType;
+	}
+
+	public void setLastVaccineType(LastVaccineType lastVaccineType) {
+		this.lastVaccineType = lastVaccineType;
 	}
 }
