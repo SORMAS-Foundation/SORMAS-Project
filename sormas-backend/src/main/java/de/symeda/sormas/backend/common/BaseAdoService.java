@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
@@ -47,7 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.user.CurrentUser;
 import de.symeda.sormas.backend.user.CurrentUserQualifier;
@@ -59,9 +56,6 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 	// protected to be used by implementations
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-	@Resource
-	private SessionContext context;
 
 	private final Class<ADO> elementClass;
 
@@ -305,72 +299,6 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			// h2 database entity manager throws "NoResultException" if the entity not found
 			return false;
 		}
-	}
-
-	/**
-	 * @return {@code true}, if the system itself is the executing user.
-	 */
-	protected boolean isSystem() {
-		return context.isCallerInRole(UserRole._SYSTEM);
-	}
-
-	/**
-	 * @return {@code true}, if the executing user is {@link UserRole#ADMIN}.
-	 */
-	protected boolean isAdmin() {
-		return hasUserRole(UserRole.ADMIN);
-	}
-
-	/**
-	 * @return {@code true}, if the executing user is {@code userRole}.
-	 */
-	protected boolean hasUserRole(UserRole userRole) {
-		return context.isCallerInRole(userRole.name());
-	}
-
-	protected Timestamp requestTransactionDate() {
-		return (Timestamp) this.em.createNativeQuery("SELECT NOW()").getSingleResult();
-	}
-
-	/**
-	 * Prüft, ob ein eindeutig zu vergebener Wert bereits durch eine andere Entity verwendet wird.
-	 * 
-	 * @param uuid
-	 *            uuid der aktuell in Bearbeitung befindlichen Entity.
-	 * @param propertyName
-	 *            Attribut-Name des zu prüfenden Werts.
-	 * @param propertyValue
-	 *            Zu prüfender eindeutiger Wert.
-	 * @return
-	 *         <ol>
-	 *         <li>{@code true}, wenn {@code propertyValue == null}.</li>
-	 *         <li>{@code true}, wenn {@code propertyValue} durch die Entity mit {@code uuid} verwendet wird.</li>
-	 *         <li>{@code false}, wenn {@code propertyValue} bereits durch einen andere Entity verwendet wird.</li>
-	 *         </ol>
-	 */
-	protected boolean isUnique(String uuid, String propertyName, Object propertyValue) {
-
-		if (propertyValue == null) {
-			return true;
-		} else {
-			ADO foundEntity = getByUniqueAttribute(propertyName, propertyValue);
-			return foundEntity == null || foundEntity.getUuid().equals(uuid);
-		}
-	}
-
-	/**
-	 * Lädt eine Entity anhand einem als eindeutig erwartetem Attribut.
-	 * 
-	 * @param propertyName
-	 *            Attribut-Name des zu prüfenden Werts.
-	 * @param propertyValue
-	 *            Zu prüfender eindeutiger Wert.
-	 * @return {@code null}, wenn es keine Entity gibt, die {@code propertyValue} gesetzt hat.
-	 */
-	protected ADO getByUniqueAttribute(String propertyName, Object propertyValue) {
-
-//		return JpaHelper.simpleSingleQuery(em, elementClass, propertyName, propertyValue);
-		return null;
 	}
 
 	public List<Long> getIdsByReferenceDtos(List<? extends ReferenceDto> references) {
