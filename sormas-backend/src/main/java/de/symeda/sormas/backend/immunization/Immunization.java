@@ -50,6 +50,7 @@ import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.vaccination.FirstVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccineType;
 import de.symeda.sormas.backend.vaccination.VaccinationEntity;
@@ -88,6 +89,7 @@ public class Immunization extends CoreAdo {
 	public static final String VACCINATIONS = "vaccinations";
 	public static final String LAST_VACCINE_TYPE = "lastVaccineType";
 	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
+	public static final String FIRST_VACCINATION_DATE = "firstVaccinationDate";
 
 	private Disease disease;
 	private String diseaseDetails;
@@ -131,6 +133,7 @@ public class Immunization extends CoreAdo {
 
 	private LastVaccineType lastVaccineType;
 	private LastVaccinationDate lastVaccinationDate;
+	private FirstVaccinationDate firstVaccinationDate;
 
 	@Enumerated(EnumType.STRING)
 	public Disease getDisease() {
@@ -150,7 +153,7 @@ public class Immunization extends CoreAdo {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	@JoinColumn(nullable = false)
 	public Person getPerson() {
 		return person;
@@ -170,7 +173,7 @@ public class Immunization extends CoreAdo {
 		this.reportDate = reportDate;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
@@ -207,7 +210,7 @@ public class Immunization extends CoreAdo {
 		this.externalId = externalId;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public Region getResponsibleRegion() {
 		return responsibleRegion;
 	}
@@ -216,7 +219,7 @@ public class Immunization extends CoreAdo {
 		this.responsibleRegion = responsibleRegion;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public District getResponsibleDistrict() {
 		return responsibleDistrict;
 	}
@@ -225,7 +228,7 @@ public class Immunization extends CoreAdo {
 		this.responsibleDistrict = responsibleDistrict;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public Community getResponsibleCommunity() {
 		return responsibleCommunity;
 	}
@@ -243,7 +246,7 @@ public class Immunization extends CoreAdo {
 		this.facilityType = facilityType;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public Facility getHealthFacility() {
 		return healthFacility;
 	}
@@ -387,7 +390,7 @@ public class Immunization extends CoreAdo {
 		this.meansOfImmunizationDetails = meansOfImmunizationDetails;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public Country getCountry() {
 		return country;
 	}
@@ -423,5 +426,15 @@ public class Immunization extends CoreAdo {
 
 	public void setLastVaccinationDate(LastVaccinationDate lastVaccinationDate) {
 		this.lastVaccinationDate = lastVaccinationDate;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, optional = false)
+	@JoinColumn(name = "id", referencedColumnName = "immunization_id")
+	public FirstVaccinationDate getFirstVaccinationDate() {
+		return firstVaccinationDate;
+	}
+
+	public void setFirstVaccinationDate(FirstVaccinationDate firstVaccinationDate) {
+		this.firstVaccinationDate = firstVaccinationDate;
 	}
 }

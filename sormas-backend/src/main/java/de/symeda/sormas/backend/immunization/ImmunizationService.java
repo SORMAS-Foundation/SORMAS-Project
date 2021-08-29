@@ -65,6 +65,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.vaccination.FirstVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccineType;
 import de.symeda.sormas.backend.vaccination.VaccinationEntity;
@@ -501,8 +502,13 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		String dateField = getDateFieldFromDateType(immunizationDateType);
 		if (dateField != null) {
 			if (LastVaccinationDate.VACCINATION_DATE.equals(dateField)) {
-				final Join<Immunization, LastVaccineType> lastVaccinationDate = defaultRoot.join(Immunization.LAST_VACCINATION_DATE, JoinType.LEFT);
+				final Join<Immunization, LastVaccinationDate> lastVaccinationDate =
+					defaultRoot.join(Immunization.LAST_VACCINATION_DATE, JoinType.LEFT);
 				path = lastVaccinationDate.get(LastVaccinationDate.VACCINATION_DATE);
+			} else if (FirstVaccinationDate.VACCINATION_DATE.equals(dateField)) {
+				final Join<Immunization, FirstVaccinationDate> firstVaccinationDate =
+					defaultRoot.join(Immunization.FIRST_VACCINATION_DATE, JoinType.LEFT);
+				path = firstVaccinationDate.get(FirstVaccinationDate.VACCINATION_DATE);
 			} else {
 				path = defaultRoot.get(dateField);
 			}
@@ -522,6 +528,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			return Immunization.RECOVERY_DATE;
 		case LAST_VACCINATION_DATE:
 			return LastVaccinationDate.VACCINATION_DATE;
+		case FIRST_VACCINATION_DATE:
+			return FirstVaccinationDate.VACCINATION_DATE;
 		}
 		return null;
 	}
