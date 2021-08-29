@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.person;
 
-import static de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent.IMMUNIZATION_LOC;
 import static de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent.TRAVEL_ENTRIES_LOC;
 
 import com.vaadin.navigator.ViewChangeListener;
@@ -35,6 +34,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 	public static final String CASES_LOC = "cases";
 	public static final String CONTACTS_LOC = "contacts";
 	public static final String EVENT_PARTICIPANTS_LOC = "events";
+	public static final String IMMUNIZATION_LOC = "immunizations";
 
 	private CommitDiscardWrapperComponent<PersonEditForm> editComponent;
 
@@ -129,7 +129,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 		TravelEntryListComponent.addTravelEntryListComponent(layout, getReference());
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)) {
-			ImmunizationListComponent.addImmunizationListComponent(layout, getReference());
+			addImmunizationListComponent(layout, getReference());
 		}
 	}
 
@@ -151,5 +151,16 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		super.enter(event);
 		initOrRedirect(event);
+	}
+
+	public void addImmunizationListComponent(CustomLayout layout, PersonReferenceDto personReferenceDto) {
+		VerticalLayout immunizationsLayout = new VerticalLayout();
+		immunizationsLayout.setMargin(false);
+		immunizationsLayout.setSpacing(false);
+
+		ImmunizationListComponent immunizationList = new ImmunizationListComponent(personReferenceDto);
+		immunizationList.addStyleName(CssStyles.SIDE_COMPONENT);
+		immunizationsLayout.addComponent(immunizationList);
+		layout.addComponent(immunizationsLayout, IMMUNIZATION_LOC);
 	}
 }

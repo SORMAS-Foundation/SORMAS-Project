@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.immunization.immunizationlink;
 
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -11,8 +10,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class ImmunizationListComponent extends VerticalLayout {
-
-	public static final String IMMUNIZATION_LOC = "immunizations";
 
 	public ImmunizationListComponent(PersonReferenceDto personReferenceDto) {
 		setWidth(100, Unit.PERCENTAGE);
@@ -33,16 +30,4 @@ public class ImmunizationListComponent extends VerticalLayout {
 		immunizationHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(immunizationHeader);
 	}
-
-	public static void addImmunizationListComponent(CustomLayout layout, PersonReferenceDto personReferenceDto) {
-		VerticalLayout immunizationsLayout = new VerticalLayout();
-		immunizationsLayout.setMargin(false);
-		immunizationsLayout.setSpacing(false);
-
-		ImmunizationListComponent immunizationList = new ImmunizationListComponent(personReferenceDto);
-		immunizationList.addStyleName(CssStyles.SIDE_COMPONENT);
-		immunizationsLayout.addComponent(immunizationList);
-		layout.addComponent(immunizationsLayout, IMMUNIZATION_LOC);
-	}
-
 }
