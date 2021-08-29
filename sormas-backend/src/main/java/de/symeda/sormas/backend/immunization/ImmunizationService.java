@@ -65,7 +65,6 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
-import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.LastVaccineType;
 import de.symeda.sormas.backend.vaccination.VaccinationEntity;
 
@@ -157,8 +156,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		cq.distinct(true);
 
-		return QueryHelper.createQuery(em, cq, first, max)
-			.unwrap(org.hibernate.query.Query.class)
+		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
 			.setResultTransformer(new ImmunizationIndexDtoResultTransformer())
 			.getResultList();
 	}

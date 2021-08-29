@@ -83,6 +83,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 	/**
 	 * Should only be used for testing scenarios of user rights & jurisdiction!
+	 * 
 	 * @param user
 	 */
 	@Deprecated
@@ -321,7 +322,6 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	/**
-	 * @param permission
 	 * @return {@code true}, if the executing user is {@code userRole}.
 	 */
 	protected boolean hasUserRole(UserRole userRole) {
@@ -382,5 +382,15 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.where(from.get(AbstractDomainObject.UUID).in(references.stream().map(ReferenceDto::getUuid).collect(Collectors.toList())));
 		cq.select(from.get(AbstractDomainObject.ID));
 		return em.createQuery(cq).getResultList();
+	}
+
+	protected <T> TypedQuery<T> createQuery(CriteriaQuery<T> cq, Integer first, Integer max) {
+
+		final TypedQuery<T> query = em.createQuery(cq);
+		if (first != null && max != null) {
+			query.setFirstResult(first).setMaxResults(max).getResultList();
+		}
+
+		return query;
 	}
 }
