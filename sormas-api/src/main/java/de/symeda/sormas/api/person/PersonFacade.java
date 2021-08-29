@@ -53,6 +53,8 @@ public interface PersonFacade {
 
 	List<String> getAllUuids();
 
+	Long getPersonIdByUuid(String uuid);
+
 	PersonDto getPersonByUuid(String uuid);
 
 	List<PersonDto> getByUuids(List<String> uuids);

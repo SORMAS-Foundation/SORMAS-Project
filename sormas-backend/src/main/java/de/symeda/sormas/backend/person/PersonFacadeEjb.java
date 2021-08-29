@@ -294,6 +294,11 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
+	public Long getPersonIdByUuid(String uuid) {
+		return Optional.of(uuid).map(u -> personService.getIdByUuid(u)).orElse(null);
+	}
+
+	@Override
 	public PersonDto getPersonByUuid(String uuid) {
 		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return Optional.of(uuid)

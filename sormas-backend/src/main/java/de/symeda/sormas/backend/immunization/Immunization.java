@@ -63,6 +63,7 @@ public class Immunization extends CoreAdo {
 
 	public static final String DISEASE = "disease";
 	public static final String PERSON = "person";
+	public static final String PERSON_ID = "personId";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String ARCHIVED = "archived";
@@ -135,6 +136,8 @@ public class Immunization extends CoreAdo {
 	private LastVaccinationDate lastVaccinationDate;
 	private FirstVaccinationDate firstVaccinationDate;
 
+	private Long personId;
+
 	@Enumerated(EnumType.STRING)
 	public Disease getDisease() {
 		return disease;
@@ -151,6 +154,15 @@ public class Immunization extends CoreAdo {
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	@Column(name = "person_id", updatable = false, insertable = false)
+	public Long getPersonId() {
+		return personId;
+	}
+
+	public void setPersonId(Long personId) {
+		this.personId = personId;
 	}
 
 	@ManyToOne

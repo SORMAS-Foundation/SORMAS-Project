@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.BaseFacade;
 
 @Remote
@@ -48,5 +47,5 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 
 	void updateImmunizationStatuses();
 
-	List<ImmunizationListEntryDto> getEntriesList(PersonReferenceDto personReferenceDto, Integer first, Integer max);
+	List<ImmunizationListEntryDto> getEntriesList(Long personId, Integer first, Integer max);
 }
