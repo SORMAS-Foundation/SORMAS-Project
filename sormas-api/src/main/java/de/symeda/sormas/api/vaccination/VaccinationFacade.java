@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.api.vaccination;
 
-import java.util.Map;
-
 import javax.ejb.Remote;
 
 @Remote
@@ -25,6 +23,4 @@ public interface VaccinationFacade {
 	VaccinationDto save(VaccinationDto dto);
 
 	void validate(VaccinationDto vaccinationDto);
-
-	Map<String, String> getLastVaccinationType();
 }

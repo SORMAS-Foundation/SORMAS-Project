@@ -64,7 +64,7 @@ public class ImmunizationPickOrCreateField extends CustomField<String> {
 		keepImmunization.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
 				overwriteImmunization.setValue(null);
-				doSetValue(newImmunization.getUuid());
+				doSetValue(null);
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(true);
 				}

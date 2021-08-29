@@ -77,11 +77,14 @@ public class ImmunizationController {
 							if (selectedPerson != null) {
 								dto.setPerson(selectedPerson);
 								selectOrCreateImmunization(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+									if (uuid == null) {
+										return;
+									}
 									if (!uuid.equals(dto.getUuid())) {
 										dto.setUuid(uuid);
 										dto.setChangeDate(new Date());
-										FacadeProvider.getImmunizationFacade().save(dto);
 									}
+									FacadeProvider.getImmunizationFacade().save(dto);
 									navigateToImmunization(uuid);
 								});
 							}
@@ -224,9 +227,7 @@ public class ImmunizationController {
 			final CommitDiscardWrapperComponent<ImmunizationPickOrCreateField> component = new CommitDiscardWrapperComponent<>(pickOrCreateField);
 			component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 			component.getCommitButton().setEnabled(false);
-			component.addCommitListener(() -> {
-				selectedImmunizationUuidConsumer.accept(pickOrCreateField.getValue());
-			});
+			component.addCommitListener(() -> selectedImmunizationUuidConsumer.accept(pickOrCreateField.getValue()));
 
 			pickOrCreateField.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
 

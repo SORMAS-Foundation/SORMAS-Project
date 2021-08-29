@@ -476,6 +476,24 @@ public class TestDataCreator {
 		return beanTest.getVaccinationFacade().save(vaccination);
 	}
 
+	public VaccinationDto createVaccinationEntity(
+		UserReferenceDto reportingUser,
+		ImmunizationReferenceDto immunization,
+		HealthConditionsDto healthConditions,
+		String vaccineType) {
+		VaccinationDto vaccination = new VaccinationDto();
+		vaccination.setUuid(DataHelper.createUuid());
+		vaccination.setReportingUser(reportingUser);
+		vaccination.setReportDate(new Date());
+		vaccination.setVaccinationDate(new Date());
+		vaccination.setVaccineType(vaccineType);
+
+		vaccination.setImmunization(immunization);
+		vaccination.setHealthConditions(healthConditions);
+
+		return beanTest.getVaccinationFacade().save(vaccination);
+	}
+
 	public TravelEntryDto createTravelEntry(
 		PersonReferenceDto person,
 		UserReferenceDto reportingUser,

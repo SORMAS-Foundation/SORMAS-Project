@@ -57,6 +57,7 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.immunization.tramsformes.ImmunizationIndexDtoResultTransformer;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
@@ -64,7 +65,9 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
-import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.vaccination.FirstVaccinationDate;
+import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
+import de.symeda.sormas.backend.vaccination.LastVaccineType;
 import de.symeda.sormas.backend.vaccination.VaccinationEntity;
 
 @Stateless
@@ -78,7 +81,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		super(Immunization.class);
 	}
 
-	public List<Object[]> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Immunization> immunization = cq.from(Immunization.class);
@@ -90,6 +93,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+
+		final Join<Immunization, LastVaccineType> lastVaccineType = immunization.join(Immunization.LAST_VACCINE_TYPE, JoinType.LEFT);
 
 		cq.multiselect(
 			immunization.get(Immunization.UUID),
@@ -108,10 +113,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			immunization.get(Immunization.IMMUNIZATION_STATUS),
 			immunization.get(Immunization.START_DATE),
 			immunization.get(Immunization.END_DATE),
+			lastVaccineType.get(LastVaccineType.VACCINE_TYPE),
 			immunization.get(Immunization.RECOVERY_DATE),
-			immunization.get(Immunization.ID),
-			immunization.get(Immunization.CHANGE_DATE),
 			immunization.get(Immunization.DISEASE),
+			immunization.get(Immunization.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)));
 
 		buildWhereCondition(criteria, cb, cq, immunizationQueryContext);
@@ -154,7 +159,9 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		cq.distinct(true);
 
-		return QueryHelper.getResultList(em, cq, first, max);
+		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new ImmunizationIndexDtoResultTransformer())
+			.getResultList();
 	}
 
 	public long count(ImmunizationCriteria criteria) {
@@ -486,15 +493,33 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), new Date()));
 		}
 		if (criteria.getImmunizationDateType() != null) {
-			String dateField = getDateFieldFromDateType(criteria.getImmunizationDateType());
-			if (dateField != null) {
-				Path<Object> path = from.get(dateField);
+			Path<Object> path = buildPathForDateFilter(criteria.getImmunizationDateType(), from);
+			if (path != null) {
 				filter = CriteriaBuilderHelper.applyDateFilter(cb, filter, path, criteria.getFromDate(), criteria.getToDate());
 			}
 		}
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
 
 		return filter;
+	}
+
+	private Path<Object> buildPathForDateFilter(ImmunizationDateType immunizationDateType, From<?, ?> defaultRoot) {
+		Path<Object> path = null;
+		String dateField = getDateFieldFromDateType(immunizationDateType);
+		if (dateField != null) {
+			if (LastVaccinationDate.VACCINATION_DATE.equals(dateField)) {
+				final Join<Immunization, LastVaccinationDate> lastVaccinationDate =
+					defaultRoot.join(Immunization.LAST_VACCINATION_DATE, JoinType.LEFT);
+				path = lastVaccinationDate.get(LastVaccinationDate.VACCINATION_DATE);
+			} else if (FirstVaccinationDate.VACCINATION_DATE.equals(dateField)) {
+				final Join<Immunization, FirstVaccinationDate> firstVaccinationDate =
+					defaultRoot.join(Immunization.FIRST_VACCINATION_DATE, JoinType.LEFT);
+				path = firstVaccinationDate.get(FirstVaccinationDate.VACCINATION_DATE);
+			} else {
+				path = defaultRoot.get(dateField);
+			}
+		}
+		return path;
 	}
 
 	private String getDateFieldFromDateType(ImmunizationDateType immunizationDateType) {
@@ -507,6 +532,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			return Immunization.VALID_UNTIL;
 		case RECOVERY_DATE:
 			return Immunization.RECOVERY_DATE;
+		case LAST_VACCINATION_DATE:
+			return LastVaccinationDate.VACCINATION_DATE;
+		case FIRST_VACCINATION_DATE:
+			return FirstVaccinationDate.VACCINATION_DATE;
 		}
 		return null;
 	}
