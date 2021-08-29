@@ -50,6 +50,7 @@ import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccineType;
 import de.symeda.sormas.backend.vaccination.VaccinationEntity;
 
@@ -86,6 +87,7 @@ public class Immunization extends CoreAdo {
 	public static final String RELATED_CASE = "relatedCase";
 	public static final String VACCINATIONS = "vaccinations";
 	public static final String LAST_VACCINE_TYPE = "lastVaccineType";
+	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
 
 	private Disease disease;
 	private String diseaseDetails;
@@ -128,6 +130,7 @@ public class Immunization extends CoreAdo {
 	private List<VaccinationEntity> vaccinations = new ArrayList<>();
 
 	private LastVaccineType lastVaccineType;
+	private LastVaccinationDate lastVaccinationDate;
 
 	@Enumerated(EnumType.STRING)
 	public Disease getDisease() {
@@ -410,5 +413,15 @@ public class Immunization extends CoreAdo {
 
 	public void setLastVaccineType(LastVaccineType lastVaccineType) {
 		this.lastVaccineType = lastVaccineType;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, optional = false)
+	@JoinColumn(name = "id", referencedColumnName = "immunization_id")
+	public LastVaccinationDate getLastVaccinationDate() {
+		return lastVaccinationDate;
+	}
+
+	public void setLastVaccinationDate(LastVaccinationDate lastVaccinationDate) {
+		this.lastVaccinationDate = lastVaccinationDate;
 	}
 }

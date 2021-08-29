@@ -65,6 +65,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
+import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccineType;
 import de.symeda.sormas.backend.vaccination.VaccinationEntity;
 
@@ -485,15 +486,28 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), new Date()));
 		}
 		if (criteria.getImmunizationDateType() != null) {
-			String dateField = getDateFieldFromDateType(criteria.getImmunizationDateType());
-			if (dateField != null) {
-				Path<Object> path = from.get(dateField);
+			Path<Object> path = buildPathForDateFilter(criteria.getImmunizationDateType(), from);
+			if (path != null) {
 				filter = CriteriaBuilderHelper.applyDateFilter(cb, filter, path, criteria.getFromDate(), criteria.getToDate());
 			}
 		}
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
 
 		return filter;
+	}
+
+	private Path<Object> buildPathForDateFilter(ImmunizationDateType immunizationDateType, From<?, ?> defaultRoot) {
+		Path<Object> path = null;
+		String dateField = getDateFieldFromDateType(immunizationDateType);
+		if (dateField != null) {
+			if (LastVaccinationDate.VACCINATION_DATE.equals(dateField)) {
+				final Join<Immunization, LastVaccineType> lastVaccinationDate = defaultRoot.join(Immunization.LAST_VACCINATION_DATE, JoinType.LEFT);
+				path = lastVaccinationDate.get(LastVaccinationDate.VACCINATION_DATE);
+			} else {
+				path = defaultRoot.get(dateField);
+			}
+		}
+		return path;
 	}
 
 	private String getDateFieldFromDateType(ImmunizationDateType immunizationDateType) {
@@ -506,6 +520,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			return Immunization.VALID_UNTIL;
 		case RECOVERY_DATE:
 			return Immunization.RECOVERY_DATE;
+		case LAST_VACCINATION_DATE:
+			return LastVaccinationDate.VACCINATION_DATE;
 		}
 		return null;
 	}
