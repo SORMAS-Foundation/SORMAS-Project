@@ -283,18 +283,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationCriteria criteria, Integer first, Integer max) {
-		List<ImmunizationIndexDto> entries = immunizationService.getIndexList(criteria, first, max, null);
-		return entries.stream()
-			.map(
-				entry -> new ImmunizationListEntryDto(
-					entry.getUuid(),
-					entry.getDisease(),
-					entry.getMeansOfImmunization(),
-					entry.getImmunizationStatus(),
-					entry.getManagementStatus(),
-					entry.getStartDate(),
-					entry.getEndDate()))
-			.collect(Collectors.toList());
+		return immunizationService.getEntriesList(criteria, first, max);
 	}
 
 	public ImmunizationDto toDto(Immunization entity) {
