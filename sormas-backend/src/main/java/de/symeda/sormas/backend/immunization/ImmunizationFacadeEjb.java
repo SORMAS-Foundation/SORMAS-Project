@@ -71,6 +71,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	@EJB
 	private ImmunizationService immunizationService;
 	@EJB
+	private ImmunizationDirectoryService immunizationDirectoryService;
+	@EJB
 	private PersonService personService;
 	@EJB
 	private UserService userService;
@@ -272,12 +274,12 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public long count(ImmunizationCriteria criteria) {
-		return immunizationService.count(criteria);
+		return immunizationDirectoryService.count(criteria);
 	}
 
 	@Override
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		return immunizationService.getIndexList(criteria, first, max, sortProperties);
+		return immunizationDirectoryService.getIndexList(criteria, first, max, sortProperties);
 	}
 
 	public ImmunizationDto toDto(Immunization entity) {
