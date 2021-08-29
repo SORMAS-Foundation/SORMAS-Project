@@ -9,7 +9,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -19,10 +19,10 @@ public class ImmunizationListEntry extends HorizontalLayout {
 
 	public static final String SEPARATOR = ": ";
 
-	private final ImmunizationIndexDto immunization;
+	private final ImmunizationListEntryDto immunization;
 	private Button editButton;
 
-	public ImmunizationListEntry(ImmunizationIndexDto immunization) {
+	public ImmunizationListEntry(ImmunizationListEntryDto immunization) {
 		this.immunization = immunization;
 
 		setMargin(false);
@@ -57,7 +57,7 @@ public class ImmunizationListEntry extends HorizontalLayout {
 
 		HorizontalLayout meansOfImmunizationLayout = new HorizontalLayout();
 		Label meansOfImmunizationLabel = new Label(
-			I18nProperties.getPrefixCaption(ImmunizationIndexDto.I18N_PREFIX, ImmunizationIndexDto.MEANS_OF_IMMUNIZATION)
+			I18nProperties.getPrefixCaption(ImmunizationListEntryDto.I18N_PREFIX, ImmunizationListEntryDto.MEANS_OF_IMMUNIZATION)
 				+ SEPARATOR
 				+ DataHelper.toStringNullable(immunization.getMeansOfImmunization()));
 		meansOfImmunizationLayout.addComponent(meansOfImmunizationLabel);
@@ -65,7 +65,7 @@ public class ImmunizationListEntry extends HorizontalLayout {
 
 		HorizontalLayout immunizationStatusLayout = new HorizontalLayout();
 		Label immunizationStatusLabel = new Label(
-			I18nProperties.getPrefixCaption(ImmunizationIndexDto.I18N_PREFIX, ImmunizationIndexDto.IMMUNIZATION_STATUS)
+			I18nProperties.getPrefixCaption(ImmunizationListEntryDto.I18N_PREFIX, ImmunizationListEntryDto.IMMUNIZATION_STATUS)
 				+ SEPARATOR
 				+ DataHelper.toStringNullable(immunization.getImmunizationStatus()));
 		immunizationStatusLayout.addComponent(immunizationStatusLabel);
@@ -73,7 +73,7 @@ public class ImmunizationListEntry extends HorizontalLayout {
 
 		HorizontalLayout managementStatusLayout = new HorizontalLayout();
 		Label managementStatusLabel = new Label(
-			I18nProperties.getPrefixCaption(ImmunizationIndexDto.I18N_PREFIX, ImmunizationIndexDto.MANAGEMENT_STATUS)
+			I18nProperties.getPrefixCaption(ImmunizationListEntryDto.I18N_PREFIX, ImmunizationListEntryDto.MANAGEMENT_STATUS)
 				+ SEPARATOR
 				+ DataHelper.toStringNullable(immunization.getManagementStatus()));
 		managementStatusLayout.addComponent(managementStatusLabel);
@@ -81,7 +81,7 @@ public class ImmunizationListEntry extends HorizontalLayout {
 
 		HorizontalLayout immunizationPeriodLayout = new HorizontalLayout();
 		Label reportDateLabel = new Label(
-			I18nProperties.getPrefixCaption(ImmunizationIndexDto.I18N_PREFIX, ImmunizationIndexDto.IMMUNIZATION_PERIOD)
+			I18nProperties.getPrefixCaption(ImmunizationListEntryDto.I18N_PREFIX, ImmunizationListEntryDto.IMMUNIZATION_PERIOD)
 				+ SEPARATOR
 				+ DateFormatHelper.buildPeriodString(immunization.getStartDate(), immunization.getEndDate()));
 		immunizationPeriodLayout.addComponent(reportDateLabel);
@@ -104,7 +104,7 @@ public class ImmunizationListEntry extends HorizontalLayout {
 		}
 	}
 
-	public ImmunizationIndexDto getImmunizationEntry() {
+	public ImmunizationListEntryDto getImmunizationEntry() {
 		return immunization;
 	}
 }

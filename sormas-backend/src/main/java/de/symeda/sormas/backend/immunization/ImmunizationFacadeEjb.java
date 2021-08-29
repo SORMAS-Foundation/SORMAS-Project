@@ -33,6 +33,7 @@ import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
@@ -281,8 +282,19 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
-	public List<ImmunizationIndexDto> getEntriesList(ImmunizationCriteria criteria, Integer first, Integer max) {
-		return immunizationService.getIndexList(criteria, first, max, null);
+	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationCriteria criteria, Integer first, Integer max) {
+		List<ImmunizationIndexDto> entries = immunizationService.getIndexList(criteria, first, max, null);
+		return entries.stream()
+			.map(
+				entry -> new ImmunizationListEntryDto(
+					entry.getUuid(),
+					entry.getDisease(),
+					entry.getMeansOfImmunization(),
+					entry.getImmunizationStatus(),
+					entry.getManagementStatus(),
+					entry.getStartDate(),
+					entry.getEndDate()))
+			.collect(Collectors.toList());
 	}
 
 	public ImmunizationDto toDto(Immunization entity) {

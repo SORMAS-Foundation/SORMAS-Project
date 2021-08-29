@@ -44,7 +44,6 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	public static final String END_DATE = "endDate";
 	public static final String LAST_VACCINE_TYPE = "lastVaccineType";
 	public static final String RECOVERY_DATE = "recoveryDate";
-	public static final String IMMUNIZATION_PERIOD = "immunizationPeriod";
 
 	private String uuid;
 
