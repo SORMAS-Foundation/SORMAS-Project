@@ -51,6 +51,7 @@ import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -179,7 +180,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationCriteria criteria, Integer first, Integer max) {
+	public List<ImmunizationListEntryDto> getEntriesList(PersonReferenceDto personReferenceDto, Integer first, Integer max) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Immunization> immunization = cq.from(Immunization.class);
@@ -197,6 +198,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			immunization.get(Immunization.CHANGE_DATE),
 			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)));
 
+		ImmunizationCriteria criteria = new ImmunizationCriteria();
+		if (personReferenceDto != null) {
+			criteria.person(personReferenceDto);
+		}
 		buildWhereCondition(criteria, cb, cq, immunizationQueryContext);
 
 		cq.orderBy(cb.desc(immunization.get(Immunization.CHANGE_DATE)));

@@ -8,8 +8,8 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -17,17 +17,17 @@ import de.symeda.sormas.ui.utils.PaginationList;
 
 public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
 
-	private final ImmunizationCriteria immunizationCriteria;
+	private final PersonReferenceDto personReferenceDto;
 
-	public ImmunizationList(ImmunizationCriteria immunizationCriteria) {
+	public ImmunizationList(PersonReferenceDto personReferenceDto) {
 		super(5);
-		this.immunizationCriteria = immunizationCriteria;
+		this.personReferenceDto = personReferenceDto;
 	}
 
 	@Override
 	public void reload() {
 		List<ImmunizationListEntryDto> immunizationsList =
-			FacadeProvider.getImmunizationFacade().getEntriesList(immunizationCriteria, 0, maxDisplayedEntries * 20);
+			FacadeProvider.getImmunizationFacade().getEntriesList(personReferenceDto, 0, maxDisplayedEntries * 20);
 
 		setEntries(immunizationsList);
 		if (!immunizationsList.isEmpty()) {

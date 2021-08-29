@@ -7,7 +7,6 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -16,12 +15,6 @@ public class ImmunizationListComponent extends VerticalLayout {
 	public static final String IMMUNIZATION_LOC = "immunizations";
 
 	public ImmunizationListComponent(PersonReferenceDto personReferenceDto) {
-		ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
-
-		if (personReferenceDto != null) {
-			immunizationCriteria.person(personReferenceDto);
-		}
-
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -32,7 +25,7 @@ public class ImmunizationListComponent extends VerticalLayout {
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		ImmunizationList immunizationList = new ImmunizationList(immunizationCriteria);
+		ImmunizationList immunizationList = new ImmunizationList(personReferenceDto);
 		addComponent(immunizationList);
 		immunizationList.reload();
 
