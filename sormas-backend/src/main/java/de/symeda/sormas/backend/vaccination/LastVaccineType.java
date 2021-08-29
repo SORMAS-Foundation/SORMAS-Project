@@ -15,8 +15,6 @@ import de.symeda.sormas.backend.immunization.Immunization;
 @Synchronize("vaccination")
 public class LastVaccineType {
 
-	public static final String IMMUNIZATION_ID = "immunization_id";
-	public static final String IMMUNIZATION = "immunization";
 	public static final String VACCINE_TYPE = "vaccineType";
 
 	@Id
@@ -25,14 +23,6 @@ public class LastVaccineType {
 
 	private Immunization immunization;
 	private String vaccineType;
-
-	public Long getImmunizationId() {
-		return immunizationId;
-	}
-
-	public void setImmunizationId(Long immunizationId) {
-		this.immunizationId = immunizationId;
-	}
 
 	@OneToOne(mappedBy = "lastVaccineType")
 	public Immunization getImmunization() {
