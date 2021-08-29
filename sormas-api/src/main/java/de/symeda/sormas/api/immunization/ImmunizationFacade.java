@@ -46,4 +46,6 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 	List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria);
 
 	void updateImmunizationStatuses();
+
+	List<ImmunizationIndexDto> getEntriesList(ImmunizationCriteria criteria, Integer first, Integer max);
 }

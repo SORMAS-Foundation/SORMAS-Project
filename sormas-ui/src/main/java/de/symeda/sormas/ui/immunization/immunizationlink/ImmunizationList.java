@@ -27,7 +27,7 @@ public class ImmunizationList extends PaginationList<ImmunizationIndexDto> {
 	@Override
 	public void reload() {
 		List<ImmunizationIndexDto> immunizationsList =
-			FacadeProvider.getImmunizationFacade().getIndexList(immunizationCriteria, 0, maxDisplayedEntries * 20, null);
+			FacadeProvider.getImmunizationFacade().getEntriesList(immunizationCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(immunizationsList);
 		if (!immunizationsList.isEmpty()) {

@@ -280,6 +280,11 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		return immunizationService.getIndexList(criteria, first, max, sortProperties);
 	}
 
+	@Override
+	public List<ImmunizationIndexDto> getEntriesList(ImmunizationCriteria criteria, Integer first, Integer max) {
+		return immunizationService.getIndexList(criteria, first, max, null);
+	}
+
 	public ImmunizationDto toDto(Immunization entity) {
 		if (entity == null) {
 			return null;
