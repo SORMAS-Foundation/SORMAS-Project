@@ -408,8 +408,7 @@ public class Immunization extends CoreAdo {
 		this.vaccinations = vaccinations;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, optional = false)
-	@JoinColumn(name = "id", referencedColumnName = "immunization_id")
+	@OneToOne(mappedBy = "immunization")
 	public LastVaccineType getLastVaccineType() {
 		return lastVaccineType;
 	}
@@ -418,8 +417,7 @@ public class Immunization extends CoreAdo {
 		this.lastVaccineType = lastVaccineType;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, optional = false)
-	@JoinColumn(name = "id", referencedColumnName = "immunization_id")
+	@OneToOne(mappedBy = "immunization")
 	public LastVaccinationDate getLastVaccinationDate() {
 		return lastVaccinationDate;
 	}
@@ -428,8 +426,7 @@ public class Immunization extends CoreAdo {
 		this.lastVaccinationDate = lastVaccinationDate;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, optional = false)
-	@JoinColumn(name = "id", referencedColumnName = "immunization_id")
+	@OneToOne(mappedBy = "immunization")
 	public FirstVaccinationDate getFirstVaccinationDate() {
 		return firstVaccinationDate;
 	}
