@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.Collections;
@@ -17,6 +32,7 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -66,6 +82,8 @@ public class CountriesView extends AbstractConfigurationView {
 	protected Button importDefaultCountriesButton;
 	private MenuBar bulkOperationsDropdown;
 
+	private final boolean infrastructureDataEditable;
+	
 	public CountriesView() {
 		super(VIEW_NAME);
 
@@ -86,7 +104,9 @@ public class CountriesView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
+		infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+
+		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.COUNTRY));
 				window.setCaption(I18nProperties.getString(Strings.headingImportCountries));
@@ -116,7 +136,7 @@ public class CountriesView extends AbstractConfigurationView {
 			fileDownloader.extend(exportButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.actionNewEntry,
 				VaadinIcons.PLUS_CIRCLE,
@@ -230,8 +250,10 @@ public class CountriesView extends AbstractConfigurationView {
 									() -> navigateTo(criteria));
 						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					bulkOperationsDropdown
-						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
+					bulkOperationsDropdown.setVisible(
+						viewConfiguration.isInEagerMode()
+							&& !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus())
+							&& (infrastructureDataEditable || !EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}
