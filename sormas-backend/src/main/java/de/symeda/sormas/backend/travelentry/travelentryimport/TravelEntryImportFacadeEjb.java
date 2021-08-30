@@ -30,6 +30,7 @@ import java.util.function.Function;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -43,13 +44,13 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportEntities;
@@ -187,7 +188,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 	}
 
 	@Override
-	public ImportLineResultDto<TravelEntryImportEntities> saveImportedEntities(TravelEntryImportEntities entities) {
+	public ImportLineResultDto<TravelEntryImportEntities> saveImportedEntities(@Valid TravelEntryImportEntities entities) {
 
 		TravelEntryDto travelEntry = entities.getTravelEntry();
 		PersonDto person = entities.getPerson();
@@ -204,6 +205,11 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 	}
 
 	private ImportLineResultDto<TravelEntryImportEntities> validateEntities(TravelEntryImportEntities entities) {
+		ImportLineResultDto<TravelEntryImportEntities> validationResult = importFacade.validateConstraints(entities);
+		if (validationResult.isError()) {
+			return validationResult;
+		}
+
 		try {
 			personFacade.validate(entities.getPerson());
 			travelEntryFacade.validate(entities.getTravelEntry());

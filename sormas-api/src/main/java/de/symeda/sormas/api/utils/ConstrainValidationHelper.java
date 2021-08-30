@@ -18,28 +18,18 @@ package de.symeda.sormas.api.utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
-import javax.validation.ConstraintViolationException;
+import javax.validation.ConstraintViolation;
 import javax.validation.ElementKind;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public class ValidationConstraintViolationInterceptor {
+public class ConstrainValidationHelper {
 
-	@AroundInvoke
-	public Object handleValidationConstraintViolation(InvocationContext context) throws Exception {
-		try {
-			return context.proceed();
-		} catch (ConstraintViolationException e) {
-			throw new ValidationRuntimeException(getPropertyErrors(e));
-		}
-	}
-
-	private Map<List<String>, String> getPropertyErrors(ConstraintViolationException e) {
-		return e.getConstraintViolations().stream().map(v -> {
+	public static Map<List<String>, String> getPropertyErrors(Set<? extends ConstraintViolation> constraintViolations) {
+		return constraintViolations.stream().map(v -> {
 			List<String> path = new ArrayList<>();
 			v.getPropertyPath().forEach(p -> {
 				if (p.getKind() == ElementKind.PROPERTY) {
@@ -52,7 +42,7 @@ public class ValidationConstraintViolationInterceptor {
 				}
 			});
 
-			return new DataHelper.Pair<>(path, I18nProperties.getValidationError(v.getMessage(), v.getConstraintDescriptor().getAttributes()));
+			return DataHelper.Pair.createPair(path, I18nProperties.getValidationError(v.getMessage(), v.getConstraintDescriptor().getAttributes()));
 		}).collect(Collectors.toMap(DataHelper.Pair::getElement0, DataHelper.Pair::getElement1));
 	}
 }

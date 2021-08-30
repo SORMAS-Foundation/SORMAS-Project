@@ -13,29 +13,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.travelentry.travelentryimport;
+package de.symeda.sormas.backend.util;
 
-import javax.ejb.Remote;
-import javax.validation.Valid;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.InvocationContext;
+import javax.validation.ConstraintViolationException;
 
-import de.symeda.sormas.api.importexport.ImportLineResultDto;
+import de.symeda.sormas.api.utils.ConstrainValidationHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
-@Remote
-public interface TravelEntryImportFacade {
+public class ValidationConstraintViolationInterceptor {
 
-	ImportLineResultDto<TravelEntryImportEntities> importData(
-		String[] values,
-		String[] entityClasses,
-		String[] entityProperties,
-		String[][] entityPropertyPaths,
-		boolean ignoreEmptyEntries);
-
-	ImportLineResultDto<TravelEntryImportEntities> importDataWithExistingPerson(
-		String personUuid,
-		String[] values,
-		String[] entityClasses,
-		String[][] entityPropertyPaths);
-
-	ImportLineResultDto<TravelEntryImportEntities> saveImportedEntities(@Valid TravelEntryImportEntities entities);
-
+	@AroundInvoke
+	public Object handleValidationConstraintViolation(InvocationContext context) throws Exception {
+		try {
+			return context.proceed();
+		} catch (ConstraintViolationException e) {
+			throw new ValidationRuntimeException(ConstrainValidationHelper.getPropertyErrors(e.getConstraintViolations()));
+		}
+	}
 }

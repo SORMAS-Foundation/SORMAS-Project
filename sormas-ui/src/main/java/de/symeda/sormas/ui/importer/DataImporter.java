@@ -20,9 +20,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -39,26 +46,28 @@ import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.CharsetHelper;
+import de.symeda.sormas.api.utils.ConstrainValidationHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.person.PersonSelectionField;
@@ -660,5 +669,22 @@ public abstract class DataImporter {
 
 	protected String getErrorReportFileName() {
 		return errorReportFileName;
+	}
+
+	protected <T> ImportLineResultDto<T> validateConstraints(T object) {
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Validator validator = factory.getValidator();
+
+		Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);
+		if (constraintViolations.size() > 0) {
+			return ImportLineResultDto.errorResult(
+				ConstrainValidationHelper.getPropertyErrors(constraintViolations)
+					.entrySet()
+					.stream()
+					.map(e -> String.join(".", e.getKey().get(e.getKey().size() - 1)) + ": " + e.getValue())
+					.collect(Collectors.joining(";")));
+		}
+
+		return ImportLineResultDto.successResult();
 	}
 }

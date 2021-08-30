@@ -52,6 +52,7 @@ public class CampaignFormDataDto extends EntityDto {
 	@Valid
 	private List<CampaignFormDataEntry> formValues;
 	private CampaignReferenceDto campaign;
+	@Valid
 	private CampaignFormMetaReferenceDto campaignFormMeta;
 	private Date formDate;
 	private RegionReferenceDto region;

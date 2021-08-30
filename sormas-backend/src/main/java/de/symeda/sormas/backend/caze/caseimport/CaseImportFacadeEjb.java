@@ -29,6 +29,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
@@ -46,9 +47,6 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -57,13 +55,16 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -189,7 +190,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	}
 
 	@Override
-	public ImportLineResultDto<CaseImportEntities> saveImportedEntities(CaseImportEntities entities) {
+	public ImportLineResultDto<CaseImportEntities> saveImportedEntities(@Valid CaseImportEntities entities) {
 
 		CaseDataDto caze = entities.getCaze();
 		PersonDto person = entities.getPerson();
@@ -226,6 +227,12 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	}
 
 	private ImportLineResultDto<CaseImportEntities> validateEntities(CaseImportEntities entities) {
+
+		ImportLineResultDto<CaseImportEntities> validationResult = importFacade.validateConstraints(entities);
+		if (validationResult.isError()) {
+			return validationResult;
+		}
+
 		try {
 			personFacade.validate(entities.getPerson());
 			caseFacade.validate(entities.getCaze());
