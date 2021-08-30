@@ -37,9 +37,9 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
 
 public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 
