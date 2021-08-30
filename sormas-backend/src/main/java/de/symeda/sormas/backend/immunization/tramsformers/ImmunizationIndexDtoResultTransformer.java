@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.immunization.tramsformes;
+package de.symeda.sormas.backend.immunization.tramsformers;
 
 import java.util.Date;
 import java.util.List;

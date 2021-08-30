@@ -1,18 +1,3 @@
-/*
- * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package de.symeda.sormas.backend.immunization;
 
 import java.util.List;
@@ -23,23 +8,23 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
+import de.symeda.sormas.backend.immunization.joins.ImmunizationDirectoryJoins;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
-public class ImmunizationJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
+public class ImmunizationDirectoryJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final ImmunizationJoins<?> joins;
+	private final ImmunizationDirectoryJoins<?> joins;
 	private final User currentUser;
 	private final CriteriaQuery<?> cq;
 
-	private ImmunizationJurisdictionPredicateValidator(
+	private ImmunizationDirectoryJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
-		ImmunizationJoins<?> joins,
+		ImmunizationDirectoryJoins<?> joins,
 		User currentUser,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
 		super(cb, associatedJurisdictionValidators);
@@ -48,11 +33,11 @@ public class ImmunizationJurisdictionPredicateValidator extends PredicateJurisdi
 		this.cq = cq;
 	}
 
-	public static ImmunizationJurisdictionPredicateValidator of(ImmunizationQueryContext qc, User currentUser) {
-		return new ImmunizationJurisdictionPredicateValidator(
+	public static ImmunizationDirectoryJurisdictionPredicateValidator of(ImmunizationDirectoryQueryContext qc, User currentUser) {
+		return new ImmunizationDirectoryJurisdictionPredicateValidator(
 			qc.getQuery(),
 			qc.getCriteriaBuilder(),
-			(ImmunizationJoins<?>) qc.getJoins(),
+			(ImmunizationDirectoryJoins<?>) qc.getJoins(),
 			currentUser,
 			null);
 	}

@@ -48,6 +48,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
@@ -71,6 +72,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@EJB
 	private ImmunizationService immunizationService;
+	@EJB
+	private ImmunizationDirectoryService immunizationDirectoryService;
 	@EJB
 	private PersonService personService;
 	@EJB
@@ -273,12 +276,12 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public long count(ImmunizationCriteria criteria) {
-		return immunizationService.count(criteria);
+		return immunizationDirectoryService.count(criteria);
 	}
 
 	@Override
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		return immunizationService.getIndexList(criteria, first, max, sortProperties);
+		return immunizationDirectoryService.getIndexList(criteria, first, max, sortProperties);
 	}
 
 	@Override

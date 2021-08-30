@@ -65,7 +65,7 @@ import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.immunization.Immunization;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.Country;
