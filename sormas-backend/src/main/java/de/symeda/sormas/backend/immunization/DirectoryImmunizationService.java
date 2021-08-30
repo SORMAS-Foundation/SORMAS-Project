@@ -27,7 +27,6 @@ import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDateType;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
-import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -39,7 +38,6 @@ import de.symeda.sormas.backend.immunization.transformers.ImmunizationIndexDtoRe
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -194,20 +192,16 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 		final DirectoryImmunizationJoins joins = (DirectoryImmunizationJoins) directoryImmunizationQueryContext.getJoins();
 		final CriteriaBuilder cb = directoryImmunizationQueryContext.getCriteriaBuilder();
 		final From<?, ?> from = directoryImmunizationQueryContext.getRoot();
-		Join<DirectoryImmunization, Person> person = joins.getPerson();
-
-		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+		final Join<DirectoryImmunization, Person> person = joins.getPerson();
+		final Join<DirectoryImmunization, LastVaccineType> lastVaccineType = joins.getLastVaccineType();
 
 		Predicate filter = null;
 		if (criteria.getDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, null, cb.equal(from.get(Immunization.DISEASE), criteria.getDisease()));
 		}
 
-		if (!DataHelper.isNullOrEmpty(criteria.getNameAddressPhoneEmailLike())) {
-			final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
-			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
-
-			String[] textFilters = criteria.getNameAddressPhoneEmailLike().split("\\s+");
+		if (!DataHelper.isNullOrEmpty(criteria.getTextLike())) {
+			String[] textFilters = criteria.getTextLike().split("\\s+");
 
 			for (String textFilter : textFilters) {
 				if (DataHelper.isNullOrEmpty(textFilter)) {
@@ -218,20 +212,7 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.UUID), textFilter),
-					CriteriaBuilderHelper.ilike(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
-						textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.STREET), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
-					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
-					CriteriaBuilderHelper.ilike(cb, person.get(Person.INTERNAL_TOKEN), textFilter),
-					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_ID), textFilter),
-					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_TOKEN), textFilter));
+					CriteriaBuilderHelper.unaccentedIlike(cb, lastVaccineType.get(LastVaccineType.VACCINE_TYPE), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}

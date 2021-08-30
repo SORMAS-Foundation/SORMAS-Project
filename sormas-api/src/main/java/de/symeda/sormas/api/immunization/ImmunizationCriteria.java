@@ -33,7 +33,7 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	public static final String I18N_PREFIX = "Immunization";
 
 	public static final String DISEASE = "disease";
-	public static final String NAME_ADDRESS_PHONE_EMAIL_LIKE = "nameAddressPhoneEmailLike";
+	public static final String TEXT_LIKE = "textLike";
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
@@ -49,7 +49,7 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	public static final String ONLY_PERSONS_WITH_OVERDUE_IMMUNIZATION = "onlyPersonsWithOverdueImmunization";
 
 	private Disease disease;
-	private String nameAddressPhoneEmailLike;
+	private String textLike;
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
 	private Integer birthdateDD;
@@ -77,12 +77,12 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 		this.disease = disease;
 	}
 
-	public String getNameAddressPhoneEmailLike() {
-		return nameAddressPhoneEmailLike;
+	public String getTextLike() {
+		return textLike;
 	}
 
-	public void setNameAddressPhoneEmailLike(String nameAddressPhoneEmailLike) {
-		this.nameAddressPhoneEmailLike = nameAddressPhoneEmailLike;
+	public void setTextLike(String textLike) {
+		this.textLike = textLike;
 	}
 
 	public Integer getBirthdateYYYY() {
