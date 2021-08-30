@@ -66,7 +66,7 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 	protected String[] getMainFilterLocators() {
 		return new String[] {
 			ImmunizationCriteria.DISEASE,
-			ImmunizationCriteria.NAME_ADDRESS_PHONE_EMAIL_LIKE,
+			ImmunizationCriteria.TEXT_LIKE,
 			ImmunizationCriteria.BIRTHDATE_YYYY,
 			ImmunizationCriteria.BIRTHDATE_MM,
 			ImmunizationCriteria.BIRTHDATE_DD,
@@ -85,10 +85,8 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 		addField(FieldConfiguration.pixelSized(ImmunizationCriteria.DISEASE, 140));
 
 		final TextField searchField = addField(
-			FieldConfiguration.withCaptionAndPixelSized(
-				ImmunizationCriteria.NAME_ADDRESS_PHONE_EMAIL_LIKE,
-				I18nProperties.getString(Strings.promptPersonsSearchField),
-				200));
+			FieldConfiguration
+				.withCaptionAndPixelSized(ImmunizationCriteria.TEXT_LIKE, I18nProperties.getString(Strings.promptPersonsSearchField), 200));
 		searchField.setNullRepresentation("");
 
 		final ComboBox birthDateYYYY = addField(getContent(), ImmunizationCriteria.BIRTHDATE_YYYY, ComboBox.class);

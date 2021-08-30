@@ -79,7 +79,7 @@
 		<class>de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequest</class>
 		<class>de.symeda.sormas.backend.customizableenum.CustomizableEnumValue</class>
 		<class>de.symeda.sormas.backend.immunization.entity.Immunization</class>
-		<class>de.symeda.sormas.backend.immunization.entity.ImmunizationDirectory</class>
+		<class>de.symeda.sormas.backend.immunization.entity.DirectoryImmunization</class>
 		<class>de.symeda.sormas.backend.travelentry.TravelEntry</class>
 		<class>de.symeda.sormas.backend.vaccination.VaccinationEntity</class>
 		<class>de.symeda.sormas.backend.vaccination.LastVaccineType</class>
