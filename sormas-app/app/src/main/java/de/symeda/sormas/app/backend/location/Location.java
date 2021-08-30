@@ -30,8 +30,8 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import androidx.databinding.Bindable;
 
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.location.AreaType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;

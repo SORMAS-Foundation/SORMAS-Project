@@ -25,7 +25,7 @@
     <data>
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <import type="de.symeda.sormas.api.hospitalization.HospitalizationReasonType" />
-        <import type="de.symeda.sormas.api.facility.FacilityType" />
+        <import type="de.symeda.sormas.api.infrastructure.facility.FacilityType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.hospitalization.Hospitalization" />
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case" />

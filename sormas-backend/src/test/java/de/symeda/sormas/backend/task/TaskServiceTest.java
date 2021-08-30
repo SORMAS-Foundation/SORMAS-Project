@@ -22,8 +22,8 @@ import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 

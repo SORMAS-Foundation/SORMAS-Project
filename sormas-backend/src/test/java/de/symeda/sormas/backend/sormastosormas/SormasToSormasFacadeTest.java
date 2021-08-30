@@ -37,14 +37,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -63,12 +63,12 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
 public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
@@ -286,9 +286,9 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return rdcf;
 	}
 
-	protected static class MappableRdcf {
+	public static class MappableRdcf {
 
-		protected TestDataCreator.RDCF remoteRdcf;
-		protected TestDataCreator.RDCF localRdcf;
+		public TestDataCreator.RDCF remoteRdcf;
+		public TestDataCreator.RDCF localRdcf;
 	}
 }
