@@ -194,7 +194,8 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 		final DirectoryImmunizationJoins joins = (DirectoryImmunizationJoins) directoryImmunizationQueryContext.getJoins();
 		final CriteriaBuilder cb = directoryImmunizationQueryContext.getCriteriaBuilder();
 		final From<?, ?> from = directoryImmunizationQueryContext.getRoot();
-		Join<DirectoryImmunization, Person> person = joins.getPerson();
+		final Join<DirectoryImmunization, Person> person = joins.getPerson();
+		final Join<DirectoryImmunization, LastVaccineType> lastVaccineType = joins.getLastVaccineType();
 
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 
@@ -231,7 +232,8 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.INTERNAL_TOKEN), textFilter),
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_ID), textFilter),
-					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_TOKEN), textFilter));
+					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_TOKEN), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, lastVaccineType.get(LastVaccineType.VACCINE_TYPE), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
