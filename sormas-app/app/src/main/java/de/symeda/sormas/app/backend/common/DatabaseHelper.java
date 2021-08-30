@@ -2793,7 +2793,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 317:
 				currentVersion = 317;
 				getDao(Symptoms.class).executeRaw(
-					"UPDATE symptoms SET symptomatic=null FROM visit WHERE visit.symptoms_id = symptoms.id AND visit.visitstatus!='COOPERATIVE';");
+					"UPDATE symptoms SET symptomatic = null WHERE (SELECT visitStatus FROM visits WHERE visits.symptoms_id = symptoms.id) != 'COOPERATIVE';");
 
 				// ATTENTION: break should only be done after last version
 				break;
