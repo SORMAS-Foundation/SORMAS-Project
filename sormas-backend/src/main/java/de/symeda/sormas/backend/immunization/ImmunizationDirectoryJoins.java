@@ -11,6 +11,9 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
+import de.symeda.sormas.backend.vaccination.FirstVaccinationDate;
+import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
+import de.symeda.sormas.backend.vaccination.LastVaccineType;
 
 public class ImmunizationDirectoryJoins<T> extends AbstractDomainObjectJoins<T, ImmunizationDirectory> {
 
@@ -20,6 +23,9 @@ public class ImmunizationDirectoryJoins<T> extends AbstractDomainObjectJoins<T, 
 	private Join<ImmunizationDirectory, Community> responsibleCommunity;
 	private Join<ImmunizationDirectory, Facility> healthFacility;
 	private Join<ImmunizationDirectory, User> reportingUser;
+	private Join<ImmunizationDirectory, LastVaccineType> lastVaccineType;
+	private Join<ImmunizationDirectory, LastVaccinationDate> lastVaccinationDate;
+	private Join<ImmunizationDirectory, FirstVaccinationDate> firstVaccinationDate;
 
 	public ImmunizationDirectoryJoins(From<T, ImmunizationDirectory> root) {
 		super(root);
@@ -71,5 +77,29 @@ public class ImmunizationDirectoryJoins<T> extends AbstractDomainObjectJoins<T, 
 
 	private void setReportingUser(Join<ImmunizationDirectory, User> reportingUser) {
 		this.reportingUser = reportingUser;
+	}
+
+	public Join<ImmunizationDirectory, LastVaccineType> getLastVaccineType() {
+		return getOrCreate(lastVaccineType, Immunization.LAST_VACCINE_TYPE, JoinType.LEFT, this::setLastVaccineType);
+	}
+
+	public void setLastVaccineType(Join<ImmunizationDirectory, LastVaccineType> lastVaccineType) {
+		this.lastVaccineType = lastVaccineType;
+	}
+
+	public Join<ImmunizationDirectory, LastVaccinationDate> getLastVaccinationDate() {
+		return getOrCreate(lastVaccinationDate, Immunization.LAST_VACCINATION_DATE, JoinType.LEFT, this::setLastVaccinationDate);
+	}
+
+	public void setLastVaccinationDate(Join<ImmunizationDirectory, LastVaccinationDate> lastVaccinationDate) {
+		this.lastVaccinationDate = lastVaccinationDate;
+	}
+
+	public Join<ImmunizationDirectory, FirstVaccinationDate> getFirstVaccinationDate() {
+		return getOrCreate(firstVaccinationDate, Immunization.FIRST_VACCINATION_DATE, JoinType.LEFT, this::setFirstVaccinationDate);
+	}
+
+	public void setFirstVaccinationDate(Join<ImmunizationDirectory, FirstVaccinationDate> firstVaccinationDate) {
+		this.firstVaccinationDate = firstVaccinationDate;
 	}
 }

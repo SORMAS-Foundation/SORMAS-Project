@@ -75,7 +75,7 @@ public class ImmunizationDirectoryService extends AbstractCoreAdoService<Immuniz
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 
-		final Join<Immunization, LastVaccineType> lastVaccineType = immunization.join(Immunization.LAST_VACCINE_TYPE, JoinType.LEFT);
+		final Join<ImmunizationDirectory, LastVaccineType> lastVaccineType = joins.getLastVaccineType();
 
 		cq.multiselect(
 			immunization.get(Immunization.UUID),
@@ -247,7 +247,7 @@ public class ImmunizationDirectoryService extends AbstractCoreAdoService<Immuniz
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), new Date()));
 		}
 		if (criteria.getImmunizationDateType() != null) {
-			Path<Object> path = buildPathForDateFilter(criteria.getImmunizationDateType(), from);
+			Path<Object> path = buildPathForDateFilter(criteria.getImmunizationDateType(), immunizationDirectoryQueryContext);
 			if (path != null) {
 				filter = CriteriaBuilderHelper.applyDateFilter(cb, filter, path, criteria.getFromDate(), criteria.getToDate());
 			}
@@ -257,20 +257,22 @@ public class ImmunizationDirectoryService extends AbstractCoreAdoService<Immuniz
 		return filter;
 	}
 
-	private Path<Object> buildPathForDateFilter(ImmunizationDateType immunizationDateType, From<?, ?> defaultRoot) {
+	private Path<Object> buildPathForDateFilter(
+		ImmunizationDateType immunizationDateType,
+		ImmunizationDirectoryQueryContext immunizationDirectoryQueryContext) {
 		Path<Object> path = null;
 		String dateField = getDateFieldFromDateType(immunizationDateType);
 		if (dateField != null) {
 			if (LastVaccinationDate.VACCINATION_DATE.equals(dateField)) {
 				final Join<ImmunizationDirectory, LastVaccinationDate> lastVaccinationDate =
-					defaultRoot.join(Immunization.LAST_VACCINATION_DATE, JoinType.LEFT);
+					((ImmunizationDirectoryJoins<ImmunizationDirectory>) immunizationDirectoryQueryContext.getJoins()).getLastVaccinationDate();
 				path = lastVaccinationDate.get(LastVaccinationDate.VACCINATION_DATE);
 			} else if (FirstVaccinationDate.VACCINATION_DATE.equals(dateField)) {
 				final Join<ImmunizationDirectory, FirstVaccinationDate> firstVaccinationDate =
-					defaultRoot.join(Immunization.FIRST_VACCINATION_DATE, JoinType.LEFT);
+					((ImmunizationDirectoryJoins<ImmunizationDirectory>) immunizationDirectoryQueryContext.getJoins()).getFirstVaccinationDate();
 				path = firstVaccinationDate.get(FirstVaccinationDate.VACCINATION_DATE);
 			} else {
-				path = defaultRoot.get(dateField);
+				path = immunizationDirectoryQueryContext.getRoot().get(dateField);
 			}
 		}
 		return path;
