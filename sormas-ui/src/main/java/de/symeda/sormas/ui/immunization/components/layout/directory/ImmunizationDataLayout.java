@@ -22,7 +22,7 @@ public class ImmunizationDataLayout extends VerticalLayout {
 		grid = new ImmunizationGrid(criteria);
 		addComponent(grid);
 
-		setMargin(true);
+		setMargin(false);
 		setSpacing(false);
 		setSizeFull();
 		setExpandRatio(grid, 1);
