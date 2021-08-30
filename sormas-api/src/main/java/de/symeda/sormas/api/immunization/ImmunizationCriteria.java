@@ -233,7 +233,7 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 		this.relatedCase = relatedCase;
 	}
 
-	public ImmunizationCriteria caze(CaseReferenceDto relatedCase) {
+	public ImmunizationCriteria relatedCase(CaseReferenceDto relatedCase) {
 		this.relatedCase = relatedCase;
 		return this;
 	}
