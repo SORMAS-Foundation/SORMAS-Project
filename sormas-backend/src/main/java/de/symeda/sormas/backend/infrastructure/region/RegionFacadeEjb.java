@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.infrastructure.region;
 
 import java.util.ArrayList;
@@ -355,11 +355,11 @@ public class RegionFacadeEjb implements RegionFacade {
 	@Override
 	public void saveRegion(RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
-		Region region = regionService.getByUuid(dto.getUuid());
-
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
 		}
+
+		Region region = regionService.getByUuid(dto.getUuid());
 
 		if (region == null) {
 			List<Region> duplicates = regionService.getByName(dto.getName(), true);
