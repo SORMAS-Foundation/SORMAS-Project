@@ -30,6 +30,7 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -74,6 +75,8 @@ public class RegionsView extends AbstractConfigurationView {
 	protected Button importButton;
 	private MenuBar bulkOperationsDropdown;
 
+	boolean infrastructureDataEditable;
+
 	public RegionsView() {
 
 		super(VIEW_NAME);
@@ -95,7 +98,9 @@ public class RegionsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
+		infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+
+		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.REGION));
 				window.setCaption(I18nProperties.getString(Strings.headingImportRegions));
@@ -117,7 +122,7 @@ public class RegionsView extends AbstractConfigurationView {
 			fileDownloader.extend(exportButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
+		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton = ButtonHelper.createIconButton(
 				Captions.actionNewEntry,
 				VaadinIcons.PLUS_CIRCLE,
@@ -226,8 +231,10 @@ public class RegionsView extends AbstractConfigurationView {
 									() -> navigateTo(criteria));
 						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					bulkOperationsDropdown
-						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
+					bulkOperationsDropdown.setVisible(
+						viewConfiguration.isInEagerMode()
+							&& !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus())
+							&& (infrastructureDataEditable || !EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}

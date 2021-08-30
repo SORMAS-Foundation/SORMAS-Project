@@ -42,6 +42,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -53,17 +54,18 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.country.Country;
-import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.area.AreaService;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -87,6 +89,8 @@ public class RegionFacadeEjb implements RegionFacade {
 	private CountryService countryService;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfiguration;
 
 	@Override
 	public List<RegionReferenceDto> getAllActiveByServerCountry() {
@@ -352,6 +356,10 @@ public class RegionFacadeEjb implements RegionFacade {
 	public void saveRegion(RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		Region region = regionService.getByUuid(dto.getUuid());
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
 
 		if (region == null) {
 			List<Region> duplicates = regionService.getByName(dto.getName(), true);
