@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.immunization;
+package de.symeda.sormas.backend.immunization.entity;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 

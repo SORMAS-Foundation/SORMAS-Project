@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.immunization;
+package de.symeda.sormas.backend.immunization.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;

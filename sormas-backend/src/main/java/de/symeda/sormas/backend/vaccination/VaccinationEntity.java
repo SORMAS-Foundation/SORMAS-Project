@@ -38,7 +38,7 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.immunization.Immunization;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "vaccination")

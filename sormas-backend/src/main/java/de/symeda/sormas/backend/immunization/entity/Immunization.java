@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.immunization;
+package de.symeda.sormas.backend.immunization.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;

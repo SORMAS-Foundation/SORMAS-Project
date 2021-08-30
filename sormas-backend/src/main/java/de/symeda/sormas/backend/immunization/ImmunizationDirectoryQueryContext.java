@@ -6,6 +6,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 
 import de.symeda.sormas.backend.common.QueryContext;
+import de.symeda.sormas.backend.immunization.entity.ImmunizationDirectory;
 
 public class ImmunizationDirectoryQueryContext<T> extends QueryContext<T, ImmunizationDirectory> {
 

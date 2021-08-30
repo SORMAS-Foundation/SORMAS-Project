@@ -11,7 +11,7 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.Subselect;
 import org.hibernate.annotations.Synchronize;
 
-import de.symeda.sormas.backend.immunization.Immunization;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 
 @Entity
 @Subselect("SELECT immunization_id, MAX(vaccinationdate) lastVaccinationDate FROM vaccination GROUP BY immunization_id")
