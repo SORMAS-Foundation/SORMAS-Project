@@ -111,12 +111,14 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 				switch (sortProperty.propertyName) {
 				case ImmunizationIndexDto.UUID:
 				case ImmunizationIndexDto.MEANS_OF_IMMUNIZATION:
-				case ImmunizationIndexDto.MANAGEMENT_STATUS:
 				case ImmunizationIndexDto.IMMUNIZATION_STATUS:
 				case ImmunizationIndexDto.START_DATE:
 				case ImmunizationIndexDto.END_DATE:
 				case ImmunizationIndexDto.RECOVERY_DATE:
 					expression = immunization.get(sortProperty.propertyName);
+					break;
+				case ImmunizationIndexDto.MANAGEMENT_STATUS:
+					expression = immunization.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS);
 					break;
 				case ImmunizationIndexDto.PERSON_UUID:
 					expression = person.get(Person.UUID);
@@ -127,8 +129,17 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 				case ImmunizationIndexDto.PERSON_LAST_NAME:
 					expression = person.get(Person.LAST_NAME);
 					break;
+				case ImmunizationIndexDto.AGE_AND_BIRTH_DATE:
+					expression = person.get(Person.APPROXIMATE_AGE);
+					break;
+				case ImmunizationIndexDto.SEX:
+					expression = person.get(Person.SEX);
+					break;
 				case ImmunizationIndexDto.DISTRICT:
 					expression = district.get(District.NAME);
+					break;
+				case ImmunizationIndexDto.LAST_VACCINE_TYPE:
+					expression = lastVaccineType.get(LastVaccineType.VACCINE_TYPE);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
