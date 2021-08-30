@@ -3,7 +3,6 @@ package de.symeda.sormas.backend.immunization;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
@@ -19,10 +18,8 @@ public class ImmunizationDirectoryJurisdictionPredicateValidator extends Predica
 
 	private final ImmunizationDirectoryJoins<?> joins;
 	private final User currentUser;
-	private final CriteriaQuery<?> cq;
 
 	private ImmunizationDirectoryJurisdictionPredicateValidator(
-		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		ImmunizationDirectoryJoins<?> joins,
 		User currentUser,
@@ -30,12 +27,10 @@ public class ImmunizationDirectoryJurisdictionPredicateValidator extends Predica
 		super(cb, associatedJurisdictionValidators);
 		this.joins = joins;
 		this.currentUser = currentUser;
-		this.cq = cq;
 	}
 
 	public static ImmunizationDirectoryJurisdictionPredicateValidator of(ImmunizationDirectoryQueryContext qc, User currentUser) {
 		return new ImmunizationDirectoryJurisdictionPredicateValidator(
-			qc.getQuery(),
 			qc.getCriteriaBuilder(),
 			(ImmunizationDirectoryJoins<?>) qc.getJoins(),
 			currentUser,
