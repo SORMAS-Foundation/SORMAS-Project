@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.person;
 
 import static java.util.Comparator.comparing;
@@ -79,7 +79,7 @@ import de.symeda.sormas.api.contact.FollowUpStatusDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
-import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -106,7 +106,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -126,30 +126,30 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.Country;
-import de.symeda.sormas.backend.region.CountryFacadeEjb;
-import de.symeda.sormas.backend.region.CountryService;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoService;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.community.CommunityService;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryService;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -541,56 +541,60 @@ public class PersonFacadeEjb implements PersonFacade {
 				I18nProperties
 					.getValidationError(Validations.validPhoneNumber, I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE)));
 		}
-		if (source.getAddress().getRegion() != null
-			&& source.getAddress().getDistrict() != null
-			&& !districtFacade.getDistrictByUuid(source.getAddress().getDistrict().getUuid()).getRegion().equals(source.getAddress().getRegion())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressDistrictInAddressRegion));
-		}
-		if (source.getAddress().getDistrict() != null
-			&& source.getAddress().getCommunity() != null
-			&& !communityFacade.getByUuid(source.getAddress().getCommunity().getUuid()).getDistrict().equals(source.getAddress().getDistrict())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressCommunityInAddressDistrict));
-		}
-		if ((source.getAddress().getDistrict() != null || source.getAddress().getFacility() != null) && source.getAddress().getRegion() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
-		}
-		if (source.getAddress().getFacility() != null) {
-			FacilityDto healthFacility = facilityFacade.getByUuid(source.getAddress().getFacility().getUuid());
+		if (source.getAddress() != null) {
+			if (source.getAddress().getRegion() != null
+				&& source.getAddress().getDistrict() != null
+				&& !districtFacade.getDistrictByUuid(source.getAddress().getDistrict().getUuid())
+					.getRegion()
+					.equals(source.getAddress().getRegion())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressDistrictInAddressRegion));
+			}
+			if (source.getAddress().getDistrict() != null
+				&& source.getAddress().getCommunity() != null
+				&& !communityFacade.getByUuid(source.getAddress().getCommunity().getUuid()).getDistrict().equals(source.getAddress().getDistrict())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressCommunityInAddressDistrict));
+			}
+			if ((source.getAddress().getDistrict() != null || source.getAddress().getFacility() != null) && source.getAddress().getRegion() == null) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
+			}
+			if (source.getAddress().getFacility() != null) {
+				FacilityDto healthFacility = facilityFacade.getByUuid(source.getAddress().getFacility().getUuid());
 
-			if (source.getAddress().getCommunity() == null
-				&& healthFacility.getDistrict() != null
-				&& !healthFacility.getDistrict().equals(source.getAddress().getDistrict())) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressDistrict));
+				if (source.getAddress().getCommunity() == null
+					&& healthFacility.getDistrict() != null
+					&& !healthFacility.getDistrict().equals(source.getAddress().getDistrict())) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressDistrict));
+				}
+				if (source.getAddress().getCommunity() != null
+					&& healthFacility.getCommunity() != null
+					&& !source.getAddress().getCommunity().equals(healthFacility.getCommunity())) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressCommunity));
+				}
+				if (healthFacility.getRegion() != null && !source.getAddress().getRegion().equals(healthFacility.getRegion())) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressRegion));
+				}
 			}
-			if (source.getAddress().getCommunity() != null
-				&& healthFacility.getCommunity() != null
-				&& !source.getAddress().getCommunity().equals(healthFacility.getCommunity())) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressCommunity));
+			if (!StringUtils.isAllBlank(
+				source.getAddress().getContactPersonFirstName(),
+				source.getAddress().getContactPersonLastName(),
+				source.getAddress().getContactPersonEmail(),
+				source.getAddress().getContactPersonPhone()) && source.getAddress().getFacilityType() == null) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPersonContactDetailsWithoutFacilityType));
 			}
-			if (healthFacility.getRegion() != null && !source.getAddress().getRegion().equals(healthFacility.getRegion())) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noAddressFacilityInAddressRegion));
+			if (StringUtils.isNotBlank(source.getAddress().getContactPersonEmail())
+				&& !source.getAddress().getContactPersonEmail().matches(DataHelper.getEmailValidationRegex())) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(
+						Validations.validEmailAddress,
+						I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_EMAIL)));
 			}
-		}
-		if (!StringUtils.isAllBlank(
-			source.getAddress().getContactPersonFirstName(),
-			source.getAddress().getContactPersonLastName(),
-			source.getAddress().getContactPersonEmail(),
-			source.getAddress().getContactPersonPhone()) && source.getAddress().getFacilityType() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importPersonContactDetailsWithoutFacilityType));
-		}
-		if (StringUtils.isNotBlank(source.getAddress().getContactPersonEmail())
-			&& !source.getAddress().getContactPersonEmail().matches(DataHelper.getEmailValidationRegex())) {
-			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(
-					Validations.validEmailAddress,
-					I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_EMAIL)));
-		}
-		if (StringUtils.isNotBlank(source.getAddress().getContactPersonPhone())
-			&& source.getAddress().getContactPersonPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
-			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(
-					Validations.validPhoneNumber,
-					I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_PHONE)));
+			if (StringUtils.isNotBlank(source.getAddress().getContactPersonPhone())
+				&& source.getAddress().getContactPersonPhone().matches(DataHelper.getPhoneNumberValidationRegex())) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(
+						Validations.validPhoneNumber,
+						I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CONTACT_PERSON_PHONE)));
+			}
 		}
 
 		// Validate birth date

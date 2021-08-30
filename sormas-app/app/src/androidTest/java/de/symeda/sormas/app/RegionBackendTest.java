@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
-import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;

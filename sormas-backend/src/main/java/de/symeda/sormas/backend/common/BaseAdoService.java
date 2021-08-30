@@ -83,6 +83,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 	/**
 	 * Should only be used for testing scenarios of user rights & jurisdiction!
+	 * 
 	 * @param user
 	 */
 	@Deprecated
@@ -228,7 +229,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	@Override
-	public ADO getByUuid(@NotNull String uuid) {
+	public ADO getByUuid(String uuid) {
 
 		if (uuid == null) {
 			return null;

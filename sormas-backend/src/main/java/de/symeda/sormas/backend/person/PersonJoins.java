@@ -29,7 +29,7 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.Immunization;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationJoins;
-import de.symeda.sormas.backend.region.Country;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
