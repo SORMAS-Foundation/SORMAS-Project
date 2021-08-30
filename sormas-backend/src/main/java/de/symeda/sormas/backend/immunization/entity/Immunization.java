@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.immunization.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -55,15 +54,4 @@ public class Immunization extends BaseImmunization {
 	public static final String VALID_UNTIL = "validUntil";
 	public static final String RELATED_CASE = "relatedCase";
 	public static final String VACCINATIONS = "vaccinations";
-
-	private Long personId;
-
-	@Column(name = "person_id", updatable = false, insertable = false)
-	public Long getPersonId() {
-		return personId;
-	}
-
-	public void setPersonId(Long personId) {
-		this.personId = personId;
-	}
 }
