@@ -31,7 +31,7 @@ import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
-import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 
 @Stateless(name = "DashboardFacade")
