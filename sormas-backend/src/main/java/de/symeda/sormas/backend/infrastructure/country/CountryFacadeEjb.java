@@ -86,6 +86,7 @@ public class CountryFacadeEjb implements CountryFacade {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
+	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfiguration;
 
 	@Override
