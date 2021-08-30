@@ -221,6 +221,7 @@ public interface Strings {
 	String entityImmunizations = "entityImmunizations";
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPersonContactDetail = "entityPersonContactDetail";
+	String entityPersons = "entityPersons";
 	String entityPointsOfEntry = "entityPointsOfEntry";
 	String entityPrescription = "entityPrescription";
 	String entityPrescriptions = "entityPrescriptions";

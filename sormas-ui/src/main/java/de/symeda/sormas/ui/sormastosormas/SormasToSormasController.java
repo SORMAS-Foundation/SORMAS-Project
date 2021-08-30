@@ -164,9 +164,7 @@ public class SormasToSormasController {
 			});
 	}
 
-	private void shareToSormasFromDetailPage(
-		HandleShareWithOptions handleShareWithOptions,
-		SormasToSormasOptionsForm optionsForm) {
+	private void shareToSormasFromDetailPage(HandleShareWithOptions handleShareWithOptions, SormasToSormasOptionsForm optionsForm) {
 		handleShareWithOptions(handleShareWithOptions::handle, SormasUI::refreshView, optionsForm, new SormasToSormasOptionsDto());
 	}
 
@@ -182,7 +180,7 @@ public class SormasToSormasController {
 		optionsCommitDiscard.getCommitButton().setCaption(I18nProperties.getCaption(Captions.sormasToSormasShare));
 		optionsCommitDiscard.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-		Window optionsPopup = VaadinUiUtil.showPopupWindow(optionsCommitDiscard, I18nProperties.getCaption(Captions.sormasToSormasDialogTitle));
+		Window optionsPopup = VaadinUiUtil.showPopupWindow(optionsCommitDiscard, I18nProperties.getCaption(Captions.sormasToSormasShare));
 
 		optionsCommitDiscard.addCommitListener(() -> {
 			SormasToSormasOptionsDto options = optionsForm.getValue();
@@ -273,9 +271,8 @@ public class SormasToSormasController {
 			HorizontalLayout layout = new HorizontalLayout(
 				groupLabel,
 				new Label(
-					String.join(
-						", ",
-						e.getMessages().stream().map(ValidationErrorMessage::getHumanMessage).collect(Collectors.toList()).toString())));
+					String
+						.join(", ", e.getMessages().stream().map(ValidationErrorMessage::getHumanMessage).collect(Collectors.toList()).toString())));
 			layout.setMargin(false);
 
 			return layout;

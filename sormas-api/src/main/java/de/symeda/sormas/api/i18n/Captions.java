@@ -1835,7 +1835,6 @@ public interface Captions {
 	String singleDayEventEvolutionDate = "singleDayEventEvolutionDate";
 	String sormasToSormasCaseNotShared = "sormasToSormasCaseNotShared";
 	String sormasToSormasContactNotShared = "sormasToSormasContactNotShared";
-	String sormasToSormasDialogTitle = "sormasToSormasDialogTitle";
 	String sormasToSormasErrorDialogTitle = "sormasToSormasErrorDialogTitle";
 	String sormasToSormasEventNotShared = "sormasToSormasEventNotShared";
 	String sormasToSormasEventParticipantNotShared = "sormasToSormasEventParticipantNotShared";

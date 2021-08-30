@@ -3,15 +3,14 @@ package de.symeda.sormas.backend.immunization;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.joins.ImmunizationDirectoryJoins;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
@@ -19,10 +18,8 @@ public class ImmunizationDirectoryJurisdictionPredicateValidator extends Predica
 
 	private final ImmunizationDirectoryJoins<?> joins;
 	private final User currentUser;
-	private final CriteriaQuery<?> cq;
 
 	private ImmunizationDirectoryJurisdictionPredicateValidator(
-		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		ImmunizationDirectoryJoins<?> joins,
 		User currentUser,
@@ -30,12 +27,10 @@ public class ImmunizationDirectoryJurisdictionPredicateValidator extends Predica
 		super(cb, associatedJurisdictionValidators);
 		this.joins = joins;
 		this.currentUser = currentUser;
-		this.cq = cq;
 	}
 
 	public static ImmunizationDirectoryJurisdictionPredicateValidator of(ImmunizationDirectoryQueryContext qc, User currentUser) {
 		return new ImmunizationDirectoryJurisdictionPredicateValidator(
-			qc.getQuery(),
 			qc.getCriteriaBuilder(),
 			(ImmunizationDirectoryJoins<?>) qc.getJoins(),
 			currentUser,

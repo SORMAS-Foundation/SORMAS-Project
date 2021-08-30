@@ -16,8 +16,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.opencsv.exceptions.CsvValidationException;
 
 import de.symeda.sormas.api.importexport.InvalidColumnException;
-import de.symeda.sormas.api.region.CountryCriteria;
-import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryCriteria;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
