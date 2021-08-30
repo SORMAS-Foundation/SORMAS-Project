@@ -22,61 +22,73 @@
             <stringProp name="Argument.name">server_url</stringProp>
             <stringProp name="Argument.value">test-performance.sormas.netzlink.com</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">URL of the server to which all requests are sent</stringProp>
           </elementProp>
           <elementProp name="server_port" elementType="Argument">
             <stringProp name="Argument.name">server_port</stringProp>
             <stringProp name="Argument.value"></stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="user_name" elementType="Argument">
-            <stringProp name="Argument.name">user_name</stringProp>
-            <stringProp name="Argument.value">RestUser</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="user_password" elementType="Argument">
-            <stringProp name="Argument.name">user_password</stringProp>
-            <stringProp name="Argument.value">PTLXe9UYoTFP</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Port of the server</stringProp>
           </elementProp>
           <elementProp name="server_protocol" elementType="Argument">
             <stringProp name="Argument.name">server_protocol</stringProp>
             <stringProp name="Argument.value">https</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">http/https</stringProp>
+          </elementProp>
+          <elementProp name="user_name" elementType="Argument">
+            <stringProp name="Argument.name">user_name</stringProp>
+            <stringProp name="Argument.value">RestUser</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Name of the user used to place requests</stringProp>
+          </elementProp>
+          <elementProp name="user_password" elementType="Argument">
+            <stringProp name="Argument.name">user_password</stringProp>
+            <stringProp name="Argument.value">PTLXe9UYoTFP</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Password of the user used to place requests</stringProp>
           </elementProp>
           <elementProp name="sormas_region_uuid" elementType="Argument">
             <stringProp name="Argument.name">sormas_region_uuid</stringProp>
             <stringProp name="Argument.value">RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of the default region</stringProp>
           </elementProp>
           <elementProp name="sormas_district_uuid" elementType="Argument">
             <stringProp name="Argument.name">sormas_district_uuid</stringProp>
             <stringProp name="Argument.value">SZ75BK-5OUMFU-V2DTKG-5BYACHFE</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of the default district</stringProp>
           </elementProp>
           <elementProp name="sormas_community_uuid" elementType="Argument">
             <stringProp name="Argument.name">sormas_community_uuid</stringProp>
             <stringProp name="Argument.value">QWK33J-XYN3DE-5CSXFJ-MMFOKNKM</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of the default community</stringProp>
           </elementProp>
           <elementProp name="sormas_nationaluser_uuid" elementType="Argument">
             <stringProp name="Argument.name">sormas_nationaluser_uuid</stringProp>
             <stringProp name="Argument.value">XXFIKA-I653UK-XTLOIT-VWZYKGXY</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of any Nationaluser</stringProp>
           </elementProp>
           <elementProp name="sormas_survoff_uuid" elementType="Argument">
             <stringProp name="Argument.name">sormas_survoff_uuid</stringProp>
             <stringProp name="Argument.value">Q2IYCN-TNYTOY-4OAYCA-DW662MTA</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of any Surveillance Officer</stringProp>
           </elementProp>
           <elementProp name="sormas_national_rest_user_uuid" elementType="Argument">
             <stringProp name="Argument.name">sormas_national_rest_user_uuid</stringProp>
             <stringProp name="Argument.value">QLW4AN-TGWLRA-3UQVEM-WCDFCIVM</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of a user with both NationalUser and RestUser rights</stringProp>
           </elementProp>
           <elementProp name="sormas_hospital_informant_uuid" elementType="Argument">
             <stringProp name="Argument.name">sormas_hospital_informant_uuid</stringProp>
             <stringProp name="Argument.value">QKBKF3-EZT5OK-327TUH-NV73SJYY</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of any HospitalInformant</stringProp>
           </elementProp>
         </collectionProp>
       </Arguments>
