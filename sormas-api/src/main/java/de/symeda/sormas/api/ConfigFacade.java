@@ -135,4 +135,6 @@ public interface ConfigFacade {
 	boolean isAuditorAttributeLoggingEnabled();
 
 	int getStepSizeForCsvExport();
+
+	long documentUploadSizeLimitMb();
 }
