@@ -316,7 +316,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 		final TypedQuery<T> query = em.createQuery(cq);
 		if (first != null && max != null) {
-			query.setFirstResult(first).setMaxResults(max).getResultList();
+			query.setFirstResult(first).setMaxResults(max);
 		}
 
 		return query;
