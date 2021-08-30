@@ -174,7 +174,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 317;
+	public static final int DATABASE_VERSION = 318;
 
 	private static DatabaseHelper instance = null;
 
@@ -2789,6 +2789,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					"UPDATE country SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultName = 'Central Europe') WHERE isoCode = 'DEU';");
 				getDao(Location.class).executeRaw(
 					"UPDATE location SET subcontinent_id = (SELECT subcontinent.id FROM subcontinent WHERE subcontinent.defaultname = 'Central Europe') WHERE location.subcontinent_id IS NOT NULL AND location.country_id = (SELECT country.id FROM country WHERE isocode = 'DEU');");
+
+			case 317:
+				currentVersion = 317;
+				getDao(Symptoms.class).executeRaw(
+					"UPDATE symptoms SET symptomatic=null FROM visit WHERE visit.symptoms_id = symptoms.id AND visit.visitstatus!='COOPERATIVE';");
 
 				// ATTENTION: break should only be done after last version
 				break;
