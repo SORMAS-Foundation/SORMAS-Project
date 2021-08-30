@@ -38,8 +38,8 @@ jmeter -n -t C:\projects\sormas\performance\SormasPoc.jmx -Jmodule=daily-build-s
 
 ## Using Variables
 
-The variables are preconfigured to run the tests against a specific test instance. 
-If you wish to run the tests against another system (e.g. localhost), you can exchange the arguments as needed. 
+The variables are preconfigured to run the tests against a specific test instance.
+If you wish to run the tests against another system (e.g. localhost), you can exchange the arguments as needed.
 Please make sure the database is populated with accessible data before trying to access it (e.g. create cases before trying to GET them).
 
 ## Reporting
