@@ -32,9 +32,9 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.immunization.entity.ImmunizationDirectory;
-import de.symeda.sormas.backend.immunization.joins.ImmunizationDirectoryJoins;
+import de.symeda.sormas.backend.immunization.joins.DirectoryImmunizationJoins;
 import de.symeda.sormas.backend.immunization.transformers.ImmunizationIndexDtoResultTransformer;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.location.Location;
@@ -49,36 +49,36 @@ import de.symeda.sormas.backend.vaccination.LastVaccineType;
 
 @Stateless
 @LocalBean
-public class ImmunizationDirectoryService extends AbstractCoreAdoService<ImmunizationDirectory> {
+public class DirectoryImmunizationService extends AbstractCoreAdoService<DirectoryImmunization> {
 
 	@EJB
 	private UserService userService;
 
-	public ImmunizationDirectoryService() {
-		super(ImmunizationDirectory.class);
+	public DirectoryImmunizationService() {
+		super(DirectoryImmunization.class);
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ImmunizationDirectory> immunizationDirectoryPath) {
-		return createUserFilter(new ImmunizationDirectoryQueryContext(cb, cq, immunizationDirectoryPath));
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, DirectoryImmunization> immunizationDirectoryPath) {
+		return createUserFilter(new DirectoryImmunizationQueryContext(cb, cq, immunizationDirectoryPath));
 	}
 
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		final Root<ImmunizationDirectory> immunization = cq.from(ImmunizationDirectory.class);
+		final Root<DirectoryImmunization> immunization = cq.from(DirectoryImmunization.class);
 
-		ImmunizationDirectoryQueryContext<ImmunizationDirectory> immunizationDirectoryQueryContext =
-			new ImmunizationDirectoryQueryContext<>(cb, cq, immunization);
-		ImmunizationDirectoryJoins<ImmunizationDirectory> joins =
-			(ImmunizationDirectoryJoins<ImmunizationDirectory>) immunizationDirectoryQueryContext.getJoins();
+		DirectoryImmunizationQueryContext<DirectoryImmunization> directoryImmunizationQueryContext =
+			new DirectoryImmunizationQueryContext<>(cb, cq, immunization);
+		DirectoryImmunizationJoins<DirectoryImmunization> joins =
+			(DirectoryImmunizationJoins<DirectoryImmunization>) directoryImmunizationQueryContext.getJoins();
 
-		final Join<ImmunizationDirectory, Person> person = joins.getPerson();
+		final Join<DirectoryImmunization, Person> person = joins.getPerson();
 
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 
-		final Join<ImmunizationDirectory, LastVaccineType> lastVaccineType = joins.getLastVaccineType();
+		final Join<DirectoryImmunization, LastVaccineType> lastVaccineType = joins.getLastVaccineType();
 
 		cq.multiselect(
 			immunization.get(Immunization.UUID),
@@ -100,9 +100,9 @@ public class ImmunizationDirectoryService extends AbstractCoreAdoService<Immuniz
 			lastVaccineType.get(LastVaccineType.VACCINE_TYPE),
 			immunization.get(Immunization.RECOVERY_DATE),
 			immunization.get(Immunization.CHANGE_DATE),
-			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationDirectoryQueryContext)));
+			JurisdictionHelper.booleanSelector(cb, createUserFilter(directoryImmunizationQueryContext)));
 
-		buildWhereCondition(criteria, cb, cq, immunizationDirectoryQueryContext);
+		buildWhereCondition(criteria, cb, cq, directoryImmunizationQueryContext);
 
 		if (CollectionUtils.isNotEmpty(sortProperties)) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
@@ -150,10 +150,10 @@ public class ImmunizationDirectoryService extends AbstractCoreAdoService<Immuniz
 	public long count(ImmunizationCriteria criteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		final Root<ImmunizationDirectory> immunization = cq.from(ImmunizationDirectory.class);
+		final Root<DirectoryImmunization> immunization = cq.from(DirectoryImmunization.class);
 
-		ImmunizationDirectoryQueryContext<ImmunizationDirectory> immunizationQueryContext =
-			new ImmunizationDirectoryQueryContext<>(cb, cq, immunization);
+		DirectoryImmunizationQueryContext<DirectoryImmunization> immunizationQueryContext =
+			new DirectoryImmunizationQueryContext<>(cb, cq, immunization);
 
 		buildWhereCondition(criteria, cb, cq, immunizationQueryContext);
 
@@ -165,10 +165,10 @@ public class ImmunizationDirectoryService extends AbstractCoreAdoService<Immuniz
 		ImmunizationCriteria criteria,
 		CriteriaBuilder cb,
 		CriteriaQuery<T> cq,
-		ImmunizationDirectoryQueryContext<ImmunizationDirectory> immunizationDirectoryQueryContext) {
-		Predicate filter = createUserFilter(immunizationDirectoryQueryContext);
+		DirectoryImmunizationQueryContext<DirectoryImmunization> directoryImmunizationQueryContext) {
+		Predicate filter = createUserFilter(directoryImmunizationQueryContext);
 		if (criteria != null) {
-			final Predicate criteriaFilter = buildCriteriaFilter(criteria, immunizationDirectoryQueryContext);
+			final Predicate criteriaFilter = buildCriteriaFilter(criteria, directoryImmunizationQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -179,11 +179,11 @@ public class ImmunizationDirectoryService extends AbstractCoreAdoService<Immuniz
 
 	private Predicate buildCriteriaFilter(
 		ImmunizationCriteria criteria,
-		ImmunizationDirectoryQueryContext<ImmunizationDirectory> immunizationDirectoryQueryContext) {
-		final ImmunizationDirectoryJoins joins = (ImmunizationDirectoryJoins) immunizationDirectoryQueryContext.getJoins();
-		final CriteriaBuilder cb = immunizationDirectoryQueryContext.getCriteriaBuilder();
-		final From<?, ?> from = immunizationDirectoryQueryContext.getRoot();
-		Join<ImmunizationDirectory, Person> person = joins.getPerson();
+		DirectoryImmunizationQueryContext<DirectoryImmunization> directoryImmunizationQueryContext) {
+		final DirectoryImmunizationJoins joins = (DirectoryImmunizationJoins) directoryImmunizationQueryContext.getJoins();
+		final CriteriaBuilder cb = directoryImmunizationQueryContext.getCriteriaBuilder();
+		final From<?, ?> from = directoryImmunizationQueryContext.getRoot();
+		Join<DirectoryImmunization, Person> person = joins.getPerson();
 
 		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 
@@ -250,7 +250,7 @@ public class ImmunizationDirectoryService extends AbstractCoreAdoService<Immuniz
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), new Date()));
 		}
 		if (criteria.getImmunizationDateType() != null) {
-			Path<Object> path = buildPathForDateFilter(criteria.getImmunizationDateType(), immunizationDirectoryQueryContext);
+			Path<Object> path = buildPathForDateFilter(criteria.getImmunizationDateType(), directoryImmunizationQueryContext);
 			if (path != null) {
 				filter = CriteriaBuilderHelper.applyDateFilter(cb, filter, path, criteria.getFromDate(), criteria.getToDate());
 			}
@@ -262,20 +262,20 @@ public class ImmunizationDirectoryService extends AbstractCoreAdoService<Immuniz
 
 	private Path<Object> buildPathForDateFilter(
 		ImmunizationDateType immunizationDateType,
-		ImmunizationDirectoryQueryContext immunizationDirectoryQueryContext) {
+		DirectoryImmunizationQueryContext directoryImmunizationQueryContext) {
 		Path<Object> path = null;
 		String dateField = getDateFieldFromDateType(immunizationDateType);
 		if (dateField != null) {
 			if (LastVaccinationDate.VACCINATION_DATE.equals(dateField)) {
-				final Join<ImmunizationDirectory, LastVaccinationDate> lastVaccinationDate =
-					((ImmunizationDirectoryJoins<ImmunizationDirectory>) immunizationDirectoryQueryContext.getJoins()).getLastVaccinationDate();
+				final Join<DirectoryImmunization, LastVaccinationDate> lastVaccinationDate =
+					((DirectoryImmunizationJoins<DirectoryImmunization>) directoryImmunizationQueryContext.getJoins()).getLastVaccinationDate();
 				path = lastVaccinationDate.get(LastVaccinationDate.VACCINATION_DATE);
 			} else if (FirstVaccinationDate.VACCINATION_DATE.equals(dateField)) {
-				final Join<ImmunizationDirectory, FirstVaccinationDate> firstVaccinationDate =
-					((ImmunizationDirectoryJoins<ImmunizationDirectory>) immunizationDirectoryQueryContext.getJoins()).getFirstVaccinationDate();
+				final Join<DirectoryImmunization, FirstVaccinationDate> firstVaccinationDate =
+					((DirectoryImmunizationJoins<DirectoryImmunization>) directoryImmunizationQueryContext.getJoins()).getFirstVaccinationDate();
 				path = firstVaccinationDate.get(FirstVaccinationDate.VACCINATION_DATE);
 			} else {
-				path = immunizationDirectoryQueryContext.getRoot().get(dateField);
+				path = directoryImmunizationQueryContext.getRoot().get(dateField);
 			}
 		}
 		return path;
@@ -299,8 +299,8 @@ public class ImmunizationDirectoryService extends AbstractCoreAdoService<Immuniz
 		return null;
 	}
 
-	private Predicate createUserFilter(ImmunizationDirectoryQueryContext<ImmunizationDirectory> qc) {
+	private Predicate createUserFilter(DirectoryImmunizationQueryContext<DirectoryImmunization> qc) {
 		final User currentUser = userService.getCurrentUser();
-		return ImmunizationDirectoryJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+		return DirectoryImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 	}
 }

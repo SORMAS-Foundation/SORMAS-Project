@@ -7,21 +7,21 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.immunization.joins.ImmunizationDirectoryJoins;
+import de.symeda.sormas.backend.immunization.joins.DirectoryImmunizationJoins;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
-public class ImmunizationDirectoryJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
+public class DirectoryImmunizationJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final ImmunizationDirectoryJoins<?> joins;
+	private final DirectoryImmunizationJoins<?> joins;
 	private final User currentUser;
 
-	private ImmunizationDirectoryJurisdictionPredicateValidator(
+	private DirectoryImmunizationJurisdictionPredicateValidator(
 		CriteriaBuilder cb,
-		ImmunizationDirectoryJoins<?> joins,
+		DirectoryImmunizationJoins<?> joins,
 		User currentUser,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
 		super(cb, associatedJurisdictionValidators);
@@ -29,10 +29,10 @@ public class ImmunizationDirectoryJurisdictionPredicateValidator extends Predica
 		this.currentUser = currentUser;
 	}
 
-	public static ImmunizationDirectoryJurisdictionPredicateValidator of(ImmunizationDirectoryQueryContext qc, User currentUser) {
-		return new ImmunizationDirectoryJurisdictionPredicateValidator(
+	public static DirectoryImmunizationJurisdictionPredicateValidator of(DirectoryImmunizationQueryContext qc, User currentUser) {
+		return new DirectoryImmunizationJurisdictionPredicateValidator(
 			qc.getCriteriaBuilder(),
-			(ImmunizationDirectoryJoins<?>) qc.getJoins(),
+			(DirectoryImmunizationJoins<?>) qc.getJoins(),
 			currentUser,
 			null);
 	}

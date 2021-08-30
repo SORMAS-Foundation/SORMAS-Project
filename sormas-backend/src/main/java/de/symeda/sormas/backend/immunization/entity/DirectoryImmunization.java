@@ -12,7 +12,7 @@ import de.symeda.sormas.backend.vaccination.LastVaccineType;
 @Entity(name = "immunizationDirectory")
 @Audited
 @Table(name = "immunization")
-public class ImmunizationDirectory extends BaseImmunization {
+public class DirectoryImmunization extends BaseImmunization {
 
 	public static final String LAST_VACCINE_TYPE = "lastVaccineType";
 	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
