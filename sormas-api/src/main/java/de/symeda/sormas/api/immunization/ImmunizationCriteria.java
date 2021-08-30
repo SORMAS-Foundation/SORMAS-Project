@@ -19,12 +19,14 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
@@ -68,6 +70,8 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 	private ImmunizationDateType immunizationDateType;
 	private Date fromDate;
 	private Date toDate;
+	private CaseReferenceDto relatedCase;
+	private PersonReferenceDto person;
 
 	public Disease getDisease() {
 		return disease;
@@ -219,5 +223,31 @@ public class ImmunizationCriteria extends BaseCriteria implements Serializable, 
 
 	public void setToDate(Date toDate) {
 		this.toDate = toDate;
+	}
+
+	public CaseReferenceDto getRelatedCase() {
+		return relatedCase;
+	}
+
+	public void setRelatedCase(CaseReferenceDto relatedCase) {
+		this.relatedCase = relatedCase;
+	}
+
+	public ImmunizationCriteria relatedCase(CaseReferenceDto relatedCase) {
+		this.relatedCase = relatedCase;
+		return this;
+	}
+
+	public PersonReferenceDto getPerson() {
+		return person;
+	}
+
+	public void setPerson(PersonReferenceDto person) {
+		this.person = person;
+	}
+
+	public ImmunizationCriteria person(PersonReferenceDto person) {
+		this.person = person;
+		return this;
 	}
 }

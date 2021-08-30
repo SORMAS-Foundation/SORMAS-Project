@@ -47,10 +47,12 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,7 +63,6 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
@@ -696,10 +697,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
 	}
 
-	public void notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
-
-	}
-
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public long updateGeoLocation(List<String> personUuids, boolean overwriteExistingCoordinates) {
 
@@ -746,6 +743,24 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		} else {
 			return getByExternalIds(externalIds);
 		}
+	}
+
+	public Long getIdByUuid(@NotNull String uuid) {
+
+		if (uuid == null) {
+			return null;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Person> from = cq.from(Person.class);
+		cq.select(from.get(AbstractDomainObject.ID));
+		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));
+
+		TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
+
+		return q.getResultList().stream().findFirst().orElse(null);
 	}
 
 	private List<Person> getByExternalIds(List<String> externalIds) {

@@ -79,6 +79,8 @@ public class BaseImmunization extends CoreAdo {
 
 	private List<VaccinationEntity> vaccinations = new ArrayList<>();
 
+	private Long personId;
+
 	@Enumerated(EnumType.STRING)
 	public Disease getDisease() {
 		return disease;
@@ -95,6 +97,15 @@ public class BaseImmunization extends CoreAdo {
 
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
+	}
+
+	@Column(name = "person_id", updatable = false, insertable = false)
+	public Long getPersonId() {
+		return personId;
+	}
+
+	public void setPersonId(Long personId) {
+		this.personId = personId;
 	}
 
 	@ManyToOne

@@ -33,6 +33,7 @@ import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
@@ -89,6 +90,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	private CaseService caseService;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 
@@ -281,6 +284,12 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	@Override
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		return directoryImmunizationService.getIndexList(criteria, first, max, sortProperties);
+	}
+
+	@Override
+	public List<ImmunizationListEntryDto> getEntriesList(String personUuid, Integer first, Integer max) {
+		Long personId = personFacade.getPersonIdByUuid(personUuid);
+		return immunizationService.getEntriesList(personId, first, max);
 	}
 
 	public ImmunizationDto toDto(Immunization entity) {

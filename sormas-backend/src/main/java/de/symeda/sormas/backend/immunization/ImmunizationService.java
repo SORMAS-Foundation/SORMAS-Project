@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.immunization;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +35,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -43,6 +45,7 @@ import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
+import de.symeda.sormas.backend.immunization.tramsformers.ImmunizationListEntryDtoTransformer;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -58,6 +61,41 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	public ImmunizationService() {
 		super(Immunization.class);
+	}
+
+	public List<ImmunizationListEntryDto> getEntriesList(Long personId, Integer first, Integer max) {
+		if (personId == null) {
+			return Collections.emptyList();
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final Root<Immunization> immunization = cq.from(Immunization.class);
+
+		ImmunizationQueryContext<Immunization> immunizationQueryContext = new ImmunizationQueryContext<>(cb, cq, immunization);
+
+		cq.multiselect(
+			immunization.get(Immunization.UUID),
+			immunization.get(Immunization.DISEASE),
+			immunization.get(Immunization.MEANS_OF_IMMUNIZATION),
+			immunization.get(Immunization.IMMUNIZATION_STATUS),
+			immunization.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS),
+			immunization.get(Immunization.START_DATE),
+			immunization.get(Immunization.END_DATE),
+			immunization.get(Immunization.CHANGE_DATE),
+			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)));
+
+		Predicate filter = cb.equal(immunization.get(Immunization.PERSON_ID), personId);
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(immunization.get(Immunization.DELETED)));
+		cq.where(filter);
+
+		cq.orderBy(cb.desc(immunization.get(Immunization.CHANGE_DATE)));
+
+		cq.distinct(true);
+
+		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new ImmunizationListEntryDtoTransformer())
+			.getResultList();
 	}
 
 	public boolean inJurisdictionOrOwned(Immunization immunization) {
