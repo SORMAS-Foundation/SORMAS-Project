@@ -44,6 +44,7 @@ import de.symeda.sormas.app.person.edit.PersonValidator;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayoutBinding, Contact, Contact> {
 
@@ -97,7 +98,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 		PersonValidator
 			.initializeBirthDateValidation(contentBinding.personBirthdateYYYY, contentBinding.personBirthdateMM, contentBinding.personBirthdateDD);
 
-		InfrastructureDaoHelper.initializeRegionFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeRegionFields(
 			contentBinding.contactRegion,
 			initialRegions,
 			record.getRegion(),

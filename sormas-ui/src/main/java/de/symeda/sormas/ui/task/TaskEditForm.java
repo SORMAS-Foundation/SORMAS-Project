@@ -47,8 +47,8 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskType;
@@ -187,7 +187,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					regions = getCaseRegions(caseDto);
 				}
 			} else if (taskDto.getEvent() != null) {
-				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
+				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid(), false);
 
 				districts = DataHelper.asListNullable(eventDto.getEventLocation().getDistrict());
 				regions = DataHelper.asListNullable(eventDto.getEventLocation().getRegion());

@@ -555,6 +555,7 @@
     <string name="validation_visit_date_time_after_followup">La visita non può durare più di 30 giorni dopo la fine della durata del follow-up.</string>
     <string name="validation_visit_date_time_before_contact_date">La visita non può essere superiore a 30 giorni prima dell\'ultima data di contatto.</string>
     <string name="validation_visit_date_time_before_report_date">La visita non può essere più di 30 giorni prima della data del rapporto di contatto.</string>
+    <string name="value_unknown">Unknown</string>
     <string name="value_age_unknown">Età N/A</string>
     <string name="value_blood_pressure_unknown">Pressione sanguigna N/A</string>
     <string name="value_case_uuid_unknown">Caso ID N/A</string>

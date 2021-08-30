@@ -37,6 +37,13 @@ public class Region extends InfrastructureAdo {
 	public static final String COUNTRY = "country";
 	public static final String AREA = "area";
 
+	public Region() {
+	}
+
+	public Region(String uuid) {
+		this.setUuid(uuid);
+	}
+
 	@Column
 	private String name;
 

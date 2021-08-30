@@ -47,10 +47,12 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,11 +63,10 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -79,12 +80,12 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.geocoding.GeocodingService;
-import de.symeda.sormas.backend.immunization.Immunization;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
@@ -172,7 +173,38 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		eventPersonsQuery.distinct(true);
 		List<String> eventPersonsResultList = em.createQuery(eventPersonsQuery).getResultList();
 
-		return Stream.of(lgaResultList, casePersonsResultList, contactPersonsResultList, eventPersonsResultList)
+		// persons by immunization
+		CriteriaQuery<String> immunizationPersonsQuery = cb.createQuery(String.class);
+		Root<Immunization> immunizationPersonsRoot = immunizationPersonsQuery.from(Immunization.class);
+		Join<Immunization, Person> immunizationPersonsSelect = immunizationPersonsRoot.join(Immunization.PERSON);
+		immunizationPersonsQuery.select(immunizationPersonsSelect.get(Person.UUID));
+		Predicate immunizationPersonsFilter = immunizationService.createUserFilter(cb, immunizationPersonsQuery, immunizationPersonsRoot);
+		if (immunizationPersonsFilter != null) {
+			immunizationPersonsQuery.where(immunizationPersonsFilter);
+		}
+		immunizationPersonsQuery.distinct(true);
+		List<String> immunizationPersonsResultList = em.createQuery(immunizationPersonsQuery).getResultList();
+
+		// persons by travel entry
+		CriteriaQuery<String> travelEntryPersonsQuery = cb.createQuery(String.class);
+		Root<TravelEntry> travelEntryPersonsRoot = travelEntryPersonsQuery.from(TravelEntry.class);
+		Join<TravelEntry, Person> travelEntryPersonsSelect = travelEntryPersonsRoot.join(TravelEntry.PERSON);
+		travelEntryPersonsQuery.select(travelEntryPersonsSelect.get(Person.UUID));
+		Predicate travelEntryPersonsFilter = travelEntryService.createUserFilter(cb, travelEntryPersonsQuery, travelEntryPersonsRoot);
+		if (travelEntryPersonsFilter != null) {
+			travelEntryPersonsQuery.where(travelEntryPersonsFilter);
+		}
+		travelEntryPersonsQuery.distinct(true);
+		List<String> travelEntryPersonsResultList = em.createQuery(travelEntryPersonsQuery).getResultList();
+
+		return Stream
+			.of(
+				lgaResultList,
+				casePersonsResultList,
+				contactPersonsResultList,
+				eventPersonsResultList,
+				immunizationPersonsResultList,
+				travelEntryPersonsResultList)
 			.flatMap(List<String>::stream)
 			.distinct()
 			.collect(Collectors.toList());
@@ -215,22 +247,22 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		PersonAssociation personAssociation =
 			Optional.ofNullable(personCriteria).map(e -> e.getPersonAssociation()).orElse(PersonCriteria.DEFAULT_ASSOCIATION);
 		switch (personAssociation) {
-			case ALL:
+		case ALL:
 			return CriteriaBuilderHelper
 				.or(cb, caseFilter.get(), contactFilter.get(), eventParticipantFilter.get(), immunizationFilter.get(), travelEntryFilter.get());
-			case CASE:
+		case CASE:
 			return caseFilter.get();
-			case CONTACT:
+		case CONTACT:
 			return contactFilter.get();
-			case EVENT_PARTICIPANT:
+		case EVENT_PARTICIPANT:
 			return eventParticipantFilter.get();
-			case IMMUNIZATION:
+		case IMMUNIZATION:
 			return immunizationFilter.get();
-			case TRAVEL_ENTRY:
+		case TRAVEL_ENTRY:
 			return travelEntryFilter.get();
 		default:
 			throw new IllegalArgumentException(personAssociation.toString());
-			}
+		}
 	}
 
 	public Predicate buildCriteriaFilter(PersonCriteria personCriteria, PersonQueryContext personQueryContext) {
@@ -665,10 +697,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return cb.or(dateFilter, cb.greaterThan(address.get(AbstractDomainObject.CHANGE_DATE), date));
 	}
 
-	public void notifyExternalJournalPersonUpdate(PersonDto existingPerson, PersonDto updatedPerson) {
-
-	}
-
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public long updateGeoLocation(List<String> personUuids, boolean overwriteExistingCoordinates) {
 
@@ -715,6 +743,24 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		} else {
 			return getByExternalIds(externalIds);
 		}
+	}
+
+	public Long getIdByUuid(@NotNull String uuid) {
+
+		if (uuid == null) {
+			return null;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Person> from = cq.from(Person.class);
+		cq.select(from.get(AbstractDomainObject.ID));
+		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));
+
+		TypedQuery<Long> q = em.createQuery(cq).setParameter(uuidParam, uuid);
+
+		return q.getResultList().stream().findFirst().orElse(null);
 	}
 
 	private List<Person> getByExternalIds(List<String> externalIds) {

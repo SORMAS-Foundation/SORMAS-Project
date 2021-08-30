@@ -22,10 +22,12 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.Table;
 
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -33,10 +35,10 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class PreviousHospitalizationsField extends AbstractTableField<PreviousHospitalizationDto> {
@@ -81,22 +83,23 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			}
 		});
 
-		table.addGeneratedColumn(COMMUNITY, new Table.ColumnGenerator() {
-
-			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
-				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
-				return prevHospitalization.getCommunity();
-			}
+		table.addGeneratedColumn(COMMUNITY, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
+			return prevHospitalization.getCommunity();
 		});
 
-		table.addGeneratedColumn(DISTRICT, new Table.ColumnGenerator() {
+		table.addGeneratedColumn(DISTRICT, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
+			DistrictReferenceDto district = prevHospitalization.getDistrict();
 
-			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
-				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
-				return prevHospitalization.getDistrict();
-			}
+			return district != null ? district.getCaption() : I18nProperties.getCaption(Captions.unknown);
+		});
+
+		table.addGeneratedColumn(PreviousHospitalizationDto.HEALTH_FACILITY, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
+			FacilityReferenceDto healthFacility = prevHospitalization.getHealthFacility();
+
+			return healthFacility != null ? healthFacility.getCaption() : I18nProperties.getCaption(Captions.unknown);
 		});
 
 		table.setVisibleColumns(

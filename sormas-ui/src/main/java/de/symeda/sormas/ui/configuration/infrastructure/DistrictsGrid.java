@@ -25,8 +25,8 @@ import com.vaadin.shared.data.sort.SortDirection;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.region.DistrictCriteria;
-import de.symeda.sormas.api.region.DistrictIndexDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
+import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;

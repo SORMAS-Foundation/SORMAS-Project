@@ -17,11 +17,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.vaadin.v7.data.util.converter.Converter;
+import de.symeda.sormas.api.travelentry.DeaContentEntry;
+import de.symeda.sormas.ui.travelentry.DEAFormBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
@@ -38,12 +40,12 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -52,7 +54,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.travelentry.DEAFormBuilder;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
@@ -226,8 +227,18 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 				.updateItems(districtCombo, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		districtCombo.addValueChangeListener(e -> {
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			getPointsOfEntryForDistrict(districtDto);
+			if (differentPointOfEntryJurisdiction.getValue()) {
+				DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+				getPointsOfEntryForDistrict(districtDto);
+			}
+		});
+
+		differentPointOfEntryJurisdiction.addValueChangeListener(v -> {
+			if (differentPointOfEntryJurisdiction.getValue()) {
+				cbPointOfEntry.removeAllItems();
+			} else {
+				getPointsOfEntryForDistrict((DistrictReferenceDto) responsibleDistrictCombo.getValue());
+			}
 		});
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
@@ -415,8 +426,9 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 	}
 
 	private void buildDeaContent(TravelEntryDto newFieldValue) {
-		if (newFieldValue.getDeaContent() != null) {
-			deaFormBuilder = new DEAFormBuilder(newFieldValue.getDeaContent(), true);
+		final List<DeaContentEntry> deaContent = newFieldValue.getDeaContent();
+		if (CollectionUtils.isNotEmpty(deaContent)) {
+			deaFormBuilder = new DEAFormBuilder(deaContent, true);
 			deaFormBuilder.buildForm();
 			getContent().addComponent(deaFormBuilder.getLayout(), DEA_CONTENT_LOC);
 		}

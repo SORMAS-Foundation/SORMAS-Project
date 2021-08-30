@@ -11,10 +11,11 @@ import javax.ejb.Remote;
 @Remote
 public interface SormasToSormasEncryptionFacade {
 
+
 	SormasToSormasEncryptedDataDto signAndEncrypt(Object entities, String recipientId) throws SormasToSormasException;
 
 	<T> T decryptAndVerify(SormasToSormasEncryptedDataDto encryptedData, Class<T> dataType) throws SormasToSormasException;
 
-	X509Certificate getOwnCertificate()
+	X509Certificate loadOwnCertificate()
 		throws SormasToSormasException, CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException;
 }

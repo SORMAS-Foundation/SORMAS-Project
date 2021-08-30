@@ -26,5 +26,7 @@ for ((i = 1; i <= $1; ++i)); do
   rm -rf ./allure-results
   ./gradlew clean
   echo "Run: $i "
-  ./gradlew startTests -Dcucumber.tags="@Sanity" -Dheadless=true -Dcourgette.threads=9
+  ./gradlew startTests -Dcucumber.tags="@PersonsAndImmunizations" -Dheadless=true -Dcourgette.threads=9
 done
+
+#NOTE: tag should be changed when populating task is done!

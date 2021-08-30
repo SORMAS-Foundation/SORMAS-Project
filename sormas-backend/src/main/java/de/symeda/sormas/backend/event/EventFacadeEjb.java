@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import static de.symeda.sormas.backend.sormastosormas.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
+import static de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -64,6 +64,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventDetailedReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventFacade;
@@ -75,12 +76,12 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -90,24 +91,24 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEvent;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoHelper;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEvent;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -184,12 +185,6 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public EventDto getByUuid(String uuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return convertToDto(eventService.getByUuid(uuid), pseudonymizer);
-	}
-
-	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
@@ -206,8 +201,10 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public EventDto getEventByUuid(String uuid) {
-		return convertToDto(eventService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+	public EventDto getEventByUuid(String uuid, boolean detailedReferences) {
+		return (detailedReferences)
+			? convertToDetailedReferenceDto(eventService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight))
+			: convertToDto(eventService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -615,6 +612,8 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.RISK_LEVEL),
 			event.get(Event.SPECIFIC_RISK),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
+			event.get(Event.EVENT_INVESTIGATION_START_DATE),
+			event.get(Event.EVENT_INVESTIGATION_END_DATE),
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_VARIANT),
 			event.get(Event.DISEASE_DETAILS),
@@ -1037,6 +1036,14 @@ public class EventFacadeEjb implements EventFacade {
 		return eventDto;
 	}
 
+	public EventDto convertToDetailedReferenceDto(Event source, Pseudonymizer pseudonymizer) {
+		EventDto eventDto = toDto(source);
+		eventDto.setSuperordinateEvent(EventFacadeEjb.toDetailedReferenceDto(source.getSuperordinateEvent()));
+		pseudonymizeDto(source, eventDto, pseudonymizer);
+
+		return eventDto;
+	}
+
 	private void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
 			boolean inJurisdiction = eventService.inJurisdictionOrOwned(event);
@@ -1062,6 +1069,20 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		return new EventReferenceDto(entity.getUuid(), entity.toString());
+	}
+
+	public static EventReferenceDto toDetailedReferenceDto(Event entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		return new EventDetailedReferenceDto(
+			entity.getUuid(),
+			entity.toString(),
+			entity.getEventStatus(),
+			entity.getEventTitle(),
+			entity.getReportDateTime());
 	}
 
 	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {

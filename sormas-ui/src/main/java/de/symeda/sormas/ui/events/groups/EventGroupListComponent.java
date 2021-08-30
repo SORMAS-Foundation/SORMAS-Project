@@ -57,7 +57,7 @@ public class EventGroupListComponent extends VerticalLayout {
 
 		EventGroupList eventList = new EventGroupList(eventReference);
 		createEventGroupListComponent(eventList, I18nProperties.getCaption(Captions.eventGroups), e -> {
-			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid());
+			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid(), false);
 			UserProvider user = UserProvider.getCurrent();
 			if (!user.hasNationalJurisdictionLevel() && !user.hasRegion(event.getEventLocation().getRegion())) {
 				new Notification(
