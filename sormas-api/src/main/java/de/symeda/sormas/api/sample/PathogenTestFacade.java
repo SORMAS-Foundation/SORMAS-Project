@@ -53,4 +53,6 @@ public interface PathogenTestFacade {
     List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids);
 
     PathogenTestDto getLatestPathogenTest(String uuid);
+
+	long count(SampleCriteria sampleCriteria);
 }

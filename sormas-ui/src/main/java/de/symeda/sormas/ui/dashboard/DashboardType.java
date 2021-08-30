@@ -23,7 +23,8 @@ public enum DashboardType {
 
 	SURVEILLANCE,
 	CONTACTS,
-	CAMPAIGNS;
+	CAMPAIGNS,
+	SAMPLES;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

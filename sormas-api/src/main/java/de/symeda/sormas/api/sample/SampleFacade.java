@@ -25,8 +25,11 @@ import java.util.Map;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -80,4 +83,6 @@ public interface SampleFacade {
 	boolean exists(String uuid);
 
 	List<SampleDto> getByEventParticipantUuids(List<String> asList);
+
+	Map<SampleCountType, Long> getSampleCount(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 }

@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.sample.SampleCountType;
 import org.apache.commons.lang3.time.DateUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -44,6 +45,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleCountType;
 
 // FIXME: 06/08/2020 this should be refactored into two specific data providers for case and contact dashboards
 public class DashboardDataProvider {
@@ -84,6 +86,8 @@ public class DashboardDataProvider {
 	private Long casesPlacedInQuarantineCount = 0L;
 	private Long contactsConvertedToCaseCount = 0L;
 	private Long caseWithReferenceDefinitionFulfilledCount = 0L;
+	private Map<SampleCountType, Long> sampleCount = new HashMap<SampleCountType, Long>();
+	private Map<SampleCountType, Long> previousSampleCount = new HashMap<SampleCountType, Long>();
 
 	public void refreshData() {
 
@@ -208,6 +212,12 @@ public class DashboardDataProvider {
 
 			dashboardCriteria.dateBetween(fromDate, toDate).includeNotACaseClassification(true);
 			setCasesCountByClassification(FacadeProvider.getDashboardFacade().getCasesCountByClassification(dashboardCriteria));
+		}
+
+		if (getDashboardType() == DashboardType.SAMPLES) {
+			//Samples counts
+			setSampleCount(FacadeProvider.getSampleFacade().getSampleCount(region, district, disease, fromDate, toDate));
+			setPreviousSampleCount(FacadeProvider.getSampleFacade().getSampleCount(region, district, disease, previousFromDate, previousToDate));
 		}
 
 		if (this.disease == null || getDashboardType() == DashboardType.CONTACTS) {
@@ -457,5 +467,21 @@ public class DashboardDataProvider {
 
 	public void setCaseWithReferenceDefinitionFulfilledCount(Long caseWithReferenceDefinitionFulfilledCount) {
 		this.caseWithReferenceDefinitionFulfilledCount = caseWithReferenceDefinitionFulfilledCount;
+	}
+	
+	public Map<SampleCountType, Long> getSampleCount() {
+		return sampleCount;
+	}
+
+	public void setSampleCount(Map<SampleCountType, Long> sampleCount) {
+		this.sampleCount = sampleCount;
+	}
+
+	public Map<SampleCountType, Long> getPreviousSampleCount() {
+		return previousSampleCount;
+	}
+
+	public void setPreviousSampleCount(Map<SampleCountType, Long> previousSampleCount) {
+		this.previousSampleCount = previousSampleCount;
 	}
 }
