@@ -16,6 +16,9 @@
 package de.symeda.sormas.app.immunization.vaccination;
 
 import android.content.Context;
+import android.view.Menu;
+
+import java.util.List;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -38,6 +41,12 @@ public class VaccinationReadActivity extends BaseReadActivity<VaccinationEntity>
 	@Override
 	protected VaccinationEntity queryRootEntity(String recordUuid) {
 		return DatabaseHelper.getVaccinationDao().queryUuid(recordUuid);
+	}
+
+	@Override
+	public List<PageMenuItem> getPageMenuData() {
+		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(VaccinationSection.values(), getContext());
+		return menuItems;
 	}
 
 	@Override
@@ -72,4 +81,12 @@ public class VaccinationReadActivity extends BaseReadActivity<VaccinationEntity>
 	protected int getActivityTitle() {
 		return R.string.heading_vaccination;
 	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		boolean result = super.onCreateOptionsMenu(menu);
+		getEditMenu().setTitle(R.string.action_edit_vaccination);
+		return result;
+	}
+
 }

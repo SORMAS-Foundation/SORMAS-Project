@@ -54,12 +54,13 @@ public class ImmunizationReadActivity extends BaseReadActivity<Immunization> {
 
     @Override
     public void goToEditView() {
-        ImmunizationEditActivity.startActivity(getContext(), getRootUuid());
+        final ImmunizationSection section = ImmunizationSection.fromOrdinal(getActivePage().getPosition());
+        ImmunizationEditActivity.startActivity(getContext(), getRootUuid(), section);
     }
 
     @Override
     protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Immunization activityRootData) {
-        ImmunizationSection section = ImmunizationSection.fromOrdinal(menuItem.getPosition());
+        final ImmunizationSection section = ImmunizationSection.fromOrdinal(menuItem.getPosition());
         BaseReadFragment fragment;
         switch (section) {
             case IMMUNIZATION_INFO:

@@ -17,6 +17,7 @@ package de.symeda.sormas.app.immunization.vaccination;
 
 import android.os.Bundle;
 
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
@@ -39,6 +40,7 @@ public class VaccinationReadFragment extends BaseReadFragment<FragmentVaccinatio
 	public void onLayoutBinding(FragmentVaccinationReadLayoutBinding contentBinding) {
 
 		contentBinding.setData(record);
+		contentBinding.setTrimesterClass(Trimester.class);
 	}
 
 	@Override

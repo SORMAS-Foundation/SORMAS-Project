@@ -26,6 +26,8 @@ import java.util.List;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.immunization.Immunization;
 
 public class VaccinationDao extends AbstractAdoDao<VaccinationEntity> {
 
@@ -75,4 +77,17 @@ public class VaccinationDao extends AbstractAdoDao<VaccinationEntity> {
 		return queryBuilder;
 	}
 
+
+
+	@Override
+	public VaccinationEntity build() {
+		throw new UnsupportedOperationException();
+	}
+
+	public VaccinationEntity build(Immunization immunization) {
+		VaccinationEntity vaccinationEntity = super.build();
+		vaccinationEntity.setImmunization(immunization);
+		vaccinationEntity.setReportingUser(ConfigProvider.getUser());
+		return vaccinationEntity;
+	}
 }

@@ -122,6 +122,7 @@
     <string name="action_sync_person_lbds">LBDS Sync Persons</string>
     <string name="action_sync_case_lbds">LBDS Sync Cases</string>
     <string name="action_save_vaccination">Save Vaccination</string>
+    <string name="action_edit_vaccination">Edit Vaccination</string>
 
     <string name="caption_address">Address</string>
     <string name="caption_age">Age</string>

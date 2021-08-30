@@ -20,17 +20,19 @@ package de.symeda.sormas.app.immunization.vaccination;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.Menu;
 
-import java.util.List;
+import androidx.annotation.NonNull;
 
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -38,30 +40,54 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.util.Bundler;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
-public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity> {
+public class VaccinationNewActivity extends BaseEditActivity<VaccinationEntity> {
+
+    public static final String TAG = VaccinationNewActivity.class.getSimpleName();
+
+    private String immunizationUuid = null;
 
     private AsyncTask saveTask;
 
-    public static void startActivity(Context context, String rootUuid) {
-        BaseEditActivity.startActivity(context, VaccinationEditActivity.class, buildBundle(rootUuid));
+    public static void startActivity(Context context, String immunizationUuid) {
+        BaseEditActivity.startActivity(context, VaccinationNewActivity.class, buildBundle(immunizationUuid));
     }
 
-    public static void startActivity(Context context, String rootUuid, boolean finishInsteadOfUpNav) {
-        BaseEditActivity.startActivity(context, VaccinationEditActivity.class, buildBundle(rootUuid, finishInsteadOfUpNav));
+    public static Bundler buildBundle(String immunizationUuid) {
+        return buildBundle(null, 0).setImmunizationUuid(immunizationUuid);
+    }
+
+    @Override
+    public Enum getPageStatus() {
+        return null;
+    }
+
+    @Override
+    protected void onCreateInner(Bundle savedInstanceState) {
+        super.onCreateInner(savedInstanceState);
+        immunizationUuid = new Bundler(savedInstanceState).getImmunizationUuid();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        new Bundler(outState).setCaseUuid(immunizationUuid);
     }
 
     @Override
     protected VaccinationEntity queryRootEntity(String recordUuid) {
-        return DatabaseHelper.getVaccinationDao().queryUuid(recordUuid);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     protected VaccinationEntity buildRootEntity() {
-        throw new UnsupportedOperationException();
+        // basic instead of reference, because we want to have at least the related person
+        Immunization immunization = DatabaseHelper.getImmunizationDao().queryUuid(immunizationUuid);
+        return DatabaseHelper.getVaccinationDao().build(immunization);
     }
 
     @Override
@@ -72,45 +98,38 @@ public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity>
     }
 
     @Override
-    public List<PageMenuItem> getPageMenuData() {
-        List<PageMenuItem> menuItems = PageMenuItem.fromEnum(VaccinationSection.values(), getContext());
-        return menuItems;
-    }
-
-    @Override
     protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, VaccinationEntity activityRootData) {
-        VaccinationSection section = VaccinationSection.fromOrdinal(menuItem.getPosition());
-        BaseEditFragment fragment;
-        switch (section) {
-
-            case VACCINATION_INFO:
-                fragment = VaccinationEditFragment.newInstance(activityRootData);
-                break;
-            case HEALTH_CONDITIONS:
-                fragment = VaccinationEditHealthConditionsFragment.newInstance(activityRootData);
-                break;
-            default:
-                throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
-        }
-
+        BaseEditFragment fragment = VaccinationEditFragment.newInstance(activityRootData);
+        fragment.setLiveValidationDisabled(true);
         return fragment;
-
     }
 
     @Override
     protected int getActivityTitle() {
-        return R.string.heading_vaccination_edit;
+        return R.string.heading_vaccination_new;
+    }
+
+    @Override
+    public void replaceFragment(BaseEditFragment f, boolean allowBackNavigation) {
+        super.replaceFragment(f, allowBackNavigation);
     }
 
     @Override
     public void saveData() {
+
         if (saveTask != null) {
             NotificationHelper.showNotification(this, WARNING, getString(R.string.message_already_saving));
-            return;
+            return; // don't save multiple times
         }
 
-        final VaccinationEntity vaccinationEntity = (VaccinationEntity) getStoredRootEntity();
+        final VaccinationEntity vaccinationEntityToSave = getStoredRootEntity();
         VaccinationEditFragment fragment = (VaccinationEditFragment) getActiveFragment();
+
+        if (vaccinationEntityToSave.getReportingUser() == null) {
+            vaccinationEntityToSave.setReportingUser(ConfigProvider.getUser());
+        }
+
+        fragment.setLiveValidationDisabled(false);
 
         try {
             FragmentValidator.validate(getContext(), fragment.getContentBinding());
@@ -119,7 +138,7 @@ public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity>
             return;
         }
 
-        saveTask = new SavingAsyncTask(getRootView(), vaccinationEntity) {
+        saveTask = new SavingAsyncTask(getRootView(), vaccinationEntityToSave) {
 
             @Override
             protected void onPreExecute() {
@@ -127,19 +146,16 @@ public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity>
             }
 
             @Override
-            public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-                DatabaseHelper.getVaccinationDao().saveAndSnapshot(vaccinationEntity);
+            public void doInBackground(TaskResultHolder resultHolder) throws DaoException, ValidationException {
+                DatabaseHelper.getVaccinationDao().saveAndSnapshot(vaccinationEntityToSave);
             }
 
             @Override
             protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
                 hidePreloader();
                 super.onPostExecute(taskResult);
-
                 if (taskResult.getResultStatus().isSuccess()) {
                     finish();
-                } else {
-                    onResume(); // reload data
                 }
                 saveTask = null;
             }
@@ -153,10 +169,4 @@ public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity>
         if (saveTask != null && !saveTask.isCancelled())
             saveTask.cancel(true);
     }
-
-    @Override
-    public Enum getPageStatus() {
-        return null;
-    }
 }
-

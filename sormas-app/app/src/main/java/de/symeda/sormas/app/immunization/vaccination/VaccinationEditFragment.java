@@ -17,9 +17,11 @@ package de.symeda.sormas.app.immunization.vaccination;
 
 import java.util.List;
 
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
@@ -63,16 +65,18 @@ public class VaccinationEditFragment extends BaseEditFragment<FragmentVaccinatio
 	@Override
 	public void onLayoutBinding(FragmentVaccinationEditLayoutBinding contentBinding) {
 		contentBinding.setData(record);
+		contentBinding.setTrimesterClass(Trimester.class);
 	}
 
 	@Override
 	public void onAfterLayoutBinding(FragmentVaccinationEditLayoutBinding contentBinding) {
+		setFieldVisibilitiesAndAccesses(VaccinationDto.class, contentBinding.mainContent);
 
 		// Initialize fields
-		contentBinding.vaccinationVaccineName.initializeSpinner(vaccineList);
-		contentBinding.vaccinationVaccineManufacturer.initializeSpinner(vaccineManufacturerList);
+		contentBinding.vaccinationEntityVaccineName.initializeSpinner(vaccineList);
+		contentBinding.vaccinationEntityVaccineManufacturer.initializeSpinner(vaccineManufacturerList);
 		contentBinding.immunizationReportDate.initializeDateField(getFragmentManager());
-		contentBinding.vaccinationVaccinationDate.initializeDateTimeField(getFragmentManager());
+		contentBinding.vaccinationEntityVaccinationDate.initializeDateTimeField(getFragmentManager());
 	}
 
 	@Override

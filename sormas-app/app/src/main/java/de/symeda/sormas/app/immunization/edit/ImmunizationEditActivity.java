@@ -41,6 +41,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.immunization.ImmunizationSection;
+import de.symeda.sormas.app.immunization.vaccination.VaccinationNewActivity;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.util.Bundler;
 
@@ -199,6 +200,15 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 
 		if (saveTask != null && !saveTask.isCancelled()) {
 			saveTask.cancel(true);
+		}
+	}
+
+	@Override
+	public void goToNewView() {
+		ImmunizationSection activeSection = ImmunizationSection.fromOrdinal(getActivePage().getPosition());
+
+		if (activeSection == ImmunizationSection.VACCINATIONS_INFO) {
+			VaccinationNewActivity.startActivity(getContext(), getRootUuid());
 		}
 	}
 }
