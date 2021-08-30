@@ -712,7 +712,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 						exportContact.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
 						exportContact.setLastCooperativeVisitSymptoms(SymptomsHelper.buildSymptomsHumanString(symptoms, true, userLanguage));
-						exportContact.setLastCooperativeVisitSymptomatic(symptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+						exportContact.setLastCooperativeVisitSymptomatic(
+							symptoms.getSymptomatic() == null
+								? YesNoUnknown.UNKNOWN
+								: (symptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO));
 					}
 				}
 

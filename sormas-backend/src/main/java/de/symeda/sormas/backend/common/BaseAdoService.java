@@ -223,7 +223,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	@Override
-	public ADO getByUuid(@NotNull String uuid) {
+	public ADO getByUuid(String uuid) {
 
 		if (uuid == null) {
 			return null;
