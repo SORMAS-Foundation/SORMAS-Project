@@ -16,17 +16,17 @@ import de.symeda.sormas.ui.utils.PaginationList;
 
 public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
 
-	private final Long personId;
+	private final String personUuid;
 
-	public ImmunizationList(Long personId) {
+	public ImmunizationList(String personUuid) {
 		super(5);
-		this.personId = personId;
+		this.personUuid = personUuid;
 	}
 
 	@Override
 	public void reload() {
 		List<ImmunizationListEntryDto> immunizationsList =
-			FacadeProvider.getImmunizationFacade().getEntriesList(personId, 0, maxDisplayedEntries * 20);
+			FacadeProvider.getImmunizationFacade().getEntriesList(personUuid, 0, maxDisplayedEntries * 20);
 
 		setEntries(immunizationsList);
 		if (!immunizationsList.isEmpty()) {

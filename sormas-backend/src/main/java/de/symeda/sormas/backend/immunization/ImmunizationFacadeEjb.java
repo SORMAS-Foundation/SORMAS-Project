@@ -91,6 +91,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	@EJB
 	private CountryService countryService;
 	@EJB
+	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
+	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 
 	public static ImmunizationReferenceDto toReferenceDto(Immunization entity) {
@@ -285,7 +287,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
-	public List<ImmunizationListEntryDto> getEntriesList(Long personId, Integer first, Integer max) {
+	public List<ImmunizationListEntryDto> getEntriesList(String personUuid, Integer first, Integer max) {
+		Long personId = personFacade.getPersonIdByUuid(personUuid);
 		return immunizationService.getEntriesList(personId, first, max);
 	}
 

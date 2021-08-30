@@ -10,7 +10,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class ImmunizationListComponent extends VerticalLayout {
 
-	public ImmunizationListComponent(Long personId) {
+	public ImmunizationListComponent(String personuuid) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -21,7 +21,7 @@ public class ImmunizationListComponent extends VerticalLayout {
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		ImmunizationList immunizationList = new ImmunizationList(personId);
+		ImmunizationList immunizationList = new ImmunizationList(personuuid);
 		addComponent(immunizationList);
 		immunizationList.reload();
 

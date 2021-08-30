@@ -108,8 +108,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 		TravelEntryListComponent.addTravelEntryListComponent(layout, getReference());
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)) {
-			Long personId = FacadeProvider.getPersonFacade().getPersonIdByUuid(getReference().getUuid());
-			layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(personId)), IMMUNIZATION_LOC);
+			layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(getReference().getUuid())), IMMUNIZATION_LOC);
 		}
 	}
 
