@@ -23,6 +23,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;

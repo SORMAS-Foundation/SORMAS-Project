@@ -53,7 +53,4 @@ public class Immunization extends BaseImmunization {
 	public static final String VALID_UNTIL = "validUntil";
 	public static final String RELATED_CASE = "relatedCase";
 	public static final String VACCINATIONS = "vaccinations";
-	public static final String LAST_VACCINE_TYPE = "lastVaccineType";
-	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
-	public static final String FIRST_VACCINATION_DATE = "firstVaccinationDate";
 }

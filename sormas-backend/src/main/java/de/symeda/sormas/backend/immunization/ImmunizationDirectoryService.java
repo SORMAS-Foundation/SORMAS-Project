@@ -34,6 +34,7 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.entity.ImmunizationDirectory;
+import de.symeda.sormas.backend.immunization.joins.ImmunizationDirectoryJoins;
 import de.symeda.sormas.backend.immunization.tramsformers.ImmunizationIndexDtoResultTransformer;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;

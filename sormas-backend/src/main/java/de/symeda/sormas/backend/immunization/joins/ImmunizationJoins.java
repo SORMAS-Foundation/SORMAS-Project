@@ -13,25 +13,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.immunization;
+package de.symeda.sormas.backend.immunization.joins;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 
-import de.symeda.sormas.backend.common.QueryContext;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
+import de.symeda.sormas.backend.user.User;
 
-public class ImmunizationQueryContext<T> extends QueryContext<T, Immunization> {
+public class ImmunizationJoins<T> extends BaseImmunizationJoins<T, Immunization> {
 
-	public ImmunizationQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Immunization> root) {
-		super(cb, query, root, new ImmunizationJoins(root));
+	private Join<Immunization, User> reportingUser;
+
+	public ImmunizationJoins(From<T, Immunization> root) {
+		super(root);
 	}
 
-	@Override
-	protected Expression<?> createExpression(String name) {
-		return null;
+	public Join<Immunization, User> getReportingUser() {
+		return getOrCreate(reportingUser, Immunization.REPORTING_USER, JoinType.LEFT, this::setReportingUser);
+	}
+
+	private void setReportingUser(Join<Immunization, User> reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 }

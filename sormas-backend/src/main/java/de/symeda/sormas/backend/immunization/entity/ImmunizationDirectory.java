@@ -14,6 +14,9 @@ import de.symeda.sormas.backend.vaccination.LastVaccineType;
 @Table(name = "immunization")
 public class ImmunizationDirectory extends BaseImmunization {
 
+	public static final String LAST_VACCINE_TYPE = "lastVaccineType";
+	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
+	public static final String FIRST_VACCINATION_DATE = "firstVaccinationDate";
 	private LastVaccineType lastVaccineType;
 	private LastVaccinationDate lastVaccinationDate;
 	private FirstVaccinationDate firstVaccinationDate;
