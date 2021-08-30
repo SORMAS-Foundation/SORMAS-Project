@@ -288,6 +288,11 @@ public class RegionFacadeEjb implements RegionFacade {
 
 	@Override
 	public void dearchive(String regionUuid) {
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
+
 		Region region = regionService.getByUuid(regionUuid);
 		region.setArchived(false);
 		regionService.ensurePersisted(region);

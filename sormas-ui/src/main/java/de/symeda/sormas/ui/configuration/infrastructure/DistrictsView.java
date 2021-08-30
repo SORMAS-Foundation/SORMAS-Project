@@ -78,7 +78,7 @@ public class DistrictsView extends AbstractConfigurationView {
 	protected Button importButton;
 	private MenuBar bulkOperationsDropdown;
 
-	boolean infrastructureDataEditable;
+	private final boolean infrastructureDataEditable;
 	
 	public DistrictsView() {
 

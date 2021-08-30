@@ -351,6 +351,10 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	@Override
 	public void dearchive(String districtUuid) {
 
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
+
 		District district = districtService.getByUuid(districtUuid);
 		district.setArchived(false);
 		districtService.ensurePersisted(district);
