@@ -228,9 +228,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	public void onAfterLayoutBinding(FragmentEventEditLayoutBinding contentBinding) {
 		// Initialize ControlSpinnerFields
 		contentBinding.eventEventIdentificationSource.initializeSpinner(eventIdentificationSourceList);
-		contentBinding.eventDisease.initializeSpinner(
-			diseaseList,
-			record.getDisease() != null ? record.getDisease() : DiseaseConfigurationCache.getInstance().getDefaultDisease());
+		contentBinding.eventDisease.initializeSpinner(diseaseList);
 		contentBinding.eventDiseaseVariant.initializeSpinner(diseaseVariantList);
 		contentBinding.eventTypeOfPlace.initializeSpinner(typeOfPlaceList);
 		contentBinding.eventSrcType.initializeSpinner(srcTypeList);

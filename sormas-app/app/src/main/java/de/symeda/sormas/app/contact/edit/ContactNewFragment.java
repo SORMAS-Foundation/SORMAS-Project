@@ -186,9 +186,6 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 
 	@Override
 	public void onAfterLayoutBinding(FragmentContactNewLayoutBinding contentBinding) {
-		contentBinding.contactDisease
-			.setValue(record.getDisease() != null ? record.getDisease() : DiseaseConfigurationCache.getInstance().getDefaultDisease());
-
 		contentBinding.personSex.initializeSpinner(sexList);
 		contentBinding.contactRelationToCase.initializeSpinner(relationshipList);
 		contentBinding.contactContactCategory.initializeSpinner(categoryList);

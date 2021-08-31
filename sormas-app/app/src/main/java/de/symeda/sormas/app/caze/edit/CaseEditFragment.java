@@ -677,9 +677,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		// Initialize ControlSpinnerFields
-		contentBinding.caseDataDisease.initializeSpinner(
-			diseaseList,
-			record.getDisease() != null ? record.getDisease() : DiseaseConfigurationCache.getInstance().getDefaultDisease());
+		contentBinding.caseDataDisease.initializeSpinner(diseaseList);
 		contentBinding.caseDataDiseaseVariant.initializeSpinner(diseaseVariantList);
 		contentBinding.caseDataCaseClassification.initializeSpinner(caseClassificationList);
 		contentBinding.caseDataCaseIdentificationSource.initializeSpinner(caseIdentificationSourceList);

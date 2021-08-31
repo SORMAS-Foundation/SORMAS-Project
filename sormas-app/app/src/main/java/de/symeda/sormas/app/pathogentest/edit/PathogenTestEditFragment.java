@@ -148,27 +148,24 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 
 		contentBinding.pathogenTestTestedDiseaseVariant.initializeSpinner(diseaseVariantList);
 
-		contentBinding.pathogenTestTestedDisease.initializeSpinner(
-			diseaseList,
-			record.getTestedDisease() != null ? record.getTestedDisease() : DiseaseConfigurationCache.getInstance().getDefaultDisease(),
-			new ValueChangeListener() {
+		contentBinding.pathogenTestTestedDisease.initializeSpinner(diseaseList, new ValueChangeListener() {
 
-				final Disease currentDisease = record.getTestedDisease();
+			final Disease currentDisease = record.getTestedDisease();
 
-				@Override
-				public void onChange(ControlPropertyField field) {
+			@Override
+			public void onChange(ControlPropertyField field) {
 
-					if (PathogenTestType.PCR_RT_PCR == record.getTestType() && Disease.CORONAVIRUS == field.getValue()) {
-						getContentBinding().pathogenTestPcrTestSpecification.setVisibility(View.VISIBLE);
-					} else {
-						getContentBinding().pathogenTestPcrTestSpecification.hideField(false);
-					}
-
-					if (this.currentDisease == null || contentBinding.pathogenTestTestedDisease.getValue() != currentDisease) {
-						updateDiseaseVariantsField(contentBinding);
-					}
+				if (PathogenTestType.PCR_RT_PCR == record.getTestType() && Disease.CORONAVIRUS == field.getValue()) {
+					getContentBinding().pathogenTestPcrTestSpecification.setVisibility(View.VISIBLE);
+				} else {
+					getContentBinding().pathogenTestPcrTestSpecification.hideField(false);
 				}
-			});
+
+				if (this.currentDisease == null || contentBinding.pathogenTestTestedDisease.getValue() != currentDisease) {
+					updateDiseaseVariantsField(contentBinding);
+				}
+			}
+		});
 
 		contentBinding.pathogenTestTestResult.initializeSpinner(testResultList, new ValueChangeListener() {
 
