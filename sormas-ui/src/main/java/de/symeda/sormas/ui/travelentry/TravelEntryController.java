@@ -39,12 +39,12 @@ public class TravelEntryController {
 		navigator.addView(TravelEntryPersonView.VIEW_NAME, TravelEntryPersonView.class);
 	}
 
-	public void create(CaseReferenceDto caseReferenceDto, Runnable callback) {
-		CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent = getTravelEntryCreateComponent(caseReferenceDto, callback);
+	public void create(CaseReferenceDto caseReferenceDto) {
+		CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent = getTravelEntryCreateComponent(caseReferenceDto);
 		VaadinUiUtil.showModalPopupWindow(travelEntryCreateComponent, I18nProperties.getString(Strings.headingCreateNewTravelEntry));
 	}
 
-	private CommitDiscardWrapperComponent<TravelEntryCreateForm> getTravelEntryCreateComponent(CaseReferenceDto caseReferenceDto, Runnable callback) {
+	private CommitDiscardWrapperComponent<TravelEntryCreateForm> getTravelEntryCreateComponent(CaseReferenceDto caseReferenceDto) {
 
 		TravelEntryCreateForm createForm = new TravelEntryCreateForm();
 		TravelEntryDto travelEntry = TravelEntryDto.build(null);
@@ -94,10 +94,7 @@ public class TravelEntryController {
 				} else {
 					FacadeProvider.getTravelEntryFacade().save(dto);
 				}
-
-				if (callback != null) {
-					callback.run();
-				}
+				navigateToTravelEntry(dto.getUuid());
 			}
 		});
 
