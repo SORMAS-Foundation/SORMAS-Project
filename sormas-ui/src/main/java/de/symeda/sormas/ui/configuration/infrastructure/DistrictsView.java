@@ -78,8 +78,6 @@ public class DistrictsView extends AbstractConfigurationView {
 	protected Button importButton;
 	private MenuBar bulkOperationsDropdown;
 
-	private final boolean infrastructureDataEditable;
-	
 	public DistrictsView() {
 
 		super(VIEW_NAME);
@@ -102,7 +100,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 		
 		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
@@ -149,8 +147,8 @@ public class DistrictsView extends AbstractConfigurationView {
 			addHeaderComponent(btnLeaveBulkEditMode);
 
 			btnEnterBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(true);
 				viewConfiguration.setInEagerMode(true);
+				bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
@@ -158,8 +156,8 @@ public class DistrictsView extends AbstractConfigurationView {
 				grid.reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(false);
 				viewConfiguration.setInEagerMode(false);
+				bulkOperationsDropdown.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				searchField.setEnabled(true);
@@ -258,10 +256,7 @@ public class DistrictsView extends AbstractConfigurationView {
 									});
 						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					bulkOperationsDropdown.setVisible(
-						viewConfiguration.isInEagerMode()
-							&& !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus())
-							&& (infrastructureDataEditable || !EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}
@@ -301,5 +296,13 @@ public class DistrictsView extends AbstractConfigurationView {
 		regionFilter.setValue(criteria.getRegion());
 
 		applyingCriteria = false;
+	}
+
+	private boolean isBulkOperationsDropdownVisible() {
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+
+		return viewConfiguration.isInEagerMode()
+				&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())
+				|| (infrastructureDataEditable && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 	}
 }

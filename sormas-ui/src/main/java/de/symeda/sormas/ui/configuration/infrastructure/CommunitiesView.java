@@ -22,6 +22,7 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -35,6 +36,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
@@ -82,8 +84,6 @@ public class CommunitiesView extends AbstractConfigurationView {
 	protected Button createButton;
 	private MenuBar bulkOperationsDropdown;
 
-	private final boolean infrastructureDataEditable;
-
 	public CommunitiesView() {
 
 		super(VIEW_NAME);
@@ -106,7 +106,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 		
 		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
@@ -137,6 +137,10 @@ public class CommunitiesView extends AbstractConfigurationView {
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
+		} else if (!infrastructureDataEditable) {
+			Label infrastructureDataLocked = new Label(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+			infrastructureDataLocked.setIcon(VaadinIcons.WARNING);
+			addHeaderComponent(infrastructureDataLocked);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -150,8 +154,8 @@ public class CommunitiesView extends AbstractConfigurationView {
 			addHeaderComponent(btnLeaveBulkEditMode);
 
 			btnEnterBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(true);
 				viewConfiguration.setInEagerMode(true);
+				bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
@@ -159,8 +163,8 @@ public class CommunitiesView extends AbstractConfigurationView {
 				grid.reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(false);
 				viewConfiguration.setInEagerMode(false);
+				bulkOperationsDropdown.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				searchField.setEnabled(true);
@@ -274,10 +278,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 									});
 						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					bulkOperationsDropdown.setVisible(
-						viewConfiguration.isInEagerMode()
-							&& !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus())
-							&& (infrastructureDataEditable || !EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}
@@ -318,5 +319,13 @@ public class CommunitiesView extends AbstractConfigurationView {
 		districtFilter.setValue(criteria.getDistrict());
 
 		applyingCriteria = false;
+	}
+
+	private boolean isBulkOperationsDropdownVisible() {
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+
+		return viewConfiguration.isInEagerMode()
+				&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())
+				|| (infrastructureDataEditable && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 	}
 }

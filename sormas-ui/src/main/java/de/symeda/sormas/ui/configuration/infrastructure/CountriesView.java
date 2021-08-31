@@ -82,8 +82,6 @@ public class CountriesView extends AbstractConfigurationView {
 	protected Button importDefaultCountriesButton;
 	private MenuBar bulkOperationsDropdown;
 
-	private final boolean infrastructureDataEditable;
-	
 	public CountriesView() {
 		super(VIEW_NAME);
 
@@ -104,7 +102,7 @@ public class CountriesView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 
 		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
@@ -157,8 +155,8 @@ public class CountriesView extends AbstractConfigurationView {
 			addHeaderComponent(btnLeaveBulkEditMode);
 
 			btnEnterBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(true);
 				viewConfiguration.setInEagerMode(true);
+				bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 				btnEnterBulkEditMode.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(true);
 				searchField.setEnabled(false);
@@ -166,8 +164,8 @@ public class CountriesView extends AbstractConfigurationView {
 				grid.reload();
 			});
 			btnLeaveBulkEditMode.addClickListener(e -> {
-				bulkOperationsDropdown.setVisible(false);
 				viewConfiguration.setInEagerMode(false);
+				bulkOperationsDropdown.setVisible(false);
 				btnLeaveBulkEditMode.setVisible(false);
 				btnEnterBulkEditMode.setVisible(true);
 				searchField.setEnabled(true);
@@ -250,10 +248,7 @@ public class CountriesView extends AbstractConfigurationView {
 									() -> navigateTo(criteria));
 						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
-					bulkOperationsDropdown.setVisible(
-						viewConfiguration.isInEagerMode()
-							&& !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus())
-							&& (infrastructureDataEditable || !EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}
@@ -293,5 +288,13 @@ public class CountriesView extends AbstractConfigurationView {
 		subcontinentFilter.setValue(criteria.getSubcontinent());
 
 		applyingCriteria = false;
+	}
+	
+	private boolean isBulkOperationsDropdownVisible() {
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+
+		return viewConfiguration.isInEagerMode()
+			&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())
+				|| (infrastructureDataEditable && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 	}
 }
