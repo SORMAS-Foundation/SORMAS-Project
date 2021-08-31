@@ -301,4 +301,9 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 			persist(noneFacility);
 		}
 	}
+
+	@Override
+	public List<Facility> getByExternalId(String externalId, boolean includeArchived) {
+		return getByExternalId(externalId, Facility.EXTERNAL_ID, includeArchived);
+	}
 }

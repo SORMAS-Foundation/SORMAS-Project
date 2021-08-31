@@ -142,15 +142,15 @@ public class PopulationDataImporter extends DataImporter {
 								if (finalCommunity != null) {
 									CommunityDto communityDto = FacadeProvider.getCommunityFacade().getByUuid(finalCommunity.getUuid());
 									communityDto.setGrowthRate(growthRate);
-									FacadeProvider.getCommunityFacade().saveCommunity(communityDto);
+									FacadeProvider.getCommunityFacade().save(communityDto);
 								} else if (finalDistrict != null) {
 									DistrictDto districtDto = FacadeProvider.getDistrictFacade().getDistrictByUuid(finalDistrict.getUuid());
 									districtDto.setGrowthRate(growthRate);
-									FacadeProvider.getDistrictFacade().saveDistrict(districtDto);
+									FacadeProvider.getDistrictFacade().save(districtDto);
 								} else {
-									RegionDto regionDto = FacadeProvider.getRegionFacade().getRegionByUuid(finalRegion.getUuid());
+									RegionDto regionDto = FacadeProvider.getRegionFacade().getByUuid(finalRegion.getUuid());
 									regionDto.setGrowthRate(growthRate);
-									FacadeProvider.getRegionFacade().saveRegion(regionDto);
+									FacadeProvider.getRegionFacade().save(regionDto);
 								}
 							}
 						} else {

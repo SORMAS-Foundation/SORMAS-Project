@@ -145,9 +145,9 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		assertNull(results.get(0).getPopulation());
 
 		PopulationDataDto populationData = PopulationDataDto.build(new Date());
-		RegionDto region = getRegionFacade().getRegionByUuid(rdcf.region.getUuid());
+		RegionDto region = getRegionFacade().getByUuid(rdcf.region.getUuid());
 		region.setGrowthRate(10f);
-		getRegionFacade().saveRegion(region);
+		getRegionFacade().save(region);
 		populationData.setRegion(rdcf.region);
 		populationData.setPopulation(new Integer(10000));
 		getPopulationDataFacade().savePopulationData(Arrays.asList(populationData));
