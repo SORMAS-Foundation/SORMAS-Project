@@ -24,6 +24,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 
@@ -76,7 +77,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		if (district != null && !PointOfEntryDto.isNameOtherPointOfEntry(name.trim())) {
 			filter = cb.and(filter, cb.equal(from.get(PointOfEntry.DISTRICT), district));
 		}
-		if(!includeArchivedEntities) {
+		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
 
@@ -85,21 +86,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 	}
 
 	public List<PointOfEntry> getByExternalId(String externalId, boolean includeArchivedEntities) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PointOfEntry> cq = cb.createQuery(getElementClass());
-		Root<PointOfEntry> from = cq.from(getElementClass());
-
-		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(PointOfEntry.EXTERNAL_ID)), externalId.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(PointOfEntry.EXTERNAL_ID))), externalId.trim().toLowerCase()));
-
-		if (!includeArchivedEntities) {
-			filter = cb.and(filter, createBasicFilter(cb, from));
-		}
-
-		cq.where(filter);
-		return em.createQuery(cq).getResultList();
+		return getByExternalId(externalId, PointOfEntry.EXTERNAL_ID, includeArchivedEntities);
 	}
 
 	public Predicate buildCriteriaFilter(PointOfEntryCriteria criteria, CriteriaBuilder cb, Root<PointOfEntry> pointOfEntry) {

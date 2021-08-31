@@ -70,7 +70,7 @@ public class CountryImporter extends InfrastructureImporter {
 
 		if (!iHasImportError) {
 			try {
-				FacadeProvider.getCountryFacade().saveCountry(newEntityDto, allowOverwrite);
+				FacadeProvider.getCountryFacade().save(newEntityDto, allowOverwrite);
 				return ImportLineResult.SUCCESS;
 			} catch (EmptyValueException e) {
 				writeImportError(values, e.getMessage());
