@@ -243,13 +243,13 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	@Override
-	public RegionDto getRegionByUuid(String uuid) {
+	public RegionDto getByUuid(String uuid) {
 		return toDto(regionService.getByUuid(uuid));
 	}
 
 	@Override
 	public List<RegionDto> getByUuids(List<String> uuids) {
-		return regionService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return regionService.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -344,12 +344,12 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	@Override
-	public void saveRegion(RegionDto dto) throws ValidationRuntimeException {
-		saveRegion(dto, false);
+	public RegionDto save(RegionDto dto) throws ValidationRuntimeException {
+		return save(dto, false);
 	}
 
 	@Override
-	public void saveRegion(RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public RegionDto save(RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		Region region = regionService.getByUuid(dto.getUuid());
 
@@ -358,7 +358,7 @@ public class RegionFacadeEjb implements RegionFacade {
 			if (!duplicates.isEmpty()) {
 				if (allowMerge) {
 					region = duplicates.get(0);
-					RegionDto dtoToMerge = getRegionByUuid(region.getUuid());
+					RegionDto dtoToMerge = getByUuid(region.getUuid());
 					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
 				} else {
 					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importRegionAlreadyExists));
@@ -368,6 +368,7 @@ public class RegionFacadeEjb implements RegionFacade {
 
 		region = fillOrBuildEntity(dto, region, true);
 		regionService.ensurePersisted(region);
+		return toDto(region);
 	}
 
 	@Override

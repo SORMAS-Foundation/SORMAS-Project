@@ -1355,7 +1355,7 @@ public class TestDataCreator {
 		CommunityDto community = CommunityDto.build();
 		community.setName(communityName);
 		community.setDistrict(district);
-		beanTest.getCommunityFacade().saveCommunity(community);
+		beanTest.getCommunityFacade().save(community);
 		return community;
 	}
 
@@ -1404,7 +1404,7 @@ public class TestDataCreator {
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);
-		beanTest.getFacilityFacade().saveFacility(facility);
+		beanTest.getFacilityFacade().save(facility);
 		return facility;
 	}
 
