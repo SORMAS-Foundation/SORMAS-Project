@@ -37,7 +37,8 @@ public enum ExportEntityName {
 	TASKS("entityTasks", "tasks"),
 	USER_ROLES("entityUserRoles", "user roles"),
 	DOCUMENTS("entityDocuments", "documents"),
-	DATA_DICTIONARY("entityDataDictionary", "data dictionary");
+	DATA_DICTIONARY("entityDataDictionary", "data dictionary"),
+	PERSONS("entityPersons", "persons");
 
 	private final String languageKey;
 	private final String defaultName;

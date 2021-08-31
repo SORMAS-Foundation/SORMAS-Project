@@ -44,7 +44,7 @@ import javax.persistence.Transient;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.externaldata.HasExternalData;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.BurialConductor;
@@ -64,13 +64,13 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.immunization.Immunization;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.Country;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 
 @Entity
@@ -95,6 +95,8 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	public static final String BIRTHDATE_DD = "birthdateDD";
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
+	public static final String CAUSE_OF_DEATH = "causeOfDeath";
+	public static final String CAUSE_OF_DEATH_DETAILS = "causeOfDeathDetails";
 	public static final String CAUSE_OF_DEATH_DISEASE = "causeOfDeathDisease";
 	public static final String DEATH_PLACE_TYPE = "deathPlaceType";
 	public static final String DEATH_PLACE_DESCRIPTION = "deathPlaceDescription";
@@ -112,6 +114,7 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	public static final String ARMED_FORCES_RELATION_TYPE = "armedForcesRelationType";
 	public static final String FATHERS_NAME = "fathersName";
 	public static final String MOTHERS_NAME = "mothersName";
+	public static final String NAMES_OF_GUARDIANS = "namesOfGuardians";
 	public static final String PLACE_OF_BIRTH_REGION = "placeOfBirthRegion";
 	public static final String PLACE_OF_BIRTH_DISTRICT = "placeOfBirthDistrict";
 	public static final String PLACE_OF_BIRTH_COMMUNITY = "placeOfBirthCommunity";
@@ -124,6 +127,9 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
 	public static final String PERSON_CONTACT_DETAILS = "personContactDetails";
+
+	public static final String HAS_COVID_APP = "hasCovidApp";
+	public static final String COVID_CODE_DELIVERED = "covidCodeDelivered";
 
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String EXTERNAL_ID = "externalId";

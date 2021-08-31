@@ -12,12 +12,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
@@ -40,8 +38,8 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -553,23 +551,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			}
 			criteria.dateFilterOption(dateFilterOption);
 		} else {
-			if (dateFilterOption == DateFilterOption.DATE) {
-				Notification notification = new Notification(
-					I18nProperties.getString(Strings.headingMissingDateFilter),
-					I18nProperties.getString(Strings.messageMissingDateFilter),
-					Notification.Type.WARNING_MESSAGE,
-					false);
-				notification.setDelayMsec(-1);
-				notification.show(Page.getCurrent());
-			} else {
-				Notification notification = new Notification(
-					I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
-					I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
-					Notification.Type.WARNING_MESSAGE,
-					false);
-				notification.setDelayMsec(-1);
-				notification.show(Page.getCurrent());
-			}
+			weekAndDateFilter.setNotificationsForMissingFilters();
 		}
 	}
 

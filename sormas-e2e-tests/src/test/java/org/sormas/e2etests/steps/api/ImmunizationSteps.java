@@ -89,5 +89,12 @@ public class ImmunizationSteps implements En {
           String responseBody = response.getBody().toString();
           Truth.assertThat(expectedBody.equals(String.valueOf(responseBody)));
         });
+
+    Then(
+        "API: I check that POST immunization call status code is {int}",
+        (Integer expectedStatus) -> {
+          int responseStatusCode = apiState.getResponse().getStatusCode();
+          Truth.assertThat(expectedStatus).isEqualTo(responseStatusCode);
+        });
   }
 }
