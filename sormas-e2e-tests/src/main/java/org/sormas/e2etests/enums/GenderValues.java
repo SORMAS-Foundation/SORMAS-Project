@@ -18,36 +18,24 @@
 
 package org.sormas.e2etests.enums;
 
+import java.util.Random;
 import lombok.Getter;
 
 @Getter
-public enum Roles {
-  PASSANGER("Passanger"),
-  STUFF("Stuff"),
-  NURSING_STAFF("Nursing Staff"),
-  MEDICAL_STAFF("Medical Staff"),
-  VISITOR("Visitor"),
-  GUEST("Guest"),
-  CUSTOMER("Customer"),
-  CONSERVATEE("Conservatee"),
-  PATIENT("Patient"),
-  EDUCATOR("Educator"),
-  TRAINEE("Trainee"),
-  PUPIL("Pupil"),
-  STUDENT("Student"),
-  PARENT("Parent"),
-  TEACHER("Teacher"),
-  UNKNOWN("Unknown"),
-  OTHER("Other");
+public enum GenderValues {
+  MALE("Male"),
+  FEMALE("Female"),
+  OTHER("Other"),
+  UNKNOWN("Unknown");
 
-  private final String role;
+  private final String gender;
 
-  Roles(String role) {
-    this.role = role;
+  GenderValues(String humanGender) {
+    gender = humanGender;
   }
 
-  @Override
-  public String toString() {
-    return this.role;
+  public static String getRandomGender() {
+    Random random = new Random();
+    return String.valueOf(GenderValues.values()[random.nextInt(values().length)].gender);
   }
 }
