@@ -27,10 +27,6 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Month;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -39,11 +35,15 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -81,8 +81,6 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		+ fluidRowLocs(PersonDto.PRESENT_CONDITION, "")
 		+ fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS);
 	//@formatter:on
-
-	private final int DAYS_IN_THE_FUTURE = 365;
 
 	private ComboBox birthDateDay;
 
@@ -155,15 +153,10 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		facilityDetails.setVisible(false);
 
 		addField(ImmunizationDto.START_DATE, DateField.class);
-		addDateField(ImmunizationDto.END_DATE, DateField.class, DAYS_IN_THE_FUTURE);
+		addDateField(ImmunizationDto.END_DATE, DateField.class, -1);
 
-		addField(ImmunizationDto.VALID_FROM, DateField.class);
-		addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, DAYS_IN_THE_FUTURE);
-
-		Label vaccinationHeadingLabel = new Label(I18nProperties.getString(Strings.headingVaccination));
-		vaccinationHeadingLabel.addStyleName(H3);
-		getContent().addComponent(vaccinationHeadingLabel, VACCINATION_HEADING_LOC);
-		vaccinationHeadingLabel.setVisible(false);
+		addDateField(ImmunizationDto.VALID_FROM, DateField.class, -1);
+		addDateField(ImmunizationDto.VALID_UNTIL, DateField.class, -1);
 
 		TextField numberOfDosesField = addField(ImmunizationDto.NUMBER_OF_DOSES, TextField.class);
 		numberOfDosesField.setConverter(new StringToIntegerConverter());
@@ -267,6 +260,9 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 
 		overwriteImmunizationManagementStatus.addValueChangeListener(e -> {
 			boolean selectedValue = (boolean) e.getProperty().getValue();
+			if (!selectedValue) {
+				managementStatusField.setValue(ImmunizationManagementStatus.SCHEDULED);
+			}
 			managementStatusField.setEnabled(selectedValue);
 		});
 
@@ -279,7 +275,6 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 			}
 			boolean isVaccinationVisible =
 				MeansOfImmunization.VACCINATION.equals(meansOfImmunization) || MeansOfImmunization.VACCINATION_RECOVERY.equals(meansOfImmunization);
-			vaccinationHeadingLabel.setVisible(isVaccinationVisible);
 			numberOfDosesField.setVisible(isVaccinationVisible);
 			if (!isVaccinationVisible) {
 				numberOfDosesField.setValue(null);

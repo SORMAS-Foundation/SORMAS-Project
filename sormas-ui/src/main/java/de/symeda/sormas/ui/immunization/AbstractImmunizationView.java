@@ -63,7 +63,7 @@ public class AbstractImmunizationView extends AbstractDetailView<ImmunizationRef
 	}
 
 	public void setImmunizationEditPermission(Component component) {
-		Boolean isImmunizationEditAllowed = FacadeProvider.getImmunizationFacade().isImmunizationEditAllowed(getReference().getUuid());
+		boolean isImmunizationEditAllowed = FacadeProvider.getImmunizationFacade().isImmunizationEditAllowed(getReference().getUuid());
 
 		if (!isImmunizationEditAllowed) {
 			component.setEnabled(false);

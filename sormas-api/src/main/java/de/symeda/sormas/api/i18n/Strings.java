@@ -221,6 +221,7 @@ public interface Strings {
 	String entityImmunizations = "entityImmunizations";
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPersonContactDetail = "entityPersonContactDetail";
+	String entityPersons = "entityPersons";
 	String entityPointsOfEntry = "entityPointsOfEntry";
 	String entityPrescription = "entityPrescription";
 	String entityPrescriptions = "entityPrescriptions";
@@ -285,6 +286,7 @@ public interface Strings {
 	String errorSormasToSormasOwnershipAlreadyHandedOver = "errorSormasToSormasOwnershipAlreadyHandedOver";
 	String errorSormasToSormasRequestToken = "errorSormasToSormasRequestToken";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
+	String errorSormasToSormasRevokeNotPending = "errorSormasToSormasRevokeNotPending";
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
 	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
 	String errorSormasToSormasShare = "errorSormasToSormasShare";

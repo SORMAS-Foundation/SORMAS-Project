@@ -21,13 +21,13 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -55,7 +55,6 @@ public class ImmunizationDto extends PseudonymizableDto {
 	public static final String MEANS_OF_IMMUNIZATION_DETAILS = "meansOfImmunizationDetails";
 	public static final String MANAGEMENT_STATUS = "managementStatus";
 	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
-	public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
 
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";

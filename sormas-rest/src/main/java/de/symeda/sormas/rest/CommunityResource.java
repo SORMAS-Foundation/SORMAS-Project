@@ -32,8 +32,8 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.region.CommunityCriteria;
-import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**

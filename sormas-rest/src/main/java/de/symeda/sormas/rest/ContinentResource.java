@@ -12,7 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.region.ContinentDto;
+import de.symeda.sormas.api.infrastructure.continent.ContinentDto;
 
 @Path("/continents")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")

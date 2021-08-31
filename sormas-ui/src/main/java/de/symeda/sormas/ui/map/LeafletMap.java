@@ -29,7 +29,7 @@ import com.vaadin.ui.JavaScriptFunction;
 import com.vaadin.util.ReflectTools;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.geo.GeoLatLon;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import org.slf4j.Logger;

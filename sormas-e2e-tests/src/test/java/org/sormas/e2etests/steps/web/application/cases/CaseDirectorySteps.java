@@ -29,7 +29,7 @@ import org.openqa.selenium.By;
 import org.sormas.e2etests.common.*;
 import org.sormas.e2etests.enums.CaseClasification;
 import org.sormas.e2etests.enums.CaseOutcome;
-import org.sormas.e2etests.enums.Disease;
+import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -102,7 +102,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               CASE_GRID_RESULTS_ROWS, maximumNumberOfRows);
           webDriverHelpers.fillAndSubmitInWebElement(
-              NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getEditPerson().getFirstName());
+              NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getLastCreatedPerson().getFirstName());
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, apiState.getCreatedCases().size());
@@ -165,14 +165,14 @@ public class CaseDirectorySteps implements En {
     Then(
         "^I check the displayed Disease filter dropdown",
         () ->
-            Arrays.stream(Disease.values())
+            Arrays.stream(DiseasesValues.values())
                 .forEach(
                     aDisease -> {
                       webDriverHelpers.selectFromCombobox(
-                          CASE_DISEASE_FILTER_COMBOBOX, aDisease.getDisease());
+                          CASE_DISEASE_FILTER_COMBOBOX, aDisease.getDiseaseName());
                       webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
                       webDriverHelpers.waitUntilAListOfElementsHasText(
-                          CASE_GRID_RESULTS_ROWS, aDisease.getDisease());
+                          CASE_GRID_RESULTS_ROWS, aDisease.getDiseaseName());
                       assertHelpers.assertWithPoll15Second(
                           () ->
                               Truth.assertThat(
