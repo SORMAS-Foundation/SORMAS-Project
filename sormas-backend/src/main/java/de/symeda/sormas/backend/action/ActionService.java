@@ -239,7 +239,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		} else if (criteria.getActionDateFrom() != null) {
 			filter =
 					CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(action.get(Action.DATE), criteria.getActionDateFrom()));
-		} else if (criteria.getActionChangeDateTo() != null) {
+		} else if (criteria.getActionDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(action.get(Action.DATE), criteria.getActionDateTo()));
 		}
 
