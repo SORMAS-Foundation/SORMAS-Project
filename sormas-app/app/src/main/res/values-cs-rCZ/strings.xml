@@ -555,7 +555,7 @@
     <string name="validation_visit_date_time_after_followup">Návštěva nemůže být delší než 30 dní po skončení následného období.</string>
     <string name="validation_visit_date_time_before_contact_date">Návštěva nemůže být delší než 30 dní před posledním kontaktním datem.</string>
     <string name="validation_visit_date_time_before_report_date">Návštěva nemůže být delší než 30 dní před datem hlášení kontaktu.</string>
-    <string name="value_unknown">Unknown</string>
+    <string name="value_unknown">Neznámý</string>
     <string name="value_age_unknown">Věk N/A</string>
     <string name="value_blood_pressure_unknown">Krevní tlak N/A</string>
     <string name="value_case_uuid_unknown">ID případu N/A</string>
