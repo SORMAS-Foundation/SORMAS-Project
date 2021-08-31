@@ -92,6 +92,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Required
 	private Disease disease;
 	@Outbreaks
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	@Required
 	@EmbeddedPersonalData
@@ -123,6 +124,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Outbreaks
 	@PersonalData
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 
 	private Date startDate;

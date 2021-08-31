@@ -346,6 +346,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
 	@Outbreaks
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String vaccinationDoses;
 	@Diseases({
 		Disease.AFP,
