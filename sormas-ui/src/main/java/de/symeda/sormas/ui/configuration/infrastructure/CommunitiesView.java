@@ -116,7 +116,14 @@ public class CommunitiesView extends AbstractConfigurationView {
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(importButton);
+		} else if (!infrastructureDataEditable) {
+			Label infrastructureDataLocked = new Label();
+			infrastructureDataLocked.setCaption(I18nProperties.getString(Strings.headingInfrastructureLocked));
+			infrastructureDataLocked.setValue(I18nProperties.getString(Strings.messageInfrastructureLocked));
+			infrastructureDataLocked.setIcon(VaadinIcons.WARNING);
+			addHeaderComponent(infrastructureDataLocked);
 		}
+
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
@@ -137,10 +144,6 @@ public class CommunitiesView extends AbstractConfigurationView {
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
-		} else if (!infrastructureDataEditable) {
-			Label infrastructureDataLocked = new Label(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
-			infrastructureDataLocked.setIcon(VaadinIcons.WARNING);
-			addHeaderComponent(infrastructureDataLocked);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
