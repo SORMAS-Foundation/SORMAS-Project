@@ -37,9 +37,11 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.location.AreaType;
+import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonExportDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserDto;
@@ -352,6 +354,32 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		assertNotPseudonymized(persons.stream().filter(p -> p.getUuid().equals(person.getUuid())).findFirst().get());
 		assertPseudonymised(persons.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst().get());
+	}
+
+	@Test
+	public void testPseudonymizeExportList() {
+		loginWith(districtUser2);
+
+		person = createPerson();
+		creator.createCase(districtUser1.toReference(), person.toReference(), rdcf2);
+
+		PersonDto person2 = createPerson();
+		//create readonly case with person2 --> person2 should be pseudonymized
+		CaseDataDto caze = creator.createCase(districtUser1.toReference(), person2.toReference(), rdcf1);
+		creator
+			.createContact(districtUser2.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+
+		List<PersonExportDto> exportList = getPersonFacade().getExportList(new PersonCriteria(), 0, 100);
+
+		PersonExportDto exportedPerson = exportList.stream().filter(p -> p.getUuid().equals(person.getUuid())).findFirst().get();
+		assertThat(exportedPerson.getFirstName(), is("James"));
+		assertThat(exportedPerson.getLastName(), is("Smith"));
+		assertThat(exportedPerson.getBirthdate().getDateOfBirthDD(), is(1));
+
+		PersonExportDto exportedPerson2 = exportList.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst().get();
+		assertThat(exportedPerson2.getFirstName(), is("Confidential"));
+		assertThat(exportedPerson2.getLastName(), is("Confidential"));
+		assertThat(exportedPerson2.getBirthdate().getDateOfBirthDD(), is(nullValue()));
 	}
 
 	private PersonDto createPerson() {

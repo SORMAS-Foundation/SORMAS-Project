@@ -90,6 +90,7 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 		target.setResponsibleRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getResponsibleRegion()));
 		target.setResponsibleDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getResponsibleDistrict()));
 		target.setResponsibleCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getResponsibleCommunity()));
+		target.setFacilityType(source.getFacilityType());
 		target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setCountry(DatabaseHelper.getCountryDao().getByReferenceDto(source.getCountry()));
@@ -153,6 +154,7 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 			target.setCountry(CountryDtoHelper.toReferenceDto(country));
 		}
 
+		target.setFacilityType(source.getFacilityType());
 		if (source.getHealthFacility() != null) {
 			Facility facility = DatabaseHelper.getFacilityDao().queryForId(source.getHealthFacility().getId());
 			target.setHealthFacility(FacilityDtoHelper.toReferenceDto(facility));

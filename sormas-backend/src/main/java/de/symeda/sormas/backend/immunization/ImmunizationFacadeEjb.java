@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,32 +35,32 @@ import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
-import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.CommunityService;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryService;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.CountryFacadeEjb;
-import de.symeda.sormas.backend.region.CountryService;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -75,6 +74,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@EJB
 	private ImmunizationService immunizationService;
+	@EJB
+	private DirectoryImmunizationService directoryImmunizationService;
 	@EJB
 	private PersonService personService;
 	@EJB
@@ -91,6 +92,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	private CaseService caseService;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 
@@ -277,35 +280,18 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public long count(ImmunizationCriteria criteria) {
-		return immunizationService.count(criteria);
+		return directoryImmunizationService.count(criteria);
 	}
 
 	@Override
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		Map<String, String> lastVaccinationTypes = vaccinationFacade.getLastVaccinationType();
-		return immunizationService.getIndexList(criteria, first, max, sortProperties).stream().map(result -> {
-			String immunizationId = result[17].toString();
-			Integer age = result[4] != null ? (int) result[4] : null;
-			ApproximateAgeType approximateAgeType = (ApproximateAgeType) result[5];
-			Integer birthdateDD = result[6] != null ? (int) result[6] : null;
-			Integer birthdateMM = result[7] != null ? (int) result[7] : null;
-			Integer birthdateYYYY = result[8] != null ? (int) result[8] : null;
-			return new ImmunizationIndexDto(
-				(String) result[0],
-				(String) result[1],
-				(String) result[2],
-				(String) result[3],
-				new AgeAndBirthDateDto(age, approximateAgeType, birthdateDD, birthdateMM, birthdateYYYY),
-				(Sex) result[9],
-				(String) result[10],
-				(MeansOfImmunization) result[11],
-				(ImmunizationManagementStatus) result[12],
-				(ImmunizationStatus) result[13],
-				(Date) result[14],
-				(Date) result[15],
-				lastVaccinationTypes.get(immunizationId),
-				(Date) result[16]);
-		}).collect(Collectors.toList());
+		return directoryImmunizationService.getIndexList(criteria, first, max, sortProperties);
+	}
+
+	@Override
+	public List<ImmunizationListEntryDto> getEntriesList(String personUuid, Integer first, Integer max) {
+		Long personId = personFacade.getPersonIdByUuid(personUuid);
+		return immunizationService.getEntriesList(personId, first, max);
 	}
 
 	public ImmunizationDto toDto(Immunization entity) {

@@ -1,22 +1,17 @@
 package de.symeda.sormas.ui.immunization;
 
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.immunization.components.filter.FilterFormLayout;
-import de.symeda.sormas.ui.immunization.components.grid.ImmunizationGrid;
+import de.symeda.sormas.ui.immunization.components.layout.directory.FilterFormLayout;
+import de.symeda.sormas.ui.immunization.components.layout.directory.ImmunizationDataLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 public class ImmunizationsView extends AbstractView {
@@ -25,32 +20,26 @@ public class ImmunizationsView extends AbstractView {
 
 	private final ImmunizationCriteria criteria;
 
-	private final Label noDiseaseInfoLabel;
-	private final ImmunizationGrid grid;
-
 	private FilterFormLayout filterFormLayout;
+	private final ImmunizationDataLayout immunizationDataLayout;
 
 	public ImmunizationsView() {
 		super(VIEW_NAME);
 
 		criteria = ViewModelProviders.of(ImmunizationsView.class).get(ImmunizationCriteria.class);
-		grid = new ImmunizationGrid(criteria);
+		immunizationDataLayout = new ImmunizationDataLayout(criteria);
 
 		final VerticalLayout gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(grid);
+		gridLayout.addComponent(immunizationDataLayout);
 
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
-		gridLayout.setExpandRatio(grid, 1);
+		gridLayout.setExpandRatio(immunizationDataLayout, 1);
 		gridLayout.setStyleName("crud-main-layout");
 
 		addComponent(gridLayout);
-
-		noDiseaseInfoLabel = new Label(I18nProperties.getString(Strings.infoNoDiseaseSelected));
-		noDiseaseInfoLabel.addStyleNames(CssStyles.LAYOUT_MINIMAL, CssStyles.H3, CssStyles.VSPACE_TOP_0, CssStyles.ALIGN_CENTER);
-		addComponent(noDiseaseInfoLabel);
 
 		UserProvider currentUser = UserProvider.getCurrent();
 		if (currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_CREATE)) {
@@ -75,7 +64,8 @@ public class ImmunizationsView extends AbstractView {
 		applyingCriteria = true;
 
 		filterFormLayout.setValue(criteria);
-		updateView(criteria.getDisease());
+		boolean shouldShowGrid = criteria.getDisease() != null;
+		immunizationDataLayout.toggleView(shouldShowGrid);
 
 		applyingCriteria = false;
 	}
@@ -90,24 +80,14 @@ public class ImmunizationsView extends AbstractView {
 
 		filterFormLayout.addApplyHandler(clickEvent -> {
 			ImmunizationCriteria filterFormValue = filterFormLayout.getValue();
-			Disease disease = filterFormValue.getDisease();
-			updateView(disease);
+			boolean shouldShowGrid = filterFormValue.getDisease() != null;
+			immunizationDataLayout.toggleView(shouldShowGrid);
 
-			if (disease != null) {
-				grid.reload();
+			if (shouldShowGrid) {
+				immunizationDataLayout.refreshGrid();
 			}
 		});
 
 		return filterFormLayout;
-	}
-
-	private void updateView(Disease disease) {
-		if (disease == null) {
-			grid.setVisible(false);
-			noDiseaseInfoLabel.setVisible(true);
-		} else {
-			grid.setVisible(true);
-			noDiseaseInfoLabel.setVisible(false);
-		}
 	}
 }

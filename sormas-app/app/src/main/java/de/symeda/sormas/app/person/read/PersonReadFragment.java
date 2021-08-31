@@ -140,6 +140,9 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 		} else if (ado instanceof Contact) {
 			record = ((Contact) ado).getPerson();
 			rootData = ado;
+		} else if (ado instanceof Immunization) {
+			record = ((Immunization) ado).getPerson();
+			rootData = ado;
 		} else {
 			throw new UnsupportedOperationException(
 				"ActivityRootData of class " + ado.getClass().getSimpleName() + " does not support PersonReadFragment");

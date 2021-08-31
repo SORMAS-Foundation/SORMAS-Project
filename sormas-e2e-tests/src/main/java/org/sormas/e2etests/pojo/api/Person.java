@@ -18,9 +18,11 @@
 package org.sormas.e2etests.pojo.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.List;
 import lombok.*;
 import lombok.Builder;
 import lombok.Value;
+import org.sormas.e2etests.pojo.api.chunks.Address;
 
 @Value
 @AllArgsConstructor
@@ -30,6 +32,13 @@ import lombok.Value;
 public class Person {
   String firstName;
   String lastName;
-  String caption;
+  Integer birthdateDD;
+  Integer birthdateMM;
+  Integer birthdateYYYY;
+  String phone;
+  String sex;
   String uuid;
+  Boolean covidCodeDelivered;
+  Address address;
+  List<Object> personContactDetails;
 }

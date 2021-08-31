@@ -555,6 +555,7 @@
     <string name="validation_visit_date_time_after_followup">Käynti ei voi olla enempää kuin 30 päivää seuranta-ajan päättymisen jälkeen.</string>
     <string name="validation_visit_date_time_before_contact_date">Käynti ei voi olla enempää kuin 30 päivää ennen viimeistä kontaktipäivämäärää.</string>
     <string name="validation_visit_date_time_before_report_date">Käynti ei voi olla enempää kuin 30 päivää ennen kontaktin raportointipäivämäärää.</string>
+    <string name="value_unknown">Unknown</string>
     <string name="value_age_unknown">Ikä puuttuu</string>
     <string name="value_blood_pressure_unknown">Verenpaine puuttuu</string>
     <string name="value_case_uuid_unknown">Potilas ID puuttuu</string>
