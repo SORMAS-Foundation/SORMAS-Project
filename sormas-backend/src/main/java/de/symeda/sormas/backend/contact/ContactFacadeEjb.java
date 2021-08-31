@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
-import static de.symeda.sormas.backend.sormastosormas.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
+import static de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -105,8 +106,8 @@ import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -148,35 +149,36 @@ import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.Country;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.CommunityService;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -555,6 +557,9 @@ public class ContactFacadeEjb implements ContactFacade {
 			contact.get(Contact.QUARANTINE_REDUCED),
 			contact.get(Contact.QUARANTINE_OFFICIAL_ORDER_SENT),
 			contact.get(Contact.QUARANTINE_OFFICIAL_ORDER_SENT_DATE),
+			contact.get(Contact.PROHIBITION_TO_WORK),
+			contact.get(Contact.PROHIBITION_TO_WORK_FROM),
+			contact.get(Contact.PROHIBITION_TO_WORK_UNTIL),
 			joins.getPerson().get(Person.PRESENT_CONDITION),
 			joins.getPerson().get(Person.DEATH_DATE),
 			joins.getAddressRegion().get(Region.NAME),
@@ -603,10 +608,9 @@ public class ContactFacadeEjb implements ContactFacade {
 			joins.getPersonCitizenship().get(Country.ISO_CODE),
 			joins.getPersonCitizenship().get(Country.DEFAULT_NAME),
 			joins.getReportingDistrict().get(District.NAME),
-			joins.getReportingUser().get(User.UUID),
-			joins.getRegion().get(Region.UUID),
-			joins.getDistrict().get(District.UUID),
-			joins.getCommunity().get(Community.UUID),
+			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+			joins.getReportingUser().get(User.ID),
+			joins.getFollowUpStatusChangeUser().get(User.ID),
 			jurisdictionSelector(contactQueryContext));
 
 		cq.distinct(true);
@@ -683,6 +687,8 @@ public class ContactFacadeEjb implements ContactFacade {
 					.collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.toList()));
 			}
 
+			Map<Long, UserReference> contactUsers = getContactUsersForExport(exportContacts, exportConfiguration);
+
 			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
@@ -706,7 +712,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 						exportContact.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
 						exportContact.setLastCooperativeVisitSymptoms(SymptomsHelper.buildSymptomsHumanString(symptoms, true, userLanguage));
-						exportContact.setLastCooperativeVisitSymptomatic(symptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+						exportContact.setLastCooperativeVisitSymptomatic(
+							symptoms.getSymptomatic() == null
+								? YesNoUnknown.UNKNOWN
+								: (symptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO));
 					}
 				}
 
@@ -743,11 +752,44 @@ public class ContactFacadeEjb implements ContactFacade {
 					});
 				}
 
+				if (!contactUsers.isEmpty()) {
+					if (exportContact.getReportingUserId() != null) {
+						UserReference user = contactUsers.get(exportContact.getReportingUserId());
+
+						exportContact.setReportingUserName(user.getName());
+						exportContact.setReportingUserRoles(user.getUserRoles());
+					}
+
+					if (exportContact.getFollowUpStatusChangeUserId() != null) {
+						UserReference user = contactUsers.get(exportContact.getFollowUpStatusChangeUserId());
+
+						exportContact.setFollowUpStatusChangeUserName(user.getName());
+						exportContact.setFollowUpStatusChangeUserRoles(user.getUserRoles());
+					}
+				}
+
 				pseudonymizer.pseudonymizeDto(ContactExportDto.class, exportContact, inJurisdiction, null);
 			}
 		}
 
 		return exportContacts;
+	}
+
+	private Map<Long, UserReference> getContactUsersForExport(List<ContactExportDto> exportContacts, ExportConfigurationDto exportConfiguration) {
+		Map<Long, UserReference> contactUsers = Collections.emptyMap();
+
+		if (exportConfiguration == null
+			|| exportConfiguration.getProperties().contains(ContactDto.REPORTING_USER)
+			|| exportConfiguration.getProperties().contains(ContactDto.FOLLOW_UP_STATUS_CHANGE_USER)) {
+			Set<Long> userIds = exportContacts.stream()
+				.map((c -> Arrays.asList(c.getReportingUserId(), c.getFollowUpStatusChangeUserId())))
+				.flatMap(Collection::stream)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+			contactUsers = userService.getUserReferencesByIds(userIds).stream().collect(Collectors.toMap(UserReference::getId, Function.identity()));
+		}
+
+		return contactUsers;
 	}
 
 	@Override
@@ -926,11 +968,11 @@ public class ContactFacadeEjb implements ContactFacade {
 				switch (sortProperty.propertyName) {
 				case FollowUpDto.UUID:
 				case ContactFollowUpDto.LAST_CONTACT_DATE:
-				case FollowUpDto.REPORT_DATE:
-					expression = contact.get(Contact.REPORT_DATE_TIME);
-					break;
 				case FollowUpDto.FOLLOW_UP_UNTIL:
 					expression = contact.get(sortProperty.propertyName);
+					break;
+				case FollowUpDto.REPORT_DATE:
+					expression = contact.get(Contact.REPORT_DATE_TIME);
 					break;
 				case FollowUpDto.SYMPTOM_JOURNAL_STATUS:
 					expression = joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS);
@@ -1613,6 +1655,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SimilarContactDto> cq = cb.createQuery(SimilarContactDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
+		cq.distinct(true);
 
 		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contactRoot);
 		ContactJoins<Contact> joins = (ContactJoins<Contact>) contactQueryContext.getJoins();
@@ -1739,11 +1782,12 @@ public class ContactFacadeEjb implements ContactFacade {
 		copyDtoValues(leadContactDto, otherContactDto);
 		saveContact(leadContactDto);
 
-		// 1.2 Person
-		PersonDto leadPerson = personFacade.getPersonByUuid(leadContactDto.getPerson().getUuid());
-		PersonDto otherPerson = personFacade.getPersonByUuid(otherContactDto.getPerson().getUuid());
-		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
-		personFacade.savePerson(leadPerson);
+		// 1.2 Person - Only merge when the persons have different UUIDs
+		if (!DataHelper.equal(leadContactDto.getPerson().getUuid(), otherContactDto.getPerson().getUuid())) {
+			PersonDto leadPerson = personFacade.getPersonByUuid(leadContactDto.getPerson().getUuid());
+			PersonDto otherPerson = personFacade.getPersonByUuid(otherContactDto.getPerson().getUuid());
+			personFacade.mergePerson(leadPerson, otherPerson);
+		}
 
 		// 2 Change ContactReference
 		Contact leadContact = contactService.getByUuid(leadContactDto.getUuid());

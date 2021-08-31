@@ -39,7 +39,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -48,8 +48,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -120,7 +120,7 @@ public class EventParticipantImporter extends DataImporter {
 			values[personUuidIndex] = DataHelper.createUuid();
 		}
 
-		final PersonDto newPersonTemp = PersonDto.build();
+		final PersonDto newPersonTemp = PersonDto.buildImportEntity();
 		final EventParticipantDto newEventParticipantTemp = EventParticipantDto.build(event, currentUser.toReference());
 		newEventParticipantTemp.setPerson(newPersonTemp);
 

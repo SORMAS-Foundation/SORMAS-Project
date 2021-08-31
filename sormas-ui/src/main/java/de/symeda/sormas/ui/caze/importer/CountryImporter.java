@@ -22,7 +22,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
-import de.symeda.sormas.api.region.CountryDto;
+import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -70,7 +70,7 @@ public class CountryImporter extends InfrastructureImporter {
 
 		if (!iHasImportError) {
 			try {
-				FacadeProvider.getCountryFacade().saveCountry(newEntityDto, allowOverwrite);
+				FacadeProvider.getCountryFacade().save(newEntityDto, allowOverwrite);
 				return ImportLineResult.SUCCESS;
 			} catch (EmptyValueException e) {
 				writeImportError(values, e.getMessage());

@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Label;
@@ -37,9 +38,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
@@ -106,6 +107,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 	private CheckBox quarantineReduced;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
+	private CheckBox differentPointOfEntryJurisdiction;
 	private DEAFormBuilder deaFormBuilder;
 
 	public TravelEntryDataForm(String travelEntryUuid, boolean isPseudonymized) {
@@ -161,7 +163,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrictCombo, responsibleCommunityCombo);
 
-		CheckBox differentPointOfEntryJurisdiction = addCustomField(DIFFERENT_POINT_OF_ENTRY_JURISDICTION, Boolean.class, CheckBox.class);
+		differentPointOfEntryJurisdiction = addCustomField(DIFFERENT_POINT_OF_ENTRY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPointOfEntryJurisdiction.addStyleName(VSPACE_3);
 
 		Label placeOfStayHeadingLabel = new Label(I18nProperties.getCaption(Captions.travelEntryPointOfEntry));
@@ -451,13 +453,19 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 	@Override
 	public void setValue(TravelEntryDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		if ((newFieldValue.getPointOfEntryRegion() != null && !newFieldValue.getPointOfEntryRegion().equals(newFieldValue.getResponsibleRegion()))
+			|| newFieldValue.getPointOfEntryDistrict() != null
+				&& !newFieldValue.getPointOfEntryDistrict().equals(newFieldValue.getResponsibleDistrict())) {
+			differentPointOfEntryJurisdiction.setValue(Boolean.TRUE);
+		}
 		super.setValue(newFieldValue);
 		buildDeaContent(newFieldValue);
 	}
 
 	private void buildDeaContent(TravelEntryDto newFieldValue) {
-		if (newFieldValue.getDeaContent() != null) {
-			deaFormBuilder = new DEAFormBuilder(newFieldValue.getDeaContent(), false);
+		final List<DeaContentEntry> deaContent = newFieldValue.getDeaContent();
+		if (CollectionUtils.isNotEmpty(deaContent)) {
+			deaFormBuilder = new DEAFormBuilder(deaContent, false);
 			deaFormBuilder.buildForm();
 			getContent().addComponent(deaFormBuilder.getLayout(), DEA_CONTENT_LOC);
 		}

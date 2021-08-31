@@ -89,14 +89,14 @@ import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoContact;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoContact;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -610,10 +610,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter = createUserFilter(cb, cq, contact);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, contactQueryContext);
+		Predicate notDeleted = cb.isFalse(contact.get(Contact.DELETED));
 		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
+			filter = cb.and(filter, criteriaFilter, notDeleted);
 		} else {
-			filter = criteriaFilter;
+			filter = cb.and(criteriaFilter, notDeleted);
 		}
 
 		if (filter != null) {
@@ -636,10 +637,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter = createUserFilter(cb, cq, contact);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, contactQueryContext);
+		Predicate notDeleted = cb.isFalse(contact.get(Contact.DELETED));
 		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
+			filter = cb.and(filter, criteriaFilter, notDeleted);
 		} else {
-			filter = criteriaFilter;
+			filter = cb.and(criteriaFilter, notDeleted);
 		}
 
 		if (filter != null) {
@@ -662,10 +664,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter = createUserFilter(cb, cq, contact);
 		Predicate criteriaFilter = buildCriteriaFilter(contactCriteria, contactQueryContext);
+		Predicate notDeleted = cb.isFalse(contact.get(Contact.DELETED));
 		if (filter != null) {
-			filter = cb.and(filter, criteriaFilter);
+			filter = cb.and(filter, criteriaFilter, notDeleted);
 		} else {
-			filter = criteriaFilter;
+			filter = cb.and(criteriaFilter, notDeleted);
 		}
 
 		if (filter != null) {
@@ -902,7 +905,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public Predicate createUserFilterWithoutCase(ContactQueryContext qc, ContactCriteria contactCriteria) {
-
 
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		CriteriaQuery cq = qc.getQuery();

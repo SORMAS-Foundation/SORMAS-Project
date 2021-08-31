@@ -58,6 +58,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -98,22 +99,22 @@ import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoCase;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -121,6 +122,8 @@ import de.symeda.sormas.backend.therapy.Prescription;
 import de.symeda.sormas.backend.therapy.PrescriptionService;
 import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.therapy.TreatmentService;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
@@ -152,6 +155,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private TreatmentService treatmentService;
 	@EJB
 	private PrescriptionService prescriptionService;
+	@EJB
+	private TravelEntryService travelEntryService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
@@ -792,6 +797,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithDontShareWithExternalSurvTool())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(from.get(Case.DONT_SHARE_WITH_REPORTING_TOOL)));
 		}
+		if (Boolean.TRUE.equals(caseCriteria.getOnlyShowCasesWithFulfilledReferenceDefinition())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_REFERENCE_DEFINITION), CaseReferenceDefinition.FULFILLED));
+		}
 
 		filter = CriteriaBuilderHelper.and(
 			cb,
@@ -866,8 +874,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				.forEach(c -> clinicalVisitService.delete(c));
 		}
 
-		//Remove all events linked to case by removing the case_id from event participant
+		// Remove all events linked to case by removing the case_id from event participant
 		caze.getEventParticipants().stream().forEach(eventParticipant -> eventParticipant.setResultingCase(null));
+
+		// Unlink TravelEntries where this case is set as the resulting case
+		List<TravelEntry> travelEntries = travelEntryService.getAllByResultingCase(caze);
+		for (TravelEntry travelEntry : travelEntries) {
+			travelEntry.setResultingCase(null);
+			travelEntryService.ensurePersisted(travelEntry);
+		}
 
 		// Mark the case as deleted
 		super.delete(caze);

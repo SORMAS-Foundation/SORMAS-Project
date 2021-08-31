@@ -44,6 +44,7 @@ public interface Strings {
 	String classificationRulesFor = "classificationRulesFor";
 	String classificationSuspect = "classificationSuspect";
 	String classificationSymptomsAllOf = "classificationSymptomsAllOf";
+	String classificationSymptomsAnyOf = "classificationSymptomsAnyOf";
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
 	String comparedTo = "comparedTo";
@@ -66,6 +67,7 @@ public interface Strings {
 	String confirmationArchiveEvents = "confirmationArchiveEvents";
 	String confirmationArchiveFacilities = "confirmationArchiveFacilities";
 	String confirmationArchiveFacility = "confirmationArchiveFacility";
+	String confirmationArchiveImmunization = "confirmationArchiveImmunization";
 	String confirmationArchiveLaboratories = "confirmationArchiveLaboratories";
 	String confirmationArchiveLaboratory = "confirmationArchiveLaboratory";
 	String confirmationArchivePointOfEntry = "confirmationArchivePointOfEntry";
@@ -99,6 +101,7 @@ public interface Strings {
 	String confirmationDearchiveEvents = "confirmationDearchiveEvents";
 	String confirmationDearchiveFacilities = "confirmationDearchiveFacilities";
 	String confirmationDearchiveFacility = "confirmationDearchiveFacility";
+	String confirmationDearchiveImmunization = "confirmationDearchiveImmunization";
 	String confirmationDearchiveLaboratories = "confirmationDearchiveLaboratories";
 	String confirmationDearchiveLaboratory = "confirmationDearchiveLaboratory";
 	String confirmationDearchivePointOfEntry = "confirmationDearchivePointOfEntry";
@@ -214,8 +217,11 @@ public interface Strings {
 	String entityExposure = "entityExposure";
 	String entityFacilities = "entityFacilities";
 	String entityGathering = "entityGathering";
+	String entityImmunization = "entityImmunization";
+	String entityImmunizations = "entityImmunizations";
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPersonContactDetail = "entityPersonContactDetail";
+	String entityPersons = "entityPersons";
 	String entityPointsOfEntry = "entityPointsOfEntry";
 	String entityPrescription = "entityPrescription";
 	String entityPrescriptions = "entityPrescriptions";
@@ -280,6 +286,7 @@ public interface Strings {
 	String errorSormasToSormasOwnershipAlreadyHandedOver = "errorSormasToSormasOwnershipAlreadyHandedOver";
 	String errorSormasToSormasRequestToken = "errorSormasToSormasRequestToken";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
+	String errorSormasToSormasRevokeNotPending = "errorSormasToSormasRevokeNotPending";
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
 	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
 	String errorSormasToSormasShare = "errorSormasToSormasShare";
@@ -315,6 +322,7 @@ public interface Strings {
 	String headingArchiveCase = "headingArchiveCase";
 	String headingArchiveEvent = "headingArchiveEvent";
 	String headingArchiveEventGroup = "headingArchiveEventGroup";
+	String headingArchiveImmunization = "headingArchiveImmunization";
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
 	String headingBurialDetails = "headingBurialDetails";
@@ -338,6 +346,7 @@ public interface Strings {
 	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
 	String headingCasesResultingFromContacts = "headingCasesResultingFromContacts";
 	String headingCaseStatusMap = "headingCaseStatusMap";
+	String headingcasesWithReferenceDefinitionFulfilled = "headingcasesWithReferenceDefinitionFulfilled";
 	String headingCaution = "headingCaution";
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
 	String headingChangePathogenTestResult = "headingChangePathogenTestResult";
@@ -385,6 +394,7 @@ public interface Strings {
 	String headingCreateNewEventGroup = "headingCreateNewEventGroup";
 	String headingCreateNewEventParticipant = "headingCreateNewEventParticipant";
 	String headingCreateNewFacility = "headingCreateNewFacility";
+	String headingCreateNewImmunization = "headingCreateNewImmunization";
 	String headingCreateNewPerson = "headingCreateNewPerson";
 	String headingCreateNewPrescription = "headingCreateNewPrescription";
 	String headingCreateNewSample = "headingCreateNewSample";
@@ -402,6 +412,7 @@ public interface Strings {
 	String headingDearchiveCase = "headingDearchiveCase";
 	String headingDearchiveEvent = "headingDearchiveEvent";
 	String headingDearchiveEventGroup = "headingDearchiveEventGroup";
+	String headingDearchiveImmunization = "headingDearchiveImmunization";
 	String headingDearchiveTravelEntry = "headingDearchiveTravelEntry";
 	String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
@@ -546,6 +557,7 @@ public interface Strings {
 	String headingPickOrCreateEntry = "headingPickOrCreateEntry";
 	String headingPickOrCreateEvent = "headingPickOrCreateEvent";
 	String headingPickOrCreateEventGroup = "headingPickOrCreateEventGroup";
+	String headingPickOrCreateImmunization = "headingPickOrCreateImmunization";
 	String headingPickOrCreatePathogenTest = "headingPickOrCreatePathogenTest";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	String headingPickOrCreateSample = "headingPickOrCreateSample";
@@ -553,6 +565,7 @@ public interface Strings {
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
 	String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
 	String headingQuarantineForCases = "headingQuarantineForCases";
+	String headingRecovery = "headingRecovery";
 	String headingReduceQuarantine = "headingReduceQuarantine";
 	String headingReferCaseFromPointOfEntry = "headingReferCaseFromPointOfEntry";
 	String headingReferSample = "headingReferSample";
@@ -578,6 +591,7 @@ public interface Strings {
 	String headingShareRequestEvents = "headingShareRequestEvents";
 	String headingShowLabMessage = "headingShowLabMessage";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
+	String headingSimilarImmunization = "headingSimilarImmunization";
 	String headingSomeCasesNotDeleted = "headingSomeCasesNotDeleted";
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
@@ -604,6 +618,7 @@ public interface Strings {
 	String headingUsersDisabled = "headingUsersDisabled";
 	String headingUsersEnabled = "headingUsersEnabled";
 	String headingUserSettings = "headingUserSettings";
+	String headingVaccination = "headingVaccination";
 	String headingViewNotFound = "headingViewNotFound";
 	String headingVisits = "headingVisits";
 	String headingVisitsDeleted = "headingVisitsDeleted";
@@ -672,6 +687,7 @@ public interface Strings {
 	String infoEpiDataFieldsHint = "infoEpiDataFieldsHint";
 	String infoEpiDataSourceCaseContacts = "infoEpiDataSourceCaseContacts";
 	String infoEventParticipantAlreadyExisting = "infoEventParticipantAlreadyExisting";
+	String infoExistingImmunizationPeriod = "infoExistingImmunizationPeriod";
 	String infoExpectedFollowUpUntilDateCase = "infoExpectedFollowUpUntilDateCase";
 	String infoExpectedFollowUpUntilDateContact = "infoExpectedFollowUpUntilDateContact";
 	String infoExportNoFilters = "infoExportNoFilters";
@@ -683,6 +699,7 @@ public interface Strings {
 	String infoFacilityNeedsDistrict = "infoFacilityNeedsDistrict";
 	String infoHowToMergeCases = "infoHowToMergeCases";
 	String infoHowToMergeContacts = "infoHowToMergeContacts";
+	String infoImmunizationPeriod = "infoImmunizationPeriod";
 	String infoImportAllContinents = "infoImportAllContinents";
 	String infoImportAllCountries = "infoImportAllCountries";
 	String infoImportAllSubcontinents = "infoImportAllSubcontinents";
@@ -703,6 +720,7 @@ public interface Strings {
 	String infoMergingPickDescription = "infoMergingPickDescription";
 	String infoNoAdditionalTests = "infoNoAdditionalTests";
 	String infoNoCasesFoundStatistics = "infoNoCasesFoundStatistics";
+	String infoNoDiseaseSelected = "infoNoDiseaseSelected";
 	String infoNoEventGroups = "infoNoEventGroups";
 	String infoNoNetworkDiagram = "infoNoNetworkDiagram";
 	String infoNoPathogenTests = "infoNoPathogenTests";
@@ -714,9 +732,14 @@ public interface Strings {
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
+	String infoPickOrCreateEventForCases = "infoPickOrCreateEventForCases";
 	String infoPickOrCreateEventForContact = "infoPickOrCreateEventForContact";
+	String infoPickOrCreateEventForContacts = "infoPickOrCreateEventForContacts";
 	String infoPickOrCreateEventForLabMessage = "infoPickOrCreateEventForLabMessage";
 	String infoPickOrCreateEventGroupForEvent = "infoPickOrCreateEventGroupForEvent";
+	String infoPickOrCreateImmunization = "infoPickOrCreateImmunization";
+	String infoPickOrCreateImmunizationExisting = "infoPickOrCreateImmunizationExisting";
+	String infoPickOrCreateImmunizationNew = "infoPickOrCreateImmunizationNew";
 	String infoPickOrCreatePathogenTest = "infoPickOrCreatePathogenTest";
 	String infoPickOrCreateSample = "infoPickOrCreateSample";
 	String infoPickOrCreateSuperordinateEventForEvent = "infoPickOrCreateSuperordinateEventForEvent";
@@ -734,8 +757,10 @@ public interface Strings {
 	String infoSelectOrCreatePersonForCase = "infoSelectOrCreatePersonForCase";
 	String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
+	String infoSelectOrCreatePersonForImmunization = "infoSelectOrCreatePersonForImmunization";
 	String infoSelectOrCreatePersonForImport = "infoSelectOrCreatePersonForImport";
 	String infoSelectOrCreatePersonForLabMessage = "infoSelectOrCreatePersonForLabMessage";
+	String infoSimilarImmunization = "infoSimilarImmunization";
 	String infoSkipOrOverrideDuplicateCampaignFormDataImport = "infoSkipOrOverrideDuplicateCampaignFormDataImport";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";
 	String infoSpecificEventSearch = "infoSpecificEventSearch";
@@ -774,6 +799,10 @@ public interface Strings {
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
 	String messageAggregateReportFound = "messageAggregateReportFound";
 	String messageAllCampaignFormsValid = "messageAllCampaignFormsValid";
+	String messageAllCasesAlreadyInEvent = "messageAllCasesAlreadyInEvent";
+	String messageAllCasesLinkedToEvent = "messageAllCasesLinkedToEvent";
+	String messageAllContactsAlreadyInEvent = "messageAllContactsAlreadyInEvent";
+	String messageAllContactsLinkedToEvent = "messageAllContactsLinkedToEvent";
 	String messageAlreadyEventParticipant = "messageAlreadyEventParticipant";
 	String messageAnimalContactsHint = "messageAnimalContactsHint";
 	String messageAreaArchived = "messageAreaArchived";
@@ -782,7 +811,10 @@ public interface Strings {
 	String messageAreasArchived = "messageAreasArchived";
 	String messageAreasArchivingNotPossible = "messageAreasArchivingNotPossible";
 	String messageAreasDearchived = "messageAreasDearchived";
+	String messageBulkCasesWithDifferentDiseasesSelected = "messageBulkCasesWithDifferentDiseasesSelected";
+	String messageBulkContactsWithDifferentDiseasesSelected = "messageBulkContactsWithDifferentDiseasesSelected";
 	String messageBulkDontShareWithReportingToolWarning = "messageBulkDontShareWithReportingToolWarning";
+	String messageBulkLinkEventHint = "messageBulkLinkEventHint";
 	String messageCampaignArchived = "messageCampaignArchived";
 	String messageCampaignCreated = "messageCampaignCreated";
 	String messageCampaignDearchived = "messageCampaignDearchived";
@@ -843,7 +875,9 @@ public interface Strings {
 	String messageConvertEventParticipantToCase = "messageConvertEventParticipantToCase";
 	String messageConvertEventParticipantToCaseDifferentDiseases = "messageConvertEventParticipantToCaseDifferentDiseases";
 	String messageCopyPassword = "messageCopyPassword";
+	String messageCountCasesAlreadyInEvent = "messageCountCasesAlreadyInEvent";
 	String messageCountCasesNotDeleted = "messageCountCasesNotDeleted";
+	String messageCountContactsAlreadyInEvent = "messageCountContactsAlreadyInEvent";
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
 	String messageCountEventsNotDeletedExternalSurveillanceTool = "messageCountEventsNotDeletedExternalSurveillanceTool";
 	String messageCountriesArchived = "messageCountriesArchived";
@@ -917,6 +951,9 @@ public interface Strings {
 	String messageFormHasErrorsPathogenTest = "messageFormHasErrorsPathogenTest";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";
+	String messageImmunizationArchived = "messageImmunizationArchived";
+	String messageImmunizationDearchived = "messageImmunizationDearchived";
+	String messageImmunizationSaved = "messageImmunizationSaved";
 	String messageImportCanceled = "messageImportCanceled";
 	String messageImportCanceledErrors = "messageImportCanceledErrors";
 	String messageImportError = "messageImportError";
@@ -1104,6 +1141,10 @@ public interface Strings {
 	String populationDataByDistrict = "populationDataByDistrict";
 	String populationDataByRegion = "populationDataByRegion";
 	String previousPeriod = "previousPeriod";
+	String promptActionChangeDateFrom = "promptActionChangeDateFrom";
+	String promptActionChangeDateTo = "promptActionChangeDateTo";
+	String promptActionChangeEpiWeekFrom = "promptActionChangeEpiWeekFrom";
+	String promptActionChangeEpiWeekTo = "promptActionChangeEpiWeekTo";
 	String promptActionDateFrom = "promptActionDateFrom";
 	String promptActionDateTo = "promptActionDateTo";
 	String promptActionEpiWeekFrom = "promptActionEpiWeekFrom";
@@ -1147,6 +1188,11 @@ public interface Strings {
 	String promptEventsSearchFieldEventParticipants = "promptEventsSearchFieldEventParticipants";
 	String promptExternalIdExternalSurveillanceTool = "promptExternalIdExternalSurveillanceTool";
 	String promptFilterByPeriod = "promptFilterByPeriod";
+	String promptImmunizationDateFrom = "promptImmunizationDateFrom";
+	String promptImmunizationDateTo = "promptImmunizationDateTo";
+	String promptImmunizationDateType = "promptImmunizationDateType";
+	String promptImmunizationEpiWeekFrom = "promptImmunizationEpiWeekFrom";
+	String promptImmunizationEpiWeekTo = "promptImmunizationEpiWeekTo";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";

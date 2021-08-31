@@ -40,20 +40,20 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.CommunityService;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -214,13 +214,18 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
 	@Override
 	public long count(TravelEntryCriteria criteria) {
+		return count(criteria, false);
+	}
+
+	@Override
+	public long count(TravelEntryCriteria criteria, boolean ignoreUserFilter) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
 
 		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
 
-		Predicate filter = travelEntryService.createUserFilter(travelEntryQueryContext);
+		Predicate filter = ignoreUserFilter ? null : travelEntryService.createUserFilter(travelEntryQueryContext);
 		if (criteria != null) {
 			final Predicate criteriaFilter = travelEntryService.buildCriteriaFilter(criteria, travelEntryQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
@@ -455,7 +460,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		target.setResponsibleDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
 		target.setResponsibleCommunity(communityService.getByReferenceDto(source.getResponsibleCommunity()));
 		target.setPointOfEntryRegion(regionService.getByReferenceDto(source.getPointOfEntryRegion()));
-		target.setPointOfEntryDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
+		target.setPointOfEntryDistrict(districtService.getByReferenceDto(source.getPointOfEntryDistrict()));
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));

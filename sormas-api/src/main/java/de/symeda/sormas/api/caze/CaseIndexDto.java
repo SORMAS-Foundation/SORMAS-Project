@@ -24,7 +24,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.MergeableIndexDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -145,7 +145,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo,
 				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccination, changeDate, facilityId,
 				responsibleRegionUuid, responsibleDistrictUuid, responsibleDistrictName, isInJurisdiction,
-				null
+				null, null
 		);
 	}
 	//@formatter:on
@@ -162,7 +162,8 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 						// responsible jurisdiction
 						String responsibleRegionUuid, String responsibleDistrictUuid, String responsibleDistrictName, boolean isInJurisdiction,
 						// others
-						Integer visitCount
+						Integer visitCount,
+						Date latestChangedDate // unused, only here for TypedQuery mapping
 	) {
 		//@formatter:on
 

@@ -23,9 +23,9 @@ import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.AreaReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.UserProvider;
@@ -108,7 +108,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		final UserDto user = UserProvider.getCurrent().getUser();
 		final RegionReferenceDto userRegion = user.getRegion();
 		final AreaReferenceDto userArea =
-			userRegion != null ? FacadeProvider.getRegionFacade().getRegionByUuid(userRegion.getUuid()).getArea() : null;
+			userRegion != null ? FacadeProvider.getRegionFacade().getByUuid(userRegion.getUuid()).getArea() : null;
 		final DistrictReferenceDto userDistrict = user.getDistrict();
 
 		dashboardDataProvider.setArea(userArea);
@@ -119,8 +119,8 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		areaFilter.addValueChangeListener(e -> {
 			final Object value = areaFilter.getValue();
 			dashboardDataProvider.setArea((AreaReferenceDto) value);
-			dashboardView.refreshDashboard();
 			updateFiltersBasedOnArea(value);
+			dashboardView.refreshDashboard();
 		});
 		addComponent(areaFilter);
 		dashboardDataProvider.setArea((AreaReferenceDto) areaFilter.getValue());
@@ -132,8 +132,8 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		regionFilter.addValueChangeListener(e -> {
 			final Object value = regionFilter.getValue();
 			dashboardDataProvider.setRegion((RegionReferenceDto) value);
-			dashboardView.refreshDashboard();
 			updateFiltersBasedOnRegion(value);
+			dashboardView.refreshDashboard();
 		});
 		addComponent(regionFilter);
 		dashboardDataProvider.setRegion((RegionReferenceDto) regionFilter.getValue());

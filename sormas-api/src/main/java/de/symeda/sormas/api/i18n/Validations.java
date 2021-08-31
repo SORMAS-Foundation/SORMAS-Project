@@ -98,6 +98,7 @@ public interface Validations {
 	String importLabNotUnique = "importLabNotUnique";
 	String importLaboratoryAlreadyExists = "importLaboratoryAlreadyExists";
 	String importLineTooLong = "importLineTooLong";
+	String importPersonContactDetailsWithoutFacilityType = "importPersonContactDetailsWithoutFacilityType";
 	String importPointOfEntryAlreadyExists = "importPointOfEntryAlreadyExists";
 	String importPointOfEntryNotUniqueInDistrict = "importPointOfEntryNotUniqueInDistrict";
 	String importPropertyTypeNotAllowed = "importPropertyTypeNotAllowed";
@@ -112,6 +113,11 @@ public interface Validations {
 	String labMessageAlreadyProcessedError = "labMessageAlreadyProcessedError";
 	String labMessagePdfConversionError = "labMessagePdfConversionError";
 	String nameOrAnyOtherFieldShouldBeFilled = "nameOrAnyOtherFieldShouldBeFilled";
+	String noAddressCommunityInAddressDistrict = "noAddressCommunityInAddressDistrict";
+	String noAddressDistrictInAddressRegion = "noAddressDistrictInAddressRegion";
+	String noAddressFacilityInAddressCommunity = "noAddressFacilityInAddressCommunity";
+	String noAddressFacilityInAddressDistrict = "noAddressFacilityInAddressDistrict";
+	String noAddressFacilityInAddressRegion = "noAddressFacilityInAddressRegion";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";
 	String noFacilityInCommunity = "noFacilityInCommunity";
@@ -124,6 +130,7 @@ public interface Validations {
 	String noPastDateAllowed = "noPastDateAllowed";
 	String noResponsibleCommunityInResponsibleDistrict = "noResponsibleCommunityInResponsibleDistrict";
 	String noResponsibleDistrictInResponsibleRegion = "noResponsibleDistrictInResponsibleRegion";
+	String notAccomodationFacilityType = "notAccomodationFacilityType";
 	String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
 	String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
 	String onlyNumbersAllowed = "onlyNumbersAllowed";
@@ -181,6 +188,8 @@ public interface Validations {
 	String validEventTitle = "validEventTitle";
 	String validFacility = "validFacility";
 	String validFacilityType = "validFacilityType";
+	String validHealthConditions = "validHealthConditions";
+	String validImmunization = "validImmunization";
 	String validLocation = "validLocation";
 	String validPerson = "validPerson";
 	String validPhoneNumber = "validPhoneNumber";

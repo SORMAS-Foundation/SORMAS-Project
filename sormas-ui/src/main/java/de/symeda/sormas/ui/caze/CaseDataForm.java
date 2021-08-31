@@ -92,10 +92,10 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
@@ -106,9 +106,9 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
@@ -170,6 +170,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			loc(CASE_DATA_HEADING_LOC) +
 					fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 5, CaseDataDto.REPORTING_USER) +
 					inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC, CASE_CONFIRMATION_BASIS, CASE_CLASSIFICATION_CALCULATE_BTN_LOC) +
+					fluidRow(fluidColumnLoc(3, 0, CaseDataDto.CASE_REFERENCE_DEFINITION)) +
 					fluidRowLocs(4, CaseDataDto.CLINICAL_CONFIRMATION, 4, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, 4, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION) +
 					fluidRowLocsCss(VSPACE_3, CaseDataDto.NOT_A_CASE_REASON_NEGATIVE_TEST, CaseDataDto.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION,
 							CaseDataDto.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN, CaseDataDto.NOT_A_CASE_REASON_OTHER) +
@@ -420,6 +421,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			final ComboBox cbCaseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
 			cbCaseClassification.addValidator(
 				new GermanCaseClassificationValidator(caseUuid, I18nProperties.getValidationError(Validations.caseClassificationInvalid)));
+
+			ComboBox caseReferenceDefinition = addField(CaseDataDto.CASE_REFERENCE_DEFINITION, ComboBox.class);
+			caseReferenceDefinition.setReadOnly(true);
 
 			if (diseaseClassificationExists()) {
 				Button caseClassificationCalculationButton = ButtonHelper.createButton(Captions.caseClassificationCalculationButton, e -> {

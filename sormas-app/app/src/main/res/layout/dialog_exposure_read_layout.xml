@@ -102,12 +102,12 @@
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/exposure_startDate"
-                        app:value="@{data.startDate}"
+                        app:dateTimeValue="@{data.startDate}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/exposure_endDate"
-                        app:value="@{data.endDate}"
+                        app:dateTimeValue="@{data.endDate}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>

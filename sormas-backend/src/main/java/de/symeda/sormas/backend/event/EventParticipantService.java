@@ -51,7 +51,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -228,12 +228,17 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return cb.and(cb.isFalse(event.get(Event.ARCHIVED)), cb.isFalse(event.get(Event.DELETED)));
 	}
 
-	public Predicate createActiveEventsForEventParticipantsFilter(CriteriaBuilder cb, Join<?, EventParticipant> eventParticipantJoin) {
+	public Predicate createActiveEventParticipantsInActiveEventsFilter(CriteriaBuilder cb, Join<?, EventParticipant> eventParticipantJoin) {
+
 		Join<EventParticipant, Event> event = eventParticipantJoin.join(EventParticipant.EVENT, JoinType.LEFT);
-		return cb.and(cb.isFalse(event.get(Event.ARCHIVED)), cb.isFalse(event.get(Event.DELETED)));
+		return cb.and(
+			cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)),
+			cb.isFalse(event.get(Event.ARCHIVED)),
+			cb.isFalse(event.get(Event.DELETED)));
 	}
 
 	public Predicate createActiveEventParticipantsFilter(CriteriaBuilder cb, Join<?, EventParticipant> eventParticipantJoin) {
+
 		return cb.and(cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
 	}
 
@@ -334,6 +339,12 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, EventParticipant> root) {
 		return cb.isFalse(root.get(EventParticipant.DELETED));
+	}
+
+	public Predicate createDefaultInUndeletedEventsFilter(CriteriaBuilder cb, From<?, EventParticipant> root) {
+
+		Join<EventParticipant, Event> eventJoin = root.join(EventParticipant.EVENT, JoinType.LEFT);
+		return CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), cb.isFalse(eventJoin.get(Event.DELETED)));
 	}
 
 	public List<EventParticipant> findBy(EventParticipantCriteria criteria, User user) {

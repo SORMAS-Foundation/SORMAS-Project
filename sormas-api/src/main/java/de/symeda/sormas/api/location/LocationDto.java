@@ -17,17 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.api.location;
 
+import de.symeda.sormas.api.infrastructure.area.AreaType;
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonAddressType;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.ContinentReferenceDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.region.SubcontinentReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;

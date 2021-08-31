@@ -29,11 +29,15 @@ import java.util.Set;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
+import de.symeda.sormas.api.person.PersonExportDto;
+import de.symeda.sormas.api.task.TaskExportDto;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 
 public final class ImportExportUtils {
 
@@ -96,6 +100,26 @@ public final class ImportExportUtils {
 		}, propertyCaptionProvider);
 	}
 
+	public static List<ExportPropertyMetaInfo> getTaskExportProperties(PropertyCaptionProvider propertyCaptionProvider) {
+		return getExportProperties(TaskExportDto.class, new PropertyTypeFilter() {
+
+			@Override
+			public boolean accept(ExportGroupType type) {
+				return true;
+			}
+		}, propertyCaptionProvider);
+	}
+
+	public static List<ExportPropertyMetaInfo> getPersonExportProperties(PropertyCaptionProvider propertyCaptionProvider) {
+		return getExportProperties(PersonExportDto.class, new PropertyTypeFilter() {
+
+			@Override
+			public boolean accept(ExportGroupType type) {
+				return true;
+			}
+		}, propertyCaptionProvider);
+	}
+
 	private static List<ExportPropertyMetaInfo> getExportProperties(
 		Class<?> exportDtoClass,
 		PropertyTypeFilter filterExportGroup,
@@ -115,9 +139,16 @@ public final class ImportExportUtils {
 			}
 		});
 
+		CountryFieldVisibilityChecker countryFieldVisibilityChecker =
+			new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale());
 		Set<String> combinedProperties = new HashSet<>();
 		List<ExportPropertyMetaInfo> properties = new ArrayList<>();
 		for (Method method : readMethods) {
+
+			if (!countryFieldVisibilityChecker.isVisible(method)) {
+				continue;
+			}
+
 			ExportGroupType groupType = method.getAnnotation(ExportGroup.class).value();
 
 			if (!filterExportGroup.accept(groupType)) {
@@ -172,6 +203,11 @@ public final class ImportExportUtils {
 	public interface PropertyTypeFilter {
 
 		boolean accept(ExportGroupType type);
+	}
+
+	public interface PropertyNameFilter {
+
+		boolean accept(String name);
 	}
 
 	public interface PropertyCaptionProvider {

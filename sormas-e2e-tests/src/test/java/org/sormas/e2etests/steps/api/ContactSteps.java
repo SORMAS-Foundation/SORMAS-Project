@@ -33,7 +33,8 @@ public class ContactSteps implements En {
     When(
         "API: I create a new contact",
         () -> {
-          Contact contact = contactApiService.buildGeneratedContact(apiState.getEditPerson());
+          Contact contact =
+              contactApiService.buildGeneratedContact(apiState.getLastCreatedPerson());
           contactHelper.push(contact);
           apiState.setCreatedContact(contact);
         });

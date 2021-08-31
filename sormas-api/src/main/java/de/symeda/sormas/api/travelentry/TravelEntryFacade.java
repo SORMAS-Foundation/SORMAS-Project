@@ -1,10 +1,10 @@
 package de.symeda.sormas.api.travelentry;
 
+import java.util.List;
+
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.region.BaseFacade;
-
-import java.util.List;
+import de.symeda.sormas.api.BaseFacade;
 
 @Remote
 public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryCriteria> {
@@ -20,6 +20,8 @@ public interface TravelEntryFacade extends BaseFacade<TravelEntryDto, TravelEntr
 	void archiveOrDearchiveTravelEntry(String travelEntryUuid, boolean archive);
 
 	Boolean isTravelEntryEditAllowed(String travelEntryUuid);
+
+	long count(TravelEntryCriteria criteria, boolean ignoreUserFilter);
 
 	boolean exists(String uuid);
 

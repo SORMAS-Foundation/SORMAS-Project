@@ -72,7 +72,8 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String externalID, String externalToken, String internalToken, boolean isInJurisdiction, boolean isCaseInJurisdiction,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
-								   String reportingUserFirstName, String reportingUserLastName, ContactRelation relationToCase, int visitCount
+								   String reportingUserFirstName, String reportingUserLastName, ContactRelation relationToCase, int visitCount,
+								   Date latestChangedDate // unused, only here for TypedQuery mapping
 	) {
 	//@formatter:on
 
@@ -80,7 +81,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
 			regionName, districtName, lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus,
 				completeness, followUpStatus, followUpUntil, symptomJournalStatus, vaccination, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
-			caseRegionName, caseDistrictName, changeDate, externalID, externalToken, internalToken, isInJurisdiction, isCaseInJurisdiction , visitCount);
+			caseRegionName, caseDistrictName, changeDate, externalID, externalToken, internalToken, isInJurisdiction, isCaseInJurisdiction , visitCount, latestChangedDate);
 
 		//@formatter:on
 

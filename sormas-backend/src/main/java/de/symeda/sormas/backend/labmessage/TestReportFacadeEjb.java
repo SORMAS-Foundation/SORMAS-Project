@@ -75,6 +75,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestResult(source.getTestResult());
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestResultText(source.getTestResultText());
+		target.setTypingId(source.getTypingId());
 		if (source.getPathogenTest() != null) {
 			target.setPathogenTest(source.getPathogenTest().toReference());
 		}
@@ -95,6 +96,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestResult(source.getTestResult());
 		target.setTestResultVerified(source.isTestResultVerified());
 		target.setTestResultText(source.getTestResultText());
+		target.setTypingId(source.getTypingId());
 		target.setPathogenTest(pathogenTestService.getByReferenceDto(source.getPathogenTest()));
 
 		return target;

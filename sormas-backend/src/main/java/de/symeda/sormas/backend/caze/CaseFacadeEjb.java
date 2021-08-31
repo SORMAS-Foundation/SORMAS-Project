@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -77,6 +76,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.CaseMeasure;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.Language;
@@ -98,6 +98,7 @@ import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CasePersonDto;
+import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
@@ -126,9 +127,9 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityHelper;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
@@ -143,18 +144,18 @@ import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.CauseOfDeath;
-import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
@@ -227,18 +228,18 @@ import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.outbreak.OutbreakService;
@@ -246,18 +247,18 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.Country;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.community.CommunityService;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.sample.AdditionalTest;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTest;
@@ -270,12 +271,12 @@ import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoHelper;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoCase;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -293,6 +294,7 @@ import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb.TreatmentFacadeEjbLoc
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -665,10 +667,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.PREGNANT), joins.getPerson().get(Person.APPROXIMATE_AGE),
 				joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE), joins.getPerson().get(Person.BIRTHDATE_DD),
 				joins.getPerson().get(Person.BIRTHDATE_MM), joins.getPerson().get(Person.BIRTHDATE_YYYY),
-				caseRoot.get(Case.REPORT_DATE), joins.getReportingUser().get(User.UUID),
-				joins.getRegion().get(Region.UUID), joins.getRegion().get(Region.NAME),
-				joins.getDistrict().get(District.UUID), joins.getDistrict().get(District.NAME),
-				joins.getCommunity().get(Community.UUID), joins.getCommunity().get(Community.NAME),
+				caseRoot.get(Case.REPORT_DATE), joins.getRegion().get(Region.NAME),
+				joins.getDistrict().get(District.NAME), joins.getCommunity().get(Community.NAME),
 				caseRoot.get(Case.FACILITY_TYPE),
 				joins.getFacility().get(Facility.NAME), joins.getFacility().get(Facility.UUID), caseRoot.get(Case.HEALTH_FACILITY_DETAILS),
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
@@ -677,13 +677,17 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.NOT_A_CASE_REASON_NEGATIVE_TEST),
 				caseRoot.get(Case.NOT_A_CASE_REASON_PHYSICIAN_INFORMATION), caseRoot.get(Case.NOT_A_CASE_REASON_DIFFERENT_PATHOGEN),
 				caseRoot.get(Case.NOT_A_CASE_REASON_OTHER), caseRoot.get(Case.NOT_A_CASE_REASON_DETAILS),
-				caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME), caseRoot.get(Case.OUTCOME_DATE),
+				caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.INVESTIGATED_DATE),
+				caseRoot.get(Case.OUTCOME), caseRoot.get(Case.OUTCOME_DATE),
+				caseRoot.get(Case.SEQUELAE), caseRoot.get(Case.SEQUELAE_DETAILS),
 				caseRoot.get(Case.BLOOD_ORGAN_OR_TISSUE_DONATED),
 				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
 				caseRoot.get(Case.NOSOCOMIAL_OUTBREAK), caseRoot.get(Case.INFECTION_SETTING),
+				caseRoot.get(Case.PROHIBITION_TO_WORK), caseRoot.get(Case.PROHIBITION_TO_WORK_FROM), caseRoot.get(Case.PROHIBITION_TO_WORK_UNTIL),
 				caseRoot.get(Case.RE_INFECTION), caseRoot.get(Case.PREVIOUS_INFECTION_DATE),
 				// quarantine
 				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_TYPE_DETAILS), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
+				caseRoot.get(Case.QUARANTINE_HELP_NEEDED),
 				caseRoot.get(Case.QUARANTINE_ORDERED_VERBALLY),
 				caseRoot.get(Case.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
 				caseRoot.get(Case.QUARANTINE_ORDERED_VERBALLY_DATE),
@@ -734,6 +738,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getResponsibleRegion().get(Region.NAME),
 				joins.getResponsibleDistrict().get(District.NAME),
 				joins.getResponsibleCommunity().get(Community.NAME),
+				caseRoot.get(Case.CLINICIAN_NAME),
+				caseRoot.get(Case.CLINICIAN_PHONE),
+				caseRoot.get(Case.CLINICIAN_EMAIL),
+				joins.getReportingUser().get(User.ID),
+				joins.getFollowUpStatusChangeUser().get(User.ID),
 				JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 		//@formatter:on
 
@@ -879,7 +888,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				Root<Sample> samplesRoot = samplesCq.from(Sample.class);
 				Join<Sample, Case> samplesCaseJoin = samplesRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 				Expression<String> caseIdsExpr = samplesCaseJoin.get(Case.ID);
-				samplesCq.where(caseIdsExpr.in(resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList())));
+				samplesCq.where(caseIdsExpr.in(resultCaseIds));
 				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedCase().getId()));
 			}
@@ -896,11 +905,9 @@ public class CaseFacadeEjb implements CaseFacade {
 				Join<Case, Visit> visitsJoin = visitsCqRoot.join(Case.VISITS, JoinType.LEFT);
 				Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-				List<Long> exportCaseIds = resultList.stream().map(e -> e.getId()).collect(Collectors.toList());
-
 				visitsCq.where(
 					CriteriaBuilderHelper
-						.and(cb, visitsCqRoot.get(AbstractDomainObject.ID).in(exportCaseIds), cb.isNotEmpty(visitsCqRoot.get(Case.VISITS))));
+						.and(cb, visitsCqRoot.get(AbstractDomainObject.ID).in(resultCaseIds), cb.isNotEmpty(visitsCqRoot.get(Case.VISITS))));
 				visitsCq.multiselect(
 					visitsCqRoot.get(AbstractDomainObject.ID),
 					visitsJoin.get(Visit.VISIT_DATE_TIME),
@@ -921,6 +928,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 				eventSummaries = eventService.getEventSummaryDetailsByCases(resultCaseIds);
 			}
+
+			Map<Long, UserReference> caseUsers = getCaseUsersForExport(resultList, exportConfiguration);
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
@@ -1047,7 +1056,10 @@ public class CaseFacadeEjb implements CaseFacade {
 						pseudonymizer.pseudonymizeDto(SymptomsDto.class, visitSymptoms, inJurisdiction, null);
 
 						exportDto.setLastCooperativeVisitSymptoms(SymptomsHelper.buildSymptomsHumanString(visitSymptoms, true, userLanguage));
-						exportDto.setLastCooperativeVisitSymptomatic(visitSymptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+						exportDto.setLastCooperativeVisitSymptomatic(
+							visitSymptoms.getSymptomatic() == null
+								? YesNoUnknown.UNKNOWN
+								: (visitSymptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO));
 					}
 				}
 
@@ -1060,6 +1072,22 @@ public class CaseFacadeEjb implements CaseFacade {
 							exportDto.setLatestEventStatus(eventSummary.getEventStatus());
 							exportDto.setLatestEventTitle(eventSummary.getEventTitle());
 						});
+				}
+
+				if (!caseUsers.isEmpty()) {
+					if (exportDto.getReportingUserId() != null) {
+						UserReference user = caseUsers.get(exportDto.getReportingUserId());
+
+						exportDto.setReportingUserName(user.getName());
+						exportDto.setReportingUserRoles(user.getUserRoles());
+					}
+
+					if (exportDto.getFollowUpStatusChangeUserId() != null) {
+						UserReference user = caseUsers.get(exportDto.getFollowUpStatusChangeUserId());
+
+						exportDto.setFollowUpStatusChangeUserName(user.getName());
+						exportDto.setFollowUpStatusChangeUserRoles(user.getUserRoles());
+					}
 				}
 
 				pseudonymizer.pseudonymizeDto(CaseExportDto.class, exportDto, inJurisdiction, (c) -> {
@@ -1076,6 +1104,22 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		caseCriteria.setMustHaveCaseManagementData(previousCaseManagementDataCriteria);
 		return resultList;
+	}
+
+	private Map<Long, UserReference> getCaseUsersForExport(List<CaseExportDto> resultList, ExportConfigurationDto exportConfiguration) {
+		Map<Long, UserReference> caseUsers = Collections.emptyMap();
+		if (exportConfiguration == null
+			|| exportConfiguration.getProperties().contains(CaseDataDto.REPORTING_USER)
+			|| exportConfiguration.getProperties().contains(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER)) {
+			Set<Long> userIds = resultList.stream()
+				.map((c -> Arrays.asList(c.getReportingUserId(), c.getFollowUpStatusChangeUserId())))
+				.flatMap(Collection::stream)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+			caseUsers = userService.getUserReferencesByIds(userIds).stream().collect(Collectors.toMap(UserReference::getId, Function.identity()));
+		}
+
+		return caseUsers;
 	}
 
 	@Override
@@ -1169,6 +1213,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CaseIndexDto> cq = cb.createQuery(CaseIndexDto.class);
 		Root<Case> root = cq.from(Case.class);
+		cq.distinct(true);
+
 		CaseJoins<Case> joins = new CaseJoins<>(root);
 
 		selectIndexDtoFields(new CaseQueryContext(cb, cq, root));
@@ -1665,8 +1711,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getHealthFacility() != null) {
 			FacilityDto healthFacility = facilityFacade.getByUuid(caze.getHealthFacility().getUuid());
 
-			if (caze.getFacilityType() == null && !FacilityDto.NONE_FACILITY_UUID.equals(caze.getHealthFacility().getUuid())) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityType));
+			if (caze.getFacilityType() == null) {
+				if (!FacilityDto.NONE_FACILITY_UUID.equals(caze.getHealthFacility().getUuid())) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityType));
+				}
+			} else if (!caze.getFacilityType().isAccommodation()) {
+				throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(Validations.notAccomodationFacilityType, caze.getFacilityType()));
 			}
 
 			if (caze.getRegion() == null) {
@@ -1875,12 +1926,13 @@ public class CaseFacadeEjb implements CaseFacade {
 		updateTasksOnCaseChanged(newCase, existingCase);
 
 		// Update case classification if the feature is enabled
+		CaseClassification classification = null;
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
 			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				// calculate classification
 				CaseDataDto newCaseDto = toDto(newCase);
 
-				CaseClassification classification = caseClassificationFacade.getClassification(newCaseDto);
+				classification = caseClassificationFacade.getClassification(newCaseDto);
 
 				// only update when classification by system changes - user may overwrite this
 				if (classification != newCase.getSystemCaseClassification()) {
@@ -1894,6 +1946,12 @@ public class CaseFacadeEjb implements CaseFacade {
 					}
 				}
 			}
+		}
+
+		// calculate reference definition for cases
+		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			boolean fulfilled = evaluateFulfilledCondition(toDto(newCase), classification);
+			newCase.setCaseReferenceDefinition(fulfilled ? CaseReferenceDefinition.FULFILLED : CaseReferenceDefinition.NOT_FULFILLED);
 		}
 
 		// Set Yes/No/Unknown fields associated with embedded lists to Yes if the lists
@@ -1980,6 +2038,32 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		if (existingCase != null && syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
+		}
+	}
+
+	public boolean evaluateFulfilledCondition(CaseDataDto newCase, CaseClassification caseClassification) {
+
+		if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
+			List<CaseClassification> fulfilledCaseClassificationOptions =
+				Arrays.asList(CaseClassification.CONFIRMED, CaseClassification.CONFIRMED_NO_SYMPTOMS, CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+
+			if (caseClassification == null) {
+				caseClassification = caseClassificationFacade.getClassification(newCase);
+			}
+
+			List<PathogenTest> casePathogenTests = null;
+			if (fulfilledCaseClassificationOptions.contains(caseClassification)) {
+				casePathogenTests = pathogenTestService.getAllByCase(newCase.getUuid());
+				casePathogenTests = casePathogenTests.stream()
+					.filter(
+						pathogenTest -> (Arrays.asList(PathogenTestType.PCR_RT_PCR, PathogenTestType.ISOLATION, PathogenTestType.SEQUENCING)
+							.contains(pathogenTest.getTestType())
+							&& PathogenTestResultType.POSITIVE.equals(pathogenTest.getTestResult())))
+					.collect(Collectors.toList());
+			}
+			return casePathogenTests != null && !casePathogenTests.isEmpty();
+		} else {
+			return false;
 		}
 	}
 
@@ -2581,6 +2665,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
 		}
 		target.setDontShareWithReportingTool(source.isDontShareWithReportingTool());
+		target.setCaseReferenceDefinition(source.getCaseReferenceDefinition());
 
 		return target;
 	}
@@ -2758,6 +2843,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setNotACaseReasonOther(source.isNotACaseReasonOther());
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 		target.setDontShareWithReportingTool(source.isDontShareWithReportingTool());
+		target.setCaseReferenceDefinition(source.getCaseReferenceDefinition());
 
 		return target;
 	}
@@ -3182,19 +3268,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (!cloning && !DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid())) {
 			PersonDto leadPerson = personFacade.getPersonByUuid(leadCaseData.getPerson().getUuid());
 			PersonDto otherPerson = personFacade.getPersonByUuid(otherCaseData.getPerson().getUuid());
-			Set primaryContactDetailTypes = new HashSet<>();
-			for (PersonContactDetailDto contactDetailDto : leadPerson.getPersonContactDetails()) {
-				if (contactDetailDto.isPrimaryContact()) {
-					primaryContactDetailTypes.add(contactDetailDto.getPersonContactDetailType());
-				}
-			}
-			for (PersonContactDetailDto contactDetailDto : otherPerson.getPersonContactDetails()) {
-				if (contactDetailDto.isPrimaryContact() && primaryContactDetailTypes.contains(contactDetailDto.getPersonContactDetailType())) {
-					contactDetailDto.setPrimaryContact(false);
-				}
-			}
-			DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
-			personFacade.savePerson(leadPerson);
+			personFacade.mergePerson(leadPerson, otherPerson);
 		} else {
 			assert (DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid()));
 		}

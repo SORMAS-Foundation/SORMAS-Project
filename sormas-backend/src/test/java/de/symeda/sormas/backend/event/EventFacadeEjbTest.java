@@ -97,7 +97,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		ActionDto action = creator.createAction(event.toReference());
 
 		// Database should contain the created event and event participant
-		assertNotNull(getEventFacade().getEventByUuid(event.getUuid()));
+		assertNotNull(getEventFacade().getEventByUuid(event.getUuid(), false));
 		assertNotNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
 		assertNotNull(getActionFacade().getByUuid(action.getUuid()));
 

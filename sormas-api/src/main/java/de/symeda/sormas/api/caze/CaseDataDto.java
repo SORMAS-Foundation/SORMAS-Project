@@ -34,15 +34,15 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
@@ -206,6 +206,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
 	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
 	public static final String DONT_SHARE_WITH_REPORTING_TOOL = "dontShareWithReportingTool";
+	public static final String CASE_REFERENCE_DEFINITION = "caseReferenceDefinition";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -619,6 +620,9 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private UserReferenceDto followUpStatusChangeUser;
 
 	private boolean dontShareWithReportingTool;
+
+	@HideForCountriesExcept
+	private CaseReferenceDefinition caseReferenceDefinition;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -1777,5 +1781,13 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 
 	public void setDontShareWithReportingTool(boolean dontShareWithReportingTool) {
 		this.dontShareWithReportingTool = dontShareWithReportingTool;
+	}
+
+	public CaseReferenceDefinition getCaseReferenceDefinition() {
+		return caseReferenceDefinition;
+	}
+
+	public void setCaseReferenceDefinition(CaseReferenceDefinition caseReferenceDefinition) {
+		this.caseReferenceDefinition = caseReferenceDefinition;
 	}
 }

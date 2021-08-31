@@ -64,15 +64,15 @@ import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -83,6 +83,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CheckBoxTree;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
@@ -162,7 +163,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private ComboBox diseaseField;
 	private ComboBox diseaseVariantField;
 	private DateField reportDate;
-	private DateField startDate;
+	private DateTimeField startDate;
 
 	public EventDataForm(boolean create, boolean isPseudonymized) {
 		super(
@@ -226,9 +227,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.INTERNAL_TOKEN);
 
-		startDate = addField(EventDto.START_DATE, DateField.class);
+		startDate = addField(EventDto.START_DATE, DateTimeField.class);
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);
-		DateField endDate = addField(EventDto.END_DATE, DateField.class);
+		DateTimeField endDate = addField(EventDto.END_DATE, DateTimeField.class);
 		initEventDateValidation(startDate, endDate, multiDayCheckbox);
 
 		addField(EventDto.EVENT_STATUS, NullableOptionGroup.class);
@@ -637,7 +638,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			laboratoryDiagnosticEvidenceDetail);
 	}
 
-	private void initEventDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
+	private void initEventDateValidation(DateTimeField startDate, DateTimeField endDate, CheckBox multiDayCheckbox) {
 		DateComparisonValidator startDateValidator = new DateComparisonValidator(
 			startDate,
 			endDate,

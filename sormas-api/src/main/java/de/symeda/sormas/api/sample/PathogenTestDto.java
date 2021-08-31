@@ -23,7 +23,7 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;

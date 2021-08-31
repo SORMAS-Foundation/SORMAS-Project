@@ -37,7 +37,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -46,8 +46,8 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -114,7 +114,7 @@ public class ContactImporter extends DataImporter {
 			values[uuidIndex] = DataHelper.createUuid();
 		}
 
-		final PersonDto newPersonTemp = PersonDto.build();
+		final PersonDto newPersonTemp = PersonDto.buildImportEntity();
 		final ContactDto newContactTemp = caze != null ? ContactDto.build(caze) : ContactDto.build();
 		newContactTemp.setReportingUser(currentUser.toReference());
 

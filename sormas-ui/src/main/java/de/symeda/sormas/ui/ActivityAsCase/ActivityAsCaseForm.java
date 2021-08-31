@@ -31,12 +31,14 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
@@ -49,7 +51,8 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -121,6 +124,7 @@ public class ActivityAsCaseForm extends AbstractEditForm<ActivityAsCaseDto> {
 		addField(ActivityAsCaseDto.DESCRIPTION, TextArea.class).setRows(5);
 
 		locationForm = addField(ActivityAsCaseDto.LOCATION, LocationEditForm.class);
+		locationForm.setSkipFacilityTypeUpdate(true);
 		locationForm.setCaption(null);
 		addField(ActivityAsCaseDto.CONNECTION_NUMBER, TextField.class);
 		getField(ActivityAsCaseDto.MEANS_OF_TRANSPORT).addValueChangeListener(e -> {
@@ -175,6 +179,29 @@ public class ActivityAsCaseForm extends AbstractEditForm<ActivityAsCaseDto> {
 				Item item = field.addItem(value);
 				item.getItemProperty(CAPTION_PROPERTY_ID).setValue(value.toString());
 			}
+			field.addValueChangeListener(e -> {
+				if (TypeOfPlace.FACILITY_23_IFSG.equals(field.getValue())
+					|| TypeOfPlace.COMMUNITY_FACILITY.equals(field.getValue())
+					|| TypeOfPlace.FACILITY_36_IFSG.equals(field.getValue())) {
+					ComboBox facilityType = locationForm.getFacilityType();
+					facilityType.removeAllItems();
+					List<FacilityType> list;
+					TypeOfPlace type = (TypeOfPlace) field.getValue();
+					if (TypeOfPlace.FACILITY_23_IFSG.equals(type)) {
+						list = FacilityType.FOR_FACILITY_23_IFSG_GERMANY;
+					} else if (TypeOfPlace.COMMUNITY_FACILITY.equals(type)) {
+						list = FacilityType.FOR_COMMUNITY_FACILITY_GERMANY;
+					} else if (TypeOfPlace.FACILITY_36_IFSG.equals(type)) {
+						list = FacilityType.FOR_FACILITY_36_IFSG_GERMANY;
+					} else {
+						throw new IllegalArgumentException(type.toString());
+					}
+					for (FacilityType value : list) {
+						Item item = facilityType.addItem(value);
+						item.getItemProperty(CAPTION_PROPERTY_ID).setValue(value.toString());
+					}
+				}
+			});
 		}
 	}
 
@@ -236,9 +263,16 @@ public class ActivityAsCaseForm extends AbstractEditForm<ActivityAsCaseDto> {
 			Collections.singletonList(FacilityTypeGroup.WORKING_PLACE),
 			true);
 
-		locationForm.setFacilityFieldsVisible(TypeOfPlace.isFacilityType(getField(ActivityAsCaseDto.TYPE_OF_PLACE).getValue()), true);
-		getField(ActivityAsCaseDto.TYPE_OF_PLACE)
-			.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(TypeOfPlace.isFacilityType(e.getProperty().getValue()), true));
+		if (CountryHelper.isCountry(FacadeProvider.getConfigFacade().getCountryLocale(), CountryHelper.COUNTRY_CODE_GERMANY)) {
+			locationForm
+				.setFacilityFieldsVisibleExceptTypeGroupField(TypeOfPlace.isFacilityType(getField(ActivityAsCaseDto.TYPE_OF_PLACE).getValue()), true);
+			getField(ActivityAsCaseDto.TYPE_OF_PLACE).addValueChangeListener(
+				e -> locationForm.setFacilityFieldsVisibleExceptTypeGroupField(TypeOfPlace.isFacilityType(e.getProperty().getValue()), true));
+		} else {
+			locationForm.setFacilityFieldsVisible(TypeOfPlace.isFacilityType(getField(ActivityAsCaseDto.TYPE_OF_PLACE).getValue()), true);
+			getField(ActivityAsCaseDto.TYPE_OF_PLACE)
+				.addValueChangeListener(e -> locationForm.setFacilityFieldsVisible(TypeOfPlace.isFacilityType(e.getProperty().getValue()), true));
+		}
 		locationForm.setContinentFieldsVisibility();
 	}
 

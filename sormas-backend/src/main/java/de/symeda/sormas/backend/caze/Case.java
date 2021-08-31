@@ -48,6 +48,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.ContactTracingContactType;
 import de.symeda.sormas.api.caze.DengueFeverType;
@@ -68,7 +69,7 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externaldata.HasExternalData;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
@@ -79,18 +80,18 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasEntity;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoCase;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoCase;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -126,6 +127,9 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String INVESTIGATED_DATE = "investigatedDate";
 	public static final String DISTRICT_LEVEL_DATE = "districtLevelDate";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String CLINICIAN_NAME = "clinicianName";
+	public static final String CLINICIAN_PHONE = "clinicianPhone";
+	public static final String CLINICIAN_EMAIL = "clinicianEmail";
 	public static final String CASE_OFFICER = "caseOfficer";
 	public static final String SYMPTOMS = "symptoms";
 	public static final String TASKS = "tasks";
@@ -178,6 +182,9 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String NOSOCOMIAL_OUTBREAK = "nosocomialOutbreak";
 	public static final String INFECTION_SETTING = "infectionSetting";
+	public static final String PROHIBITION_TO_WORK = "prohibitionToWork";
+	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";
+	public static final String PROHIBITION_TO_WORK_UNTIL = "prohibitionToWorkUntil";
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
@@ -231,6 +238,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String FOLLOW_UP_STATUS_CHANGE_DATE = "followUpStatusChangeDate";
 	public static final String FOLLOW_UP_STATUS_CHANGE_USER = "followUpStatusChangeUser";
 	public static final String DONT_SHARE_WITH_REPORTING_TOOL = "dontShareWithReportingTool";
+	public static final String CASE_REFERENCE_DEFINITION = "caseReferenceDefinition";
 
 	private Person person;
 	private String description;
@@ -407,6 +415,8 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<ShareInfoCase> shareInfoCases = new ArrayList<>(0);
 	private List<ExternalShareInfo> externalShares = new ArrayList<>(0);
+
+	private CaseReferenceDefinition caseReferenceDefinition;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -1260,7 +1270,9 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 
 	/**
 	 * Extra setter for externalID needed to comply with the HasExternalData interface
-	 * @param externalId the value to be set for externalID
+	 * 
+	 * @param externalId
+	 *            the value to be set for externalID
 	 */
 	public void setExternalId(String externalId) {
 		this.externalID = externalId;
@@ -1753,5 +1765,14 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 
 	public void setDontShareWithReportingTool(boolean dontShareWithReportingTool) {
 		this.dontShareWithReportingTool = dontShareWithReportingTool;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CaseReferenceDefinition getCaseReferenceDefinition() {
+		return caseReferenceDefinition;
+	}
+
+	public void setCaseReferenceDefinition(CaseReferenceDefinition caseReferenceDefinition) {
+		this.caseReferenceDefinition = caseReferenceDefinition;
 	}
 }

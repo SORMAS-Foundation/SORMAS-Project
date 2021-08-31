@@ -27,13 +27,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -151,6 +151,7 @@ public class PersonDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	private String namesOfGuardians;
 	@Outbreaks
+	@Required
 	private Sex sex;
 	@Outbreaks
 	@PersonalData
@@ -326,6 +327,13 @@ public class PersonDto extends PseudonymizableDto {
 		PersonDto person = new PersonDto();
 		person.setUuid(DataHelper.createUuid());
 		person.setAddress(LocationDto.build());
+		return person;
+	}
+
+	public static PersonDto buildImportEntity() {
+
+		PersonDto person = build();
+		person.setSex(Sex.UNKNOWN);
 		return person;
 	}
 

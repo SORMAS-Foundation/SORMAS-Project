@@ -63,12 +63,12 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
-import de.symeda.sormas.api.facility.FacilityCriteria;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.infrastructure.PointOfEntryType;
-import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultUserHelper;
@@ -78,22 +78,22 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.Country;
-import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CountryService;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.community.CommunityService;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.country.CountryService;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -589,7 +589,7 @@ public class StartupShutdownService {
 	 */
 	private void syncUsers() {
 
-		AuthProvider authProvider = AuthProvider.getProvider();
+		AuthProvider authProvider = AuthProvider.getProvider(configFacade);
 
 		if (!authProvider.isUserSyncSupported()) {
 			logger.info("Active Authentication Provider {} doesn't support user sync", authProvider.getName());
