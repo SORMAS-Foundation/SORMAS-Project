@@ -289,9 +289,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
-	public List<ImmunizationListEntryDto> getEntriesList(String personUuid, Integer first, Integer max) {
-		Long personId = personFacade.getPersonIdByUuid(personUuid);
-		return immunizationService.getEntriesList(personId, first, max);
+	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationCriteria criteria, Integer first, Integer max) {
+		return immunizationService.getEntriesList(criteria, first, max);
 	}
 
 	public ImmunizationDto toDto(Immunization entity) {

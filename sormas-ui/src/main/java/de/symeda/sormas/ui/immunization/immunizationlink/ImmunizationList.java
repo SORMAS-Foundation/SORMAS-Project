@@ -17,7 +17,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
-public class ImmunizationList extends PaginationList<ImmunizationIndexDto> {
+public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
 
 	private final ImmunizationCriteria immunizationCriteria;
 
@@ -29,7 +29,7 @@ public class ImmunizationList extends PaginationList<ImmunizationIndexDto> {
 	@Override
 	public void reload() {
 		List<ImmunizationListEntryDto> immunizationsList =
-				FacadeProvider.getImmunizationFacade().getEntriesList(personUuid, 0, maxDisplayedEntries * 20);
+				FacadeProvider.getImmunizationFacade().getEntriesList(immunizationCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(immunizationsList);
 		if (!immunizationsList.isEmpty()) {

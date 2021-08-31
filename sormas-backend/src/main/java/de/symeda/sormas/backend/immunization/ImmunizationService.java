@@ -29,15 +29,22 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.immunization.ImmunizationCriteria;
+import de.symeda.sormas.api.immunization.ImmunizationDateType;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -46,11 +53,16 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
 import de.symeda.sormas.backend.immunization.tramsformers.ImmunizationListEntryDtoTransformer;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.vaccination.VaccinationEntity;
+
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEqualsReferenceDto;
 
 @Stateless
 @LocalBean
@@ -63,11 +75,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		super(Immunization.class);
 	}
 
-	public List<ImmunizationListEntryDto> getEntriesList(Long personId, Integer first, Integer max) {
-		if (personId == null) {
-			return Collections.emptyList();
-		}
-
+	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationCriteria criteria, Integer first, Integer max) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Immunization> immunization = cq.from(Immunization.class);
@@ -86,9 +94,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)),
 			immunization.get(Immunization.DISEASE));
 
-		Predicate filter = cb.equal(immunization.get(Immunization.PERSON_ID), personId);
-		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(immunization.get(Immunization.DELETED)));
-		cq.where(filter);
+		buildWhereCondition(criteria, cb, cq, immunizationQueryContext);
 
 		cq.orderBy(cb.desc(immunization.get(Immunization.CHANGE_DATE)));
 
