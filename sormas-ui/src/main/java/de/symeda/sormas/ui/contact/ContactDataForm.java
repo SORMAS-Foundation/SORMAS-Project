@@ -604,7 +604,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 									I18nProperties.getString(Strings.headingContactConfirmationRequired),
 									I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
 							} else {
-								ControllerProvider.getCaseController().createFromContact(getValue());
+								ControllerProvider.getCaseController().createFromContact(getValue(), null);
 							}
 						}, ValoTheme.BUTTON_LINK);
 

@@ -122,7 +122,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 				ControllerProvider.getCaseController().navigateToCase(e.getCaseUuid());
 			} else if (e.getInJurisdiction()) {
 				EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getUuid());
-				ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
+				ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant, null);
 			}
 		}));
 		addItemClickListener(

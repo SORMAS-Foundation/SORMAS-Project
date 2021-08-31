@@ -560,7 +560,7 @@ public class LabMessageController {
 		Window window,
 		CaseDataDto caseDto) {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, true);
+			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, true, null);
 		caseCreateComponent.addCommitListener(() -> {
 			savePerson(
 				FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
