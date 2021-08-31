@@ -16,33 +16,35 @@
 package de.symeda.sormas.api.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ElementKind;
-
-import de.symeda.sormas.api.i18n.I18nProperties;
+import javax.validation.Path;
 
 public class ConstrainValidationHelper {
 
 	public static Map<List<String>, String> getPropertyErrors(Set<? extends ConstraintViolation> constraintViolations) {
-		return constraintViolations.stream().map(v -> {
+		Map<List<String>, String> errors = new HashMap<>();
+
+		for (ConstraintViolation<?> constraintViolation : constraintViolations) {
 			List<String> path = new ArrayList<>();
-			v.getPropertyPath().forEach(p -> {
-				if (p.getKind() == ElementKind.PROPERTY) {
-					if (p.getIndex() != null && path.size() > 0) {
+
+			for (Path.Node propertyNode : constraintViolation.getPropertyPath()) {
+				if (propertyNode.getKind() == ElementKind.PROPERTY) {
+					if (propertyNode.getIndex() != null && path.size() > 0) {
 						int pathSize = path.size();
-						path.set(pathSize - 1, path.get(pathSize - 1) + "[" + p.getIndex() + "]");
+						path.set(pathSize - 1, path.get(pathSize - 1) + "[" + propertyNode.getIndex() + "]");
 					}
 
-					path.add(p.getName());
+					path.add(propertyNode.getName());
 				}
-			});
+			}
+		}
 
-			return DataHelper.Pair.createPair(path, I18nProperties.getValidationError(v.getMessage(), v.getConstraintDescriptor().getAttributes()));
-		}).collect(Collectors.toMap(DataHelper.Pair::getElement0, DataHelper.Pair::getElement1));
+		return errors;
 	}
 }

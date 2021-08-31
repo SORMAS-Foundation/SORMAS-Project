@@ -136,5 +136,7 @@ public interface ConfigFacade {
 
 	int getStepSizeForCsvExport();
 
-	long documentUploadSizeLimitMb();
+	long getDocumentUploadSizeLimitMb();
+
+	long getImportFileSizeLimitMb();
 }

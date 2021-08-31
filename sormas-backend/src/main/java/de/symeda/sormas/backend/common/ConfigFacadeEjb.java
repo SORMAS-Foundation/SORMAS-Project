@@ -160,6 +160,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String DOCUMENT_UPLOAD_SIZE_LIMIT_MB = "documentUploadSizeLimitMb";
 	public static final int DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB = 20;
+	public static final String IMPORT_FILE_SIZE_LIMIT_MB = "importFileSizeLimitMb";
+	public static final int DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB = 20;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -668,8 +670,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public long documentUploadSizeLimitMb() {
+	public long getDocumentUploadSizeLimitMb() {
 		return getLong(DOCUMENT_UPLOAD_SIZE_LIMIT_MB, DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
+	}
+
+	@Override
+	public long getImportFileSizeLimitMb() {
+		return getLong(IMPORT_FILE_SIZE_LIMIT_MB, DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB);
 	}
 
 	@LocalBean

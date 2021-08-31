@@ -31,7 +31,7 @@ public class DocumentMultiFileUpload extends MultiFileUpload {
 	public DocumentMultiFileUpload(UploadStartedHandler uploadStartedHandler, UploadFinishedHandler uploadFinishedHandler, UploadStateWindow uploadStateWindow, boolean multiple) {
 		super(uploadStartedHandler, uploadFinishedHandler, uploadStateWindow, multiple);
 
-		long fileSizeLimitMb = FacadeProvider.getConfigFacade().documentUploadSizeLimitMb();
+		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
 		setMaxFileSize(fileSizeLimitMb * 1_000_000);
 		setSizeErrorMsgPattern(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
 

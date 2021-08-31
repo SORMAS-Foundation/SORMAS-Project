@@ -12,7 +12,7 @@ import java.util.Date;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.v7.ui.Upload;
+import com.vaadin.v7.ui.Upload.StartedEvent;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
@@ -72,8 +72,8 @@ public class DocumentTemplateReceiver
 	}
 
 	@Override
-	public void uploadStarted(Upload.StartedEvent startedEvent) {
-		long fileSizeLimitMb = FacadeProvider.getConfigFacade().documentUploadSizeLimitMb();
+	public void uploadStarted(StartedEvent startedEvent) {
+		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
 
 		if (startedEvent.getContentLength() > fileSizeLimitMb * 1_000_000) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
