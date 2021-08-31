@@ -157,7 +157,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	@Override
 	public void onAfterLayoutBinding(final FragmentImmunizationEditLayoutBinding contentBinding) {
 
-		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles()) || record.getHealthFacility() == null) {
+		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
 			contentBinding.facilityOrHome.setVisibility(GONE);
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 			contentBinding.immunizationHealthFacility.setVisibility(GONE);
