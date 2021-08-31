@@ -38,6 +38,7 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.immunization.ImmunizationSection;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
@@ -137,7 +138,11 @@ public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity>
                 super.onPostExecute(taskResult);
 
                 if (taskResult.getResultStatus().isSuccess()) {
-                    finish();
+                    if (getActivePage().getPosition() == VaccinationSection.HEALTH_CONDITIONS.ordinal()) {
+                        finish();
+                    } else {
+                        goToNextPage();
+                    }
                 } else {
                     onResume(); // reload data
                 }
