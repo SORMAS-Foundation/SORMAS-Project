@@ -105,7 +105,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		TextField externalIdField = addField(ImmunizationDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		addDiseaseField(ImmunizationDto.DISEASE, false);
+		addDiseaseField(ImmunizationDto.DISEASE, false, true);
 		addField(ImmunizationDto.DISEASE_DETAILS, TextField.class);
 
 		ComboBox meansOfImmunizationField = addField(ImmunizationDto.MEANS_OF_IMMUNIZATION, ComboBox.class);

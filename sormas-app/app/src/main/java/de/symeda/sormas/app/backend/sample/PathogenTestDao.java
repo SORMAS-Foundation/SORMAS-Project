@@ -25,10 +25,12 @@ import com.j256.ormlite.stmt.Where;
 
 import android.util.Log;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
 
@@ -55,6 +57,10 @@ public class PathogenTestDao extends AbstractAdoDao<PathogenTest> {
 		pathogenTest.setLabUser(ConfigProvider.getUser());
 		if (associatedSample.getSamplePurpose() == SamplePurpose.INTERNAL) {
 			pathogenTest.setTestResultVerified(true);
+		}
+		Disease defaultDisease = DiseaseConfigurationCache.getInstance().getDefaultDisease();
+		if (defaultDisease != null) {
+			pathogenTest.setTestedDisease(defaultDisease);
 		}
 		return pathogenTest;
 	}
