@@ -794,6 +794,7 @@ public interface Strings {
 	String lastYear = "lastYear";
 	String listOf = "listOf";
 	String max = "max";
+	String messafeTravelEntryPOEFilledBySystem = "messafeTravelEntryPOEFilledBySystem";
 	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
