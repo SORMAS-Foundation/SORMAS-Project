@@ -40,7 +40,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.Page;
