@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.infrastructure.region;
 
 import java.util.ArrayList;
@@ -43,6 +40,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -54,6 +52,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
@@ -88,6 +87,8 @@ public class RegionFacadeEjb implements RegionFacade {
 	private CountryService countryService;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfiguration;
 
 	@Override
 	public List<RegionReferenceDto> getAllActiveByServerCountry() {
@@ -285,6 +286,11 @@ public class RegionFacadeEjb implements RegionFacade {
 
 	@Override
 	public void dearchive(String regionUuid) {
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
+
 		Region region = regionService.getByUuid(regionUuid);
 		region.setArchived(false);
 		regionService.ensurePersisted(region);
@@ -351,6 +357,10 @@ public class RegionFacadeEjb implements RegionFacade {
 
 	@Override
 	public RegionDto save(@Valid RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
 
 		Region region = regionService.getByUuid(dto.getUuid());
 

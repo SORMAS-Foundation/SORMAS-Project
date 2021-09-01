@@ -505,6 +505,7 @@ public interface Strings {
 	String headingImportSubcontinents = "headingImportSubcontinents";
 	String headingImportTravelEntries = "headingImportTravelEntries";
 	String headingInformationSource = "headingInformationSource";
+	String headingInfrastructureLocked = "headingInfrastructureLocked";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
 	String headingLabMessageDownload = "headingLabMessageDownload";
@@ -964,6 +965,7 @@ public interface Strings {
 	String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	String messageImportSuccessful = "messageImportSuccessful";
 	String messageIncompleteGpsCoordinates = "messageIncompleteGpsCoordinates";
+	String messageInfrastructureLocked = "messageInfrastructureLocked";
 	String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
 	String messageLabMessagesDeleted = "messageLabMessagesDeleted";
 	String messageLabMessagesDeleteProcessed = "messageLabMessagesDeleteProcessed";

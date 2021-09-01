@@ -110,6 +110,7 @@ public interface Validations {
 	String importSubcontinentNotUnique = "importSubcontinentNotUnique";
 	String importUnexpectedError = "importUnexpectedError";
 	String importWrongDataTypeError = "importWrongDataTypeError";
+	String infrastructureDataLocked = "infrastructureDataLocked";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
 	String labMessageAlreadyProcessedError = "labMessageAlreadyProcessedError";
 	String labMessagePdfConversionError = "labMessagePdfConversionError";
