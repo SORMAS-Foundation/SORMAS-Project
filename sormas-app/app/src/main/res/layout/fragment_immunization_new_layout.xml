@@ -103,7 +103,7 @@
                 app:value="@={data.immunizationStatus}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/immunization_externalID"
+                android:id="@+id/immunization_externalId"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.externalId}" />
 
