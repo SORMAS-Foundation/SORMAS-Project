@@ -189,7 +189,6 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 			if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
 				contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
 				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-				contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.VISIBLE);
 			}
 			if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
 				contentBinding.immunizationNumberOfDoses.setVisibility(View.VISIBLE);
@@ -202,6 +201,8 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.overwriteImmunizationManagementStatusCheckBox.addValueChangedListener(e -> {
 			if (Boolean.TRUE.equals(e.getValue())) {
 				contentBinding.immunizationImmunizationManagementStatus.setEnabled(true);
+			} else {
+				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
 			}
 		});
 
@@ -219,7 +220,6 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 
 		contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.SCHEDULED);
 		contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-		contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.GONE);
 		contentBinding.immunizationNumberOfDoses.setVisibility(View.GONE);
 
 	}

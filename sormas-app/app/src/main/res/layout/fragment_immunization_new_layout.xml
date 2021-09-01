@@ -89,7 +89,6 @@
             <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                 android:id="@+id/overwrite_immunization_management_status_checkBox"
                 style="@style/ControlSingleColumnStyle"
-                android:visibility="gone"
                 app:caption="@string/caption_overwrite_immunization_management_status" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField

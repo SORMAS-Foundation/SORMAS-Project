@@ -184,7 +184,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
 				contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
 				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-				contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.VISIBLE);
 			}
 			if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
 				contentBinding.immunizationVaccinationLayout.setVisibility(View.VISIBLE);
