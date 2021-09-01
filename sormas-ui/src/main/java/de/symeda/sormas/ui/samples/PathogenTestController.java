@@ -28,11 +28,11 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -52,7 +52,6 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -148,7 +147,7 @@ public class PathogenTestController {
 		return editView;
 	}
 
-	public static void showCaseUpdateWithNewDiseaseVariantDialog(CaseDataDto existingCaseDto, DiseaseVariant diseaseVariant) {
+	public static void showCaseUpdateWithNewDiseaseVariantDialog(CaseDataDto existingCaseDto, DiseaseVariant diseaseVariant, Runnable callback) {
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingUpdateCaseWithNewDiseaseVariant),
@@ -162,6 +161,9 @@ public class PathogenTestController {
 					caseDataByUuid.setDiseaseVariant(diseaseVariant);
 					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
 					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
+				}
+				if (callback != null) {
+					callback.run();
 				}
 			});
 	}
@@ -188,63 +190,50 @@ public class PathogenTestController {
 		PathogenTestDto dto,
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
 		CaseReferenceDto associatedCase) {
+
+		// Negative test result AND test result verified
+		// a) Tested disease == case disease AND test result != sample pathogen test result: Ask user whether to update the sample pathogen test result
+		// b) Tested disease != case disease: Do nothing
+
+		// Positive test result AND test result verified
+		// a) Tested disease == case disease: Ask user whether to update the sample pathogen test result
+		// a.1) Tested disease variant != case disease variant: Ask user to change the case disease variant
+		// a.2) Case classification != confirmed: Ask user whether to confirm the case
+		// b) Tested disease != case disease: Ask user to create a new case for the tested disease
+
 		CaseDataDto preSaveCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 		CaseDataDto postSaveCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 		showSaveNotification(preSaveCaseDto, postSaveCaseDto);
 
-		// RULESET according to #5816
-		// 1. If pathogentestresult negative AND confirmed
-		// 1.1 If Diseases equal: ask user whether to update sampleResult (if sampleResult != pathogenTestResult)
-		// 1.1.1 if yes, update case classification to probable if (sampleCollectionDate - mostRelevantDate < 30)
-		// 1.2 if Diseases do not Equal: do nothing
+		final boolean equalDisease = dto.getTestedDisease() == postSaveCaseDto.getDisease();
 
-		// 2. If pathogentestresult positive AND confirmed
-		// 2.1 If Diseases Equal: ask user if sampleResult should be updated, change classification if yes & (sampleCollectionDate - mostRelevantDate < 30)
-		// 2.1.1 If Disease Variant does not equal: show dialogue suggesting changing the variant
-		// 2.2 If Diseases do not Equal: Suggest creating new case for that disease and set classification of the new case to confirmed. SampleResult remains unchanged
-
-		final Boolean equalDisease = dto.getTestedDisease() == postSaveCaseDto.getDisease();
-
-		// 1.
 		Runnable negativeTestCallback = () -> {
 			if (equalDisease && PathogenTestResultType.NEGATIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
-				// 1.1
-				changeAssociatedSampleResult(dto, () -> {
-				}, () -> {
-					// 1.1.1
-					Date sampleCollectionDate = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()).getSampleDateTime();
-					if (DateHelper.subtractDays(sampleCollectionDate, 30).before(CaseLogic.getStartDate(postSaveCaseDto))) {
-						CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(postSaveCaseDto.getUuid());
-						caseDataByUuid.setCaseClassification(CaseClassification.PROBABLE);
-						caseDataByUuid = FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
-
-						showSaveNotification(preSaveCaseDto, caseDataByUuid);
-					}
-
+				changeAssociatedSampleResult(dto, handleChanges -> {
 				});
 			}
 		};
 
-		// 2.
 		Runnable positiveTestCallback = () -> {
 			if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
-					// 2.1
-					changeAssociatedSampleResult(dto, () -> {
-						Date sampleCollectionDate = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()).getSampleDateTime();
-						if (DateHelper.subtractDays(sampleCollectionDate, 30).before(CaseLogic.getStartDate(postSaveCaseDto))) {
-							showConfirmCaseDialog(postSaveCaseDto);
+					changeAssociatedSampleResult(dto, handleChanges -> {
+						if (handleChanges) {
+							if (dto.getTestedDiseaseVariant() != null
+								&& !DataHelper.equal(dto.getTestedDiseaseVariant(), postSaveCaseDto.getDiseaseVariant())) {
+								showCaseUpdateWithNewDiseaseVariantDialog(
+									postSaveCaseDto,
+									dto.getTestedDiseaseVariant(),
+									() -> {
+										// Retrieve the case again because it might have changed
+										showConfirmCaseDialog(FacadeProvider.getCaseFacade().getByUuid(postSaveCaseDto.getUuid()));
+									});
+							} else {
+								showConfirmCaseDialog(postSaveCaseDto);
+							}
 						}
-
-						// 2.1.1
-						if (dto.getTestedDiseaseVariant() != null
-							&& !DataHelper.equal(dto.getTestedDiseaseVariant(), postSaveCaseDto.getDiseaseVariant())) {
-							showCaseUpdateWithNewDiseaseVariantDialog(postSaveCaseDto, dto.getTestedDiseaseVariant());
-						}
-					}, () -> {
 					});
 				} else {
-					// 2.2
 					showCaseCloningWithNewDiseaseDialog(postSaveCaseDto, dto.getTestedDisease());
 				}
 			}
@@ -265,26 +254,23 @@ public class PathogenTestController {
 		PathogenTestDto dto,
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
 		ContactReferenceDto associatedContact) {
+
+		// Negative test result AND test result verified
+		// a) Tested disease == contact disease AND test result != sample pathogen test result: Ask user whether to update the sample pathogen test result
+		// b) Tested disease != contact disease: Do nothing
+
+		// Positive test result AND test result verified
+		// a) Tested disease == contact disease: Ask user to convert the contact to a case
+		// a.1) If contact is converted, update the sample pathogen test result
+		// a.2) If contact is not converted (or there already is a resulting case), ask user whether to update the sample pathogen test result
+		// b) Tested disease != contact disease: Ask user to create a new case for the tested disease
+
 		final ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
-
-		// RULESET according to #5816
-		// 1. If pathogentestresult negative AND confirmed
-		// 1.1 If Diseases equal: ask user whether to update sampleResult (if sampleResult != pathogenTestResult)
-		// 1.2 if Diseases do not Equal: do nothing
-
-		// 2. If pathogentestresult positive AND confirmed
-		// 2.1 If Diseases Equal: Suggest converting to Case if contact has not yet been converted
-		// 2.1.1 If Yes, set sampleResult to positive & caseClassification to confirmed
-		// 2.1.2 If No, ask user whether to update sampleResult to positive
-		// 2.2 If Diseases do not Equal: Suggest creating new case for that disease and set classification of the new case to confirmed. SampleResult remains unchanged
-
-		final boolean equalDisease = contact.getDisease().equals(dto.getTestedDisease());
+		final boolean equalDisease = dto.getTestedDisease() == contact.getDisease();
 
 		Runnable negativeTestCallback = () -> {
-			// 1.1
 			if (equalDisease && PathogenTestResultType.NEGATIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
-				changeAssociatedSampleResult(dto, () -> {
-				}, () -> {
+				changeAssociatedSampleResult(dto, handleChanges -> {
 				});
 			}
 		};
@@ -292,26 +278,15 @@ public class PathogenTestController {
 		Runnable positiveTestCallback = () -> {
 			if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
-					// 2.1
 					if (!ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
 						showConvertContactToCaseDialog(contact, converted -> {
-							if (converted) {
-								// 2.1.1
-								SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
-								if (sample.getPathogenTestResult() != dto.getTestResult()) {
-									sample.setPathogenTestResult(dto.getTestResult());
-									FacadeProvider.getSampleFacade().saveSample(sample);
-								}
-							} else {
-								// 2.1.2
-								changeAssociatedSampleResult(dto, () -> {
-								}, () -> {
-								});
-							}
+							handleCaseCreationFromContactOrEventParticipant(converted, dto);
+						});
+					} else {
+						changeAssociatedSampleResult(dto, handleChanges -> {
 						});
 					}
 				} else {
-					// 2.2
 					showCreateContactCaseDialog(contact, dto.getTestedDisease());
 				}
 			}
@@ -332,28 +307,27 @@ public class PathogenTestController {
 		PathogenTestDto dto,
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
 		EventParticipantReferenceDto associatedEventParticipant) {
+
+		// Negative test result AND test result verified
+		// a) Tested disease == event disease AND test result != sample pathogen test result: Ask user whether to update the sample pathogen test result
+		// b) Tested disease != event disease: Do nothing
+
+		// Positive test result AND test result verified
+		// a) Tested disease == event disease: Ask user to create a case linked to the event participant
+		// a.1) If a case is created, update the sample pathogen test result
+		// a.2) If no case is created (or there already is an existing case), ask user whether to update the sample pathogen test result
+		// b) Tested disease != event disease: Ask user to create a case for the event participant person
+		// b.1) If the event has no disease and a case is created, update the sample pathogen test result
+		// b.2) If the event has no disease and no case is created, ask user whether to update the sample pathogen test result
+
 		final EventParticipantDto eventParticipant =
 			FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
-
-		// RULESET according to #5816
-		// 1. If pathogentestresult negative AND confirmed
-		// 1.1 If Diseases equal: ask user whether to update sampleResult (if sampleResult != pathogenTestResult)
-		// 1.2 if Diseases do not Equal: do nothing
-
-		// 2. If pathogentestresult positive AND confirmed
-		// 2.1 If Diseases Equal: Suggest creating a case
-		// 2.1.1 If Yes, set sampleResult to positive & caseClassification to confirmed
-		// 2.1.2 If No, ask user whether to update sampleResult to positive
-		// 2.2 If Diseases do not Equal: Suggest creating new case for that disease and set classification of the new case to confirmed. SampleResult remains unchanged
-
 		final Disease eventDisease = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false).getDisease();
 		final boolean equalDisease = eventDisease != null && eventDisease.equals(dto.getTestedDisease());
 
 		Runnable negativeTestCallback = () -> {
-			// 1.1
 			if (equalDisease && PathogenTestResultType.NEGATIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
-				changeAssociatedSampleResult(dto, () -> {
-				}, () -> {
+				changeAssociatedSampleResult(dto, handleChanges -> {
 				});
 			}
 		};
@@ -361,25 +335,19 @@ public class PathogenTestController {
 		Runnable positiveTestCallback = () -> {
 			if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
-					// 2.1
-					showConvertEventParticipantToCaseDialog(eventParticipant, dto.getTestedDisease(), caseCreated -> {
-						if (caseCreated) {
-							// 2.1.1
-							SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
-							if (sample.getPathogenTestResult() != dto.getTestResult()) {
-								sample.setPathogenTestResult(dto.getTestResult());
-								FacadeProvider.getSampleFacade().saveSample(sample);
-							}
-						} else {
-							// 2.1.2
-							changeAssociatedSampleResult(dto, () -> {
-							}, () -> {
-							});
-						}
-					});
+					if (eventParticipant.getResultingCase() == null) {
+						showConvertEventParticipantToCaseDialog(eventParticipant, dto.getTestedDisease(), caseCreated -> {
+							handleCaseCreationFromContactOrEventParticipant(caseCreated, dto);
+						});
+					} else {
+						changeAssociatedSampleResult(dto, handleChanges -> {
+						});
+					}
 				} else {
-					// 2.2
 					showConvertEventParticipantToCaseDialog(eventParticipant, dto.getTestedDisease(), caseCreated -> {
+						if (eventDisease == null) {
+							handleCaseCreationFromContactOrEventParticipant(caseCreated, dto);
+						}
 					});
 				}
 			}
@@ -396,32 +364,36 @@ public class PathogenTestController {
 		}
 	}
 
-	private void changeAssociatedSampleResult(PathogenTestDto dto, Runnable samplePositiveCallback, Runnable sampleNegativeCallback) {
-		if (dto.getTestResult() != FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()).getPathogenTestResult()) {
-			ControllerProvider.getSampleController().showChangePathogenTestResultWindow(null, dto.getSample().getUuid(), dto.getTestResult(), () -> {
-				PathogenTestResultType sampleResult =
-					FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()).getPathogenTestResult();
-				if (sampleResult.equals(PathogenTestResultType.POSITIVE)) {
-					samplePositiveCallback.run();
-				} else if (sampleResult.equals(PathogenTestResultType.NEGATIVE)) {
-					sampleNegativeCallback.run();
-				}
-			});
-		} else {
-			if (dto.getTestResult().equals(PathogenTestResultType.POSITIVE)) {
-				samplePositiveCallback.run();
-			} else if (dto.getTestResult().equals(PathogenTestResultType.NEGATIVE)) {
-				sampleNegativeCallback.run();
+	private void handleCaseCreationFromContactOrEventParticipant(boolean caseCreated, PathogenTestDto pathogenTest) {
+		if (caseCreated) {
+			SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
+			if (sample.getPathogenTestResult() != pathogenTest.getTestResult()) {
+				sample.setPathogenTestResult(pathogenTest.getTestResult());
+				FacadeProvider.getSampleFacade().saveSample(sample);
 			}
+		} else {
+			changeAssociatedSampleResult(pathogenTest, handleChanges -> {
+			});
+		}
+	}
+
+	private void changeAssociatedSampleResult(PathogenTestDto dto, Consumer<Boolean> callback) {
+		if (dto.getTestResult() != FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()).getPathogenTestResult()) {
+			ControllerProvider.getSampleController()
+				.showChangePathogenTestResultWindow(null, dto.getSample().getUuid(), dto.getTestResult(), callback);
+		} else {
+			callback.accept(true);
 		}
 	}
 
 	public void showConvertEventParticipantToCaseDialog(EventParticipantDto eventParticipant, Disease testedDisease, Consumer<Boolean> callback) {
 		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
-		final boolean differentDiseases = event.getDisease() == null || !event.getDisease().equals(testedDisease);
-		Label dialogContent = differentDiseases
-			? new Label(I18nProperties.getString(Strings.messageConvertEventParticipantToCaseDifferentDiseases))
-			: new Label(I18nProperties.getString(Strings.messageConvertEventParticipantToCase));
+		final boolean differentDiseases = testedDisease != event.getDisease();
+		Label dialogContent = event.getDisease() == null
+			? new Label(I18nProperties.getString(Strings.messageConvertEventParticipantToCaseNoDisease))
+			: differentDiseases
+				? new Label(I18nProperties.getString(Strings.messageConvertEventParticipantToCaseDifferentDiseases))
+				: new Label(I18nProperties.getString(Strings.messageConvertEventParticipantToCase));
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.convertEventParticipantToCase),
 			dialogContent,
@@ -431,10 +403,9 @@ public class PathogenTestController {
 			confirmed -> {
 				if (confirmed) {
 					if (differentDiseases) {
-						ControllerProvider.getCaseController()
-							.createFromEventParticipantDifferentDisease(eventParticipant, testedDisease, CaseClassification.CONFIRMED);
+						ControllerProvider.getCaseController().createFromEventParticipantDifferentDisease(eventParticipant, testedDisease);
 					} else {
-						ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant, CaseClassification.CONFIRMED);
+						ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
 					}
 				}
 				callback.accept(confirmed);
@@ -450,7 +421,7 @@ public class PathogenTestController {
 			800,
 			confirmed -> {
 				if (confirmed) {
-					ControllerProvider.getCaseController().createFromContact(contact, CaseClassification.CONFIRMED);
+					ControllerProvider.getCaseController().createFromContact(contact);
 				}
 				callback.accept(confirmed);
 			});
@@ -459,13 +430,13 @@ public class PathogenTestController {
 	public void showCreateContactCaseDialog(ContactDto contact, Disease disease) {
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.contactCreateContactCase),
-			new Label(I18nProperties.getString(Strings.messageCreateContactCase)),
+			new Label(I18nProperties.getString(Strings.messageConvertContactToCaseDifferentDiseases)),
 			I18nProperties.getString(Strings.yes),
 			I18nProperties.getString(Strings.no),
 			800,
 			confirmed -> {
 				if (confirmed) {
-					ControllerProvider.getCaseController().createFromUnrelatedContact(contact, disease, CaseClassification.CONFIRMED);
+					ControllerProvider.getCaseController().createFromUnrelatedContact(contact, disease);
 				}
 			});
 	}
@@ -481,7 +452,7 @@ public class PathogenTestController {
 			confirmed -> {
 				if (confirmed) {
 					CaseDataDto clonedCase = FacadeProvider.getCaseFacade().cloneCase(existingCaseDto);
-					clonedCase.setCaseClassification(CaseClassification.CONFIRMED);
+					clonedCase.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
 					clonedCase.setClassificationUser(null);
 					clonedCase.setDisease(disease);
 					clonedCase.setEpidNumber(null);
@@ -493,6 +464,14 @@ public class PathogenTestController {
 	}
 
 	public void showConfirmCaseDialog(CaseDataDto caze) {
+
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			return;
+		}
+
+		if (caze.getCaseClassification() == CaseClassification.CONFIRMED) {
+			return;
+		}
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.caseConfirmCase),

@@ -53,7 +53,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseBulkEditData;
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
@@ -165,11 +164,11 @@ public class CaseController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, null, false, null);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null, null, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
-	public void createFromEventParticipant(EventParticipantDto eventParticipant, CaseClassification initialCaseClassification) {
+	public void createFromEventParticipant(EventParticipantDto eventParticipant) {
 		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 		if (event.getDisease() == null) {
 			new Notification(
@@ -180,8 +179,7 @@ public class CaseController {
 			return;
 		}
 
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			getCaseCreateComponent(null, eventParticipant, null, null, false, initialCaseClassification);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null, null, false);
 		caseCreateComponent.addCommitListener(() -> {
 			EventParticipantDto updatedEventparticipant = FacadeProvider.getEventParticipantFacade().getByUuid(eventParticipant.getUuid());
 			if (updatedEventparticipant.getResultingCase() != null) {
@@ -196,10 +194,7 @@ public class CaseController {
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
-	public void createFromEventParticipantDifferentDisease(
-		EventParticipantDto eventParticipant,
-		Disease disease,
-		CaseClassification initialCaseClassification) {
+	public void createFromEventParticipantDifferentDisease(EventParticipantDto eventParticipant, Disease disease) {
 		if (disease == null) {
 			new Notification(
 				I18nProperties.getString(Strings.headingCreateNewCaseIssue),
@@ -209,12 +204,11 @@ public class CaseController {
 			return;
 		}
 
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			getCaseCreateComponent(null, eventParticipant, null, disease, false, initialCaseClassification);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null, disease, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
-	public void createFromContact(ContactDto contact, CaseClassification initialClassification) {
+	public void createFromContact(ContactDto contact) {
 		PersonDto selectedPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		CaseDataDto dto = CaseDataDto.build(PersonDto.build().toReference(), contact.getDisease());
 
@@ -227,8 +221,7 @@ public class CaseController {
 
 		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
 			if (uuid == null) {
-				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-					getCaseCreateComponent(contact, null, null, null, false, initialClassification);
+				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, null, false);
 				caseCreateComponent.addCommitListener(() -> {
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
 					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
@@ -245,9 +238,6 @@ public class CaseController {
 			} else {
 				CaseDataDto selectedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
 				selectedCase.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
-				if (initialClassification != null) {
-					selectedCase.setCaseClassification(initialClassification);
-				}
 				FacadeProvider.getCaseFacade().saveCase(selectedCase);
 
 				ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
@@ -265,9 +255,8 @@ public class CaseController {
 		});
 	}
 
-	public void createFromUnrelatedContact(ContactDto contact, Disease disease, CaseClassification initialCaseClassification) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			getCaseCreateComponent(contact, null, null, disease, false, initialCaseClassification);
+	public void createFromUnrelatedContact(ContactDto contact, Disease disease) {
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, disease, false);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -279,8 +268,7 @@ public class CaseController {
 
 		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
 			if (uuid == null) {
-				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-					getCaseCreateComponent(null, null, travelEntryDto, null, false, null);
+				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, travelEntryDto, null, false);
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 			} else {
 				TravelEntryDto updatedTravelEntry = FacadeProvider.getTravelEntryFacade().getByUuid(travelEntryDto.getUuid());
@@ -543,8 +531,7 @@ public class CaseController {
 		EventParticipantDto convertedEventParticipant,
 		TravelEntryDto convertedTravelEntry,
 		Disease unrelatedDisease,
-		boolean createdFromLabMessage,
-		CaseClassification initialCaseClassification) {
+		boolean createdFromLabMessage) {
 
 		assert ((convertedContact == null && convertedEventParticipant == null)
 			|| (convertedContact == null && convertedTravelEntry == null)
@@ -570,9 +557,6 @@ public class CaseController {
 			} else {
 				caze = CaseDataDto.buildFromUnrelatedContact(convertedContact, unrelatedDisease);
 			}
-			if (initialCaseClassification != null) {
-				caze.setCaseClassification(initialCaseClassification);
-			}
 		} else if (convertedEventParticipant != null) {
 			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(convertedEventParticipant.getEvent().getUuid(), false);
 			symptoms = null;
@@ -581,9 +565,6 @@ public class CaseController {
 				caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, person, event.getDisease());
 			} else {
 				caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, person, unrelatedDisease);
-			}
-			if (initialCaseClassification != null) {
-				caze.setCaseClassification(initialCaseClassification);
 			}
 		} else if (convertedTravelEntry != null) {
 			symptoms = null;

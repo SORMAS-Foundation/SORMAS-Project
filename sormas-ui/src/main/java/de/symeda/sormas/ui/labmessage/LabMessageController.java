@@ -514,7 +514,7 @@ public class LabMessageController {
 							new CommitDiscardWrapperComponent<>(new SampleCreateForm()),
 							sampleDto.getUuid(),
 							pathogenTestDto.getTestResult(),
-							callback);
+							testedResult -> callback.run());
 				} else {
 					callback.run();
 				}
@@ -560,7 +560,7 @@ public class LabMessageController {
 		Window window,
 		CaseDataDto caseDto) {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, true, null);
+			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, true);
 		caseCreateComponent.addCommitListener(() -> {
 			savePerson(
 				FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),

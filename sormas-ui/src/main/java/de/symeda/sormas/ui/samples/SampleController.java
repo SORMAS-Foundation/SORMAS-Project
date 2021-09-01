@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -382,7 +383,7 @@ public class SampleController {
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> editComponent,
 		String sampleUuid,
 		PathogenTestResultType newResult,
-		Runnable callback) {
+		Consumer<Boolean> callback) {
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
@@ -414,7 +415,7 @@ public class SampleController {
 				FacadeProvider.getSampleFacade().saveSample(sample);
 				popupWindow.close();
 				SormasUI.refreshView();
-				callback.run();
+				callback.accept(true);
 			}
 		});
 		confirmationComponent.getCancelButton().addClickListener(new ClickListener() {
@@ -424,7 +425,7 @@ public class SampleController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
-				callback.run();
+				callback.accept(false);
 			}
 		});
 	}
