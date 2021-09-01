@@ -25,7 +25,7 @@ import cucumber.api.java8.En;
 import java.util.Arrays;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.sormas.e2etests.enums.LabCaption;
+import org.sormas.e2etests.enums.LaboratoryValues;
 import org.sormas.e2etests.enums.PathogenTestResults;
 import org.sormas.e2etests.enums.SpecimenConditions;
 import org.sormas.e2etests.helpers.AssertHelpers;
@@ -143,7 +143,7 @@ public class SamplesDirectorySteps implements En {
     Then(
         "^I check the displayed Laboratory filter dropdown",
         () ->
-            Arrays.stream(LabCaption.values())
+            Arrays.stream(LaboratoryValues.values())
                 .forEach(
                     caption -> {
                       webDriverHelpers.selectFromCombobox(

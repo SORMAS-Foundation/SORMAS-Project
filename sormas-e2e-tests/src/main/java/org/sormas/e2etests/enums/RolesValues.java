@@ -18,22 +18,36 @@
 
 package org.sormas.e2etests.enums;
 
-import java.util.Random;
 import lombok.Getter;
 
 @Getter
-public enum LabUuid {
-  VOREINGESTELLTES("VQL6NJ-HPJY24-56F2R5-T5UV2HUI"),
-  NEW_LAB("SORMAS-CONSTID-OTHERS-FACILITY");
+public enum RolesValues {
+  PASSANGER("Passanger"),
+  STUFF("Stuff"),
+  NURSING_STAFF("Nursing Staff"),
+  MEDICAL_STAFF("Medical Staff"),
+  VISITOR("Visitor"),
+  GUEST("Guest"),
+  CUSTOMER("Customer"),
+  CONSERVATEE("Conservatee"),
+  PATIENT("Patient"),
+  EDUCATOR("Educator"),
+  TRAINEE("Trainee"),
+  PUPIL("Pupil"),
+  STUDENT("Student"),
+  PARENT("Parent"),
+  TEACHER("Teacher"),
+  UNKNOWN("Unknown"),
+  OTHER("Other");
 
-  private final String UuidValue;
+  private final String role;
 
-  LabUuid(String idValue) {
-    UuidValue = idValue;
+  RolesValues(String role) {
+    this.role = role;
   }
 
-  public static String getRandomUuid() {
-    Random random = new Random();
-    return String.valueOf(LabUuid.values()[random.nextInt(values().length)].UuidValue);
+  @Override
+  public String toString() {
+    return this.role;
   }
 }

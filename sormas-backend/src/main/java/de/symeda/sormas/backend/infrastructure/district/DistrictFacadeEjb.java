@@ -145,6 +145,11 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
+	public DistrictDto getByUuid(String uuid) {
+		return toDto(districtService.getByUuid(uuid));
+	}
+
+	@Override
 	public List<DistrictIndexDto> getIndexList(DistrictCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -274,12 +279,12 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
-	public void saveDistrict(DistrictDto dto) throws ValidationRuntimeException {
-		saveDistrict(dto, false);
+	public DistrictDto save(DistrictDto dto) throws ValidationRuntimeException {
+		return save(dto, false);
 	}
 
 	@Override
-	public void saveDistrict(DistrictDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public DistrictDto save(DistrictDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
@@ -307,6 +312,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 		district = fillOrBuildEntity(dto, district, true);
 		districtService.ensurePersisted(district);
+		return toDto(district);
 	}
 
 	@Override

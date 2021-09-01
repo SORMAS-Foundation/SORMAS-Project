@@ -40,6 +40,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.Page;
@@ -196,17 +197,16 @@ public class CountryFacadeEjb implements CountryFacade {
 	}
 
 	@Override
-	public String saveCountry(CountryDto dto) throws ValidationRuntimeException {
-		return saveCountry(dto, false);
+	public CountryDto save(CountryDto dto) throws ValidationRuntimeException {
+		return save(dto, false);
 	}
 
 	@Override
-	public String saveCountry(CountryDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public CountryDto save(CountryDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
 		}
-
 		if (StringUtils.isBlank(dto.getIsoCode())) {
 			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
 		}
@@ -229,7 +229,7 @@ public class CountryFacadeEjb implements CountryFacade {
 
 		country = fillOrBuildEntity(dto, country, true);
 		countryService.ensurePersisted(country);
-		return country.getUuid();
+		return toDto(country);
 	}
 
 	@Override
@@ -362,6 +362,12 @@ public class CountryFacadeEjb implements CountryFacade {
 		}
 
 		return em.createQuery(cq).getResultList();
+	}
+
+
+	@Override
+	public CountryDto getByUuid(String uuid) {
+		return toDto(countryService.getByUuid(uuid));
 	}
 
 	@Override

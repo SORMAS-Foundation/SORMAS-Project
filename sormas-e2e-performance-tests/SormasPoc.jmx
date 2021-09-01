@@ -16,6 +16,83 @@
         <stringProp name="propFilePath">${__P(module)}.properties</stringProp>
       </com.tag.jmeter.ext.config.PropertyReader>
       <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="server_url" elementType="Argument">
+            <stringProp name="Argument.name">server_url</stringProp>
+            <stringProp name="Argument.value">test-performance.sormas.netzlink.com</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">URL of the server to which all requests are sent</stringProp>
+          </elementProp>
+          <elementProp name="server_port" elementType="Argument">
+            <stringProp name="Argument.name">server_port</stringProp>
+            <stringProp name="Argument.value"></stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Port of the server</stringProp>
+          </elementProp>
+          <elementProp name="server_protocol" elementType="Argument">
+            <stringProp name="Argument.name">server_protocol</stringProp>
+            <stringProp name="Argument.value">https</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">http/https</stringProp>
+          </elementProp>
+          <elementProp name="user_name" elementType="Argument">
+            <stringProp name="Argument.name">user_name</stringProp>
+            <stringProp name="Argument.value">RestUser</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Name of the user used to place requests</stringProp>
+          </elementProp>
+          <elementProp name="user_password" elementType="Argument">
+            <stringProp name="Argument.name">user_password</stringProp>
+            <stringProp name="Argument.value">PTLXe9UYoTFP</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Password of the user used to place requests</stringProp>
+          </elementProp>
+          <elementProp name="sormas_region_uuid" elementType="Argument">
+            <stringProp name="Argument.name">sormas_region_uuid</stringProp>
+            <stringProp name="Argument.value">RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of the default region</stringProp>
+          </elementProp>
+          <elementProp name="sormas_district_uuid" elementType="Argument">
+            <stringProp name="Argument.name">sormas_district_uuid</stringProp>
+            <stringProp name="Argument.value">SZ75BK-5OUMFU-V2DTKG-5BYACHFE</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of the default district</stringProp>
+          </elementProp>
+          <elementProp name="sormas_community_uuid" elementType="Argument">
+            <stringProp name="Argument.name">sormas_community_uuid</stringProp>
+            <stringProp name="Argument.value">QWK33J-XYN3DE-5CSXFJ-MMFOKNKM</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of the default community</stringProp>
+          </elementProp>
+          <elementProp name="sormas_nationaluser_uuid" elementType="Argument">
+            <stringProp name="Argument.name">sormas_nationaluser_uuid</stringProp>
+            <stringProp name="Argument.value">XXFIKA-I653UK-XTLOIT-VWZYKGXY</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of any Nationaluser</stringProp>
+          </elementProp>
+          <elementProp name="sormas_survoff_uuid" elementType="Argument">
+            <stringProp name="Argument.name">sormas_survoff_uuid</stringProp>
+            <stringProp name="Argument.value">Q2IYCN-TNYTOY-4OAYCA-DW662MTA</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of any Surveillance Officer</stringProp>
+          </elementProp>
+          <elementProp name="sormas_national_rest_user_uuid" elementType="Argument">
+            <stringProp name="Argument.name">sormas_national_rest_user_uuid</stringProp>
+            <stringProp name="Argument.value">QLW4AN-TGWLRA-3UQVEM-WCDFCIVM</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of a user with both NationalUser and RestUser rights</stringProp>
+          </elementProp>
+          <elementProp name="sormas_hospital_informant_uuid" elementType="Argument">
+            <stringProp name="Argument.name">sormas_hospital_informant_uuid</stringProp>
+            <stringProp name="Argument.value">QKBKF3-EZT5OK-327TUH-NV73SJYY</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">UUID of any HospitalInformant</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Load Thread Group" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -34,9 +111,9 @@
         <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
           <collectionProp name="AuthManager.auth_list">
             <elementProp name="" elementType="Authorization">
-              <stringProp name="Authorization.url">https://test-performance.sormas.netzlink.com</stringProp>
-              <stringProp name="Authorization.username">RestUser</stringProp>
-              <stringProp name="Authorization.password">PTLXe9UYoTFP</stringProp>
+              <stringProp name="Authorization.url">${server_protocol}://${server_url}</stringProp>
+              <stringProp name="Authorization.username">${user_name}</stringProp>
+              <stringProp name="Authorization.password">${user_password}</stringProp>
               <stringProp name="Authorization.domain"></stringProp>
               <stringProp name="Authorization.realm"></stringProp>
             </elementProp>
@@ -84,9 +161,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/persons/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -148,23 +225,23 @@
         &quot;positiveTestResultDate&quot; : ${current_date},&#xd;
         &quot;recoveryDate&quot; : ${current_date},&#xd;
         &quot;externalId&quot; : &quot;123&quot;,&#xd;
-        &quot;reportingUser&quot;: &quot;XXFIKA-I653UK-XTLOIT-VWZYKGXY&quot;,&#xd;
+        &quot;reportingUser&quot;: &quot;${sormas_nationaluser_uuid}&quot;,&#xd;
         &quot;archived&quot;: false,&#xd;
         &quot;immunizationStatus&quot;: &quot;ACQUIRED&quot;,&#xd;
         &quot;meansOfImmunization&quot;: &quot;VACCINATION&quot;,&#xd;
         &quot;immunizationManagementStatus&quot;: &quot;COMPLETED&quot;,&#xd;
-        &quot;responsibleRegion&quot;: &quot;RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY&quot;,&#xd;
-        &quot;responsibleDistrict&quot;: &quot;SZ75BK-5OUMFU-V2DTKG-5BYACHFE&quot;,&#xd;
-        &quot;responsibleCommunity&quot;:  &quot;QWK33J-XYN3DE-5CSXFJ-MMFOKNKM&quot;&#xd;
+        &quot;responsibleRegion&quot;: &quot;${sormas_region_uuid}&quot;,&#xd;
+        &quot;responsibleDistrict&quot;: &quot;${sormas_district_uuid}&quot;,&#xd;
+        &quot;responsibleCommunity&quot;:  &quot;${sormas_community_uuid}&quot;&#xd;
     }&#xd;
 ]</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/immunizations/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -202,9 +279,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/clinicalvisits/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -241,9 +318,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/communities/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -280,9 +357,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/eventparticipants/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -319,9 +396,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/outbreaks/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -358,9 +435,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/pathogentests/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -397,9 +474,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/prescriptions/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -436,9 +513,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/tasks/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -475,9 +552,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/samples/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -514,9 +591,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/visits/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -553,9 +630,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/continents/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -592,9 +669,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/countries/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -631,9 +708,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/districts/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -670,9 +747,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/events/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -709,9 +786,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/facilities/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -748,8 +825,8 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/cases/all/1621371600000</stringProp>
@@ -767,9 +844,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/cases/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -806,9 +883,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/cases/${first_case_uuid}</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -836,8 +913,8 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/persons/all/1621371600000</stringProp>
@@ -855,9 +932,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/persons/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -894,9 +971,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/persons/${first_person_uuid}</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -924,9 +1001,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/immunizations/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -970,9 +1047,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/immunizations/${first_immunization_uuid}</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -1000,9 +1077,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/regions/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -1039,9 +1116,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/contacts/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -1078,9 +1155,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/persons/${person_uuid}</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -1123,10 +1200,10 @@
         },&#xd;
         &quot;reportDate&quot;: ${current_date},&#xd;
         &quot;reportingUser&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;QLW4AN-TGWLRA-3UQVEM-WCDFCIVM&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_national_rest_user_uuid}&quot;&#xd;
         },&#xd;
         &quot;surveillanceOfficer&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;Q2IYCN-TNYTOY-4OAYCA-DW662MTA&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_survoff_uuid}&quot;&#xd;
         },&#xd;
         &quot;outcome&quot;: &quot;NO_OUTCOME&quot;,&#xd;
         &quot;investigationStatus&quot;: &quot;PENDING&quot;,&#xd;
@@ -1140,7 +1217,7 @@
             &quot;uuid&quot;: &quot;${__UUID()}&quot;&#xd;
         },&#xd;
         &quot;community&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;QWK33J-XYN3DE-5CSXFJ-MMFOKNKM&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_community_uuid}&quot;&#xd;
         },&#xd;
         &quot;symptoms&quot;: {&#xd;
             &quot;uuid&quot;: &quot;${__UUID()}&quot;&#xd;
@@ -1159,13 +1236,13 @@
             &quot;uuid&quot;: &quot;${district_uuid}&quot;&#xd;
         },&#xd;
         &quot;region&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_region_uuid}&quot;&#xd;
         },&#xd;
         &quot;responsibleRegion&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_region_uuid}&quot;&#xd;
         },&#xd;
         &quot;responsibleDistrict&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;SZ75BK-5OUMFU-V2DTKG-5BYACHFE&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_district_uuid}&quot;&#xd;
         },        &#xd;
         &quot;healthFacility&quot;: {&#xd;
             &quot;uuid&quot;: &quot;SORMAS-CONSTID-ISNONE-FACILITY&quot;&#xd;
@@ -1179,9 +1256,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/cases/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -1213,7 +1290,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
+            <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
@@ -1241,7 +1318,7 @@
         },&#xd;
         &quot;eventStatus&quot;: &quot;SIGNAL&quot;,&#xd;
         &quot;reportingUser&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;QLW4AN-TGWLRA-3UQVEM-WCDFCIVM&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_national_rest_user_uuid}&quot;&#xd;
         },&#xd;
         &quot;eventInvestigationStatus&quot;: &quot;PENDING&quot;,&#xd;
         &quot;reportDateTime&quot;: ${current_date},&#xd;
@@ -1253,9 +1330,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/events/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -1296,7 +1373,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
+            <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
@@ -1335,7 +1412,7 @@
             &quot;uuid&quot;: &quot;${available_region}&quot;&#xd;
         },&#xd;
         &quot;reportingUser&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;QLW4AN-TGWLRA-3UQVEM-WCDFCIVM&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_national_rest_user_uuid}&quot;&#xd;
         },&#xd;
         &quot;contactClassification&quot;: &quot;UNCONFIRMED&quot;,&#xd;
         &quot;disease&quot;: &quot;CORONAVIRUS&quot;,&#xd;
@@ -1351,9 +1428,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/contacts/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -1373,7 +1450,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
+            <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
@@ -1398,7 +1475,7 @@
         &quot;taskType&quot;: &quot;WEEKLY_REPORT_GENERATION&quot;,&#xd;
         &quot;dueDate&quot;: 1621931465785,&#xd;
         &quot;assigneeUser&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;QKBKF3-EZT5OK-327TUH-NV73SJYY&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_hospital_informant_uuid}&quot;&#xd;
         },&#xd;
         &quot;taskContext&quot;: &quot;GENERAL&quot;,&#xd;
         &quot;priority&quot;: &quot;NORMAL&quot;,&#xd;
@@ -1411,9 +1488,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/tasks/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -1445,7 +1522,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
+            <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
@@ -1473,7 +1550,7 @@
             &quot;uuid&quot;: &quot;${case_uuid}&quot;&#xd;
         },&#xd;
         &quot;reportingUser&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;QLW4AN-TGWLRA-3UQVEM-WCDFCIVM&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_national_rest_user_uuid}&quot;&#xd;
         },&#xd;
         &quot;pathogenTestResult&quot;: &quot;PENDING&quot;,&#xd;
         &quot;sampleDateTime&quot;: ${current_date},&#xd;
@@ -1488,9 +1565,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/samples/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -1522,7 +1599,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
+            <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
@@ -1540,8 +1617,8 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/users/uuids</stringProp>
@@ -1569,8 +1646,8 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/sormasToSormas/events</stringProp>
@@ -1598,8 +1675,8 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/sormasToSormas/events</stringProp>
@@ -1627,8 +1704,8 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/sormasToSormas/cases</stringProp>
@@ -1646,8 +1723,8 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/sormasToSormas/cases</stringProp>
@@ -1665,8 +1742,8 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/sormasToSormas/contacts</stringProp>
@@ -1684,8 +1761,8 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/sormasToSormas/contacts</stringProp>
@@ -1755,7 +1832,7 @@
         <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
           <collectionProp name="AuthManager.auth_list">
             <elementProp name="" elementType="Authorization">
-              <stringProp name="Authorization.url">https://test-performance.sormas.netzlink.com</stringProp>
+              <stringProp name="Authorization.url">https://${server_url}</stringProp>
               <stringProp name="Authorization.username">RestUser</stringProp>
               <stringProp name="Authorization.password">PTLXe9UYoTFP</stringProp>
               <stringProp name="Authorization.domain"></stringProp>
@@ -1805,9 +1882,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/persons/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -1869,23 +1946,23 @@
         &quot;positiveTestResultDate&quot; : ${current_date},&#xd;
         &quot;recoveryDate&quot; : ${current_date},&#xd;
         &quot;externalId&quot; : &quot;123&quot;,&#xd;
-        &quot;reportingUser&quot;: &quot;XXFIKA-I653UK-XTLOIT-VWZYKGXY&quot;,&#xd;
+        &quot;reportingUser&quot;: &quot;${sormas_nationaluser_uuid}&quot;,&#xd;
         &quot;archived&quot;: false,&#xd;
         &quot;immunizationStatus&quot;: &quot;ACQUIRED&quot;,&#xd;
         &quot;meansOfImmunization&quot;: &quot;VACCINATION&quot;,&#xd;
         &quot;immunizationManagementStatus&quot;: &quot;COMPLETED&quot;,&#xd;
-        &quot;responsibleRegion&quot;: &quot;RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY&quot;,&#xd;
-        &quot;responsibleDistrict&quot;: &quot;SZ75BK-5OUMFU-V2DTKG-5BYACHFE&quot;,&#xd;
-        &quot;responsibleCommunity&quot;:  &quot;QWK33J-XYN3DE-5CSXFJ-MMFOKNKM&quot;&#xd;
+        &quot;responsibleRegion&quot;: &quot;${sormas_region_uuid}&quot;,&#xd;
+        &quot;responsibleDistrict&quot;: &quot;${sormas_district_uuid}&quot;,&#xd;
+        &quot;responsibleCommunity&quot;:  &quot;${sormas_community_uuid}&quot;&#xd;
     }&#xd;
 ]</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/immunizations/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -1923,9 +2000,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/clinicalvisits/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -1962,9 +2039,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/communities/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2001,9 +2078,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/eventparticipants/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2040,9 +2117,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/outbreaks/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2079,9 +2156,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/pathogentests/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2118,9 +2195,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/prescriptions/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2157,9 +2234,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/tasks/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2196,9 +2273,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/samples/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2235,9 +2312,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/visits/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2274,9 +2351,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/continents/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2313,9 +2390,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/countries/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2352,9 +2429,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/districts/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2391,9 +2468,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/events/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2430,9 +2507,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/facilities/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2469,9 +2546,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/cases/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2508,9 +2585,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/cases/${first_case_uuid}</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2538,9 +2615,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/persons/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2577,9 +2654,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/persons/${first_person_uuid}</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2607,9 +2684,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/regions/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2646,9 +2723,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/contacts/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2685,9 +2762,9 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/immunizations/uuids</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2731,9 +2808,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/immunizations/${first_immunization_uuid}</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
@@ -2776,10 +2853,10 @@
         },&#xd;
         &quot;reportDate&quot;: ${current_date},&#xd;
         &quot;reportingUser&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;QLW4AN-TGWLRA-3UQVEM-WCDFCIVM&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_national_rest_user_uuid}&quot;&#xd;
         },&#xd;
         &quot;surveillanceOfficer&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;Q2IYCN-TNYTOY-4OAYCA-DW662MTA&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_survoff_uuid}&quot;&#xd;
         },&#xd;
         &quot;outcome&quot;: &quot;NO_OUTCOME&quot;,&#xd;
         &quot;investigationStatus&quot;: &quot;PENDING&quot;,&#xd;
@@ -2793,7 +2870,7 @@
             &quot;uuid&quot;: &quot;${__UUID()}&quot;&#xd;
         },&#xd;
         &quot;community&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;QWK33J-XYN3DE-5CSXFJ-MMFOKNKM&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_community_uuid}&quot;&#xd;
         },&#xd;
         &quot;symptoms&quot;: {&#xd;
             &quot;uuid&quot;: &quot;${__UUID()}&quot;&#xd;
@@ -2809,16 +2886,16 @@
             &quot;uuid&quot;: &quot;${__UUID()}&quot;&#xd;
         },&#xd;
         &quot;district&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;${district_uuid}&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_district_uuid}&quot;&#xd;
         },&#xd;
         &quot;region&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_region_uuid}&quot;&#xd;
         },&#xd;
         &quot;responsibleRegion&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_region_uuid}&quot;&#xd;
         },&#xd;
         &quot;responsibleDistrict&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;SZ75BK-5OUMFU-V2DTKG-5BYACHFE&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_district_uuid}&quot;&#xd;
         },        &#xd;
         &quot;healthFacility&quot;: {&#xd;
             &quot;uuid&quot;: &quot;SORMAS-CONSTID-ISNONE-FACILITY&quot;&#xd;
@@ -2832,9 +2909,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/cases/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -2866,7 +2943,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
+            <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
@@ -2894,7 +2971,7 @@
         },&#xd;
         &quot;eventStatus&quot;: &quot;SIGNAL&quot;,&#xd;
         &quot;reportingUser&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;QLW4AN-TGWLRA-3UQVEM-WCDFCIVM&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_national_rest_user_uuid}&quot;&#xd;
         },&#xd;
         &quot;eventInvestigationStatus&quot;: &quot;PENDING&quot;,&#xd;
         &quot;reportDateTime&quot;: ${current_date},&#xd;
@@ -2906,9 +2983,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/events/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -2949,7 +3026,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
+            <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
@@ -2988,7 +3065,7 @@
             &quot;uuid&quot;: &quot;${available_region}&quot;&#xd;
         },&#xd;
         &quot;reportingUser&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;QLW4AN-TGWLRA-3UQVEM-WCDFCIVM&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_national_rest_user_uuid}&quot;&#xd;
         },&#xd;
         &quot;contactClassification&quot;: &quot;UNCONFIRMED&quot;,&#xd;
         &quot;disease&quot;: &quot;CORONAVIRUS&quot;,&#xd;
@@ -3004,9 +3081,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/contacts/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -3026,7 +3103,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
+            <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
@@ -3051,7 +3128,7 @@
         &quot;taskType&quot;: &quot;WEEKLY_REPORT_GENERATION&quot;,&#xd;
         &quot;dueDate&quot;: 1621931465785,&#xd;
         &quot;assigneeUser&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;QKBKF3-EZT5OK-327TUH-NV73SJYY&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_hospital_informant_uuid}&quot;&#xd;
         },&#xd;
         &quot;taskContext&quot;: &quot;GENERAL&quot;,&#xd;
         &quot;priority&quot;: &quot;NORMAL&quot;,&#xd;
@@ -3064,9 +3141,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/tasks/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -3098,7 +3175,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
+            <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
@@ -3126,7 +3203,7 @@
             &quot;uuid&quot;: &quot;${case_uuid}&quot;&#xd;
         },&#xd;
         &quot;reportingUser&quot;: {&#xd;
-            &quot;uuid&quot;: &quot;QLW4AN-TGWLRA-3UQVEM-WCDFCIVM&quot;&#xd;
+            &quot;uuid&quot;: &quot;${sormas_national_rest_user_uuid}&quot;&#xd;
         },&#xd;
         &quot;pathogenTestResult&quot;: &quot;PENDING&quot;,&#xd;
         &quot;sampleDateTime&quot;: ${current_date},&#xd;
@@ -3141,9 +3218,9 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">test-performance.sormas.netzlink.com</stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.domain">${server_url}</stringProp>
+          <stringProp name="HTTPSampler.port">${server_port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${server_protocol}</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/sormas-rest/samples/push</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -3175,7 +3252,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
+            <intProp name="Assertion.test_type">16</intProp>
           </ResponseAssertion>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">

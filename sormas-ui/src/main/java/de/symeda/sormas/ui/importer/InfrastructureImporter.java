@@ -111,22 +111,22 @@ public class InfrastructureImporter extends DataImporter {
 			try {
 				switch (type) {
 				case COMMUNITY:
-					FacadeProvider.getCommunityFacade().saveCommunity((CommunityDto) newEntityDto, allowOverwrite);
+					FacadeProvider.getCommunityFacade().save((CommunityDto) newEntityDto, allowOverwrite);
 					break;
 				case DISTRICT:
-					FacadeProvider.getDistrictFacade().saveDistrict((DistrictDto) newEntityDto, allowOverwrite);
+					FacadeProvider.getDistrictFacade().save((DistrictDto) newEntityDto, allowOverwrite);
 					break;
 				case FACILITY:
-					FacadeProvider.getFacilityFacade().saveFacility((FacilityDto) newEntityDto, allowOverwrite);
+					FacadeProvider.getFacilityFacade().save((FacilityDto) newEntityDto, allowOverwrite);
 					break;
 				case POINT_OF_ENTRY:
 					FacadeProvider.getPointOfEntryFacade().save((PointOfEntryDto) newEntityDto, allowOverwrite);
 					break;
 				case REGION:
-					FacadeProvider.getRegionFacade().saveRegion((RegionDto) newEntityDto, allowOverwrite);
+					FacadeProvider.getRegionFacade().save((RegionDto) newEntityDto, allowOverwrite);
 					break;
 				case AREA:
-					FacadeProvider.getAreaFacade().saveArea((AreaDto) newEntityDto, allowOverwrite);
+					FacadeProvider.getAreaFacade().save((AreaDto) newEntityDto, allowOverwrite);
 					break;
 				case SUBCONTINENT:
 					FacadeProvider.getSubcontinentFacade().save((SubcontinentDto) newEntityDto, allowOverwrite);

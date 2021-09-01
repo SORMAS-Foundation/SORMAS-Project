@@ -278,12 +278,12 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	}
 
 	@Override
-	public void saveCommunity(CommunityDto dto) throws ValidationRuntimeException {
-		saveCommunity(dto, false);
+	public CommunityDto save(CommunityDto dto) throws ValidationRuntimeException {
+		return save(dto, false);
 	}
 
 	@Override
-	public void saveCommunity(CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public CommunityDto save(CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
@@ -310,6 +310,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		}
 		community = fillOrBuildEntity(dto, community, true);
 		communityService.ensurePersisted(community);
+		return toDto(community);
 	}
 
 	@Override

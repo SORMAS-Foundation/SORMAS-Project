@@ -404,7 +404,6 @@ public class TestDataCreator {
 		return caze;
 	}
 
-
 	public ImmunizationDto createImmunization(
 		Disease disease,
 		PersonReferenceDto person,
@@ -414,11 +413,11 @@ public class TestDataCreator {
 		ImmunizationManagementStatus immunizationManagementStatus,
 		RDCF rdcf,
 		Date startDate,
-		Date endDate) {
+		Date validUntilDate) {
 		ImmunizationDto immunization =
 			createImmunizationDto(disease, person, reportingUser, immunizationStatus, meansOfImmunization, immunizationManagementStatus, rdcf);
 		immunization.setStartDate(startDate);
-		immunization.setEndDate(endDate);
+		immunization.setValidUntil(validUntilDate);
 
 		return beanTest.getImmunizationFacade().save(immunization);
 	}
@@ -438,7 +437,14 @@ public class TestDataCreator {
 	}
 
 	@NotNull
-	private ImmunizationDto createImmunizationDto(Disease disease, PersonReferenceDto person, UserReferenceDto reportingUser, ImmunizationStatus immunizationStatus, MeansOfImmunization meansOfImmunization, ImmunizationManagementStatus immunizationManagementStatus, RDCF rdcf) {
+	private ImmunizationDto createImmunizationDto(
+		Disease disease,
+		PersonReferenceDto person,
+		UserReferenceDto reportingUser,
+		ImmunizationStatus immunizationStatus,
+		MeansOfImmunization meansOfImmunization,
+		ImmunizationManagementStatus immunizationManagementStatus,
+		RDCF rdcf) {
 		ImmunizationDto immunization = new ImmunizationDto();
 		immunization.setUuid(DataHelper.createUuid());
 		immunization.setDisease(disease);
@@ -463,6 +469,24 @@ public class TestDataCreator {
 		vaccination.setUuid(DataHelper.createUuid());
 		vaccination.setReportingUser(reportingUser);
 		vaccination.setReportDate(new Date());
+
+		vaccination.setImmunization(immunization);
+		vaccination.setHealthConditions(healthConditions);
+
+		return beanTest.getVaccinationFacade().save(vaccination);
+	}
+
+	public VaccinationDto createVaccinationEntity(
+		UserReferenceDto reportingUser,
+		ImmunizationReferenceDto immunization,
+		HealthConditionsDto healthConditions,
+		String vaccineType) {
+		VaccinationDto vaccination = new VaccinationDto();
+		vaccination.setUuid(DataHelper.createUuid());
+		vaccination.setReportingUser(reportingUser);
+		vaccination.setReportDate(new Date());
+		vaccination.setVaccinationDate(new Date());
+		vaccination.setVaccineType(vaccineType);
 
 		vaccination.setImmunization(immunization);
 		vaccination.setHealthConditions(healthConditions);
@@ -1355,7 +1379,7 @@ public class TestDataCreator {
 		CommunityDto community = CommunityDto.build();
 		community.setName(communityName);
 		community.setDistrict(district);
-		beanTest.getCommunityFacade().saveCommunity(community);
+		beanTest.getCommunityFacade().save(community);
 		return community;
 	}
 
@@ -1404,7 +1428,7 @@ public class TestDataCreator {
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);
-		beanTest.getFacilityFacade().saveFacility(facility);
+		beanTest.getFacilityFacade().save(facility);
 		return facility;
 	}
 

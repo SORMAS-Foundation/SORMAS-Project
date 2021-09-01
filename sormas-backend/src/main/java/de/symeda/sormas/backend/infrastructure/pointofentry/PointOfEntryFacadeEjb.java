@@ -70,9 +70,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 			return null;
 		}
 
-		PointOfEntryReferenceDto ref =
-			new PointOfEntryReferenceDto(entity.getUuid(), entity.toString(), entity.getPointOfEntryType(), entity.getExternalID());
-		return ref;
+		return new PointOfEntryReferenceDto(entity.getUuid(), entity.toString(), entity.getPointOfEntryType(), entity.getExternalID());
 	}
 
 	@Override
@@ -82,7 +80,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		return service.getAllByDistrict(district, includeOthers)
 			.stream()
 			.filter(p -> !p.isArchived())
-			.map(p -> toReferenceDto(p))
+			.map(PointOfEntryFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -145,7 +143,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@Override
 	public List<PointOfEntryDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -165,12 +163,12 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	@Override
-	public void save(PointOfEntryDto dto) throws ValidationRuntimeException {
-		save(dto, false);
+	public PointOfEntryDto save(PointOfEntryDto dto) throws ValidationRuntimeException {
+		return save(dto, false);
 	}
 
 	@Override
-	public void save(PointOfEntryDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public PointOfEntryDto save(PointOfEntryDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		validate(dto);
 
@@ -195,6 +193,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 		pointOfEntry = fillOrBuildEntity(dto, pointOfEntry, true);
 		service.ensurePersisted(pointOfEntry);
+		return toDto(pointOfEntry);
 	}
 
 	@Override

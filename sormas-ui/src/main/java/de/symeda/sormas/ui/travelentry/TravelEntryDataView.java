@@ -16,7 +16,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.ViewMode;
 
 public class TravelEntryDataView extends AbstractTravelEntryView {
 
@@ -55,8 +54,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 
 		TravelEntryDto travelEntryDto = FacadeProvider.getTravelEntryFacade().getByUuid(getReference().getUuid());
 
-		editComponent = ControllerProvider.getTravelEntryController()
-			.getTravelEntryDataEditComponent(getTravelEntryRef().getUuid(), ViewMode.NORMAL, travelEntryDto.isPseudonymized());
+		editComponent = ControllerProvider.getTravelEntryController().getTravelEntryDataEditComponent(getTravelEntryRef().getUuid());
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
