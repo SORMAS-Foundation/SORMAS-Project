@@ -25,6 +25,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ElementKind;
 import javax.validation.Path;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 public class ConstrainValidationHelper {
 
 	public static Map<List<String>, String> getPropertyErrors(Set<? extends ConstraintViolation> constraintViolations) {
@@ -43,6 +45,10 @@ public class ConstrainValidationHelper {
 					path.add(propertyNode.getName());
 				}
 			}
+
+			errors.put(
+				path,
+				I18nProperties.getValidationError(constraintViolation.getMessage(), constraintViolation.getConstraintDescriptor().getAttributes()));
 		}
 
 		return errors;

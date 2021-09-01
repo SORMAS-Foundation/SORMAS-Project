@@ -3,6 +3,8 @@ package de.symeda.sormas.ui.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.Size;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -368,12 +370,31 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		}
 
 		if (typeOfFieldData.equals(String.class)) {
-			final Class<?> fieldType = field.getClass();
-			if (fieldType.isAssignableFrom(TextArea.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextArea.class)) {
-				field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_AREA_MAX_LENGTH));
-			} else if (fieldType.isAssignableFrom(TextField.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextField.class)) {
-				field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_FIELD_MAX_LENGTH));
+			Integer maxLength = getPropertyMaxLength(field.getId());
+			if (maxLength != null) {
+				field.addValidator(new MaxLengthValidator(maxLength));
+			} else {
+				final Class<?> fieldType = field.getClass();
+				if (fieldType.isAssignableFrom(TextArea.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextArea.class)) {
+					field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_AREA_MAX_LENGTH));
+				} else if (fieldType.isAssignableFrom(TextField.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextField.class)) {
+					field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_FIELD_MAX_LENGTH));
+				}
 			}
+		}
+	}
+
+	private Integer getPropertyMaxLength(String propertyId) {
+		try {
+			java.lang.reflect.Field field = type.getDeclaredField(propertyId);
+
+			if (!field.isAnnotationPresent(Size.class)) {
+				return null;
+			}
+
+			return field.getAnnotation(Size.class).max();
+		} catch (NoSuchFieldException e) {
+			return null;
 		}
 	}
 
