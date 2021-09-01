@@ -393,7 +393,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 				} else if (UserReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return userFacade.getByUuid(uuid);
 				} else if (RegionReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
-					return regionFacade.getRegionByUuid(uuid);
+					return regionFacade.getByUuid(uuid);
 				} else if (DistrictReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return districtFacade.getDistrictByUuid(uuid);
 				} else if (CommunityReferenceDto.class.isAssignableFrom(referenceDtoClass)) {

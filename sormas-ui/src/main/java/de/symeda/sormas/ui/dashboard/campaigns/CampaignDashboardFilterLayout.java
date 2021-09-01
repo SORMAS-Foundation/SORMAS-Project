@@ -108,7 +108,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		final UserDto user = UserProvider.getCurrent().getUser();
 		final RegionReferenceDto userRegion = user.getRegion();
 		final AreaReferenceDto userArea =
-			userRegion != null ? FacadeProvider.getRegionFacade().getRegionByUuid(userRegion.getUuid()).getArea() : null;
+			userRegion != null ? FacadeProvider.getRegionFacade().getByUuid(userRegion.getUuid()).getArea() : null;
 		final DistrictReferenceDto userDistrict = user.getDistrict();
 
 		dashboardDataProvider.setArea(userArea);

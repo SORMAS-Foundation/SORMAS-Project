@@ -1031,6 +1031,7 @@ public interface Captions {
 	String Event_workEnvironment = "Event.workEnvironment";
 	String EventAction_actionChangeDate = "EventAction.actionChangeDate";
 	String EventAction_actionCreationDate = "EventAction.actionCreationDate";
+	String EventAction_actionDate = "EventAction.actionDate";
 	String EventAction_actionLastModifiedBy = "EventAction.actionLastModifiedBy";
 	String EventAction_actionPriority = "EventAction.actionPriority";
 	String EventAction_actionStatus = "EventAction.actionStatus";

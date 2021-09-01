@@ -54,17 +54,17 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.country.Country;
-import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.area.AreaService;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -244,13 +244,13 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	@Override
-	public RegionDto getRegionByUuid(String uuid) {
+	public RegionDto getByUuid(String uuid) {
 		return toDto(regionService.getByUuid(uuid));
 	}
 
 	@Override
 	public List<RegionDto> getByUuids(List<String> uuids) {
-		return regionService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return regionService.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -345,12 +345,12 @@ public class RegionFacadeEjb implements RegionFacade {
 	}
 
 	@Override
-	public void saveRegion(@Valid RegionDto dto) throws ValidationRuntimeException {
-		saveRegion(dto, false);
+	public RegionDto save(@Valid RegionDto dto) throws ValidationRuntimeException {
+		return save(dto, false);
 	}
 
 	@Override
-	public void saveRegion(@Valid RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public RegionDto save(@Valid RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		Region region = regionService.getByUuid(dto.getUuid());
 
@@ -359,7 +359,7 @@ public class RegionFacadeEjb implements RegionFacade {
 			if (!duplicates.isEmpty()) {
 				if (allowMerge) {
 					region = duplicates.get(0);
-					RegionDto dtoToMerge = getRegionByUuid(region.getUuid());
+					RegionDto dtoToMerge = getByUuid(region.getUuid());
 					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
 				} else {
 					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importRegionAlreadyExists));
@@ -369,6 +369,7 @@ public class RegionFacadeEjb implements RegionFacade {
 
 		region = fillOrBuildEntity(dto, region, true);
 		regionService.ensurePersisted(region);
+		return toDto(region);
 	}
 
 	@Override

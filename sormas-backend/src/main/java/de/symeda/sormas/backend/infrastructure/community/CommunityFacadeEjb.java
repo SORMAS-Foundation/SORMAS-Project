@@ -271,12 +271,12 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	}
 
 	@Override
-	public void saveCommunity(@Valid CommunityDto dto) throws ValidationRuntimeException {
-		saveCommunity(dto, false);
+	public CommunityDto save(@Valid CommunityDto dto) throws ValidationRuntimeException {
+		return save(dto, false);
 	}
 
 	@Override
-	public void saveCommunity(@Valid CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public CommunityDto save(@Valid CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		if (dto.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
@@ -299,6 +299,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		}
 		community = fillOrBuildEntity(dto, community, true);
 		communityService.ensurePersisted(community);
+		return toDto(community);
 	}
 
 	@Override

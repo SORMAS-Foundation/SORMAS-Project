@@ -23,21 +23,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
-import javax.validation.Valid;
 
+import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
-public interface FacilityFacade {
-
-	List<FacilityIndexDto> getIndexList(FacilityCriteria facilityCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
-
-	List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Integer first, Integer max);
-
-	long count(FacilityCriteria criteria);
+public interface FacilityFacade extends InfrastructureBaseFacade<FacilityDto, FacilityIndexDto, FacilityReferenceDto, FacilityCriteria> {
 
 	List<FacilityReferenceDto> getActiveFacilitiesByCommunityAndType(
 		CommunityReferenceDto community,
@@ -65,16 +57,6 @@ public interface FacilityFacade {
 
 	FacilityReferenceDto getFacilityReferenceById(long id);
 
-	FacilityDto getByUuid(String uuid);
-
-	List<FacilityDto> getByUuids(List<String> uuids);
-
-	List<String> getAllUuids();
-
-	void saveFacility(@Valid FacilityDto value) throws ValidationRuntimeException;
-
-	void saveFacility(@Valid FacilityDto value, boolean allowMerge) throws ValidationRuntimeException;
-
 	List<FacilityReferenceDto> getByNameAndType(
 		String name,
 		DistrictReferenceDto districtRef,
@@ -84,10 +66,6 @@ public interface FacilityFacade {
 
 	List<FacilityReferenceDto> getLaboratoriesByName(String name, boolean includeArchivedEntities);
 
-	void archive(String facilityUuid);
-
-	void dearchive(String facilityUuid);
-
 	boolean hasArchivedParentInfrastructure(Collection<String> facilityUuids);
 
 	Map<String, String> getDistrictUuidsForFacilities(List<FacilityReferenceDto> facilities);
@@ -95,4 +73,6 @@ public interface FacilityFacade {
 	Map<String, String> getCommunityUuidsForFacilities(List<FacilityReferenceDto> facilities);
 
 	List<FacilityReferenceDto> getByExternalIdAndType(String id, FacilityType type, boolean includeArchivedEntities);
+
+	List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Integer first, Integer max);
 }
