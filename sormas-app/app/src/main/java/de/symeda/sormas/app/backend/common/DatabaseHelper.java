@@ -2810,6 +2810,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" snapshot SMALLINT DEFAULT 0,"  +
 						" pseudonymized SMALLINT,"  +
 						" disease varchar(255)," +
+						" diseaseDetails varchar(512)," +
 						" person_id bigint REFERENCES person(id)," +
 						" reportDate timestamp not null," +
 						" reportingUser_id bigint REFERENCES users(id)," +

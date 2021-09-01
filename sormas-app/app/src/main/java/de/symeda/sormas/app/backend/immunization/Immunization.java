@@ -55,6 +55,7 @@ public class Immunization extends PseudonymizableAdo {
 	public static final String I18N_PREFIX = "ImmunizationData";
 
     public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
     public static final String RESPONSIBLE_REGION = "responsibleRegion";
 
     public static final String POSITIVE_TEST_RESULT_DATE = "positivetestresultdate";
@@ -72,6 +73,8 @@ public class Immunization extends PseudonymizableAdo {
 
     @Enumerated(EnumType.STRING)
     private Disease disease;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String diseaseDetails;
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
     private Person person;
     @DatabaseField(dataType = DataType.DATE_LONG)
@@ -367,12 +370,21 @@ public class Immunization extends PseudonymizableAdo {
 		this.validUntil = validUntil;
 	}
 
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
 	@Override
     public String getI18nPrefix() {
         return I18N_PREFIX;
     }
 
     public void update(Immunization immunization) {
+        this.setDiseaseDetails(immunization.getDiseaseDetails());
         this.setPerson(immunization.getPerson());
         this.setReportDate(immunization.getReportDate());
         this.setReportingUser(immunization.getReportingUser());

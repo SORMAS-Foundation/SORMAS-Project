@@ -37,6 +37,7 @@
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
+        <import type="de.symeda.sormas.api.Disease" />
     </data>
 
     <ScrollView
@@ -75,6 +76,13 @@
                 style="@style/ControlSingleColumnStyle"
                 app:required="true"
                 app:value="@={data.disease}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/immunization_diseaseDetails"
+                app:value="@={data.diseaseDetails}"
+                app:dependencyParentField="@{immunizationDisease}"
+                app:dependencyParentValue="@{Disease.OTHER}"
+                style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/immunization_meansOfImmunization"
