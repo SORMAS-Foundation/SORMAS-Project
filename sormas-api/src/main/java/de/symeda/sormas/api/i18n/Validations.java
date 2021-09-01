@@ -132,6 +132,7 @@ public interface Validations {
 	String noResponsibleCommunityInResponsibleDistrict = "noResponsibleCommunityInResponsibleDistrict";
 	String noResponsibleDistrictInResponsibleRegion = "noResponsibleDistrictInResponsibleRegion";
 	String notAccomodationFacilityType = "notAccomodationFacilityType";
+	String numberNotInRange = "numberNotInRange";
 	String numberTooBig = "numberTooBig";
 	String numberTooSmall = "numberTooSmall";
 	String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
@@ -181,6 +182,7 @@ public interface Validations {
 	String textSizeNotInRange = "textSizeNotInRange";
 	String textTooLong = "textTooLong";
 	String userNameNotUnique = "userNameNotUnique";
+	String uuidPatternNotMatching = "uuidPatternNotMatching";
 	String vaccineDosesFormat = "vaccineDosesFormat";
 	String validCaseContactOrEventParticipant = "validCaseContactOrEventParticipant";
 	String validCommunity = "validCommunity";

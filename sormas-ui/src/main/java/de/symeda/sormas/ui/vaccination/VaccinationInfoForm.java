@@ -21,8 +21,8 @@ import java.util.Collections;
 
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
-
 import com.vaadin.v7.ui.Field;
+
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
@@ -34,7 +34,7 @@ import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.NumberValidator;
+import de.symeda.sormas.ui.utils.NumberNumericValueValidator;
 
 public class VaccinationInfoForm extends AbstractEditForm<VaccinationInfoDto> {
 
@@ -61,7 +61,8 @@ public class VaccinationInfoForm extends AbstractEditForm<VaccinationInfoDto> {
 	protected void addFields() {
 		addField(VaccinationInfoDto.VACCINATION);
 		Field vaccinationDoseField = addField(VaccinationInfoDto.VACCINATION_DOSES);
-		vaccinationDoseField.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
+		vaccinationDoseField
+			.addValidator(new NumberNumericValueValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
 		vaccinationDoseField.addValueChangeListener(e -> {
 			if (vaccinationDoseField.getValue() != null) {
 				String value = vaccinationDoseField.getValue().toString();

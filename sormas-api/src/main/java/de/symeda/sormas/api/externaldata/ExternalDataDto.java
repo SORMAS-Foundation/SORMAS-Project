@@ -14,7 +14,7 @@ import de.symeda.sormas.api.i18n.Validations;
 
 public class ExternalDataDto implements Serializable, HasExternalData {
 
-	@Pattern(regexp = UUID_REGEX)
+	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
 	@Size(min = COLUMN_LENGTH_UUID_MIN, max = COLUMN_LENGTH_UUID_MAX, message = Validations.textSizeNotInRange)
     private String uuid;
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)

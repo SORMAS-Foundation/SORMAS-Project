@@ -55,7 +55,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	private Date creationDate;
 	private Date changeDate;
 	@Outbreaks
-	@Pattern(regexp = UUID_REGEX)
+	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
 	@Size(min = COLUMN_LENGTH_UUID_MIN, max = COLUMN_LENGTH_UUID_MAX, message = Validations.textSizeNotInRange)
 	private String uuid;
 
