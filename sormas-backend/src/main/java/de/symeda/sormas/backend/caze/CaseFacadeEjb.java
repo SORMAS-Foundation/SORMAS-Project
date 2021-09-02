@@ -127,9 +127,6 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
@@ -139,6 +136,13 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
@@ -148,10 +152,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -228,25 +228,12 @@ import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.outbreak.OutbreakService;
-import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
@@ -256,9 +243,22 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.outbreak.OutbreakService;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.AdditionalTest;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTest;
@@ -271,9 +271,9 @@ import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoCase;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
@@ -3611,17 +3611,16 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
-			resultMap.values().stream().forEach(caseFollowUpDto -> {
+			for (CaseFollowUpDto caseFollowUpDto : resultMap.values()) {
 				caseFollowUpDto.initVisitSize(interval + 1);
-
 				pseudonymizer.pseudonymizeDto(CaseFollowUpDto.class, caseFollowUpDto, caseFollowUpDto.getInJurisdiction(), null);
-			});
+			}
 
-			visits.stream().forEach(v -> {
+			for (Object[] v : visits) {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
-				VisitResultDto result = getVisitResult((VisitStatus) v[2], (VisitOrigin) v[3], (boolean) v[4]);
+				VisitResultDto result = getVisitResult((VisitStatus) v[2], (VisitOrigin) v[3], (Boolean) v[4]);
 				resultMap.get(v[0]).getVisitResults()[day - 1] = result;
-			});
+			}
 		}
 
 		return resultList;
