@@ -4,6 +4,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -128,7 +129,7 @@ public abstract class DataImporter {
 		Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
 		if (!exportDirectory.toFile().exists() || !exportDirectory.toFile().canWrite()) {
 			logger.error(exportDirectory + " doesn't exist or cannot be accessed");
-			throw new IOException("Temp directory doesn't exist or cannot be accessed");
+			throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
 		}
 		Path errorReportFilePath = exportDirectory.resolve(
 			ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(currentUser.getUuid()) + "_"

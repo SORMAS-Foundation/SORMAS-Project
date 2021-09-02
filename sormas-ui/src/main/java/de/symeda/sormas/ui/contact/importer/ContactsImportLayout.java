@@ -30,28 +30,18 @@ public class ContactsImportLayout extends AbstractImportLayout {
 
 		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Contact_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(2, importFacade.getContactImportTemplateFilePath(), importFacade.getContactImportTemplateFileName());
-		addImportCsvComponent(3, new ImportReceiver("_contact_import_", new Consumer<File>() {
+		addImportCsvComponent(3, new ImportReceiver("_contact_import_", file -> {
+			resetDownloadErrorReportButton();
 
-			@Override
-			public void accept(File file) {
-				resetDownloadErrorReportButton();
-
-				try {
-					ContactImporter importer = new ContactImporter(file, false, currentUser, null, (ValueSeparator) separator.getValue());
-					importer.startImport(new Consumer<StreamResource>() {
-
-						@Override
-						public void accept(StreamResource resource) {
-							extendDownloadErrorReportButton(resource);
-						}
-					}, currentUI, false);
-				} catch (IOException | CsvValidationException e) {
-					new Notification(
-						I18nProperties.getString(Strings.headingImportFailed),
-						I18nProperties.getString(Strings.messageImportFailed),
-						Type.ERROR_MESSAGE,
-						false).show(Page.getCurrent());
-				}
+			try {
+				ContactImporter importer = new ContactImporter(file, false, currentUser, null, (ValueSeparator) separator.getValue());
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI, false);
+			} catch (IOException | CsvValidationException e) {
+				new Notification(
+					I18nProperties.getString(Strings.headingImportFailed),
+					I18nProperties.getString(Strings.messageImportFailed),
+					Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
 			}
 		}));
 		addDownloadErrorReportComponent(4);

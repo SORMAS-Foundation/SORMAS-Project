@@ -33,22 +33,18 @@ public class CaseContactsImportLayout extends AbstractImportLayout {
 			2,
 			importFacade.getCaseContactImportTemplateFilePath(),
 			importFacade.getCaseContactImportTemplateFileName());
-		addImportCsvComponent(3, new ImportReceiver("_case_contact_import_", new Consumer<File>() {
+		addImportCsvComponent(3, new ImportReceiver("_case_contact_import_", file -> {
 
-			@Override
-			public void accept(File file) {
-
-				resetDownloadErrorReportButton();
-				try {
-					ContactImporter importer = new ContactImporter(file, false, currentUser, caze, (ValueSeparator) separator.getValue());
-					importer.startImport(resource -> extendDownloadErrorReportButton(resource), currentUI, false);
-				} catch (IOException | CsvValidationException e) {
-					new Notification(
-						I18nProperties.getString(Strings.headingImportFailed),
-						I18nProperties.getString(Strings.messageImportFailed),
-						Type.ERROR_MESSAGE,
-						false).show(Page.getCurrent());
-				}
+			resetDownloadErrorReportButton();
+			try {
+				ContactImporter importer = new ContactImporter(file, false, currentUser, caze, (ValueSeparator) separator.getValue());
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI, false);
+			} catch (IOException | CsvValidationException e) {
+				new Notification(
+					I18nProperties.getString(Strings.headingImportFailed),
+					I18nProperties.getString(Strings.messageImportFailed),
+					Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
 			}
 		}));
 		addDownloadErrorReportComponent(4);
