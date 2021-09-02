@@ -23,12 +23,14 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -201,7 +203,6 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 			if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
 				contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
 				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-				contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.VISIBLE);
 			}
 			if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
 				contentBinding.immunizationNumberOfDoses.setVisibility(View.VISIBLE);
@@ -214,6 +215,8 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.overwriteImmunizationManagementStatusCheckBox.addValueChangedListener(e -> {
 			if (Boolean.TRUE.equals(e.getValue())) {
 				contentBinding.immunizationImmunizationManagementStatus.setEnabled(true);
+			} else {
+				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
 			}
 		});
 
@@ -231,8 +234,18 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 
 		contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.SCHEDULED);
 		contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-		contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.GONE);
 		contentBinding.immunizationNumberOfDoses.setVisibility(View.GONE);
+
+		if (record.getHealthFacility() == null
+			|| (record.getHealthFacility() != null && FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid()))) {
+			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
+		} else {
+			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
+			final FacilityType facilityType = record.getFacilityType();
+			if (facilityType != null) {
+				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
+			}
+		}
 
 	}
 }

@@ -48,17 +48,12 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 
 	private Immunization record;
 
-	// enum lists
-
 	private List<Item> diseaseList;
 	private List<Item> immunizationStatusList;
 	private List<Item> meansOfImmunizationList;
 	private List<Item> immunizationManagementStatusList;
 
-	private List<Item> initialResponsibleDistricts;
-	private List<Item> initialResponsibleCommunities;
 	private List<Item> initialRegions;
-	private List<Item> allDistricts;
 	private List<Item> initialDistricts;
 	private List<Item> initialCommunities;
 	private List<Item> initialFacilities;
@@ -84,14 +79,16 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	}
 
 	@Override
+	public Immunization getPrimaryData() {
+		return record;
+	}
+
+	@Override
 	protected String getSubHeadingTitle() {
 		return getResources().getString(R.string.caption_immunization_information);
 	}
 
-	@Override
-	public Immunization getPrimaryData() {
-		return record;
-	}
+
 
 	@Override
 	protected void prepareFragmentData() {
@@ -108,9 +105,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 
 		countries = InfrastructureDaoHelper.loadCountries();
 		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
-		allDistricts = InfrastructureDaoHelper.loadAllDistricts();
-		initialResponsibleDistricts = InfrastructureDaoHelper.loadDistricts(record.getResponsibleRegion());
-		initialResponsibleCommunities = InfrastructureDaoHelper.loadCommunities(record.getResponsibleDistrict());
 		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getResponsibleRegion());
 		initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getResponsibleDistrict());
 		initialFacilities =
@@ -184,7 +178,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
 				contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
 				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-				contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.VISIBLE);
 			}
 			if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
 				contentBinding.immunizationVaccinationLayout.setVisibility(View.VISIBLE);
@@ -221,7 +214,8 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			}
 		});
 
-		if (record.getHealthFacility() != null && FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())) {
+		if (record.getHealthFacility() == null
+				|| (record.getHealthFacility() != null && FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid()))) {
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
 		} else {
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
@@ -241,5 +235,4 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	public boolean isShowNewAction() {
 		return false;
 	}
-
 }

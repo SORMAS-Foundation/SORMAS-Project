@@ -37,6 +37,7 @@
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
         <import type="de.symeda.sormas.api.i18n.Strings" />
         <import type="de.symeda.sormas.api.event.TypeOfPlace" />
+        <import type="de.symeda.sormas.api.Disease" />
     </data>
 
     <ScrollView
@@ -76,21 +77,28 @@
                 app:required="true"
                 app:value="@={data.disease}" />
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/immunization_diseaseDetails"
+                app:value="@={data.diseaseDetails}"
+                app:dependencyParentField="@{immunizationDisease}"
+                app:dependencyParentValue="@{Disease.OTHER}"
+                style="@style/ControlSingleColumnStyle" />
+
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/immunization_meansOfImmunization"
                 style="@style/ControlSingleColumnStyle"
+                app:required="true"
                 app:value="@={data.meansOfImmunization}" />
+
+            <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                android:id="@+id/overwrite_immunization_management_status_checkBox"
+                style="@style/ControlSingleColumnStyle"
+                app:caption="@string/caption_overwrite_immunization_management_status" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/immunization_immunizationManagementStatus"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.immunizationManagementStatus}" />
-
-            <de.symeda.sormas.app.component.controls.ControlCheckBoxField
-                android:id="@+id/overwrite_immunization_management_status_checkBox"
-                style="@style/ControlSingleColumnStyle"
-                android:visibility="gone"
-                app:caption="@string/caption_overwrite_immunization_management_status" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/immunization_immunizationStatus"
@@ -98,7 +106,7 @@
                 app:value="@={data.immunizationStatus}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/immunization_externalID"
+                android:id="@+id/immunization_externalId"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.externalId}" />
 
@@ -197,13 +205,11 @@
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/immunization_validFrom"
                     style="@style/ControlFirstOfTwoColumnsStyle"
-                    app:allowedDaysInFuture="365"
                     app:value="@={data.validFrom}" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/immunization_validUntil"
                     style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:allowedDaysInFuture="365"
                     app:value="@={data.validUntil}" />
 
             </LinearLayout>

@@ -60,12 +60,7 @@ public class ImmunizationReadFragment extends BaseReadFragment<FragmentImmunizat
 	@Override
 	public void onAfterLayoutBinding(FragmentImmunizationReadLayoutBinding contentBinding) {
 
-		if (record.getHealthFacility() == null) {
-			contentBinding.facilityOrHome.setVisibility(GONE);
-			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
-			contentBinding.immunizationHealthFacility.setVisibility(GONE);
-			contentBinding.immunizationHealthFacilityDetails.setVisibility(GONE);
-		} else if (FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())) {
+		if (record.getHealthFacility() == null || FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())) {
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 		} else {
@@ -85,5 +80,10 @@ public class ImmunizationReadFragment extends BaseReadFragment<FragmentImmunizat
 	@Override
 	public Immunization getPrimaryData() {
 		return record;
+	}
+
+	@Override
+	protected String getSubHeadingTitle() {
+		return getResources().getString(R.string.caption_immunization_information);
 	}
 }

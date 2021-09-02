@@ -63,7 +63,9 @@
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/immunization_disease"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@{data.disease}" />
+                app:value="@{data.disease}"
+                app:appendValue="@{data.diseaseDetails}"
+                app:valueFormat="@string/two_strings_with_hyphen_format"/>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/immunization_meansOfImmunization"
@@ -81,7 +83,7 @@
                 app:value="@{data.immunizationStatus}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/immunization_externalID"
+                android:id="@+id/immunization_externalId"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@{data.externalId}" />
 
