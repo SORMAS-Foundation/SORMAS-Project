@@ -95,7 +95,7 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_no_jurisdiction.csv").toURI());
 
-		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user);
+		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user, ValueSeparator.DEFAULT);
 		ImportResultStatus importResult = importer.runImport();
 
 		assertThat(importResult, is(ImportResultStatus.COMPLETED));
@@ -132,7 +132,7 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 
 			File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_no_poe.csv").toURI());
 
-			TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user);
+			TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user, ValueSeparator.DEFAULT);
 			importResult = importer.runImport();
 		} finally {
 			// make sure server locale is reset
@@ -164,7 +164,7 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_travelentry_import_no_poe.csv").toURI());
 
-		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user);
+		TravelEntryImporterExtension importer = new TravelEntryImporterExtension(csvFile, false, user, ValueSeparator.DEFAULT);
 		ImportResultStatus importResult = importer.runImport();
 
 		assertThat(importResult, is(ImportResultStatus.COMPLETED_WITH_ERRORS));
