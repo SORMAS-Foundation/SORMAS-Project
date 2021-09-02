@@ -120,7 +120,7 @@ public class DocumentTemplateEntitiesBuilder {
 			return buildEntities(ROOT_TRAVEL_ENTRY, travelEntryDto, travelEntryDto.getPerson(), null, null);
 
 		default:
-			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineOnlySupportedEntities));
 		}
 	}
 
@@ -145,7 +145,7 @@ public class DocumentTemplateEntitiesBuilder {
 
 			break;
 		default:
-			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineBulkOnlyCaseAndContacts));
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineBulkOnlySupportedEntities));
 		}
 
 		return builder.build();

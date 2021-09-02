@@ -380,7 +380,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		} else if (reference instanceof TravelEntryReferenceDto) {
 			return DocumentWorkflow.QUARANTINE_ORDER_TRAVEL_ENTRY;
 		} else {
-			throw new IllegalArgumentException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
+			throw new IllegalArgumentException(I18nProperties.getString(Strings.errorQuarantineOnlySupportedEntities));
 		}
 	}
 }
