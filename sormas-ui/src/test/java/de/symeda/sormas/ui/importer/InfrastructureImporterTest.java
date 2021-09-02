@@ -20,6 +20,7 @@ import com.opencsv.exceptions.CsvValidationException;
 
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
@@ -213,8 +214,8 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 
 	private static class InfrastructureImporterExtension extends InfrastructureImporter {
 
-		private InfrastructureImporterExtension(File inputFile, UserDto currentUser, InfrastructureType infrastructureType) throws IOException {
-			super(inputFile, currentUser, infrastructureType);
+		private InfrastructureImporterExtension(File inputFile, UserDto currentUser, InfrastructureType infrastructureType) {
+			super(inputFile, currentUser, infrastructureType, ValueSeparator.COMMA);
 		}
 
 		protected Writer createErrorReportWriter() {

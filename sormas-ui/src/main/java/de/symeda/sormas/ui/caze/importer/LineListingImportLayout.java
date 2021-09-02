@@ -15,6 +15,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
@@ -40,7 +41,7 @@ public class LineListingImportLayout extends AbstractImportLayout {
 				resetDownloadErrorReportButton();
 
 				try {
-					CaseImporter importer = new CaseImporter(file, false, currentUser);
+					CaseImporter importer = new CaseImporter(file, false, currentUser, (ValueSeparator) separator.getValue());
 					importer.startImport(new Consumer<StreamResource>() {
 
 						@Override

@@ -47,10 +47,10 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.event.EventService;
-import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -234,11 +234,10 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		}
 
 		if (criteria.getActionDateFrom() != null && criteria.getActionDateTo() != null) {
-			filter = CriteriaBuilderHelper
-					.and(cb, filter, cb.between(action.get(Action.DATE), criteria.getActionDateFrom(), criteria.getActionDateTo()));
-		} else if (criteria.getActionDateFrom() != null) {
 			filter =
-					CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(action.get(Action.DATE), criteria.getActionDateFrom()));
+				CriteriaBuilderHelper.and(cb, filter, cb.between(action.get(Action.DATE), criteria.getActionDateFrom(), criteria.getActionDateTo()));
+		} else if (criteria.getActionDateFrom() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(action.get(Action.DATE), criteria.getActionDateFrom()));
 		} else if (criteria.getActionDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(action.get(Action.DATE), criteria.getActionDateTo()));
 		}
@@ -363,6 +362,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 					break;
 				case EventActionIndexDto.ACTION_CREATION_DATE:
 					expression = action.get(Action.CREATION_DATE);
+					break;
+				case EventActionIndexDto.ACTION_DATE:
+					expression = action.get(Action.DATE);
 					break;
 				case EventActionIndexDto.ACTION_PRIORITY:
 					expression = action.get(Action.PRIORITY);

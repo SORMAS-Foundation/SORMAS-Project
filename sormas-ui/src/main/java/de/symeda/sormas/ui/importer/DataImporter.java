@@ -46,6 +46,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
@@ -118,7 +119,7 @@ public abstract class DataImporter {
 
 	private final EnumCaptionCache enumCaptionCache;
 
-	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) throws IOException {
+	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator) throws IOException {
 		this.inputFile = inputFile;
 		this.hasEntityClassRow = hasEntityClassRow;
 		this.currentUser = currentUser;
@@ -134,7 +135,7 @@ public abstract class DataImporter {
 				+ DateHelper.formatDateForExport(new Date()) + ".csv");
 		this.errorReportFilePath = errorReportFilePath.toString();
 
-		this.csvSeparator = FacadeProvider.getConfigFacade().getCsvSeparator();
+		this.csvSeparator = ValueSeparator.getSeparator(csvSeparator);
 	}
 
 	/**
@@ -251,7 +252,9 @@ public abstract class DataImporter {
 			// Write first line to the error report writer
 			String[] columnNames = new String[entityProperties.length + 1];
 			columnNames[0] = ERROR_COLUMN_NAME;
-			System.arraycopy(entityProperties, 0, columnNames, 1, entityProperties.length);
+			for (int i = 0; i < entityProperties.length; i++) {
+				columnNames[i + 1] = entityProperties[i];
+			}
 			errorReportCsvWriter.writeNext(columnNames);
 
 			// Read and import all lines from the import file
@@ -564,7 +567,7 @@ public abstract class DataImporter {
 		}
 
 		if (invalidColumns.size() > 0) {
-			logger.warn("Unhandled columns [{}]", String.join(", ", invalidColumns));
+			LoggerFactory.getLogger(getClass()).warn("Unhandled columns [{}]", String.join(", ", invalidColumns));
 		}
 
 		return dataHasImportError;
@@ -627,7 +630,7 @@ public abstract class DataImporter {
 		List<String> errorLineAsList = new ArrayList<>();
 		errorLineAsList.add(message);
 		errorLineAsList.addAll(Arrays.asList(errorLine));
-		errorReportCsvWriter.writeNext(errorLineAsList.toArray(new String[0]));
+		errorReportCsvWriter.writeNext(errorLineAsList.toArray(new String[errorLineAsList.size()]));
 	}
 
 	protected String buildEntityProperty(String[] entityPropertyPath) {

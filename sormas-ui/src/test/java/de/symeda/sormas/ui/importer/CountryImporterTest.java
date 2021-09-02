@@ -16,6 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.opencsv.exceptions.CsvValidationException;
 
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.country.CountryCriteria;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -56,8 +57,8 @@ public class CountryImporterTest extends AbstractBeanTest {
 
 	private static class CountryImporterExtension extends CountryImporter {
 
-		private CountryImporterExtension(File inputFile, UserDto currentUser) throws IOException {
-			super(inputFile, currentUser);
+		private CountryImporterExtension(File inputFile, UserDto currentUser) {
+			super(inputFile, currentUser, ValueSeparator.DEFAULT);
 		}
 
 		protected Writer createErrorReportWriter() {
