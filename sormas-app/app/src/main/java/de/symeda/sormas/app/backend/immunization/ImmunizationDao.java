@@ -23,11 +23,11 @@ import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -35,6 +35,8 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
+
+import static de.symeda.sormas.app.backend.immunization.ImmunizationDaoHelper.overlappingDateRangeImmunizations;
 
 public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 
@@ -169,43 +171,21 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 			ImmunizationCriteria immunizationCriteria = criteria.getImmunizationCriteria();
 			where.and().ne(Immunization.UUID, criteria.getImmunizationUuid());
 			where.and().eq(Immunization.DISEASE, immunizationCriteria.getDisease());
-			if (criteria.getStartDate() != null && criteria.getEndDate() != null) {
-				Where<Immunization, Long> betweenCombination = where.or(
-					where.between(
-						Immunization.START_DATE,
-						DateHelper.getStartOfDay(criteria.getStartDate()),
-						DateHelper.getEndOfDay(criteria.getEndDate())),
-					where.between(
-						Immunization.END_DATE,
-						DateHelper.getStartOfDay(criteria.getStartDate()),
-						DateHelper.getEndOfDay(criteria.getEndDate())));
-
-				Where<Immunization, Long> startDateNull = where.and(
-					where.isNull(Immunization.START_DATE),
-					where.gt(Immunization.END_DATE, DateHelper.getStartOfDay(criteria.getStartDate())));
-
-				Where<Immunization, Long> endDateNull = where.and(
-					where.isNull(Immunization.END_DATE),
-					where.lt(Immunization.START_DATE, DateHelper.getStartOfDay(criteria.getEndDate())));
-
-				where.and().or(betweenCombination, startDateNull, endDateNull);
-
-			} else if (criteria.getStartDate() == null && criteria.getEndDate() != null) {
-				where.and()
-					.or(where.isNull(Immunization.START_DATE), where.lt(Immunization.START_DATE, DateHelper.getStartOfDay(criteria.getEndDate())));
-			} else if (criteria.getStartDate() != null && criteria.getEndDate() == null) {
-				where.and()
-					.or(where.isNull(Immunization.END_DATE), where.gt(Immunization.END_DATE, DateHelper.getStartOfDay(criteria.getStartDate())));
-			}
 			where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
 
 			queryBuilder.setWhere(where);
 			queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
 
-			return queryBuilder.orderBy(Immunization.CREATION_DATE, false).query();
+			List<Immunization> immunizations = queryBuilder.orderBy(Immunization.CREATION_DATE, false).query();
+
+			final Date startDate = criteria.getStartDate();
+			final Date endDate = criteria.getEndDate();
+			return overlappingDateRangeImmunizations(immunizations, startDate, endDate);
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getSimilarImmunizations on immunization");
 			throw new RuntimeException(e);
 		}
 	}
+
+
 }
