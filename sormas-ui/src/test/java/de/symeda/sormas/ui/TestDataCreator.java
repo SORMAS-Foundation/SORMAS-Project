@@ -40,19 +40,19 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.region.CommunityDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -366,7 +366,7 @@ public class TestDataCreator {
 		RegionDto region = RegionDto.build();
 		region.setUuid(DataHelper.createUuid());
 		region.setName(regionName);
-		FacadeProvider.getRegionFacade().saveRegion(region);
+		FacadeProvider.getRegionFacade().save(region);
 		return region;
 	}
 
@@ -376,7 +376,7 @@ public class TestDataCreator {
 		district.setUuid(DataHelper.createUuid());
 		district.setName(districtName);
 		district.setRegion(region);
-		FacadeProvider.getDistrictFacade().saveDistrict(district);
+		FacadeProvider.getDistrictFacade().save(district);
 
 		return district;
 	}
@@ -387,7 +387,7 @@ public class TestDataCreator {
 		community.setUuid(DataHelper.createUuid());
 		community.setName(communityName);
 		community.setDistrict(district);
-		FacadeProvider.getCommunityFacade().saveCommunity(community);
+		FacadeProvider.getCommunityFacade().save(community);
 
 		return community;
 	}
@@ -405,7 +405,7 @@ public class TestDataCreator {
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);
-		FacadeProvider.getFacilityFacade().saveFacility(facility);
+		FacadeProvider.getFacilityFacade().save(facility);
 		return facility;
 	}
 

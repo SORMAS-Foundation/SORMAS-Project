@@ -36,6 +36,12 @@ Non-GUI execution of the performance tests is recommended:
 jmeter -n -t C:\projects\sormas\performance\SormasPoc.jmx -Jmodule=daily-build-scenario
 -l C:\projects\sormas\performance\results\Results3.csv -e -o C:\projects\sormas\performance\reports
 
+## Using Variables
+
+The variables are preconfigured to run the tests against a specific test instance.
+If you wish to run the tests against another system (e.g. localhost), you can exchange the arguments as needed.
+Please make sure the database is populated with accessible data before trying to access it (e.g. create cases before trying to GET them).
+
 ## Reporting
 
 * After running the tests with the above mentioned command, you will be able to find the html report

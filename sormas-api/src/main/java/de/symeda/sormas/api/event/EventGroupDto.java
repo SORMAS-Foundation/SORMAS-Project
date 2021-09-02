@@ -18,7 +18,10 @@
 
 package de.symeda.sormas.api.event;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 
@@ -31,6 +34,7 @@ public class EventGroupDto extends EntityDto {
     public static final String NAME = "name";
 
     @Required
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
     private String name;
 
     public static EventGroupDto build() {

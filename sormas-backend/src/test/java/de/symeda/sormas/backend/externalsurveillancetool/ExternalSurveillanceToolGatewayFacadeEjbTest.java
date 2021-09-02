@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -111,7 +112,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 		try {
 			subjectUnderTest.sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"));
 		} catch (ExternalSurveillanceToolException e) {
-			assertThat(e.getMessage(), Matchers.is("ExternalSurveillanceToolGateway.notificationErrorSending"));
+			assertThat(e.getMessage(), Matchers.is(I18nProperties.getString("ExternalSurveillanceToolGateway.notificationErrorSending")));
 		}
 	}
 

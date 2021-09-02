@@ -111,7 +111,7 @@ public class ContactResource extends EntityDtoResource {
 
 	@POST
 	@Path("/externalData")
-	public Response updateExternalData(List<ExternalDataDto> externalData) {
+	public Response updateExternalData(@Valid List<ExternalDataDto> externalData) {
 		try {
 			FacadeProvider.getContactFacade().updateExternalData(externalData);
 			return Response.status(Response.Status.OK).build();

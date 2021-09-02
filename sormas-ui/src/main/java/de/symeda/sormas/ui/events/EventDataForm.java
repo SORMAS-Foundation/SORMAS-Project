@@ -64,15 +64,15 @@ import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.ParenteralTransmissionMode;
 import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -214,7 +214,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		getContent().addComponent(locationHeadingLabel, LOCATION_HEADING_LOC);
 
 		addField(EventDto.UUID, TextField.class);
-		diseaseField = addDiseaseField(EventDto.DISEASE, false);
+		diseaseField = addDiseaseField(EventDto.DISEASE, false, isCreateForm);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
 		diseaseVariantField = addField(EventDto.DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantField.setNullSelectionAllowed(true);

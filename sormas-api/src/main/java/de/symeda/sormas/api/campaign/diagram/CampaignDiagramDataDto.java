@@ -1,18 +1,30 @@
 package de.symeda.sormas.api.campaign.diagram;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_SMALL;
+
 import java.io.Serializable;
+
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
 
 public class CampaignDiagramDataDto implements Serializable {
 
 	private static final long serialVersionUID = -8813972727008846360L;
 
 	private String formMetaUuid;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String formId;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String fieldId;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String fieldCaption;
 	private Number valueSum;
 	private Object groupingKey;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String groupingCaption;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String stack;
 	private boolean hasAgeGroupData;
 

@@ -42,7 +42,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
 @Entity

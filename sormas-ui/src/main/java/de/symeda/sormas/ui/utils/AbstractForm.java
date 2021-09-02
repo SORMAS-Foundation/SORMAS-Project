@@ -1,7 +1,14 @@
 package de.symeda.sormas.ui.utils;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +28,8 @@ import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 
 public abstract class AbstractForm<T> extends CustomField<T> {
 
@@ -338,6 +347,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	 */
 	protected <F extends Field> F addDefaultAdditionalValidators(F field, Class<?> fieldDataType) {
 		addLengthValidator(field, fieldDataType);
+		addMinMaxValidator(field, fieldDataType);
 		addFutureDateValidator(field, 0);
 		return field;
 	}
@@ -345,7 +355,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	@SuppressWarnings("rawtypes")
 	/**
 	 * Add additional Parameters to fields, like setting the filteringMode for ComboBoxes
-	 * 
+	 *
 	 * @param field
 	 */
 	protected <F extends Field> F setDefaultAdditionalParameters(F field) {
@@ -368,12 +378,64 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		}
 
 		if (typeOfFieldData.equals(String.class)) {
-			final Class<?> fieldType = field.getClass();
-			if (fieldType.isAssignableFrom(TextArea.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextArea.class)) {
-				field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_AREA_MAX_LENGTH));
-			} else if (fieldType.isAssignableFrom(TextField.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextField.class)) {
-				field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_FIELD_MAX_LENGTH));
+			Integer maxLength = getPropertyMaxLength(field.getId());
+			if (maxLength != null) {
+				field.addValidator(new MaxLengthValidator(maxLength));
+			} else {
+				final Class<?> fieldType = field.getClass();
+				if (fieldType.isAssignableFrom(TextArea.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextArea.class)) {
+					field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_AREA_MAX_LENGTH));
+				} else if (fieldType.isAssignableFrom(TextField.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextField.class)) {
+					field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_FIELD_MAX_LENGTH));
+				}
 			}
+		}
+
+	}
+
+	private Integer getPropertyMaxLength(String propertyId) {
+		Size sizeAnnotation = getPropertyAnnotation(propertyId, Size.class);
+		return sizeAnnotation != null ? sizeAnnotation.max() : null;
+	}
+
+	private <T extends Annotation> T getPropertyAnnotation(String propertyId, Class<T> annotationType) {
+		try {
+			java.lang.reflect.Field field = type.getDeclaredField(propertyId);
+
+			if (!field.isAnnotationPresent(annotationType)) {
+				return null;
+			}
+
+			return field.getAnnotation(annotationType);
+		} catch (NoSuchFieldException e) {
+			return null;
+		}
+	}
+
+	private <F extends Field<?>> void addMinMaxValidator(F field, Class<?> fieldDataType) {
+		Max maxAnnotation = getPropertyAnnotation(field.getId(), Max.class);
+		Long maxValue = maxAnnotation != null ? maxAnnotation.value() : null;
+
+		Min minAnnotation = getPropertyAnnotation(field.getId(), Min.class);
+		Long minValue = minAnnotation != null ? minAnnotation.value() : null;
+
+		if (minValue != null || maxValue != null) {
+			String validationMessageTag;
+			Map<String, Object> validationMessageArgs = new HashMap<>();
+			if (minValue == null) {
+				validationMessageTag = Validations.numberTooBig;
+				validationMessageArgs.put("value", maxValue);
+			} else if (maxValue == null) {
+				validationMessageTag = Validations.numberTooSmall;
+				validationMessageArgs.put("value", minValue);
+			} else {
+				validationMessageTag = Validations.numberNotInRange;
+				validationMessageArgs.put("min", minValue);
+				validationMessageArgs.put("max", maxValue);
+			}
+
+			field.addValidator(
+				new NumberValidator(I18nProperties.getValidationError(validationMessageTag, validationMessageArgs), minValue, maxValue));
 		}
 	}
 

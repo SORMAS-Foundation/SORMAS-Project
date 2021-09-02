@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.travelentry.travelentryimport;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 
@@ -35,6 +36,6 @@ public interface TravelEntryImportFacade {
 		String[] entityClasses,
 		String[][] entityPropertyPaths);
 
-	ImportLineResultDto<TravelEntryImportEntities> saveImportedEntities(TravelEntryImportEntities entities);
+	ImportLineResultDto<TravelEntryImportEntities> saveImportedEntities(@Valid TravelEntryImportEntities entities);
 
 }
