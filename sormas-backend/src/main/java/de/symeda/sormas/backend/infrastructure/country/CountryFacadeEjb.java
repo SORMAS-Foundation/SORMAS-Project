@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.infrastructure.country;
 
 import java.util.ArrayList;
@@ -24,12 +39,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
-import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
-import de.symeda.sormas.backend.infrastructure.continent.Continent;
-import de.symeda.sormas.backend.infrastructure.continent.ContinentService;
-import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.Page;
@@ -45,6 +55,12 @@ import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.continent.Continent;
+import de.symeda.sormas.backend.infrastructure.continent.ContinentService;
+import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
+import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -69,6 +85,9 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
+
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfiguration;
 
 	@Override
 	public CountryDto getCountryByUuid(String uuid) {
@@ -183,6 +202,10 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@Override
 	public CountryDto save(CountryDto dto, boolean allowMerge) throws ValidationRuntimeException {
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
 		if (StringUtils.isBlank(dto.getIsoCode())) {
 			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
 		}
@@ -219,6 +242,11 @@ public class CountryFacadeEjb implements CountryFacade {
 
 	@Override
 	public void dearchive(String countryUuid) {
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
+
 		Country country = countryService.getByUuid(countryUuid);
 		if (country != null) {
 			country.setArchived(false);

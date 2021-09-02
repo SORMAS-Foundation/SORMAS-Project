@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.infrastructure.region;
 
 import java.util.ArrayList;
@@ -42,6 +42,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -53,17 +54,18 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.country.Country;
-import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.area.AreaService;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -87,6 +89,8 @@ public class RegionFacadeEjb implements RegionFacade {
 	private CountryService countryService;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfiguration;
 
 	@Override
 	public List<RegionReferenceDto> getAllActiveByServerCountry() {
@@ -284,6 +288,11 @@ public class RegionFacadeEjb implements RegionFacade {
 
 	@Override
 	public void dearchive(String regionUuid) {
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
+
 		Region region = regionService.getByUuid(regionUuid);
 		region.setArchived(false);
 		regionService.ensurePersisted(region);
@@ -350,6 +359,10 @@ public class RegionFacadeEjb implements RegionFacade {
 
 	@Override
 	public RegionDto save(RegionDto dto, boolean allowMerge) throws ValidationRuntimeException {
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
 
 		Region region = regionService.getByUuid(dto.getUuid());
 

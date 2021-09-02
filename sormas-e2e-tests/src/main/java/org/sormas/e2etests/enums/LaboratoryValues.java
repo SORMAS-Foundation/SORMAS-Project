@@ -22,20 +22,28 @@ import java.util.Random;
 import lombok.Getter;
 
 @Getter
-public enum Gender {
-  MALE("Male"),
-  FEMALE("Female"),
-  OTHER("Other"),
-  UNKNOWN("Unknown");
+public enum LaboratoryValues {
+  VOREINGESTELLTES_LABOR(
+      "Voreingestelltes Labor", "Voreingestelltes Labor", "VQL6NJ-HPJY24-56F2R5-T5UV2HUI"),
+  OTHER_FACILITY("Andere Einrichtung", "Other facility", "SORMAS-CONSTID-OTHERS-FACILITY");
 
-  private final String gender;
+  private final String caption;
+  private final String captionEnglish;
+  private final String uuidValue;
 
-  Gender(String humanGender) {
-    gender = humanGender;
+  LaboratoryValues(String captionType, String captionTypeEnglish, String idValue) {
+    caption = captionType;
+    captionEnglish = captionTypeEnglish;
+    uuidValue = idValue;
   }
 
-  public static String getRandomGender() {
+  public static String getRandomCaption() {
     Random random = new Random();
-    return String.valueOf(Gender.values()[random.nextInt(values().length)].gender);
+    return String.valueOf(LaboratoryValues.values()[random.nextInt(values().length)].caption);
+  }
+
+  public static String getRandomUUID() {
+    Random random = new Random();
+    return String.valueOf(LaboratoryValues.values()[random.nextInt(values().length)].uuidValue);
   }
 }

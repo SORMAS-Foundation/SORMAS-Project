@@ -110,6 +110,8 @@ public enum FeatureType {
 
 	PERSON_DUPLICATE_CUSTOM_SEARCH(true, false, null),
 
+	EDIT_INFRASTRUCTURE_DATA(true, true, null),
+
 	// SHOW/HIDE VIEW TAB FEATURES
 	VIEW_TAB_CASES_HOSPITALIZATION(true,
 		true,

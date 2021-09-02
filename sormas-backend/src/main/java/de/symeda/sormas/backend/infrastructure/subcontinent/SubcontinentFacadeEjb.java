@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.infrastructure.subcontinent;
 
 import java.util.ArrayList;
@@ -22,6 +37,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -32,6 +48,7 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentIndexDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentService;
@@ -53,6 +70,8 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 	private ContinentService continentService;
 	@EJB
 	private CountryService countryService;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfiguration;
 
 	public static SubcontinentReferenceDto toReferenceDto(Subcontinent entity) {
 		if (entity == null) {
@@ -168,6 +187,11 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 	@Override
 	public void dearchive(String uuid) {
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
+
 		Subcontinent subcontinent = subcontinentService.getByUuid(uuid);
 		if (subcontinent != null) {
 			subcontinent.setArchived(false);
@@ -209,6 +233,10 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 
 	@Override
 	public SubcontinentDto save(SubcontinentDto dto, boolean allowMerge) {
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
 
 		Subcontinent subcontinent = subcontinentService.getByUuid(dto.getUuid());
 

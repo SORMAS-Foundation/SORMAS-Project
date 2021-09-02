@@ -22,13 +22,17 @@ import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import javax.inject.Inject;
+import org.sormas.e2etests.enums.AreaTypeValues;
 import org.sormas.e2etests.enums.CommunityUUIDs;
 import org.sormas.e2etests.enums.ContinentUUIDs;
 import org.sormas.e2etests.enums.CountryUUIDs;
 import org.sormas.e2etests.enums.DistrictUUIDs;
 import org.sormas.e2etests.enums.FacilityUUIDs;
+import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionUUIDs;
 import org.sormas.e2etests.enums.SubcontinentUUIDs;
 import org.sormas.e2etests.helpers.api.PersonsHelper;
@@ -39,6 +43,8 @@ import org.sormas.e2etests.pojo.api.chunks.PersonContactDetails;
 import org.sormas.e2etests.state.ApiState;
 
 public class PersonSteps implements En {
+
+  Random random = new Random();
 
   @Inject
   public PersonSteps(PersonsHelper personsHelper, ApiState apiState, Faker faker) {
@@ -56,8 +62,8 @@ public class PersonSteps implements En {
 
           Address address =
               Address.builder()
-                  .latitude(52.28339547689361)
-                  .longitude(10.5794084300839)
+                  .latitude(48 + (random.nextInt(6)) + ThreadLocalRandom.current().nextDouble(0, 1))
+                  .longitude(8 + (random.nextInt(5)) + ThreadLocalRandom.current().nextDouble(0, 1))
                   .country(
                       Country.builder()
                           .uuid(CountryUUIDs.Germany.toString())
@@ -71,7 +77,7 @@ public class PersonSteps implements En {
                   .district(DistrictUUIDs.VoreingestellterLandkreis.toString())
                   .community(CommunityUUIDs.VoreingestellteGemeinde.toString())
                   .city(faker.address().cityName())
-                  .areaType("URBAN")
+                  .areaType(AreaTypeValues.getRandomAreaType())
                   .postalCode(faker.address().zipCode())
                   .street(faker.address().streetName())
                   .houseNumber(faker.address().buildingNumber())
@@ -104,7 +110,7 @@ public class PersonSteps implements En {
                   .birthdateDD(faker.number().numberBetween(1, 29))
                   .birthdateMM(faker.number().numberBetween(1, 12))
                   .birthdateYYYY(faker.number().numberBetween(1900, 2005))
-                  .sex("MALE")
+                  .sex(GenderValues.getRandomGender().toUpperCase())
                   .phone(faker.phoneNumber().phoneNumber())
                   .address(address)
                   .personContactDetails(Collections.singletonList(personContactDetails))

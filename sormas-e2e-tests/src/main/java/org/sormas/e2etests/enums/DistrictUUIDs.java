@@ -21,7 +21,7 @@ import lombok.Getter;
 
 @Getter
 public enum DistrictUUIDs {
-  VoreingestellterLandkreis("Z75BK-5OUMFU-V2DTKG-5BYACHFE");
+  VoreingestellterLandkreis("SZ75BK-5OUMFU-V2DTKG-5BYACHFE");
 
   private final String option;
 

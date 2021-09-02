@@ -61,7 +61,7 @@ public class ReportOverviewFragment extends ReportFragment {
 		super.onAfterLayoutBinding(contentBinding);
 
 		List<Item> diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
-		contentBinding.weeklyReportEntryDisease.initializeSpinner(diseaseList);
+		contentBinding.weeklyReportEntryDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
 		contentBinding.weeklyReportEntryDisease.setVisibility(VISIBLE);
 		contentBinding.weeklyReportEntryDisease.addValueChangedListener(new ValueChangeListener() {
 

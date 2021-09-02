@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.enums.ActivityTypes;
-import org.sormas.e2etests.enums.Roles;
+import org.sormas.e2etests.enums.RolesValues;
 import org.sormas.e2etests.enums.YesNoUnknownOptions;
 import org.sormas.e2etests.pojo.web.ExposureDetails;
 
@@ -26,7 +26,7 @@ public class ExposureDetailsService {
         .endOfExposure(LocalDate.now().minusDays(2).format(formatter).replaceFirst("^0+(?!$)", ""))
         .exposureDescription(faker.medical().symptoms())
         .typeOfActivity(ActivityTypes.VISIT.toString())
-        .exposureDetailsRole(Roles.VISITOR.toString())
+        .exposureDetailsRole(RolesValues.VISITOR.toString())
         .riskArea(YesNoUnknownOptions.YES.toString())
         .indoors(YesNoUnknownOptions.YES.toString())
         .outdoors(YesNoUnknownOptions.YES.toString())
