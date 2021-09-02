@@ -19,8 +19,8 @@ CREATE TEMP TABLE tmp_subcontinent
 (
     defaultName varchar(255),
     externalId  varchar(255),
-    continent   varchar(255),
-    archived    boolean
+    archived    boolean,
+    continent   varchar(255)
 );
 
 /** TODO
