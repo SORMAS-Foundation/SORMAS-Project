@@ -118,13 +118,17 @@ public abstract class DataImporter {
 
 	private final EnumCaptionCache enumCaptionCache;
 
-	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
+	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) throws IOException {
 		this.inputFile = inputFile;
 		this.hasEntityClassRow = hasEntityClassRow;
 		this.currentUser = currentUser;
 		this.enumCaptionCache = new EnumCaptionCache(currentUser.getLanguage());
 
 		Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
+		if (!exportDirectory.toFile().exists() || !exportDirectory.toFile().canWrite()) {
+			logger.error(exportDirectory + " doesn't exist or cannot be accessed");
+			throw new IOException("Temp directory doesn't exist or cannot be accessed");
+		}
 		Path errorReportFilePath = exportDirectory.resolve(
 			ImportExportUtils.TEMP_FILE_PREFIX + "_error_report_" + DataHelper.getShortUuid(currentUser.getUuid()) + "_"
 				+ DateHelper.formatDateForExport(new Date()) + ".csv");

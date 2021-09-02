@@ -74,7 +74,7 @@ public class EventImporter extends DataImporter {
 	private final EventParticipantFacade eventParticipantFacade;
 	private final PersonFacade personFacade;
 
-	public EventImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
+	public EventImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) throws IOException {
 		super(inputFile, hasEntityClassRow, currentUser);
 
 		eventImportFacade = FacadeProvider.getEventImportFacade();

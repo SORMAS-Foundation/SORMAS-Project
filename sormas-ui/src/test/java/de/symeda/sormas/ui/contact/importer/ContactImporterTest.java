@@ -216,11 +216,11 @@ public class ContactImporterTest extends AbstractBeanTest {
 		public StringBuilder stringBuilder = new StringBuilder("");
 		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
-		public ContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) {
+		public ContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) throws IOException {
 			super(inputFile, hasEntityClassRow, currentUser, caze);
 		}
 
-		public ContactImporterExtension(File inputFile, UserDto currentUser) {
+		public ContactImporterExtension(File inputFile, UserDto currentUser) throws IOException {
 			super(inputFile, false, currentUser, null);
 		}
 

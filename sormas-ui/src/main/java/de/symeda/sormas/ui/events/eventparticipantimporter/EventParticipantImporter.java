@@ -79,7 +79,7 @@ public class EventParticipantImporter extends DataImporter {
 	private final EventReferenceDto event;
 	private UI currentUI;
 
-	public EventParticipantImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event) {
+	public EventParticipantImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event) throws IOException {
 		super(inputFile, hasEntityClassRow, currentUser);
 		this.event = event;
 

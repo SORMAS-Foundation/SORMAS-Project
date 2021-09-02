@@ -34,11 +34,11 @@ import de.symeda.sormas.ui.importer.InfrastructureImporter;
 
 public class CountryImporter extends InfrastructureImporter {
 
-	public CountryImporter(File inputFile, UserDto currentUser) {
+	public CountryImporter(File inputFile, UserDto currentUser) throws IOException {
 		this(inputFile, currentUser, false);
 	}
 
-	public CountryImporter(File inputFile, UserDto currentUser, boolean allowOverwrite) {
+	public CountryImporter(File inputFile, UserDto currentUser, boolean allowOverwrite) throws IOException {
 		super(inputFile, currentUser, InfrastructureType.COUNTRY, allowOverwrite);
 	}
 

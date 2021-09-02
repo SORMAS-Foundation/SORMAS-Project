@@ -213,7 +213,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 
 	private static class InfrastructureImporterExtension extends InfrastructureImporter {
 
-		private InfrastructureImporterExtension(File inputFile, UserDto currentUser, InfrastructureType infrastructureType) {
+		private InfrastructureImporterExtension(File inputFile, UserDto currentUser, InfrastructureType infrastructureType) throws IOException {
 			super(inputFile, currentUser, infrastructureType);
 		}
 

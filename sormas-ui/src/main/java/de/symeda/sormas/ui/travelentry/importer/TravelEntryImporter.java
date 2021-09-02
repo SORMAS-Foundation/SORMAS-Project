@@ -42,7 +42,7 @@ public class TravelEntryImporter extends DataImporter {
 	private UI currentUI;
 	private final TravelEntryImportFacade importFacade;
 
-	public TravelEntryImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
+	public TravelEntryImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) throws IOException {
 
 		super(inputFile, hasEntityClassRow, currentUser);
 		importFacade = FacadeProvider.getTravelEntryImportFacade();

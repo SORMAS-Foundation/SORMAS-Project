@@ -56,7 +56,7 @@ public class CountryImporterTest extends AbstractBeanTest {
 
 	private static class CountryImporterExtension extends CountryImporter {
 
-		private CountryImporterExtension(File inputFile, UserDto currentUser) {
+		private CountryImporterExtension(File inputFile, UserDto currentUser) throws IOException {
 			super(inputFile, currentUser);
 		}
 

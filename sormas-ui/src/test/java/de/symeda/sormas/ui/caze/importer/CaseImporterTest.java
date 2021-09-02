@@ -251,7 +251,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		public StringBuilder stringBuilder = new StringBuilder("");
 		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
-		public CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
+		public CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) throws IOException {
 			super(inputFile, hasEntityClassRow, currentUser);
 		}
 

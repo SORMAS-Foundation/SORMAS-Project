@@ -67,7 +67,7 @@ public class CampaignFormDataImporter extends DataImporter {
 		boolean hasEntityClassRow,
 		UserDto currentUser,
 		String campaignFormMetaUuid,
-		CampaignReferenceDto campaignReferenceDto) {
+		CampaignReferenceDto campaignReferenceDto) throws IOException {
 		super(inputFile, hasEntityClassRow, currentUser);
 		this.campaignFormMetaUuid = campaignFormMetaUuid;
 		this.campaignReferenceDto = campaignReferenceDto;
