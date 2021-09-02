@@ -18,6 +18,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -31,12 +32,12 @@ import de.symeda.sormas.ui.importer.InfrastructureImporter;
 
 public class CountryImporter extends InfrastructureImporter {
 
-	public CountryImporter(File inputFile, UserDto currentUser) {
-		this(inputFile, currentUser, false);
+	public CountryImporter(File inputFile, UserDto currentUser, ValueSeparator csvSeparator) {
+		this(inputFile, currentUser, false, csvSeparator);
 	}
 
-	public CountryImporter(File inputFile, UserDto currentUser, boolean allowOverwrite) {
-		super(inputFile, currentUser, InfrastructureType.COUNTRY, allowOverwrite);
+	public CountryImporter(File inputFile, UserDto currentUser, boolean allowOverwrite, ValueSeparator csvSeparator) {
+		super(inputFile, currentUser, InfrastructureType.COUNTRY, allowOverwrite, csvSeparator);
 	}
 
 	@Override

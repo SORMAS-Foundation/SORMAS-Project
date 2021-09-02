@@ -1630,7 +1630,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		if (newFieldValue.getRegion() != null || newFieldValue.getDistrict() != null || newFieldValue.getCommunity() != null) {
+			boolean readOnly = differentPlaceOfStayJurisdiction.isReadOnly();
+			differentPlaceOfStayJurisdiction.setReadOnly(false);
 			differentPlaceOfStayJurisdiction.setValue(Boolean.TRUE);
+			differentPlaceOfStayJurisdiction.setReadOnly(readOnly);
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
@@ -1669,7 +1672,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			if (TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
 				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
 				facilityCombo.addItem(noFacilityRef);
+				boolean readOnly = facilityCombo.isReadOnly();
+				facilityCombo.setReadOnly(false);
 				facilityCombo.setValue(noFacilityRef);
+				facilityCombo.setReadOnly(readOnly);
 			} else {
 				FieldHelper.removeItems(facilityCombo);
 			}

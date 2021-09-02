@@ -44,6 +44,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -80,8 +81,13 @@ public class EventParticipantImporter extends DataImporter {
 	private final EventReferenceDto event;
 	private UI currentUI;
 
-	public EventParticipantImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event) {
-		super(inputFile, hasEntityClassRow, currentUser);
+	public EventParticipantImporter(
+		File inputFile,
+		boolean hasEntityClassRow,
+		UserDto currentUser,
+		EventReferenceDto event,
+		ValueSeparator csvSeparator) {
+		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		this.event = event;
 
 		personFacade = FacadeProvider.getPersonFacade();

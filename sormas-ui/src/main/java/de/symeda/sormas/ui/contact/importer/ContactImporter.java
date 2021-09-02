@@ -42,6 +42,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -80,9 +81,9 @@ public class ContactImporter extends DataImporter {
 	private CaseDataDto caze;
 	private UI currentUI;
 
-	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) {
+	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze, ValueSeparator csvSeparator) {
 
-		super(inputFile, hasEntityClassRow, currentUser);
+		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		this.caze = caze;
 	}
 

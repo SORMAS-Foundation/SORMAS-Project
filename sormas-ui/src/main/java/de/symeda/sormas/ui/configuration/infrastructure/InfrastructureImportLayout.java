@@ -14,6 +14,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.ui.caze.importer.CountryImporter;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
@@ -100,12 +101,14 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(2, templateFilePath, templateFileName);
 
+		ValueSeparator valueSeparator = (ValueSeparator) separator.getValue();
+
 		if (infrastructureType == InfrastructureType.POPULATION_DATA) {
 			addImportCsvComponent(3, new ImportReceiver(fileNameAddition, file -> {
 				resetDownloadErrorReportButton();
 
 				try {
-					DataImporter importer = new PopulationDataImporter(file, currentUser, dfCollectionDate.getValue());
+					DataImporter importer = new PopulationDataImporter(file, currentUser, dfCollectionDate.getValue(), valueSeparator);
 					importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
 				} catch (IOException | CsvValidationException e) {
 					new Notification(
@@ -124,31 +127,31 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 					DataImporter importer;
 					switch (infrastructureType) {
 					case COMMUNITY:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.COMMUNITY, allowOverwrite);
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.COMMUNITY, allowOverwrite, valueSeparator);
 						break;
 					case DISTRICT:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.DISTRICT, allowOverwrite);
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.DISTRICT, allowOverwrite, valueSeparator);
 						break;
 					case FACILITY:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.FACILITY, allowOverwrite);
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.FACILITY, allowOverwrite, valueSeparator);
 						break;
 					case POINT_OF_ENTRY:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.POINT_OF_ENTRY, allowOverwrite);
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.POINT_OF_ENTRY, allowOverwrite, valueSeparator);
 						break;
 					case COUNTRY:
-						importer = new CountryImporter(file, currentUser, allowOverwrite);
+						importer = new CountryImporter(file, currentUser, allowOverwrite, valueSeparator);
 						break;
 					case REGION:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.REGION, allowOverwrite);
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.REGION, allowOverwrite, valueSeparator);
 						break;
 					case AREA:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.AREA, allowOverwrite);
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.AREA, allowOverwrite, valueSeparator);
 						break;
 					case SUBCONTINENT:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.SUBCONTINENT, allowOverwrite);
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.SUBCONTINENT, allowOverwrite, valueSeparator);
 						break;
 					case CONTINENT:
-						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.CONTINENT, allowOverwrite);
+						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.CONTINENT, allowOverwrite, valueSeparator);
 						break;
 					default:
 						throw new UnsupportedOperationException(
