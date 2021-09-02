@@ -875,8 +875,10 @@ public interface Strings {
 	String messageContinentsArchivingNotPossible = "messageContinentsArchivingNotPossible";
 	String messageContinentsDearchived = "messageContinentsDearchived";
 	String messageConvertContactToCase = "messageConvertContactToCase";
+	String messageConvertContactToCaseDifferentDiseases = "messageConvertContactToCaseDifferentDiseases";
 	String messageConvertEventParticipantToCase = "messageConvertEventParticipantToCase";
 	String messageConvertEventParticipantToCaseDifferentDiseases = "messageConvertEventParticipantToCaseDifferentDiseases";
+	String messageConvertEventParticipantToCaseNoDisease = "messageConvertEventParticipantToCaseNoDisease";
 	String messageCopyPassword = "messageCopyPassword";
 	String messageCountCasesAlreadyInEvent = "messageCountCasesAlreadyInEvent";
 	String messageCountCasesNotDeleted = "messageCountCasesNotDeleted";
@@ -890,7 +892,6 @@ public interface Strings {
 	String messageCountryDearchived = "messageCountryDearchived";
 	String messageCountryDearchivingNotPossible = "messageCountryDearchivingNotPossible";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
-	String messageCreateContactCase = "messageCreateContactCase";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDeletionUnsupportedByExternalJournalWarning = "messageDeletionUnsupportedByExternalJournalWarning";
 	String messageDistrictArchived = "messageDistrictArchived";

@@ -514,7 +514,7 @@ public class LabMessageController {
 							new CommitDiscardWrapperComponent<>(new SampleCreateForm()),
 							sampleDto.getUuid(),
 							pathogenTestDto.getTestResult(),
-							callback);
+							testedResult -> callback.run());
 				} else {
 					callback.run();
 				}
