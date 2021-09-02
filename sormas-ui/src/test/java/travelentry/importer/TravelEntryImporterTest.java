@@ -136,7 +136,7 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testImportFailedWithoutPE()
+	public void testImportFailedWithoutPOE()
 		throws InterruptedException, InvalidColumnException, CsvValidationException, IOException, URISyntaxException {
 		TestDataCreator tdc = new TestDataCreator();
 		TestDataCreator.RDP rdp = tdc.createRDP();

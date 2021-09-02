@@ -133,7 +133,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 
 		if (travelEntry.getPointOfEntry() == null && configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			travelEntry.setPointOfEntry(pointOfEntryFacade.getByUuid(PointOfEntryDto.OTHER_POE_UUID).toReference());
-			travelEntry.setPointOfEntryDetails(I18nProperties.getString(Strings.messafeTravelEntryPOEFilledBySystem));
+			travelEntry.setPointOfEntryDetails(I18nProperties.getString(Strings.messageTravelEntryPOEFilledBySystem));
 		}
 
 		ImportLineResultDto<TravelEntryImportEntities> validationResult = validateEntities(entities);

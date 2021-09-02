@@ -794,7 +794,6 @@ public interface Strings {
 	String lastYear = "lastYear";
 	String listOf = "listOf";
 	String max = "max";
-	String messafeTravelEntryPOEFilledBySystem = "messafeTravelEntryPOEFilledBySystem";
 	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
@@ -1057,6 +1056,7 @@ public interface Strings {
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
 	String messageTravelEntryArchived = "messageTravelEntryArchived";
 	String messageTravelEntryDearchived = "messageTravelEntryDearchived";
+	String messageTravelEntryPOEFilledBySystem = "messageTravelEntryPOEFilledBySystem";
 	String messageTravelEntrySaved = "messageTravelEntrySaved";
 	String messageTreatmentCreated = "messageTreatmentCreated";
 	String messageTreatmentSaved = "messageTreatmentSaved";
