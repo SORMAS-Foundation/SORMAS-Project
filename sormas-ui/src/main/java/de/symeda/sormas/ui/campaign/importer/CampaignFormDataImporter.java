@@ -39,6 +39,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -67,8 +68,9 @@ public class CampaignFormDataImporter extends DataImporter {
 		boolean hasEntityClassRow,
 		UserDto currentUser,
 		String campaignFormMetaUuid,
-		CampaignReferenceDto campaignReferenceDto) {
-		super(inputFile, hasEntityClassRow, currentUser);
+		CampaignReferenceDto campaignReferenceDto,
+		ValueSeparator csvSeparator) {
+		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		this.campaignFormMetaUuid = campaignFormMetaUuid;
 		this.campaignReferenceDto = campaignReferenceDto;
 

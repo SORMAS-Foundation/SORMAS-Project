@@ -20,6 +20,7 @@ import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -252,7 +253,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
 		public CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
-			super(inputFile, hasEntityClassRow, currentUser);
+			super(inputFile, hasEntityClassRow, currentUser, ValueSeparator.DEFAULT);
 		}
 
 		@Override

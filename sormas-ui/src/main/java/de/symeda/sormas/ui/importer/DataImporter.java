@@ -46,6 +46,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
@@ -118,7 +119,7 @@ public abstract class DataImporter {
 
 	private final EnumCaptionCache enumCaptionCache;
 
-	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
+	public DataImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator) {
 		this.inputFile = inputFile;
 		this.hasEntityClassRow = hasEntityClassRow;
 		this.currentUser = currentUser;
@@ -130,7 +131,7 @@ public abstract class DataImporter {
 				+ DateHelper.formatDateForExport(new Date()) + ".csv");
 		this.errorReportFilePath = errorReportFilePath.toString();
 
-		this.csvSeparator = FacadeProvider.getConfigFacade().getCsvSeparator();
+		this.csvSeparator = ValueSeparator.getSeparator(csvSeparator);
 	}
 
 	/**

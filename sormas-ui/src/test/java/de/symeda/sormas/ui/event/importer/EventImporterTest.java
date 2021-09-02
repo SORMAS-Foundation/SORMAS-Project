@@ -22,6 +22,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -145,7 +146,7 @@ public class EventImporterTest extends AbstractBeanTest {
 		private StringBuilderWriter writer = new StringBuilderWriter(errors);
 
 		private EventImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
-			super(inputFile, hasEntityClassRow, currentUser);
+			super(inputFile, hasEntityClassRow, currentUser, ValueSeparator.DEFAULT);
 		}
 
 		protected void handlePersonSimilarity(PersonDto newPerson, Consumer<PersonImportSimilarityResult> resultConsumer) {
