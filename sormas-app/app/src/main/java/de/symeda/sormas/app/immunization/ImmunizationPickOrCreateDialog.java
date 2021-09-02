@@ -98,7 +98,6 @@ public class ImmunizationPickOrCreateDialog extends AbstractDialog {
 		this.criteria.setImmunizationCriteria(immunizationCriteria);
 		this.criteria.setPersonUuid(newImmunization.getPerson().getUuid());
 		this.criteria.setImmunizationUuid(newImmunization.getUuid());
-		this.criteria.setReportDate(newImmunization.getReportDate());
 		this.criteria.setStartDate(newImmunization.getStartDate());
 		this.criteria.setEndDate(newImmunization.getEndDate());
 

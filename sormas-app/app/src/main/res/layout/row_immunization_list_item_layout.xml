@@ -135,7 +135,7 @@
                     android:gravity="right"
                     android:textColor="@color/listActivityRowLeastText"
                     android:textSize="@dimen/listActivityRowTertiaryTextSize"
-                    app:value="@{DateFormatHelper.formatLocalDate(data.startDate) + ` - ` + DateFormatHelper.formatLocalDate(data.startDate)}" />
+                    app:value="@{DateFormatHelper.formatLocalDate(data.startDate) + ` - ` + DateFormatHelper.formatLocalDate(data.endDate)}" />
 
             </LinearLayout>
 
