@@ -251,9 +251,7 @@ public abstract class DataImporter {
 			// Write first line to the error report writer
 			String[] columnNames = new String[entityProperties.length + 1];
 			columnNames[0] = ERROR_COLUMN_NAME;
-			for (int i = 0; i < entityProperties.length; i++) {
-				columnNames[i + 1] = entityProperties[i];
-			}
+			System.arraycopy(entityProperties, 0, columnNames, 1, entityProperties.length);
 			errorReportCsvWriter.writeNext(columnNames);
 
 			// Read and import all lines from the import file
@@ -566,7 +564,7 @@ public abstract class DataImporter {
 		}
 
 		if (invalidColumns.size() > 0) {
-			LoggerFactory.getLogger(getClass()).warn("Unhandled columns [{}]", String.join(", ", invalidColumns));
+			logger.warn("Unhandled columns [{}]", String.join(", ", invalidColumns));
 		}
 
 		return dataHasImportError;
@@ -629,7 +627,7 @@ public abstract class DataImporter {
 		List<String> errorLineAsList = new ArrayList<>();
 		errorLineAsList.add(message);
 		errorLineAsList.addAll(Arrays.asList(errorLine));
-		errorReportCsvWriter.writeNext(errorLineAsList.toArray(new String[errorLineAsList.size()]));
+		errorReportCsvWriter.writeNext(errorLineAsList.toArray(new String[0]));
 	}
 
 	protected String buildEntityProperty(String[] entityPropertyPath) {
