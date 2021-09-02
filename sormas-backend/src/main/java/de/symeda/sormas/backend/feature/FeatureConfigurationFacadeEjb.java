@@ -34,6 +34,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
@@ -168,7 +169,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
-	public void saveFeatureConfigurations(Collection<FeatureConfigurationIndexDto> configurations, FeatureType featureType) {
+	public void saveFeatureConfigurations(@Valid Collection<FeatureConfigurationIndexDto> configurations, FeatureType featureType) {
 
 		for (FeatureConfigurationIndexDto config : configurations) {
 			saveFeatureConfiguration(config, featureType);
@@ -176,7 +177,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
-	public void saveFeatureConfiguration(FeatureConfigurationIndexDto configuration, FeatureType featureType) {
+	public void saveFeatureConfiguration(@Valid FeatureConfigurationIndexDto configuration, FeatureType featureType) {
 
 		// Delete an existing configuration that was set inactive and is not a server feature
 		if (!featureType.isServerFeature() && Boolean.FALSE.equals(configuration.isEnabled())) {

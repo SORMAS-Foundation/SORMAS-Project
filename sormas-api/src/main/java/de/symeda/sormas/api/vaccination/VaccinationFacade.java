@@ -16,11 +16,12 @@
 package de.symeda.sormas.api.vaccination;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 @Remote
 public interface VaccinationFacade {
 
-	VaccinationDto save(VaccinationDto dto);
+	VaccinationDto save(@Valid VaccinationDto dto);
 
 	void validate(VaccinationDto vaccinationDto);
 }

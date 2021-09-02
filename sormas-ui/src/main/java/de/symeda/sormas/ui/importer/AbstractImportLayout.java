@@ -107,6 +107,7 @@ public class AbstractImportLayout extends VerticalLayout {
 		upload = new Upload("", receiver);
 		upload.setButtonCaption(I18nProperties.getCaption(Captions.importImportData));
 		CssStyles.style(upload, CssStyles.VSPACE_2);
+		upload.addStartedListener(receiver);
 		upload.addSucceededListener(receiver);
 		addComponent(upload);
 	}
@@ -130,6 +131,7 @@ public class AbstractImportLayout extends VerticalLayout {
 		upload = new Upload("", generatedReceiver);
 		upload.setButtonCaption(I18nProperties.getCaption(Captions.importImportData));
 		CssStyles.style(upload, CssStyles.VSPACE_2);
+		upload.addStartedListener(generatedReceiver);
 		upload.addSucceededListener(generatedReceiver);
 
 		HorizontalLayout checkboxBar = new HorizontalLayout();
@@ -150,6 +152,7 @@ public class AbstractImportLayout extends VerticalLayout {
 			upload.removeSucceededListener(generatedReceiver);
 			generatedReceiver = receiverGenerator.apply(e.getValue());
 			upload.setReceiver(generatedReceiver);
+			upload.addStartedListener(generatedReceiver);
 			upload.addSucceededListener(generatedReceiver);
 		});
 	}

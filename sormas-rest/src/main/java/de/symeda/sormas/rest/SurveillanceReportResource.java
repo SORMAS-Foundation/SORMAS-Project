@@ -3,6 +3,7 @@ package de.symeda.sormas.rest;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -30,7 +31,7 @@ public class SurveillanceReportResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postCaseReports(List<SurveillanceReportDto> dtos) {
+	public List<PushResult> postCaseReports(@Valid List<SurveillanceReportDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getSurveillanceReportFacade()::saveSurveillanceReport);
 	}
 }

@@ -13,44 +13,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.caze;
+package de.symeda.sormas.backend.util;
 
-import java.io.Serializable;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.InvocationContext;
+import javax.validation.ConstraintViolationException;
 
-import javax.validation.Valid;
+import de.symeda.sormas.api.utils.ConstrainValidationHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
-import de.symeda.sormas.api.person.PersonDto;
+public class ValidationConstraintViolationInterceptor {
 
-public class CasePersonDto implements Serializable {
-
-	private static final long serialVersionUID = 4238365446327936524L;
-
-	@Valid
-	private CaseDataDto caze;
-	@Valid
-	private PersonDto person;
-
-	public CasePersonDto() {
-	}
-
-	public CasePersonDto(CaseDataDto caze, PersonDto person) {
-		this.caze = caze;
-		this.person = person;
-	}
-
-	public CaseDataDto getCaze() {
-		return caze;
-	}
-
-	public void setCaze(CaseDataDto caze) {
-		this.caze = caze;
-	}
-
-	public PersonDto getPerson() {
-		return person;
-	}
-
-	public void setPerson(PersonDto person) {
-		this.person = person;
+	@AroundInvoke
+	public Object handleValidationConstraintViolation(InvocationContext context) throws Exception {
+		try {
+			return context.proceed();
+		} catch (ConstraintViolationException e) {
+			throw new ValidationRuntimeException(ConstrainValidationHelper.getPropertyErrors(e.getConstraintViolations()));
+		}
 	}
 }

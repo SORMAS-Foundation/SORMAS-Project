@@ -35,6 +35,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.feature.FeatureType;
@@ -227,12 +228,12 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 	}
 
 	@Override
-	public SubcontinentDto save(SubcontinentDto dto) {
+	public SubcontinentDto save(@Valid SubcontinentDto dto) {
 		return save(dto, false);
 	}
 
 	@Override
-	public SubcontinentDto save(SubcontinentDto dto, boolean allowMerge) {
+	public SubcontinentDto save(@Valid SubcontinentDto dto, boolean allowMerge) {
 
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
