@@ -5,12 +5,12 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
+import de.symeda.sormas.api.infrastructure.GeoInfrastructureBaseFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 
 @Remote
-public interface ContinentFacade extends InfrastructureBaseFacade<ContinentDto, ContinentIndexDto, ContinentReferenceDto, ContinentCriteria> {
+public interface ContinentFacade extends GeoInfrastructureBaseFacade<ContinentDto, ContinentIndexDto, ContinentReferenceDto, ContinentCriteria> {
 
 	List<ContinentReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities);
 

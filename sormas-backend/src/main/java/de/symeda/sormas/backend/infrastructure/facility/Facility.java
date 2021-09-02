@@ -29,7 +29,7 @@ import javax.persistence.ManyToOne;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.area.AreaType;
-import de.symeda.sormas.backend.common.InfrastructureAdo;
+import de.symeda.sormas.backend.infrastructure.abstrct.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;

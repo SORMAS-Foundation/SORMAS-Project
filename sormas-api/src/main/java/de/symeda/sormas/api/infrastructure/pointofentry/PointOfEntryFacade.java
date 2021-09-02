@@ -5,13 +5,13 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
+import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface PointOfEntryFacade
-	extends InfrastructureBaseFacade<PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryCriteria> {
+	extends BaseFacade<PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryCriteria> {
 
 	/**
 	 * @param includeOthers
@@ -19,6 +19,10 @@ public interface PointOfEntryFacade
 	 *            point of entry is not in the database.
 	 */
 	List<PointOfEntryReferenceDto> getAllActiveByDistrict(String districtUuid, boolean includeOthers);
+
+	List<PointOfEntryReferenceDto> getByExternalId(String name, boolean includeArchivedEntities);
+
+	PointOfEntryDto save(PointOfEntryDto dto, boolean allowMerge) throws ValidationRuntimeException;
 
 	void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException;
 

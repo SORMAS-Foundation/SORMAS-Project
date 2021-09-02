@@ -28,7 +28,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
-import de.symeda.sormas.backend.common.InfrastructureAdo;
+import de.symeda.sormas.backend.infrastructure.abstrct.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;

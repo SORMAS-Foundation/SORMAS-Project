@@ -25,7 +25,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import de.symeda.sormas.backend.common.InfrastructureAdo;
+import de.symeda.sormas.backend.infrastructure.abstrct.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.district.District;
 
 @Entity

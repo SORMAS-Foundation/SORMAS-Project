@@ -25,12 +25,12 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
+import de.symeda.sormas.api.infrastructure.GeoInfrastructureBaseFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface CommunityFacade extends InfrastructureBaseFacade<CommunityDto, CommunityDto, CommunityReferenceDto, CommunityCriteria> {
+public interface CommunityFacade extends GeoInfrastructureBaseFacade<CommunityDto, CommunityDto, CommunityReferenceDto, CommunityCriteria> {
 
 	List<CommunityReferenceDto> getAllActiveByDistrict(String districtUuid);
 

@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.common;
+package de.symeda.sormas.backend.infrastructure.abstrct;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,6 +11,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 public abstract class AbstractInfrastructureAdoService<ADO extends InfrastructureAdo> extends AdoServiceWithUserFilter<ADO> {

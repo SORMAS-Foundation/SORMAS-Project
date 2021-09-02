@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
-import de.symeda.sormas.backend.common.InfrastructureAdo;
+import de.symeda.sormas.backend.infrastructure.abstrct.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 

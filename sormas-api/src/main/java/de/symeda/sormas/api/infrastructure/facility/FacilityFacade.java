@@ -24,12 +24,13 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
+import de.symeda.sormas.api.BaseFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
-public interface FacilityFacade extends InfrastructureBaseFacade<FacilityDto, FacilityIndexDto, FacilityReferenceDto, FacilityCriteria> {
+public interface FacilityFacade extends BaseFacade<FacilityDto, FacilityIndexDto, FacilityReferenceDto, FacilityCriteria> {
 
 	List<FacilityReferenceDto> getActiveFacilitiesByCommunityAndType(
 		CommunityReferenceDto community,
@@ -53,6 +54,8 @@ public interface FacilityFacade extends InfrastructureBaseFacade<FacilityDto, Fa
 
 	List<FacilityDto> getAllWithoutRegionAfter(Date date);
 
+	List<FacilityReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities);
+
 	FacilityReferenceDto getFacilityReferenceByUuid(String uuid);
 
 	FacilityReferenceDto getFacilityReferenceById(long id);
@@ -75,4 +78,6 @@ public interface FacilityFacade extends InfrastructureBaseFacade<FacilityDto, Fa
 	List<FacilityReferenceDto> getByExternalIdAndType(String id, FacilityType type, boolean includeArchivedEntities);
 
 	List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Integer first, Integer max);
+
+	FacilityDto save(FacilityDto dto, boolean allowMerge) throws ValidationRuntimeException;
 }

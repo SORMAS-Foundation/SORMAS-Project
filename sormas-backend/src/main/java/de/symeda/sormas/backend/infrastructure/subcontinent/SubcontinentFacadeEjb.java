@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -304,6 +305,19 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 			.stream()
 			.map(SubcontinentFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
+	}
+
+	public SubcontinentReferenceDto loadLocal(SubcontinentReferenceDto subcontinent) {
+		if (subcontinent == null) {
+			return null;
+		}
+		Optional<SubcontinentReferenceDto> localSubcontinent =
+			subcontinent.getExternalId() != null ? getByExternalId(subcontinent.getExternalId(), false).stream().findFirst() : Optional.empty();
+		if (!localSubcontinent.isPresent()) {
+			localSubcontinent = getReferencesByName(subcontinent.getCaption(), false).stream().findFirst();
+		}
+
+		return localSubcontinent.orElse(null);
 	}
 
 	public List<SubcontinentReferenceDto> getReferencesByName(String caption, boolean includeArchived) {

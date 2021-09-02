@@ -38,7 +38,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
+import de.symeda.sormas.backend.infrastructure.abstrct.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.country.Country;

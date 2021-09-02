@@ -5,7 +5,7 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
-import de.symeda.sormas.backend.common.InfrastructureAdo;
+import de.symeda.sormas.backend.infrastructure.abstrct.InfrastructureAdo;
 
 @Entity(name = "areas")
 public class Area extends InfrastructureAdo {

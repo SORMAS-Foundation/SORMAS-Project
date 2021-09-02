@@ -321,6 +321,25 @@ public class CountryFacadeEjb implements CountryFacade {
 			.collect(Collectors.toList());
 	}
 
+	public CountryReferenceDto loadLocal(CountryReferenceDto country) {
+		if (country == null) {
+			return null;
+		}
+
+		Optional<CountryReferenceDto> localCountry =
+			country.getExternalId() != null ? getByExternalId(country.getExternalId(), false).stream().findFirst() : Optional.empty();
+
+		if (!localCountry.isPresent()) {
+			localCountry = Optional.ofNullable(getByIsoCode(country.getIsoCode(), false)).map(CountryFacadeEjb::toReferenceDto);
+		}
+
+		if (!localCountry.isPresent()) {
+			localCountry = getReferencesByName(country.getCaption(), false).stream().findFirst();
+		}
+
+		return localCountry.orElse(null);
+	}
+
 	public List<CountryReferenceDto> getReferencesByName(String caption, boolean includeArchived) {
 		return countryService.getByDefaultName(caption, includeArchived).stream().map(CountryFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
@@ -363,7 +382,6 @@ public class CountryFacadeEjb implements CountryFacade {
 
 		return em.createQuery(cq).getResultList();
 	}
-
 
 	@Override
 	public CountryDto getByUuid(String uuid) {

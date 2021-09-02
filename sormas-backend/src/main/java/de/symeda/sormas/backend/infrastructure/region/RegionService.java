@@ -34,7 +34,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
+import de.symeda.sormas.backend.infrastructure.abstrct.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;

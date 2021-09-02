@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -397,6 +398,21 @@ public class RegionFacadeEjb implements RegionFacade {
 			.stream()
 			.map(RegionFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
+	}
+
+	public RegionReferenceDto loadLocal(RegionReferenceDto region) {
+		if (region == null) {
+			return null;
+		}
+
+		Optional<RegionReferenceDto> localRegion =
+			region.getExternalId() != null ? getByExternalId(region.getExternalId(), false).stream().findFirst() : Optional.empty();
+
+		if (!localRegion.isPresent()) {
+			localRegion = getReferencesByName(region.getCaption(), false).stream().findFirst();
+		}
+
+		return localRegion.orElse(null);
 	}
 
 	private List<RegionReferenceDto> getAllActiveByPredicate(BiFunction<CriteriaBuilder, Root<Region>, Predicate> buildPredicate) {

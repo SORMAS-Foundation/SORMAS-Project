@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -275,16 +276,26 @@ public class ContinentFacadeEjb implements ContinentFacade {
 
 	public List<ContinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
 		return continentService.getByExternalId(externalId, includeArchived)
-				.stream()
-				.map(ContinentFacadeEjb::toReferenceDto)
-				.collect(Collectors.toList());
+			.stream()
+			.map(ContinentFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	public ContinentReferenceDto loadLocal(ContinentReferenceDto continent) {
+		if (continent == null) {
+			return null;
+		}
+		Optional<ContinentReferenceDto> localContinent =
+			continent.getExternalId() != null ? getByExternalId(continent.getExternalId(), false).stream().findFirst() : Optional.empty();
+		if (!localContinent.isPresent()) {
+			localContinent = getReferencesByName(continent.getCaption(), false).stream().findFirst();
+		}
+
+		return localContinent.orElse(null);
 	}
 
 	public List<ContinentReferenceDto> getReferencesByName(String name, boolean includeArchived) {
-		return continentService.getByDefaultName(name, includeArchived)
-				.stream()
-				.map(ContinentFacadeEjb::toReferenceDto)
-				.collect(Collectors.toList());
+		return continentService.getByDefaultName(name, includeArchived).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	private Continent fillOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate) {

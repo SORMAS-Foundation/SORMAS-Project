@@ -86,7 +86,7 @@ public class ReceivedDataProcessorHelper {
 	private SampleFacadeEjbLocal sampleFacade;
 	@EJB
 	private InfrastructureValidator infraValidator;
-	
+
 	public ValidationErrors processOriginInfo(SormasToSormasOriginInfoDto originInfo, String validationGroupCaption) {
 		if (originInfo == null) {
 			return ValidationErrors
@@ -140,7 +140,7 @@ public class ReceivedDataProcessorHelper {
 	}
 
 	private CountryReferenceDto processCountry(CountryReferenceDto country, String errorCaption, ValidationErrors validationErrors) {
-		CountryReferenceDto localCountry = infraValidator.loadLocalCountry(country);
+		CountryReferenceDto localCountry = countryFacade.loadLocal(country);
 		if (country != null && localCountry == null) {
 			validationErrors
 				.add(new ValidationErrorGroup(errorCaption), new ValidationErrorMessage(Validations.sormasToSormasCountry, country.getCaption()));
@@ -163,7 +163,7 @@ public class ReceivedDataProcessorHelper {
 			updateReportingUser(sample, existingSamplesMap.get(sample.getUuid()));
 
 			DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-					infraValidator.loadLocalInfrastructure(null, null, null, null, sample.getLab(), sample.getLabDetails(), null, null);
+				infraValidator.loadLocalInfrastructure(null, null, null, null, sample.getLab(), sample.getLabDetails(), null, null);
 
 			infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Sample_lab, sampleErrors, (infrastructureData -> {
 				sample.setLab(infrastructureData.getFacility());
@@ -175,15 +175,16 @@ public class ReceivedDataProcessorHelper {
 			}
 
 			sormasToSormasSample.getPathogenTests().forEach(pathogenTest -> {
-				DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> ptInfrastructureAndErrors = infraValidator.loadLocalInfrastructure(
-					null,
-					null,
-					null,
-					FacilityType.LABORATORY,
-					pathogenTest.getLab(),
-					pathogenTest.getLabDetails(),
-					null,
-					null);
+				DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> ptInfrastructureAndErrors =
+					infraValidator.loadLocalInfrastructure(
+						null,
+						null,
+						null,
+						FacilityType.LABORATORY,
+						pathogenTest.getLab(),
+						pathogenTest.getLabDetails(),
+						null,
+						null);
 
 				ValidationErrors pathogenTestErrors = new ValidationErrors();
 				infraValidator.handleInfraStructure(ptInfrastructureAndErrors, Captions.PathogenTest_lab, pathogenTestErrors, (infrastructureData -> {
@@ -210,7 +211,7 @@ public class ReceivedDataProcessorHelper {
 		updateReportingUser(contact, existingContact);
 
 		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-				infraValidator.loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
+			infraValidator.loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
 
 		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
 			contact.setRegion(infrastructure.getRegion());
@@ -227,7 +228,7 @@ public class ReceivedDataProcessorHelper {
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-				infraValidator.loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
+			infraValidator.loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
 
 		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
 			contact.setRegion(infrastructure.getRegion());

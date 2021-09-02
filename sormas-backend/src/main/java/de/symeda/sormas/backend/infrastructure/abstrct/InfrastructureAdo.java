@@ -1,4 +1,6 @@
-package de.symeda.sormas.backend.common;
+package de.symeda.sormas.backend.infrastructure.abstrct;
+
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;

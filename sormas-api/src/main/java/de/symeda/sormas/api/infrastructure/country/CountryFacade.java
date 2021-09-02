@@ -6,11 +6,11 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
+import de.symeda.sormas.api.infrastructure.GeoInfrastructureBaseFacade;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface CountryFacade extends InfrastructureBaseFacade<CountryDto, CountryIndexDto, CountryReferenceDto, CountryCriteria> {
+public interface CountryFacade extends GeoInfrastructureBaseFacade<CountryDto, CountryIndexDto, CountryReferenceDto, CountryCriteria> {
 
 	CountryDto getCountryByUuid(String uuid);
 
