@@ -211,9 +211,7 @@ public class PathogenTestController {
 			if (equalDisease && PathogenTestResultType.NEGATIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
 				});
-			}
-
-			if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
+			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
 					showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
 						if (handleChanges) {
@@ -265,9 +263,7 @@ public class PathogenTestController {
 			if (equalDisease && PathogenTestResultType.NEGATIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
 				});
-			}
-
-			if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
+			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
 					if (!ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
 						showConvertContactToCaseDialog(contact, converted -> {
@@ -316,9 +312,7 @@ public class PathogenTestController {
 			if (equalDisease && PathogenTestResultType.NEGATIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				showChangeAssociatedSampleResultDialog(dto, handleChanges -> {
 				});
-			}
-
-			if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
+			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
 					if (eventParticipant.getResultingCase() == null) {
 						showConvertEventParticipantToCaseDialog(eventParticipant, dto.getTestedDisease(), caseCreated -> {
