@@ -77,7 +77,8 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 		public StringBuilder stringBuilder = new StringBuilder("");
 		public StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
-		public TravelEntryImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator separator) {
+		public TravelEntryImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator separator)
+			throws IOException {
 			super(inputFile, hasEntityClassRow, currentUser, separator);
 		}
 

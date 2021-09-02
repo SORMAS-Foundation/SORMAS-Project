@@ -145,7 +145,7 @@ public class EventImporterTest extends AbstractBeanTest {
 		private StringBuilder errors = new StringBuilder("");
 		private StringBuilderWriter writer = new StringBuilderWriter(errors);
 
-		private EventImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
+		private EventImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) throws IOException {
 			super(inputFile, hasEntityClassRow, currentUser, ValueSeparator.DEFAULT);
 		}
 

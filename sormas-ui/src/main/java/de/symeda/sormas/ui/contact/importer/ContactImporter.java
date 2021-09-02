@@ -80,7 +80,8 @@ public class ContactImporter extends DataImporter {
 	private CaseDataDto caze;
 	private UI currentUI;
 
-	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze, ValueSeparator csvSeparator) {
+	public ContactImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze, ValueSeparator csvSeparator)
+		throws IOException {
 
 		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		this.caze = caze;

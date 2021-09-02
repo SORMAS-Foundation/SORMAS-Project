@@ -106,7 +106,8 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 			boolean hasEntityClassRow,
 			UserDto currentUser,
 			String campaignFormMetaUUID,
-			CampaignReferenceDto campaignReferenceDto) {
+			CampaignReferenceDto campaignReferenceDto)
+			throws IOException {
 			super(inputFile, hasEntityClassRow, currentUser, campaignFormMetaUUID, campaignReferenceDto, ValueSeparator.DEFAULT);
 		}
 

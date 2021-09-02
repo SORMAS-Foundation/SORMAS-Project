@@ -85,7 +85,8 @@ public class EventParticipantImporter extends DataImporter {
 		boolean hasEntityClassRow,
 		UserDto currentUser,
 		EventReferenceDto event,
-		ValueSeparator csvSeparator) {
+		ValueSeparator csvSeparator)
+		throws IOException {
 		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		this.event = event;
 

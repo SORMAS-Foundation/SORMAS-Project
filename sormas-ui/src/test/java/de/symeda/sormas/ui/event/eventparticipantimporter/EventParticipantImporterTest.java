@@ -352,7 +352,8 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 	private static class EventParticipantImporterExtension extends EventParticipantImporter {
 
-		private EventParticipantImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event) {
+		private EventParticipantImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event)
+			throws IOException {
 			super(inputFile, hasEntityClassRow, currentUser, event, ValueSeparator.DEFAULT);
 		}
 

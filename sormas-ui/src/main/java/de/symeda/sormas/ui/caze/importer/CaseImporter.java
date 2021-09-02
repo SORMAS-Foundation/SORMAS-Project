@@ -75,7 +75,7 @@ public class CaseImporter extends DataImporter {
 	private final PersonFacade personFacade;
 	private final CaseFacade caseFacade;
 
-	public CaseImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator) {
+	public CaseImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator) throws IOException {
 		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 
 		caseImportFacade = FacadeProvider.getCaseImportFacade();
