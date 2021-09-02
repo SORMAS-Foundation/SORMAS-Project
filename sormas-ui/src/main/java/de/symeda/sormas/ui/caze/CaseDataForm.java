@@ -92,10 +92,6 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
@@ -104,11 +100,15 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
@@ -1629,7 +1629,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		if (newFieldValue.getRegion() != null || newFieldValue.getDistrict() != null || newFieldValue.getCommunity() != null) {
+			boolean readOnly = differentPlaceOfStayJurisdiction.isReadOnly();
+			differentPlaceOfStayJurisdiction.setReadOnly(false);
 			differentPlaceOfStayJurisdiction.setValue(Boolean.TRUE);
+			differentPlaceOfStayJurisdiction.setReadOnly(readOnly);
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
@@ -1668,7 +1671,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			if (TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
 				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
 				facilityCombo.addItem(noFacilityRef);
+				boolean readOnly = facilityCombo.isReadOnly();
+				facilityCombo.setReadOnly(false);
 				facilityCombo.setValue(noFacilityRef);
+				facilityCombo.setReadOnly(readOnly);
 			} else {
 				FieldHelper.removeItems(facilityCombo);
 			}

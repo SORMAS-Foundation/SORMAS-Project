@@ -39,8 +39,8 @@ import javax.transaction.UserTransaction;
 
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
+import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProducer;
 
@@ -66,9 +66,7 @@ public class MockProducer {
 	private static Session mailSession;
 
 	static {
-		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME, "nigeria");
-		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
-		properties.setProperty(ConfigFacadeEjb.TEMP_FILES_PATH, TMP_PATH);
+		resetProperties();
 
 		try {
 			Field instance = InfoProvider.class.getDeclaredField("instance");
@@ -104,6 +102,14 @@ public class MockProducer {
 			SORMAS_TO_SORMAS_REST_CLIENT,
 			managedScheduledExecutorService);
 		wireMocks();
+		resetProperties();
+	}
+
+	private static void resetProperties() {
+		properties.clear();
+		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME, "nigeria");
+		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
+		properties.setProperty(ConfigFacadeEjb.TEMP_FILES_PATH, TMP_PATH);
 	}
 
 	public static void wireMocks() {

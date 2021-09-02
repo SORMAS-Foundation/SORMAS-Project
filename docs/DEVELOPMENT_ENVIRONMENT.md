@@ -25,7 +25,8 @@ If you plan to work on the Android App as well, you will also need the **Java 8 
 - Download and install the latest [IntelliJ IDEA Ultimate](https://www.jetbrains.com/lp/intellij-frameworks/); (newer than version of 2020-04-15 to enable debugging, see <https://youtrack.jetbrains.com/issue/IDEA-216528>)
 - Set the project SDK to the installed JDK
 - *Optional:* Clone the SORMAS-Project repository if you haven't done so already
-- Open the project in IntelliJ; make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
+- Open the project in IntelliJ. Make sure the project is recognized by IntelliJ as a `maven project`; if not, right-click the `pom.xml` file in sormas-base and select `Add as maven project`.
+- Make sure that under `File -> Project Structure -> Modules` all modules EXCEPT sormas-app are recognized; if not, add the missing modules with the `+` button
 - Navigate to `File -> Settings -> Plugins` and make sure that Glassfish & Ant integrations are enabled
 - Install the [Vaadin 6-8 plugin](https://plugins.jetbrains.com/plugin/13199-vaadin-6-8); the commercial Vaadin Designer is not needed
 - Make a copy of `sormas-base/build.properties.example`, rename it to `build.properties` and set `glassfish.domain.root` to the location of the SORMAS domain inside your Payara installation

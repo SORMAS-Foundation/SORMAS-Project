@@ -17,9 +17,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.vaadin.v7.data.util.converter.Converter;
-import de.symeda.sormas.api.travelentry.DeaContentEntry;
-import de.symeda.sormas.ui.travelentry.DEAFormBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,13 +38,14 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
@@ -117,7 +115,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		TextField externalIdField = addField(TravelEntryDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false);
+		ComboBox diseaseField = addDiseaseField(TravelEntryDto.DISEASE, false, true);
 		ComboBox diseaseVariantField = addField(TravelEntryDto.DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);

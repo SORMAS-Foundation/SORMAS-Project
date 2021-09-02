@@ -206,7 +206,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.contactCommunity,
 			initialCommunities,
 			record.getCommunity());
-		contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
+		contentBinding.contactDisease.initializeSpinner(diseaseList);
 		contentBinding.contactDisease.addValueChangedListener(e -> {
 			contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
 			contentBinding.contactContactProximity.clear();

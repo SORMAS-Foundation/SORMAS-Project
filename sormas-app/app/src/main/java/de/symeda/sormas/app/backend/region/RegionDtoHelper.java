@@ -18,8 +18,8 @@ package de.symeda.sormas.app.backend.region;
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;

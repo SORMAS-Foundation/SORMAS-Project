@@ -17,12 +17,12 @@ import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.CommunityDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -143,15 +143,15 @@ public class PopulationDataImporter extends DataImporter {
 								if (finalCommunity != null) {
 									CommunityDto communityDto = FacadeProvider.getCommunityFacade().getByUuid(finalCommunity.getUuid());
 									communityDto.setGrowthRate(growthRate);
-									FacadeProvider.getCommunityFacade().saveCommunity(communityDto);
+									FacadeProvider.getCommunityFacade().save(communityDto);
 								} else if (finalDistrict != null) {
 									DistrictDto districtDto = FacadeProvider.getDistrictFacade().getDistrictByUuid(finalDistrict.getUuid());
 									districtDto.setGrowthRate(growthRate);
-									FacadeProvider.getDistrictFacade().saveDistrict(districtDto);
+									FacadeProvider.getDistrictFacade().save(districtDto);
 								} else {
-									RegionDto regionDto = FacadeProvider.getRegionFacade().getRegionByUuid(finalRegion.getUuid());
+									RegionDto regionDto = FacadeProvider.getRegionFacade().getByUuid(finalRegion.getUuid());
 									regionDto.setGrowthRate(growthRate);
-									FacadeProvider.getRegionFacade().saveRegion(regionDto);
+									FacadeProvider.getRegionFacade().save(regionDto);
 								}
 							}
 						} else {
