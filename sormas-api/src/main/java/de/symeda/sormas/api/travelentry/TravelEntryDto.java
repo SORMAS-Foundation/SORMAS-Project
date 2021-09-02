@@ -7,11 +7,11 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -67,8 +67,6 @@ public class TravelEntryDto extends PseudonymizableDto {
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
-
-
 
 	@Required
 	@EmbeddedPersonalData
@@ -126,6 +124,10 @@ public class TravelEntryDto extends PseudonymizableDto {
 		travelEntry.setPerson(person);
 		travelEntry.setReportDate(new Date());
 		return travelEntry;
+	}
+
+	public TravelEntryReferenceDto toReference() {
+		return new TravelEntryReferenceDto(getUuid(), getPerson().getCaption(), getExternalId());
 	}
 
 	public PersonReferenceDto getPerson() {
