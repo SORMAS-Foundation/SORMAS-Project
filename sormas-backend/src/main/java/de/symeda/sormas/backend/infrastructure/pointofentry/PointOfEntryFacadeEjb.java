@@ -20,25 +20,26 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
@@ -163,12 +164,12 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	@Override
-	public PointOfEntryDto save(PointOfEntryDto dto) throws ValidationRuntimeException {
+	public PointOfEntryDto save(@Valid PointOfEntryDto dto) throws ValidationRuntimeException {
 		return save(dto, false);
 	}
 
 	@Override
-	public PointOfEntryDto save(PointOfEntryDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public PointOfEntryDto save(@Valid PointOfEntryDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		validate(dto);
 

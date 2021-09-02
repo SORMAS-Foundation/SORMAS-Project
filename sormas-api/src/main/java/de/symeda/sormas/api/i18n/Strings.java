@@ -244,6 +244,7 @@ public interface Strings {
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
+	String errorConstraintViolation = "errorConstraintViolation";
 	String errorContactDuplicateDeletion = "errorContactDuplicateDeletion";
 	String errorContactMerging = "errorContactMerging";
 	String errorCreatingTemplateDirectory = "errorCreatingTemplateDirectory";
@@ -1059,6 +1060,7 @@ public interface Strings {
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
 	String messageTravelEntryArchived = "messageTravelEntryArchived";
 	String messageTravelEntryDearchived = "messageTravelEntryDearchived";
+	String messageTravelEntryPOEFilledBySystem = "messageTravelEntryPOEFilledBySystem";
 	String messageTravelEntrySaved = "messageTravelEntrySaved";
 	String messageTreatmentCreated = "messageTreatmentCreated";
 	String messageTreatmentSaved = "messageTreatmentSaved";

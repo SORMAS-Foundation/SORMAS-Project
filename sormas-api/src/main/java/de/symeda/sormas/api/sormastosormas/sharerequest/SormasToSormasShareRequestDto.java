@@ -17,6 +17,8 @@ package de.symeda.sormas.api.sormastosormas.sharerequest;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -38,10 +40,14 @@ public class SormasToSormasShareRequestDto extends EntityDto {
 
 	private ShareRequestStatus status;
 
+	@Valid
 	private SormasToSormasOriginInfoDto originInfo;
 
+	@Valid
 	private List<SormasToSormasCasePreview> cases;
+	@Valid
 	private List<SormasToSormasContactPreview> contacts;
+	@Valid
 	private List<SormasToSormasEventPreview> events;
 
 	public ShareRequestDataType getDataType() {

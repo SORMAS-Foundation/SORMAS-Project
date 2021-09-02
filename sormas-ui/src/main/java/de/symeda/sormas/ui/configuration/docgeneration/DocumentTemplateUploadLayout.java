@@ -109,6 +109,7 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 		upload = new Upload("", receiver);
 		upload.setButtonCaption(I18nProperties.getCaption(Captions.DocumentTemplate_buttonUploadTemplate));
 		CssStyles.style(upload, CssStyles.VSPACE_2);
+		upload.addStartedListener(receiver);
 		upload.addSucceededListener(receiver);
 		addComponent(upload);
 	}

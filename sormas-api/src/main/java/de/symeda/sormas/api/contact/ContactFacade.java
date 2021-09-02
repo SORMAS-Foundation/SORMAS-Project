@@ -152,5 +152,5 @@ public interface ContactFacade {
 
 	void updateCompleteness(String uuid);
 
-	void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
+	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 }

@@ -37,6 +37,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.feature.FeatureType;
@@ -196,12 +197,12 @@ public class CountryFacadeEjb implements CountryFacade {
 	}
 
 	@Override
-	public CountryDto save(CountryDto dto) throws ValidationRuntimeException {
+	public CountryDto save(@Valid CountryDto dto) throws ValidationRuntimeException {
 		return save(dto, false);
 	}
 
 	@Override
-	public CountryDto save(CountryDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public CountryDto save(@Valid CountryDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
