@@ -332,6 +332,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 			.collect(Collectors.toList());
 	}
 
+	@Override
 	public DistrictReferenceDto loadLocal(DistrictReferenceDto district) {
 		if (district == null) {
 			return null;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -26,6 +27,7 @@ import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.area.AreaFacade;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -188,6 +190,22 @@ public class AreaFacadeEjb implements AreaFacade {
 			.stream()
 			.map(AreaFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public AreaReferenceDto loadLocal(AreaReferenceDto area) {
+		if (area == null) {
+			return null;
+		}
+
+		Optional<AreaReferenceDto> localRegion =
+			area.getExternalId() != null ? getByExternalId(area.getExternalId(), false).stream().findFirst() : Optional.empty();
+
+		if (!localRegion.isPresent()) {
+			localRegion = getByName(area.getCaption(), false).stream().findFirst();
+		}
+
+		return localRegion.orElse(null);
 	}
 
 	public AreaDto toDto(Area source) {

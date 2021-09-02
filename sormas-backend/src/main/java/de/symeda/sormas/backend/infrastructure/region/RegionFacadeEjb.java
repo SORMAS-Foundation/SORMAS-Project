@@ -400,6 +400,7 @@ public class RegionFacadeEjb implements RegionFacade {
 			.collect(Collectors.toList());
 	}
 
+	@Override
 	public RegionReferenceDto loadLocal(RegionReferenceDto region) {
 		if (region == null) {
 			return null;

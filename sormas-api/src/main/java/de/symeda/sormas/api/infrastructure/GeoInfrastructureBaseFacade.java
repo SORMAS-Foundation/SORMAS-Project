@@ -19,4 +19,6 @@ public interface GeoInfrastructureBaseFacade<DTO extends EntityDto, INDEX_DTO ex
 
 	List<REF_DTO> getByExternalId(String externalId, boolean includeArchivedEntities);
 
+	REF_DTO loadLocal(REF_DTO ref);
+
 }

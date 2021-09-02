@@ -330,7 +330,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 			.collect(Collectors.toList());
 	}
 
-
+	@Override
 	public CommunityReferenceDto loadLocal(CommunityReferenceDto community) {
 		if (community == null) {
 			return null;

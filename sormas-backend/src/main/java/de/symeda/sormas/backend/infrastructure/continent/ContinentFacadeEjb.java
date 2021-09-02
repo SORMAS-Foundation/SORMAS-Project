@@ -281,6 +281,7 @@ public class ContinentFacadeEjb implements ContinentFacade {
 			.collect(Collectors.toList());
 	}
 
+	@Override
 	public ContinentReferenceDto loadLocal(ContinentReferenceDto continent) {
 		if (continent == null) {
 			return null;
