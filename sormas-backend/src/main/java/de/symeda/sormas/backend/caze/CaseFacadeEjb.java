@@ -965,12 +965,17 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 				if (firstPreviousHospitalizations != null) {
 					Optional.ofNullable(firstPreviousHospitalizations.get(exportDto.getHospitalizationId()))
-						.ifPresent(
-							firstPreviousHospitalization -> exportDto.setInitialDetectionPlace(
-								FacilityHelper.buildFacilityString(
-									firstPreviousHospitalization.getHealthFacility().getUuid(),
-									firstPreviousHospitalization.getHealthFacility().getName(),
-									firstPreviousHospitalization.getHealthFacilityDetails())));
+						.ifPresent(firstPreviousHospitalization -> {
+							if (firstPreviousHospitalization.getHealthFacility() != null) {
+								exportDto.setInitialDetectionPlace(
+									FacilityHelper.buildFacilityString(
+										firstPreviousHospitalization.getHealthFacility().getUuid(),
+										firstPreviousHospitalization.getHealthFacility().getName(),
+										firstPreviousHospitalization.getHealthFacilityDetails()));
+							} else {
+								exportDto.setInitialDetectionPlace(I18nProperties.getCaption(Captions.unknown));
+							}
+						});
 					if (StringUtils.isEmpty(exportDto.getInitialDetectionPlace())) {
 						if (!StringUtils.isEmpty(exportDto.getHealthFacility())) {
 							exportDto.setInitialDetectionPlace(exportDto.getHealthFacility());
