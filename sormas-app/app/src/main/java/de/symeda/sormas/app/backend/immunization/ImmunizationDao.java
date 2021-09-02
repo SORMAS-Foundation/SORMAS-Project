@@ -171,7 +171,9 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 			ImmunizationCriteria immunizationCriteria = criteria.getImmunizationCriteria();
 			where.and().ne(Immunization.UUID, criteria.getImmunizationUuid());
 			where.and().eq(Immunization.DISEASE, immunizationCriteria.getDisease());
-			where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
+			if (criteria.getPersonUuid() != null) {
+				where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
+			}
 
 			queryBuilder.setWhere(where);
 			queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
