@@ -95,7 +95,7 @@ public interface PersonFacade {
 
 	List<PersonDto> getByExternalIds(List<String> externalIds);
 
-	void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
+	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
 	void mergePerson(PersonDto leadPerson, PersonDto otherPerson);
 }

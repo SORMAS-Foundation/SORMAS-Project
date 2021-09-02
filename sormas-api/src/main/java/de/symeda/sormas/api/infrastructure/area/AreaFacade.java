@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
 

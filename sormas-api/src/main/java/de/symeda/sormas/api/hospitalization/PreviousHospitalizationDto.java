@@ -19,11 +19,14 @@ package de.symeda.sormas.api.hospitalization;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -60,12 +63,15 @@ public class PreviousHospitalizationDto extends PseudonymizableDto {
 	@SensitiveData
 	private FacilityReferenceDto healthFacility;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 	private YesNoUnknown isolated;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String description;
 
 	private HospitalizationReasonType hospitalizationReason;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String otherHospitalizationReason;
 
 	private YesNoUnknown intensiveCareUnit;

@@ -39,6 +39,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -278,12 +279,12 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	}
 
 	@Override
-	public CommunityDto save(CommunityDto dto) throws ValidationRuntimeException {
+	public CommunityDto save(@Valid CommunityDto dto) throws ValidationRuntimeException {
 		return save(dto, false);
 	}
 
 	@Override
-	public CommunityDto save(CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public CommunityDto save(@Valid CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));

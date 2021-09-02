@@ -39,6 +39,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -279,12 +280,12 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
-	public DistrictDto save(DistrictDto dto) throws ValidationRuntimeException {
+	public DistrictDto save(@Valid DistrictDto dto) throws ValidationRuntimeException {
 		return save(dto, false);
 	}
 
 	@Override
-	public DistrictDto save(DistrictDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public DistrictDto save(@Valid DistrictDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));

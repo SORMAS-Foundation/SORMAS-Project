@@ -18,19 +18,23 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.v7.ui.Upload.Receiver;
+import com.vaadin.v7.ui.Upload.StartedEvent;
+import com.vaadin.v7.ui.Upload.StartedListener;
 import com.vaadin.v7.ui.Upload.SucceededEvent;
 import com.vaadin.v7.ui.Upload.SucceededListener;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.UserProvider;
 
 @SuppressWarnings("serial")
-public class ImportReceiver implements Receiver, SucceededListener {
+public class ImportReceiver implements Receiver, StartedListener, SucceededListener {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -91,6 +95,14 @@ public class ImportReceiver implements Receiver, SucceededListener {
 		}
 
 		return fos;
+	}
+
+	@Override
+	public void uploadStarted(StartedEvent startedEvent) {
+		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getImportFileSizeLimitMb();
+		if (startedEvent.getContentLength() > fileSizeLimitMb * 1_000_000) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
+		}
 	}
 
 	@Override

@@ -19,8 +19,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -88,6 +92,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Required
 	private Disease disease;
 	@Outbreaks
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	@Required
 	@EmbeddedPersonalData
@@ -97,8 +102,10 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private boolean archived;
 	private ImmunizationStatus immunizationStatus;
 	private MeansOfImmunization meansOfImmunization;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String meansOfImmunizationDetails;
 	private ImmunizationManagementStatus immunizationManagementStatus;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String externalId;
 
 	private RegionReferenceDto responsibleRegion;
@@ -117,6 +124,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Outbreaks
 	@PersonalData
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 
 	private Date startDate;
@@ -125,6 +133,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private YesNoUnknown previousInfection;
 
 	private Date lastInfectionDate;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String additionalDetails;
 
 	private Date positiveTestResultDate;
@@ -134,6 +143,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	private CaseReferenceDto relatedCase;
 
+	@Valid
 	private List<VaccinationDto> vaccinations = new ArrayList<>();
 
 	public static ImmunizationDto build(PersonReferenceDto person) {

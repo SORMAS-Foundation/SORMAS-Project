@@ -274,7 +274,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		personService.updateExternalData(externalData);
 	}
 
@@ -404,11 +404,11 @@ public class PersonFacadeEjb implements PersonFacade {
 	 * @throws ValidationRuntimeException
 	 *             if the passed source person to be saved contains invalid data
 	 */
-	public PersonDto savePerson(PersonDto source, boolean checkChangeDate) throws ValidationRuntimeException {
+	public PersonDto savePerson(@Valid PersonDto source, boolean checkChangeDate) throws ValidationRuntimeException {
 		return savePerson(source, checkChangeDate, true);
 	}
 
-	public PersonDto savePerson(PersonDto source, boolean checkChangeDate, boolean syncShares) throws ValidationRuntimeException {
+	public PersonDto savePerson(@Valid PersonDto source, boolean checkChangeDate, boolean syncShares) throws ValidationRuntimeException {
 		Person person = personService.getByUuid(source.getUuid());
 
 		PersonDto existingPerson = toDto(person);
@@ -453,7 +453,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	 *             if the passed source person to be saved contains invalid data
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(PersonDto source) throws ValidationRuntimeException {
+	public Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(@Valid PersonDto source) throws ValidationRuntimeException {
 		Person existingPerson = personService.getByUuid(source.getUuid());
 		PersonDto existingPersonDto = toDto(existingPerson);
 
