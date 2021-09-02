@@ -24,8 +24,8 @@
     <data>
 
         <variable
-            name="immunization"
-            type="de.symeda.sormas.app.backend.immunization.Immunization" />
+            name="disease"
+            type="java.lang.String" />
 
         <variable
             name="similarImmunizations"
@@ -34,6 +34,10 @@
         <variable
             name="similarImmunizationItemClickCallback"
             type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+
+        <import type="de.symeda.sormas.api.i18n.Strings" />
     </data>
 
     <ScrollView
@@ -52,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/rowListItemHorizontalMargin"
                 android:paddingEnd="@dimen/rowListItemHorizontalMargin"
-                android:text="String.format(@string/info_pick_or_create_immunization, @{immunization.disease})"
+                android:text="@{String.format(I18nProperties.getString(Strings.infoPickOrCreateImmunization), disease)}"
                 android:textSize="@dimen/defaultControlTextSize" />
 
             <LinearLayout
