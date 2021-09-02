@@ -72,8 +72,6 @@ public class TravelEntryDto extends PseudonymizableDto {
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
 
-
-
 	@Required
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
@@ -138,6 +136,10 @@ public class TravelEntryDto extends PseudonymizableDto {
 		travelEntry.setPerson(person);
 		travelEntry.setReportDate(new Date());
 		return travelEntry;
+	}
+
+	public TravelEntryReferenceDto toReference() {
+		return new TravelEntryReferenceDto(getUuid(), getPerson().getCaption(), getExternalId());
 	}
 
 	public PersonReferenceDto getPerson() {

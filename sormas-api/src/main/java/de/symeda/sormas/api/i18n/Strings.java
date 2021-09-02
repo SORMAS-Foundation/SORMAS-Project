@@ -272,7 +272,8 @@ public interface Strings {
 	String errorOccurred = "errorOccurred";
 	String errorProblemOccurred = "errorProblemOccurred";
 	String errorProcessingTemplate = "errorProcessingTemplate";
-	String errorQuarantineOnlyCaseAndContacts = "errorQuarantineOnlyCaseAndContacts";
+	String errorQuarantineBulkOnlySupportedEntities = "errorQuarantineBulkOnlySupportedEntities";
+	String errorQuarantineOnlySupportedEntities = "errorQuarantineOnlySupportedEntities";
 	String errorReadingDocument = "errorReadingDocument";
 	String errorReadingTemplate = "errorReadingTemplate";
 	String errorSetFeverRequired = "errorSetFeverRequired";
