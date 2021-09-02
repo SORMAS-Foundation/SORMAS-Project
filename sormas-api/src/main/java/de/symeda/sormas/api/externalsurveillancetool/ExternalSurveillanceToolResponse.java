@@ -15,22 +15,37 @@
 
 package de.symeda.sormas.api.externalsurveillancetool;
 
-public class ExternalSurveillanceToolException extends Exception {
+import java.io.Serializable;
 
-	private static final long serialVersionUID = -3526487657644154163L;
+public class ExternalSurveillanceToolResponse implements Serializable {
+
+	private static final long serialVersionUID = 3550759299237595766L;
+
+	private String message;
 
 	private String errorCode;
 
-	public ExternalSurveillanceToolException(String message) {
-		super(message);
+	public ExternalSurveillanceToolResponse() {
 	}
 
-	public ExternalSurveillanceToolException(String message, String errorCode) {
-		this(message);
+	public ExternalSurveillanceToolResponse(String message, String errorCode) {
+		this.message = message;
 		this.errorCode = errorCode;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	public String getErrorCode() {
 		return errorCode;
+	}
+
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
 	}
 }
