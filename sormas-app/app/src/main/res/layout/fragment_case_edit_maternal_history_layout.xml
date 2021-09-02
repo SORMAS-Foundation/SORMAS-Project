@@ -253,7 +253,7 @@
                     app:dependencyParentValue="@{YesNoUnknown.YES}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/maternalHistory_rashExposureRegion"
                     app:value="@={data.rashExposureRegion}"
                     app:dependencyParentField="@{maternalHistoryRashExposure}"
@@ -267,14 +267,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/maternalHistory_rashExposureDistrict"
                     app:value="@={data.rashExposureDistrict}"
                     app:dependencyParentField="@{maternalHistoryRashExposure}"
                     app:dependencyParentValue="@{YesNoUnknown.YES}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/maternalHistory_rashExposureCommunity"
                     app:value="@={data.rashExposureCommunity}"
                     app:dependencyParentField="@{maternalHistoryRashExposure}"

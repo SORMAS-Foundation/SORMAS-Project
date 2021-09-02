@@ -124,7 +124,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					sampleTestDateField.getCaption(),
 					I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME),
 					DateFormatHelper.formatDate(sample.getSampleDateTime()))));
-		ComboBox lab = addField(PathogenTestDto.LAB, ComboBox.class);
+		ComboBox lab = addInfrastructureField(PathogenTestDto.LAB);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
 		TextField labDetails = addField(PathogenTestDto.LAB_DETAILS, TextField.class);
 		labDetails.setVisible(false);
