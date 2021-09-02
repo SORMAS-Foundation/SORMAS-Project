@@ -126,7 +126,7 @@ public abstract class DataImporter {
 		this.currentUser = currentUser;
 		this.enumCaptionCache = new EnumCaptionCache(currentUser.getLanguage());
 
-		Path exportDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
+		Path exportDirectory = getErrorReportFolderPath();
 		if (!exportDirectory.toFile().exists() || !exportDirectory.toFile().canWrite()) {
 			logger.error(exportDirectory + " doesn't exist or cannot be accessed");
 			throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
@@ -666,5 +666,9 @@ public abstract class DataImporter {
 
 	protected String getErrorReportFileName() {
 		return errorReportFileName;
+	}
+
+	protected Path getErrorReportFolderPath() {
+		return Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
 	}
 }

@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.junit.Test;
@@ -85,6 +87,11 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 		@Override
 		protected Writer createErrorReportWriter() {
 			return writer;
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 

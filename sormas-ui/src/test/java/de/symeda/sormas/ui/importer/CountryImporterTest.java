@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,6 +71,11 @@ public class CountryImporterTest extends AbstractBeanTest {
 					// Do nothing
 				}
 			}));
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }
