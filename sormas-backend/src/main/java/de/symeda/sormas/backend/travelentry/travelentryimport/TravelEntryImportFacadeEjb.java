@@ -36,10 +36,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
@@ -57,20 +59,21 @@ import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportEntit
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportCellData;
 import de.symeda.sormas.backend.importexport.ImportErrorException;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportHelper;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
-import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -104,6 +107,8 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private EnumService enumService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public ImportLineResultDto<TravelEntryImportEntities> importData(
@@ -119,11 +124,17 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		}
 
 		final TravelEntryImportEntities entities = new TravelEntryImportEntities(userService.getCurrentUser().toReference());
-		fillTravelEntryWithDefaultValues(entities.getTravelEntry());
+		TravelEntryDto travelEntry = entities.getTravelEntry();
+		fillTravelEntryWithDefaultValues(travelEntry);
 		ImportLineResultDto<TravelEntryImportEntities> importResult =
 			buildEntities(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, entities);
 		if (importResult.isError()) {
 			return importResult;
+		}
+
+		if (travelEntry.getPointOfEntry() == null && configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			travelEntry.setPointOfEntry(pointOfEntryFacade.getByUuid(PointOfEntryDto.OTHER_POE_UUID).toReference());
+			travelEntry.setPointOfEntryDetails(I18nProperties.getString(Strings.messageTravelEntryPOEFilledBySystem));
 		}
 
 		ImportLineResultDto<TravelEntryImportEntities> validationResult = validateEntities(entities);
