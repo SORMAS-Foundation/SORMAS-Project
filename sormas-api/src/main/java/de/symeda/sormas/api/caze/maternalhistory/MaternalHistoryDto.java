@@ -2,6 +2,9 @@ package de.symeda.sormas.api.caze.maternalhistory;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -61,6 +64,7 @@ public class MaternalHistoryDto extends PseudonymizableDto {
 	private Date otherComplicationsOnset;
 	private Integer otherComplicationsMonth;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String otherComplicationsDetails;
 	private YesNoUnknown rubella;
 	private Date rubellaOnset;

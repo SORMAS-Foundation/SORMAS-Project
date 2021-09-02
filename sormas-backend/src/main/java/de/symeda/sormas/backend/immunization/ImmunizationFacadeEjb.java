@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -223,7 +224,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
-	public ImmunizationDto save(ImmunizationDto dto) {
+	public ImmunizationDto save(@Valid ImmunizationDto dto) {
 		Immunization existingImmunization = dto.getUuid() != null ? immunizationService.getByUuid(dto.getUuid()) : null;
 		ImmunizationDto existingDto = toDto(existingImmunization);
 

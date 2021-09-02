@@ -130,7 +130,7 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
-import de.symeda.sormas.ui.utils.NumberValidator;
+import de.symeda.sormas.ui.utils.NumberNumericValueValidator;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -816,7 +816,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.VACCINATION);
 		Field vaccinationDoseField = addField(CaseDataDto.VACCINATION_DOSES);
-		vaccinationDoseField.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
+		vaccinationDoseField
+			.addValidator(new NumberNumericValueValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
 		vaccinationDoseField.addValueChangeListener(e -> {
 			if (vaccinationDoseField.getValue() != null) {
 				String value = vaccinationDoseField.getValue().toString();

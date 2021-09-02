@@ -33,6 +33,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.feature.FeatureType;
@@ -204,12 +205,12 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	}
 
 	@Override
-	public ContinentDto save(ContinentDto dto) {
+	public ContinentDto save(@Valid ContinentDto dto) {
 		return save(dto, false);
 	}
 
 	@Override
-	public ContinentDto save(ContinentDto dto, boolean allowMerge) {
+	public ContinentDto save(@Valid ContinentDto dto, boolean allowMerge) {
 
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));

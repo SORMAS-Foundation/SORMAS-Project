@@ -21,7 +21,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -59,25 +64,40 @@ public class FacilityDto extends EntityDto {
 	public static final String TYPE = "type";
 	public static final String EXTERNAL_ID = "externalID";
 
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String name;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String city;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String postalCode;
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String street;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String houseNumber;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String additionalInformation;
 	private AreaType areaType;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String contactPersonFirstName;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String contactPersonLastName;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String contactPersonPhone;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String contactPersonEmail;
+	@Min(value = -90, message = Validations.numberTooSmall)
+	@Max(value = 90, message = Validations.numberTooBig)
 	private Double latitude;
+	@Min(value = -180, message = Validations.numberTooSmall)
+	@Max(value = 180, message = Validations.numberTooBig)
 	private Double longitude;
 	private FacilityType type;
 	private boolean publicOwnership;
 	private boolean archived;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
 
 	public FacilityDto(

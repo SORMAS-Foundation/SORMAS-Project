@@ -15,6 +15,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
@@ -36,7 +37,7 @@ public class ContactsImportLayout extends AbstractImportLayout {
 				resetDownloadErrorReportButton();
 
 				try {
-					ContactImporter importer = new ContactImporter(file, false, currentUser, null);
+					ContactImporter importer = new ContactImporter(file, false, currentUser, null, (ValueSeparator) separator.getValue());
 					importer.startImport(new Consumer<StreamResource>() {
 
 						@Override

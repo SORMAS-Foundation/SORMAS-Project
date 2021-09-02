@@ -17,6 +17,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -102,12 +103,12 @@ public class AreaFacadeEjb implements AreaFacade {
 	}
 
 	@Override
-	public AreaDto save(AreaDto dto) {
+	public AreaDto save(@Valid AreaDto dto) {
 		return save(dto, false);
 	}
 
 	@Override
-	public AreaDto save(AreaDto dto, boolean allowMerge) {
+	public AreaDto save(@Valid AreaDto dto, boolean allowMerge) {
 		Area area = areaService.getByUuid(dto.getUuid());
 
 		if (area == null) {

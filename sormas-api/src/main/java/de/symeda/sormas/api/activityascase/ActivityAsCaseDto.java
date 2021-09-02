@@ -22,12 +22,16 @@ package de.symeda.sormas.api.activityascase;
 
 import java.util.Date;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -69,11 +73,14 @@ public class ActivityAsCaseDto extends PseudonymizableDto {
 	private Date startDate;
 	private Date endDate;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String description;
 	@Required
 	private ActivityAsCaseType activityAsCaseType;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String activityAsCaseTypeDetails;
+	@Valid
 	private LocationDto location;
 	@HideForCountries
 	private ExposureRole role;
@@ -81,13 +88,17 @@ public class ActivityAsCaseDto extends PseudonymizableDto {
 	// Type of Place
 	private TypeOfPlace typeOfPlace;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String typeOfPlaceDetails;
 	private MeansOfTransport meansOfTransport;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String meansOfTransportDetails;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String connectionNumber;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String seatNumber;
 
 	private WorkEnvironment workEnvironment;
@@ -95,11 +106,13 @@ public class ActivityAsCaseDto extends PseudonymizableDto {
 	// Exposure sub-types
 	private GatheringType gatheringType;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String gatheringDetails;
 	@HideForCountries
 	private HabitationType habitationType;
 	@HideForCountries
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String habitationDetails;
 
 	public static ActivityAsCaseDto build(ActivityAsCaseType activityAsCaseType) {

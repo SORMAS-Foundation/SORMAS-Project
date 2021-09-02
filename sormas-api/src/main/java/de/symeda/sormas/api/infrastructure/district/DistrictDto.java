@@ -19,7 +19,10 @@ package de.symeda.sormas.api.infrastructure.district;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -35,11 +38,14 @@ public class DistrictDto extends EntityDto {
 	public static final String REGION = "region";
 	public static final String EXTERNAL_ID = "externalID";
 
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String name;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String epidCode;
 	private Float growthRate;
 	private RegionReferenceDto region;
 	private boolean archived;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
 
 	public DistrictDto(

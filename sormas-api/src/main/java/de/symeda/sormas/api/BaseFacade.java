@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
@@ -15,7 +17,7 @@ public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	long count(CRITERIA criteria);
 
-	DTO save(DTO dto);
+	DTO save(@Valid DTO dto);
 
 	void archive(String uuid);
 
