@@ -10,6 +10,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.junit.Test;
@@ -214,7 +217,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 
 	private static class InfrastructureImporterExtension extends InfrastructureImporter {
 
-		private InfrastructureImporterExtension(File inputFile, UserDto currentUser, InfrastructureType infrastructureType) {
+		private InfrastructureImporterExtension(File inputFile, UserDto currentUser, InfrastructureType infrastructureType) throws IOException {
 			super(inputFile, currentUser, infrastructureType, ValueSeparator.COMMA);
 		}
 
@@ -226,6 +229,11 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 					// Do nothing
 				}
 			});
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

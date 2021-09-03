@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -252,7 +254,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		public StringBuilder stringBuilder = new StringBuilder("");
 		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
-		public CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
+		public CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) throws IOException {
 			super(inputFile, hasEntityClassRow, currentUser, ValueSeparator.DEFAULT);
 		}
 
@@ -274,6 +276,11 @@ public class CaseImporterTest extends AbstractBeanTest {
 		@Override
 		protected Writer createErrorReportWriter() {
 			return writer;
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

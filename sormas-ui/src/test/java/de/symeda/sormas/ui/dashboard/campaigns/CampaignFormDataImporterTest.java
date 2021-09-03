@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,7 +108,8 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 			boolean hasEntityClassRow,
 			UserDto currentUser,
 			String campaignFormMetaUUID,
-			CampaignReferenceDto campaignReferenceDto) {
+			CampaignReferenceDto campaignReferenceDto)
+			throws IOException {
 			super(inputFile, hasEntityClassRow, currentUser, campaignFormMetaUUID, campaignReferenceDto, ValueSeparator.DEFAULT);
 		}
 
@@ -127,6 +130,11 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 
 		public List<String> getErrorMessages() {
 			return errorMessages;
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

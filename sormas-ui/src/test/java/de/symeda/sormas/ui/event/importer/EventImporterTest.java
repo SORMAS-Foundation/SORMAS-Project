@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -145,7 +147,7 @@ public class EventImporterTest extends AbstractBeanTest {
 		private StringBuilder errors = new StringBuilder("");
 		private StringBuilderWriter writer = new StringBuilderWriter(errors);
 
-		private EventImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
+		private EventImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser) throws IOException {
 			super(inputFile, hasEntityClassRow, currentUser, ValueSeparator.DEFAULT);
 		}
 
@@ -155,6 +157,11 @@ public class EventImporterTest extends AbstractBeanTest {
 
 		protected Writer createErrorReportWriter() {
 			return writer;
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

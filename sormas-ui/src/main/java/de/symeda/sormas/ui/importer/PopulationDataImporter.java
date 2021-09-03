@@ -45,7 +45,7 @@ public class PopulationDataImporter extends DataImporter {
 
 	private final Date collectionDate;
 
-	public PopulationDataImporter(File inputFile, UserDto currentUser, Date collectionDate, ValueSeparator csvSeparator) {
+	public PopulationDataImporter(File inputFile, UserDto currentUser, Date collectionDate, ValueSeparator csvSeparator) throws IOException {
 		super(inputFile, false, currentUser, csvSeparator);
 		this.collectionDate = collectionDate;
 	}

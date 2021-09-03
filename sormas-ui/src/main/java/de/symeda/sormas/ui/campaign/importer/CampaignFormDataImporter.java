@@ -70,7 +70,8 @@ public class CampaignFormDataImporter extends DataImporter {
 		UserDto currentUser,
 		String campaignFormMetaUuid,
 		CampaignReferenceDto campaignReferenceDto,
-		ValueSeparator csvSeparator) {
+		ValueSeparator csvSeparator)
+		throws IOException {
 		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		this.campaignFormMetaUuid = campaignFormMetaUuid;
 		this.campaignReferenceDto = campaignReferenceDto;

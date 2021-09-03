@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -352,7 +354,8 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 	private static class EventParticipantImporterExtension extends EventParticipantImporter {
 
-		private EventParticipantImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event) {
+		private EventParticipantImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event)
+			throws IOException {
 			super(inputFile, hasEntityClassRow, currentUser, event, ValueSeparator.DEFAULT);
 		}
 
@@ -374,6 +377,11 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 					// Do nothing
 				}
 			});
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

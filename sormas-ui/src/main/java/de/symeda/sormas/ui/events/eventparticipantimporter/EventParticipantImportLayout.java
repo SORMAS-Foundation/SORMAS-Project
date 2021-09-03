@@ -54,7 +54,7 @@ public class EventParticipantImportLayout extends AbstractImportLayout {
 			try {
 				EventParticipantImporter importer =
 					new EventParticipantImporter(file, true, currentUser, event, (ValueSeparator) separator.getValue());
-				importer.startImport(resource -> extendDownloadErrorReportButton(resource), currentUI, true);
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
 					I18nProperties.getString(Strings.headingImportFailed),

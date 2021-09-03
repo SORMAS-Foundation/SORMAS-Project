@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.function.Consumer;
@@ -73,9 +74,13 @@ public class ImportReceiver implements Receiver, StartedListener, SucceededListe
 
 		final FileOutputStream fos;
 		try {
+			Path tempDirectory = Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath());
+			if (!tempDirectory.toFile().exists() || !tempDirectory.toFile().canWrite()) {
+				throw new FileNotFoundException("Temp directory doesn't exist or cannot be accessed");
+			}
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + fileNameAddition + DateHelper.formatDateForExport(new Date()) + "_"
 				+ DataHelper.getShortUuid(UserProvider.getCurrent().getUuid()) + ".csv";
-			file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
+			file = new File(tempDirectory.resolve(newFileName).toString());
 			fos = new FileOutputStream(file);
 		} catch (FileNotFoundException e) {
 			file = null;

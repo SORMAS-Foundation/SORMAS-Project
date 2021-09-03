@@ -38,11 +38,12 @@ public class InfrastructureImporter extends DataImporter {
 	private final InfrastructureType type;
 	protected final boolean allowOverwrite;
 
-	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type, ValueSeparator csvSeparator) {
+	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type, ValueSeparator csvSeparator) throws IOException {
 		this(inputFile, currentUser, type, false, csvSeparator);
 	}
 
-	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type, boolean allowOverwrite, ValueSeparator csvSeparator) {
+	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type, boolean allowOverwrite, ValueSeparator csvSeparator)
+		throws IOException {
 		super(inputFile, false, currentUser, csvSeparator);
 		this.type = type;
 		this.allowOverwrite = allowOverwrite;

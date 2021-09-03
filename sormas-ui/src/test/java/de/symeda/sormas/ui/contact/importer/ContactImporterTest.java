@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -217,11 +219,11 @@ public class ContactImporterTest extends AbstractBeanTest {
 		public StringBuilder stringBuilder = new StringBuilder("");
 		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
-		public ContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) {
+		public ContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) throws IOException {
 			super(inputFile, hasEntityClassRow, currentUser, caze, ValueSeparator.DEFAULT);
 		}
 
-		public ContactImporterExtension(File inputFile, UserDto currentUser) {
+		public ContactImporterExtension(File inputFile, UserDto currentUser) throws IOException {
 			super(inputFile, false, currentUser, null, ValueSeparator.DEFAULT);
 		}
 
@@ -243,6 +245,11 @@ public class ContactImporterTest extends AbstractBeanTest {
 		@Override
 		protected Writer createErrorReportWriter() {
 			return writer;
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }
