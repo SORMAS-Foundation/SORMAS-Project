@@ -68,6 +68,7 @@
     <string name="action_markAllAsRead">Označit vše jako přečtené</string>
     <string name="action_new">Nové</string>
     <string name="action_new_case">Nový případ</string>
+    <string name="action_new_immunization">New Immunization</string>
     <string name="action_new_campaign_form_data">Nová data formuláře kampaně</string>
     <string name="action_new_contact">Nový kontakt</string>
     <string name="action_new_event">Nová udalost</string>
@@ -231,6 +232,9 @@
     <string name="caption_year">Rok</string>
     <string name="caption_latest_submission">Poslední příspěvek: %1$s</string>
     <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
+    <string name="caption_immunization_information">Immunization details</string>
+    <string name="caption_new_immunization">New Immunization</string>
+    <string name="caption_overwrite_immunization_management_status">Overwrite immunization management status</string>
     <string name="confirmation_action">Opravdu to chcete udělat?</string>
     <string name="confirmation_delete">Opravdu chcete vymazat tento záznam?</string>
     <string name="confirmation_pick_gps">Jste právě na tomto místě?</string>
@@ -306,6 +310,7 @@
     <string name="heading_events_list">Výpis událostí</string>
     <string name="heading_existing_persons">Stávající osoby</string>
     <string name="heading_existing_cases">Existující případy</string>
+    <string name="heading_existing_immunizations">Existing Immunizations</string>
     <string name="heading_existing_events">Existující události</string>
     <string name="heading_gathering">Shromažďování</string>
     <string name="heading_gps_activation">Zapnout GPS</string>
@@ -327,6 +332,7 @@
     <string name="heading_person_contact_detail">Kontaktní údaje osoby</string>
     <string name="heading_pick_or_create_person">Vyberte nebo vytvořte osobu</string>
     <string name="heading_pick_or_create_case">Vyberte nebo vytvořte případ</string>
+    <string name="heading_pick_or_create_immunization">Pick or Create an Immunization</string>
     <string name="heading_pick_or_create_event">Vyberte nebo vytvořte případ</string>
     <string name="heading_prescription">Předpis</string>
     <string name="heading_prescription_edit">Upravit předpis</string>
@@ -341,6 +347,10 @@
     <string name="heading_sample_read">Číst vzorek</string>
     <string name="heading_sample_summary">Shrnutí vzorku</string>
     <string name="heading_samples_list">Seznam vzorků</string>
+    <string name="heading_immunization_edit">Edit Immunization</string>
+    <string name="heading_immunization_new">New Immunization</string>
+    <string name="heading_immunization_read">Read Immunization</string>
+    <string name="heading_immunizations_list">Immunization Listing</string>
     <string name="heading_pathogen_test_edit">Upravit test patogenu</string>
     <string name="heading_pathogen_test_new">Nový test patogenu</string>
     <string name="heading_pathogen_test_read">Číst test patogenu</string>
@@ -445,12 +455,14 @@
     <string name="info_case_creation_mark_check_box">Tento případ je <b>nový případ</b> a <b>není duplicitní</b> jednoho z výše uvedených případů</string>
     <string name="info_event_creation_mark_check_box">Tato událost je <b>nová událost</b> a <b>není duplicitní</b> jedné z výše uvedených událostí</string>
     <string name="info_pick_campaign_form_meta">Vyberte prosím formulář kampaně, pro který chcete vložit data!</string>
+    <string name="info_immunization_override_mark_check_box">Override existing immunization&gt;</string>
     <string name="main_menu_cases">Případy</string>
     <string name="main_menu_contacts">Kontakty</string>
     <string name="main_menu_dashboard">Ovládací panel</string>
     <string name="main_menu_events">Události</string>
     <string name="main_menu_reports">Zprávy</string>
     <string name="main_menu_samples">Vzorky</string>
+    <string name="main_menu_immunizations">Immunizations</string>
     <string name="main_menu_settings">Nastavení</string>
     <string name="main_menu_tasks">Úkoly</string>
     <string name="main_menu_aggregate_reports">mSERS</string>
@@ -514,6 +526,7 @@
     <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
     <string name="tag_row_item_select_or_create_event">rowItemSelectOrCreateEvent</string>
     <string name="tag_row_item_case_pick_or_create">rowItemPickOrCreatePerson</string>
+    <string name="tag_row_item_immunization_pick_or_create">rowItemImmunizationPickOrCreatePerson</string>
     <string name="time_future_almost_two_years">během téměř dvou let</string>
     <string name="time_future_one_day">zítra</string>
     <string name="time_future_one_hour">do přibližně hodiny</string>
