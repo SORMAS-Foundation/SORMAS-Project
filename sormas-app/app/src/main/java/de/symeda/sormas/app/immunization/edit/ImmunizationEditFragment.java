@@ -116,8 +116,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		contentBinding.setData(record);
 
 		contentBinding.immunizationCountry.initializeSpinner(countries);
-		contentBinding.immunizationValidFrom.skipDateValidation(true);
-		contentBinding.immunizationValidUntil.skipDateValidation(true);
 
 		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			record,

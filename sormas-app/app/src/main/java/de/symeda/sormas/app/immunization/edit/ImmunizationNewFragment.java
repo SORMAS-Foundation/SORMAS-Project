@@ -121,9 +121,6 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
-		contentBinding.immunizationValidFrom.skipDateValidation(true);
-		contentBinding.immunizationValidUntil.skipDateValidation(true);
-
 		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			record,
 			contentBinding.immunizationResponsibleRegion,
@@ -180,9 +177,6 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.immunizationEndDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationValidFrom.initializeDateField(getFragmentManager());
 		contentBinding.immunizationValidUntil.initializeDateField(getFragmentManager());
-
-		contentBinding.immunizationValidFrom.skipDateValidation(true);
-		contentBinding.immunizationValidUntil.skipDateValidation(true);
 
 		ValidationHelper
 			.initIntegerValidator(contentBinding.immunizationNumberOfDoses, I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10);

@@ -67,7 +67,6 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 	private SimpleDateFormat dateFormat;
 	private int allowedDaysInFuture;
 	private Date cachedTime;
-	private boolean skipDateValidation;
 
 	// Constructors
 
@@ -93,17 +92,15 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 			return false;
 		}
 
-		if (!skipDateValidation) {
-			if (allowedDaysInFuture > 0) {
-				if (DateHelper.getFullDaysBetween(new Date(), getValue()) > allowedDaysInFuture) {
-					enableErrorState(I18nProperties.getValidationError(Validations.futureDate, getCaption(), allowedDaysInFuture));
-					return true;
-				}
-			} else if (allowedDaysInFuture == 0) {
-				if (!DateHelper.isSameDay(new Date(), getValue())) {
-					enableErrorState(I18nProperties.getValidationError(Validations.futureDateStrict, getCaption()));
-					return true;
-				}
+		if (allowedDaysInFuture > 0) {
+			if (DateHelper.getFullDaysBetween(new Date(), getValue()) > allowedDaysInFuture) {
+				enableErrorState(I18nProperties.getValidationError(Validations.futureDate, getCaption(), allowedDaysInFuture));
+				return true;
+			}
+		} else if (allowedDaysInFuture == 0) {
+			if (!DateHelper.isSameDay(new Date(), getValue())) {
+				enableErrorState(I18nProperties.getValidationError(Validations.futureDateStrict, getCaption()));
+				return true;
 			}
 		}
 
@@ -232,10 +229,6 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 		} else {
 			input.setText(DateHelper.formatLocalDate(value, dateFormat));
 		}
-	}
-
-	public void skipDateValidation(boolean noDateValidation) {
-		this.skipDateValidation = noDateValidation;
 	}
 
 	@Override
