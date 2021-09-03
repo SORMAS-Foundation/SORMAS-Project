@@ -1291,6 +1291,7 @@ public interface Captions {
 	String Immunization_externalId = "Immunization.externalId";
 	String Immunization_healthFacility = "Immunization.healthFacility";
 	String Immunization_healthFacilityDetails = "Immunization.healthFacilityDetails";
+	String Immunization_immunizationPeriod = "Immunization.immunizationPeriod";
 	String Immunization_immunizationStatus = "Immunization.immunizationStatus";
 	String Immunization_lastInfectionDate = "Immunization.lastInfectionDate";
 	String Immunization_lastVaccineType = "Immunization.lastVaccineType";
@@ -1306,6 +1307,9 @@ public interface Captions {
 	String Immunization_previousInfection = "Immunization.previousInfection";
 	String Immunization_recoveryDate = "Immunization.recoveryDate";
 	String Immunization_reportDate = "Immunization.reportDate";
+	String Immunization_responsibleCommunity = "Immunization.responsibleCommunity";
+	String Immunization_responsibleDistrict = "Immunization.responsibleDistrict";
+	String Immunization_responsibleRegion = "Immunization.responsibleRegion";
 	String Immunization_startDate = "Immunization.startDate";
 	String Immunization_uuid = "Immunization.uuid";
 	String Immunization_vaccinations = "Immunization.vaccinations";
@@ -1314,6 +1318,7 @@ public interface Captions {
 	String immunizationImmunizationsList = "immunizationImmunizationsList";
 	String immunizationKeepImmunization = "immunizationKeepImmunization";
 	String immunizationNewImmunization = "immunizationNewImmunization";
+	String immunizationNoImmunizationsForPerson = "immunizationNoImmunizationsForPerson";
 	String immunizationOnlyPersonsWithOverdueImmunization = "immunizationOnlyPersonsWithOverdueImmunization";
 	String immunizationOverwriteImmunization = "immunizationOverwriteImmunization";
 	String importCancelImport = "importCancelImport";
@@ -1613,6 +1618,7 @@ public interface Captions {
 	String personsUpdated = "personsUpdated";
 	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
+	String PointOfEntry_archived = "PointOfEntry.archived";
 	String PointOfEntry_externalID = "PointOfEntry.externalID";
 	String PointOfEntry_latitude = "PointOfEntry.latitude";
 	String PointOfEntry_longitude = "PointOfEntry.longitude";
@@ -1832,7 +1838,6 @@ public interface Captions {
 	String singleDayEventEvolutionDate = "singleDayEventEvolutionDate";
 	String sormasToSormasCaseNotShared = "sormasToSormasCaseNotShared";
 	String sormasToSormasContactNotShared = "sormasToSormasContactNotShared";
-	String sormasToSormasDialogTitle = "sormasToSormasDialogTitle";
 	String sormasToSormasErrorDialogTitle = "sormasToSormasErrorDialogTitle";
 	String sormasToSormasEventNotShared = "sormasToSormasEventNotShared";
 	String sormasToSormasEventParticipantNotShared = "sormasToSormasEventParticipantNotShared";
@@ -2171,6 +2176,7 @@ public interface Captions {
 	String TravelEntry_person = "TravelEntry.person";
 	String TravelEntry_personFirstName = "TravelEntry.personFirstName";
 	String TravelEntry_personLastName = "TravelEntry.personLastName";
+	String TravelEntry_pointOfEntryDetails = "TravelEntry.pointOfEntryDetails";
 	String TravelEntry_pointOfEntryDistrict = "TravelEntry.pointOfEntryDistrict";
 	String TravelEntry_pointOfEntryName = "TravelEntry.pointOfEntryName";
 	String TravelEntry_pointOfEntryRegion = "TravelEntry.pointOfEntryRegion";
@@ -2229,6 +2235,7 @@ public interface Captions {
 	String TreatmentExport_caseUuid = "TreatmentExport.caseUuid";
 	String treatmentNewTreatment = "treatmentNewTreatment";
 	String treatmentOpenPrescription = "treatmentOpenPrescription";
+	String unknown = "unknown";
 	String User = "User";
 	String User_active = "User.active";
 	String User_address = "User.address";

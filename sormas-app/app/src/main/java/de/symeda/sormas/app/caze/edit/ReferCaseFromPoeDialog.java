@@ -40,6 +40,7 @@ import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogMoveCaseLayoutBinding;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class ReferCaseFromPoeDialog extends AbstractDialog {
 
@@ -87,7 +88,7 @@ public class ReferCaseFromPoeDialog extends AbstractDialog {
 		List<Item> initialCommunities = InfrastructureDaoHelper.loadCommunities(CaseDao.getDistrictWithFallback(data));
 		List<Item> initialFacilities = InfrastructureDaoHelper
 			.loadFacilities(CaseDao.getDistrictWithFallback(data), CaseDao.getCommunityWithFallback(data), data.getFacilityType());
-		InfrastructureDaoHelper.initializeFacilityFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			data,
 			contentBinding.caseDataRegion,
 			initialRegions,

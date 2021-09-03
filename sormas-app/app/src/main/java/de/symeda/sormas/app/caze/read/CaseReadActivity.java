@@ -15,11 +15,11 @@
 
 package de.symeda.sormas.app.caze.read;
 
-import java.util.List;
-
 import android.content.Context;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -92,6 +92,9 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 		if (caze != null && caze.isUnreferredPortHealthCase()) {
 			menuItems.set(CaseSection.SAMPLES.ordinal(), null);
 		}
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+			menuItems.set(CaseSection.IMMUNIZATIONS.ordinal(), null);
+		}
 		if (caze != null && caze.isUnreferredPortHealthCase()) {
 			menuItems.set(CaseSection.EVENTS.ordinal(), null);
 		}
@@ -154,6 +157,9 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 			break;
 		case EVENTS:
 			fragment = CaseReadEventListFragment.newInstance(activityRootData);
+			break;
+		case IMMUNIZATIONS:
+			fragment = CaseReadImmunizationListFragment.newInstance(activityRootData);
 			break;
 		case PRESCRIPTIONS:
 			fragment = CaseReadPrescriptionListFragment.newInstance(activityRootData);

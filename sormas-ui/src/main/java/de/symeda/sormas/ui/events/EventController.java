@@ -140,7 +140,7 @@ public class EventController {
 
 		EventSelectionField eventSelect =
 			new EventSelectionField(caseDataDto.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForCase));
-		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
+		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
 		component.addCommitListener(() -> {
@@ -188,7 +188,7 @@ public class EventController {
 		EventSelectionField eventSelect = new EventSelectionField(
 			caseDataDtos.stream().findFirst().get().getDisease(),
 			I18nProperties.getString(Strings.infoPickOrCreateEventForCases));
-		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
+		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
 		component.addCommitListener(() -> {
@@ -219,7 +219,7 @@ public class EventController {
 		EventSelectionField eventSelect = new EventSelectionField(
 			contactDtos.stream().findFirst().get().getDisease(),
 			I18nProperties.getString(Strings.infoPickOrCreateEventForContact));
-		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
+		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
 		component.addCommitListener(() -> {
@@ -372,7 +372,7 @@ public class EventController {
 
 		EventSelectionField eventSelect =
 			new EventSelectionField(contact.getDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForContact));
-		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
+		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
 		component.addCommitListener(() -> {
@@ -407,15 +407,15 @@ public class EventController {
 		excludedUuids.add(superordinateEventRef.getUuid());
 		excludedUuids.addAll(FacadeProvider.getEventFacade().getAllSuperordinateEventUuids(superordinateEventRef.getUuid()));
 
-		EventDto superordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(superordinateEventRef.getUuid());
+		EventDto superordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(superordinateEventRef.getUuid(), false);
 		EventSelectionField selectionField = new EventSelectionField(superordinateEvent, excludedUuids, false);
-		selectionField.setWidth(1024, Sizeable.Unit.PIXELS);
+		selectionField.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
 		component.addCommitListener(() -> {
 			EventIndexDto selectedIndexEvent = selectionField.getValue();
 			if (selectedIndexEvent != null) {
-				EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(selectedIndexEvent.getUuid());
+				EventDto selectedEvent = FacadeProvider.getEventFacade().getEventByUuid(selectedIndexEvent.getUuid(), false);
 				selectedEvent.setSuperordinateEvent(superordinateEventRef);
 				FacadeProvider.getEventFacade().saveEvent(selectedEvent);
 
@@ -436,9 +436,9 @@ public class EventController {
 		excludedUuids.add(subordinateEventRef.getUuid());
 		excludedUuids.addAll(FacadeProvider.getEventFacade().getAllSubordinateEventUuids(subordinateEventRef.getUuid()));
 
-		EventDto subordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(subordinateEventRef.getUuid());
+		EventDto subordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(subordinateEventRef.getUuid(), false);
 		EventSelectionField selectionField = new EventSelectionField(subordinateEvent, excludedUuids, true);
-		selectionField.setWidth(1024, Sizeable.Unit.PIXELS);
+		selectionField.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
 		component.addCommitListener(() -> {
@@ -561,7 +561,7 @@ public class EventController {
 	}
 
 	private EventDto findEvent(String uuid) {
-		return FacadeProvider.getEventFacade().getEventByUuid(uuid);
+		return FacadeProvider.getEventFacade().getEventByUuid(uuid, false);
 	}
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent(CaseReferenceDto caseRef) {
@@ -690,7 +690,7 @@ public class EventController {
 		EventReferenceDto superOrSubordinateEventRef,
 		boolean createSuperordinateEvent) {
 
-		EventDto superOrSubordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(superOrSubordinateEventRef.getUuid());
+		EventDto superOrSubordinateEvent = FacadeProvider.getEventFacade().getEventByUuid(superOrSubordinateEventRef.getUuid(), false);
 		EventDataForm form = new EventDataForm(true, false);
 		form.setValue(createNewEvent(superOrSubordinateEvent.getDisease()));
 		form.getField(EventDto.DISEASE).setReadOnly(true);
@@ -810,7 +810,7 @@ public class EventController {
 			public void onCommit() {
 				EventDto updatedTempEvent = form.getValue();
 				for (EventIndexDto indexDto : selectedEvents) {
-					EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(indexDto.getUuid());
+					EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(indexDto.getUuid(), false);
 					if (form.getEventStatusCheckBox().getValue() == true) {
 						eventDto.setEventStatus(updatedTempEvent.getEventStatus());
 					}
@@ -909,7 +909,7 @@ public class EventController {
 					StringBuilder nonDeletableEventsFromExternalTool = new StringBuilder();
 					int countNotDeletedEventsFromExternalTool = 0;
 					for (EventIndexDto selectedRow : selectedRows) {
-						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(selectedRow.getUuid());
+						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(selectedRow.getUuid(), false);
 						if (existEventParticipantsLinkedToEvent(eventDto)) {
 							countNotDeletedEventsWithParticipants = countNotDeletedEventsWithParticipants + 1;
 							nonDeletableEventsWithParticipants.append(selectedRow.getUuid(), 0, 6).append(", ");

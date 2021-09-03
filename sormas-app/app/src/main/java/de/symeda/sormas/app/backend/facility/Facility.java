@@ -28,9 +28,9 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import androidx.databinding.Bindable;
 
-import de.symeda.sormas.api.facility.FacilityHelper;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.location.AreaType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
@@ -50,6 +50,13 @@ public class Facility extends InfrastructureAdo {
 	public static final String COMMUNITY = "community_id";
 	public static final String NAME = "name";
 	public static final String TYPE = "type";
+
+	public Facility() {
+	}
+
+	public Facility(String uuid) {
+		setUuid(uuid);
+	}
 
 	@Column
 	private String name;

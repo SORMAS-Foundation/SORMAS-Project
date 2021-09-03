@@ -89,6 +89,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 	public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext context)
 		throws AuthenticationException {
 		if (request.getPathInfo().startsWith(SormasToSormasApiConstants.RESOURCE_PATH)) {
+			// S2S auth will be handled by S2SAuthFilter
 			return validateRequestS2S(context);
 		}
 		return authenticationMechanism.validateRequest(request, response, context);

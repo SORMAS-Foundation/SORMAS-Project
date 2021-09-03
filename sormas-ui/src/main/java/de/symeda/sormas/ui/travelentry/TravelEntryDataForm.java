@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Label;
@@ -37,9 +38,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
@@ -462,8 +463,9 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 	}
 
 	private void buildDeaContent(TravelEntryDto newFieldValue) {
-		if (newFieldValue.getDeaContent() != null) {
-			deaFormBuilder = new DEAFormBuilder(newFieldValue.getDeaContent(), false);
+		final List<DeaContentEntry> deaContent = newFieldValue.getDeaContent();
+		if (CollectionUtils.isNotEmpty(deaContent)) {
+			deaFormBuilder = new DEAFormBuilder(deaContent, false);
 			deaFormBuilder.buildForm();
 			getContent().addComponent(deaFormBuilder.getLayout(), DEA_CONTENT_LOC);
 		}

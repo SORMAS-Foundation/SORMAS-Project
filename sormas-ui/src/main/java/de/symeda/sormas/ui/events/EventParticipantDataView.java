@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent.QUARANTINE_LOC;
+import static de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent.IMMUNIZATION_LOC;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
@@ -30,6 +31,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -40,6 +42,7 @@ import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
+import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
@@ -63,6 +66,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
 		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC),
+		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC),
 		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC),
 		LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC));
 
@@ -176,6 +180,11 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		boolean isEditAllowed = FacadeProvider.getEventParticipantFacade().isEventParticipantEditAllowed(eventParticipantRef.getUuid());
 		if (!isEditAllowed) {
 			container.setEnabled(false);
+		}
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+			ImmunizationListComponent.addImmunizationListComponent(layout, eventParticipant);
 		}
 	}
 

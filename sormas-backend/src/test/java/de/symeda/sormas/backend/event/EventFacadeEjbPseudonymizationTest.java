@@ -64,14 +64,14 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testEventInJurisdiction() {
 		EventDto event = createEvent(user2, rdcf2);
 
-		assertNotPseudonymized(getEventFacade().getEventByUuid(event.getUuid()));
+		assertNotPseudonymized(getEventFacade().getEventByUuid(event.getUuid(), false));
 	}
 
 	@Test
 	public void testEventOutsideJurisdiction() {
 		EventDto event = createEvent(user1, rdcf1);
 
-		assertPseudonymized(getEventFacade().getEventByUuid(event.getUuid()));
+		assertPseudonymized(getEventFacade().getEventByUuid(event.getUuid(), false));
 	}
 
 	@Test

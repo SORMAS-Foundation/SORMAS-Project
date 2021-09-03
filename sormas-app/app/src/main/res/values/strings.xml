@@ -140,6 +140,7 @@
     <string name="caption_case_samples">Case Samples</string>
     <string name="caption_case_tasks">Case Tasks</string>
     <string name="caption_case_events" >Case Events</string>
+    <string name="caption_case_immunizations" >Case Immunizations</string>
     <string name="caption_case_treatments">Treatments</string>
     <string name="caption_case_similarity_create">Create a new case</string>
     <string name="caption_changed_data_lost">Changed data lost during re-sync.</string>
@@ -155,6 +156,7 @@
     <string name="caption_contact_tasks">Contact Tasks</string>
     <string name="caption_contact_epidemiological_data">Epidemiological info</string>
     <string name="caption_contact_visits">Follow-Up Information</string>
+    <string name="caption_contact_immunizations" >Contact Immunizations</string>
     <string name="caption_converted_to_case">Converted to Case</string>
     <string name="caption_date_of_birth">Date of birth (year / month / day)</string>
     <string name="caption_date_of_sampling">Date of Sampling</string>
@@ -167,6 +169,7 @@
     <string name="caption_event_period">Date of event</string>
     <string name="caption_event_information">Event Information</string>
     <string name="caption_event_participants">Persons Involved</string>
+    <string name="caption_event_participant_immunizations">Event participant Immunizations</string>
     <string name="caption_event_tasks">Event Tasks</string>
     <string name="caption_executed_by">Executed by</string>
     <string name="caption_facility_or_home">Place of stay</string>
@@ -239,7 +242,7 @@
     <string name="caption_year">Year</string>
     <string name="caption_latest_submission">Latest Submission: %1$s</string>
     <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
-    <string name="caption_immunization_information">Immunization Information</string>
+    <string name="caption_immunization_information">Immunization details</string>
     <string name="caption_immunization_vaccinations">Immunization Vaccinations</string>
     <string name="caption_vaccination_information">Vaccination Information</string>
     <string name="caption_new_immunization">New Immunization</string>
@@ -596,6 +599,7 @@
     <string name="validation_visit_date_time_before_contact_date">The visit cannot be more than 30 days before the last contact date.</string>
     <string name="validation_visit_date_time_before_report_date">The visit cannot be more than 30 days before the contact report date.</string>
 
+    <string name="value_unknown">Unknown</string>
     <string name="value_age_unknown">Age N/A</string>
     <string name="value_blood_pressure_unknown">Blood Pressure N/A</string>
     <string name="value_case_uuid_unknown">Case ID N/A</string>

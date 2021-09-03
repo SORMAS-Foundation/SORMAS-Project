@@ -21,11 +21,13 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
@@ -38,22 +40,20 @@ import de.symeda.sormas.app.databinding.FragmentImmunizationEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
+
+import static android.view.View.GONE;
 
 public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizationEditLayoutBinding, Immunization, Immunization> {
 
 	private Immunization record;
-
-	// enum lists
 
 	private List<Item> diseaseList;
 	private List<Item> immunizationStatusList;
 	private List<Item> meansOfImmunizationList;
 	private List<Item> immunizationManagementStatusList;
 
-	private List<Item> initialResponsibleDistricts;
-	private List<Item> initialResponsibleCommunities;
 	private List<Item> initialRegions;
-	private List<Item> allDistricts;
 	private List<Item> initialDistricts;
 	private List<Item> initialCommunities;
 	private List<Item> initialFacilities;
@@ -79,14 +79,16 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	}
 
 	@Override
+	public Immunization getPrimaryData() {
+		return record;
+	}
+
+	@Override
 	protected String getSubHeadingTitle() {
 		return getResources().getString(R.string.caption_immunization_information);
 	}
 
-	@Override
-	public Immunization getPrimaryData() {
-		return record;
-	}
+
 
 	@Override
 	protected void prepareFragmentData() {
@@ -103,9 +105,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 
 		countries = InfrastructureDaoHelper.loadCountries();
 		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
-		allDistricts = InfrastructureDaoHelper.loadAllDistricts();
-		initialResponsibleDistricts = InfrastructureDaoHelper.loadDistricts(record.getResponsibleRegion());
-		initialResponsibleCommunities = InfrastructureDaoHelper.loadCommunities(record.getResponsibleDistrict());
 		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getResponsibleRegion());
 		initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getResponsibleDistrict());
 		initialFacilities =
@@ -119,11 +118,9 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	protected void onLayoutBinding(FragmentImmunizationEditLayoutBinding contentBinding) {
 		contentBinding.setData(record);
 
-		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
-
 		contentBinding.immunizationCountry.initializeSpinner(countries);
 
-		InfrastructureDaoHelper.initializeFacilityFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			record,
 			contentBinding.immunizationResponsibleRegion,
 			initialRegions,
@@ -154,6 +151,13 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	@Override
 	public void onAfterLayoutBinding(final FragmentImmunizationEditLayoutBinding contentBinding) {
 
+		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
+			contentBinding.facilityOrHome.setVisibility(GONE);
+			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
+			contentBinding.immunizationHealthFacility.setVisibility(GONE);
+			contentBinding.immunizationHealthFacilityDetails.setVisibility(GONE);
+		}
+
 		InfrastructureDaoHelper
 				.initializeHealthFacilityDetailsFieldVisibility(contentBinding.immunizationHealthFacility, contentBinding.immunizationHealthFacilityDetails);
 
@@ -174,7 +178,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
 				contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
 				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-				contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.VISIBLE);
 			}
 			if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
 				contentBinding.immunizationVaccinationLayout.setVisibility(View.VISIBLE);
@@ -210,6 +213,17 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 				contentBinding.immunizationImmunizationStatus.setValue(ImmunizationStatus.NOT_ACQUIRED);
 			}
 		});
+
+		if (record.getHealthFacility() == null
+				|| (record.getHealthFacility() != null && FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid()))) {
+			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
+		} else {
+			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
+			final FacilityType facilityType = record.getFacilityType();
+			if (facilityType != null) {
+				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
+			}
+		}
 	}
 
 	@Override
@@ -221,5 +235,4 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	public boolean isShowNewAction() {
 		return false;
 	}
-
 }
