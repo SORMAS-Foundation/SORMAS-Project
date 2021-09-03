@@ -8,8 +8,6 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 
-import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
-
 @Remote
 public interface SubcontinentFacade
 	extends InfrastructureBaseFacade<SubcontinentDto, SubcontinentIndexDto, SubcontinentReferenceDto, SubcontinentCriteria> {
