@@ -68,6 +68,7 @@
     <string name="action_markAllAsRead">Alle als gelesen markieren</string>
     <string name="action_new">Neu</string>
     <string name="action_new_case">Neuer Fall</string>
+    <string name="action_new_immunization">New Immunization</string>
     <string name="action_new_campaign_form_data">Neue Kampagnen-Formulardaten</string>
     <string name="action_new_contact">Neuer Kontakt</string>
     <string name="action_new_event">Neues Ereignis</string>
@@ -231,6 +232,9 @@
     <string name="caption_year">Jahr</string>
     <string name="caption_latest_submission">Letzte Einreichung: %1$s</string>
     <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
+    <string name="caption_immunization_information">Immunization details</string>
+    <string name="caption_new_immunization">New Immunization</string>
+    <string name="caption_overwrite_immunization_management_status">Overwrite immunization management status</string>
     <string name="confirmation_action">Sind Sie sicher, dass Sie dies tun wollen?</string>
     <string name="confirmation_delete">Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?</string>
     <string name="confirmation_pick_gps">Sind Sie gerade an diesem Ort?</string>
@@ -306,6 +310,7 @@
     <string name="heading_events_list">Ereignisliste</string>
     <string name="heading_existing_persons">Vorhandene Personen</string>
     <string name="heading_existing_cases">Vorhandene Fälle</string>
+    <string name="heading_existing_immunizations">Existing Immunizations</string>
     <string name="heading_existing_events">Bestehende Ereignisse</string>
     <string name="heading_gathering">Versammlung</string>
     <string name="heading_gps_activation">GPS einschalten</string>
@@ -327,6 +332,7 @@
     <string name="heading_person_contact_detail">Personen-Kontaktdetails</string>
     <string name="heading_pick_or_create_person">Person auswählen oder erstellen</string>
     <string name="heading_pick_or_create_case">Fall auswählen oder erstellen</string>
+    <string name="heading_pick_or_create_immunization">Pick or Create an Immunization</string>
     <string name="heading_pick_or_create_event">Ereignis auswählen oder erstellen</string>
     <string name="heading_prescription">Rezept</string>
     <string name="heading_prescription_edit">Rezept bearbeiten</string>
@@ -341,6 +347,10 @@
     <string name="heading_sample_read">Probe lesen</string>
     <string name="heading_sample_summary">Probe-Zusammenfassung</string>
     <string name="heading_samples_list">Proben-Liste</string>
+    <string name="heading_immunization_edit">Edit Immunization</string>
+    <string name="heading_immunization_new">New Immunization</string>
+    <string name="heading_immunization_read">Read Immunization</string>
+    <string name="heading_immunizations_list">Immunization Listing</string>
     <string name="heading_pathogen_test_edit">Erregertest bearbeiten</string>
     <string name="heading_pathogen_test_new">Neuer Erregertest</string>
     <string name="heading_pathogen_test_read">Erregertest lesen</string>
@@ -445,12 +455,14 @@
     <string name="info_case_creation_mark_check_box">Dieser Fall ist ein <b>neuer Fall</b> und <b>kein Duplikat</b> eines der obigen Fälle</string>
     <string name="info_event_creation_mark_check_box">Dieses Ereignis ist ein <b>neues Ereignis</b> und <b>kein Duplikat</b> eines der obigen Ereignisse</string>
     <string name="info_pick_campaign_form_meta">Bitte wählen Sie ein Kampagnenformular, für das Sie Daten eingeben wollen!</string>
+    <string name="info_immunization_override_mark_check_box">Override existing immunization&gt;</string>
     <string name="main_menu_cases">Fälle</string>
     <string name="main_menu_contacts">Kontakte</string>
     <string name="main_menu_dashboard">Übersicht</string>
     <string name="main_menu_events">Ereignisse</string>
     <string name="main_menu_reports">Meldungen</string>
     <string name="main_menu_samples">Proben</string>
+    <string name="main_menu_immunizations">Immunizations</string>
     <string name="main_menu_settings">Einstellungen</string>
     <string name="main_menu_tasks">Aufgaben</string>
     <string name="main_menu_aggregate_reports">mSERS</string>
@@ -514,6 +526,7 @@
     <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
     <string name="tag_row_item_select_or_create_event">rowItemSelectOrCreateEvent</string>
     <string name="tag_row_item_case_pick_or_create">rowItemPickOrCreatePerson</string>
+    <string name="tag_row_item_immunization_pick_or_create">rowItemImmunizationPickOrCreatePerson</string>
     <string name="time_future_almost_two_years">innerhalb von fast zwei Jahren</string>
     <string name="time_future_one_day">morgen</string>
     <string name="time_future_one_hour">innerhalb von etwa einer Stunde</string>
