@@ -35,6 +35,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.action.ActionCriteria;
+import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionStatEntry;
 import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
@@ -187,6 +188,70 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		}
 
 		cq.orderBy(cb.desc(action.get(Action.DATE)));
+
+		return QueryHelper.getResultList(em, cq, first, max);
+	}
+
+	public List<Action> getActionList(ActionCriteria actionCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Action> cq = cb.createQuery(getElementClass());
+		Root<Action> action = cq.from(getElementClass());
+
+		// Add filters
+		Predicate filter = null;
+		if (actionCriteria == null || !actionCriteria.hasContextCriteria()) {
+			filter = createUserFilter(cb, cq, action);
+		}
+
+		if (actionCriteria != null) {
+			Predicate criteriaFilter = buildCriteriaFilter(actionCriteria, cb, action);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case ActionDto.UUID:
+					expression = action.get(Action.UUID);
+					break;
+				case ActionDto.ACTION_STATUS:
+					expression = action.get(Action.ACTION_STATUS);
+					break;
+				case ActionDto.ACTION_MEASURE:
+					expression = action.get(Action.ACTION_MEASURE);
+					break;
+				case ActionDto.ACTION_CONTEXT:
+					expression = action.get(Action.ACTION_CONTEXT);
+					break;
+				case ActionDto.CHANGE_DATE:
+					expression = action.get(Action.CHANGE_DATE);
+					break;
+				case ActionDto.CREATION_DATE:
+					expression = action.get(Action.CREATION_DATE);
+					break;
+				case ActionDto.DATE:
+					expression = action.get(Action.DATE);
+					break;
+				case ActionDto.PRIORITY:
+					expression = action.get(Action.PRIORITY);
+					break;
+				case ActionDto.TITLE:
+					expression = cb.lower(action.get(Action.TITLE));
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(action.get(Action.DATE)));
+		}
 
 		return QueryHelper.getResultList(em, cq, first, max);
 	}
@@ -476,6 +541,31 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		if (criteria != null) {
 			Predicate criteriaFilter = buildEventCriteriaFilter(criteria, actionQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.count(action.get(Action.UUID)));
+
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	public long countActions(ActionCriteria actionCriteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Action> action = cq.from(getElementClass());
+
+		// Add filters
+		Predicate filter = null;
+		if (actionCriteria == null || !actionCriteria.hasContextCriteria()) {
+			filter = createUserFilter(cb, cq, action);
+		}
+
+		if (actionCriteria != null) {
+			Predicate criteriaFilter = buildCriteriaFilter(actionCriteria, cb, action);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
