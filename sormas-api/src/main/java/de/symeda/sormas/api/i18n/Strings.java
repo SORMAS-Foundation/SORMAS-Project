@@ -627,6 +627,8 @@ public interface Strings {
 	String headingVisitsDeleted = "headingVisitsDeleted";
 	String headingVisualization = "headingVisualization";
 	String headingWrongFileType = "headingWrongFileType";
+	String immunizationRecoveryHeading = "immunizationRecoveryHeading";
+	String immunizationVaccinationHeading = "immunizationVaccinationHeading";
 	String inactive = "inactive";
 	String inColumn = "inColumn";
 	String infoActivityAsCaseInvestigation = "infoActivityAsCaseInvestigation";
@@ -1199,6 +1201,10 @@ public interface Strings {
 	String promptImmunizationDateType = "promptImmunizationDateType";
 	String promptImmunizationEpiWeekFrom = "promptImmunizationEpiWeekFrom";
 	String promptImmunizationEpiWeekTo = "promptImmunizationEpiWeekTo";
+	String promptImmunizationPositiveTestResultDateFrom = "promptImmunizationPositiveTestResultDateFrom";
+	String promptImmunizationRecoveryDateFrom = "promptImmunizationRecoveryDateFrom";
+	String promptImmunizationStartDateFrom = "promptImmunizationStartDateFrom";
+	String promptImmunizationValidFrom = "promptImmunizationValidFrom";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";

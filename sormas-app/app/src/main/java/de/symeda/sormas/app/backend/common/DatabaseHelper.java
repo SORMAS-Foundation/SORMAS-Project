@@ -15,6 +15,21 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -26,21 +41,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
 
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
@@ -174,7 +174,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 318;
+	public static final int DATABASE_VERSION = 319;
 
 	private static DatabaseHelper instance = null;
 
@@ -2795,6 +2795,51 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Symptoms.class).executeRaw(
 					"UPDATE symptoms SET symptomatic = null WHERE (SELECT visitStatus FROM visits WHERE visits.symptoms_id = symptoms.id) != 'COOPERATIVE';");
 
+			case 318:
+				currentVersion = 318;
+				getDao(Immunization.class).executeRaw("DROP TABLE immunization");
+				//@formatter:off
+				getDao(Immunization.class).executeRaw("CREATE TABLE immunization (" +
+						" id integer primary key autoincrement," +
+						" uuid varchar(36) not null unique," +
+						" changeDate timestamp not null," +
+						" creationDate timestamp not null," +
+						" lastOpenedDate timestamp," +
+						" localChangeDate timestamp not null," +
+						" modified SMALLINT DEFAULT 0," +
+						" snapshot SMALLINT DEFAULT 0,"  +
+						" pseudonymized SMALLINT,"  +
+						" disease varchar(255)," +
+						" diseaseDetails varchar(512)," +
+						" person_id bigint REFERENCES person(id)," +
+						" reportDate timestamp not null," +
+						" reportingUser_id bigint REFERENCES users(id)," +
+						" archived boolean DEFAULT false," +
+						" immunizationStatus varchar(255)," +
+						" meansOfImmunization varchar(255)," +
+						" meansOfImmunizationDetails text," +
+						" immunizationManagementStatus varchar(255)," +
+						" externalId varchar(255)," +
+						" responsibleRegion_id bigint," +
+						" responsibleDistrict_id bigint," +
+						" responsibleCommunity_id bigint," +
+						" country_id bigint REFERENCES country(id)," +
+						" facilityType varchar(255)," +
+						" healthFacility_id bigint REFERENCES facility(id)," +
+						" healthFacilityDetails varchar(512)," +
+						" startDate timestamp," +
+						" endDate timestamp," +
+						" validFrom timestamp," +
+						" validUntil timestamp," +
+						" numberOfDoses int," +
+						" previousInfection varchar(255)," +
+						" lastInfectionDate timestamp," +
+						" additionalDetails text," +
+						" positiveTestResultDate timestamp," +
+						" recoveryDate timestamp," +
+						" relatedCase_id bigint REFERENCES cases(id))");
+
+				//@formatter:on
 				// ATTENTION: break should only be done after last version
 				break;
 

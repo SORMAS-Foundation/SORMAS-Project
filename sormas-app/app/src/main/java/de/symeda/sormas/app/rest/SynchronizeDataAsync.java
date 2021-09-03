@@ -222,6 +222,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		final boolean hasUnsynchronizedCampaignData = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)
 			&& (DatabaseHelper.getCampaignFormDataDao().isAnyModified());
 		return DatabaseHelper.getCaseDao().isAnyModified()
+			|| DatabaseHelper.getImmunizationDao().isAnyModified()
 			|| DatabaseHelper.getContactDao().isAnyModified()
 			|| DatabaseHelper.getPersonDao().isAnyModified()
 			|| DatabaseHelper.getEventDao().isAnyModified()
