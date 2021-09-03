@@ -103,6 +103,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
@@ -440,6 +441,10 @@ public class TaskFacadeEjb implements TaskFacade {
 				joins.getContactPerson().get(Person.LAST_NAME),
 				joins.getContactCasePerson().get(Person.FIRST_NAME),
 				joins.getContactCasePerson().get(Person.LAST_NAME),
+				joins.getTravelEntry().get(TravelEntry.UUID),
+				joins.getTravelEntry().get(TravelEntry.EXTERNAL_ID),
+				joins.getTravelEntryPerson().get(Person.FIRST_NAME),
+				joins.getTravelEntryPerson().get(Person.LAST_NAME),
 				task.get(Task.TASK_TYPE),
 				task.get(Task.PRIORITY),
 				task.get(Task.DUE_DATE),

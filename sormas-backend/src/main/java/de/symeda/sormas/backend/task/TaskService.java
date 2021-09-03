@@ -171,6 +171,10 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
 		}
+		Predicate travelEntryFilter = travelEntryService.createUserFilter(cb, cq, taskPath.join(Task.TRAVEL_ENTRY, JoinType.LEFT));
+		if (travelEntryFilter != null) {
+			filter = cb.or(filter, travelEntryFilter);
+		}
 
 		return CriteriaBuilderHelper.and(cb, filter, assigneeFilter);
 	}
@@ -305,7 +309,10 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 						cb.isTrue(from.get(Task.ARCHIVED)),
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE), cb.equal(joins.getCaze().get(Case.ARCHIVED), true)),
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT), cb.equal(joins.getContactCase().get(Case.ARCHIVED), true)),
-						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT), cb.equal(joins.getEvent().get(Event.ARCHIVED), true))));
+						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT), cb.equal(joins.getEvent().get(Event.ARCHIVED), true)),
+						cb.and(
+							cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.TRAVEL_ENTRY),
+							cb.equal(joins.getTravelEntry().get(TravelEntry.ARCHIVED), true))));
 			}
 		}
 		if (taskCriteria.getTaskContext() != null) {
@@ -396,6 +403,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		Join<Task, Contact> contact = from.join(Task.CONTACT, JoinType.LEFT);
 		Join<Contact, Case> contactCaze = contact.join(Contact.CAZE, JoinType.LEFT);
 		Join<Task, Event> event = from.join(Task.EVENT, JoinType.LEFT);
+		Join<Task, TravelEntry> travelEntry = from.join(Task.TRAVEL_ENTRY, JoinType.LEFT);
 
 		return cb.and(
 			cb.isFalse(from.get(Task.ARCHIVED)),
@@ -409,7 +417,10 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					cb.or(cb.equal(contactCaze.get(Case.ARCHIVED), false), cb.isNull(contactCaze.get(Case.ARCHIVED)))),
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
-					cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED))))));
+					cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED)))),
+				cb.and(
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.TRAVEL_ENTRY),
+					cb.or(cb.equal(travelEntry.get(TravelEntry.ARCHIVED), false), cb.isNull(travelEntry.get(TravelEntry.ARCHIVED))))));
 	}
 
 	public Task buildTask(User creatorUser) {

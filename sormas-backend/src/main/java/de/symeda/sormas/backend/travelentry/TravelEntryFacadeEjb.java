@@ -91,7 +91,11 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		if (entity == null) {
 			return null;
 		}
-		return new TravelEntryReferenceDto(entity.getUuid(), entity.getPerson().getFirstName(), entity.getExternalId());
+		return new TravelEntryReferenceDto(
+			entity.getUuid(),
+			entity.getExternalId(),
+			entity.getPerson().getFirstName(),
+			entity.getPerson().getLastName());
 	}
 
 	@Override

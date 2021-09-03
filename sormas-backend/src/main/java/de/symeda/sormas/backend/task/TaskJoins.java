@@ -85,8 +85,7 @@ public class TaskJoins<T> extends AbstractDomainObjectJoins<T, Task> {
 	private Join<TravelEntry, Region> travelEntryResponsibleRegion;
 	private Join<TravelEntry, District> travelEntryResponsibleDistrict;
 	private Join<TravelEntry, Community> travelEntryResponsibleCommunity;
-
-	private Join<TravelEntry, Person> 
+	private Join<TravelEntry, Person> travelEntryPerson;
 
 	public TaskJoins(From<T, Task> root) {
 		super(root);
@@ -169,6 +168,14 @@ public class TaskJoins<T> extends AbstractDomainObjectJoins<T, Task> {
 
 	public void setTravelEntryResponsibleCommunity(Join<TravelEntry, Community> travelEntryResponsibleCommunity) {
 		this.travelEntryResponsibleCommunity = travelEntryResponsibleCommunity;
+	}
+
+	public Join<TravelEntry, Person> getTravelEntryPerson() {
+		return getOrCreate(travelEntryPerson, TravelEntry.PERSON, JoinType.LEFT, getTravelEntry(), this::setTravelEntryPerson);
+	}
+
+	public void setTravelEntryPerson(Join<TravelEntry, Person> travelEntryPerson) {
+		this.travelEntryPerson = travelEntryPerson;
 	}
 
 	public Join<Event, User> getEventReportingUser() {
