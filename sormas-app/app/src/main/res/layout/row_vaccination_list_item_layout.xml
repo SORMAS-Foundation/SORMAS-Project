@@ -28,6 +28,9 @@
         <variable
             name="testResultMessage"
             type="String" />
+
+        <import type="de.symeda.sormas.app.util.DateFormatHelper" />
+
     </data>
 
     <LinearLayout
@@ -52,72 +55,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:orientation="horizontal"
-                android:scrollHorizontally="true">
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/txtVaccineName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
-                    android:textColor="@color/listActivityRowTertiaryText"
-                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
-                    app:defaultValue='@{@string/value_not_available}'
-                    app:value="@{data.vaccineName}" />
-
-                <TextView
-                    android:id="@+id/txtVaccineNameDateSeparator"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="-"
-                    android:textColor="@color/listActivityRowLeastText"
-                    android:textSize="@dimen/listActivityRowTertiaryTextSize" />
-
-                <TextView
-                    android:id="@+id/txtVaccinationDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
-                    android:textColor="@color/listActivityRowDateText"
-                    android:textSize="@dimen/row_entry_date_text_size"
-                    app:defaultValue='@{@string/value_vaccine_date_unknown}'
-                    app:timeAgoValue="@{data.vaccinationDate}" />
-
-                <ImageView
-                    android:layout_width="@dimen/separatorThickness"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginBottom="2dp"
-                    android:background="@color/listActivityRowTopCaptionSeparator" />
-
-                <TextView
-                    android:id="@+id/txtVaccineManufacturer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
-                    android:textColor="@color/listActivityRowTertiaryText"
-                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
-                    app:defaultValue='@{@string/value_not_available}'
-                    app:value="@{data.vaccineManufacturer}" />
-
-                <ImageView
-                    android:layout_width="@dimen/separatorThickness"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginBottom="2dp"
-                    android:background="@color/listActivityRowTopCaptionSeparator" />
-
-                <TextView
-                    android:id="@+id/txtVaccinationUuid"
+                    android:id="@+id/vaccination_uuid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
@@ -126,6 +67,71 @@
                     app:defaultValue='@{@string/value_uuid_unknown}'
                     app:shortUuid="@{true}"
                     app:value="@{data.uuid}" />
+
+                <TextView
+                    android:id="@+id/txtVaccinationDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif"
+                    android:gravity="right"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    app:value="@{DateFormatHelper.formatLocalDate(data.vaccinationDate)}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txtVaccineName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:textColor="@color/listActivityRowTertiaryText"
+                    android:textSize="@dimen/row_entry_secondary_text_size"
+                    app:value="@{data.vaccineName}" />
+
+                <TextView
+                    android:id="@+id/txtVaccineManufacturer"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:gravity="right"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:textSize="@dimen/row_entry_secondary_text_size"
+                    app:value="@{data.vaccineManufacturer}" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txtVaccineType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    app:value="@{data.vaccineType}" />
+
+                <TextView
+                    android:id="@+id/txtVaccineDose"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="right"
+                    android:textColor="@color/listActivityRowLeastText"
+                    android:textSize="@dimen/listActivityRowTertiaryTextSize"
+                    app:value="@{data.vaccineDose}" />
 
             </LinearLayout>
 
@@ -152,9 +158,7 @@
                         android:layout_centerVertical="true"
                         android:scaleType="fitEnd"
                         android:tint="@color/syncIconListActivityRowItem" />
-
                 </RelativeLayout>
-
 
                 <ImageView
                     android:id="@+id/img_open_entry"
@@ -165,8 +169,6 @@
                     android:src="@drawable/ic_go_to_read_view_24dp" />
 
             </LinearLayout>
-
         </LinearLayout>
-
     </LinearLayout>
 </layout>
