@@ -61,10 +61,8 @@ public class ImmunizationReadFragment extends BaseReadFragment<FragmentImmunizat
 	public void onAfterLayoutBinding(FragmentImmunizationReadLayoutBinding contentBinding) {
 
 		if (record.getHealthFacility() == null || FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())) {
-			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 		} else {
-			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
 			final FacilityType facilityType = record.getFacilityType();
 			if (facilityType != null) {
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());

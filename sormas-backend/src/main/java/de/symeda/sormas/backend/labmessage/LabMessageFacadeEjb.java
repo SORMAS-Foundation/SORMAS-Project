@@ -24,12 +24,9 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
-import de.symeda.sormas.api.labmessage.TestReportDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.backend.sample.PathogenTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,14 +40,17 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageFacade;
 import de.symeda.sormas.api.labmessage.LabMessageFetchResult;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
+import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.labmessage.NewMessagesState;
+import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -131,7 +131,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	public LabMessageDto save(LabMessageDto dto) {
+	public LabMessageDto save(@Valid LabMessageDto dto) {
 
 		LabMessage labMessage = labMessageService.getByUuid(dto.getUuid());
 

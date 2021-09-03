@@ -21,7 +21,7 @@ package org.sormas.e2etests.enums;
 import lombok.Getter;
 
 @Getter
-public enum Roles {
+public enum RolesValues {
   PASSANGER("Passanger"),
   STUFF("Stuff"),
   NURSING_STAFF("Nursing Staff"),
@@ -42,7 +42,7 @@ public enum Roles {
 
   private final String role;
 
-  Roles(String role) {
+  RolesValues(String role) {
     this.role = role;
   }
 

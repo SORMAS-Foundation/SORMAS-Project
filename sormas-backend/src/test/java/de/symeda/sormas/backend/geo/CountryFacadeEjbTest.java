@@ -107,7 +107,7 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 		expected.setDefaultName("Romania");
 		expected.setIsoCode("ROU");
 		expected.setUnoCode("642");
-		String uuid = getCountryFacade().saveCountry(expected);
+		String uuid = getCountryFacade().save(expected).getUuid();
 		expected.setUuid(uuid);
 		Country actual = getCountryService().getByIsoCode("ROU", false).orElseThrow(() -> new Exception("Country not found"));
 		assertTrue(entityIsEqualToDto(actual, expected));
@@ -117,7 +117,7 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 	public void testSaveCountryIsoCodeEmpty() {
 		CountryDto country = new CountryDto();
 		country.setDefaultName("Romania");
-		getCountryFacade().saveCountry(country);
+		getCountryFacade().save(country);
 	}
 
 	@Test(expected = ValidationRuntimeException.class)
@@ -126,7 +126,7 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 		CountryDto duplicate = new CountryDto();
 		duplicate.setDefaultName("Romania");
 		duplicate.setIsoCode("ROU");
-		getCountryFacade().saveCountry(duplicate);
+		getCountryFacade().save(duplicate);
 	}
 
 	@Test(expected = ValidationRuntimeException.class)
@@ -136,7 +136,7 @@ public class CountryFacadeEjbTest extends AbstractBeanTest {
 		duplicate.setDefaultName("Germany");
 		duplicate.setIsoCode("DEU");
 		duplicate.setUnoCode("642");
-		getCountryFacade().saveCountry(duplicate);
+		getCountryFacade().save(duplicate);
 	}
 
 	@Test

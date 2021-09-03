@@ -59,12 +59,12 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -325,7 +325,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return saveSample(dto, true, true, true);
 	}
 
-	public SampleDto saveSample(SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean syncShares) {
+	public SampleDto saveSample(@Valid SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean syncShares) {
 
 		Sample existingSample = sampleService.getByUuid(dto.getUuid());
 		SampleDto existingSampleDto = toDto(existingSample);

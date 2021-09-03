@@ -5,11 +5,12 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 @Remote
 public interface CampaignFormMetaFacade {
 
-	CampaignFormMetaDto saveCampaignFormMeta(CampaignFormMetaDto campaignFormMetaDto);
+	CampaignFormMetaDto saveCampaignFormMeta(@Valid CampaignFormMetaDto campaignFormMetaDto);
 
 	/**
 	 * Validates the campaign form by checking whether mandatory elements are included, only supported types are used

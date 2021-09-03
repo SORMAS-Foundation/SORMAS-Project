@@ -17,6 +17,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -39,16 +40,16 @@ public class AreaFacadeEjb implements AreaFacade {
 	private EntityManager em;
 
 	@EJB
-	private AreaService service;
+	private AreaService areaService;
 
 	@Override
 	public List<AreaReferenceDto> getAllActiveAsReference() {
-		return service.getAllActive(Area.NAME, true).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
+		return areaService.getAllActive(Area.NAME, true).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
-	public AreaDto getAreaByUuid(String uuid) {
-		return toDto(service.getByUuid(uuid));
+	public AreaDto getByUuid(String uuid) {
+		return toDto(areaService.getByUuid(uuid));
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class AreaFacadeEjb implements AreaFacade {
 		CriteriaQuery<Area> cq = cb.createQuery(Area.class);
 		Root<Area> areaRoot = cq.from(Area.class);
 
-		Predicate filter = service.buildCriteriaFilter(criteria, cb, areaRoot);
+		Predicate filter = areaService.buildCriteriaFilter(criteria, cb, areaRoot);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -92,7 +93,7 @@ public class AreaFacadeEjb implements AreaFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Area> areaRoot = cq.from(Area.class);
 
-		Predicate filter = service.buildCriteriaFilter(criteria, cb, areaRoot);
+		Predicate filter = areaService.buildCriteriaFilter(criteria, cb, areaRoot);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -102,20 +103,20 @@ public class AreaFacadeEjb implements AreaFacade {
 	}
 
 	@Override
-	public void saveArea(AreaDto dto) {
-		saveArea(dto, false);
+	public AreaDto save(@Valid AreaDto dto) {
+		return save(dto, false);
 	}
 
 	@Override
-	public void saveArea(AreaDto dto, boolean allowMerge) {
-		Area area = service.getByUuid(dto.getUuid());
+	public AreaDto save(@Valid AreaDto dto, boolean allowMerge) {
+		Area area = areaService.getByUuid(dto.getUuid());
 
 		if (area == null) {
-			List<Area> duplicates = service.getByName(dto.getName(), true);
+			List<Area> duplicates = areaService.getByName(dto.getName(), true);
 			if (!duplicates.isEmpty()) {
 				if (allowMerge) {
 					area = duplicates.get(0);
-					AreaDto dtoToMerge = getAreaByUuid(area.getUuid());
+					AreaDto dtoToMerge = getByUuid(area.getUuid());
 					dto = DtoHelper.copyDtoValues(dtoToMerge, dto, true);
 				} else {
 					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importAreaAlreadyExists));
@@ -124,49 +125,50 @@ public class AreaFacadeEjb implements AreaFacade {
 		}
 
 		area = fromDto(dto, area, true);
-		service.ensurePersisted(area);
+		areaService.ensurePersisted(area);
+		return toDto(area);
 	}
 
 	@Override
 	public boolean isUsedInOtherInfrastructureData(Collection<String> areaUuids) {
-		return service.isUsedInInfrastructureData(areaUuids, Region.AREA, Region.class);
+		return areaService.isUsedInInfrastructureData(areaUuids, Region.AREA, Region.class);
 	}
 
 	@Override
 	public void archive(String areaUuid) {
-		Area area = service.getByUuid(areaUuid);
+		Area area = areaService.getByUuid(areaUuid);
 		area.setArchived(true);
-		service.ensurePersisted(area);
+		areaService.ensurePersisted(area);
 	}
 
 	@Override
-	public void deArchive(String areaUuid) {
-		Area area = service.getByUuid(areaUuid);
+	public void dearchive(String areaUuid) {
+		Area area = areaService.getByUuid(areaUuid);
 		area.setArchived(false);
-		service.ensurePersisted(area);
+		areaService.ensurePersisted(area);
 	}
 
 	@Override
-	public List<AreaReferenceDto> getByName(String name, boolean includeArchivedAreas) {
-		return service.getByName(name, includeArchivedAreas).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	public List<AreaReferenceDto> getByName(String name, boolean includeArchived) {
+		return areaService.getByName(name, includeArchived).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<AreaDto> getAllAfter(Date date) {
-		return service.getAll((cb, root) -> service.createChangeDateFilter(cb, root, date))
-				.stream()
-				.map(this::toDto)
-				.collect(Collectors.toList());
+		return areaService.getAll((cb, root) -> areaService.createChangeDateFilter(cb, root, date))
+			.stream()
+			.map(this::toDto)
+			.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<AreaDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		return areaService.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<String> getAllUuids() {
-		return service.getAllUuids();
+		return areaService.getAllUuids();
 	}
 
 	public Area fromDto(@NotNull AreaDto source, Area target, boolean checkChangeDate) {
@@ -177,6 +179,15 @@ public class AreaFacadeEjb implements AreaFacade {
 		target.setArchived(source.isArchived());
 
 		return target;
+	}
+
+	@Override
+	public List<AreaReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+
+		return areaService.getByExternalId(externalId, includeArchivedEntities)
+			.stream()
+			.map(AreaFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	public AreaDto toDto(Area source) {

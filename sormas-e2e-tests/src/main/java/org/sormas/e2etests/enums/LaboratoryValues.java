@@ -22,18 +22,28 @@ import java.util.Random;
 import lombok.Getter;
 
 @Getter
-public enum LabUuid {
-  VOREINGESTELLTES("VQL6NJ-HPJY24-56F2R5-T5UV2HUI"),
-  NEW_LAB("SORMAS-CONSTID-OTHERS-FACILITY");
+public enum LaboratoryValues {
+  VOREINGESTELLTES_LABOR(
+      "Voreingestelltes Labor", "Voreingestelltes Labor", "VQL6NJ-HPJY24-56F2R5-T5UV2HUI"),
+  OTHER_FACILITY("Andere Einrichtung", "Other facility", "SORMAS-CONSTID-OTHERS-FACILITY");
 
-  private final String UuidValue;
+  private final String caption;
+  private final String captionEnglish;
+  private final String uuidValue;
 
-  LabUuid(String idValue) {
-    UuidValue = idValue;
+  LaboratoryValues(String captionType, String captionTypeEnglish, String idValue) {
+    caption = captionType;
+    captionEnglish = captionTypeEnglish;
+    uuidValue = idValue;
   }
 
-  public static String getRandomUuid() {
+  public static String getRandomCaption() {
     Random random = new Random();
-    return String.valueOf(LabUuid.values()[random.nextInt(values().length)].UuidValue);
+    return String.valueOf(LaboratoryValues.values()[random.nextInt(values().length)].caption);
+  }
+
+  public static String getRandomUUID() {
+    Random random = new Random();
+    return String.valueOf(LaboratoryValues.values()[random.nextInt(values().length)].uuidValue);
   }
 }

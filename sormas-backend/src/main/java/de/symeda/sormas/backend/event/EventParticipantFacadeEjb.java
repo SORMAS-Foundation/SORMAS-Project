@@ -65,17 +65,17 @@ import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -238,7 +238,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return saveEventParticipant(dto, true, true);
 	}
 
-	public EventParticipantDto saveEventParticipant(EventParticipantDto dto, boolean checkChangeDate, boolean syncShares) {
+	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean syncShares) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? eventParticipantService.getByUuid(dto.getUuid()) : null;
 		EventParticipantDto existingDto = toDto(existingParticipant);
 

@@ -133,7 +133,6 @@ public class ImmunizationListActivity extends PagedBaseListActivity {
 	@Override
 	public void goToNewView() {
 		ImmunizationNewActivity.startActivity(getContext());
-		finish();
 	}
 
 	@Override

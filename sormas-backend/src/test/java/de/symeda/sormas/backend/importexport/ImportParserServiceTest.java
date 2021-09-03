@@ -166,7 +166,7 @@ public class ImportParserServiceTest extends AbstractBeanTest {
 	public void testParseAreaFieldValue() throws IntrospectionException, ImportErrorException {
 		AreaDto area = AreaDto.build();
 		area.setName("Test Area");
-		getAreaFacade().saveArea(area);
+		getAreaFacade().save(area);
 
 		Object parsed = getImportParserService().parseValue(
 			new PropertyDescriptor(RegionDto.AREA, RegionDto.class),

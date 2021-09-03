@@ -18,51 +18,29 @@
 package de.symeda.sormas.api.infrastructure.community;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
-public interface CommunityFacade {
+public interface CommunityFacade extends InfrastructureBaseFacade<CommunityDto, CommunityDto, CommunityReferenceDto, CommunityCriteria> {
 
 	List<CommunityReferenceDto> getAllActiveByDistrict(String districtUuid);
 
-	List<CommunityDto> getAllAfter(Date date);
-
-	List<CommunityDto> getIndexList(CommunityCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
-
 	Page<CommunityDto> getIndexPage(CommunityCriteria communityCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
-
-	long count(CommunityCriteria criteria);
-
-	CommunityDto getByUuid(String uuid);
-
-	List<String> getAllUuids();
 
 	CommunityReferenceDto getCommunityReferenceByUuid(String uuid);
 
 	CommunityReferenceDto getCommunityReferenceById(long id);
 
-	List<CommunityDto> getByUuids(List<String> uuids);
-
-	void saveCommunity(CommunityDto dto) throws ValidationRuntimeException;
-
-	void saveCommunity(CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException;
-
+	// todo handle parent infra generically
 	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, boolean includeArchivedEntities);
-
-	List<CommunityReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities);
-
-	void archive(String communityUuid);
-
-	void dearchive(String communityUuid);
 
 	boolean isUsedInOtherInfrastructureData(Collection<String> communityUuids);
 
