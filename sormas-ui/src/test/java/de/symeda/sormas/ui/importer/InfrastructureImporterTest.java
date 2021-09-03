@@ -10,6 +10,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.junit.Test;
@@ -20,6 +23,7 @@ import com.opencsv.exceptions.CsvValidationException;
 
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
@@ -213,8 +217,8 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 
 	private static class InfrastructureImporterExtension extends InfrastructureImporter {
 
-		private InfrastructureImporterExtension(File inputFile, UserDto currentUser, InfrastructureType infrastructureType) {
-			super(inputFile, currentUser, infrastructureType);
+		private InfrastructureImporterExtension(File inputFile, UserDto currentUser, InfrastructureType infrastructureType) throws IOException {
+			super(inputFile, currentUser, infrastructureType, ValueSeparator.COMMA);
 		}
 
 		protected Writer createErrorReportWriter() {
@@ -225,6 +229,11 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 					// Do nothing
 				}
 			});
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

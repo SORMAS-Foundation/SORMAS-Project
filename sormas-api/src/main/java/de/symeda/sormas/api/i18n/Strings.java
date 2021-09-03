@@ -244,6 +244,7 @@ public interface Strings {
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
+	String errorConstraintViolation = "errorConstraintViolation";
 	String errorContactDuplicateDeletion = "errorContactDuplicateDeletion";
 	String errorContactMerging = "errorContactMerging";
 	String errorCreatingTemplateDirectory = "errorCreatingTemplateDirectory";
@@ -271,7 +272,8 @@ public interface Strings {
 	String errorOccurred = "errorOccurred";
 	String errorProblemOccurred = "errorProblemOccurred";
 	String errorProcessingTemplate = "errorProcessingTemplate";
-	String errorQuarantineOnlyCaseAndContacts = "errorQuarantineOnlyCaseAndContacts";
+	String errorQuarantineBulkOnlySupportedEntities = "errorQuarantineBulkOnlySupportedEntities";
+	String errorQuarantineOnlySupportedEntities = "errorQuarantineOnlySupportedEntities";
 	String errorReadingDocument = "errorReadingDocument";
 	String errorReadingTemplate = "errorReadingTemplate";
 	String errorSetFeverRequired = "errorSetFeverRequired";
@@ -504,6 +506,7 @@ public interface Strings {
 	String headingImportSubcontinents = "headingImportSubcontinents";
 	String headingImportTravelEntries = "headingImportTravelEntries";
 	String headingInformationSource = "headingInformationSource";
+	String headingInfrastructureLocked = "headingInfrastructureLocked";
 	String headingIntroduction = "headingIntroduction";
 	String headingInvalidDateEntered = "headingInvalidDateEntered";
 	String headingLabMessageDownload = "headingLabMessageDownload";
@@ -874,8 +877,10 @@ public interface Strings {
 	String messageContinentsArchivingNotPossible = "messageContinentsArchivingNotPossible";
 	String messageContinentsDearchived = "messageContinentsDearchived";
 	String messageConvertContactToCase = "messageConvertContactToCase";
+	String messageConvertContactToCaseDifferentDiseases = "messageConvertContactToCaseDifferentDiseases";
 	String messageConvertEventParticipantToCase = "messageConvertEventParticipantToCase";
 	String messageConvertEventParticipantToCaseDifferentDiseases = "messageConvertEventParticipantToCaseDifferentDiseases";
+	String messageConvertEventParticipantToCaseNoDisease = "messageConvertEventParticipantToCaseNoDisease";
 	String messageCopyPassword = "messageCopyPassword";
 	String messageCountCasesAlreadyInEvent = "messageCountCasesAlreadyInEvent";
 	String messageCountCasesNotDeleted = "messageCountCasesNotDeleted";
@@ -889,7 +894,6 @@ public interface Strings {
 	String messageCountryDearchived = "messageCountryDearchived";
 	String messageCountryDearchivingNotPossible = "messageCountryDearchivingNotPossible";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
-	String messageCreateContactCase = "messageCreateContactCase";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDeletionUnsupportedByExternalJournalWarning = "messageDeletionUnsupportedByExternalJournalWarning";
 	String messageDistrictArchived = "messageDistrictArchived";
@@ -965,6 +969,7 @@ public interface Strings {
 	String messageImportPartiallySuccessful = "messageImportPartiallySuccessful";
 	String messageImportSuccessful = "messageImportSuccessful";
 	String messageIncompleteGpsCoordinates = "messageIncompleteGpsCoordinates";
+	String messageInfrastructureLocked = "messageInfrastructureLocked";
 	String messageInvalidDatesLineListing = "messageInvalidDatesLineListing";
 	String messageLabMessagesDeleted = "messageLabMessagesDeleted";
 	String messageLabMessagesDeleteProcessed = "messageLabMessagesDeleteProcessed";
@@ -1058,6 +1063,7 @@ public interface Strings {
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
 	String messageTravelEntryArchived = "messageTravelEntryArchived";
 	String messageTravelEntryDearchived = "messageTravelEntryDearchived";
+	String messageTravelEntryPOEFilledBySystem = "messageTravelEntryPOEFilledBySystem";
 	String messageTravelEntrySaved = "messageTravelEntrySaved";
 	String messageTreatmentCreated = "messageTreatmentCreated";
 	String messageTreatmentSaved = "messageTreatmentSaved";
@@ -1143,6 +1149,10 @@ public interface Strings {
 	String populationDataByDistrict = "populationDataByDistrict";
 	String populationDataByRegion = "populationDataByRegion";
 	String previousPeriod = "previousPeriod";
+	String promptActionChangeDateFrom = "promptActionChangeDateFrom";
+	String promptActionChangeDateTo = "promptActionChangeDateTo";
+	String promptActionChangeEpiWeekFrom = "promptActionChangeEpiWeekFrom";
+	String promptActionChangeEpiWeekTo = "promptActionChangeEpiWeekTo";
 	String promptActionDateFrom = "promptActionDateFrom";
 	String promptActionDateTo = "promptActionDateTo";
 	String promptActionEpiWeekFrom = "promptActionEpiWeekFrom";

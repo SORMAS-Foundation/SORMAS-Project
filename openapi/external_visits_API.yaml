@@ -382,6 +382,9 @@ components:
       type: object
       properties:
         personUuid:
+          maxLength: 36
+          minLength: 20
+          pattern: "^[0-9a-zA-Z-]*$"
           type: string
         disease:
           type: string
@@ -452,13 +455,19 @@ components:
           - "Available, but uncooperative"
           - Available and cooperative
         visitRemarks:
+          maxLength: 512
+          minLength: 0
           type: string
         symptoms:
           $ref: '#/components/schemas/SymptomsDto'
         reportLat:
+          maximum: 90
+          minimum: -90
           type: number
           format: double
         reportLon:
+          maximum: 180
+          minimum: -180
           type: number
           format: double
         reportLatLonAccuracy:
@@ -474,6 +483,8 @@ components:
           type: string
           format: date-time
         uuid:
+          maxLength: 36
+          minLength: 20
           pattern: "^[0-9a-zA-Z-]*$"
           type: string
         pseudonymized:
@@ -867,6 +878,8 @@ components:
           type: string
           format: date-time
         onsetSymptom:
+          maxLength: 512
+          minLength: 0
           type: string
         oralUlcers:
           type: string
@@ -881,6 +894,8 @@ components:
           - "No"
           - Unknown
         otherHemorrhagicSymptomsText:
+          maxLength: 512
+          minLength: 0
           type: string
         otherNonHemorrhagicSymptoms:
           type: string
@@ -889,6 +904,8 @@ components:
           - "No"
           - Unknown
         otherNonHemorrhagicSymptomsText:
+          maxLength: 512
+          minLength: 0
           type: string
         otitisMedia:
           type: string
@@ -915,6 +932,8 @@ components:
           - "No"
           - Unknown
         patientIllLocation:
+          maxLength: 512
+          minLength: 0
           type: string
         pharyngealErythema:
           type: string
@@ -1000,6 +1019,8 @@ components:
         symptomatic:
           type: boolean
         symptomsComments:
+          maxLength: 512
+          minLength: 0
           type: string
         temperature:
           type: number
@@ -1097,6 +1118,8 @@ components:
           - Ventricular septal defect (VSD)
           - Other heart defect
         congenitalHeartDiseaseDetails:
+          maxLength: 512
+          minLength: 0
           type: string
         unexplainedBleeding:
           type: string
@@ -1366,6 +1389,8 @@ components:
           - "No"
           - Unknown
         otherComplicationsText:
+          maxLength: 512
+          minLength: 0
           type: string
         seizures:
           type: string

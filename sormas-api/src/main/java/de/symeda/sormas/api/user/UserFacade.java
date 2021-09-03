@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -33,7 +34,7 @@ public interface UserFacade {
 
 	UserDto getByUuid(String uuid);
 
-	UserDto saveUser(UserDto dto);
+	UserDto saveUser(@Valid UserDto dto);
 
 	boolean isLoginUnique(String uuid, String userName);
 

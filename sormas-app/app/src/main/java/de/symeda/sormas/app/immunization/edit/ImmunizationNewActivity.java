@@ -26,6 +26,7 @@ import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -263,4 +264,11 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 		return null;
 	}
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		if (saveTask != null && !saveTask.isCancelled())
+			saveTask.cancel(true);
+	}
 }

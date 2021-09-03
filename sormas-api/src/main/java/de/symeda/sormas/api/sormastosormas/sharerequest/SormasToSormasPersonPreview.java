@@ -15,8 +15,14 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.io.Serializable;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.Sex;
 
@@ -31,12 +37,15 @@ public class SormasToSormasPersonPreview implements Serializable {
 	public static final String SEX = "sex";
 	public static final String ADDRESS = "address";
 
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String firstName;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String lastName;
 	private Integer birthdateDD;
 	private Integer birthdateMM;
 	private Integer birthdateYYYY;
 	private Sex sex;
+	@Valid
 	private LocationDto address;
 
 	public String getFirstName() {

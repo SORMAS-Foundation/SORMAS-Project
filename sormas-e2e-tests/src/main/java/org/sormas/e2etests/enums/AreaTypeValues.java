@@ -22,23 +22,20 @@ import java.util.Random;
 import lombok.Getter;
 
 @Getter
-public enum LabCaption {
-  VOREINGESTELLTES_LABOR(
-      "Voreingestelltes Labor", "Voreingestelltes Labor", "VQL6NJ-HPJY24-56F2R5-T5UV2HUI"),
-  OTHER_FACILITY("Andere Einrichtung", "Other facility", "SORMAS-CONSTID-OTHERS-FACILITY");
+public enum AreaTypeValues {
+  URBAN("URBAN"),
+  RURAL("RURAL"),
+  UNKNOWN("UNKNOWN");
 
-  private final String caption;
-  private final String captionEnglish;
-  private final String uuidValue;
+  private final String areaType;
 
-  LabCaption(String captionType, String captionTypeEnglish, String idValue) {
-    caption = captionType;
-    captionEnglish = captionTypeEnglish;
-    uuidValue = idValue;
+  private static Random random = new Random();
+
+  AreaTypeValues(String areaType) {
+    this.areaType = areaType;
   }
 
-  public static String getRandomCaption() {
-    Random random = new Random();
-    return String.valueOf(LabCaption.values()[random.nextInt(values().length)].caption);
+  public static String getRandomAreaType() {
+    return String.valueOf(AreaTypeValues.values()[random.nextInt(values().length)].areaType);
   }
 }

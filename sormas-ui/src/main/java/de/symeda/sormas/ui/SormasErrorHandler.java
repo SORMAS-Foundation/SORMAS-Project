@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui;
 
 import java.net.SocketException;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -144,7 +145,18 @@ public class SormasErrorHandler implements ErrorHandler {
 				if (rootCause instanceof OutdatedEntityException) {
 					error = new LocalUserError(I18nProperties.getString(Strings.errorEntityOutdated), ContentMode.HTML, ErrorLevel.WARNING);
 				} else {
-					error = new LocalUserError(rootCause.getMessage(), ContentMode.HTML, ErrorLevel.WARNING);
+					if (((ValidationRuntimeException) rootCause).getPropertyErrors() != null) {
+						error = new LocalUserError(
+							((ValidationRuntimeException) rootCause).getPropertyErrors()
+								.entrySet()
+								.stream()
+								.map(e -> String.join(".", e.getKey()) + ": " + e.getValue())
+								.collect(Collectors.joining("<br>")),
+							ContentMode.HTML,
+							ErrorLevel.WARNING);
+					} else {
+						error = new LocalUserError(rootCause.getMessage(), ContentMode.HTML, ErrorLevel.WARNING);
+					}
 				}
 				return error;
 			} else {

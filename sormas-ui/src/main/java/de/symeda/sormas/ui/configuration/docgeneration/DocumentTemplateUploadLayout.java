@@ -67,27 +67,35 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 	}
 
 	private void addExampleTemplatesQuarantineOrder() {
-		if (documentWorkflow == DocumentWorkflow.QUARANTINE_ORDER_CASE) {
-			addDownloadResource(
-				Captions.DocumentTemplate_exampleTemplateCases,
-				VaadinIcons.FILE_TEXT,
-				new ClassResource("/ExampleDocumentTemplateCases.docx"));
-		} else if (documentWorkflow == DocumentWorkflow.QUARANTINE_ORDER_CONTACT) {
-			addDownloadResource(
-				Captions.DocumentTemplate_exampleTemplateContacts,
-				VaadinIcons.FILE_TEXT,
-				new ClassResource("/ExampleDocumentTemplateContacts.docx"));
-		} else if (documentWorkflow == DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT) {
-			addDownloadResource(
-				Captions.DocumentTemplate_exampleTemplateEventParticipants,
-				VaadinIcons.FILE_TEXT,
-				new ClassResource("/ExampleDocumentTemplateEventParticipant.docx"));
-		} else if (documentWorkflow == DocumentWorkflow.EVENT_HANDOUT) {
-			addDownloadResource(
-				Captions.DocumentTemplate_exampleTemplateEventHandout,
-				VaadinIcons.FILE_TEXT,
-				new ClassResource("/ExampleDocumentTemplateEventHandout.html"));
+		String caption = null;
+		ClassResource exampleTemplate = null;
+
+		switch (documentWorkflow) {
+		case QUARANTINE_ORDER_CASE:
+			caption = Captions.DocumentTemplate_exampleTemplateCases;
+			exampleTemplate = new ClassResource("/ExampleDocumentTemplateCases.docx");
+			break;
+		case QUARANTINE_ORDER_CONTACT:
+			caption = Captions.DocumentTemplate_exampleTemplateContacts;
+			exampleTemplate = new ClassResource("/ExampleDocumentTemplateContacts.docx");
+			break;
+		case QUARANTINE_ORDER_EVENT_PARTICIPANT:
+			caption = Captions.DocumentTemplate_exampleTemplateEventParticipants;
+			exampleTemplate = new ClassResource("/ExampleDocumentTemplateEventParticipant.docx");
+			break;
+		case QUARANTINE_ORDER_TRAVEL_ENTRY:
+			caption = Captions.DocumentTemplate_exampleTemplateTravelEntries;
+			exampleTemplate = new ClassResource("/ExampleDocumentTemplateTravelEntry.docx");
+			break;
+		case EVENT_HANDOUT:
+			caption = Captions.DocumentTemplate_exampleTemplateEventHandout;
+			exampleTemplate = new ClassResource("/ExampleDocumentTemplateEventHandout.html");
+			break;
+		default:
+			return;
 		}
+
+		addDownloadResource(caption, VaadinIcons.FILE_TEXT, exampleTemplate);
 	}
 
 	private void addUploadResourceComponent() {
@@ -101,6 +109,7 @@ public class DocumentTemplateUploadLayout extends VerticalLayout {
 		upload = new Upload("", receiver);
 		upload.setButtonCaption(I18nProperties.getCaption(Captions.DocumentTemplate_buttonUploadTemplate));
 		CssStyles.style(upload, CssStyles.VSPACE_2);
+		upload.addStartedListener(receiver);
 		upload.addSucceededListener(receiver);
 		addComponent(upload);
 	}

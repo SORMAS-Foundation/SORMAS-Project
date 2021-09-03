@@ -20,6 +20,8 @@ package de.symeda.sormas.api.epidata;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
@@ -59,8 +61,10 @@ public class EpiDataDto extends PseudonymizableDto {
 		Disease.OTHER })
 	private YesNoUnknown areaInfectedAnimals;
 
+	@Valid
 	private List<ExposureDto> exposures = new ArrayList<>();
 
+	@Valid
 	private List<ActivityAsCaseDto> activitiesAsCase = new ArrayList<>();
 
 	public YesNoUnknown getExposureDetailsKnown() {

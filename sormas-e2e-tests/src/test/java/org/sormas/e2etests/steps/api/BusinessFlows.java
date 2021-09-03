@@ -109,7 +109,7 @@ public class BusinessFlows implements En {
                     .received(true)
                     .pathogenTestResult(PathogenTestResults.getRandomResult())
                     .specimenCondition(SpecimenConditions.getRandomCondition())
-                    .lab(Lab.builder().uuid(LabUuid.getRandomUuid()).build())
+                    .lab(Lab.builder().uuid(LaboratoryValues.getRandomUUID()).build())
                     .build();
             sampleHelper.createSample(sample);
             sampleList.add(sample);

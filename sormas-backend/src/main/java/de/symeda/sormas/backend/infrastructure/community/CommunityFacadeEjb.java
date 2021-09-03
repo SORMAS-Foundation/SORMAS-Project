@@ -1,6 +1,6 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.infrastructure.community;
 
 import java.util.ArrayList;
@@ -39,10 +39,12 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
@@ -52,10 +54,11 @@ import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -75,6 +78,8 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	private UserService userService;
 	@EJB
 	private DistrictService districtService;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfiguration;
 
 	@Override
 	public List<CommunityReferenceDto> getAllActiveByDistrict(String districtUuid) {
@@ -111,6 +116,10 @@ public class CommunityFacadeEjb implements CommunityFacade {
 
 	@Override
 	public void dearchive(String communityUuid) {
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
 
 		Community community = communityService.getByUuid(communityUuid);
 		community.setArchived(false);
@@ -270,12 +279,16 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	}
 
 	@Override
-	public void saveCommunity(CommunityDto dto) throws ValidationRuntimeException {
-		saveCommunity(dto, false);
+	public CommunityDto save(@Valid CommunityDto dto) throws ValidationRuntimeException {
+		return save(dto, false);
 	}
 
 	@Override
-	public void saveCommunity(CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public CommunityDto save(@Valid CommunityDto dto, boolean allowMerge) throws ValidationRuntimeException {
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
 
 		if (dto.getDistrict() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
@@ -298,6 +311,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 		}
 		community = fillOrBuildEntity(dto, community, true);
 		communityService.ensurePersisted(community);
+		return toDto(community);
 	}
 
 	@Override
