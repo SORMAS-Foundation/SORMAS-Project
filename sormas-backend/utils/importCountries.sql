@@ -111,7 +111,7 @@ UPDATE country
 SET (defaultName, externalid, isocode, unocode, subcontinent_id, archived)
     = (c.defaultName, c.externalId, c.isoCode, c.unoCode, c.subcontinent_id, c.archived)
 FROM tmp_country AS c
-WHERE country.externalId IS NOT NULL AND country.externalid = c.externalId;
+WHERE country.isocode IS NOT NULL AND country.isocode = c.isoCode;
 
 /* 5. Insert new countries */
 INSERT INTO country
@@ -127,6 +127,6 @@ INSERT INTO country
             tmp_country.subcontinent_id,
             archived
      FROM tmp_country
-     WHERE (SELECT COUNT(*) FROM country WHERE country.externalid = tmp_country.externalId) = 0);
+     WHERE (SELECT COUNT(*) FROM country WHERE country.isocode = tmp_country.isoCode) = 0);
 
 DROP TABLE tmp_country;
