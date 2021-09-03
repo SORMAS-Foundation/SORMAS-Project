@@ -187,4 +187,12 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 		return null;
 	}
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		if (saveTask != null && !saveTask.isCancelled())
+			saveTask.cancel(true);
+	}
+
 }

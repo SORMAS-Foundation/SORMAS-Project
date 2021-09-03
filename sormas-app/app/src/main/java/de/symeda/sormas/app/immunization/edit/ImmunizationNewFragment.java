@@ -121,6 +121,9 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
+		contentBinding.immunizationValidFrom.skipDateValidation(true);
+		contentBinding.immunizationValidUntil.skipDateValidation(true);
+
 		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			record,
 			contentBinding.immunizationResponsibleRegion,
@@ -132,7 +135,7 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 			contentBinding.immunizationResponsibleCommunity,
 			initialResponsibleCommunities,
 			record.getResponsibleCommunity(),
-			contentBinding.facilityOrHome,
+			null,
 			facilityOrHomeList,
 			contentBinding.facilityTypeGroup,
 			facilityTypeGroupList,
@@ -175,6 +178,11 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.immunizationReportDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationStartDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationEndDate.initializeDateField(getFragmentManager());
+		contentBinding.immunizationValidFrom.initializeDateField(getFragmentManager());
+		contentBinding.immunizationValidUntil.initializeDateField(getFragmentManager());
+
+		contentBinding.immunizationValidFrom.skipDateValidation(true);
+		contentBinding.immunizationValidUntil.skipDateValidation(true);
 
 		ValidationHelper
 			.initIntegerValidator(contentBinding.immunizationNumberOfDoses, I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10);
@@ -224,16 +232,12 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
 		contentBinding.immunizationNumberOfDoses.setVisibility(View.GONE);
 
-		if (record.getHealthFacility() == null
-			|| (record.getHealthFacility() != null && FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid()))) {
-			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
-		} else {
-			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
+		if (!(record.getHealthFacility() == null
+				|| (record.getHealthFacility() != null && FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())))) {
 			final FacilityType facilityType = record.getFacilityType();
 			if (facilityType != null) {
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
 			}
 		}
-
 	}
 }

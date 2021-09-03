@@ -71,6 +71,7 @@
                 app:value="@={data.diseaseDetails}"
                 app:dependencyParentField="@{immunizationDisease}"
                 app:dependencyParentValue="@{Disease.OTHER}"
+                app:required="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
@@ -137,12 +138,6 @@
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.responsibleCommunity}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                android:id="@+id/facilityOrHome"
-                style="@style/ControlSingleColumnStyle"
-                app:caption="@string/caption_facility_or_home"
-                app:required="true"/>
-
             <LinearLayout
                 android:id="@+id/facility_type_fields_layout"
                 android:layout_width="match_parent"
@@ -153,15 +148,11 @@
                     android:id="@+id/facilityTypeGroup"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:caption="@string/caption_facility_type_group"
-                    app:dependencyParentField="@{facilityOrHome}"
-                    app:dependencyParentValue="@{TypeOfPlace.FACILITY}"
                     app:required="true"/>
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/immunization_facilityType"
                     style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:dependencyParentField="@{facilityOrHome}"
-                    app:dependencyParentValue="@{TypeOfPlace.FACILITY}"
                     app:required="true"
                     app:value="@={data.facilityType}"/>
 
@@ -170,8 +161,6 @@
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/immunization_healthFacility"
                 style="@style/ControlSingleColumnStyle"
-                app:dependencyParentField="@{facilityOrHome}"
-                app:dependencyParentValue="@{TypeOfPlace.FACILITY}"
                 app:required="true"
                 app:value="@={data.healthFacility}" />
 
@@ -211,7 +200,7 @@
                     app:value="@={data.validFrom}" />
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
-                    android:id="@+id/immunization_validTo"
+                    android:id="@+id/immunization_validUntil"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@={data.validUntil}" />
 

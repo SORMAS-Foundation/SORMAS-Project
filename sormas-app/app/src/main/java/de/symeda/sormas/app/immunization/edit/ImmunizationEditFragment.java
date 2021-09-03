@@ -27,7 +27,6 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
@@ -41,8 +40,6 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
-
-import static android.view.View.GONE;
 
 public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizationEditLayoutBinding, Immunization, Immunization> {
 
@@ -119,6 +116,8 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		contentBinding.setData(record);
 
 		contentBinding.immunizationCountry.initializeSpinner(countries);
+		contentBinding.immunizationValidFrom.skipDateValidation(true);
+		contentBinding.immunizationValidUntil.skipDateValidation(true);
 
 		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			record,
@@ -131,7 +130,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			contentBinding.immunizationResponsibleCommunity,
 			initialCommunities,
 			record.getResponsibleCommunity(),
-			contentBinding.facilityOrHome,
+			null,
 			facilityOrHomeList,
 			contentBinding.facilityTypeGroup,
 			facilityTypeGroupList,
@@ -151,13 +150,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	@Override
 	public void onAfterLayoutBinding(final FragmentImmunizationEditLayoutBinding contentBinding) {
 
-		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
-			contentBinding.facilityOrHome.setVisibility(GONE);
-			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
-			contentBinding.immunizationHealthFacility.setVisibility(GONE);
-			contentBinding.immunizationHealthFacilityDetails.setVisibility(GONE);
-		}
-
 		InfrastructureDaoHelper
 				.initializeHealthFacilityDetailsFieldVisibility(contentBinding.immunizationHealthFacility, contentBinding.immunizationHealthFacilityDetails);
 
@@ -172,6 +164,8 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		contentBinding.immunizationRecoveryDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationStartDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationEndDate.initializeDateField(getFragmentManager());
+		contentBinding.immunizationValidFrom.initializeDateField(getFragmentManager());
+		contentBinding.immunizationValidUntil.initializeDateField(getFragmentManager());
 		contentBinding.immunizationLastInfectionDate.initializeDateField(getFragmentManager());
 
 		contentBinding.immunizationMeansOfImmunization.addValueChangedListener(e -> {
@@ -214,11 +208,10 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			}
 		});
 
-		if (record.getHealthFacility() == null
-				|| (record.getHealthFacility() != null && FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid()))) {
-			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
-		} else {
-			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
+		contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
+
+		if (!(record.getHealthFacility() == null
+			|| (record.getHealthFacility() != null && FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())))) {
 			final FacilityType facilityType = record.getFacilityType();
 			if (facilityType != null) {
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());

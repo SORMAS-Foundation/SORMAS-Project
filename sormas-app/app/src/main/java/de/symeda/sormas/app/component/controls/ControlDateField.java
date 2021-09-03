@@ -15,12 +15,6 @@
 
 package de.symeda.sormas.app.component.controls;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -41,6 +35,12 @@ import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
 import androidx.fragment.app.FragmentManager;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -67,6 +67,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 	private SimpleDateFormat dateFormat;
 	private int allowedDaysInFuture;
 	private Date cachedTime;
+	private boolean skipDateValidation;
 
 	// Constructors
 
@@ -92,15 +93,17 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 			return false;
 		}
 
-		if (allowedDaysInFuture > 0) {
-			if (DateHelper.getFullDaysBetween(new Date(), getValue()) > allowedDaysInFuture) {
-				enableErrorState(I18nProperties.getValidationError(Validations.futureDate, getCaption(), allowedDaysInFuture));
-				return true;
-			}
-		} else if (allowedDaysInFuture == 0) {
-			if (!DateHelper.isSameDay(new Date(), getValue())) {
-				enableErrorState(I18nProperties.getValidationError(Validations.futureDateStrict, getCaption()));
-				return true;
+		if (!skipDateValidation) {
+			if (allowedDaysInFuture > 0) {
+				if (DateHelper.getFullDaysBetween(new Date(), getValue()) > allowedDaysInFuture) {
+					enableErrorState(I18nProperties.getValidationError(Validations.futureDate, getCaption(), allowedDaysInFuture));
+					return true;
+				}
+			} else if (allowedDaysInFuture == 0) {
+				if (!DateHelper.isSameDay(new Date(), getValue())) {
+					enableErrorState(I18nProperties.getValidationError(Validations.futureDateStrict, getCaption()));
+					return true;
+				}
 			}
 		}
 
@@ -229,6 +232,10 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 		} else {
 			input.setText(DateHelper.formatLocalDate(value, dateFormat));
 		}
+	}
+
+	public void skipDateValidation(boolean noDateValidation) {
+		this.skipDateValidation = noDateValidation;
 	}
 
 	@Override

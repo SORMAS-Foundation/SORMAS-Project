@@ -17,7 +17,6 @@ package de.symeda.sormas.app.immunization.read;
 
 import android.os.Bundle;
 
-import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -61,10 +60,8 @@ public class ImmunizationReadFragment extends BaseReadFragment<FragmentImmunizat
 	public void onAfterLayoutBinding(FragmentImmunizationReadLayoutBinding contentBinding) {
 
 		if (record.getHealthFacility() == null || FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())) {
-			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 		} else {
-			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
 			final FacilityType facilityType = record.getFacilityType();
 			if (facilityType != null) {
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
