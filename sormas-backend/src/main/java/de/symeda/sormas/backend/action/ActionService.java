@@ -202,9 +202,10 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 				case ActionDto.CREATION_DATE:
 				case ActionDto.DATE:
 				case ActionDto.PRIORITY:
-				case ActionDto.TITLE:
 					expression = action.get(sortProperty.propertyName);
 					break;
+				case ActionDto.TITLE:
+					expression = cb.lower(action.get(sortProperty.propertyName));
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
