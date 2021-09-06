@@ -143,6 +143,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		String[] requestUuids = encryptionService.decryptAndVerify(encryptedRequestUuids, String[].class);
 		List<SormasToSormasShareRequestDto> shareRequests = shareRequestFacade.getShareRequestsByUuids(Arrays.asList(requestUuids));
 
+		if (shareRequests.stream().anyMatch(r -> r.getStatus() != ShareRequestStatus.PENDING)) {
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRevokeNotPending);
+		}
+
 		shareRequests.forEach(shareRequest -> {
 			shareRequest.setChangeDate(new Date());
 			shareRequest.setRevoked();
@@ -165,6 +169,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		String requestUuid = encryptionService.decryptAndVerify(encryptedRequestUuid, String.class);
 
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByRequestUuid(requestUuid);
+
+		if(shareInfo.getRequestStatus() != ShareRequestStatus.PENDING){
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasAcceptNotPending);
+		}
 
 		shareInfo.setRequestStatus(ShareRequestStatus.ACCEPTED);
 		shareInfoService.ensurePersisted(shareInfo);
