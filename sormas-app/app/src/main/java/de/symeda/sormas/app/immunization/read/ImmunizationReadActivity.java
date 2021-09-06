@@ -23,6 +23,7 @@ import android.view.MenuItem;
 
 import java.util.List;
 
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseReadActivity;
@@ -88,10 +89,20 @@ public class ImmunizationReadActivity extends BaseReadActivity<Immunization> {
         return null;
     }
 
-    @Override
-    public List<PageMenuItem> getPageMenuData() {
-        return PageMenuItem.fromEnum(ImmunizationSection.values(), getContext());
-    }
+	@Override
+	public List<PageMenuItem> getPageMenuData() {
+		final Immunization storedRootEntity = this.getStoredRootEntity();
+		if (storedRootEntity != null) {
+			MeansOfImmunization meansOfImmunization = storedRootEntity.getMeansOfImmunization();
+			if (meansOfImmunization == MeansOfImmunization.VACCINATION || meansOfImmunization == MeansOfImmunization.VACCINATION_RECOVERY) {
+				return PageMenuItem.fromEnum(ImmunizationSection.values(), getContext());
+			} else {
+				return PageMenuItem.fromEnum(getContext(), ImmunizationSection.IMMUNIZATION_INFO, ImmunizationSection.PERSON_INFO);
+			}
+		} else {
+			return PageMenuItem.fromEnum(ImmunizationSection.values(), getContext());
+		}
+	}
 
     @Override
     protected int getActivityTitle() {

@@ -27,7 +27,6 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
@@ -37,12 +36,11 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentImmunizationEditLayoutBinding;
+import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
-
-import static android.view.View.GONE;
 
 public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizationEditLayoutBinding, Immunization, Immunization> {
 
@@ -60,8 +58,9 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	private List<Item> facilityOrHomeList;
 	private List<Item> facilityTypeGroupList;
 	private List<Item> countries;
+	private Consumer<MeansOfImmunization> meansOfImmunizationChange;
 
-	public static ImmunizationEditFragment newInstance(Immunization activityRootData) {
+	public static ImmunizationEditFragment newInstance(Immunization activityRootData, Consumer<MeansOfImmunization> meansOfImmunizationChange) {
 		ImmunizationEditFragment immunizationEditFragment = newInstanceWithFieldCheckers(
 			ImmunizationEditFragment.class,
 			null,
@@ -69,6 +68,8 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
 			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+
+		immunizationEditFragment.setMeansOfImmunizationChange(meansOfImmunizationChange);
 
 		return immunizationEditFragment;
 	}
@@ -87,8 +88,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	protected String getSubHeadingTitle() {
 		return getResources().getString(R.string.caption_immunization_information);
 	}
-
-
 
 	@Override
 	protected void prepareFragmentData() {
@@ -170,23 +169,25 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		contentBinding.immunizationLastInfectionDate.initializeDateField(getFragmentManager());
 
 		contentBinding.immunizationMeansOfImmunization.addValueChangedListener(e -> {
-			if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
+			MeansOfImmunization value = (MeansOfImmunization) e.getValue();
+			if (value == MeansOfImmunization.OTHER || value == MeansOfImmunization.RECOVERY) {
 				contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
 				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
 			}
-			if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
+			if (value == MeansOfImmunization.VACCINATION || value == MeansOfImmunization.VACCINATION_RECOVERY) {
 				contentBinding.immunizationVaccinationLayout.setVisibility(View.VISIBLE);
 				contentBinding.immunizationNumberOfDoses.setEnabled(true);
 			} else {
 				contentBinding.immunizationVaccinationLayout.setVisibility(View.GONE);
 			}
-			if (e.getValue() == MeansOfImmunization.RECOVERY || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
+			if (value == MeansOfImmunization.RECOVERY || value == MeansOfImmunization.VACCINATION_RECOVERY) {
 				contentBinding.immunizationRecoveryLayout.setVisibility(View.VISIBLE);
 				contentBinding.immunizationRecoveryDate.setEnabled(true);
 				contentBinding.immunizationPositiveTestResultDate.setEnabled(true);
 			} else {
 				contentBinding.immunizationRecoveryLayout.setVisibility(View.GONE);
 			}
+			meansOfImmunizationChange.accept(value);
 		});
 
 		contentBinding.overwriteImmunizationManagementStatusCheckBox.addValueChangedListener(e -> {
@@ -228,5 +229,9 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	@Override
 	public boolean isShowNewAction() {
 		return false;
+	}
+
+	public void setMeansOfImmunizationChange(Consumer<MeansOfImmunization> meansOfImmunizationChange) {
+		this.meansOfImmunizationChange = meansOfImmunizationChange;
 	}
 }
