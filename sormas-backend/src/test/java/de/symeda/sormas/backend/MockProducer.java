@@ -65,10 +65,14 @@ public class MockProducer {
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
+	static {
+		// Make sure that the default session does not use a local mail server (if mock-javamail is removed)
+		Properties props = new Properties();
+		props.setProperty("mail.host", "non@existent");
+		mailSession = Session.getInstance(props);
+	}
 
 	static {
-		resetProperties();
-
 		try {
 			Field instance = InfoProvider.class.getDeclaredField("instance");
 			instance.setAccessible(true);
@@ -82,9 +86,6 @@ public class MockProducer {
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-
-		// Make sure that the default session does not use a local mail server (if mock-javamail is removed)
-		mailSession = Session.getInstance(properties);
 	}
 
 	static {
@@ -99,6 +100,7 @@ public class MockProducer {
 	}
 
 	private static void resetProperties() {
+
 		properties.clear();
 		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME, "nigeria");
 		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
