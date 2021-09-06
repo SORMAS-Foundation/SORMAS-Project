@@ -2364,6 +2364,21 @@ public class CaseFacadeEjb implements CaseFacade {
 		caseService.delete(caze);
 	}
 
+	public List<String> deleteCases(List<String> caseUuids) {
+		List<String> deletedCasesUuids = new ArrayList<>();
+		for (String caseUuid : caseUuids) {
+			try {
+				deleteCase(caseUuid);
+				if (isDeleted(caseUuid)) {
+					deletedCasesUuids.add(caseUuid);
+				}
+			} catch (ExternalSurveillanceToolException e) {
+				logger.error("The case with uuid:" + caseUuid + "could not be deleted");
+			}
+		}
+		return deletedCasesUuids;
+	}
+
 	@Override
 	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException {
 

@@ -130,6 +130,8 @@ public interface CaseFacade {
 
 	void deleteCase(String caseUuid) throws ExternalSurveillanceToolException;
 
+	List<String> deleteCases(List<String> caseUuids);
+
 	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException;
 
 	Date getOldestCaseOnsetDate();
