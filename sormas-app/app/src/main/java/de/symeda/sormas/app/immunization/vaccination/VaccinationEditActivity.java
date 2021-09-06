@@ -109,11 +109,10 @@ public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity>
             return;
         }
 
-        final VaccinationEntity vaccinationEntity = (VaccinationEntity) getStoredRootEntity();
-        VaccinationEditFragment fragment = (VaccinationEditFragment) getActiveFragment();
+        final VaccinationEntity vaccinationEntity = getStoredRootEntity();
 
         try {
-            FragmentValidator.validate(getContext(), fragment.getContentBinding());
+            FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
         } catch (ValidationException e) {
             NotificationHelper.showNotification(this, ERROR, e.getMessage());
             return;

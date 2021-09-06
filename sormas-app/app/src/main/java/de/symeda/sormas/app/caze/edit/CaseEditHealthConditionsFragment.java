@@ -21,7 +21,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilit
 import de.symeda.sormas.app.BaseEditHealthConditionsFragment;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
 
 public class CaseEditHealthConditionsFragment extends BaseEditHealthConditionsFragment<Case> {
 
@@ -35,16 +34,6 @@ public class CaseEditHealthConditionsFragment extends BaseEditHealthConditionsFr
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
-				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
-	}
-
-	public static CaseEditHealthConditionsFragment newInstance(VaccinationEntity activityRootData) {
-		return newInstanceWithFieldCheckers(
-			CaseEditHealthConditionsFragment.class,
-			null,
-			activityRootData,
-			FieldVisibilityCheckers.withDisease(activityRootData.getImmunization().getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
