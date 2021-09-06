@@ -59,6 +59,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	public static final String MEANS_OF_IMMUNIZATION_DETAILS = "meansOfImmunizationDetails";
 	public static final String MANAGEMENT_STATUS = "managementStatus";
 	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
+	public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
 
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";

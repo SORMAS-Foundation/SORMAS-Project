@@ -1291,11 +1291,11 @@ public interface Captions {
 	String Immunization_externalId = "Immunization.externalId";
 	String Immunization_healthFacility = "Immunization.healthFacility";
 	String Immunization_healthFacilityDetails = "Immunization.healthFacilityDetails";
+	String Immunization_immunizationManagementStatus = "Immunization.immunizationManagementStatus";
 	String Immunization_immunizationPeriod = "Immunization.immunizationPeriod";
 	String Immunization_immunizationStatus = "Immunization.immunizationStatus";
 	String Immunization_lastInfectionDate = "Immunization.lastInfectionDate";
 	String Immunization_lastVaccineType = "Immunization.lastVaccineType";
-	String Immunization_managementStatus = "Immunization.managementStatus";
 	String Immunization_meansOfImmunization = "Immunization.meansOfImmunization";
 	String Immunization_meansOfImmunizationDetails = "Immunization.meansOfImmunizationDetails";
 	String Immunization_numberOfDoses = "Immunization.numberOfDoses";
@@ -2135,6 +2135,7 @@ public interface Captions {
 	String Task_taskPriority = "Task.taskPriority";
 	String Task_taskStatus = "Task.taskStatus";
 	String Task_taskType = "Task.taskType";
+	String Task_travelEntry = "Task.travelEntry";
 	String taskActiveTasks = "taskActiveTasks";
 	String taskAllTasks = "taskAllTasks";
 	String taskArchivedTasks = "taskArchivedTasks";

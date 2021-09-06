@@ -240,6 +240,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	public void sendRejectShareRequest(String uuid) throws SormasToSormasException {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
 
+		if(shareRequest.getStatus() != ShareRequestStatus.PENDING){
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRejectNotPending);
+		}
+
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
 		sormasToSormasRestClient.post(organizationId, requestRejectEndpoint, uuid, null);
 
@@ -254,6 +258,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	public void rejectShareRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException {
 		String requestUuid = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedRequestUuid, String.class);
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByRequestUuid(requestUuid);
+
+		if(shareInfo.getRequestStatus() != ShareRequestStatus.PENDING){
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRejectNotPending);
+		}
+
 		shareInfo.setRequestStatus(ShareRequestStatus.REJECTED);
 		shareInfo.setOwnershipHandedOver(false);
 		shareInfoService.ensurePersisted(shareInfo);
@@ -264,6 +273,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		Exception.class })
 	public void acceptShareRequest(String uuid) throws SormasToSormasException, SormasToSormasValidationException {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
+
+		if(shareRequest.getStatus() != ShareRequestStatus.PENDING){
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasAcceptNotPending);
+		}
+
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
 
 		SormasToSormasEncryptedDataDto encryptedData =
@@ -674,6 +688,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		String ownOrganizationId = configFacadeEjb.getS2SConfig().getId();
 		List<SormasToSormasShareTree> shares = new ArrayList<>();
 		List<SormasToSormasShareTree> reShareTrees = new ArrayList<>();
+
+		LOGGER.info("Get shares for {} from {} by {}", criteria.getEntityUuid(), ownOrganizationId, criteria.getOriginInfo() != null ? criteria.getOriginInfo().getOrganizationId() : ownOrganizationId);
 
 		walkShareTree(criteria, (entity, originInfo, parentCriteria) -> {
 			try {
