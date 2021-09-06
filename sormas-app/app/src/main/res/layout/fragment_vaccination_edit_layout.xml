@@ -84,7 +84,7 @@
                     android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/vaccinationEntity_uuid"
+                        android:id="@+id/vaccination_uuid"
                         style="@style/ControlSingleColumnStyle"
                         app:shortUuidValue="@{data.uuid}" />
 
@@ -109,83 +109,83 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlDateTimeField
-                    android:id="@+id/vaccinationEntity_vaccinationDate"
+                    android:id="@+id/vaccination_vaccinationDate"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.vaccinationDate}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/vaccinationEntity_vaccineName"
+                    android:id="@+id/vaccination_vaccineName"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.vaccineName}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/vaccinationEntity_vaccineNameDetails"
+                    android:id="@+id/vaccination_vaccineNameDetails"
                     style="@style/ControlSingleColumnStyle"
-                    app:dependencyParentField="@{vaccinationEntityVaccineName}"
+                    app:dependencyParentField="@{vaccinationVaccineName}"
                     app:dependencyParentValue="@{Vaccine.OTHER}"
                     app:dependencyParentValue2="@{Vaccine.UNKNOWN}"
                     app:required="true"
                     app:value="@={data.vaccineNameDetails}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/vaccinationEntity_vaccineManufacturer"
+                    android:id="@+id/vaccination_vaccineManufacturer"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.vaccineManufacturer}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/vaccinationEntity_vaccineManufacturerDetails"
+                    android:id="@+id/vaccination_vaccineManufacturerDetails"
                     style="@style/ControlSingleColumnStyle"
-                    app:dependencyParentField="@{vaccinationEntityVaccineManufacturer}"
+                    app:dependencyParentField="@{vaccinationVaccineManufacturer}"
                     app:dependencyParentValue="@{VaccineManufacturer.OTHER}"
                     app:dependencyParentValue2="@{VaccineManufacturer.UNKNOWN}"
                     app:required="true"
                     app:value="@={data.vaccineManufacturerDetails}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/vaccinationEntity_vaccineType"
+                    android:id="@+id/vaccination_vaccineType"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.vaccineType}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/vaccinationEntity_vaccinationInfoSource"
+                    android:id="@+id/vaccination_vaccinationInfoSource"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.vaccinationInfoSource}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/vaccinationEntity_vaccineDose"
+                    android:id="@+id/vaccination_vaccineDose"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.vaccineDose}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/vaccinationEntity_vaccineInn"
+                    android:id="@+id/vaccination_vaccineInn"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.vaccineInn}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/vaccinationEntity_vaccineBatchNumber"
+                    android:id="@+id/vaccination_vaccineBatchNumber"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.vaccineBatchNumber}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/vaccinationEntity_vaccineUniiCode"
+                    android:id="@+id/vaccination_vaccineUniiCode"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.vaccineUniiCode}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/vaccinationEntity_vaccineAtcCode"
+                    android:id="@+id/vaccination_vaccineAtcCode"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.vaccineAtcCode}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/vaccinationEntity_pregnant"
+                    android:id="@+id/vaccination_pregnant"
                     style="@style/ControlSingleColumnStyle"
                     app:enumClass="@{yesNoUnknownClass}"
                     app:value="@={data.pregnant}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
-                    android:id="@+id/vaccinationEntity_trimester"
+                    android:id="@+id/vaccination_trimester"
                     style="@style/ControlSingleColumnStyle"
-                    app:dependencyParentField="@{vaccinationEntityPregnant}"
+                    app:dependencyParentField="@{vaccinationPregnant}"
                     app:dependencyParentValue="@{YesNoUnknown.YES}"
                     app:enumClass="@{trimesterClass}"
                     app:value="@={data.trimester}" />

@@ -108,11 +108,13 @@
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/immunization_startDateExisting"
                         style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:caption="@string/caption_immunization_startDateExisting"
                         app:value="@{data.startDateExisting}" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/immunization_endDateExisting"
                         style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:caption="@string/caption_immunization_endDateExisting"
                         app:value="@{data.endDateExisting}" />
 
                 </LinearLayout>
