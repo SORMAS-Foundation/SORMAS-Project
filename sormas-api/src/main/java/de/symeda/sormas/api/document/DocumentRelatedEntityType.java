@@ -21,7 +21,8 @@ public enum DocumentRelatedEntityType {
 	CASE,
 	CONTACT,
 	ACTION,
-	EVENT;
+	EVENT,
+	TRAVEL_ENTRY;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

@@ -19,8 +19,13 @@ package de.symeda.sormas.api.visit;
 
 import java.util.Date;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -58,11 +63,15 @@ public class VisitDto extends PseudonymizableDto {
 	private VisitStatus visitStatus;
 	@SensitiveData
 	private String visitRemarks;
+	@Valid
 	private SymptomsDto symptoms;
-
 	@SensitiveData
+	@Min(value = -90, message = Validations.numberTooSmall)
+	@Max(value = 90, message = Validations.numberTooBig)
 	private Double reportLat;
 	@SensitiveData
+	@Min(value = -180, message = Validations.numberTooSmall)
+	@Max(value = 180, message = Validations.numberTooBig)
 	private Double reportLon;
 
 	private Float reportLatLonAccuracy;

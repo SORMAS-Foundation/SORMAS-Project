@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.docgeneration;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_CASE;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_CONTACT;
 import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_EVENT_PARTICIPANT;
+import static de.symeda.sormas.api.docgeneneration.RootEntityType.ROOT_TRAVEL_ENTRY;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -48,6 +49,7 @@ import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -55,6 +57,7 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipant
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 
 @Stateless
@@ -67,6 +70,8 @@ public class DocumentTemplateEntitiesBuilder {
 	private ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
+	@EJB
+	private TravelEntryFacadeEjbLocal travelEntryFacade;
 	@EJB
 	private UserFacadeEjb.UserFacadeEjbLocal userFacade;
 	@EJB
@@ -109,8 +114,13 @@ public class DocumentTemplateEntitiesBuilder {
 
 			return buildEntities(ROOT_EVENT_PARTICIPANT, eventParticipantDto, eventParticipantDto.getPerson().toReference(), sample, pathogenTest);
 
+		case QUARANTINE_ORDER_TRAVEL_ENTRY:
+			TravelEntryDto travelEntryDto = travelEntryFacade.getByUuid(rootEntityUuid);
+
+			return buildEntities(ROOT_TRAVEL_ENTRY, travelEntryDto, travelEntryDto.getPerson(), null, null);
+
 		default:
-			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineOnlySupportedEntities));
 		}
 	}
 
@@ -135,7 +145,7 @@ public class DocumentTemplateEntitiesBuilder {
 
 			break;
 		default:
-			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineOnlyCaseAndContacts));
+			throw new DocumentTemplateException(I18nProperties.getString(Strings.errorQuarantineBulkOnlySupportedEntities));
 		}
 
 		return builder.build();

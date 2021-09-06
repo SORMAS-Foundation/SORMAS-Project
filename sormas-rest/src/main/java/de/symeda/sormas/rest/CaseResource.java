@@ -145,7 +145,7 @@ public class CaseResource extends EntityDtoResource {
 
 	@POST
 	@Path("/externalData")
-	public Response updateExternalData(List<ExternalDataDto> externalData) {
+	public Response updateExternalData(@Valid List<ExternalDataDto> externalData) {
 		try {
 			FacadeProvider.getCaseFacade().updateExternalData(externalData);
 			return Response.status(Response.Status.OK).build();

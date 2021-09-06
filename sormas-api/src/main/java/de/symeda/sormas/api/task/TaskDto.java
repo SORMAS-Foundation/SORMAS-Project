@@ -19,11 +19,16 @@ package de.symeda.sormas.api.task;
 
 import java.util.Date;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -84,12 +89,18 @@ public class TaskDto extends EntityDto {
 	private Date perceivedStart;
 
 	private UserReferenceDto creatorUser;
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String creatorComment;
 	@Required
 	private UserReferenceDto assigneeUser;
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String assigneeReply;
 
+	@Min(value = -90, message = Validations.numberTooSmall)
+	@Max(value = 90, message = Validations.numberTooBig)
 	private Double closedLat;
+	@Min(value = -180, message = Validations.numberTooSmall)
+	@Max(value = 180, message = Validations.numberTooBig)
 	private Double closedLon;
 	private Float closedLatLonAccuracy;
 

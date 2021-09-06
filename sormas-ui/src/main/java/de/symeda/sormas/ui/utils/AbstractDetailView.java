@@ -110,9 +110,7 @@ public abstract class AbstractDetailView<R extends ReferenceDto> extends Abstrac
 						I18nProperties.getString(Strings.unsavedChanges_cancel),
 						null,
 						ValoTheme.BUTTON_LINK),
-					buttonEvent -> {
-						popupWindow.close();
-					});
+					buttonEvent -> popupWindow.close());
 
 				return confirmationComponent;
 			},

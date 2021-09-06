@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@ import de.symeda.sormas.api.action.ActionMeasure;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.importexport.format.ExportFormat;
+import de.symeda.sormas.api.importexport.format.ImportExportFormat;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.Order;
 
@@ -53,6 +55,7 @@ public class EventActionExportDto implements Serializable {
 	private String actionTitle;
 	private Date actionCreationDate;
 	private Date actionChangeDate;
+	private Date actionDate;
 	private ActionStatus actionStatus;
 	private ActionPriority actionPriority;
 	private UserReferenceDto actionLastModifiedBy;
@@ -82,6 +85,7 @@ public class EventActionExportDto implements Serializable {
 		String actionTitle,
 		Date actionCreationDate,
 		Date actionChangeDate,
+		Date actionDate,
 		ActionStatus actionStatus,
 		ActionPriority actionPriority,
 		String actionLastModifiedByUuid,
@@ -110,6 +114,7 @@ public class EventActionExportDto implements Serializable {
 		this.actionTitle = actionTitle;
 		this.actionCreationDate = actionCreationDate;
 		this.actionChangeDate = actionChangeDate;
+		this.actionDate = actionDate;
 		this.actionStatus = actionStatus;
 		this.actionPriority = actionPriority;
 		this.actionLastModifiedBy = actionLastModifiedByUuid != null
@@ -203,26 +208,34 @@ public class EventActionExportDto implements Serializable {
 	}
 
 	@Order(17)
+	@ExportFormat(ImportExportFormat.DATE_TIME)
 	public Date getActionCreationDate() {
 		return actionCreationDate;
 	}
 
 	@Order(18)
+	@ExportFormat(ImportExportFormat.DATE_TIME)
 	public Date getActionChangeDate() {
 		return actionChangeDate;
 	}
 
 	@Order(19)
+	@ExportFormat(ImportExportFormat.DATE_TIME)
+	public Date getActionDate() {
+		return actionDate;
+	}
+
+	@Order(20)
 	public ActionStatus getActionStatus() {
 		return actionStatus;
 	}
 
-	@Order(20)
+	@Order(21)
 	public ActionPriority getActionPriority() {
 		return actionPriority;
 	}
 
-	@Order(21)
+	@Order(22)
 	public UserReferenceDto getActionLastModifiedBy() {
 		return actionLastModifiedBy;
 	}

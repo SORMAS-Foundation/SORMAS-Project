@@ -2,7 +2,10 @@ package de.symeda.sormas.api.caze.porthealthinfo;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -36,33 +39,50 @@ public class PortHealthInfoDto extends EntityDto {
 	public static final String DETAILS = "details";
 
 	// Airport
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String airlineName;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String flightNumber;
 	private Date departureDateTime;
 	private Date arrivalDateTime;
 	private YesNoUnknown freeSeating;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String seatNumber;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String departureAirport;
 	private Integer numberOfTransitStops;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String transitStopDetails1;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String transitStopDetails2;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String transitStopDetails3;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String transitStopDetails4;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String transitStopDetails5;
 
 	// Seaport
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String vesselName;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String vesselDetails;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String portOfDeparture;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String lastPortOfCall;
 
 	// Ground Crossing
 	private ConveyanceType conveyanceType;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String conveyanceTypeDetails;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String departureLocation;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String finalDestination;
 
 	// Other
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String details;
 
 	public static PortHealthInfoDto build() {

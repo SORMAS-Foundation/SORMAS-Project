@@ -4,13 +4,14 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface LabMessageFacade {
 
-	LabMessageDto save(LabMessageDto dto);
+	LabMessageDto save(@Valid LabMessageDto dto);
 
 	LabMessageDto getByUuid(String uuid);
 

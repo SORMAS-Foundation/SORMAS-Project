@@ -19,11 +19,14 @@ package de.symeda.sormas.api.sample;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -65,18 +68,22 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Required
 	private Disease testedDisease;
 	private DiseaseVariant testedDiseaseVariant;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String testedDiseaseDetails;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String typingId;
 	@Required
 	private PathogenTestType testType;
 	private PCRTestSpecification pcrTestSpecification;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String testTypeText;
 	@Required
 	private Date testDateTime;
 	@Required
 	private FacilityReferenceDto lab;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String labDetails;
 	@Required
 	@SensitiveData
@@ -85,11 +92,13 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private PathogenTestResultType testResult;
 	@Required
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
 	private String testResultText;
 	@Required
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String serotype;
 	private Float cqValue;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)

@@ -15,12 +15,19 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.io.Serializable;
+
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
 
 public class SormasToSormasEncryptedDataDto implements Serializable {
 
 	private static final long serialVersionUID = 8658507076136806951L;
 
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String senderId;
 
 	private byte[] data;
