@@ -243,7 +243,7 @@
     <string name="caption_latest_submission">Latest Submission: %1$s</string>
     <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
     <string name="caption_immunization_information">Immunization details</string>
-    <string name="caption_immunization_vaccinations">Immunization Vaccinations</string>
+    <string name="caption_immunization_vaccinations">Vaccinations</string>
     <string name="caption_vaccination_information">Vaccination Information</string>
     <string name="caption_new_immunization">New Immunization</string>
     <string name="caption_overwrite_immunization_management_status">Overwrite immunization management status</string>
