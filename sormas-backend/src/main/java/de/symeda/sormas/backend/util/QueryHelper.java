@@ -62,7 +62,7 @@ public final class QueryHelper {
 
 	/**
 	 * Fetches the first entry of the given query.
-	 * 
+	 *
 	 * @param <T>
 	 *            Return value type of the {@code typedQuery}.
 	 * @param em
@@ -78,7 +78,7 @@ public final class QueryHelper {
 
 	/**
 	 * Fetches the first entry of the given query.
-	 * 
+	 *
 	 * @param <T>
 	 *            Entity, DTO or simple type for the fetched object.
 	 * @param <U>
@@ -98,7 +98,7 @@ public final class QueryHelper {
 
 	/**
 	 * Fetches the first entry of the given query.
-	 * 
+	 *
 	 * @param <T>
 	 *            Return value type of the {@code typedQuery}.
 	 * @param query
@@ -118,7 +118,7 @@ public final class QueryHelper {
 	/**
 	 * Executes a query and returns the result. Can be selected down to a definite batch
 	 * starting at {@code first} and limited by {@code max}.
-	 * 
+	 *
 	 * @param <T>
 	 *            Entity, DTO or simple type for the returned list.
 	 * @param em
@@ -135,7 +135,8 @@ public final class QueryHelper {
 
 		final List<T> resultList;
 		if (first != null && max != null) {
-			resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+			TypedQuery<T> query = em.createQuery(cq);
+			resultList = query.setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
 			resultList = em.createQuery(cq).getResultList();
 		}
@@ -146,7 +147,7 @@ public final class QueryHelper {
 	/**
 	 * Executes a query and returns the result. Can be selected down to a definite batch
 	 * starting at {@code first} and limited by {@code max}.
-	 * 
+	 *
 	 * @param <T>
 	 *            Entity, DTO or simple type for the fetched list.
 	 * @param <U>
@@ -171,7 +172,7 @@ public final class QueryHelper {
 
 	/**
 	 * Fetches no or one entry that matches the given query.
-	 * 
+	 *
 	 * @param <T>
 	 *            Return value type of the {@code cq}.
 	 * @param em
@@ -189,7 +190,7 @@ public final class QueryHelper {
 
 	/**
 	 * Fetches no or one entry that matches the given query.
-	 * 
+	 *
 	 * @param <T>
 	 *            Entity, DTO or simple type for the fetched object.
 	 * @param <U>
@@ -211,7 +212,7 @@ public final class QueryHelper {
 
 	/**
 	 * Fetches no or one entry that matches the given query.
-	 * 
+	 *
 	 * @param <T>
 	 *            Return value type of the {@code typedQuery}.
 	 * @param typedQuery

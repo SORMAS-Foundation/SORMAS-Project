@@ -487,7 +487,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 		public void showPlaceholder(String placeholderText) {
 			setEntries(Collections.emptyList());
-			updatePaginationLayout();
+			showPage(1);
 
 			placeholderLabel.setValue(placeholderText == null ? defaultPlaceHolderText : placeholderText);
 			listLayout.addComponent(placeholderLabel);

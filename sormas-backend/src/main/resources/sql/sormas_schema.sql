@@ -7933,4 +7933,11 @@ ALTER TABLE immunization_history ADD COLUMN validuntil timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (403, 'Modifications to immunization tables #6025');
 
+-- 2021-08-30 - Add TravelEntries to tasks #5844
+ALTER TABLE task ADD COLUMN travelentry_id bigint;
+ALTER TABLE task ADD CONSTRAINT fk_task_travelentry_id FOREIGN KEY (travelentry_id) REFERENCES travelentry (id);
+ALTER TABLE task_history ADD COLUMN travelentry_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (404, 'Add TravelEntries to tasks #5844');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
