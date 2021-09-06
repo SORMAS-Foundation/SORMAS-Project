@@ -18,7 +18,7 @@
 
 package org.sormas.e2etests.services;
 
-import static org.sormas.e2etests.enums.Disease.*;
+import static org.sormas.e2etests.enums.DiseasesValues.getRandomDiseaseCaption;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
@@ -36,7 +36,7 @@ public class ContactsLineListingService {
   public ContactsLineListing buildGeneratedLineListingContacts() {
     long currentTimeMillis = System.currentTimeMillis();
     return ContactsLineListing.builder()
-        .disease(getRandomDiseaseValue())
+        .disease(getRandomDiseaseCaption())
         .region("Voreingestellte")
         .district("Voreingestellter Landkreis")
         .dateOfReport(LocalDate.now().minusDays(5))

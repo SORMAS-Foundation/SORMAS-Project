@@ -30,6 +30,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
@@ -51,8 +52,9 @@ public class EventParticipantImportLayout extends AbstractImportLayout {
 			resetDownloadErrorReportButton();
 
 			try {
-				EventParticipantImporter importer = new EventParticipantImporter(file, true, currentUser, event);
-				importer.startImport(resource -> extendDownloadErrorReportButton(resource), currentUI, true);
+				EventParticipantImporter importer =
+					new EventParticipantImporter(file, true, currentUser, event, (ValueSeparator) separator.getValue());
+				importer.startImport(this::extendDownloadErrorReportButton, currentUI, true);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(
 					I18nProperties.getString(Strings.headingImportFailed),

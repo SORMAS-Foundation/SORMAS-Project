@@ -32,7 +32,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import androidx.databinding.Bindable;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
 import de.symeda.sormas.api.person.BurialConductor;

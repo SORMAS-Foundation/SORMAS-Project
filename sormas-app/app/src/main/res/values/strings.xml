@@ -242,7 +242,7 @@
     <string name="caption_year">Year</string>
     <string name="caption_latest_submission">Latest Submission: %1$s</string>
     <string name="caption_settings_debug_url_lbds">LBDS Server Debug URL</string>
-    <string name="caption_immunization_information">Immunization Information</string>
+    <string name="caption_immunization_information">Immunization details</string>
     <string name="caption_new_immunization">New Immunization</string>
     <string name="caption_overwrite_immunization_management_status">Overwrite immunization management status</string>
 `
@@ -595,6 +595,7 @@
     <string name="validation_visit_date_time_before_contact_date">The visit cannot be more than 30 days before the last contact date.</string>
     <string name="validation_visit_date_time_before_report_date">The visit cannot be more than 30 days before the contact report date.</string>
 
+    <string name="value_unknown">Unknown</string>
     <string name="value_age_unknown">Age N/A</string>
     <string name="value_blood_pressure_unknown">Blood Pressure N/A</string>
     <string name="value_case_uuid_unknown">Case ID N/A</string>

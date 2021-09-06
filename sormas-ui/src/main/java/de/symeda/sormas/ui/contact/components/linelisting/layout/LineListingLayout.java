@@ -95,25 +95,25 @@ public class LineListingLayout extends VerticalLayout {
 		this(window, new SharedInfoField(eventDto));
 
 		for (EventParticipantDto eventParticipantDto : eventParticipantDtos) {
-			PersonFieldDto person = new PersonFieldDto();
-			person.setFirstName(eventParticipantDto.getPerson().getFirstName());
-			person.setLastName(eventParticipantDto.getPerson().getLastName());
-			person.setBirthDate(
+			PersonFieldDto personField = new PersonFieldDto();
+			personField.setFirstName(eventParticipantDto.getPerson().getFirstName());
+			personField.setLastName(eventParticipantDto.getPerson().getLastName());
+			personField.setBirthDate(
 				new BirthDateDto(
 					eventParticipantDto.getPerson().getBirthdateDD(),
 					eventParticipantDto.getPerson().getBirthdateMM(),
 					eventParticipantDto.getPerson().getBirthdateYYYY()));
-			person.setSex(eventParticipantDto.getPerson().getSex());
+			personField.setSex(eventParticipantDto.getPerson().getSex());
 
 			ContactLineLayoutDto newLineDto = new ContactLineLayoutDto();
-			newLineDto.lineField = new ContactLineFieldDto();
-			newLineDto.lineField.setPerson(person);
+			newLineDto.setLineField(new ContactLineFieldDto());
+			newLineDto.getLineField().setPerson(personField);
 
 			ContactLineLayout newLine = new ContactLineLayout(lines.size());
 			newLine.enableDelete(false);
 			newLine.enablePersonField(false);
-			newLine.setBean(newLineDto);
 			newLine.setPerson(eventParticipantDto.getPerson());
+			newLine.setBean(newLineDto);
 
 			lines.add(newLine);
 			lineComponent.addComponent(newLine);
@@ -209,11 +209,8 @@ public class LineListingLayout extends VerticalLayout {
 		ContactLineLayout newLine = new ContactLineLayout(lines.size());
 		ContactLineLayoutDto newLineDto = new ContactLineLayoutDto();
 
-		if (!lines.isEmpty()) {
-			ContactLineLayoutDto lastLineDto = lines.get(lines.size() - 1).getBean();
-			newLineDto.setLineField(lastLineDto.getLineField());
-		} else {
-			newLineDto.setLineField(new ContactLineFieldDto());
+		newLineDto.setLineField(new ContactLineFieldDto());
+		if (lines.isEmpty()) {
 			newLine.enableDelete(false);
 		}
 

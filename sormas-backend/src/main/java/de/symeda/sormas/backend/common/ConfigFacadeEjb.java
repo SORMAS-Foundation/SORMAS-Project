@@ -33,13 +33,13 @@ import com.google.common.collect.Lists;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
+import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -158,6 +158,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String UI_URL = "ui.url";
 
+	private static final String DOCUMENT_UPLOAD_SIZE_LIMIT_MB = "documentUploadSizeLimitMb";
+	public static final int DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB = 20;
+	public static final String IMPORT_FILE_SIZE_LIMIT_MB = "importFileSizeLimitMb";
+	public static final int DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB = 20;
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Resource(lookup = "sormas/Properties")
@@ -199,6 +204,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			return Integer.parseInt(getProperty(name, Integer.toString(defaultValue)));
 		} catch (Exception e) {
 			logger.error("Could not parse integer value of property '" + name + "': " + e.getMessage());
+			return defaultValue;
+		}
+	}
+
+	protected long getLong(String name, int defaultValue) {
+
+		try {
+			return Long.parseLong(getProperty(name, Long.toString(defaultValue)));
+		} catch (Exception e) {
+			logger.error("Could not parse long value of property '" + name + "': " + e.getMessage());
 			return defaultValue;
 		}
 	}
@@ -652,6 +667,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getDemisJndiName() {
 		return getProperty(INTERFACE_DEMIS_JNDINAME, null);
+	}
+
+	@Override
+	public long getDocumentUploadSizeLimitMb() {
+		return getLong(DOCUMENT_UPLOAD_SIZE_LIMIT_MB, DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB);
+	}
+
+	@Override
+	public long getImportFileSizeLimitMb() {
+		return getLong(IMPORT_FILE_SIZE_LIMIT_MB, DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB);
 	}
 
 	@LocalBean

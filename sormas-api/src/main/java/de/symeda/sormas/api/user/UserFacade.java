@@ -22,10 +22,11 @@ import java.util.List;
 import java.util.Set;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -33,7 +34,7 @@ public interface UserFacade {
 
 	UserDto getByUuid(String uuid);
 
-	UserDto saveUser(UserDto dto);
+	UserDto saveUser(@Valid UserDto dto);
 
 	boolean isLoginUnique(String uuid, String userName);
 

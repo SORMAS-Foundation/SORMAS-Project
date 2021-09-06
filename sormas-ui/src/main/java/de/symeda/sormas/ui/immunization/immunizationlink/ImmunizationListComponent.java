@@ -25,6 +25,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.components.SideComponentLayout;
 
 public class ImmunizationListComponent extends VerticalLayout {
 
@@ -75,7 +76,7 @@ public class ImmunizationListComponent extends VerticalLayout {
 	}
 
 	public static void addImmunizationListComponent(CustomLayout layout, EventParticipantDto eventPart) {
-		final EventDto eventDto = FacadeProvider.getEventFacade().getByUuid(eventPart.getEvent().getUuid());
+		final EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventPart.getEvent().getUuid(), false);
 		final Disease disease = eventDto.getDisease();
 		if (disease != null) {
 			addImmunizationListComponent(layout, eventPart.getPerson().toReference(), disease);
@@ -83,16 +84,11 @@ public class ImmunizationListComponent extends VerticalLayout {
 	}
 
 	private static void addImmunizationListComponent(CustomLayout layout, PersonReferenceDto personReferenceDto, Disease disease) {
-		final VerticalLayout immunizationsLayout = new VerticalLayout();
-		immunizationsLayout.setMargin(false);
-		immunizationsLayout.setSpacing(false);
-
 		final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
 		immunizationCriteria.setPerson(personReferenceDto);
 		immunizationCriteria.setDisease(disease);
 		ImmunizationListComponent immunizationList = new ImmunizationListComponent(immunizationCriteria);
 		immunizationList.addStyleName(CssStyles.SIDE_COMPONENT);
-		immunizationsLayout.addComponent(immunizationList);
-		layout.addComponent(immunizationsLayout, IMMUNIZATION_LOC);
+		layout.addComponent(new SideComponentLayout(immunizationList), IMMUNIZATION_LOC);
 	}
 }

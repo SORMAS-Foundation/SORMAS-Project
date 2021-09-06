@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.externalsurveillanceservice;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,8 +127,12 @@ public class ExternalSurveillanceServiceGateway {
 			notificationType = Notification.Type.HUMANIZED_MESSAGE;
 			notificationMessage = successMessage;
 		} catch (ExternalSurveillanceToolException e) {
-			notificationType = Notification.Type.ERROR_MESSAGE;
-			notificationMessage = I18nProperties.getString(e.getMessage());
+			if (StringUtils.isNotBlank(e.getErrorCode()) && "timeout_anticipated".equals(e.getErrorCode())) {
+				notificationType = Notification.Type.WARNING_MESSAGE;
+			} else {
+				notificationType = Notification.Type.ERROR_MESSAGE;
+			}
+			notificationMessage = e.getMessage();
 		}
 
 		Notification.show(I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_title), notificationMessage, notificationType);

@@ -5,7 +5,6 @@ import static de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListCom
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -26,6 +25,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.components.SideComponentLayout;
 
 public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 
@@ -35,6 +35,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 	public static final String CASES_LOC = "cases";
 	public static final String CONTACTS_LOC = "contacts";
 	public static final String EVENT_PARTICIPANTS_LOC = "events";
+	public static final String IMMUNIZATION_LOC = "immunizations";
 
 	private CommitDiscardWrapperComponent<PersonEditForm> editComponent;
 
@@ -94,36 +95,15 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
-			VerticalLayout caseLayout = new VerticalLayout();
-			caseLayout.setMargin(false);
-			caseLayout.setSpacing(false);
-
-			CaseListComponent caseListComponent = new CaseListComponent(getReference());
-			caseListComponent.addStyleName(CssStyles.SIDE_COMPONENT);
-			caseLayout.addComponent(caseListComponent);
-			layout.addComponent(caseLayout, CASES_LOC);
+			layout.addComponent(new SideComponentLayout(new CaseListComponent(getReference())), CASES_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)) {
-			VerticalLayout contactLayout = new VerticalLayout();
-			contactLayout.setMargin(false);
-			contactLayout.setSpacing(false);
-
-			ContactListComponent contactListComponent = new ContactListComponent(getReference());
-			contactListComponent.addStyleName(CssStyles.SIDE_COMPONENT);
-			contactLayout.addComponent(contactListComponent);
-			layout.addComponent(contactLayout, CONTACTS_LOC);
+			layout.addComponent(new SideComponentLayout(new ContactListComponent(getReference())), CONTACTS_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
-			VerticalLayout eventParticipantLayout = new VerticalLayout();
-			eventParticipantLayout.setMargin(false);
-			eventParticipantLayout.setSpacing(false);
-
-			EventParticipantListComponent eventParticipantList = new EventParticipantListComponent(getReference());
-			eventParticipantList.addStyleName(CssStyles.SIDE_COMPONENT);
-			eventParticipantLayout.addComponent(eventParticipantList);
-			layout.addComponent(eventParticipantLayout, EVENT_PARTICIPANTS_LOC);
+			layout.addComponent(new SideComponentLayout(new EventParticipantListComponent(getReference())), EVENT_PARTICIPANTS_LOC);
 		}
 
 		TravelEntryListComponent.addTravelEntryListComponent(layout, getReference());

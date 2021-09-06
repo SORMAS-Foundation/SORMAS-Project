@@ -941,6 +941,7 @@ public interface Captions {
 	String DocumentTemplate_exampleTemplateContacts = "DocumentTemplate.exampleTemplateContacts";
 	String DocumentTemplate_exampleTemplateEventHandout = "DocumentTemplate.exampleTemplateEventHandout";
 	String DocumentTemplate_exampleTemplateEventParticipants = "DocumentTemplate.exampleTemplateEventParticipants";
+	String DocumentTemplate_exampleTemplateTravelEntries = "DocumentTemplate.exampleTemplateTravelEntries";
 	String DocumentTemplate_plural = "DocumentTemplate.plural";
 	String DocumentTemplate_QuarantineOrder = "DocumentTemplate.QuarantineOrder";
 	String DocumentTemplate_QuarantineOrder_create = "DocumentTemplate.QuarantineOrder.create";
@@ -1031,6 +1032,7 @@ public interface Captions {
 	String Event_workEnvironment = "Event.workEnvironment";
 	String EventAction_actionChangeDate = "EventAction.actionChangeDate";
 	String EventAction_actionCreationDate = "EventAction.actionCreationDate";
+	String EventAction_actionDate = "EventAction.actionDate";
 	String EventAction_actionLastModifiedBy = "EventAction.actionLastModifiedBy";
 	String EventAction_actionPriority = "EventAction.actionPriority";
 	String EventAction_actionStatus = "EventAction.actionStatus";
@@ -1289,11 +1291,11 @@ public interface Captions {
 	String Immunization_externalId = "Immunization.externalId";
 	String Immunization_healthFacility = "Immunization.healthFacility";
 	String Immunization_healthFacilityDetails = "Immunization.healthFacilityDetails";
+	String Immunization_immunizationManagementStatus = "Immunization.immunizationManagementStatus";
 	String Immunization_immunizationPeriod = "Immunization.immunizationPeriod";
 	String Immunization_immunizationStatus = "Immunization.immunizationStatus";
 	String Immunization_lastInfectionDate = "Immunization.lastInfectionDate";
 	String Immunization_lastVaccineType = "Immunization.lastVaccineType";
-	String Immunization_managementStatus = "Immunization.managementStatus";
 	String Immunization_meansOfImmunization = "Immunization.meansOfImmunization";
 	String Immunization_meansOfImmunizationDetails = "Immunization.meansOfImmunizationDetails";
 	String Immunization_numberOfDoses = "Immunization.numberOfDoses";
@@ -1305,6 +1307,9 @@ public interface Captions {
 	String Immunization_previousInfection = "Immunization.previousInfection";
 	String Immunization_recoveryDate = "Immunization.recoveryDate";
 	String Immunization_reportDate = "Immunization.reportDate";
+	String Immunization_responsibleCommunity = "Immunization.responsibleCommunity";
+	String Immunization_responsibleDistrict = "Immunization.responsibleDistrict";
+	String Immunization_responsibleRegion = "Immunization.responsibleRegion";
 	String Immunization_startDate = "Immunization.startDate";
 	String Immunization_uuid = "Immunization.uuid";
 	String Immunization_validFrom = "Immunization.validFrom";
@@ -1332,6 +1337,7 @@ public interface Captions {
 	String importLineListing = "importLineListing";
 	String importProcessed = "importProcessed";
 	String importSkips = "importSkips";
+	String importValueSeparator = "importValueSeparator";
 	String inaccessibleValue = "inaccessibleValue";
 	String info = "info";
 	String infrastructureImportAllowOverwrite = "infrastructureImportAllowOverwrite";
@@ -1614,6 +1620,7 @@ public interface Captions {
 	String personsUpdated = "personsUpdated";
 	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
+	String PointOfEntry_archived = "PointOfEntry.archived";
 	String PointOfEntry_externalID = "PointOfEntry.externalID";
 	String PointOfEntry_latitude = "PointOfEntry.latitude";
 	String PointOfEntry_longitude = "PointOfEntry.longitude";
@@ -1833,7 +1840,6 @@ public interface Captions {
 	String singleDayEventEvolutionDate = "singleDayEventEvolutionDate";
 	String sormasToSormasCaseNotShared = "sormasToSormasCaseNotShared";
 	String sormasToSormasContactNotShared = "sormasToSormasContactNotShared";
-	String sormasToSormasDialogTitle = "sormasToSormasDialogTitle";
 	String sormasToSormasErrorDialogTitle = "sormasToSormasErrorDialogTitle";
 	String sormasToSormasEventNotShared = "sormasToSormasEventNotShared";
 	String sormasToSormasEventParticipantNotShared = "sormasToSormasEventParticipantNotShared";
@@ -1866,6 +1872,7 @@ public interface Captions {
 	String SormasToSormasShareRequest_dataType = "SormasToSormasShareRequest.dataType";
 	String SormasToSormasShareRequest_events = "SormasToSormasShareRequest.events";
 	String SormasToSormasShareRequest_organizationName = "SormasToSormasShareRequest.organizationName";
+	String SormasToSormasShareRequest_ownershipHandedOver = "SormasToSormasShareRequest.ownershipHandedOver";
 	String SormasToSormasShareRequest_senderName = "SormasToSormasShareRequest.senderName";
 	String SormasToSormasShareRequest_status = "SormasToSormasShareRequest.status";
 	String SormasToSormasShareRequest_uuid = "SormasToSormasShareRequest.uuid";
@@ -2172,6 +2179,7 @@ public interface Captions {
 	String TravelEntry_person = "TravelEntry.person";
 	String TravelEntry_personFirstName = "TravelEntry.personFirstName";
 	String TravelEntry_personLastName = "TravelEntry.personLastName";
+	String TravelEntry_pointOfEntryDetails = "TravelEntry.pointOfEntryDetails";
 	String TravelEntry_pointOfEntryDistrict = "TravelEntry.pointOfEntryDistrict";
 	String TravelEntry_pointOfEntryName = "TravelEntry.pointOfEntryName";
 	String TravelEntry_pointOfEntryRegion = "TravelEntry.pointOfEntryRegion";
@@ -2230,6 +2238,7 @@ public interface Captions {
 	String TreatmentExport_caseUuid = "TreatmentExport.caseUuid";
 	String treatmentNewTreatment = "treatmentNewTreatment";
 	String treatmentOpenPrescription = "treatmentOpenPrescription";
+	String unknown = "unknown";
 	String User = "User";
 	String User_active = "User.active";
 	String User_address = "User.address";

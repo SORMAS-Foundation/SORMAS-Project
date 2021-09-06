@@ -23,12 +23,14 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -41,6 +43,7 @@ import de.symeda.sormas.app.databinding.FragmentImmunizationNewLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizationNewLayoutBinding, Immunization, Immunization> {
 
@@ -130,7 +133,7 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
-		InfrastructureDaoHelper.initializeFacilityFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			record,
 			contentBinding.immunizationResponsibleRegion,
 			initialResponsibleRegions,
@@ -141,7 +144,7 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 			contentBinding.immunizationResponsibleCommunity,
 			initialResponsibleCommunities,
 			record.getResponsibleCommunity(),
-			contentBinding.facilityOrHome,
+			null,
 			facilityOrHomeList,
 			contentBinding.facilityTypeGroup,
 			facilityTypeGroupList,
@@ -184,6 +187,8 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.immunizationReportDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationStartDate.initializeDateField(getFragmentManager());
 		contentBinding.immunizationEndDate.initializeDateField(getFragmentManager());
+		contentBinding.immunizationValidFrom.initializeDateField(getFragmentManager());
+		contentBinding.immunizationValidUntil.initializeDateField(getFragmentManager());
 
 		ValidationHelper
 			.initIntegerValidator(contentBinding.immunizationNumberOfDoses, I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10);
@@ -200,7 +205,6 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 			if (e.getValue() == MeansOfImmunization.OTHER || e.getValue() == MeansOfImmunization.RECOVERY) {
 				contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.COMPLETED);
 				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-				contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.VISIBLE);
 			}
 			if (e.getValue() == MeansOfImmunization.VACCINATION || e.getValue() == MeansOfImmunization.VACCINATION_RECOVERY) {
 				contentBinding.immunizationNumberOfDoses.setVisibility(View.VISIBLE);
@@ -213,6 +217,8 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.overwriteImmunizationManagementStatusCheckBox.addValueChangedListener(e -> {
 			if (Boolean.TRUE.equals(e.getValue())) {
 				contentBinding.immunizationImmunizationManagementStatus.setEnabled(true);
+			} else {
+				contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
 			}
 		});
 
@@ -230,8 +236,14 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 
 		contentBinding.immunizationImmunizationManagementStatus.setValue(ImmunizationManagementStatus.SCHEDULED);
 		contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
-		contentBinding.overwriteImmunizationManagementStatusCheckBox.setVisibility(View.GONE);
 		contentBinding.immunizationNumberOfDoses.setVisibility(View.GONE);
 
+		if (!(record.getHealthFacility() == null
+				|| (record.getHealthFacility() != null && FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())))) {
+			final FacilityType facilityType = record.getFacilityType();
+			if (facilityType != null) {
+				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
+			}
+		}
 	}
 }

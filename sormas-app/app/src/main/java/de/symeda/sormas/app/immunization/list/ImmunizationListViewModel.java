@@ -26,6 +26,7 @@ import androidx.paging.PositionalDataSource;
 
 import java.util.List;
 
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;

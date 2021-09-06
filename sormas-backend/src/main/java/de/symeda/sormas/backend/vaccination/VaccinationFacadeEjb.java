@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -48,7 +49,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	@EJB
 	private VaccinationService vaccinationService;
 
-	public VaccinationDto save(VaccinationDto dto) {
+	public VaccinationDto save(@Valid VaccinationDto dto) {
 
 		VaccinationEntity existingVaccination = dto.getUuid() != null ? vaccinationService.getByUuid(dto.getUuid()) : null;
 		VaccinationDto existingDto = toDto(existingVaccination);

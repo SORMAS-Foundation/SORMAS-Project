@@ -19,11 +19,11 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
@@ -33,7 +33,6 @@ public class ImmunizationJoins<T> extends AbstractDomainObjectJoins<T, Immunizat
 	private Join<Immunization, Region> responsibleRegion;
 	private Join<Immunization, District> responsibleDistrict;
 	private Join<Immunization, Community> responsibleCommunity;
-	private Join<Immunization, Facility> healthFacility;
 	private Join<Immunization, User> reportingUser;
 
 	public ImmunizationJoins(From<T, Immunization> root) {
@@ -70,14 +69,6 @@ public class ImmunizationJoins<T> extends AbstractDomainObjectJoins<T, Immunizat
 
 	private void setResponsibleCommunity(Join<Immunization, Community> responsibleCommunity) {
 		this.responsibleCommunity = responsibleCommunity;
-	}
-
-	public Join<Immunization, Facility> getHealthFacility() {
-		return getOrCreate(healthFacility, Immunization.HEALTH_FACILITY, JoinType.LEFT, this::setHealthFacility);
-	}
-
-	public void setHealthFacility(Join<Immunization, Facility> healthFacility) {
-		this.healthFacility = healthFacility;
 	}
 
 	public Join<Immunization, User> getReportingUser() {

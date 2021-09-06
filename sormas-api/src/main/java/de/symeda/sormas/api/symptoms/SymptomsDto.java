@@ -42,8 +42,11 @@ import static de.symeda.sormas.api.Disease.YELLOW_FEVER;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.Complication;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependantOn;
@@ -1174,6 +1177,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Outbreaks
 	private Date onsetDate;
 
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String onsetSymptom;
 
 	@Diseases({
@@ -1220,6 +1224,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		CountryHelper.COUNTRY_CODE_SWITZERLAND })
 	@SensitiveData
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String otherHemorrhagicSymptomsText;
 
 	@Diseases({
@@ -1267,6 +1272,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(OTHER_NON_HEMORRHAGIC_SYMPTOMS)
 	@SensitiveData
 	@SymptomGrouping(SymptomGroup.OTHER)
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String otherNonHemorrhagicSymptomsText;
 
 	@Diseases({
@@ -1325,6 +1331,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String patientIllLocation;
 
 	@Diseases({
@@ -1530,6 +1537,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		UNDEFINED,
 		OTHER })
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String symptomsComments;
 
 	@Diseases({
@@ -1677,6 +1685,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@HideForCountries
 	@SensitiveData
 	@SymptomGrouping(SymptomGroup.CARDIOVASCULAR)
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String congenitalHeartDiseaseDetails;
 
 	@Diseases({
@@ -2133,6 +2142,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@Complication
 	@HideForCountries
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String otherComplicationsText;
 
 	@Diseases({

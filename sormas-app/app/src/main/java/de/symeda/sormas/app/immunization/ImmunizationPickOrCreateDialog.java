@@ -52,6 +52,7 @@ public class ImmunizationPickOrCreateDialog extends AbstractDialog {
 	private DialogImmunizationPickOrCreateLayoutBinding contentBinding;
 
 	private ImmunizationSimilarityCriteria criteria;
+	private String disease;
 	private List<Immunization> similarImmunizations;
 
 	private IEntryItemOnClickListener similarImmunizationItemClickCallback;
@@ -97,9 +98,10 @@ public class ImmunizationPickOrCreateDialog extends AbstractDialog {
 		this.criteria.setImmunizationCriteria(immunizationCriteria);
 		this.criteria.setPersonUuid(newImmunization.getPerson().getUuid());
 		this.criteria.setImmunizationUuid(newImmunization.getUuid());
-		this.criteria.setReportDate(newImmunization.getReportDate());
 		this.criteria.setStartDate(newImmunization.getStartDate());
 		this.criteria.setEndDate(newImmunization.getEndDate());
+
+		this.disease = newImmunization.getDisease().toString();
 
 		this.setSelectedImmunization(null);
 	}
@@ -172,10 +174,16 @@ public class ImmunizationPickOrCreateDialog extends AbstractDialog {
 			Log.e(TAG, "There is no variable 'similarImmunizations' in layout " + layoutName);
 		}
 
+		if (!binding.setVariable(BR.disease, disease)) {
+			Log.e(TAG, "There is no variable 'disease' in layout " + layoutName);
+		}
+
 		if (!binding.setVariable(BR.similarImmunizationItemClickCallback, similarImmunizationItemClickCallback)) {
 			Log.e(TAG, "There is no variable 'similarImmunizationItemClickCallback' in layout " + layoutName);
 		}
 	}
+
+
 
 	@Override
 	protected void initializeContentView(ViewDataBinding rootBinding, final ViewDataBinding buttonPanelBinding) {

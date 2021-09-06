@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +18,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.opencsv.exceptions.CsvValidationException;
 
 import de.symeda.sormas.api.importexport.InvalidColumnException;
-import de.symeda.sormas.api.region.CountryCriteria;
-import de.symeda.sormas.api.region.CountryReferenceDto;
+import de.symeda.sormas.api.importexport.ValueSeparator;
+import de.symeda.sormas.api.infrastructure.country.CountryCriteria;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
@@ -56,8 +59,8 @@ public class CountryImporterTest extends AbstractBeanTest {
 
 	private static class CountryImporterExtension extends CountryImporter {
 
-		private CountryImporterExtension(File inputFile, UserDto currentUser) {
-			super(inputFile, currentUser);
+		private CountryImporterExtension(File inputFile, UserDto currentUser) throws IOException {
+			super(inputFile, currentUser, ValueSeparator.DEFAULT);
 		}
 
 		protected Writer createErrorReportWriter() {
@@ -68,6 +71,11 @@ public class CountryImporterTest extends AbstractBeanTest {
 					// Do nothing
 				}
 			}));
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

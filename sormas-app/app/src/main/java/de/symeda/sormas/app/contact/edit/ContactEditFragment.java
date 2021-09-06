@@ -53,6 +53,7 @@ import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
+import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
 public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLayoutBinding, Contact, Contact> {
 
@@ -195,7 +196,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contentBinding.setCaze(sourceCase);
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
-		InfrastructureDaoHelper.initializeRegionFields(
+		InfrastructureFieldsDependencyHandler.instance.initializeRegionFields(
 			contentBinding.contactRegion,
 			initialRegions,
 			record.getRegion(),
@@ -205,7 +206,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.contactCommunity,
 			initialCommunities,
 			record.getCommunity());
-		contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
+		contentBinding.contactDisease.initializeSpinner(diseaseList);
 		contentBinding.contactDisease.addValueChangedListener(e -> {
 			contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
 			contentBinding.contactContactProximity.clear();

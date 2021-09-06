@@ -65,14 +65,14 @@ public class BusinessFlows implements En {
                     .uuid(UUID.randomUUID().toString())
                     .lastName(faker.name().lastName())
                     .build();
-            apiState.setEditPerson(person);
+            apiState.setLastCreatedPerson(person);
             personsHelper.createNewPerson(person);
 
-            Case caze = caseApiService.buildGeneratedCase(apiState.getEditPerson());
+            Case caze = caseApiService.buildGeneratedCase(apiState.getLastCreatedPerson());
             caze =
                 caze.toBuilder()
                     .outcome(CaseOutcome.getRandomOutcome())
-                    .disease(Disease.getRandomDisease())
+                    .disease(DiseasesValues.getRandomDiseaseName())
                     .caseClassification(CaseClasification.getRandomClassification())
                     .build();
             caseHelper.createCase(caze);
@@ -94,10 +94,10 @@ public class BusinessFlows implements En {
                     .uuid(UUID.randomUUID().toString())
                     .lastName(faker.name().lastName())
                     .build();
-            apiState.setEditPerson(person);
+            apiState.setLastCreatedPerson(person);
             personsHelper.createNewPerson(person);
 
-            Case caze = caseApiService.buildGeneratedCase(apiState.getEditPerson());
+            Case caze = caseApiService.buildGeneratedCase(apiState.getLastCreatedPerson());
             caseHelper.createCase(caze);
             apiState.setCreatedCase(caze);
 
@@ -109,7 +109,7 @@ public class BusinessFlows implements En {
                     .received(true)
                     .pathogenTestResult(PathogenTestResults.getRandomResult())
                     .specimenCondition(SpecimenConditions.getRandomCondition())
-                    .lab(Lab.builder().uuid(LabUuid.getRandomUuid()).build())
+                    .lab(Lab.builder().uuid(LaboratoryValues.getRandomUUID()).build())
                     .build();
             sampleHelper.createSample(sample);
             sampleList.add(sample);

@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.ejb.ApplicationException;
 
 /*
@@ -30,7 +33,21 @@ import javax.ejb.ApplicationException;
 @ApplicationException(rollback = false)
 public class ValidationRuntimeException extends RuntimeException {
 
+	private Map<List<String>, String> propertyErrors;
+
 	public ValidationRuntimeException(String message) {
 		super(message);
+	}
+
+	public ValidationRuntimeException(Map<List<String>, String> propertyErrors) {
+		this.propertyErrors = propertyErrors;
+	}
+
+	public ValidationRuntimeException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public Map<List<String>, String> getPropertyErrors() {
+		return propertyErrors;
 	}
 }

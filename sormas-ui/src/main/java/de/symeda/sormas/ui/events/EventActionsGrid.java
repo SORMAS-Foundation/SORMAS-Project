@@ -82,6 +82,7 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 			EventActionIndexDto.ACTION_TITLE,
 			EventActionIndexDto.ACTION_CREATION_DATE,
 			EventActionIndexDto.ACTION_CHANGE_DATE,
+			EventActionIndexDto.ACTION_DATE,
 			EventActionIndexDto.ACTION_STATUS,
 			EventActionIndexDto.ACTION_PRIORITY,
 			createLastModifiedByOrCreatorColumn(this));
@@ -91,6 +92,8 @@ public class EventActionsGrid extends FilteredGrid<EventActionIndexDto, EventCri
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<EventActionIndexDto, Date>) getColumn(EventActionIndexDto.ACTION_CHANGE_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<EventActionIndexDto, Date>) getColumn(EventActionIndexDto.ACTION_DATE))
+				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 
 		for (Column<EventActionIndexDto, ?> column : getColumns()) {
 			String columnId = column.getId();

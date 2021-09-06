@@ -21,12 +21,19 @@ import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadStartedHandler;
 import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadStatePanel;
 import com.wcs.wcslib.vaadin.widget.multifileupload.ui.UploadStateWindow;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.ui.SormasUI;
 
 public class DocumentMultiFileUpload extends MultiFileUpload {
 
 	public DocumentMultiFileUpload(UploadStartedHandler uploadStartedHandler, UploadFinishedHandler uploadFinishedHandler, UploadStateWindow uploadStateWindow, boolean multiple) {
 		super(uploadStartedHandler, uploadFinishedHandler, uploadStateWindow, multiple);
+
+		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
+		setMaxFileSize(fileSizeLimitMb * 1_000_000);
+		setSizeErrorMsgPattern(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
 
 		// Need to enable Polling or nothing will happen after selecting a file with the MultiFileUpload input
 		this.addAttachListener(e -> SormasUI.get().access(() -> SormasUI.get().setPollInterval(300)));

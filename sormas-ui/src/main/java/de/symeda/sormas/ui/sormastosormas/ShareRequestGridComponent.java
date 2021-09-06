@@ -119,7 +119,6 @@ public class ShareRequestGridComponent extends VerticalLayout {
 
 		createAndAddStatusButton(ShareRequestStatus.PENDING, statusFilterLayout, filterChangeHandler);
 		createAndAddStatusButton(ShareRequestStatus.ACCEPTED, statusFilterLayout, filterChangeHandler);
-		createAndAddStatusButton(ShareRequestStatus.REJECTED, statusFilterLayout, filterChangeHandler);
 
 		return statusFilterLayout;
 	}

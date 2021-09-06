@@ -10,12 +10,14 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
+import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
-public class ImmunizationList extends PaginationList<ImmunizationIndexDto> {
+public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
 
 	private final ImmunizationCriteria immunizationCriteria;
 
@@ -26,8 +28,8 @@ public class ImmunizationList extends PaginationList<ImmunizationIndexDto> {
 
 	@Override
 	public void reload() {
-		List<ImmunizationIndexDto> immunizationsList =
-			FacadeProvider.getImmunizationFacade().getIndexList(immunizationCriteria, 0, maxDisplayedEntries * 20, null);
+		List<ImmunizationListEntryDto> immunizationsList =
+				FacadeProvider.getImmunizationFacade().getEntriesList(immunizationCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(immunizationsList);
 		if (!immunizationsList.isEmpty()) {
@@ -41,7 +43,7 @@ public class ImmunizationList extends PaginationList<ImmunizationIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		for (ImmunizationIndexDto immunization : getDisplayedEntries()) {
+		for (ImmunizationListEntryDto immunization : getDisplayedEntries()) {
 			ImmunizationListEntry listEntry = new ImmunizationListEntry(immunization);
 			addEditButton(listEntry);
 			listLayout.addComponent(listEntry);
@@ -49,7 +51,8 @@ public class ImmunizationList extends PaginationList<ImmunizationIndexDto> {
 	}
 
 	private void addEditButton(ImmunizationListEntry listEntry) {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+		UserProvider currentUser = UserProvider.getCurrent();
+		if (currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
 			listEntry.addEditListener(
 				(Button.ClickListener) event -> ControllerProvider.getImmunizationController()
 					.navigateToImmunization(listEntry.getImmunizationEntry().getUuid()));
