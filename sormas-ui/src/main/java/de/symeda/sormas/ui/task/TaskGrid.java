@@ -192,6 +192,9 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 		case EVENT:
 			ControllerProvider.getEventController().navigateToData(task.getEvent().getUuid());
 			return;
+		case TRAVEL_ENTRY:
+			ControllerProvider.getTravelEntryController().navigateToTravelEntry(task.getTravelEntry().getUuid());
+			return;
 		case GENERAL:
 			return;
 		default:

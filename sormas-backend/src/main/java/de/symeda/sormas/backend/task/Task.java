@@ -38,6 +38,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
 
 @Entity
@@ -66,11 +67,13 @@ public class Task extends AbstractDomainObject {
 	public static final String CLOSED_LAT = "closedLat";
 	public static final String CLOSED_LON = "closedLon";
 	public static final String ARCHIVED = "archived";
+	public static final String TRAVEL_ENTRY = "travelEntry";
 
 	private TaskContext taskContext;
 	private Case caze;
 	private Contact contact;
 	private Event event;
+	private TravelEntry travelEntry;
 
 	private TaskType taskType;
 	private TaskPriority priority;
@@ -257,5 +260,14 @@ public class Task extends AbstractDomainObject {
 
 	public void setArchived(boolean archived) {
 		this.archived = archived;
+	}
+
+	@ManyToOne(cascade = {})
+	public TravelEntry getTravelEntry() {
+		return travelEntry;
+	}
+
+	public void setTravelEntry(TravelEntry travelEntry) {
+		this.travelEntry = travelEntry;
 	}
 }
