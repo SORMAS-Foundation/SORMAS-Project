@@ -51,16 +51,17 @@ import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProd
  */
 public class MockProducer {
 
-	private static final SessionContext sessionContext = mock(SessionContext.class);
-	private static final Principal principal = mock(Principal.class);
-	private static final Topic topic = mock(Topic.class);
-	private static final ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
-	private static final TimerService timerService = mock(TimerService.class);
-	public static final Properties properties = new Properties();
-	private static final UserTransaction userTransaction = mock(UserTransaction.class);
-	private static final SormasToSormasRestClient SORMAS_TO_SORMAS_REST_CLIENT = mock(SormasToSormasRestClient.class);
-	private static final ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
 	private static final String TMP_PATH = "target/tmp";
+
+	private static SessionContext sessionContext = mock(SessionContext.class);
+	private static Principal principal = mock(Principal.class);
+	private static Topic topic = mock(Topic.class);
+	private static ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
+	private static TimerService timerService = mock(TimerService.class);
+	private static Properties properties = new Properties();
+	private static UserTransaction userTransaction = mock(UserTransaction.class);
+	private static SormasToSormasRestClient s2sRestClient = mock(SormasToSormasRestClient.class);
+	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -92,15 +93,7 @@ public class MockProducer {
 
 	public static void resetMocks() {
 
-		reset(
-			sessionContext,
-			principal,
-			topic,
-			connectionFactory,
-			timerService,
-			userTransaction,
-			SORMAS_TO_SORMAS_REST_CLIENT,
-			managedScheduledExecutorService);
+		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction, s2sRestClient, managedScheduledExecutorService);
 		wireMocks();
 		resetProperties();
 	}
@@ -158,7 +151,7 @@ public class MockProducer {
 	}
 
 	public static SormasToSormasRestClient getSormasToSormasClient() {
-		return SORMAS_TO_SORMAS_REST_CLIENT;
+		return s2sRestClient;
 	}
 
 	@Specializes
@@ -170,7 +163,7 @@ public class MockProducer {
 			SormasToSormasDiscoveryService sormasToSormasDiscoveryService,
 			SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb,
 			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
-			return SORMAS_TO_SORMAS_REST_CLIENT;
+			return s2sRestClient;
 		}
 	}
 
