@@ -47,5 +47,5 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 
 	void updateImmunizationStatuses();
 
-	List<ImmunizationListEntryDto> getEntriesList(String personUuid, Integer first, Integer max);
+	List<ImmunizationListEntryDto> getEntriesList(ImmunizationCriteria criteria, Integer first, Integer max);
 }

@@ -28,6 +28,8 @@ import javax.ejb.Stateless;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
@@ -288,9 +290,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
-	public List<ImmunizationListEntryDto> getEntriesList(String personUuid, Integer first, Integer max) {
-		Long personId = personFacade.getPersonIdByUuid(personUuid);
-		return immunizationService.getEntriesList(personId, first, max);
+	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationCriteria criteria, Integer first, Integer max) {
+		return immunizationService.getEntriesList(criteria, first, max);
 	}
 
 	public ImmunizationDto toDto(Immunization entity) {

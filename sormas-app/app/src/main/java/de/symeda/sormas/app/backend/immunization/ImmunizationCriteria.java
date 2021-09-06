@@ -25,10 +25,12 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Region;
 
 public class ImmunizationCriteria implements Serializable {
 
+    private Person person;
     private Disease disease;
     private Region responsibleRegion;
     private ImmunizationStatus immunizationStatus;
@@ -51,6 +53,14 @@ public class ImmunizationCriteria implements Serializable {
     private Date recoveryDateTo;
 
     private Boolean overdueImmunization;
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
 
     public Disease getDisease() {
         return disease;

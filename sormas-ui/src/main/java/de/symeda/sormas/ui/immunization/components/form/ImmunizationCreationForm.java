@@ -42,6 +42,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -83,12 +84,16 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 	//@formatter:on
 
 	private ComboBox birthDateDay;
+	private PersonReferenceDto personDto;
+	private Disease disease;
 
-	public ImmunizationCreationForm() {
+	public ImmunizationCreationForm(PersonReferenceDto personDto, Disease disease) {
 		super(
 			ImmunizationDto.class,
 			ImmunizationDto.I18N_PREFIX,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
+		this.personDto = personDto;
+		this.disease = disease;
 		setWidth(720, Unit.PIXELS);
 		hideValidationUntilNextCommit();
 	}
@@ -98,6 +103,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		return HTML_LAYOUT;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
 		addField(ImmunizationDto.REPORT_DATE, DateField.class);
@@ -232,15 +238,11 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		setRequired(
 			true,
 			ImmunizationDto.REPORT_DATE,
-			ImmunizationDto.DISEASE,
 			ImmunizationDto.MEANS_OF_IMMUNIZATION,
 			FACILITY_TYPE_GROUP_LOC,
 			ImmunizationDto.FACILITY_TYPE,
 			ImmunizationDto.HEALTH_FACILITY,
-			ImmunizationDto.START_DATE,
-			PersonDto.FIRST_NAME,
-			PersonDto.LAST_NAME,
-			PersonDto.SEX);
+			ImmunizationDto.START_DATE);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -362,6 +364,46 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		facilityCombo.addValueChangeListener(e -> {
 			updateFacilityFields(facilityCombo, facilityDetails);
 			this.getValue().setFacilityType((FacilityType) facilityType.getValue());
+		});
+
+		addValueChangeListener(e -> {
+			if (disease != null) {
+				setVisible(false, ImmunizationDto.DISEASE, ImmunizationDto.DISEASE_DETAILS);
+				setReadOnly(false, ImmunizationDto.DISEASE, ImmunizationDto.DISEASE_DETAILS);
+			} else {
+				setRequired(true, ImmunizationDto.DISEASE);
+			}
+			if (personDto != null) {
+				setVisible(
+						false,
+						PersonDto.FIRST_NAME,
+						PersonDto.LAST_NAME,
+						PersonDto.SEX,
+						PersonDto.NATIONAL_HEALTH_ID,
+						PersonDto.PASSPORT_NUMBER,
+						PersonDto.BIRTH_DATE_DD,
+						PersonDto.BIRTH_DATE_MM,
+						PersonDto.BIRTH_DATE_YYYY,
+						PersonDto.PRESENT_CONDITION,
+						PersonDto.PHONE,
+						PersonDto.EMAIL_ADDRESS
+						);
+				setReadOnly(
+						false,
+						PersonDto.FIRST_NAME,
+						PersonDto.LAST_NAME,
+						PersonDto.SEX,
+						PersonDto.NATIONAL_HEALTH_ID,
+						PersonDto.PASSPORT_NUMBER,
+						PersonDto.BIRTH_DATE_DD,
+						PersonDto.BIRTH_DATE_MM,
+						PersonDto.BIRTH_DATE_YYYY,
+						PersonDto.PRESENT_CONDITION,
+						PersonDto.PHONE,
+						PersonDto.EMAIL_ADDRESS);
+			} else {
+				setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
+			}
 		});
 	}
 

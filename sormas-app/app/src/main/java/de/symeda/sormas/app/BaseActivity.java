@@ -440,7 +440,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 
 			if (immunizationMenu != null)
 				immunizationMenu.setVisible(
-					ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_MANAGEMENT_ACCESS)
+					ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT));
 
 			if (eventMenu != null)

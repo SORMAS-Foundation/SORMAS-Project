@@ -17,6 +17,7 @@ package de.symeda.sormas.app.immunization.read;
 
 import android.os.Bundle;
 
+import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;

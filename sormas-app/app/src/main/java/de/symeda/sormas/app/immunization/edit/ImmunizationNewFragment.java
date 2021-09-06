@@ -70,6 +70,18 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		return newInstance(ImmunizationNewFragment.class, ImmunizationNewActivity.buildBundle().get(), activityRootData);
 	}
 
+	public static ImmunizationNewFragment newInstanceFromCase(Immunization activityRootData, String caseUuid) {
+		return newInstance(ImmunizationNewFragment.class, ImmunizationNewActivity.buildBundleWithCase(caseUuid).get(), activityRootData);
+	}
+
+	public static ImmunizationNewFragment newInstanceFromContact(Immunization activityRootData, String contactUuid) {
+		return newInstance(ImmunizationNewFragment.class, ImmunizationNewActivity.buildBundleWithContact(contactUuid).get(), activityRootData);
+	}
+
+	public static ImmunizationNewFragment newInstanceFromEventParticipant(Immunization activityRootData, String eventParticipantUuid) {
+		return newInstance(ImmunizationNewFragment.class, ImmunizationNewActivity.buildBundleWithEvent(eventParticipantUuid).get(), activityRootData);
+	}
+
 	@Override
 	protected String getSubHeadingTitle() {
 		return getResources().getString(R.string.caption_new_immunization);
