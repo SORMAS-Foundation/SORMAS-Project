@@ -133,6 +133,7 @@
     <string name="caption_case_samples">Potilaan näytteet</string>
     <string name="caption_case_tasks">Potilastehtävät</string>
     <string name="caption_case_events">Case Events</string>
+    <string name="caption_case_immunizations">Case Immunizations</string>
     <string name="caption_case_treatments">Hoidot</string>
     <string name="caption_case_similarity_create">Lisää uusi potilas</string>
     <string name="caption_changed_data_lost">Muutetut tiedot hävinneet uudelleensynkronoinnin aikana.</string>
@@ -148,6 +149,7 @@
     <string name="caption_contact_tasks">Kontaktitehtävät</string>
     <string name="caption_contact_epidemiological_data">Epidemiological info</string>
     <string name="caption_contact_visits">Seurantatiedot</string>
+    <string name="caption_contact_immunizations">Contact Immunizations</string>
     <string name="caption_converted_to_case">Sairastunut seurannassa</string>
     <string name="caption_date_of_birth">Syntymäpäivä (vuosi / kuukausi / päivä)</string>
     <string name="caption_date_of_sampling">Näytteenottopäivä</string>
@@ -160,6 +162,7 @@
     <string name="caption_event_period">Date of event</string>
     <string name="caption_event_information">Tapahtuman tiedot</string>
     <string name="caption_event_participants">Osallisia henkilöitä</string>
+    <string name="caption_event_participant_immunizations">Event participant Immunizations</string>
     <string name="caption_event_tasks">Tapahtumatehtävät</string>
     <string name="caption_executed_by">Suorittaja</string>
     <string name="caption_facility_or_home">Place of stay</string>
