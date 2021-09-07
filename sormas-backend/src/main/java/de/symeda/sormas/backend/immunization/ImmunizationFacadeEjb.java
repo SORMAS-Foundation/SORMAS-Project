@@ -236,6 +236,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		validate(dto);
 
 		existingImmunization = fillOrBuildEntity(dto, existingImmunization);
+		immunizationService.updateImmunizationStatusBasedOnVaccinations(existingImmunization);
 		immunizationService.ensurePersisted(existingImmunization);
 
 		return convertToDto(existingImmunization, pseudonymizer);

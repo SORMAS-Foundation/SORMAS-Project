@@ -41,6 +41,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -178,14 +179,13 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		numberOfDosesField.setConverter(new StringToIntegerConverter());
 		numberOfDosesField.setVisible(shouldShowVaccinationFields(meansOfImmunizationValue));
 
-		VaccinationsField vaccinationsField = addField(ImmunizationDto.VACCINATIONS, VaccinationsField.class);
+		addField(ImmunizationDto.VACCINATIONS, VaccinationsField.class);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			ImmunizationDto.VACCINATIONS,
 			ImmunizationDto.MEANS_OF_IMMUNIZATION,
 			Arrays.asList(MeansOfImmunization.VACCINATION, MeansOfImmunization.VACCINATION_RECOVERY),
 			false);
-		vaccinationsField.addValueChangeListener(this::updateImmunizationStatus);
 
 		Label recoveryHeadingLabel = new Label(I18nProperties.getString(Strings.headingRecovery));
 		recoveryHeadingLabel.addStyleName(H3);
@@ -352,23 +352,6 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 	private boolean shouldShowRecoveryFields(MeansOfImmunization meansOfImmunization) {
 		return MeansOfImmunization.RECOVERY.equals(meansOfImmunization) || MeansOfImmunization.VACCINATION_RECOVERY.equals(meansOfImmunization);
-	}
-
-	private void updateImmunizationStatus(Property.ValueChangeEvent valueChangeEvent) {
-		ImmunizationDto immunizationDto = getValue();
-		Integer numberOfDoses = immunizationDto.getNumberOfDoses();
-		int vaccinationCount = ((VaccinationsField) getField(ImmunizationDto.VACCINATIONS)).getValue().size();
-
-		if (numberOfDoses != null) {
-			Date startDate = ((DateField) getField(ImmunizationDto.START_DATE)).getValue();
-			if (System.currentTimeMillis() > startDate.getTime() && vaccinationCount >= 1 && vaccinationCount < numberOfDoses) {
-				((ComboBox) getField(ImmunizationDto.MANAGEMENT_STATUS)).setValue(ImmunizationManagementStatus.ONGOING);
-				((ComboBox) getField(ImmunizationDto.IMMUNIZATION_STATUS)).setValue(ImmunizationStatus.PENDING);
-			} else if (vaccinationCount >= numberOfDoses) {
-				((ComboBox) getField(ImmunizationDto.MANAGEMENT_STATUS)).setValue(ImmunizationManagementStatus.COMPLETED);
-				((ComboBox) getField(ImmunizationDto.IMMUNIZATION_STATUS)).setValue(ImmunizationStatus.ACQUIRED);
-			}
-		}
 	}
 
 	private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {
