@@ -15,9 +15,11 @@
 
 package de.symeda.sormas.backend.immunization;
 
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
+import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEqualsReferenceDto;
+
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -60,9 +62,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.vaccination.VaccinationEntity;
-
-import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
-import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEqualsReferenceDto;
 
 @Stateless
 @LocalBean
@@ -396,9 +395,9 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		if (criteria.getMeansOfImmunization() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.MEANS_OF_IMMUNIZATION), criteria.getMeansOfImmunization()));
 		}
-		if (criteria.getManagementStatus() != null) {
+		if (criteria.getImmunizationManagementStatus() != null) {
 			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS), criteria.getManagementStatus()));
+				.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS), criteria.getImmunizationManagementStatus()));
 		}
 		if (criteria.getImmunizationStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_STATUS), criteria.getImmunizationStatus()));

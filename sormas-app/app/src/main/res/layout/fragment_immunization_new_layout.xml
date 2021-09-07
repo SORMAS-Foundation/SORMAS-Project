@@ -96,6 +96,7 @@
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/immunization_immunizationManagementStatus"
                 style="@style/ControlSingleColumnStyle"
+                app:excludeEmptyItem="true"
                 app:value="@={data.immunizationManagementStatus}" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
@@ -147,13 +148,11 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/facilityTypeGroup"
                     style="@style/ControlFirstOfTwoColumnsStyle"
-                    app:caption="@string/caption_facility_type_group"
-                    app:required="true"/>
+                    app:caption="@string/caption_facility_type_group"/>
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/immunization_facilityType"
                     style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:required="true"
                     app:value="@={data.facilityType}"/>
 
             </LinearLayout>
@@ -161,7 +160,6 @@
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/immunization_healthFacility"
                 style="@style/ControlSingleColumnStyle"
-                app:required="true"
                 app:value="@={data.healthFacility}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField

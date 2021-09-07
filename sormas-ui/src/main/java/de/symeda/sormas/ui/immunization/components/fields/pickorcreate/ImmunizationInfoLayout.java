@@ -21,7 +21,8 @@ public class ImmunizationInfoLayout extends HorizontalLayout {
 		addComponent(meansOfImmunizationField);
 
 		Label managementStatusField = new Label();
-		managementStatusField.setCaption(I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.MANAGEMENT_STATUS));
+		managementStatusField
+			.setCaption(I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS));
 		managementStatusField.setValue(immunization.getImmunizationManagementStatus().toString());
 		managementStatusField.setWidthUndefined();
 		addComponent(managementStatusField);
