@@ -78,7 +78,7 @@ public class EventDataView extends AbstractEventView {
 	@Override
 	protected void initView(String params) {
 
-		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid());
+		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(getEventRef().getUuid(), false);
 
 		setHeightUndefined();
 
@@ -157,7 +157,7 @@ public class EventDataView extends AbstractEventView {
 			layout.addComponent(eventGroupsList, EVENT_GROUPS_LOC);
 		}
 
-		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser();
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingEventsEnabledForUser();
 		if (sormasToSormasEnabled || event.getSormasToSormasOriginInfo() != null) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);

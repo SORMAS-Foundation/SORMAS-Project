@@ -26,18 +26,18 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.Country;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
@@ -76,6 +76,7 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 	private Join<Case, District> reportingDistrict;
 	private Join<Case, SormasToSormasShareInfo> shareInfoCases;
 	private Join<Case, ExternalShareInfo> externalShareInfo;
+	private Join<Case, User> followUpStatusChangeUser;
 
 	public CaseJoins(From<T, Case> caze) {
 		super(caze);
@@ -319,5 +320,13 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 
 	private void setExternalShareInfo(Join<Case, ExternalShareInfo> externalShareInfo) {
 		this.externalShareInfo = externalShareInfo;
+	}
+
+	public Join<Case, User> getFollowUpStatusChangeUser() {
+		return getOrCreate(followUpStatusChangeUser, Case.FOLLOW_UP_STATUS_CHANGE_USER, JoinType.LEFT, this::setFollowUpStatusChangeUser);
+	}
+
+	private void setFollowUpStatusChangeUser(Join<Case, User> followUpStatusChangeUser) {
+		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 }

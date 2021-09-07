@@ -24,8 +24,8 @@ import androidx.core.content.ContextCompat;
 
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -199,7 +199,7 @@ public class LbdsIntentSender {
 	private static String getAuthHeader() {
 
 		String authToken = Credentials.basic(ConfigProvider.getUsername(), ConfigProvider.getPassword());
-		return "Authorization: " + authToken;
+		return "Authorization= " + authToken;
 	}
 
 	private static HttpMethod createLbdsHttpMethodPersons(List<PersonDto> personsToSend) {

@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -77,6 +78,7 @@ import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -208,7 +210,11 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		this.validate(dto);
 
-		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
+		if (dto.getVisitStatus().equals(VisitStatus.COOPERATIVE)) {
+			SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
+		} else {
+			dto.getSymptoms().setSymptomatic(null);
+		}
 		Visit entity = fromDto(dto, true);
 
 		visitService.ensurePersisted(entity);
@@ -219,7 +225,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	public ExternalVisitDto saveExternalVisit(final ExternalVisitDto dto) {
+	public ExternalVisitDto saveExternalVisit(@Valid final ExternalVisitDto dto) {
 
 		final String personUuid = dto.getPersonUuid();
 		final UserReferenceDto currentUser = new UserReferenceDto(userService.getCurrentUser().getUuid());
@@ -455,7 +461,11 @@ public class VisitFacadeEjb implements VisitFacade {
 		return resultList;
 	}
 
-	private Expression<Object> jurisdictionSelector(CriteriaQuery cq, CriteriaBuilder cb, Join<Visit, Case> caseJoin, Join<Visit, Contact> contactJoin) {
+	private Expression<Object> jurisdictionSelector(
+		CriteriaQuery cq,
+		CriteriaBuilder cb,
+		Join<Visit, Case> caseJoin,
+		Join<Visit, Contact> contactJoin) {
 		return JurisdictionHelper.booleanSelector(
 			cb,
 			cb.or(
@@ -617,7 +627,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	private void updateContactVisitAssociations(VisitDto existingVisit, Visit visit) {
 
-		if (existingVisit != null && existingVisit.getVisitDateTime() == visit.getVisitDateTime()) {
+		if (existingVisit != null && Objects.equals(existingVisit.getVisitDateTime(), visit.getVisitDateTime())) {
 			// No need to update the associations
 			return;
 		}
@@ -632,7 +642,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	private void updateCaseVisitAssociations(VisitDto existingVisit, Visit visit) {
 
 		if (existingVisit != null
-			&& existingVisit.getVisitDateTime() == visit.getVisitDateTime()
+			&& Objects.equals(existingVisit.getVisitDateTime(), visit.getVisitDateTime())
 			&& existingVisit.getPerson().equals(visit.getPerson())) {
 			// No need to update the associations
 			return;

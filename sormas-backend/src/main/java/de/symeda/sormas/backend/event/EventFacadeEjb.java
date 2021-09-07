@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import static de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
+
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,14 +31,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -59,6 +64,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventDetailedReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventFacade;
@@ -70,12 +76,13 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -84,23 +91,24 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoEvent;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoHelper;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoEvent;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -140,6 +148,12 @@ public class EventFacadeEjb implements EventFacade {
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolFacade;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
+	@EJB
+	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	@EJB
+	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
+	@Resource
+	private ManagedScheduledExecutorService executorService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -187,8 +201,10 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public EventDto getEventByUuid(String uuid) {
-		return convertToDto(eventService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+	public EventDto getEventByUuid(String uuid, boolean detailedReferences) {
+		return (detailedReferences)
+			? convertToDetailedReferenceDto(eventService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight))
+			: convertToDto(eventService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -203,10 +219,10 @@ public class EventFacadeEjb implements EventFacade {
 
 	@Override
 	public EventDto saveEvent(@Valid @NotNull EventDto dto) {
-		return saveEvent(dto, true);
+		return saveEvent(dto, true, true);
 	}
 
-	public EventDto saveEvent(@NotNull EventDto dto, boolean checkChangeDate) {
+	public EventDto saveEvent(@NotNull EventDto dto, boolean checkChangeDate, boolean syncShares) {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
@@ -221,7 +237,21 @@ public class EventFacadeEjb implements EventFacade {
 		Event event = fromDto(dto, checkChangeDate);
 		eventService.ensurePersisted(event);
 
+		onEventChange(toDto(event), syncShares);
+
 		return convertToDto(event, pseudonymizer);
+	}
+
+	public void onEventChange(EventDto event, boolean syncShares) {
+		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
+			syncSharesAsync(new ShareTreeCriteria(event.getUuid()));
+		}
+	}
+
+	public void syncSharesAsync(ShareTreeCriteria criteria) {
+		executorService.schedule(() -> {
+			sormasToSormasEventFacade.syncShares(criteria);
+		}, 5, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -294,6 +324,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.INTERNAL_TOKEN),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
+			event.get(Event.SPECIFIC_RISK),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
 			event.get(Event.EVENT_MANAGEMENT_STATUS),
 			event.get(Event.DISEASE),
@@ -356,6 +387,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.INTERNAL_TOKEN:
 				case EventIndexDto.EVENT_STATUS:
 				case EventIndexDto.RISK_LEVEL:
+				case EventIndexDto.SPECIFIC_RISK:
 				case EventIndexDto.EVENT_INVESTIGATION_STATUS:
 				case EventIndexDto.EVENT_MANAGEMENT_STATUS:
 				case EventIndexDto.DISEASE:
@@ -369,6 +401,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.SRC_TEL_NO:
 				case EventIndexDto.SRC_TYPE:
 				case EventIndexDto.REPORT_DATE_TIME:
+				case EventIndexDto.EVENT_IDENTIFICATION_SOURCE:
 					expression = event.get(sortProperty.propertyName);
 					break;
 				case EventIndexDto.EVENT_LOCATION:
@@ -577,7 +610,10 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.INTERNAL_TOKEN),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.RISK_LEVEL),
+			event.get(Event.SPECIFIC_RISK),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
+			event.get(Event.EVENT_INVESTIGATION_START_DATE),
+			event.get(Event.EVENT_INVESTIGATION_END_DATE),
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_VARIANT),
 			event.get(Event.DISEASE_DETAILS),
@@ -926,6 +962,7 @@ public class EventFacadeEjb implements EventFacade {
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
+		target.setSpecificRisk(source.getSpecificRisk());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
@@ -999,6 +1036,14 @@ public class EventFacadeEjb implements EventFacade {
 		return eventDto;
 	}
 
+	public EventDto convertToDetailedReferenceDto(Event source, Pseudonymizer pseudonymizer) {
+		EventDto eventDto = toDto(source);
+		eventDto.setSuperordinateEvent(EventFacadeEjb.toDetailedReferenceDto(source.getSuperordinateEvent()));
+		pseudonymizeDto(source, eventDto, pseudonymizer);
+
+		return eventDto;
+	}
+
 	private void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
 			boolean inJurisdiction = eventService.inJurisdictionOrOwned(event);
@@ -1026,11 +1071,26 @@ public class EventFacadeEjb implements EventFacade {
 		return new EventReferenceDto(entity.getUuid(), entity.toString());
 	}
 
+	public static EventReferenceDto toDetailedReferenceDto(Event entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		return new EventDetailedReferenceDto(
+			entity.getUuid(),
+			entity.toString(),
+			entity.getEventStatus(),
+			entity.getEventTitle(),
+			entity.getReportDateTime());
+	}
+
 	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {
 		Event target = DtoHelper.fillOrBuildEntity(source, eventService.getByUuid(source.getUuid()), Event::new, checkChangeDate);
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
+		target.setSpecificRisk(source.getSpecificRisk());
 		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
 		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
 		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
@@ -1175,7 +1235,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		eventService.updateExternalData(externalData);
 	}
 

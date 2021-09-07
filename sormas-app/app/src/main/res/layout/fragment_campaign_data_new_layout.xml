@@ -66,13 +66,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/campaignFormData_area"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:required="true"
                     app:value="@={data.area}" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/campaignFormData_region"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:required="true"
@@ -84,13 +84,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/campaignFormData_district"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:required="true"
                     app:value="@={data.district}" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/campaignFormData_community"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:required="true"

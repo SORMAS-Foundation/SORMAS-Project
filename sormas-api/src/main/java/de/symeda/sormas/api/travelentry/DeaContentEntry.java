@@ -15,17 +15,27 @@
 
 package de.symeda.sormas.api.travelentry;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.ObjectUtils;
+
+import de.symeda.sormas.api.i18n.Validations;
 
 public class DeaContentEntry implements Serializable, Comparable<DeaContentEntry> {
 
 	private static final long serialVersionUID = -9182801671706246792L;
 
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String caption;
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String value;
+
+	public DeaContentEntry(){ }
 
 	public DeaContentEntry(String caption, String value) {
 		this.caption = caption;

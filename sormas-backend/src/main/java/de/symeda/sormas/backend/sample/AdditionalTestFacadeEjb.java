@@ -56,7 +56,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		return saveAdditionalTest(additionalTest, true);
 	}
 
-	public AdditionalTestDto saveAdditionalTest(AdditionalTestDto additionalTest, boolean checkChangeDate) {
+	public AdditionalTestDto saveAdditionalTest(@Valid AdditionalTestDto additionalTest, boolean checkChangeDate) {
 
 		AdditionalTest entity = fromDto(additionalTest, checkChangeDate);
 		service.ensurePersisted(entity);

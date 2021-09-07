@@ -29,7 +29,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="4" language="java" name="de.symeda.sormas.backend.facility.Facility" project="sormas-backend" 
+  <class id="4" language="java" name="de.symeda.sormas.backend.infrastructure.facility.Facility" project="sormas-backend"
     file="/sormas-backend/src/main/java/de/symeda/sormas/backend/facility/Facility.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="771" y="97"/>    
@@ -50,7 +50,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="6" language="java" name="de.symeda.sormas.backend.infrastructure.PointOfEntry" project="sormas-backend" 
+  <class id="6" language="java" name="de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry" project="sormas-backend"
     file="/sormas-backend/src/main/java/de/symeda/sormas/backend/infrastructure/PointOfEntry.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1464" y="230"/>    
@@ -80,7 +80,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="9" language="java" name="de.symeda.sormas.backend.region.Community" project="sormas-backend" 
+  <class id="9" language="java" name="de.symeda.sormas.backend.infrastructure.community.Community" project="sormas-backend"
     file="/sormas-backend/src/main/java/de/symeda/sormas/backend/region/Community.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1490" y="430"/>    
@@ -90,7 +90,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="10" language="java" name="de.symeda.sormas.backend.region.District" project="sormas-backend" 
+  <class id="10" language="java" name="de.symeda.sormas.backend.infrastructure.district.District" project="sormas-backend"
     file="/sormas-backend/src/main/java/de/symeda/sormas/backend/region/District.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1454" y="468"/>    
@@ -100,7 +100,7 @@
       <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="11" language="java" name="de.symeda.sormas.backend.region.Region" project="sormas-backend" 
+  <class id="11" language="java" name="de.symeda.sormas.backend.infrastructure.region.Region" project="sormas-backend"
     file="/sormas-backend/src/main/java/de/symeda/sormas/backend/region/Region.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1424" y="502"/>    

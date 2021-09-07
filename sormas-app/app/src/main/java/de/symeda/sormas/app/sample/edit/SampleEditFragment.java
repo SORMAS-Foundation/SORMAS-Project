@@ -32,7 +32,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -246,6 +246,9 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 				contentBinding.sampleAdditionalTestingRequested
 					.setVisibility(ConfigProvider.getUser().equals(record.getReportingUser()) ? VISIBLE : GONE);
 			} else {
+				contentBinding.sampleShipped.setValue(null);
+				contentBinding.sampleShipmentDate.setValue(null);
+				contentBinding.sampleShipmentDetails.setValue(null);
 				contentBinding.externalSampleFieldsLayout.setVisibility(GONE);
 				contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
 				contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);
@@ -279,6 +282,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			contentBinding.samplePurpose.setEnabled(false);
 			contentBinding.sampleReceived.setEnabled(false);
 			contentBinding.sampleLabSampleID.setEnabled(false);
+			contentBinding.sampleSpecimenCondition.setEnabled(false);
 			contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
 			contentBinding.sampleRequestedPathogenTests.setVisibility(GONE);
 			contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);

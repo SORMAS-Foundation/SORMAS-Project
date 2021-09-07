@@ -15,6 +15,22 @@
 
 package de.symeda.sormas.app.backend.caze;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -23,28 +39,13 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.text.Html;
 import android.util.Log;
-
 import androidx.core.app.NotificationCompat;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -87,8 +88,6 @@ import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.LocationService;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class CaseDao extends AbstractAdoDao<Case> {
 
@@ -389,7 +388,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			&& currentCase.isModified()
 			&& currentCase.getOutcomeDate() != null
 			&& source.getOutcomeDate() != null
-			&& currentCase.getOutcomeDate() != source.getOutcomeDate()) {
+			&& !Objects.equals(currentCase.getOutcomeDate(), source.getOutcomeDate())) {
 			// this could be the situation, but we also have to check the snapshot - the outcome date has to be null
 			Case snapshotCase = querySnapshotByUuid(source.getUuid());
 			if (snapshotCase != null && snapshotCase.getOutcomeDate() == null) {
@@ -482,7 +481,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 						.getByDistrictAndRole(changedCase.getResponsibleDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
 				}
 
-				if (districtOfficers.size() == 0) {
+				if (districtOfficers.size() == 0 && changedCase.getDistrict() != null) {
 					districtOfficers =
 						DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
 				}
@@ -647,8 +646,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		for (Event event : eventList) {
 			List<EventParticipant> eventParticipantByEventList = DatabaseHelper.getEventParticipantDao().getByEvent(event);
 			if (eventParticipantByEventList.isEmpty()) {
-				Boolean isEventInJurisdiction =
-					EventEditAuthorization.isEventEditAllowed(event);
+				Boolean isEventInJurisdiction = EventEditAuthorization.isEventEditAllowed(event);
 				if (!isEventInJurisdiction) {
 					DatabaseHelper.getEventDao().delete(event);
 				}

@@ -32,6 +32,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskIndexDto;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -56,6 +57,9 @@ public class TaskList extends PaginationList<TaskIndexDto> {
 			break;
 		case EVENT:
 			taskCriteria.event((EventReferenceDto) entityRef);
+			break;
+		case TRAVEL_ENTRY:
+			taskCriteria.travelEntry((TravelEntryReferenceDto) entityRef);
 			break;
 		default:
 			throw new IndexOutOfBoundsException(context.toString());

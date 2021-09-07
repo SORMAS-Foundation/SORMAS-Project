@@ -1,11 +1,18 @@
 package de.symeda.sormas.ui.contact.importer;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -14,8 +21,10 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vaadin.ui.UI;
 
@@ -27,6 +36,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonNameDto;
@@ -141,7 +151,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testImportContacts() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
+	public void testImportContacts() throws IOException, InvalidColumnException, InterruptedException, CsvException, URISyntaxException {
 
 		ContactFacadeEjb contactFacade = getBean(ContactFacadeEjbLocal.class);
 
@@ -193,6 +203,13 @@ public class ContactImporterTest extends AbstractBeanTest {
 		contactImporter = new ContactImporterExtension(csvFile, false, user, null);
 		importResult = contactImporter.runImport();
 
+		InputStream errorStream =
+			new ByteArrayInputStream(((ContactImporterExtension) contactImporter).stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
+		List<String[]> errorRows = getCsvReader(errorStream).readAll();
+		if (errorRows.size() > 1) {
+			assertThat("Error during import: " + StringUtils.join(errorRows.get(1), ", "), errorRows, hasSize(0));
+		}
+
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(8, contactFacade.count(null));
 	}
@@ -202,12 +219,12 @@ public class ContactImporterTest extends AbstractBeanTest {
 		public StringBuilder stringBuilder = new StringBuilder("");
 		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
 
-		public ContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) {
-			super(inputFile, hasEntityClassRow, currentUser, caze);
+		public ContactImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, CaseDataDto caze) throws IOException {
+			super(inputFile, hasEntityClassRow, currentUser, caze, ValueSeparator.DEFAULT);
 		}
 
-		public ContactImporterExtension(File inputFile, UserDto currentUser) {
-			super(inputFile, false, currentUser, null);
+		public ContactImporterExtension(File inputFile, UserDto currentUser) throws IOException {
+			super(inputFile, false, currentUser, null, ValueSeparator.DEFAULT);
 		}
 
 		@Override
@@ -228,6 +245,11 @@ public class ContactImporterTest extends AbstractBeanTest {
 		@Override
 		protected Writer createErrorReportWriter() {
 			return writer;
+		}
+
+		@Override
+		protected Path getErrorReportFolderPath() {
+			return Paths.get(System.getProperty("java.io.tmpdir"));
 		}
 	}
 }

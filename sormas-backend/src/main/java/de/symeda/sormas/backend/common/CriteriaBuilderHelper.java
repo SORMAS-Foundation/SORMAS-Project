@@ -158,4 +158,25 @@ public class CriteriaBuilderHelper {
 
 		return predicate;
 	}
+
+	@SafeVarargs
+	public static <T> Expression<T> coalesce(CriteriaBuilder cb, Class<T> type, Expression<T>... expressions) {
+		return cb.function("COALESCE", type, expressions);
+	}
+
+	@SafeVarargs
+	public static Expression<String> coalesce(CriteriaBuilder cb, Expression<String>... expressions) {
+		return coalesce(cb, String.class, expressions);
+	}
+
+	public static Predicate applyDateFilter(CriteriaBuilder cb, Predicate filter, Path path, Date fromDate, Date toDate) {
+		if (fromDate != null && toDate != null) {
+			filter = and(cb, filter, cb.between(path, fromDate, toDate));
+		} else if (fromDate != null) {
+			filter = and(cb, filter, cb.greaterThanOrEqualTo(path, fromDate));
+		} else if (toDate != null) {
+			filter = and(cb, filter, cb.lessThanOrEqualTo(path, toDate));
+		}
+		return filter;
+	}
 }

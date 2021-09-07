@@ -25,11 +25,11 @@ import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationEx
 @Remote
 public interface SormasToSormasFacade {
 
-	List<ServerAccessDataReferenceDto> getAvailableOrganizations();
+	String getOrganizationId();
 
-	ServerAccessDataReferenceDto getOrganizationRef(String id);
+	List<SormasServerDescriptor> getAllAvailableServers();
 
-	List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
+	SormasServerDescriptor getSormasServerDescriptorById(String id);
 
 	void rejectShareRequest(ShareRequestDataType dataType, String uuid) throws SormasToSormasException;
 
@@ -44,4 +44,10 @@ public interface SormasToSormasFacade {
 	boolean isFeatureEnabledForUser();
 
 	boolean isFeatureConfigured();
+
+	boolean isSharingCasesContactsAndSamplesEnabledForUser();
+
+	boolean isSharingEventsEnabledForUser();
+
+	boolean isSharingLabMessagesEnabledForUser();
 }

@@ -32,9 +32,9 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.region.AreaReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.campaign.expressions.ExpressionProcessor;
@@ -119,11 +119,11 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			cbRegion.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 				if (Objects.nonNull(region)) {
-					cbArea.setValue(FacadeProvider.getRegionFacade().getRegionByUuid(region.getUuid()).getArea());
+					cbArea.setValue(FacadeProvider.getRegionFacade().getByUuid(region.getUuid()).getArea());
 				}
 			});
 			if (currentUserRegion != null) {
-				final AreaReferenceDto area = FacadeProvider.getRegionFacade().getRegionByUuid(currentUserRegion.getUuid()).getArea();
+				final AreaReferenceDto area = FacadeProvider.getRegionFacade().getByUuid(currentUserRegion.getUuid()).getArea();
 				cbArea.setValue(area);
 				if (currentUserRegion != null) {
 					cbArea.setEnabled(false);

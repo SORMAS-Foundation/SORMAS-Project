@@ -1,15 +1,8 @@
 package de.symeda.sormas.ui.contact.components.linelisting.layout;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.BirthDateDto;
-import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.event.EventParticipantIndexDto;
-import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -22,8 +15,11 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -32,12 +28,12 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineField;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineFieldDto;
 import de.symeda.sormas.ui.contact.components.linelisting.sharedinfo.SharedInfoField;
-import de.symeda.sormas.ui.contact.components.linelisting.sharedinfo.SharedInfoFieldDto;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
 import de.symeda.sormas.ui.utils.components.linelisting.line.LineLayout;
+import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 import de.symeda.sormas.ui.utils.components.linelisting.section.LineListingSection;
 
 public class LineListingLayout extends VerticalLayout {
@@ -99,24 +95,25 @@ public class LineListingLayout extends VerticalLayout {
 		this(window, new SharedInfoField(eventDto));
 
 		for (EventParticipantDto eventParticipantDto : eventParticipantDtos) {
-			PersonFieldDto person = new PersonFieldDto();
-			person.setFirstName(eventParticipantDto.getPerson().getFirstName());
-			person.setLastName(eventParticipantDto.getPerson().getLastName());
-			person.setBirthDate(new BirthDateDto(
+			PersonFieldDto personField = new PersonFieldDto();
+			personField.setFirstName(eventParticipantDto.getPerson().getFirstName());
+			personField.setLastName(eventParticipantDto.getPerson().getLastName());
+			personField.setBirthDate(
+				new BirthDateDto(
 					eventParticipantDto.getPerson().getBirthdateDD(),
 					eventParticipantDto.getPerson().getBirthdateMM(),
 					eventParticipantDto.getPerson().getBirthdateYYYY()));
-			person.setSex(eventParticipantDto.getPerson().getSex());
+			personField.setSex(eventParticipantDto.getPerson().getSex());
 
 			ContactLineLayoutDto newLineDto = new ContactLineLayoutDto();
-			newLineDto.lineField = new ContactLineFieldDto();
-			newLineDto.lineField.setPerson(person);
+			newLineDto.setLineField(new ContactLineFieldDto());
+			newLineDto.getLineField().setPerson(personField);
 
 			ContactLineLayout newLine = new ContactLineLayout(lines.size());
 			newLine.enableDelete(false);
 			newLine.enablePersonField(false);
-			newLine.setBean(newLineDto);
 			newLine.setPerson(eventParticipantDto.getPerson());
+			newLine.setBean(newLineDto);
 
 			lines.add(newLine);
 			lineComponent.addComponent(newLine);
@@ -191,9 +188,11 @@ public class LineListingLayout extends VerticalLayout {
 				person = PersonDto.build();
 				person.setFirstName(layoutBean.getLineField().getPerson().getFirstName());
 				person.setLastName(layoutBean.getLineField().getPerson().getLastName());
-				person.setBirthdateYYYY(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthYYYY());
-				person.setBirthdateMM(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthMM());
-				person.setBirthdateDD(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthDD());
+				if (layoutBean.getLineField().getPerson().getBirthDate() != null) {
+					person.setBirthdateYYYY(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthYYYY());
+					person.setBirthdateMM(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthMM());
+					person.setBirthdateDD(layoutBean.getLineField().getPerson().getBirthDate().getDateOfBirthDD());
+				}
 				person.setSex(layoutBean.getLineField().getPerson().getSex());
 			}
 			result.setPerson(person);
@@ -210,10 +209,8 @@ public class LineListingLayout extends VerticalLayout {
 		ContactLineLayout newLine = new ContactLineLayout(lines.size());
 		ContactLineLayoutDto newLineDto = new ContactLineLayoutDto();
 
-		if (!lines.isEmpty()) {
-			ContactLineLayoutDto lastLineDto = lines.get(lines.size() - 1).getBean();
-			newLineDto.setLineField(lastLineDto.getLineField());
-		} else {
+		newLineDto.setLineField(new ContactLineFieldDto());
+		if (lines.isEmpty()) {
 			newLine.enableDelete(false);
 		}
 
@@ -266,7 +263,7 @@ public class LineListingLayout extends VerticalLayout {
 		}
 
 		public boolean hasErrors() {
-			return sharedInfoField.hasErrors() | contactLineField.hasErrors();
+			return sharedInfoField.hasErrors() || contactLineField.hasErrors();
 		}
 
 		public void enableDelete(boolean shouldEnable) {

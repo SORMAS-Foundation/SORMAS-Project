@@ -13,12 +13,19 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.task.Task;
+import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -29,6 +36,8 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 
 	@EJB
 	private UserService userService;
+	@EJB
+	private TaskService taskService;
 
 	public TravelEntryService() {
 		super(TravelEntry.class);
@@ -57,6 +66,10 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		return inJurisdictionOrOwned(travelEntryQueryContext);
 	}
 
+	public Predicate createActiveTravelEntriesFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
+		return cb.and(cb.isFalse(root.get(TravelEntry.ARCHIVED)), cb.isFalse(root.get(TravelEntry.DELETED)));
+	}
+
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, TravelEntry> root) {
 		return cb.isFalse(root.get(TravelEntry.DELETED));
 	}
@@ -65,8 +78,9 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 
 		final TravelEntryJoins joins = (TravelEntryJoins) travelEntryQueryContext.getJoins();
 		final CriteriaBuilder cb = travelEntryQueryContext.getCriteriaBuilder();
-		final From<?, ?> from = travelEntryQueryContext.getRoot();
+		final From<?, TravelEntry> from = travelEntryQueryContext.getRoot();
 		Join<TravelEntry, Person> person = joins.getPerson();
+		Join<TravelEntry, Case> resultingCase = joins.getResultingCase();
 
 		Predicate filter = null;
 
@@ -90,6 +104,23 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.UUID), criteria.getPerson().getUuid()));
 		}
 
+		if (criteria.getCase() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(resultingCase.get(Case.UUID), criteria.getCase().getUuid()));
+		}
+
+		if (criteria.getRelevanceStatus() != null) {
+			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(from.get(TravelEntry.ARCHIVED), false), cb.isNull(from.get(TravelEntry.ARCHIVED))));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.ARCHIVED), true));
+			}
+		}
+
+		if (criteria.getDeleted() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.DELETED), criteria.getDeleted()));
+		}
+
 		if (!DataHelper.isNullOrEmpty(criteria.getNameUuidExternalIDLike())) {
 			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
 				cb,
@@ -103,6 +134,8 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 					CriteriaBuilderHelper.ilike(cb, person.get(Person.EXTERNAL_ID), textFilter)));
 			filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 		}
+
+		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
 		return filter;
 	}
 
@@ -131,5 +164,41 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public List<TravelEntry> getAllByResultingCase(Case caze) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<TravelEntry> cq = cb.createQuery(getElementClass());
+		Root<TravelEntry> from = cq.from(getElementClass());
+
+		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(TravelEntry.RESULTING_CASE), caze)));
+		cq.orderBy(cb.desc(from.get(TravelEntry.REPORT_DATE)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public boolean isTravelEntryEditAllowed(TravelEntry travelEntry) {
+		return userService.hasRight(UserRight.TRAVEL_ENTRY_EDIT) && inJurisdictionOrOwned(travelEntry);
+	}
+
+	@Override
+	public void delete(TravelEntry travelEntry) {
+
+		// Delete all tasks associated with this travel entry
+		List<Task> tasks = taskService.findBy(
+			new TaskCriteria().travelEntry(
+				new TravelEntryReferenceDto(
+					travelEntry.getUuid(),
+					travelEntry.getExternalId(),
+					travelEntry.getPerson().getFirstName(),
+					travelEntry.getPerson().getLastName())),
+			true);
+		for (Task task : tasks) {
+			taskService.delete(task);
+		}
+
+		// Mark the travel entry as deleted
+		super.delete(travelEntry);
 	}
 }

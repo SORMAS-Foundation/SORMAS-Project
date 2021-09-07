@@ -156,4 +156,114 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, getPersonFacade().getPersonsAfter(new DateTime(new Date()).minusDays(1).toDate()).size());
 	}
 
+	@Test
+	public void testImmunizationCreatedByDistrictUserIsVisibleToThatUser(){
+		loginWith(districtUser1);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		final ImmunizationDto immunization = creator.createImmunization(
+				Disease.ANTHRAX,
+				person.toReference(),
+				nationalUser.toReference(),
+				ImmunizationStatus.ACQUIRED,
+				MeansOfImmunization.VACCINATION,
+				ImmunizationManagementStatus.COMPLETED,
+				rdcf1);
+
+		final Date yesterday = new DateTime(new Date()).minusDays(1).toDate();
+		final List<ImmunizationDto> allImmunizations = getImmunizationFacade().getAllAfter(yesterday);
+		assertEquals(1, allImmunizations.size());
+		final ImmunizationDto immunizationDto = allImmunizations.get(0);
+		assertEquals(immunization.getUuid(), immunizationDto.getUuid());
+		assertEquals(immunization.getImmunizationStatus(), immunizationDto.getImmunizationStatus());
+		assertEquals(immunization.getImmunizationManagementStatus(), immunizationDto.getImmunizationManagementStatus());
+		assertEquals(immunization.getMeansOfImmunization(), immunizationDto.getMeansOfImmunization());
+
+		final List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(yesterday);
+		assertEquals(1, allPersonsAfter.size());
+		final PersonDto personDto = allPersonsAfter.get(0);
+
+		assertEquals(person.getUuid(), personDto.getUuid());
+		assertEquals("John", personDto.getFirstName());
+		assertEquals("Doe", personDto.getLastName());
+	}
+
+	@Test
+	public void testImmunizationAutomation() {
+		loginWith(nationalUser);
+
+		PersonDto person = creator.createPerson("John", "Doe");
+
+		ImmunizationDto nonAcquiredImmunization = creator.createImmunization(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.NOT_ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		ImmunizationDto pendingImmunization = creator.createImmunization(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.PENDING,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		ImmunizationDto expiredImmunization = creator.createImmunization(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.EXPIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		ImmunizationDto acquiredImmunizationStillValid = creator.createImmunization(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf2,
+			new DateTime(new Date()).minusDays(10).toDate(),
+			new DateTime(new Date()).plusDays(1).toDate());
+		ImmunizationDto acquiredImmunizationNoLongerValid = creator.createImmunization(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf2,
+			new DateTime(new Date()).minusDays(10).toDate(),
+			new DateTime(new Date()).minusDays(2).toDate());
+
+		// immunizations before status automation update
+		assertEquals(5, getImmunizationFacade().getAllAfter(new DateTime(new Date()).minusDays(2).toDate()).size());
+		assertEquals(ImmunizationStatus.NOT_ACQUIRED, getImmunizationFacade().getByUuid(nonAcquiredImmunization.getUuid()).getImmunizationStatus());
+		assertEquals(ImmunizationStatus.PENDING, getImmunizationFacade().getByUuid(pendingImmunization.getUuid()).getImmunizationStatus());
+		assertEquals(ImmunizationStatus.EXPIRED, getImmunizationFacade().getByUuid(expiredImmunization.getUuid()).getImmunizationStatus());
+		assertEquals(
+			ImmunizationStatus.ACQUIRED,
+			getImmunizationFacade().getByUuid(acquiredImmunizationStillValid.getUuid()).getImmunizationStatus());
+		assertEquals(
+			ImmunizationStatus.ACQUIRED,
+			getImmunizationFacade().getByUuid(acquiredImmunizationNoLongerValid.getUuid()).getImmunizationStatus());
+
+		getImmunizationFacade().updateImmunizationStatuses();
+
+		// immunizations after status automation update
+		assertEquals(5, getImmunizationFacade().getAllAfter(new DateTime(new Date()).minusDays(2).toDate()).size());
+		assertEquals(ImmunizationStatus.NOT_ACQUIRED, getImmunizationFacade().getByUuid(nonAcquiredImmunization.getUuid()).getImmunizationStatus());
+		assertEquals(ImmunizationStatus.PENDING, getImmunizationFacade().getByUuid(pendingImmunization.getUuid()).getImmunizationStatus());
+		assertEquals(ImmunizationStatus.EXPIRED, getImmunizationFacade().getByUuid(expiredImmunization.getUuid()).getImmunizationStatus());
+		assertEquals(
+			ImmunizationStatus.ACQUIRED,
+			getImmunizationFacade().getByUuid(acquiredImmunizationStillValid.getUuid()).getImmunizationStatus());
+		assertEquals(
+			ImmunizationStatus.EXPIRED,
+			getImmunizationFacade().getByUuid(acquiredImmunizationNoLongerValid.getUuid()).getImmunizationStatus());
+	}
 }

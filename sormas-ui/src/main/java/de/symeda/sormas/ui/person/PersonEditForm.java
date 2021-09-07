@@ -51,14 +51,18 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -69,10 +73,6 @@ import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -313,8 +313,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.EDUCATION_DETAILS);
 
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
-		((ComboBox) addField(PersonDto.BIRTH_COUNTRY)).addItems(countries);
-		((ComboBox) addField(PersonDto.CITIZENSHIP)).addItems(countries);
+		addInfrastructureField(PersonDto.BIRTH_COUNTRY).addItems(countries);
+		addInfrastructureField(PersonDto.CITIZENSHIP).addItems(countries);
 
 		addFields(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID);
 		Field externalId = addField(PersonDto.EXTERNAL_ID);
@@ -352,7 +352,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		// Set requirements that don't need visibility changes and read only status
 
 		setReadOnly(true, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE);
-		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
+		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 		setVisible(
 			false,
 			PersonDto.OCCUPATION_DETAILS,

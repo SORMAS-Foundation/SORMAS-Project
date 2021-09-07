@@ -16,20 +16,19 @@
 package de.symeda.sormas.api.event.eventimport;
 
 import javax.ejb.Remote;
+import javax.validation.Valid;
 
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
-import de.symeda.sormas.api.importexport.InvalidColumnException;
 
 @Remote
 public interface EventImportFacade {
 
 	ImportLineResultDto<EventImportEntities> importEventData(
-            String[] values,
-            String[] entityClasses,
-            String[] entityProperties,
-            String[][] entityPropertyPaths,
-            boolean ignoreEmptyEntries)
-		throws InvalidColumnException;
+		String[] values,
+		String[] entityClasses,
+		String[] entityProperties,
+		String[][] entityPropertyPaths,
+		boolean ignoreEmptyEntries);
 
-	ImportLineResultDto<EventImportEntities> saveImportedEntities(EventImportEntities entities);
+	ImportLineResultDto<EventImportEntities> saveImportedEntities(@Valid EventImportEntities entities);
 }

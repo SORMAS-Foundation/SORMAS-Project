@@ -22,8 +22,13 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -60,11 +65,13 @@ public class HospitalizationDto extends EntityDto {
 
 	private YesNoUnknown hospitalizedPreviously;
 	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+	@Valid
 	private List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
 	private YesNoUnknown intensiveCareUnit;
 	private Date intensiveCareUnitStart;
 	private Date intensiveCareUnitEnd;
 	private HospitalizationReasonType hospitalizationReason;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String otherHospitalizationReason;
 
 	public static HospitalizationDto build() {

@@ -11,6 +11,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -19,6 +20,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,30 +28,33 @@ import org.apache.commons.collections4.CollectionUtils;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.PointOfEntryService;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.CommunityService;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -61,11 +66,10 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless(name = "TravelEntryFacade")
 public class TravelEntryFacadeEjb implements TravelEntryFacade {
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
 	@EJB
 	TravelEntryService travelEntryService;
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 	@EJB
 	private PersonService personService;
 	@EJB
@@ -80,6 +84,20 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	private PointOfEntryService pointOfEntryService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
+
+	public static TravelEntryReferenceDto toReferenceDto(TravelEntry entity) {
+
+		if (entity == null) {
+			return null;
+		}
+		return new TravelEntryReferenceDto(
+			entity.getUuid(),
+			entity.getExternalId(),
+			entity.getPerson().getFirstName(),
+			entity.getPerson().getLastName());
+	}
 
 	@Override
 	public TravelEntryDto getByUuid(String uuid) {
@@ -90,14 +108,6 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	@Override
 	public TravelEntryReferenceDto getReferenceByUuid(String uuid) {
 		return Optional.of(uuid).map(u -> travelEntryService.getByUuid(u)).map(TravelEntryFacadeEjb::toReferenceDto).orElse(null);
-	}
-
-	public static TravelEntryReferenceDto toReferenceDto(TravelEntry entity) {
-
-		if (entity == null) {
-			return null;
-		}
-		return new TravelEntryReferenceDto(entity.getUuid(), entity.getPerson().getFirstName(), entity.getExternalId());
 	}
 
 	@Override
@@ -119,6 +129,57 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	}
 
 	@Override
+	public boolean isDeleted(String travelEntryUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<TravelEntry> from = cq.from(TravelEntry.class);
+
+		cq.where(cb.and(cb.isTrue(from.get(TravelEntry.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), travelEntryUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+
+	@Override
+	public boolean isArchived(String travelEntryUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<TravelEntry> from = cq.from(TravelEntry.class);
+
+		cq.where(cb.and(cb.equal(from.get(TravelEntry.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), travelEntryUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+
+	@Override
+	public void archiveOrDearchiveTravelEntry(String travelEntryUuid, boolean archive) {
+		TravelEntry travelEntry = travelEntryService.getByUuid(travelEntryUuid);
+		travelEntry.setArchived(archive);
+		travelEntryService.ensurePersisted(travelEntry);
+	}
+
+	@Override
+	public Boolean isTravelEntryEditAllowed(String travelEntryUuid) {
+		TravelEntry travelEntry = travelEntryService.getByUuid(travelEntryUuid);
+		return travelEntryService.isTravelEntryEditAllowed(travelEntry);
+	}
+
+	@Override
+	public void deleteTravelEntry(String travelEntryUuid) {
+		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete travel entries");
+		}
+
+		TravelEntry travelEntry = travelEntryService.getByUuid(travelEntryUuid);
+		travelEntryService.delete(travelEntry);
+
+		if (travelEntry.getResultingCase() != null) {
+			caseFacade.onCaseChanged(CaseFacadeEjb.CaseFacadeEjbLocal.toDto(travelEntry.getResultingCase()), travelEntry.getResultingCase());
+		}
+	}
+
+	@Override
 	public List<TravelEntryDto> getAllAfter(Date date) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return travelEntryService.getAllActiveAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
@@ -136,14 +197,40 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	}
 
 	@Override
+	public List<DeaContentEntry> getDeaContentOfLastTravelEntry() {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<TravelEntry> query = cb.createQuery(TravelEntry.class);
+		final Root<TravelEntry> from = query.from(TravelEntry.class);
+		query.select(from);
+		query.where(cb.and(travelEntryService.createDefaultFilter(cb, from), cb.lessThanOrEqualTo(from.get(TravelEntry.CREATION_DATE), new Date())));
+		query.orderBy(cb.desc(from.get(TravelEntry.CREATION_DATE)));
+
+		final TypedQuery<TravelEntry> q = em.createQuery(query);
+		final TravelEntry lastTravelEntry = q.getResultList().stream().findFirst().orElse(null);
+
+		if (lastTravelEntry != null) {
+			Pseudonymizer aDefault = Pseudonymizer.getDefault(userService::hasRight);
+			TravelEntryDto travelEntryDto = convertToDto(lastTravelEntry, aDefault);
+			return travelEntryDto.getDeaContent();
+		}
+
+		return null;
+	}
+
+	@Override
 	public long count(TravelEntryCriteria criteria) {
+		return count(criteria, false);
+	}
+
+	@Override
+	public long count(TravelEntryCriteria criteria, boolean ignoreUserFilter) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
 
 		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
 
-		Predicate filter = travelEntryService.createUserFilter(travelEntryQueryContext);
+		Predicate filter = ignoreUserFilter ? null : travelEntryService.createUserFilter(travelEntryQueryContext);
 		if (criteria != null) {
 			final Predicate criteriaFilter = travelEntryService.buildCriteriaFilter(criteria, travelEntryQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
@@ -158,7 +245,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	}
 
 	@Override
-	public TravelEntryDto save(TravelEntryDto dto) {
+	public TravelEntryDto save(@Valid TravelEntryDto dto) {
 		TravelEntry existingTravelEntry = dto.getUuid() != null ? travelEntryService.getByUuid(dto.getUuid()) : null;
 		TravelEntryDto existingDto = toDto(existingTravelEntry);
 
@@ -378,7 +465,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		target.setResponsibleDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
 		target.setResponsibleCommunity(communityService.getByReferenceDto(source.getResponsibleCommunity()));
 		target.setPointOfEntryRegion(regionService.getByReferenceDto(source.getPointOfEntryRegion()));
-		target.setPointOfEntryDistrict(districtService.getByReferenceDto(source.getResponsibleDistrict()));
+		target.setPointOfEntryDistrict(districtService.getByReferenceDto(source.getPointOfEntryDistrict()));
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setPointOfEntryDetails(source.getPointOfEntryDetails());
 		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));

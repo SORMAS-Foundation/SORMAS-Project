@@ -111,11 +111,10 @@
                     android:id="@+id/pathogenTest_testDateTime"
                     app:dateHint="@string/caption_date_of_sampling"
                     app:timeHint="@string/caption_time_of_sampling"
-                    app:required="true"
                     app:value="@={data.testDateTime}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/pathogenTest_lab"
                     app:required="true"
                     app:value="@={data.lab}"

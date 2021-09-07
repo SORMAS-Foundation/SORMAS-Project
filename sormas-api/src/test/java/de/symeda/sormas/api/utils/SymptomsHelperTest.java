@@ -59,6 +59,11 @@ public class SymptomsHelperTest {
 		SymptomsHelper.updateSymptoms(sourceSymptoms, targetSymptoms);
 		assertEquals(SymptomState.YES, targetSymptoms.getAbdominalPain());
 
+		// Always set the reported symptom if it is the first time the symptom is reported
+		sourceSymptoms.setHeadache(SymptomState.NO);
+		SymptomsHelper.updateSymptoms(sourceSymptoms, targetSymptoms);
+		assertEquals(SymptomState.NO, targetSymptoms.getHeadache());
+
 		// Update temperature if higher
 		targetSymptoms.setTemperature(36.5f);
 		sourceSymptoms.setTemperature(36.3f);

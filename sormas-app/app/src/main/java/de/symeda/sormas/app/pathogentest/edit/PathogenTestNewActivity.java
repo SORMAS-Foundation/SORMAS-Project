@@ -18,8 +18,6 @@ package de.symeda.sormas.app.pathogentest.edit;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
-import java.util.Date;
-
 import android.content.Context;
 import android.database.SQLException;
 import android.os.AsyncTask;
@@ -172,9 +170,6 @@ public class PathogenTestNewActivity extends BaseEditActivity<PathogenTest> {
 		if (pathogenTestToSave.getLabUser() == null) {
 			NotificationHelper.showNotification(this, ERROR, getString(R.string.error_no_pathogentest_labuser));
 			return;
-		}
-		if (pathogenTestToSave.getTestDateTime() == null) {
-			pathogenTestToSave.setTestDateTime(new Date());
 		}
 
 		fragment.setLiveValidationDisabled(false);

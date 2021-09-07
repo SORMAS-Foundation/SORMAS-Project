@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent.IMMUNIZATION_LOC;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
@@ -36,6 +38,7 @@ import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
+import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
@@ -51,10 +54,7 @@ import de.symeda.sormas.ui.utils.ViewMode;
  */
 public class CaseDataView extends AbstractCaseView {
 
-	private static final long serialVersionUID = -1L;
-
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/data";
-
 	public static final String CASE_LOC = "case";
 	public static final String TASKS_LOC = "tasks";
 	public static final String SAMPLES_LOC = "samples";
@@ -63,7 +63,7 @@ public class CaseDataView extends AbstractCaseView {
 	public static final String SMS_LOC = "sms";
 	public static final String SURVEILLANCE_REPORTS_LOC = "surveillanceReports";
 	public static final String DOCUMENTS_LOC = "documents";
-
+	private static final long serialVersionUID = -1L;
 	private CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 
 	public CaseDataView() {
@@ -82,6 +82,7 @@ public class CaseDataView extends AbstractCaseView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SMS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC),
@@ -163,7 +164,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(eventLayout, EVENTS_LOC);
 		}
 
-		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser();
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser();
 		if (sormasToSormasEnabled || caze.getSormasToSormasOriginInfo() != null) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
@@ -199,5 +200,10 @@ public class CaseDataView extends AbstractCaseView {
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getCaseRef());
 
 		setCaseEditPermission(container);
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+			ImmunizationListComponent.addImmunizationListComponent(layout, caze);
+		}
 	}
 }

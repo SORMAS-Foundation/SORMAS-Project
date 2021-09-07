@@ -27,6 +27,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportEntities;
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
@@ -42,9 +43,9 @@ public class TravelEntryImporter extends DataImporter {
 	private UI currentUI;
 	private final TravelEntryImportFacade importFacade;
 
-	public TravelEntryImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser) {
+	public TravelEntryImporter(File inputFile, boolean hasEntityClassRow, UserDto currentUser, ValueSeparator csvSeparator) throws IOException {
 
-		super(inputFile, hasEntityClassRow, currentUser);
+		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		importFacade = FacadeProvider.getTravelEntryImportFacade();
 	}
 
@@ -99,7 +100,7 @@ public class TravelEntryImporter extends DataImporter {
 				PERSON_SELECT_LOCK.wasNotified = false;
 				if (consumer.result != null) {
 					resultOption = consumer.result.getResultOption();
-					pickedPersonUuid = consumer.result.getMatchingPerson().getUuid();
+					pickedPersonUuid = consumer.result.getMatchingPerson() != null ? consumer.result.getMatchingPerson().getUuid() : null;
 				}
 			}
 
@@ -109,9 +110,14 @@ public class TravelEntryImporter extends DataImporter {
 			} else if (resultOption == ImportSimilarityResultOption.CANCEL) {
 				cancelImport();
 				return ImportLineResult.SKIPPED;
-			} else if (resultOption == ImportSimilarityResultOption.PICK) {
-				ImportLineResultDto<TravelEntryImportEntities> saveResult =
-					importFacade.importDataWithExistingPerson(pickedPersonUuid, values, entityClasses, entityPropertyPaths);
+			} else {
+				ImportLineResultDto<TravelEntryImportEntities> saveResult;
+				if (resultOption == ImportSimilarityResultOption.PICK && pickedPersonUuid != null) {
+					saveResult = importFacade.importDataWithExistingPerson(pickedPersonUuid, values, entityClasses, entityPropertyPaths);
+				} else {
+					saveResult = importFacade.saveImportedEntities(entities);
+				}
+
 				if (saveResult.isError()) {
 					writeImportError(values, importResult.getMessage());
 					return ImportLineResult.ERROR;

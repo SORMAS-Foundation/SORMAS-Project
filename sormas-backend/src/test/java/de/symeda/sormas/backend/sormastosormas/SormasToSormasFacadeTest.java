@@ -15,35 +15,36 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
-import java.io.IOException;
+import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
-
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -55,27 +56,28 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
 
-public class SormasToSormasFacadeTest extends AbstractBeanTest {
+public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 
 	// values are set in server-list.csv located in serveraccessdefault and serveraccesssecond
-	public static final String DEFAULT_SERVER_ACCESS_ID = "default";
-	public static final String DEFAULT_SERVER_ACCESS_DATA_CSV = "default-server-access-data.csv";
-	public static final String SECOND_SERVER_ACCESS_ID = "second";
-	public static final String SECOND_SERVER_ACCESS_DATA_CSV = "second-server-access-data.csv";
-
+	public static final String DEFAULT_SERVER_ID = "2.sormas.id.sormas_a";
+	public static final SormasServerDescriptor DEFAULT_SERVER = new SormasServerDescriptor("2.sormas.id.sormas_a", "sormas_a", "sormas_a:6048");
+	public static final String SECOND_SERVER_ID = "2.sormas.id.sormas_b";
+	public static final SormasServerDescriptor SECOND_SERVER = new SormasServerDescriptor("2.sormas.id.sormas_b", "sormas_b", "sormas_b:6048");
 	private ObjectMapper objectMapper;
 
 	@Override
@@ -157,64 +159,81 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return shareInfo;
 	}
 
-	protected SormasToSormasEncryptedDataDto encryptShareDataAsArray(Object shareData) throws JsonProcessingException, SormasToSormasException {
+	protected SormasToSormasShareInfoDto createShareInfoDto(UserReferenceDto sender, String serverId, boolean ownershipHandedOver) {
+		SormasToSormasShareInfoDto shareInfo = new SormasToSormasShareInfoDto();
+
+		shareInfo.setOwnershipHandedOver(ownershipHandedOver);
+		shareInfo.setTargetDescriptor(new SormasServerDescriptor(serverId));
+		shareInfo.setSender(sender);
+
+		return shareInfo;
+	}
+
+	protected SormasToSormasEncryptedDataDto encryptShareDataAsArray(Object shareData) throws SormasToSormasException {
 		return encryptShareData(Collections.singletonList(shareData));
 	}
 
 	protected SormasToSormasEncryptedDataDto encryptShareData(Object shareData) throws SormasToSormasException {
+		mockS2Snetwork();
 		mockDefaultServerAccess();
 
-		SormasToSormasEncryptedDataDto encryptedData = getSormasToSormasEncryptionService().signAndEncrypt(shareData, SECOND_SERVER_ACCESS_ID);
+		SormasToSormasEncryptedDataDto encryptedData = getSormasToSormasEncryptionFacade().signAndEncrypt(shareData, SECOND_SERVER_ID);
 
 		mockSecondServerAccess();
 
 		return encryptedData;
 	}
 
-	protected <T> T decryptSharesData(byte[] data, Class<T> dataType) throws SormasToSormasException, IOException {
+	protected <T> T decryptSharesData(byte[] data, Class<T> dataType) throws SormasToSormasException {
 		mockSecondServerAccess();
 
-		T decryptData =
-			getSormasToSormasEncryptionService().decryptAndVerify(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ACCESS_ID, data), dataType);
+		T decryptData = getSormasToSormasEncryptionFacade().decryptAndVerify(new SormasToSormasEncryptedDataDto(DEFAULT_SERVER_ID, data), dataType);
 
 		mockDefaultServerAccess();
 
 		return decryptData;
 	}
 
-	protected void mockDefaultServerAccess() {
+	protected void mockS2Snetwork() throws SormasToSormasException {
+		Mockito.when(MockProducer.getSormasToSormasClient().get(Matchers.anyString(),eq("/sormasToSormas/cert"), Matchers.any()))
+			.thenAnswer(invocation -> {
+				if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ID)) {
+					mockDefaultServerAccess();
+				} else {
+					mockSecondServerAccess();
+				}
+				X509Certificate cert = getSormasToSormasEncryptionFacade().loadOwnCertificate();
+				if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ID)) {
+					mockSecondServerAccess();
+				} else {
+					mockDefaultServerAccess();
+				}
+				return cert.getEncoded();
+			});
+	}
 
+	protected void mockDefaultServerAccess() {
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccessdefault");
 
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getServerAccessDataFileName()).thenReturn(DEFAULT_SERVER_ACCESS_DATA_CSV);
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("default.sormas2sormas.keystore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certPass");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststoreName()).thenReturn("sormas2sormas.truststore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststorePass()).thenReturn("truster");
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_FILES_PATH, file.getAbsolutePath());
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_ID, DEFAULT_SERVER_ID);
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_KEYSTORE_NAME, "sormas_a.sormas2sormas.keystore.p12");
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_KEYSTORE_PASSWORD, "1234");
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_TRUSTSTORE_NAME, "sormas2sormas.truststore.p12");
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_TRUSTSTORE_PASS, "password");
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_ROOT_CA_ALIAS, "S2SCA");
 	}
 
 	protected void mockSecondServerAccess() {
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccesssecond");
 
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getServerAccessDataFileName()).thenReturn(SECOND_SERVER_ACCESS_DATA_CSV);
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("second.sormas2sormas.keystore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certiPass");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststoreName()).thenReturn("sormas2sormas.truststore.p12");
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getTruststorePass()).thenReturn("trusteR");
-	}
-
-	@Specializes
-	private static class MockSormasToSormasConfigProducer extends SormasToSormasConfigProducer {
-
-		static SormasToSormasConfig sormasToSormasConfig = mock(SormasToSormasConfig.class);
-
-		@Override
-		@Produces
-		public SormasToSormasConfig sormas2SormasConfig() {
-			return sormasToSormasConfig;
-		}
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_FILES_PATH, file.getAbsolutePath());
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_ID, SECOND_SERVER_ID);
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_KEYSTORE_NAME, "sormas_b.sormas2sormas.keystore.p12");
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_KEYSTORE_PASSWORD, "1234");
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_TRUSTSTORE_NAME, "sormas2sormas.truststore.p12");
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_TRUSTSTORE_PASS, "password");
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_ROOT_CA_ALIAS, "S2SCA");
 	}
 
 	protected MappableRdcf createRDCF(boolean withExternalId) {
@@ -267,9 +286,9 @@ public class SormasToSormasFacadeTest extends AbstractBeanTest {
 		return rdcf;
 	}
 
-	protected static class MappableRdcf {
+	public static class MappableRdcf {
 
-		protected TestDataCreator.RDCF remoteRdcf;
-		protected TestDataCreator.RDCF localRdcf;
+		public TestDataCreator.RDCF remoteRdcf;
+		public TestDataCreator.RDCF localRdcf;
 	}
 }

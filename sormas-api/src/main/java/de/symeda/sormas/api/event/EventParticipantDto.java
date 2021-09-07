@@ -17,11 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -52,15 +56,19 @@ public class EventParticipantDto extends PseudonymizableDto implements SormasToS
 	private EventReferenceDto event;
 	@Required
 	@EmbeddedPersonalData
+	@Valid
 	private PersonDto person;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String involvementDescription;
 	private CaseReferenceDto resultingCase; // read-only
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 
+	@Valid
 	private VaccinationInfoDto vaccinationInfo;
 
+	@Valid
 	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
 

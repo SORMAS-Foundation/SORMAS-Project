@@ -59,12 +59,12 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -95,25 +95,28 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoHelper;
-import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -161,6 +164,10 @@ public class SampleFacadeEjb implements SampleFacade {
 	private FacilityService facilityService;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private ContactFacadeEjbLocal contactFacade;
+	@EJB
+	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 	@EJB
 	private MessagingService messagingService;
 	@EJB
@@ -218,6 +225,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
 		final Root<Sample> root = cq.from(Sample.class);
+		cq.distinct(true);
 
 		SampleJoins<Sample> joins = new SampleJoins<>(root);
 
@@ -314,10 +322,10 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public SampleDto saveSample(@Valid SampleDto dto) {
-		return saveSample(dto, true, true);
+		return saveSample(dto, true, true, true);
 	}
 
-	public SampleDto saveSample(SampleDto dto, boolean handleChanges, boolean checkChangeDate) {
+	public SampleDto saveSample(@Valid SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean syncShares) {
 
 		Sample existingSample = sampleService.getByUuid(dto.getUuid());
 		SampleDto existingSampleDto = toDto(existingSample);
@@ -337,7 +345,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		sampleService.ensurePersisted(sample);
 
 		if (handleChanges) {
-			onSampleChanged(existingSampleDto, sample);
+			onSampleChanged(existingSampleDto, sample, syncShares);
 		}
 
 		return toDto(sample);
@@ -354,7 +362,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		final Root<Sample> sample = cq.from(Sample.class);
-
 
 		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
 		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
@@ -389,7 +396,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		cq.distinct(true);
 
 		List<Selection<?>> selections = new ArrayList<>(
-				Arrays.asList(sample.get(Sample.UUID),
+			Arrays.asList(
+				sample.get(Sample.UUID),
 				caze.get(Case.EPID_NUMBER),
 				sample.get(Sample.LAB_SAMPLE_ID),
 				sample.get(Sample.SAMPLE_DATE_TIME),
@@ -612,7 +620,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Override
 	public void validate(SampleDto sample) throws ValidationRuntimeException {
 
-		if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null & sample.getAssociatedEventParticipant() == null) {
+		if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
 		}
 		if (sample.getSampleDateTime() == null) {
@@ -658,99 +666,100 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		cq.distinct(true);
 
-		List<Selection<?>> selections = new ArrayList<>(Arrays.asList(
-			sampleRoot.get(Sample.ID),
-			sampleRoot.get(Sample.UUID),
-			sampleRoot.get(Sample.LAB_SAMPLE_ID),
-			sampleRoot.get(Sample.REPORT_DATE_TIME),
-			joins.getCaze().get(Case.EPID_NUMBER),
-			joins.getCasePerson().get(Person.FIRST_NAME),
-			joins.getCasePerson().get(Person.LAST_NAME),
-			joins.getContactPerson().get(Person.FIRST_NAME),
-			joins.getContactPerson().get(Person.LAST_NAME),
-			joins.getEventParticipantPerson().get(Person.FIRST_NAME),
-			joins.getEventParticipantPerson().get(Person.LAST_NAME),
-			joins.getCaze().get(Case.DISEASE),
-			joins.getCaze().get(Case.DISEASE_DETAILS),
-			joins.getContact().get(Contact.DISEASE),
-			joins.getContact().get(Contact.DISEASE_DETAILS),
-			joins.getEvent().get(Event.DISEASE),
-			joins.getEvent().get(Event.DISEASE_DETAILS),
-			sampleRoot.get(Sample.SAMPLE_DATE_TIME),
-			sampleRoot.get(Sample.SAMPLE_MATERIAL),
-			sampleRoot.get(Sample.SAMPLE_MATERIAL_TEXT),
-			sampleRoot.get(Sample.SAMPLE_PURPOSE),
-			sampleRoot.get(Sample.SAMPLING_REASON),
-			sampleRoot.get(Sample.SAMPLING_REASON_DETAILS),
-			sampleRoot.get(Sample.SAMPLE_SOURCE),
-			joins.getLab().get(Facility.NAME),
-			sampleRoot.get(Sample.LAB_DETAILS),
-			sampleRoot.get(Sample.PATHOGEN_TEST_RESULT),
-			sampleRoot.get(Sample.PATHOGEN_TESTING_REQUESTED),
-			sampleRoot.get(Sample.REQUESTED_PATHOGEN_TESTS_STRING),
-			sampleRoot.get(Sample.REQUESTED_OTHER_PATHOGEN_TESTS),
-			sampleRoot.get(Sample.ADDITIONAL_TESTING_REQUESTED),
-			sampleRoot.get(Sample.REQUESTED_ADDITIONAL_TESTS_STRING),
-			sampleRoot.get(Sample.REQUESTED_OTHER_ADDITIONAL_TESTS),
-			sampleRoot.get(Sample.SHIPPED),
-			sampleRoot.get(Sample.SHIPMENT_DATE),
-			sampleRoot.get(Sample.SHIPMENT_DETAILS),
-			sampleRoot.get(Sample.RECEIVED),
-			sampleRoot.get(Sample.RECEIVED_DATE),
-			sampleRoot.get(Sample.SPECIMEN_CONDITION),
-			sampleRoot.get(Sample.NO_TEST_POSSIBLE_REASON),
-			sampleRoot.get(Sample.COMMENT),
-			joins.getReferredSample().get(Sample.UUID),
-			joins.getCaze().get(Case.UUID),
-			joins.getContact().get(Contact.UUID),
-			joins.getEventParticipant().get(EventParticipant.UUID),
-			joins.getCasePerson().get(Person.APPROXIMATE_AGE),
-			joins.getCasePerson().get(Person.APPROXIMATE_AGE_TYPE),
-			joins.getCasePerson().get(Person.SEX),
-			joins.getContactPerson().get(Person.APPROXIMATE_AGE),
-			joins.getContactPerson().get(Person.APPROXIMATE_AGE_TYPE),
-			joins.getContactPerson().get(Person.SEX),
-			joins.getEventParticipantPerson().get(Person.APPROXIMATE_AGE),
-			joins.getEventParticipantPerson().get(Person.APPROXIMATE_AGE_TYPE),
-			joins.getEventParticipantPerson().get(Person.SEX),
-			joins.getCasePersonAddressRegion().get(Region.NAME),
-			joins.getCasePersonAddressDistrict().get(District.NAME),
-			joins.getCasePersonAddressCommunity().get(Community.NAME),
-			joins.getCasePersonAddress().get(Location.CITY),
-			joins.getCasePersonAddress().get(Location.STREET),
-			joins.getCasePersonAddress().get(Location.HOUSE_NUMBER),
-			joins.getCasePersonAddress().get(Location.ADDITIONAL_INFORMATION),
-			joins.getContactPersonAddressRegion().get(Region.NAME),
-			joins.getContactPersonAddressDistrict().get(District.NAME),
-			joins.getContactPersonAddressCommunity().get(Community.NAME),
-			joins.getContactPersonAddress().get(Location.CITY),
-			joins.getContactPersonAddress().get(Location.STREET),
-			joins.getContactPersonAddress().get(Location.HOUSE_NUMBER),
-			joins.getContactPersonAddress().get(Location.ADDITIONAL_INFORMATION),
-			joins.getEventRegion().get(Region.NAME),
-			joins.getEventDistrict().get(District.NAME),
-			joins.getEventCommunity().get(Community.NAME),
-			joins.getEventLocation().get(Location.CITY),
-			joins.getEventLocation().get(Location.STREET),
-			joins.getEventLocation().get(Location.HOUSE_NUMBER),
-			joins.getEventLocation().get(Location.ADDITIONAL_INFORMATION),
-			joins.getCaze().get(Case.REPORT_DATE),
-			joins.getCaze().get(Case.CASE_CLASSIFICATION),
-			joins.getCaze().get(Case.OUTCOME),
-			joins.getCaseRegion().get(Region.NAME),
-			joins.getCaseDistrict().get(District.NAME),
-			joins.getCaseCommunity().get(Community.NAME),
-			joins.getCaseFacility().get(Facility.NAME),
-			joins.getCaze().get(Case.HEALTH_FACILITY_DETAILS),
-			joins.getContactRegion().get(Region.NAME),
-			joins.getContactDistrict().get(District.NAME),
-			joins.getContactCommunity().get(Community.NAME),
-			joins.getContact().get(Contact.REPORT_DATE_TIME),
-			joins.getContact().get(Contact.LAST_CONTACT_DATE),
-			joins.getContact().get(Contact.CONTACT_CLASSIFICATION),
-			joins.getContact().get(Contact.CONTACT_STATUS),
-			joins.getLab().get(Facility.UUID),
-			joins.getCaseFacility().get(Facility.UUID)));
+		List<Selection<?>> selections = new ArrayList<>(
+			Arrays.asList(
+				sampleRoot.get(Sample.ID),
+				sampleRoot.get(Sample.UUID),
+				sampleRoot.get(Sample.LAB_SAMPLE_ID),
+				sampleRoot.get(Sample.REPORT_DATE_TIME),
+				joins.getCaze().get(Case.EPID_NUMBER),
+				joins.getCasePerson().get(Person.FIRST_NAME),
+				joins.getCasePerson().get(Person.LAST_NAME),
+				joins.getContactPerson().get(Person.FIRST_NAME),
+				joins.getContactPerson().get(Person.LAST_NAME),
+				joins.getEventParticipantPerson().get(Person.FIRST_NAME),
+				joins.getEventParticipantPerson().get(Person.LAST_NAME),
+				joins.getCaze().get(Case.DISEASE),
+				joins.getCaze().get(Case.DISEASE_DETAILS),
+				joins.getContact().get(Contact.DISEASE),
+				joins.getContact().get(Contact.DISEASE_DETAILS),
+				joins.getEvent().get(Event.DISEASE),
+				joins.getEvent().get(Event.DISEASE_DETAILS),
+				sampleRoot.get(Sample.SAMPLE_DATE_TIME),
+				sampleRoot.get(Sample.SAMPLE_MATERIAL),
+				sampleRoot.get(Sample.SAMPLE_MATERIAL_TEXT),
+				sampleRoot.get(Sample.SAMPLE_PURPOSE),
+				sampleRoot.get(Sample.SAMPLING_REASON),
+				sampleRoot.get(Sample.SAMPLING_REASON_DETAILS),
+				sampleRoot.get(Sample.SAMPLE_SOURCE),
+				joins.getLab().get(Facility.NAME),
+				sampleRoot.get(Sample.LAB_DETAILS),
+				sampleRoot.get(Sample.PATHOGEN_TEST_RESULT),
+				sampleRoot.get(Sample.PATHOGEN_TESTING_REQUESTED),
+				sampleRoot.get(Sample.REQUESTED_PATHOGEN_TESTS_STRING),
+				sampleRoot.get(Sample.REQUESTED_OTHER_PATHOGEN_TESTS),
+				sampleRoot.get(Sample.ADDITIONAL_TESTING_REQUESTED),
+				sampleRoot.get(Sample.REQUESTED_ADDITIONAL_TESTS_STRING),
+				sampleRoot.get(Sample.REQUESTED_OTHER_ADDITIONAL_TESTS),
+				sampleRoot.get(Sample.SHIPPED),
+				sampleRoot.get(Sample.SHIPMENT_DATE),
+				sampleRoot.get(Sample.SHIPMENT_DETAILS),
+				sampleRoot.get(Sample.RECEIVED),
+				sampleRoot.get(Sample.RECEIVED_DATE),
+				sampleRoot.get(Sample.SPECIMEN_CONDITION),
+				sampleRoot.get(Sample.NO_TEST_POSSIBLE_REASON),
+				sampleRoot.get(Sample.COMMENT),
+				joins.getReferredSample().get(Sample.UUID),
+				joins.getCaze().get(Case.UUID),
+				joins.getContact().get(Contact.UUID),
+				joins.getEventParticipant().get(EventParticipant.UUID),
+				joins.getCasePerson().get(Person.APPROXIMATE_AGE),
+				joins.getCasePerson().get(Person.APPROXIMATE_AGE_TYPE),
+				joins.getCasePerson().get(Person.SEX),
+				joins.getContactPerson().get(Person.APPROXIMATE_AGE),
+				joins.getContactPerson().get(Person.APPROXIMATE_AGE_TYPE),
+				joins.getContactPerson().get(Person.SEX),
+				joins.getEventParticipantPerson().get(Person.APPROXIMATE_AGE),
+				joins.getEventParticipantPerson().get(Person.APPROXIMATE_AGE_TYPE),
+				joins.getEventParticipantPerson().get(Person.SEX),
+				joins.getCasePersonAddressRegion().get(Region.NAME),
+				joins.getCasePersonAddressDistrict().get(District.NAME),
+				joins.getCasePersonAddressCommunity().get(Community.NAME),
+				joins.getCasePersonAddress().get(Location.CITY),
+				joins.getCasePersonAddress().get(Location.STREET),
+				joins.getCasePersonAddress().get(Location.HOUSE_NUMBER),
+				joins.getCasePersonAddress().get(Location.ADDITIONAL_INFORMATION),
+				joins.getContactPersonAddressRegion().get(Region.NAME),
+				joins.getContactPersonAddressDistrict().get(District.NAME),
+				joins.getContactPersonAddressCommunity().get(Community.NAME),
+				joins.getContactPersonAddress().get(Location.CITY),
+				joins.getContactPersonAddress().get(Location.STREET),
+				joins.getContactPersonAddress().get(Location.HOUSE_NUMBER),
+				joins.getContactPersonAddress().get(Location.ADDITIONAL_INFORMATION),
+				joins.getEventRegion().get(Region.NAME),
+				joins.getEventDistrict().get(District.NAME),
+				joins.getEventCommunity().get(Community.NAME),
+				joins.getEventLocation().get(Location.CITY),
+				joins.getEventLocation().get(Location.STREET),
+				joins.getEventLocation().get(Location.HOUSE_NUMBER),
+				joins.getEventLocation().get(Location.ADDITIONAL_INFORMATION),
+				joins.getCaze().get(Case.REPORT_DATE),
+				joins.getCaze().get(Case.CASE_CLASSIFICATION),
+				joins.getCaze().get(Case.OUTCOME),
+				joins.getCaseRegion().get(Region.NAME),
+				joins.getCaseDistrict().get(District.NAME),
+				joins.getCaseCommunity().get(Community.NAME),
+				joins.getCaseFacility().get(Facility.NAME),
+				joins.getCaze().get(Case.HEALTH_FACILITY_DETAILS),
+				joins.getContactRegion().get(Region.NAME),
+				joins.getContactDistrict().get(District.NAME),
+				joins.getContactCommunity().get(Community.NAME),
+				joins.getContact().get(Contact.REPORT_DATE_TIME),
+				joins.getContact().get(Contact.LAST_CONTACT_DATE),
+				joins.getContact().get(Contact.CONTACT_CLASSIFICATION),
+				joins.getContact().get(Contact.CONTACT_STATUS),
+				joins.getLab().get(Facility.UUID),
+				joins.getCaseFacility().get(Facility.UUID)));
 
 		selections.addAll(sampleService.getJurisdictionSelections(sampleQueryContext));
 
@@ -891,10 +900,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
 		sampleService.delete(sample);
 
-		final Case associatedCase = sample.getAssociatedCase();
-		if (associatedCase != null) {
-			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(associatedCase), associatedCase);
-		}
+		handleAssotiatedObjectChanges(sample, true);
 	}
 
 	@Override
@@ -1097,7 +1103,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return new SampleReferenceDto(entity.getUuid(), entity.toString());
 	}
 
-	private void onSampleChanged(SampleDto existingSample, Sample newSample) {
+	private void onSampleChanged(SampleDto existingSample, Sample newSample, boolean syncShares) {
 
 		// Change pathogenTestResultChangeDate if the pathogen test result has changed
 		if (existingSample != null
@@ -1109,9 +1115,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			}
 		}
 
-		if (newSample.getAssociatedCase() != null) {
-			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase());
-		}
+		handleAssotiatedObjectChanges(newSample, syncShares);
 
 		// Send an email to the lab user when a sample has been shipped to their lab
 		if (newSample.isShipped()
@@ -1148,6 +1152,21 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 	}
 
+	private void handleAssotiatedObjectChanges(Sample newSample, boolean syncShares) {
+		if (newSample.getAssociatedCase() != null) {
+			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
+		}
+
+		if (newSample.getAssociatedContact() != null) {
+			contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(newSample.getAssociatedContact()), syncShares);
+		}
+
+		if (newSample.getAssociatedEventParticipant() != null) {
+			eventParticipantFacade
+				.onEventParticipantChanged(EventFacadeEjbLocal.toDto(newSample.getAssociatedEventParticipant().getEvent()), syncShares);
+		}
+	}
+
 	@Override
 	public boolean isDeleted(String sampleUuid) {
 
@@ -1170,8 +1189,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	public Boolean isSampleEditAllowed(String sampleUuid) {
 		Sample sample = sampleService.getByUuid(sampleUuid);
 
-		if (sample.getSormasToSormasOriginInfo() != null) {
-			return sample.getSormasToSormasOriginInfo().isOwnershipHandedOver();
+		if (sample.getSormasToSormasOriginInfo() != null && !sample.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
+			return false;
 		}
 
 		return sampleService.inJurisdictionOrOwned(sample).getInJurisdiction() && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);

@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.ui.contact;
 
 import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
@@ -58,6 +55,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -255,6 +253,7 @@ public class ContactsView extends AbstractView {
 			{
 				Button btnCustomExport = ButtonHelper.createIconButton(Captions.exportCustom, VaadinIcons.FILE_TEXT, e -> {
 					ControllerProvider.getCustomExportController().openContactExportWindow(grid.getCriteria(), this::getSelectedRows);
+					exportButton.setPopupVisible(false);
 				}, ValoTheme.BUTTON_PRIMARY);
 				btnCustomExport.setDescription(I18nProperties.getString(Strings.infoCustomExport));
 				btnCustomExport.setWidth(100, Unit.PERCENTAGE);
@@ -482,7 +481,7 @@ public class ContactsView extends AbstractView {
 							VaadinIcons.SHARE,
 							mi -> grid.bulkActionHandler(
 								items -> ControllerProvider.getSormasToSormasController().shareSelectedContacts(items, () -> navigateTo(criteria))),
-							FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser())));
+							FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser())));
 
 				if (isDocGenerationAllowed() && grid instanceof AbstractContactGrid) {
 					bulkActions.add(
@@ -508,6 +507,38 @@ public class ContactsView extends AbstractView {
 
 								ControllerProvider.getDocGenerationController()
 									.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CONTACT);
+							})));
+				}
+
+				if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+					bulkActions.add(
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkLinkToEvent),
+							VaadinIcons.PHONE,
+							mi -> grid.bulkActionHandler(items -> {
+								List<ContactIndexDto> selectedContacts =
+									grid.asMultiSelect().getSelectedItems().stream().map(item -> (ContactIndexDto) item).collect(Collectors.toList());
+
+								if (selectedContacts.isEmpty()) {
+									new Notification(
+										I18nProperties.getString(Strings.headingNoContactsSelected),
+										I18nProperties.getString(Strings.messageNoContactsSelected),
+										Notification.Type.WARNING_MESSAGE,
+										false).show(Page.getCurrent());
+									return;
+								}
+
+								if (!selectedContacts.stream()
+									.allMatch(contact -> contact.getDisease().equals(selectedContacts.stream().findAny().get().getDisease()))) {
+									new Notification(
+										I18nProperties.getString(Strings.messageBulkContactsWithDifferentDiseasesSelected),
+										Notification.Type.WARNING_MESSAGE).show(Page.getCurrent());
+									return;
+								}
+
+								ControllerProvider.getEventController()
+									.selectOrCreateEventForContactList(
+										selectedContacts.stream().map(ContactIndexDto::toReference).collect(Collectors.toList()));
 							})));
 				}
 
@@ -594,7 +625,7 @@ public class ContactsView extends AbstractView {
 	private boolean isBulkEditAllowed() {
 		return viewConfiguration.getViewType().isContactOverview()
 			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
-				|| FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser());
+				|| FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser());
 	}
 
 	private HorizontalLayout buildScrollLayout() {

@@ -1,10 +1,11 @@
 package de.symeda.sormas.ui.person;
 
+import static de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent.IMMUNIZATION_LOC;
+import static de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent.TRAVEL_ENTRIES_LOC;
+
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -18,12 +19,14 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.caselink.CaseListComponent;
 import de.symeda.sormas.ui.contact.contactlink.ContactListComponent;
 import de.symeda.sormas.ui.events.eventParticipantLink.EventParticipantListComponent;
-import de.symeda.sormas.ui.travelentry.travelentryLink.TravelEntryListComponent;
+import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
+import de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.components.SideComponentLayout;
 
 public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 
@@ -33,7 +36,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 	public static final String CASES_LOC = "cases";
 	public static final String CONTACTS_LOC = "contacts";
 	public static final String EVENT_PARTICIPANTS_LOC = "events";
-	public static final String TRAVEL_ENTRIES_LOC = "travelEntries";
+	public static final String IMMUNIZATION_LOC = "immunizations";
 
 	private CommitDiscardWrapperComponent<PersonEditForm> editComponent;
 
@@ -67,7 +70,8 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_PARTICIPANTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TRAVEL_ENTRIES_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TRAVEL_ENTRIES_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC));
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -92,49 +96,22 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
-			VerticalLayout caseLayout = new VerticalLayout();
-			caseLayout.setMargin(false);
-			caseLayout.setSpacing(false);
-
-			CaseListComponent caseListComponent = new CaseListComponent(getReference());
-			caseListComponent.addStyleName(CssStyles.SIDE_COMPONENT);
-			caseLayout.addComponent(caseListComponent);
-			layout.addComponent(caseLayout, CASES_LOC);
+			layout.addComponent(new SideComponentLayout(new CaseListComponent(getReference())), CASES_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)) {
-			VerticalLayout contactLayout = new VerticalLayout();
-			contactLayout.setMargin(false);
-			contactLayout.setSpacing(false);
-
-			ContactListComponent contactListComponent = new ContactListComponent(getReference());
-			contactListComponent.addStyleName(CssStyles.SIDE_COMPONENT);
-			contactLayout.addComponent(contactListComponent);
-			layout.addComponent(contactLayout, CONTACTS_LOC);
+			layout.addComponent(new SideComponentLayout(new ContactListComponent(getReference())), CONTACTS_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
-			VerticalLayout eventParticipantLayout = new VerticalLayout();
-			eventParticipantLayout.setMargin(false);
-			eventParticipantLayout.setSpacing(false);
-
-			EventParticipantListComponent eventParticipantList = new EventParticipantListComponent(getReference());
-			eventParticipantList.addStyleName(CssStyles.SIDE_COMPONENT);
-			eventParticipantLayout.addComponent(eventParticipantList);
-			layout.addComponent(eventParticipantLayout, EVENT_PARTICIPANTS_LOC);
+			layout.addComponent(new SideComponentLayout(new EventParticipantListComponent(getReference())), EVENT_PARTICIPANTS_LOC);
 		}
 
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
+		TravelEntryListComponent.addTravelEntryListComponent(layout, getReference());
 
-			VerticalLayout travelEntriesLayout = new VerticalLayout();
-			travelEntriesLayout.setMargin(false);
-			travelEntriesLayout.setSpacing(false);
-
-			TravelEntryListComponent travelEntryList = new TravelEntryListComponent(getReference());
-			travelEntryList.addStyleName(CssStyles.SIDE_COMPONENT);
-			travelEntriesLayout.addComponent(travelEntryList);
-			layout.addComponent(travelEntriesLayout, TRAVEL_ENTRIES_LOC);
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+			ImmunizationListComponent.addImmunizationListComponent(layout, getReference());
 		}
 	}
 

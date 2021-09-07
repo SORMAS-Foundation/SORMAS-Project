@@ -46,19 +46,20 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 
-@Entity(name = "users")
+@Entity(name = User.TABLE_NAME)
 @Audited
 public class User extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -629432920970152112L;
 
+	public static final String TABLE_NAME = "users";
 	public static final String TABLE_NAME_USERROLES = "users_userroles";
 
 	public static final String USER_NAME = "userName";

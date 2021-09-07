@@ -38,10 +38,12 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.importexport.ValueSeparator;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
@@ -67,8 +69,10 @@ public class CampaignFormDataImporter extends DataImporter {
 		boolean hasEntityClassRow,
 		UserDto currentUser,
 		String campaignFormMetaUuid,
-		CampaignReferenceDto campaignReferenceDto) {
-		super(inputFile, hasEntityClassRow, currentUser);
+		CampaignReferenceDto campaignReferenceDto,
+		ValueSeparator csvSeparator)
+		throws IOException {
+		super(inputFile, hasEntityClassRow, currentUser, csvSeparator);
 		this.campaignFormMetaUuid = campaignFormMetaUuid;
 		this.campaignReferenceDto = campaignReferenceDto;
 
@@ -262,6 +266,11 @@ public class CampaignFormDataImporter extends DataImporter {
 					campaignFormData.setFormValues(formValues);
 				}
 			}
+		}
+
+		ImportLineResultDto<CampaignFormDataDto> constraintErrors = validateConstraints(campaignFormData);
+		if (constraintErrors.isError()) {
+			throw new ImportErrorException(constraintErrors.getMessage());
 		}
 	}
 

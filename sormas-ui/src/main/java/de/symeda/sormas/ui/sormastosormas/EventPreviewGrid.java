@@ -55,11 +55,15 @@ public class EventPreviewGrid extends Grid<SormasToSormasEventPreview> {
 
 		removeColumn(SormasToSormasEventPreview.DISEASE);
 		addComponentColumn(casePreview -> {
-			String diseaseText = casePreview.getDisease().toString();
-			if (!StringUtils.isEmpty(casePreview.getDiseaseDetails())) {
-				diseaseText += " - " + casePreview.getDiseaseDetails();
+			String diseaseText;
+			if(casePreview.getDisease() == null){
+				diseaseText = "";
+			} else {
+				diseaseText = casePreview.getDisease().toString();
+				if (!StringUtils.isEmpty(casePreview.getDiseaseDetails())) {
+					diseaseText += " - " + casePreview.getDiseaseDetails();
+				}
 			}
-
 			return new Label(diseaseText);
 		}).setId(SormasToSormasEventPreview.DISEASE);
 

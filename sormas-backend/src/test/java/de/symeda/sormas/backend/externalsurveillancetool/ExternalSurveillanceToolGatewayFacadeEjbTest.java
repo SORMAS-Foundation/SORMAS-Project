@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -49,6 +50,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.share.ExternalShareInfoService;
 
 public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTest {
 
@@ -110,7 +112,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 		try {
 			subjectUnderTest.sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"));
 		} catch (ExternalSurveillanceToolException e) {
-			assertThat(e.getMessage(), Matchers.is("ExternalSurveillanceToolGateway.notificationErrorSending"));
+			assertThat(e.getMessage(), Matchers.is(I18nProperties.getString("ExternalSurveillanceToolGateway.notificationErrorSending")));
 		}
 	}
 
@@ -122,6 +124,9 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.withRequestBody(containing("eventUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		subjectUnderTest.sendEvents(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "VXAERX-5RCKFA-G5DVXH-DPHPCAFB"));
+
+		// Events don't actually exist, so no share info is created
+		assertThat(getBean(ExternalShareInfoService.class).getAll(), hasSize(0));
 	}
 
 	@Test

@@ -61,12 +61,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Provider;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -88,48 +93,46 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportColumn;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportFacade;
-import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.continent.ContinentDto;
+import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.AreaDto;
-import de.symeda.sormas.api.region.AreaReferenceDto;
-import de.symeda.sormas.api.region.CommunityDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.ContinentDto;
-import de.symeda.sormas.api.region.ContinentReferenceDto;
-import de.symeda.sormas.api.region.CountryDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
-import de.symeda.sormas.api.region.DistrictDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.region.SubcontinentDto;
-import de.symeda.sormas.api.region.SubcontinentReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.ConstrainValidationHelper;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
@@ -137,12 +140,12 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.region.AreaFacadeEjb.AreaFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CountryFacadeEjb;
-import de.symeda.sormas.backend.region.CountryFacadeEjb.CountryFacadeEjbLocal;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.importexport.parser.ImportParserService;
+import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb.AreaFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 
 @Stateless(name = "ImportFacade")
@@ -193,6 +196,8 @@ public class ImportFacadeEjb implements ImportFacade {
 	private RegionService regionService;
 	@EJB
 	private CountryFacadeEjbLocal countryFacade;
+	@EJB
+	private ImportParserService importParserService;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = "import_case_template.csv";
 	private static final String EVENT_IMPORT_TEMPLATE_FILE_NAME = "import_event_template.csv";
@@ -860,132 +865,47 @@ public class ImportFacadeEjb implements ImportFacade {
 		throws InvocationTargetException, IllegalAccessException, ParseException, ImportErrorException, EnumService.InvalidEnumCaptionException {
 		Class<?> propertyType = pd.getPropertyType();
 
-		if (propertyType.isEnum()) {
-			Enum enumValue = null;
-			Class<Enum> enumType = (Class<Enum>) propertyType;
-			try {
-				enumValue = Enum.valueOf(enumType, entry.toUpperCase());
-			} catch (IllegalArgumentException e) {
-				// ignore
-			}
+		if (importParserService.hasParser(pd)) {
+			Object parsedValue = importParserService.parseValue(pd, entry, entryHeaderPath);
+			pd.getWriteMethod().invoke(element, parsedValue);
 
-			if (enumValue == null) {
-				enumValue = enumService.getEnumByCaption(enumType, entry);
-			}
+			if (propertyType.isAssignableFrom(RegionReferenceDto.class) && !allowForeignRegions && parsedValue != null) {
 
-			pd.getWriteMethod().invoke(element, enumValue);
-			return true;
-		}
-		if (propertyType.getSuperclass() != null && propertyType.getSuperclass() == CustomizableEnum.class) {
-			try {
-				Object customizableEnum = propertyType.newInstance();
-				((CustomizableEnum) customizableEnum).setValue(entry);
-				pd.getWriteMethod().invoke(element, customizableEnum);
-				return true;
-			} catch (InstantiationException e) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importErrorCustomizableEnumValue, entry, buildEntityProperty(entryHeaderPath)));
-			}
-		}
-		if (propertyType.isAssignableFrom(Date.class)) {
-			// If the string is smaller than the length of the expected date format, throw an exception
-			if (entry.length() < 8) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(
-						Validations.importInvalidDate,
-						buildEntityProperty(entryHeaderPath),
-						DateHelper.getAllowedDateFormats(I18nProperties.getUserLanguage().getDateFormat())));
-			} else {
-				pd.getWriteMethod().invoke(element, DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));
-				return true;
-			}
-		}
-		if (propertyType.isAssignableFrom(Integer.class)) {
-			pd.getWriteMethod().invoke(element, Integer.parseInt(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(Double.class)) {
-			pd.getWriteMethod().invoke(element, Double.parseDouble(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(Float.class)) {
-			pd.getWriteMethod().invoke(element, Float.parseFloat(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(boolean.class)) {
-			pd.getWriteMethod().invoke(element, Boolean.parseBoolean(entry));
-			return true;
-		}
-		if (propertyType.isAssignableFrom(CountryReferenceDto.class)) {
-			List<CountryReferenceDto> countries = countryFacade.getReferencesByName(entry, false);
-			if (countries.isEmpty()) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (countries.size() > 1) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importCountryNotUnique, entry, buildEntityProperty(entryHeaderPath)));
-			} else {
-				pd.getWriteMethod().invoke(element, countries.get(0));
-				return true;
-			}
-		}
-		if (propertyType.isAssignableFrom(AreaReferenceDto.class)) {
-			List<AreaReferenceDto> areas = areaFacade.getByName(entry, false);
-			if (areas.isEmpty()) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (areas.size() > 1) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importAreaNotUnique, entry, buildEntityProperty(entryHeaderPath)));
-			} else {
-				pd.getWriteMethod().invoke(element, areas.get(0));
-				return true;
-			}
-		}
-		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<Region> regions = regionService.getByName(entry, false);
-			if (regions.isEmpty()) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (regions.size() > 1) {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildEntityProperty(entryHeaderPath)));
-			} else if (allowForeignRegions) {
-				pd.getWriteMethod().invoke(element, RegionFacadeEjb.toReferenceDto(regions.get(0)));
-				return true;
-			} else {
-				Region region = regions.get(0);
+				Region region = regionService.getByUuid(((RegionReferenceDto) parsedValue).getUuid());
 				CountryReferenceDto serverCountry = countryFacade.getServerCountry();
 
 				if (region.getCountry() != null && !CountryFacadeEjb.toReferenceDto(region.getCountry()).equals(serverCountry)) {
 					throw new ImportErrorException(
 						I18nProperties.getValidationError(Validations.importRegionNotInServerCountry, entry, buildEntityProperty(entryHeaderPath)));
-				} else {
-					pd.getWriteMethod().invoke(element, RegionFacadeEjb.toReferenceDto(region));
-					return true;
 				}
 			}
-		}
-		if (propertyType.isAssignableFrom(UserReferenceDto.class)) {
-			UserDto user = userFacade.getByUserName(entry);
-			if (user != null) {
-				pd.getWriteMethod().invoke(element, user.toReference());
-				return true;
-			} else {
-				throw new ImportErrorException(
-					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
-			}
-		}
-		if (propertyType.isAssignableFrom(String.class)) {
-			pd.getWriteMethod().invoke(element, entry);
+
 			return true;
 		}
+
 
 		return false;
 	}
 
 	public String buildEntityProperty(String[] entityPropertyPath) {
 		return String.join(".", entityPropertyPath);
+	}
+
+	public <T> ImportLineResultDto<T> validateConstraints(T entities) {
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Validator validator = factory.getValidator();
+
+		Set<ConstraintViolation<T>> constraintViolations = validator.validate(entities);
+		if (constraintViolations.size() > 0) {
+			return ImportLineResultDto.errorResult(
+				ConstrainValidationHelper.getPropertyErrors(constraintViolations)
+					.entrySet()
+					.stream()
+					.map(e -> String.join(".", e.getKey().get(e.getKey().size() - 1)) + ": " + e.getValue())
+					.collect(Collectors.joining(";")));
+		}
+
+		return ImportLineResultDto.successResult();
 	}
 
 	@LocalBean

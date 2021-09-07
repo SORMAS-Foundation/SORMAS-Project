@@ -1,3 +1,17 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package de.symeda.sormas.api.feature;
 
 import java.util.ArrayList;
@@ -27,6 +41,8 @@ public enum FeatureType {
 			EVENT_SURVEILLANCE }),
 	TASK_MANAGEMENT(true, true, null),
 	WEEKLY_REPORTING(true, true, null),
+	IMMUNIZATION_MANAGEMENT(true, false, null),
+	TRAVEL_ENTRIES(true, false, null),
 
 	// FEATURE EXTENSIONS
 	ASSIGN_TASKS_TO_HIGHER_LEVEL(true,
@@ -76,7 +92,25 @@ public enum FeatureType {
 			CASE_SURVEILANCE,
 			CONTACT_TRACING,
 			EVENT_SURVEILLANCE }),
+	SORMAS_TO_SORMAS_SHARE_CASES_WITH_CONTACTS_AND_SAMPLES(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE,
+			CONTACT_TRACING,
+			SAMPLES_LAB }),
+	SORMAS_TO_SORMAS_SHARE_EVENTS(true,
+		false,
+		new FeatureType[] {
+			EVENT_SURVEILLANCE }),
+	SORMAS_TO_SORMAS_SHARE_LAB_MESSAGES(true,
+		false,
+		new FeatureType[] {
+			LAB_MESSAGES }),
+	IMMUNIZATION_STATUS_AUTOMATION(true, false, new FeatureType[]{ IMMUNIZATION_MANAGEMENT}),
+
 	PERSON_DUPLICATE_CUSTOM_SEARCH(true, false, null),
+
+	EDIT_INFRASTRUCTURE_DATA(true, true, null),
 
 	// SHOW/HIDE VIEW TAB FEATURES
 	VIEW_TAB_CASES_HOSPITALIZATION(true,
@@ -160,8 +194,7 @@ public enum FeatureType {
 	TASK_GENERATION_GENERAL(true,
 		true,
 		new FeatureType[] {
-			TASK_MANAGEMENT }),
-	IMMUNIZATION_MANAGEMENT(true, false, null);
+			TASK_MANAGEMENT });
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

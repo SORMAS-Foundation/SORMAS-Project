@@ -23,16 +23,16 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
-import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -78,6 +78,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String ONLY_ENTITIES_CHANGED_SINCE_LAST_SHARED_WITH_EXTERNAL_SURV_TOOL =
 		"onlyEntitiesChangedSinceLastSharedWithExternalSurvTool";
 	public static final String ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL = "onlyCasesWithDontShareWithExternalSurvTool";
+	public static final String ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION = "onlyShowCasesWithFulfilledReferenceDefinition";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
@@ -133,6 +134,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean onlyEntitiesSharedWithExternalSurvTool;
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
 	private Boolean onlyCasesWithDontShareWithExternalSurvTool;
+	private Boolean onlyShowCasesWithFulfilledReferenceDefinition;
 
 	public CaseCriteria() {
 		super(NewCaseDateType.class);
@@ -674,5 +676,13 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public void setOnlyCasesWithDontShareWithExternalSurvTool(Boolean onlyCasesWithDontShareWithExternalSurvTool) {
 		this.onlyCasesWithDontShareWithExternalSurvTool = onlyCasesWithDontShareWithExternalSurvTool;
+	}
+
+	public Boolean getOnlyShowCasesWithFulfilledReferenceDefinition() {
+		return onlyShowCasesWithFulfilledReferenceDefinition;
+	}
+
+	public void setOnlyShowCasesWithFulfilledReferenceDefinition(Boolean onlyShowCasesWithFulfilledReferenceDefinition) {
+		this.onlyShowCasesWithFulfilledReferenceDefinition = onlyShowCasesWithFulfilledReferenceDefinition;
 	}
 }

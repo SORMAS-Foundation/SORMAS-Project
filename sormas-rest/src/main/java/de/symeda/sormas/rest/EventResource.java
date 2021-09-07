@@ -57,6 +57,20 @@ public class EventResource extends EntityDtoResource {
 		return FacadeProvider.getEventFacade().getAllActiveEventsAfter(new Date(since));
 	}
 
+	/**
+	 * This method returns the eventDto that correspond to the given uuid.
+	 * The return eventDto has the superordinateEvent of type EventDetailedReferenceDto.
+	 * 
+	 * @param uuid
+	 * @return
+	 *         The return eventDto has the superordinateEvent of type EventDetailedReferenceDto
+	 */
+	@GET
+	@Path("/{uuid}")
+	public EventDto getByUuid(@PathParam("uuid") String uuid) {
+		return FacadeProvider.getEventFacade().getEventByUuid(uuid, true);
+	}
+
 	@POST
 	@Path("/query")
 	public List<EventDto> getByUuids(List<String> uuids) {
@@ -88,6 +102,14 @@ public class EventResource extends EntityDtoResource {
 		return FacadeProvider.getEventFacade().getDeletedUuidsSince(new Date(since));
 	}
 
+	/**
+	 * 
+	 * @param criteriaWithSorting
+	 *            - The criteria object inside criteriaWithSorting cannot be null. Use an empty criteria instead.
+	 * @param offset
+	 * @param size
+	 * @return
+	 */
 	@POST
 	@Path("/indexList")
 	public Page<EventIndexDto> getIndexList(

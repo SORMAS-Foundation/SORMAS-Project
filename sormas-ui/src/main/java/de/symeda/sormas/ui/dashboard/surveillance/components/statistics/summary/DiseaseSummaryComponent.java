@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.dashboard.surveillance.components.statistics.summary;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -25,6 +26,9 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 	// "Contacts converted to cases"
 	private final DiseaseSummaryElementComponent contactsConvertedToCase;
 
+	// Cases for which Reference definition is Fulfilled
+	private DiseaseSummaryElementComponent casesWithReferenceDefinitionFulfilled;
+
 	public DiseaseSummaryComponent() {
 		fatalitiesSummaryElementComponent = new FatalitiesSummaryElementComponent();
 		addComponent(fatalitiesSummaryElementComponent);
@@ -47,6 +51,11 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 		contactsConvertedToCase = new DiseaseSummaryElementComponent(Strings.headingCasesResultingFromContacts);
 		addComponent(contactsConvertedToCase);
 
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			casesWithReferenceDefinitionFulfilled = new DiseaseSummaryElementComponent(Strings.headingcasesWithReferenceDefinitionFulfilled);
+			addComponent(casesWithReferenceDefinitionFulfilled);
+		}
+
 		addStyleName(CssStyles.VSPACE_TOP_4);
 	}
 
@@ -63,5 +72,8 @@ public class DiseaseSummaryComponent extends DashboardStatisticsSubComponent {
 		casesInQuarantineByDate.updateTotalLabel(dashboardDataProvider.getCasesInQuarantineCount().toString());
 		casesPlacedInQuarantineByDate.updateTotalLabel(dashboardDataProvider.getCasesPlacedInQuarantineCount().toString());
 		contactsConvertedToCase.updateTotalLabel(dashboardDataProvider.getContactsConvertedToCaseCount().toString());
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			casesWithReferenceDefinitionFulfilled.updateTotalLabel(dashboardDataProvider.getCaseWithReferenceDefinitionFulfilledCount().toString());
+		}
 	}
 }

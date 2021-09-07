@@ -12,11 +12,9 @@ import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 
-import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -36,18 +34,18 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -100,7 +98,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.ONLY_CASES_WITH_EVENTS,
 			CaseCriteria.ONLY_CONTACTS_FROM_OTHER_INSTANCES,
 			CaseCriteria.ONLY_CASES_WITH_REINFECTION,
-			CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS)
+			CaseCriteria.INCLUDE_CASES_FROM_OTHER_JURISDICTIONS,
+			CaseCriteria.ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION)
 		+ filterLocsCss(
 			VSPACE_3,
 			CaseCriteria.ONLY_ENTITIES_NOT_SHARED_WITH_EXTERNAL_SURV_TOOL,
@@ -329,6 +328,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CaseCriteria.ONLY_CASES_WITH_REINFECTION,
 					I18nProperties.getCaption(Captions.caseFilterCasesWithReinfection),
 					I18nProperties.getDescription(Descriptions.descCaseFilterCasesWithReinfection),
+					CssStyles.CHECKBOX_FILTER_INLINE));
+
+			addField(
+				moreFiltersContainer,
+				CheckBox.class,
+				FieldConfiguration.withCaptionAndStyle(
+					CaseCriteria.ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION,
+					I18nProperties.getCaption(Captions.caseFilterOnlyCasesWithFulfilledReferenceDefinition),
+					I18nProperties.getDescription(Descriptions.descCaseFilterOnlyCasesWithFulfilledReferenceDefinition),
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
@@ -770,23 +778,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
 			criteria.dateFilterOption(dateFilterOption);
 		} else {
-			if (dateFilterOption == DateFilterOption.DATE) {
-				Notification notification = new Notification(
-					I18nProperties.getString(Strings.headingMissingDateFilter),
-					I18nProperties.getString(Strings.messageMissingDateFilter),
-					Notification.Type.WARNING_MESSAGE,
-					false);
-				notification.setDelayMsec(-1);
-				notification.show(Page.getCurrent());
-			} else {
-				Notification notification = new Notification(
-					I18nProperties.getString(Strings.headingMissingEpiWeekFilter),
-					I18nProperties.getString(Strings.messageMissingEpiWeekFilter),
-					Notification.Type.WARNING_MESSAGE,
-					false);
-				notification.setDelayMsec(-1);
-				notification.show(Page.getCurrent());
-			}
+			weekAndDateFilter.setNotificationsForMissingFilters();
 		}
 	}
 

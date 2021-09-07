@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,13 +31,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.CountryReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -118,11 +122,13 @@ public class PersonDto extends PseudonymizableDto {
 	@Required
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String firstName;
 	@Outbreaks
 	@Required
 	@PersonalData(mandatoryField = true)
 	@SensitiveData(mandatoryField = true)
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String lastName;
 	@HideForCountriesExcept
 	@PersonalData
@@ -130,28 +136,36 @@ public class PersonDto extends PseudonymizableDto {
 	private Salutation salutation;
 	@PersonalData
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String otherSalutation;
 	@PersonalData
 	@SensitiveData
 	@HideForCountriesExcept
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String birthName;
 	@PersonalData
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String nickname;
 	@PersonalData
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String mothersName;
 	@PersonalData
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String mothersMaidenName;
 	@PersonalData
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String fathersName;
 	@PersonalData
 	@SensitiveData
 	@HideForCountriesExcept
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String namesOfGuardians;
 	@Outbreaks
+	@Required
 	private Sex sex;
 	@Outbreaks
 	@PersonalData
@@ -193,6 +207,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.CONGENITAL_RUBELLA })
 	@HideForCountries
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String placeOfBirthFacilityDetails;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
@@ -209,6 +224,7 @@ public class PersonDto extends PseudonymizableDto {
 	private CauseOfDeath causeOfDeath;
 	private Disease causeOfDeathDisease;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String causeOfDeathDetails;
 	@Diseases({
 		Disease.AFP,
@@ -230,6 +246,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String deathPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -253,6 +270,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String burialPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -267,25 +285,32 @@ public class PersonDto extends PseudonymizableDto {
 	private BurialConductor burialConductor;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Valid
 	private LocationDto address;
 
 	private EducationType educationType;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String educationDetails;
 
 	private OccupationType occupationType;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String occupationDetails;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private ArmedForcesRelationType armedForcesRelationType;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String passportNumber;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String nationalHealthId;
 	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+	@Valid
 	private List<LocationDto> addresses = new ArrayList<>();
 	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+	@Valid
 	private List<PersonContactDetailDto> personContactDetails = new ArrayList<>();
 
 	@Diseases(Disease.CORONAVIRUS)
@@ -300,9 +325,12 @@ public class PersonDto extends PseudonymizableDto {
 	private SymptomJournalStatus symptomJournalStatus;
 	@SensitiveData
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String externalId;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 
 	@HideForCountriesExcept
@@ -312,6 +340,7 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	private CountryReferenceDto citizenship;
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String additionalDetails;
 
 	@SuppressWarnings("serial")
@@ -331,6 +360,13 @@ public class PersonDto extends PseudonymizableDto {
 		PersonDto person = new PersonDto();
 		person.setUuid(DataHelper.createUuid());
 		person.setAddress(LocationDto.build());
+		return person;
+	}
+
+	public static PersonDto buildImportEntity() {
+
+		PersonDto person = build();
+		person.setSex(Sex.UNKNOWN);
 		return person;
 	}
 

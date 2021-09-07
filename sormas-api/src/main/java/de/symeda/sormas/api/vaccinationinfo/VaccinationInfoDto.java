@@ -17,12 +17,15 @@ package de.symeda.sormas.api.vaccinationinfo;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
@@ -73,6 +76,7 @@ public class VaccinationInfoDto extends EntityDto {
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
 	@Outbreaks
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String vaccinationDoses;
 
 	@Diseases({
@@ -127,6 +131,7 @@ public class VaccinationInfoDto extends EntityDto {
 
 	@Diseases({
 		Disease.CORONAVIRUS })
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String otherVaccineName;
 
 	@Diseases({
@@ -135,6 +140,7 @@ public class VaccinationInfoDto extends EntityDto {
 
 	@Diseases({
 		Disease.CORONAVIRUS, })
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String otherVaccineManufacturer;
 
 	@Diseases({
@@ -149,6 +155,7 @@ public class VaccinationInfoDto extends EntityDto {
 		Disease.ANTHRAX,
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String vaccineInn;
 
 	@Diseases({
@@ -163,6 +170,7 @@ public class VaccinationInfoDto extends EntityDto {
 		Disease.ANTHRAX,
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String vaccineBatchNumber;
 
 	@Diseases({
@@ -177,6 +185,7 @@ public class VaccinationInfoDto extends EntityDto {
 		Disease.ANTHRAX,
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String vaccineUniiCode;
 
 	@Diseases({
@@ -191,6 +200,7 @@ public class VaccinationInfoDto extends EntityDto {
 		Disease.ANTHRAX,
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
+	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String vaccineAtcCode;
 
 	public static VaccinationInfoDto build() {

@@ -29,6 +29,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
@@ -41,13 +42,13 @@ public class EventImportLayout extends AbstractImportLayout {
 
 		ImportFacade importFacade = FacadeProvider.getImportFacade();
 
-		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Event_Import_Guide.pdf"), new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Event_Import_Guide.pdf"));
 		addDownloadImportTemplateComponent(2, importFacade.getEventImportTemplateFilePath(), importFacade.getEventImportTemplateFileName());
 		addImportCsvComponent(3, new ImportReceiver("_event_import_", file -> {
 			resetDownloadErrorReportButton();
 
 			try {
-				EventImporter importer = new EventImporter(file, true, currentUser);
+				EventImporter importer = new EventImporter(file, true, currentUser, (ValueSeparator) separator.getValue());
 				importer.startImport(EventImportLayout.this::extendDownloadErrorReportButton, currentUI, true);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(

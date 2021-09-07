@@ -29,14 +29,15 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -71,12 +72,12 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 	protected static final String REQUESTED_ADDITIONAL_TESTS_READ_LOC = "requestedAdditionalTestsReadLoc";
 
 	//@formatter:off
-   protected static final String SAMPLE_COMMON_HTML_LAYOUT =
-                    fluidRowLocs(SampleDto.UUID, SampleDto.REPORTING_USER) +
+    protected static final String SAMPLE_COMMON_HTML_LAYOUT =
+            fluidRowLocs(SampleDto.UUID, SampleDto.REPORTING_USER) +
                     fluidRowLocs(SampleDto.SAMPLE_PURPOSE) +
                     fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL) +
                     fluidRowLocs("", SampleDto.SAMPLE_MATERIAL_TEXT) +
-					fluidRowLocs(SampleDto.SAMPLING_REASON, SampleDto.SAMPLING_REASON_DETAILS) +
+                    fluidRowLocs(SampleDto.SAMPLING_REASON, SampleDto.SAMPLING_REASON_DETAILS) +
                     fluidRowLocs(SampleDto.SAMPLE_SOURCE, "") +
                     fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, "") +
                     fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS) +
@@ -135,7 +136,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		addDateField(SampleDto.SHIPMENT_DATE, DateField.class, 7);
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
 		addField(SampleDto.RECEIVED_DATE, DateField.class);
-		final ComboBox lab = addField(SampleDto.LAB, ComboBox.class);
+		final ComboBox lab = addInfrastructureField(SampleDto.LAB);
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
 		final TextField labDetails = addField(SampleDto.LAB_DETAILS, TextField.class);
 		labDetails.setVisible(false);
@@ -151,7 +152,8 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SHIPPED, CheckBox.class);
 		addField(SampleDto.RECEIVED, CheckBox.class);
 
-		addField(SampleDto.PATHOGEN_TEST_RESULT, ComboBox.class);
+		ComboBox testResultField = addField(SampleDto.PATHOGEN_TEST_RESULT, ComboBox.class);
+		testResultField.removeItem(PathogenTestResultType.NOT_DONE);
 
 		addFields(SampleDto.SAMPLING_REASON, SampleDto.SAMPLING_REASON_DETAILS);
 		FieldHelper.setVisibleWhen(
@@ -194,11 +196,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			Arrays.asList(true),
 			Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION),
 			true);
-		FieldHelper.setRequiredWhen(
-			getFieldGroup(),
-			receivedField,
-			Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.SPECIMEN_CONDITION),
-			Arrays.asList(true));
+		FieldHelper.setRequiredWhen(getFieldGroup(), receivedField, Arrays.asList(SampleDto.SPECIMEN_CONDITION), Arrays.asList(true));
 
 		if (disease != Disease.NEW_INFLUENZA) {
 			getField(SampleDto.SAMPLE_SOURCE).setVisible(false);
@@ -219,7 +217,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 				Arrays.asList(true),
 				Arrays.asList(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS),
 				true);
-			FieldHelper.setRequiredWhen(getFieldGroup(), shippedField, Arrays.asList(SampleDto.SHIPMENT_DATE), Arrays.asList(true));
 			FieldHelper.setRequiredWhen(
 				getFieldGroup(),
 				SampleDto.SAMPLE_PURPOSE,
