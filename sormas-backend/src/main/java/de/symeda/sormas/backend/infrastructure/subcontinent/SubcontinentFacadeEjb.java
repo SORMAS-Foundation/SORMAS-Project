@@ -38,6 +38,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -216,6 +217,13 @@ public class SubcontinentFacadeEjb implements SubcontinentFacade {
 	@Override
 	public List<String> getAllUuids() {
 		return subcontinentService.getAllUuids();
+	}
+
+	@Override
+	public Page<SubcontinentIndexDto> getIndexPage(SubcontinentCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<SubcontinentIndexDto> subcontinentIndexList = getIndexList(criteria, offset, size, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(subcontinentIndexList, offset, size, totalElementCount);
 	}
 
 	@Override

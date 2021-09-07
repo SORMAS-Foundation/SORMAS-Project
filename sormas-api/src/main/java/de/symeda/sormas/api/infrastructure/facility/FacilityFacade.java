@@ -24,9 +24,11 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface FacilityFacade extends InfrastructureBaseFacade<FacilityDto, FacilityIndexDto, FacilityReferenceDto, FacilityCriteria> {
@@ -73,6 +75,8 @@ public interface FacilityFacade extends InfrastructureBaseFacade<FacilityDto, Fa
 	Map<String, String> getCommunityUuidsForFacilities(List<FacilityReferenceDto> facilities);
 
 	List<FacilityReferenceDto> getByExternalIdAndType(String id, FacilityType type, boolean includeArchivedEntities);
+
+	Page<FacilityIndexDto> getIndexPage(FacilityCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Integer first, Integer max);
 }
