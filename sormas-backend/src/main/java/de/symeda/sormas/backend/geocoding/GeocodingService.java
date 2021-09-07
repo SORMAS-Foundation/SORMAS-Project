@@ -131,7 +131,7 @@ public class GeocodingService {
 		Object jsonLatitude = null;
 		Object jsonLongitude = null;
 		// read values as object, than parse to double
-		// JsonPath.read sometimes returns Integer that can't be converted to double, @see #6506
+		// JsonPath.read sometimes returns Integer that can't be casted to double, @see #6506
 		try {
 			jsonLatitude = JsonPath.read(responseText, configFacade.getGeocodingLatitudeJsonPath());
 			Double latitude = jsonLatitude != null ? Double.parseDouble(jsonLatitude.toString()) : null;
