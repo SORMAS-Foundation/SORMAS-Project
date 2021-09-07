@@ -243,9 +243,9 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 		if (criteria.getMeansOfImmunization() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.MEANS_OF_IMMUNIZATION), criteria.getMeansOfImmunization()));
 		}
-		if (criteria.getManagementStatus() != null) {
+		if (criteria.getImmunizationManagementStatus() != null) {
 			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS), criteria.getManagementStatus()));
+				.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS), criteria.getImmunizationManagementStatus()));
 		}
 		if (criteria.getImmunizationStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_STATUS), criteria.getImmunizationStatus()));

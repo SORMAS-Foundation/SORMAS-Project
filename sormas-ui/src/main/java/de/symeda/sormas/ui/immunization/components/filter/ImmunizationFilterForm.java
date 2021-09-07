@@ -71,7 +71,7 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 			ImmunizationCriteria.BIRTHDATE_MM,
 			ImmunizationCriteria.BIRTHDATE_DD,
 			ImmunizationCriteria.MEANS_OF_IMMUNIZATION,
-			ImmunizationCriteria.MANAGEMENT_STATUS,
+			ImmunizationCriteria.IMMUNIZATION_MANAGEMENT_STATUS,
 			ImmunizationCriteria.IMMUNIZATION_STATUS };
 	}
 
@@ -106,7 +106,7 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 
 		addFields(
 			FieldConfiguration.pixelSized(ImmunizationCriteria.MEANS_OF_IMMUNIZATION, 140),
-			FieldConfiguration.pixelSized(ImmunizationCriteria.MANAGEMENT_STATUS, 140),
+			FieldConfiguration.pixelSized(ImmunizationCriteria.IMMUNIZATION_MANAGEMENT_STATUS, 140),
 			FieldConfiguration.pixelSized(ImmunizationCriteria.IMMUNIZATION_STATUS, 140));
 	}
 
