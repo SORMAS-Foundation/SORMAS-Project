@@ -68,7 +68,7 @@
     <string name="action_markAllAsRead">Označit vše jako přečtené</string>
     <string name="action_new">Nové</string>
     <string name="action_new_case">Nový případ</string>
-    <string name="action_new_immunization">New Immunization</string>
+    <string name="action_new_immunization">Nová imunizace</string>
     <string name="action_new_campaign_form_data">Nová data formuláře kampaně</string>
     <string name="action_new_contact">Nový kontakt</string>
     <string name="action_new_event">Nová udalost</string>
@@ -133,6 +133,7 @@
     <string name="caption_case_samples">Vzorky případu</string>
     <string name="caption_case_tasks">Úkoly případu</string>
     <string name="caption_case_events">Události případu</string>
+    <string name="caption_case_immunizations">Imunizace případu</string>
     <string name="caption_case_treatments">Léčba</string>
     <string name="caption_case_similarity_create">Vytvořit nový případ</string>
     <string name="caption_changed_data_lost">Změněná data ztracená při opětovné synchronizaci.</string>
@@ -148,6 +149,7 @@
     <string name="caption_contact_tasks">Kontaktní úkoly</string>
     <string name="caption_contact_epidemiological_data">Epidemiologické informace</string>
     <string name="caption_contact_visits">Následné informace</string>
+    <string name="caption_contact_immunizations">Imunizace kontaktu</string>
     <string name="caption_converted_to_case">Převedeno na Případ</string>
     <string name="caption_date_of_birth">Datum narození (rok / měsíc / den)</string>
     <string name="caption_date_of_sampling">Datum odběru vzorků</string>
@@ -160,6 +162,7 @@
     <string name="caption_event_period">Datum události</string>
     <string name="caption_event_information">Informace o události</string>
     <string name="caption_event_participants">Zapojené osoby</string>
+    <string name="caption_event_participant_immunizations">Immunizace účastníků akce</string>
     <string name="caption_event_tasks">Úkoly událostí</string>
     <string name="caption_executed_by">Provedl</string>
     <string name="caption_facility_or_home">Místo pobytu</string>
