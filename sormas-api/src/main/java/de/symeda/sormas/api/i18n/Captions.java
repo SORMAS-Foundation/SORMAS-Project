@@ -2138,6 +2138,7 @@ public interface Captions {
 	String Task_taskPriority = "Task.taskPriority";
 	String Task_taskStatus = "Task.taskStatus";
 	String Task_taskType = "Task.taskType";
+	String Task_travelEntry = "Task.travelEntry";
 	String taskActiveTasks = "taskActiveTasks";
 	String taskAllTasks = "taskAllTasks";
 	String taskArchivedTasks = "taskArchivedTasks";

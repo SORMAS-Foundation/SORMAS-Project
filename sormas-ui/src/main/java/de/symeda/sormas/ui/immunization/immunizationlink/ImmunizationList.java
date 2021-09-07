@@ -52,11 +52,8 @@ public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
 
 	private void addEditButton(ImmunizationListEntry listEntry) {
 		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
 			listEntry.addEditListener(
 				(Button.ClickListener) event -> ControllerProvider.getImmunizationController()
 					.navigateToImmunization(listEntry.getImmunizationEntry().getUuid()));
-		}
-
 	}
 }

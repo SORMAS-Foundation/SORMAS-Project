@@ -51,7 +51,7 @@ public enum TaskType {
 	QUARANTINE_ORDER_SEND(TaskContext.CASE, TaskContext.CONTACT),
 	VACCINATION_ACTIVITIES(TaskContext.EVENT, TaskContext.CASE),
 	ANIMAL_DEPOPULATION(TaskContext.EVENT, TaskContext.CASE),
-	OTHER(true, TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.GENERAL),
+	OTHER(true, TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.GENERAL, TaskContext.TRAVEL_ENTRY),
 	DAILY_REPORT_GENERATION(TaskContext.GENERAL),
 	SURVEILLANCE_REPORT_GENERATION(TaskContext.GENERAL),
 	WEEKLY_REPORT_GENERATION(TaskContext.GENERAL);

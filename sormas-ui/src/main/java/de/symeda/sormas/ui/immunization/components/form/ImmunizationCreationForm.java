@@ -132,11 +132,11 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		ComboBox responsibleRegion = addField(ImmunizationDto.RESPONSIBLE_REGION);
+		ComboBox responsibleRegion = addInfrastructureField(ImmunizationDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
-		ComboBox responsibleDistrictCombo = addField(ImmunizationDto.RESPONSIBLE_DISTRICT);
+		ComboBox responsibleDistrictCombo = addInfrastructureField(ImmunizationDto.RESPONSIBLE_DISTRICT);
 		responsibleDistrictCombo.setRequired(true);
-		ComboBox responsibleCommunityCombo = addField(ImmunizationDto.RESPONSIBLE_COMMUNITY);
+		ComboBox responsibleCommunityCombo = addInfrastructureField(ImmunizationDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunityCombo.setNullSelectionAllowed(true);
 		responsibleCommunityCombo.addStyleName(SOFT_REQUIRED);
 

@@ -902,11 +902,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		ComboBox responsibleRegion = addField(CaseDataDto.RESPONSIBLE_REGION);
+		ComboBox responsibleRegion = addInfrastructureField(CaseDataDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
-		responsibleDistrict = addField(CaseDataDto.RESPONSIBLE_DISTRICT);
+		responsibleDistrict = addInfrastructureField(CaseDataDto.RESPONSIBLE_DISTRICT);
 		responsibleDistrict.setRequired(true);
-		responsibleCommunity = addField(CaseDataDto.RESPONSIBLE_COMMUNITY);
+		responsibleCommunity = addInfrastructureField(CaseDataDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunity.setNullSelectionAllowed(true);
 		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 

@@ -139,7 +139,7 @@ public class TravelEntryDto extends PseudonymizableDto {
 	}
 
 	public TravelEntryReferenceDto toReference() {
-		return new TravelEntryReferenceDto(getUuid(), getPerson().getCaption(), getExternalId());
+		return new TravelEntryReferenceDto(getUuid(), getExternalId(), getPerson().getFirstName(), getPerson().getLastName());
 	}
 
 	public PersonReferenceDto getPerson() {
