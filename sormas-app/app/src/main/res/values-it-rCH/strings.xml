@@ -133,6 +133,7 @@
     <string name="caption_case_samples">Campioni test</string>
     <string name="caption_case_tasks">Attività dei casi</string>
     <string name="caption_case_events">Eventi Caso</string>
+    <string name="caption_case_immunizations">Case Immunizations</string>
     <string name="caption_case_treatments">Trattamenti</string>
     <string name="caption_case_similarity_create">Crea nuovo caso</string>
     <string name="caption_changed_data_lost">Dati modificati persi durante la ri-sincronizzazione.</string>
@@ -148,6 +149,7 @@
     <string name="caption_contact_tasks">Attivita di contatto</string>
     <string name="caption_contact_epidemiological_data">Dati epidemiologici</string>
     <string name="caption_contact_visits">Informazioni addizionali</string>
+    <string name="caption_contact_immunizations">Contact Immunizations</string>
     <string name="caption_converted_to_case">Convertito in caso</string>
     <string name="caption_date_of_birth">Data di nascita (anno/mese /giorno)</string>
     <string name="caption_date_of_sampling">Data del campionamento</string>
@@ -160,6 +162,7 @@
     <string name="caption_event_period">Data dell\'evento</string>
     <string name="caption_event_information">Informazioni evento</string>
     <string name="caption_event_participants">Persone coinvolte</string>
+    <string name="caption_event_participant_immunizations">Event participant Immunizations</string>
     <string name="caption_event_tasks">Attività Evento</string>
     <string name="caption_executed_by">Eseguito da</string>
     <string name="caption_facility_or_home">Luogo di soggiorno</string>
