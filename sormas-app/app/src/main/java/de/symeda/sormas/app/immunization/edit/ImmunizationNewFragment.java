@@ -15,11 +15,11 @@
 
 package de.symeda.sormas.app.immunization.edit;
 
-import android.view.View;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import android.view.View;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -109,7 +109,7 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 
 		immunizationStatusList = DataUtils.getEnumItems(ImmunizationStatus.class, true);
 		meansOfImmunizationList = DataUtils.getEnumItems(MeansOfImmunization.class, true);
-		immunizationManagementStatusList = DataUtils.getEnumItems(ImmunizationManagementStatus.class, true);
+		immunizationManagementStatusList = DataUtils.getEnumItems(ImmunizationManagementStatus.class, false);
 
 		initialResponsibleRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
 		initialResponsibleDistricts = InfrastructureDaoHelper.loadDistricts(record.getResponsibleRegion());
@@ -163,6 +163,7 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		// Initialize ControlSpinnerFields
 		contentBinding.immunizationDisease.initializeSpinner(diseaseList);
 		contentBinding.immunizationImmunizationStatus.initializeSpinner(immunizationStatusList);
+		contentBinding.immunizationImmunizationStatus.setEnabled(false);
 		contentBinding.immunizationImmunizationManagementStatus.initializeSpinner(immunizationManagementStatusList);
 		contentBinding.immunizationMeansOfImmunization.initializeSpinner(meansOfImmunizationList);
 
@@ -239,7 +240,7 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.immunizationNumberOfDoses.setVisibility(View.GONE);
 
 		if (!(record.getHealthFacility() == null
-				|| (record.getHealthFacility() != null && FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())))) {
+			|| (record.getHealthFacility() != null && FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())))) {
 			final FacilityType facilityType = record.getFacilityType();
 			if (facilityType != null) {
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());

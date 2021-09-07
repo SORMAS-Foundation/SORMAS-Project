@@ -15,9 +15,9 @@
 
 package de.symeda.sormas.app.immunization.edit;
 
-import android.view.View;
-
 import java.util.List;
+
+import android.view.View;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -27,7 +27,6 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
@@ -41,8 +40,6 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
-
-import static android.view.View.GONE;
 
 public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizationEditLayoutBinding, Immunization, Immunization> {
 
@@ -88,8 +85,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		return getResources().getString(R.string.caption_immunization_information);
 	}
 
-
-
 	@Override
 	protected void prepareFragmentData() {
 		record = getActivityRootData();
@@ -101,7 +96,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		}
 		immunizationStatusList = DataUtils.getEnumItems(ImmunizationStatus.class, true);
 		meansOfImmunizationList = DataUtils.getEnumItems(MeansOfImmunization.class, true);
-		immunizationManagementStatusList = DataUtils.getEnumItems(ImmunizationManagementStatus.class, true);
+		immunizationManagementStatusList = DataUtils.getEnumItems(ImmunizationManagementStatus.class, false);
 
 		countries = InfrastructureDaoHelper.loadCountries();
 		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
@@ -151,12 +146,14 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	@Override
 	public void onAfterLayoutBinding(final FragmentImmunizationEditLayoutBinding contentBinding) {
 
-		InfrastructureDaoHelper
-				.initializeHealthFacilityDetailsFieldVisibility(contentBinding.immunizationHealthFacility, contentBinding.immunizationHealthFacilityDetails);
+		InfrastructureDaoHelper.initializeHealthFacilityDetailsFieldVisibility(
+			contentBinding.immunizationHealthFacility,
+			contentBinding.immunizationHealthFacilityDetails);
 
 		// Initialize ControlSpinnerFields
 		contentBinding.immunizationDisease.initializeSpinner(diseaseList);
 		contentBinding.immunizationImmunizationStatus.initializeSpinner(immunizationStatusList);
+		contentBinding.immunizationImmunizationStatus.setEnabled(false);
 		contentBinding.immunizationImmunizationManagementStatus.initializeSpinner(immunizationManagementStatusList);
 		contentBinding.immunizationMeansOfImmunization.initializeSpinner(meansOfImmunizationList);
 
