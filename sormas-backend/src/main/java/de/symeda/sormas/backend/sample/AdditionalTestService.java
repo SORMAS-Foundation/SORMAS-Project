@@ -42,7 +42,7 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		CriteriaQuery<AdditionalTest> cq = cb.createQuery(getElementClass());
 		Root<AdditionalTest> from = cq.from(getElementClass());
 
-		Predicate filter = createActiveSamplesFilter(cb,from);
+		Predicate filter = createActiveSamplesFilter(cb, from);
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
@@ -66,7 +66,7 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<AdditionalTest> from = cq.from(getElementClass());
-		Predicate filter = createActiveSamplesFilter(cb,from);
+		Predicate filter = createActiveSamplesFilter(cb, from);
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
@@ -94,7 +94,6 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		return resultList;
 	}
 
-
 	/**
 	 * Creates a filter that excludes all samples that are {@link CoreAdo#deleted} or associated with
 	 * cases that are {@link Case#archived}, contacts that are {@link Contact#deleted}. or event participants that are
@@ -106,11 +105,9 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		Join<Sample, Contact> contact = sample.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
 		Join<Sample, EventParticipant> event = sample.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
 		Predicate pred =
-				cb.or(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(contact.get(Contact.DELETED)), cb.isFalse(event.get(EventParticipant.DELETED)));
+			cb.or(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(contact.get(Contact.DELETED)), cb.isFalse(event.get(EventParticipant.DELETED)));
 		return cb.and(pred, cb.isFalse(sample.get(Sample.DELETED)));
 	}
-
-
 
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
@@ -140,5 +137,11 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		cd.where(root.get(AdditionalTest.UUID).in(additionalTestUuids));
 
 		em.createQuery(cd).executeUpdate();
+	}
+
+	@Override
+	public void delete(AdditionalTest deleteme) {
+		em.remove(em.contains(deleteme) ? deleteme : em.merge(deleteme));
+		em.flush();
 	}
 }

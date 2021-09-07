@@ -57,9 +57,8 @@ public class AdditionalTestController {
 
 	public void openEditComponent(AdditionalTestDto dto, Runnable callback) {
 
-		AdditionalTestDto newDto = FacadeProvider.getAdditionalTestFacade().getByUuid(dto.getUuid());
 		AdditionalTestForm form = new AdditionalTestForm(FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()), false);
-		form.setValue(newDto);
+		form.setValue(dto);
 		final CommitDiscardWrapperComponent<AdditionalTestForm> component =
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_EDIT), form.getFieldGroup());
 
