@@ -206,6 +206,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 					break;
 				case ActionDto.TITLE:
 					expression = cb.lower(action.get(sortProperty.propertyName));
+					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
