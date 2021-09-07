@@ -52,12 +52,7 @@ fi
 #AS_JAVA_NATIVE='C:\zulu-11'
 #AS_JAVA_NATIVE='/opt/zulu-11'
 
-# Temporal workaround: Do not use newer version than 5.194 for developers to avoid redeployment issue, see https://github.com/hzi-braunschweig/SORMAS-Project/issues/2511
-if [[ ${DEV_SYSTEM} != true ]]; then
-	PAYARA_VERSION=5.2020.2
-else
-	PAYARA_VERSION=5.194
-fi
+PAYARA_VERSION=5.2021.6
 
 if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
 	LINUX=true
@@ -318,7 +313,7 @@ read -p "Database setup completed. Please check the output for any error. Press 
 
 # Setting ASADMIN_CALL and creating domain
 echo "Creating domain for Payara..."
-"${PAYARA_HOME}/bin/asadmin" create-domain --domaindir "${DOMAINS_HOME}" --portbase "${PORT_BASE}" --nopassword --template ${PAYARA_HOME}/glassfish/common/templates/gf/production-domain.jar "${DOMAIN_NAME}"
+"${PAYARA_HOME}/bin/asadmin" create-domain --domaindir "${DOMAINS_HOME}" --portbase "${PORT_BASE}" --nopassword "${DOMAIN_NAME}"
 ASADMIN="${PAYARA_HOME}/bin/asadmin --port ${PORT_ADMIN}"
 
 if [[ ${LINUX} = true ]]; then
@@ -340,11 +335,14 @@ done
 echo "Configuring domain..."
 
 # General domain settings
-${ASADMIN} delete-jvm-options -Xms2g
-${ASADMIN} delete-jvm-options -Xmx2g
+${ASADMIN} delete-jvm-options '-client'
+${ASADMIN} delete-jvm-options -Xmx512m
 ${ASADMIN} create-jvm-options -Xmx${DOMAIN_XMX}
-${ASADMIN} set configs.config.server-config.admin-service.das-config.autodeploy-enabled=true
-${ASADMIN} set configs.config.server-config.admin-service.das-config.dynamic-reload-enabled=true
+${ASADMIN} create-jvm-options '-XX\:+IgnoreUnrecognizedVMOptions'
+${ASADMIN} create-system-properties --target server-config fish.payara.classloading.delegate=false
+${ASADMIN} get configs.config.server-config.ejb-container.max-pool-size
+${ASADMIN} set configs.config.server-config.ejb-container.max-pool-size=128
+${ASADMIN} set configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size=50
 
 # JDBC pool
 ${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --maxpoolsize ${DB_JDBC_MAXPOOLSIZE} --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
