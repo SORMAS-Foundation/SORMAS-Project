@@ -114,7 +114,7 @@
                     app:value="@={data.testDateTime}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.InfrastructureSpinnerField
                     android:id="@+id/pathogenTest_lab"
                     app:required="true"
                     app:value="@={data.lab}"

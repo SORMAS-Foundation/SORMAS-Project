@@ -14,7 +14,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -22,6 +24,8 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.task.Task;
+import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -32,6 +36,8 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 
 	@EJB
 	private UserService userService;
+	@EJB
+	private TaskService taskService;
 
 	public TravelEntryService() {
 		super(TravelEntry.class);
@@ -174,5 +180,25 @@ public class TravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 
 	public boolean isTravelEntryEditAllowed(TravelEntry travelEntry) {
 		return userService.hasRight(UserRight.TRAVEL_ENTRY_EDIT) && inJurisdictionOrOwned(travelEntry);
+	}
+
+	@Override
+	public void delete(TravelEntry travelEntry) {
+
+		// Delete all tasks associated with this travel entry
+		List<Task> tasks = taskService.findBy(
+			new TaskCriteria().travelEntry(
+				new TravelEntryReferenceDto(
+					travelEntry.getUuid(),
+					travelEntry.getExternalId(),
+					travelEntry.getPerson().getFirstName(),
+					travelEntry.getPerson().getLastName())),
+			true);
+		for (Task task : tasks) {
+			taskService.delete(task);
+		}
+
+		// Mark the travel entry as deleted
+		super.delete(travelEntry);
 	}
 }

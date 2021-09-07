@@ -15,6 +15,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.caselink.CaseListComponent;
 import de.symeda.sormas.ui.contact.contactlink.ContactListComponent;
 import de.symeda.sormas.ui.events.eventParticipantLink.EventParticipantListComponent;
@@ -108,7 +109,8 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 
 		TravelEntryListComponent.addTravelEntryListComponent(layout, getReference());
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
 			ImmunizationListComponent.addImmunizationListComponent(layout, getReference());
 		}
 	}

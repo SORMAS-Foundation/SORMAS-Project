@@ -278,6 +278,7 @@ public interface Strings {
 	String errorReadingTemplate = "errorReadingTemplate";
 	String errorSetFeverRequired = "errorSetFeverRequired";
 	String errorSormasToSormasAccept = "errorSormasToSormasAccept";
+	String errorSormasToSormasAcceptNotPending = "errorSormasToSormasAcceptNotPending";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
@@ -286,6 +287,7 @@ public interface Strings {
 	String errorSormasToSormasInvalidRequestMethod = "errorSormasToSormasInvalidRequestMethod";
 	String errorSormasToSormasLoadShares = "errorSormasToSormasLoadShares";
 	String errorSormasToSormasOwnershipAlreadyHandedOver = "errorSormasToSormasOwnershipAlreadyHandedOver";
+	String errorSormasToSormasRejectNotPending = "errorSormasToSormasRejectNotPending";
 	String errorSormasToSormasRequestToken = "errorSormasToSormasRequestToken";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
 	String errorSormasToSormasRevokeNotPending = "errorSormasToSormasRevokeNotPending";
@@ -1124,6 +1126,7 @@ public interface Strings {
 	String notificationTaskAssociatedCaseLink = "notificationTaskAssociatedCaseLink";
 	String notificationTaskAssociatedContactLink = "notificationTaskAssociatedContactLink";
 	String notificationTaskAssociatedEventLink = "notificationTaskAssociatedEventLink";
+	String notificationTaskAssociatedTravelEntryLink = "notificationTaskAssociatedTravelEntryLink";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";
 	String notificationTaskStartGeneral = "notificationTaskStartGeneral";
