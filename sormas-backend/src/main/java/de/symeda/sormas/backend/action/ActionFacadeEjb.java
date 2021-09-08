@@ -204,14 +204,14 @@ public class ActionFacadeEjb implements ActionFacade {
 		Integer size,
 		List<SortProperty> sortProperties) {
 		List<EventActionIndexDto> eventActionIndexList = getEventActionList(criteria, offset, size, sortProperties);
-		long totalElementCount = countEventAction(criteria);
+		long totalElementCount = countEventActions(criteria);
 		return new Page<>(eventActionIndexList, offset, size, totalElementCount);
 
 	}
 
 	public Page<ActionDto> getActionPage(ActionCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
 		List<ActionDto> actionList = getActionList(criteria, offset, size, sortProperties);
-		long totalElementCount = countAction(criteria);
+		long totalElementCount = countActions(criteria);
 		return new Page<>(actionList, offset, size, totalElementCount);
 	}
 
@@ -221,12 +221,12 @@ public class ActionFacadeEjb implements ActionFacade {
 	}
 
 	@Override
-	public long countEventAction(EventCriteria criteria) {
+	public long countEventActions(EventCriteria criteria) {
 		return actionService.countEventActions(criteria);
 	}
 
 	@Override
-	public long countAction(ActionCriteria criteria) {
+	public long countActions(ActionCriteria criteria) {
 		return actionService.countActions(criteria);
 	}
 

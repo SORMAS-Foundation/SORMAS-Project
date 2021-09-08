@@ -58,7 +58,7 @@ public interface ActionFacade {
 
 	List<EventActionExportDto> getEventActionExportList(EventCriteria criteria, Integer first, Integer max);
 
-	long countEventAction(EventCriteria criteria);
+	long countEventActions(EventCriteria criteria);
 
-	long countAction(ActionCriteria criteria);
+	long countActions(ActionCriteria criteria);
 }
