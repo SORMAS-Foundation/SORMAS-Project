@@ -33,13 +33,13 @@ public class ExternalDataUtil {
 			ExternalDataDto externalDataUpdate = externalDataDtoMap.get(externalDataEntity.getUuid());
 			if (StringUtils.isNotBlank(externalDataEntity.getExternalId()) && StringUtils.isNotBlank(externalDataUpdate.getExternalId())) {
 				throw new ExternalDataUpdateException(String.format("Entity with uuid %s already has externalId", externalDataEntity.getUuid()));
-			} else if (externalDataUpdate.getExternalId() != null) {
+			} else if (StringUtils.isNotBlank(externalDataUpdate.getExternalId())) {
 				externalDataEntity.setExternalId(externalDataUpdate.getExternalId());
 			}
 
 			if (StringUtils.isNotBlank(externalDataEntity.getExternalToken()) && StringUtils.isNotBlank(externalDataUpdate.getExternalToken())) {
 				throw new ExternalDataUpdateException(String.format("Entity with uuid %s already has externalToken", externalDataEntity.getUuid()));
-			} else if (externalDataUpdate.getExternalToken() != null) {
+			} else if (StringUtils.isNotBlank(externalDataUpdate.getExternalToken())) {
 				externalDataEntity.setExternalToken(externalDataUpdate.getExternalToken());
 			}
 
