@@ -124,7 +124,6 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 
-	@Required
 	private Date startDate;
 	private Date endDate;
 	private Integer numberOfDoses;
