@@ -15,12 +15,12 @@
 
 package de.symeda.sormas.app.immunization.edit;
 
-import java.util.List;
-
 import android.view.View;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
@@ -54,7 +54,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	private List<Item> initialDistricts;
 	private List<Item> initialCommunities;
 	private List<Item> initialFacilities;
-	private List<Item> facilityOrHomeList;
+	private List<Item> facilityTypeList;
 	private List<Item> facilityTypeGroupList;
 	private List<Item> countries;
 
@@ -105,8 +105,8 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		initialFacilities =
 			InfrastructureDaoHelper.loadFacilities(record.getResponsibleDistrict(), record.getResponsibleCommunity(), record.getFacilityType());
 
-		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.FOR_CASES, true);
-		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
+		facilityTypeGroupList = DataUtils.toItems(Arrays.asList(FacilityTypeGroup.values()), true);
+		facilityTypeList = record.getFacilityType() != null ? DataUtils.toItems(FacilityType.getTypes(record.getFacilityType().getFacilityTypeGroup())) : null;
 	}
 
 	@Override
@@ -127,20 +127,16 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			initialCommunities,
 			record.getResponsibleCommunity(),
 			null,
-			facilityOrHomeList,
+			null,
 			contentBinding.facilityTypeGroup,
 			facilityTypeGroupList,
 			contentBinding.immunizationFacilityType,
-			null,
+			facilityTypeList,
 			contentBinding.immunizationHealthFacility,
 			initialFacilities,
 			record.getHealthFacility(),
 			contentBinding.immunizationHealthFacilityDetails,
-			null,
-			null,
-			null,
-			false,
-			() -> false);
+			false);
 	}
 
 	@Override
@@ -215,6 +211,12 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
 			}
 		}
+//
+//		contentBinding.facilityTypeGroup.addValueChangedListener(e -> {
+//			contentBinding.immunizationFacilityType.setSpinnerData(				e.getValue() != null
+//					? FacilityType.getTypes((FacilityTypeGroup) e.getValue())
+//					: Arrays.stream(FacilityType.values()).collect(Collectors.toList()));
+//		});
 	}
 
 	@Override
