@@ -272,9 +272,8 @@
 			<dependency>
 				<groupId>org.glassfish.soteria</groupId>
 				<artifactId>javax.security.enterprise</artifactId>
-				<version>1.0</version>
+				<version>1.1-b01.payara-p4</version>
 				<scope>provided</scope>
-				<!-- Avoid problems with finding the dependencies in Maven repos fixed by Payara -->
 			</dependency>
 
 			<dependency>
@@ -1210,6 +1209,13 @@
 			<name>Open Source Geospatial Foundation Repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
+
+		<repository>
+			<id>payara-patched-externals</id>
+			<name>Payara Patched Externals</name>
+			<url>https://raw.github.com/payara/Payara_PatchedProjects/master</url>
+		</repository>
+
 		<repository>
 			<!-- this repo is readOnly since 2021 and only listed for older artifacts that may not be found elsewhere -->
 			<id>bintray</id>

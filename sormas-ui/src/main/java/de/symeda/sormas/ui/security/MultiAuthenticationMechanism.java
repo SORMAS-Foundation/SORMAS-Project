@@ -69,9 +69,9 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 	private final static Logger logger = LoggerFactory.getLogger(MultiAuthenticationMechanism.class);
 
-	private String authenticationProvider;
+	private final String authenticationProvider;
 
-	private HttpAuthenticationMechanism authenticationMechanism;
+	private final HttpAuthenticationMechanism authenticationMechanism;
 
 	private static final String UNDEFINED = "undefined";
 
@@ -93,7 +93,6 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 		authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
 		if (authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
 			try {
-				openIdAuthenticationMechanism.setConfiguration(new DefaultOpenIdAuthenticationDefinition());
 				authenticationMechanism = openIdAuthenticationMechanism;
 			} catch (IllegalArgumentException e) {
 				logger.warn("Undefined KEYCLOAK configuration. Configure the properties or disable the KEYCLOAK authentication provider.");

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,30 +17,9 @@
  */
 package de.symeda.sormas.ui.security;
 
-import com.nimbusds.jose.Algorithm;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.user.UserDto;
-import fish.payara.security.openid.OpenIdCredential;
-import fish.payara.security.openid.api.OpenIdConstant;
-import fish.payara.security.openid.controller.TokenController;
-import fish.payara.security.openid.controller.UserInfoController;
-import fish.payara.security.openid.domain.AccessTokenImpl;
-import fish.payara.security.openid.domain.IdentityTokenImpl;
-import fish.payara.security.openid.domain.OpenIdConfiguration;
-import fish.payara.security.openid.domain.OpenIdContextImpl;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.json.JsonObject;
-import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
-import javax.security.enterprise.identitystore.CredentialValidationResult;
-import javax.security.enterprise.identitystore.IdentityStore;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -49,8 +28,31 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
+import javax.security.enterprise.identitystore.CredentialValidationResult;
+import javax.security.enterprise.identitystore.IdentityStore;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jwt.JWTClaimsSet;
+
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.user.UserDto;
+import fish.payara.security.openid.OpenIdCredential;
+import fish.payara.security.openid.api.OpenIdConstant;
+import fish.payara.security.openid.controller.TokenController;
+import fish.payara.security.openid.domain.AccessTokenImpl;
+import fish.payara.security.openid.domain.IdentityTokenImpl;
+import fish.payara.security.openid.domain.OpenIdConfiguration;
+import fish.payara.security.openid.domain.OpenIdContextImpl;
 
 /**
  * Identity store validates the identity token & access token and returns the validation result with the caller name and groups.
@@ -71,47 +73,48 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 	private TokenController tokenController;
 
 	@Inject
-	private UserInfoController userInfoController;
+	private OpenIdConfiguration openIdConfiguration;
 
 	public CredentialValidationResult validate(OpenIdCredential credential) throws InvocationTargetException, IllegalAccessException {
 		HttpMessageContext httpContext = credential.getHttpContext();
-		OpenIdConfiguration configuration = credential.getConfiguration();
 		IdentityTokenImpl idToken = (IdentityTokenImpl) credential.getIdentityToken();
 
 		Algorithm idTokenAlgorithm = idToken.getTokenJWT().getHeader().getAlgorithm();
 
-		Map<String, Object> idTokenClaims;
+		JWTClaimsSet idTokenClaims;
 		if (isNull(context.getIdentityToken())) {
-			idTokenClaims = tokenController.validateIdToken(idToken, httpContext, configuration);
+			idTokenClaims = tokenController.validateIdToken(idToken, httpContext);
 		} else {
 			// If an ID Token is returned as a result of a token refresh request
-			idTokenClaims = tokenController.validateRefreshedIdToken(context.getIdentityToken(), idToken, httpContext, configuration);
+			idTokenClaims = tokenController.validateRefreshedIdToken(context.getIdentityToken(), idToken);
 		}
 		if (idToken.isEncrypted()) {
-			idToken.setClaims(idTokenClaims);
+			idToken.withClaims(idTokenClaims);
 		}
 		context.setIdentityToken(idToken);
 
 		AccessTokenImpl accessToken = (AccessTokenImpl) credential.getAccessToken();
 		if (nonNull(accessToken)) {
 			Map<String, Object> accessTokenClaims =
-				tokenController.validateAccessToken(accessToken, idTokenAlgorithm, context.getIdentityToken().getClaims(), configuration);
+				tokenController.validateAccessToken(accessToken, idTokenAlgorithm, context.getIdentityToken().getClaims());
 			if (accessToken.isEncrypted()) {
 				accessToken.setClaims(accessTokenClaims);
 			}
 
 			context.setAccessToken(accessToken);
-			JsonObject userInfo = userInfoController.getUserInfo(configuration, accessToken);
-			context.setClaims(userInfo);
+			//TODO: remove  this when tested it works
+//	should now be automatically taken from the configuration or access token
+//			JsonObject userInfo = userInfoController.getUserInfo(openIdConfiguration, accessToken);
+//			context.setClaims(userInfo);
 		}
 
-		context.setCallerName(getCallerName(configuration));
+		context.setCallerName(getCallerName(openIdConfiguration));
 		UserDto user = FacadeProvider.getUserFacade().getByUserName(context.getCallerName());
 		Set<String> groups = getCallerGroups(user);
 		setGroups(groups);
 		updateLocale(accessToken, user);
 
-		return new CredentialValidationResult(getCallerName(configuration),	groups);
+		return new CredentialValidationResult(getCallerName(openIdConfiguration),	groups);
 	}
 
 	private void updateLocale(AccessTokenImpl accessToken, UserDto userDto) {
@@ -153,6 +156,7 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 	 * @param groups user groups
 	 */
 	private void setGroups(Set<String> groups) throws InvocationTargetException, IllegalAccessException {
+		//TODO: remove unneeded reflection workaround
 		for (Method method : context.getClass().getMethods()) {
 			if (StringUtils.equals(method.getName(), "setCallerGroups")) {
 				Parameter[] parameters = method.getParameters();

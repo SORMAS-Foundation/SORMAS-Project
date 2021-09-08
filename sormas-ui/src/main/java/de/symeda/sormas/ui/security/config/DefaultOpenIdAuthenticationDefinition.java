@@ -19,6 +19,7 @@
 package de.symeda.sormas.ui.security.config;
 
 import fish.payara.security.annotations.ClaimsDefinition;
+import fish.payara.security.annotations.LogoutDefinition;
 import fish.payara.security.annotations.OpenIdAuthenticationDefinition;
 import fish.payara.security.annotations.OpenIdProviderMetadata;
 import fish.payara.security.openid.api.DisplayType;
@@ -67,6 +68,11 @@ public class DefaultOpenIdAuthenticationDefinition implements OpenIdAuthenticati
 			}
 
 			@Override
+			public String endSessionEndpoint() {
+				return "";
+			}
+
+			@Override
 			public String jwksURI() {
 				return "";
 			}
@@ -90,6 +96,38 @@ public class DefaultOpenIdAuthenticationDefinition implements OpenIdAuthenticati
 			@Override
 			public String callerGroupsClaim() {
 				return OpenIdConstant.GROUPS;
+			}
+		};
+	}
+
+	@Override
+	public LogoutDefinition logout() {
+		//TODO: investigate how to configure logout for SORMAS when token expires
+		return new LogoutDefinition() {
+
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return LogoutDefinition.class;
+			}
+
+			@Override
+			public boolean notifyProvider() {
+				return false;
+			}
+
+			@Override
+			public String redirectURI() {
+				return "";
+			}
+
+			@Override
+			public boolean accessTokenExpiry() {
+				return false;
+			}
+
+			@Override
+			public boolean identityTokenExpiry() {
+				return false;
 			}
 		};
 	}
