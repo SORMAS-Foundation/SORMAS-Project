@@ -94,6 +94,7 @@ public class ImmunizationPickOrCreateDialog extends AbstractDialog {
 
 		immunizationCriteria.setResponsibleRegion(newImmunization.getResponsibleRegion());
 		immunizationCriteria.setDisease(newImmunization.getDisease());
+		immunizationCriteria.setMeansOfImmunization(newImmunization.getMeansOfImmunization());
 		this.criteria = new ImmunizationSimilarityCriteria();
 		this.criteria.setImmunizationCriteria(immunizationCriteria);
 		this.criteria.setPersonUuid(newImmunization.getPerson().getUuid());
