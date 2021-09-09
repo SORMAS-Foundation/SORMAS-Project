@@ -407,7 +407,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			} else {
 				VaadinUiUtil.showSimplePopupWindow(
 					I18nProperties.getString(Strings.headingNoCaseFound),
-					I18nProperties.getString(Strings.messageNoCaseFound));
+					I18nProperties.getString(Strings.messageNoCaseFoundToLinkImmunization));
 			}
 		};
 
