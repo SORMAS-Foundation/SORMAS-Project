@@ -44,6 +44,8 @@ import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentImmunizationEditLayoutBinding;
 import de.symeda.sormas.app.immunization.read.ImmunizationSearchCaseDialog;
 import de.symeda.sormas.app.util.DataUtils;
@@ -266,10 +268,8 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 
 					List<Case> cases = DatabaseHelper.getCaseDao().queryByCriteria(criteria, 0, 1);
 
+					if (cases != null && !cases.isEmpty() && cases.get(0)!= null){
 					Case foundCase = cases.get(0);
-
-					if (foundCase != null) {
-
 						immunization.setRelatedCase(foundCase);
 						List<Sample> samples = DatabaseHelper.getSampleDao().queryByCase(foundCase);
 						PathogenTest relevantPathogenTest = null;
@@ -305,6 +305,8 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 						}
 						final ImmunizationEditActivity activity = (ImmunizationEditActivity) ImmunizationEditFragment.this.getActivity();
 						activity.saveData();
+					}else {
+						NotificationHelper.showNotification(ImmunizationEditActivity.getActiveActivity(), NotificationType.WARNING, getString(R.string.message_no_Case_found_to_link_immunization));
 					}
 				}
 		);

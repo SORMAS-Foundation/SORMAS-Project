@@ -408,7 +408,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
-	public Boolean linkRecoveryImmunizationToCaseSearchCaseIncluded(String specificCaseSearchValue, ImmunizationDto immunization){
+	public Boolean linkRecoveryImmunizationToSearchedCase(String specificCaseSearchValue, ImmunizationDto immunization){
 
 		CaseCriteria criteria = new CaseCriteria();
 		criteria.setPerson(immunization.getPerson());
