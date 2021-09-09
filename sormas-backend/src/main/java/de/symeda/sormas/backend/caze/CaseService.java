@@ -424,8 +424,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> root = cq.from(Case.class);
 
-		Predicate filter =null;
-		if(caseCriteria!=null){
+		Predicate filter = null;
+		if (caseCriteria != null) {
 			final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
 			filter = createCriteriaFilter(caseCriteria, caseQueryContext);
 			// Userfilter
