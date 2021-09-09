@@ -1388,6 +1388,7 @@ public interface Captions {
 	String lineListingSharedInformation = "lineListingSharedInformation";
 	String linkEvent = "linkEvent";
 	String linkEventGroup = "linkEventGroup";
+	String linkImmunizationToCaseButton = "linkImmunizationToCaseButton";
 	String Location = "Location";
 	String Location_additionalInformation = "Location.additionalInformation";
 	String Location_addressType = "Location.addressType";
@@ -1479,6 +1480,7 @@ public interface Captions {
 	String numberOfCharacters = "numberOfCharacters";
 	String openInPatientDiaryButton = "openInPatientDiaryButton";
 	String openInSymptomJournalButton = "openInSymptomJournalButton";
+	String openLinkedCaseToImmunizationButton = "openLinkedCaseToImmunizationButton";
 	String options = "options";
 	String outbreakAffectedDistricts = "outbreakAffectedDistricts";
 	String outbreakNoOutbreak = "outbreakNoOutbreak";

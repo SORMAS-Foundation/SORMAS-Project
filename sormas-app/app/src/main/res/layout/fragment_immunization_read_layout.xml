@@ -30,6 +30,7 @@
             type="de.symeda.sormas.app.backend.immunization.Immunization" />
 
         <import type="de.symeda.sormas.api.immunization.MeansOfImmunization" />
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
     </data>
 
     <ScrollView
@@ -201,6 +202,16 @@
                 app:singleLine="false"
                 app:textArea="true"
                 app:value="@{data.additionalDetails}" />
+
+            <de.symeda.sormas.app.component.controls.ControlButton
+                android:id="@+id/open_linked_case"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlHalfMarginBottom"
+                android:text="@string/action_open_linked_case"
+                app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
+                app:rounded="true"
+                app:iconStart="@drawable/ic_open_case_black_24dp" />
 
         </LinearLayout>
     </ScrollView>
