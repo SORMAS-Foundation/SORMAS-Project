@@ -303,29 +303,36 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	}
 
 	private Predicate createDateFilter(CriteriaBuilder cb, Root<Immunization> from, ImmunizationSimilarityCriteria criteria) {
-		Date startDate = criteria.getStartDate();
-		Date endDate = criteria.getEndDate();
-
-		Predicate dateFilter = null;
+		final Date startDate = criteria.getStartDate();
+		final Date endDate = criteria.getEndDate();
 
 		if (startDate != null && endDate != null) {
-			dateFilter = cb.or(
-				cb.and(cb.isNull(from.get(Immunization.END_DATE)), cb.between(from.get(Immunization.START_DATE), startDate, endDate)),
-				cb.and(cb.isNull(from.get(Immunization.START_DATE)), cb.between(from.get(Immunization.END_DATE), startDate, endDate)),
+			return cb.or(
 				cb.and(
-					cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), startDate),
-					cb.lessThanOrEqualTo(from.get(Immunization.START_DATE), endDate)));
-		} else if (startDate != null) {
-			dateFilter = cb.or(
-				cb.and(cb.isNull(from.get(Immunization.END_DATE)), cb.greaterThanOrEqualTo(from.get(Immunization.START_DATE), startDate)),
-				cb.and(cb.isNull(from.get(Immunization.START_DATE)), cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), startDate)));
-		} else if (endDate != null) {
-			dateFilter = cb.or(
-				cb.and(cb.isNull(from.get(Immunization.START_DATE)), cb.lessThanOrEqualTo(from.get(Immunization.END_DATE), endDate)),
-				cb.and(cb.isNull(from.get(Immunization.END_DATE)), cb.lessThanOrEqualTo(from.get(Immunization.START_DATE), endDate)));
+					cb.isNull(from.get(Immunization.END_DATE)),
+					cb.isNotNull(from.get(Immunization.START_DATE)),
+					cb.between(from.get(Immunization.START_DATE), startDate, endDate)),
+				cb.and(
+					cb.isNull(from.get(Immunization.START_DATE)),
+					cb.isNotNull(from.get(Immunization.END_DATE)),
+					cb.between(from.get(Immunization.END_DATE), startDate, endDate)),
+				cb.and(cb.isNull(from.get(Immunization.START_DATE)), cb.isNull(from.get(Immunization.END_DATE))),
+				cb.and(
+					cb.or(cb.isNull(from.get(Immunization.END_DATE)), cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), startDate)),
+					cb.or(cb.isNull(from.get(Immunization.START_DATE)), cb.lessThanOrEqualTo(from.get(Immunization.START_DATE), endDate))));
+		} else if (startDate != null && endDate == null) {
+			return cb.or(
+				cb.isNull(from.get(Immunization.END_DATE)),
+				cb.and(cb.isNotNull(from.get(Immunization.END_DATE)), cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), startDate)),
+				cb.and(cb.isNull(from.get(Immunization.START_DATE)), cb.isNull(from.get(Immunization.END_DATE))));
+		} else if (endDate != null && startDate == null) {
+			return cb.or(
+				cb.isNull(from.get(Immunization.START_DATE)),
+				cb.and(cb.isNotNull(from.get(Immunization.START_DATE)), cb.lessThanOrEqualTo(from.get(Immunization.START_DATE), endDate)),
+				cb.and(cb.isNull(from.get(Immunization.START_DATE)), cb.isNull(from.get(Immunization.END_DATE))));
+		} else {
+			return cb.conjunction();
 		}
-
-		return dateFilter;
 	}
 
 	private <T> void buildWhereCondition(

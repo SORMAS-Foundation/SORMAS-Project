@@ -52,7 +52,7 @@ public class ImmunizationSimilarityCriteria extends BaseCriteria implements Clon
 		}
 	}
 
-	private ImmunizationSimilarityCriteria(Builder builder) {
+	public ImmunizationSimilarityCriteria(Builder builder) {
 		this.immunizationUuid = builder.immunizationUuid;
 		this.disease = builder.disease;
 		this.startDate = builder.startDate;
