@@ -225,6 +225,7 @@ public class ImmunizationController {
 			.withStartDate(immunizationDto.getStartDate())
 			.withEndDate(immunizationDto.getEndDate())
 			.withPerson(person.getUuid())
+			.withMeansOfImmunization(immunizationDto.getMeansOfImmunization())
 			.build();
 
 		List<ImmunizationDto> similarImmunizations = FacadeProvider.getImmunizationFacade().getSimilarImmunizations(criteria);
@@ -252,6 +253,7 @@ public class ImmunizationController {
 			.withStartDate(immunizationDto.getStartDate())
 			.withEndDate(immunizationDto.getEndDate())
 			.withPerson(immunizationDto.getPerson().getUuid())
+			.withMeansOfImmunization(immunizationDto.getMeansOfImmunization())
 			.build();
 
 		return FacadeProvider.getImmunizationFacade().getSimilarImmunizations(criteria);

@@ -358,7 +358,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
 	private void assertSimilarImmunizationsSize(int size, PersonDto person, Date startDate, Date endDate) {
 		final ImmunizationSimilarityCriteria.Builder builder =
-				new ImmunizationSimilarityCriteria.Builder().withDisease(Disease.ANTHRAX).withPerson(person.getUuid()).withStartDate(startDate).withEndDate(endDate);
+				new ImmunizationSimilarityCriteria.Builder().withDisease(Disease.ANTHRAX).withMeansOfImmunization(MeansOfImmunization.VACCINATION).withPerson(person.getUuid()).withStartDate(startDate).withEndDate(endDate);
 		final List<ImmunizationDto> similarImmunizations = getImmunizationFacade().getSimilarImmunizations(new ImmunizationSimilarityCriteria(builder));
 		assertEquals(size, similarImmunizations.size());
 	}
