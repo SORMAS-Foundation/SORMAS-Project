@@ -169,7 +169,7 @@
     <string name="caption_fatalities">Fatalité</string>
     <string name="caption_first_name">Prénom</string>
     <string name="caption_sex">Sexe</string>
-    <string name="caption_inadequate_specimen">Spécimen Inadéquat</string>
+    <string name="caption_inadequate_specimen">Spécimen non conforme</string>
     <string name="caption_indeterminate">Indéterminé</string>
     <string name="caption_informant_reports">Rapports d\'informateurs</string>
     <string name="caption_issued_on">Émis le </string>
@@ -587,7 +587,7 @@
     <string name="value_frequency_unknown">Fréquence N/A</string>
     <string name="value_sex_unknown">Sexe N/A</string>
     <string name="value_heart_rate_unknown">Rythme cardiaque N/A</string>
-    <string name="value_inadequate_specimen_condition">L\'état du spécimen n\'est pas adéquat</string>
+    <string name="value_inadequate_specimen_condition">L\'état du spécimen est non conforme</string>
     <string name="value_lab_unknown">Lab N/A</string>
     <string name="value_location_unknown">Emplacement N/A</string>
     <string name="value_missing_report">Rapport manquant</string>
