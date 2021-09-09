@@ -263,15 +263,6 @@
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.recoveryDate}" />
 
-<!--                <de.symeda.sormas.app.component.controls.ControlButton-->
-<!--                    android:id="@+id/immunization_link_case"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    app:buttonType="@{ControlButtonType.FILTER_PRIMARY}"-->
-<!--                    app:iconStart="@drawable/ic_format_list_bulleted_black_24dp"-->
-<!--                    app:rounded="true"-->
-<!--                    android:text="@string/action_show_classification_rules" />-->
-
                 <LinearLayout
                     android:id="@+id/task_buttons_panel"
                     android:layout_width="match_parent"
@@ -303,16 +294,6 @@
                         app:buttonType="@{ControlButtonType.LINE_PRIMARY}"
                         app:rounded="true"
                         app:iconStart="@drawable/ic_create_case_black_24dp"/>
-<!--                        app:userViewRight="@{UserRight.CASE_CREATE}" -->
-
-<!--                    <de.symeda.sormas.app.component.controls.ControlButton-->
-<!--                        android:id="@+id/open_resulting_case"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="@string/action_open_resulting_case"-->
-<!--                        app:buttonType="@{ControlButtonType.LINE_PRIMARY}"-->
-<!--                        app:rounded="true"-->
-<!--                        app:iconStart="@drawable/ic_open_case_black_24dp" />-->
 
                 </LinearLayout>
 

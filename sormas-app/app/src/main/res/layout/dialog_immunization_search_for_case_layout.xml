@@ -37,6 +37,7 @@
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/search_field"
+                app:caption="@string/caption_searchCase"
                 style="@style/ControlSingleColumnStyle" />
 
         </LinearLayout>
