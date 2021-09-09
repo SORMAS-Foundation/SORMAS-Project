@@ -104,7 +104,7 @@ public class ActivityAsCaseField extends AbstractTableField<ActivityAsCaseDto> {
 			return activityAsCase.getTypeOfPlace() != null
 				? TypeOfPlace.OTHER != activityAsCase.getTypeOfPlace()
 					? activityAsCase.getTypeOfPlace().toString()
-					: activityAsCase.getTypeOfPlaceDetails() != null ? activityAsCase.getActivityAsCaseTypeDetails() : TypeOfPlace.OTHER.toString()
+					: activityAsCase.getTypeOfPlaceDetails() != null ? activityAsCase.getTypeOfPlaceDetails() : TypeOfPlace.OTHER.toString()
 				: "";
 		});
 
