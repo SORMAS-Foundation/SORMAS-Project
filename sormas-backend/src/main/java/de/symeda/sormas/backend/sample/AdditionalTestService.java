@@ -138,10 +138,4 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 
 		em.createQuery(cd).executeUpdate();
 	}
-
-	@Override
-	public void delete(AdditionalTest deleteme) {
-		em.remove(em.contains(deleteme) ? deleteme : em.merge(deleteme));
-		em.flush();
-	}
 }
