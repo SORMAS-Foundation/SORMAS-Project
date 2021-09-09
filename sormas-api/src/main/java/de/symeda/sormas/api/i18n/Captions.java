@@ -1320,8 +1320,6 @@ public interface Captions {
 	String immunizationNoImmunizationsForPerson = "immunizationNoImmunizationsForPerson";
 	String immunizationOnlyPersonsWithOverdueImmunization = "immunizationOnlyPersonsWithOverdueImmunization";
 	String immunizationOverwriteImmunization = "immunizationOverwriteImmunization";
-	String linkImmunizationToCaseButton = "linkImmunizationToCaseButton";
-	String openLinkedCaseToImmunizationButton = "openLinkedCaseToImmunizationButton";
 	String importCancelImport = "importCancelImport";
 	String importDetailed = "importDetailed";
 	String importDownloadCaseImportTemplate = "importDownloadCaseImportTemplate";
@@ -1390,6 +1388,7 @@ public interface Captions {
 	String lineListingSharedInformation = "lineListingSharedInformation";
 	String linkEvent = "linkEvent";
 	String linkEventGroup = "linkEventGroup";
+	String linkImmunizationToCaseButton = "linkImmunizationToCaseButton";
 	String Location = "Location";
 	String Location_additionalInformation = "Location.additionalInformation";
 	String Location_addressType = "Location.addressType";
@@ -1481,6 +1480,7 @@ public interface Captions {
 	String numberOfCharacters = "numberOfCharacters";
 	String openInPatientDiaryButton = "openInPatientDiaryButton";
 	String openInSymptomJournalButton = "openInSymptomJournalButton";
+	String openLinkedCaseToImmunizationButton = "openLinkedCaseToImmunizationButton";
 	String options = "options";
 	String outbreakAffectedDistricts = "outbreakAffectedDistricts";
 	String outbreakNoOutbreak = "outbreakNoOutbreak";

@@ -18,11 +18,14 @@ package de.symeda.sormas.app.immunization.edit;
 import java.util.Date;
 import java.util.List;
 
+import android.text.Html;
 import android.view.View;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
@@ -306,7 +309,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 						final ImmunizationEditActivity activity = (ImmunizationEditActivity) ImmunizationEditFragment.this.getActivity();
 						activity.saveData();
 					}else {
-						NotificationHelper.showNotification(ImmunizationEditActivity.getActiveActivity(), NotificationType.WARNING, getString(R.string.message_no_Case_found_to_link_immunization));
+						NotificationHelper.showNotification(ImmunizationEditActivity.getActiveActivity(), NotificationType.WARNING, I18nProperties.getString(Strings.messageNoCaseFoundToLinkImmunization));
 					}
 				}
 		);
