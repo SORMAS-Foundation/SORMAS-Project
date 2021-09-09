@@ -93,7 +93,12 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)),
 			immunization.get(Immunization.DISEASE));
 
-		buildWhereCondition(criteria, cb, cq, immunizationQueryContext);
+		if (criteria != null) {
+			final Predicate criteriaFilter = buildCriteriaFilter(criteria, immunizationQueryContext);
+			if (criteriaFilter != null) {
+				cq.where(criteriaFilter);
+			}
+		}
 
 		cq.orderBy(cb.desc(immunization.get(Immunization.CHANGE_DATE)));
 
@@ -332,22 +337,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 				cb.and(cb.isNull(from.get(Immunization.START_DATE)), cb.isNull(from.get(Immunization.END_DATE))));
 		} else {
 			return cb.conjunction();
-		}
-	}
-
-	private <T> void buildWhereCondition(
-		ImmunizationCriteria criteria,
-		CriteriaBuilder cb,
-		CriteriaQuery<T> cq,
-		ImmunizationQueryContext<Immunization> immunizationQueryContext) {
-		Predicate filter = createUserFilter(immunizationQueryContext);
-		if (criteria != null) {
-			final Predicate criteriaFilter = buildCriteriaFilter(criteria, immunizationQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
 		}
 	}
 
