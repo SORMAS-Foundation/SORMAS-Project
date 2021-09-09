@@ -17,14 +17,6 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
-echo "Installing allure"
-sudo apt-add-repository ppa:qameta/allure
-sudo apt-get update
-sudo apt-get install allure
-echo "Checking allure version"
-allure --version
-
-
 echo "I was called with $# parameters"
 echo "I will run $1 times the tests"
 echo "Script started at:"
