@@ -95,8 +95,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		return getResources().getString(R.string.caption_immunization_information);
 	}
 
-
-
 	@Override
 	protected void prepareFragmentData() {
 		record = getActivityRootData();
@@ -108,7 +106,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		}
 		immunizationStatusList = DataUtils.getEnumItems(ImmunizationStatus.class, true);
 		meansOfImmunizationList = DataUtils.getEnumItems(MeansOfImmunization.class, true);
-		immunizationManagementStatusList = DataUtils.getEnumItems(ImmunizationManagementStatus.class, true);
+		immunizationManagementStatusList = DataUtils.getEnumItems(ImmunizationManagementStatus.class, false);
 
 		countries = InfrastructureDaoHelper.loadCountries();
 		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
@@ -159,12 +157,14 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	@Override
 	public void onAfterLayoutBinding(final FragmentImmunizationEditLayoutBinding contentBinding) {
 
-		InfrastructureDaoHelper
-				.initializeHealthFacilityDetailsFieldVisibility(contentBinding.immunizationHealthFacility, contentBinding.immunizationHealthFacilityDetails);
+		InfrastructureDaoHelper.initializeHealthFacilityDetailsFieldVisibility(
+			contentBinding.immunizationHealthFacility,
+			contentBinding.immunizationHealthFacilityDetails);
 
 		// Initialize ControlSpinnerFields
 		contentBinding.immunizationDisease.initializeSpinner(diseaseList);
 		contentBinding.immunizationImmunizationStatus.initializeSpinner(immunizationStatusList);
+		contentBinding.immunizationImmunizationStatus.setEnabled(false);
 		contentBinding.immunizationImmunizationManagementStatus.initializeSpinner(immunizationManagementStatusList);
 		contentBinding.immunizationMeansOfImmunization.initializeSpinner(meansOfImmunizationList);
 

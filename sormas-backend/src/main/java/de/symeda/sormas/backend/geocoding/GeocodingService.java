@@ -128,14 +128,26 @@ public class GeocodingService {
 			return null;
 		}
 
+		Object jsonLatitude = null;
+		Object jsonLongitude = null;
+		// read values as object, than parse to double
+		// JsonPath.read sometimes returns Integer that can't be casted to double, @see #6506
 		try {
-			Double latitude = JsonPath.read(responseText, configFacade.getGeocodingLatitudeJsonPath());
-			Double longitude = JsonPath.read(responseText, configFacade.getGeocodingLongitudeJsonPath());
+			jsonLatitude = JsonPath.read(responseText, configFacade.getGeocodingLatitudeJsonPath());
+			Double latitude = jsonLatitude != null ? Double.parseDouble(jsonLatitude.toString()) : null;
+			jsonLongitude = JsonPath.read(responseText, configFacade.getGeocodingLongitudeJsonPath());
+			Double longitude = jsonLongitude != null ? Double.parseDouble(jsonLongitude.toString()) : null;
 
 			return new GeoLatLon(latitude, longitude);
 		} catch (PathNotFoundException e) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("geosearch coordinates not found in '{}'" + responseText);
+			}
+
+			return null;
+		} catch (NumberFormatException e) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("geosearch coordinates can't be parsed: lat: {}, lon: {}", jsonLatitude, jsonLongitude);
 			}
 
 			return null;

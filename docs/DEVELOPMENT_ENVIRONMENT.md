@@ -46,6 +46,9 @@ If you plan to work on the Android App as well, you will also need the **Java 8 
 - Execute the `install` and `deploy-serverlibs` Ant scripts
 - Set the default working directory for run configurations by navigating to `Run -> Edit Configurations -> Templates -> Application` and setting `Working directory` to `$MODULE_WORKING_DIR$`
 
+#### Known issues
+- The first time you build the project in IntelliJ, you have to switch the java compiler to "Eclipse" to workarround a dependency resolution problem in sormas-api.
+
 ### Eclipse
 - Download and install the latest [Eclipse IDE for Enterprise Java and Web Developers](https://www.eclipse.org/downloads/packages)
 - Set the default JRE of Eclipse to the installed JDK: [Assigning the default JRE for the workbench](https://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Ftasks%2Ftask-assign_default_jre.htm)

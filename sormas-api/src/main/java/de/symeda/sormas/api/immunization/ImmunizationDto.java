@@ -49,45 +49,33 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "Immunization";
 
-	public static final String REPORT_DATE = "reportDate";
-	public static final String EXTERNAL_ID = "externalId";
-
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String COUNTRY = "country";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-
-	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
-	public static final String MEANS_OF_IMMUNIZATION_DETAILS = "meansOfImmunizationDetails";
-	public static final String MANAGEMENT_STATUS = "managementStatus";
-	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
-	public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
-
-	public static final String RESPONSIBLE_REGION = "responsibleRegion";
-	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
-	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
-
+	public static final String END_DATE = "endDate";
+	public static final String EXTERNAL_ID = "externalId";
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
-
-	public static final String START_DATE = "startDate";
-	public static final String END_DATE = "endDate";
-
-	public static final String NUMBER_OF_DOSES = "numberOfDoses";
-
-	public static final String REPORTING_USER = "reportingUser";
-	public static final String PREVIOUS_INFECTION = "previousInfection";
+	public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
+	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
 	public static final String LAST_INFECTION_DATE = "lastInfectionDate";
-	public static final String ADDITIONAL_DETAILS = "additionalDetails";
-
+	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
+	public static final String MEANS_OF_IMMUNIZATION_DETAILS = "meansOfImmunizationDetails";
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+	public static final String PERSON = "person";
 	public static final String POSITIVE_TEST_RESULT_DATE = "positiveTestResultDate";
+	public static final String PREVIOUS_INFECTION = "previousInfection";
 	public static final String RECOVERY_DATE = "recoveryDate";
-
+	public static final String REPORTING_USER = "reportingUser";
+	public static final String REPORT_DATE = "reportDate";
+	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String START_DATE = "startDate";
 	public static final String VALID_FROM = "validFrom";
 	public static final String VALID_UNTIL = "validUntil";
-
-	public static final String COUNTRY = "country";
-
-	public static final String PERSON = "person";
 
 	@Outbreaks
 	@Required
@@ -98,29 +86,37 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Required
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
+	@Required
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
 	private boolean archived;
+	@Required
 	private ImmunizationStatus immunizationStatus;
+	@Required
 	private MeansOfImmunization meansOfImmunization;
 	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@SensitiveData(mandatoryField = true)
 	private String meansOfImmunizationDetails;
 	private ImmunizationManagementStatus immunizationManagementStatus;
 	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@SensitiveData(mandatoryField = true)
 	private String externalId;
 
+	@Required
 	private RegionReferenceDto responsibleRegion;
+	@Required
 	private DistrictReferenceDto responsibleDistrict;
+	@PersonalData
+	@SensitiveData
 	private CommunityReferenceDto responsibleCommunity;
 	private CountryReferenceDto country;
 
-	@PersonalData(mandatoryField = true)
-	@SensitiveData(mandatoryField = true)
+	@PersonalData
+	@SensitiveData
 	private FacilityType facilityType;
 	@Outbreaks
-	@Required
-	@PersonalData(mandatoryField = true)
-	@SensitiveData(mandatoryField = true)
+	@PersonalData
+	@SensitiveData
 	private FacilityReferenceDto healthFacility;
 	@Outbreaks
 	@PersonalData
@@ -128,6 +124,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 
+	@Required
 	private Date startDate;
 	private Date endDate;
 	private Integer numberOfDoses;
@@ -135,6 +132,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	private Date lastInfectionDate;
 	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@SensitiveData
 	private String additionalDetails;
 
 	private Date positiveTestResultDate;
@@ -153,6 +151,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 		immunizationDto.setUuid(DataHelper.createUuid());
 		immunizationDto.setPerson(person);
 		immunizationDto.setReportDate(new Date());
+		immunizationDto.setImmunizationManagementStatus(ImmunizationManagementStatus.SCHEDULED);
 
 		return immunizationDto;
 	}

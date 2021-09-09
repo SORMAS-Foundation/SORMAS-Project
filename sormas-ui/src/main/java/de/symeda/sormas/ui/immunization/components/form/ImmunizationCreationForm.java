@@ -66,7 +66,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		+ fluidRowLocs(ImmunizationDto.DISEASE, ImmunizationDto.DISEASE_DETAILS)
 		+ fluidRowLocs(ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.MEANS_OF_IMMUNIZATION_DETAILS)
 		+ fluidRowLocs(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS)
-		+ fluidRowLocs(ImmunizationDto.MANAGEMENT_STATUS, ImmunizationDto.IMMUNIZATION_STATUS)
+		+ fluidRowLocs(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS, ImmunizationDto.IMMUNIZATION_STATUS)
 		+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.RESPONSIBLE_REGION, ImmunizationDto.RESPONSIBLE_DISTRICT, ImmunizationDto.RESPONSIBLE_COMMUNITY)
 		+ fluidRowLocs(FACILITY_TYPE_GROUP_LOC, ImmunizationDto.FACILITY_TYPE)
@@ -120,9 +120,11 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		CheckBox overwriteImmunizationManagementStatus = addCustomField(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS, Boolean.class, CheckBox.class);
 		overwriteImmunizationManagementStatus.addStyleName(VSPACE_3);
 
-		ComboBox managementStatusField = addCustomField(ImmunizationDto.MANAGEMENT_STATUS, ImmunizationManagementStatus.class, ComboBox.class);
+		ComboBox managementStatusField =
+			addCustomField(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS, ImmunizationManagementStatus.class, ComboBox.class);
 		managementStatusField.setValue(ImmunizationManagementStatus.SCHEDULED);
 		managementStatusField.setEnabled(false);
+		managementStatusField.setNullSelectionAllowed(false);
 
 		ComboBox immunizationStatusField = addCustomField(ImmunizationDto.IMMUNIZATION_STATUS, ImmunizationStatus.class, ComboBox.class);
 		immunizationStatusField.setValue(ImmunizationStatus.PENDING);
@@ -235,14 +237,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(
-			true,
-			ImmunizationDto.REPORT_DATE,
-			ImmunizationDto.MEANS_OF_IMMUNIZATION,
-			FACILITY_TYPE_GROUP_LOC,
-			ImmunizationDto.FACILITY_TYPE,
-			ImmunizationDto.HEALTH_FACILITY,
-			ImmunizationDto.START_DATE);
+		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.START_DATE);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -375,32 +370,31 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 			}
 			if (personDto != null) {
 				setVisible(
-						false,
-						PersonDto.FIRST_NAME,
-						PersonDto.LAST_NAME,
-						PersonDto.SEX,
-						PersonDto.NATIONAL_HEALTH_ID,
-						PersonDto.PASSPORT_NUMBER,
-						PersonDto.BIRTH_DATE_DD,
-						PersonDto.BIRTH_DATE_MM,
-						PersonDto.BIRTH_DATE_YYYY,
-						PersonDto.PRESENT_CONDITION,
-						PersonDto.PHONE,
-						PersonDto.EMAIL_ADDRESS
-						);
+					false,
+					PersonDto.FIRST_NAME,
+					PersonDto.LAST_NAME,
+					PersonDto.SEX,
+					PersonDto.NATIONAL_HEALTH_ID,
+					PersonDto.PASSPORT_NUMBER,
+					PersonDto.BIRTH_DATE_DD,
+					PersonDto.BIRTH_DATE_MM,
+					PersonDto.BIRTH_DATE_YYYY,
+					PersonDto.PRESENT_CONDITION,
+					PersonDto.PHONE,
+					PersonDto.EMAIL_ADDRESS);
 				setReadOnly(
-						false,
-						PersonDto.FIRST_NAME,
-						PersonDto.LAST_NAME,
-						PersonDto.SEX,
-						PersonDto.NATIONAL_HEALTH_ID,
-						PersonDto.PASSPORT_NUMBER,
-						PersonDto.BIRTH_DATE_DD,
-						PersonDto.BIRTH_DATE_MM,
-						PersonDto.BIRTH_DATE_YYYY,
-						PersonDto.PRESENT_CONDITION,
-						PersonDto.PHONE,
-						PersonDto.EMAIL_ADDRESS);
+					false,
+					PersonDto.FIRST_NAME,
+					PersonDto.LAST_NAME,
+					PersonDto.SEX,
+					PersonDto.NATIONAL_HEALTH_ID,
+					PersonDto.PASSPORT_NUMBER,
+					PersonDto.BIRTH_DATE_DD,
+					PersonDto.BIRTH_DATE_MM,
+					PersonDto.BIRTH_DATE_YYYY,
+					PersonDto.PRESENT_CONDITION,
+					PersonDto.PHONE,
+					PersonDto.EMAIL_ADDRESS);
 			} else {
 				setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 			}
@@ -489,7 +483,8 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 	@Override
 	public ImmunizationDto getValue() {
 		ImmunizationDto immunizationDto = super.getValue();
-		immunizationDto.setImmunizationManagementStatus((ImmunizationManagementStatus) getField(ImmunizationDto.MANAGEMENT_STATUS).getValue());
+		immunizationDto
+			.setImmunizationManagementStatus((ImmunizationManagementStatus) getField(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS).getValue());
 		immunizationDto.setImmunizationStatus((ImmunizationStatus) getField(ImmunizationDto.IMMUNIZATION_STATUS).getValue());
 		return immunizationDto;
 	}

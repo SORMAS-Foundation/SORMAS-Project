@@ -28,12 +28,14 @@ import javax.ejb.Stateless;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.user.User;
@@ -94,6 +96,15 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		List<Outbreak> result = outbreakService
 			.queryByCriteria(new OutbreakCriteria().district(districtRef).disease(disease).active(true), null, Outbreak.DISTRICT, true);
 		return result.stream().map(OutbreakFacadeEjb::toDto).findFirst().orElse(null);
+	}
+
+	public Page<OutbreakDto> getIndexPage(OutbreakCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<OutbreakDto> activeOutbreaksList = outbreakService.queryByCriteria(criteria, offset, size, sortProperties)
+			.stream()
+			.map(OutbreakFacadeEjb::toDto)
+			.collect(Collectors.toList());
+		long totalElementCount = outbreakService.countByCriteria(criteria, null);
+		return new Page<>(activeOutbreaksList, offset, size, totalElementCount);
 	}
 
 	@Override

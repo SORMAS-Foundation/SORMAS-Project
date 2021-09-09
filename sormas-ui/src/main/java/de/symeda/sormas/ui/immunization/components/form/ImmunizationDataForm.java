@@ -72,7 +72,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(ImmunizationDto.DISEASE, ImmunizationDto.DISEASE_DETAILS)
 		+ fluidRowLocs(ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.MEANS_OF_IMMUNIZATION_DETAILS)
 		+ fluidRowLocs(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS)
-		+ fluidRowLocs(ImmunizationDto.MANAGEMENT_STATUS, ImmunizationDto.IMMUNIZATION_STATUS)
+		+ fluidRowLocs(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS, ImmunizationDto.IMMUNIZATION_STATUS)
 		+ fluidRowLocs(ImmunizationDto.PREVIOUS_INFECTION, ImmunizationDto.LAST_INFECTION_DATE)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY))
 		+ fluidRowLocs(ImmunizationDto.ADDITIONAL_DETAILS)
@@ -129,12 +129,11 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		CheckBox overwriteImmunizationManagementStatus = addCustomField(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS, Boolean.class, CheckBox.class);
 		overwriteImmunizationManagementStatus.addStyleName(VSPACE_3);
 
-		ComboBox managementStatusField = addCustomField(ImmunizationDto.MANAGEMENT_STATUS, ImmunizationManagementStatus.class, ComboBox.class);
-		managementStatusField.setValue(ImmunizationManagementStatus.SCHEDULED);
+		ComboBox managementStatusField = addField(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS, ComboBox.class);
+		managementStatusField.setNullSelectionAllowed(false);
 		managementStatusField.setEnabled(false);
 
-		ComboBox immunizationStatusField = addCustomField(ImmunizationDto.IMMUNIZATION_STATUS, ImmunizationStatus.class, ComboBox.class);
-		immunizationStatusField.setValue(ImmunizationStatus.PENDING);
+		ComboBox immunizationStatusField = addField(ImmunizationDto.IMMUNIZATION_STATUS, ComboBox.class);
 		immunizationStatusField.setEnabled(false);
 
 		addField(ImmunizationDto.PREVIOUS_INFECTION, NullableOptionGroup.class);
@@ -221,15 +220,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(
-			true,
-			ImmunizationDto.REPORT_DATE,
-			ImmunizationDto.DISEASE,
-			ImmunizationDto.MEANS_OF_IMMUNIZATION,
-			FACILITY_TYPE_GROUP_LOC,
-			ImmunizationDto.FACILITY_TYPE,
-			ImmunizationDto.HEALTH_FACILITY,
-			ImmunizationDto.START_DATE);
+		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.DISEASE, ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.START_DATE);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -260,8 +251,6 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			MeansOfImmunization meansOfImmunization = (MeansOfImmunization) valueChangeEvent.getProperty().getValue();
 			if (MeansOfImmunization.RECOVERY.equals(meansOfImmunization) || MeansOfImmunization.OTHER.equals(meansOfImmunization)) {
 				managementStatusField.setValue(ImmunizationManagementStatus.COMPLETED);
-			} else {
-				managementStatusField.setValue(ImmunizationManagementStatus.SCHEDULED);
 			}
 			boolean isVaccinationVisible = shouldShowVaccinationFields(meansOfImmunization);
 			vaccinationHeadingLabel.setVisible(isVaccinationVisible);
