@@ -80,6 +80,8 @@
     <string name="action_open_prescription">Open Prescription</string>
     <string name="action_open_resulting_case">Open Resulting Case</string>
     <string name="action_open_source_case">Open Source Case</string>
+    <string name="action_open_linked_case">Open Linked Case</string>
+    <string name="action_link_case">Link Case</string>
     <string name="action_open_syncLog">Synchronization conflicts</string>
     <string name="action_options">Options</string>
     <string name="action_pick_gps">Pick current GPS for address</string>
@@ -238,6 +240,7 @@
     <string name="caption_immunization_information">Immunization details</string>
     <string name="caption_new_immunization">New Immunization</string>
     <string name="caption_overwrite_immunization_management_status">Overwrite immunization management status</string>
+    <string name="caption_searchCase">Search case</string>
     <string name="confirmation_action">Are you sure you want to do this?</string>
     <string name="confirmation_delete">Are you sure you want to delete this record?</string>
     <string name="confirmation_pick_gps">Are you in this place right now?</string>
@@ -394,6 +397,7 @@
     <string name="heading_campaign_form_data_summary">Campaign Data Summary</string>
     <string name="heading_campaign_form_meta_select">Select Campaign Form</string>
     <string name="heading_case_place_of_stay">Place of stay</string>
+    <string name="heading_search_for_case">Search specific case</string>
     <string name="hint_add_to_empty_list">Add a new entry by pressing the \"+\" symbol in the top right.</string>
     <string name="hint_clear">Clear</string>
     <string name="hint_create_pin">Please choose a four-digit PIN which you will use to authenticate yourself whenever you open the SORMAS app.</string>
