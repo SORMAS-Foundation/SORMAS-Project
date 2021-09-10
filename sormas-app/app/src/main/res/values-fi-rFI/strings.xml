@@ -80,6 +80,8 @@
     <string name="action_open_prescription">Avaa Lääkemääräys</string>
     <string name="action_open_resulting_case">Avaa tartunnan saanut potilas</string>
     <string name="action_open_source_case">Avaa tartuttava potilas</string>
+    <string name="action_open_linked_case">Open Linked Case</string>
+    <string name="action_link_case">Link Case</string>
     <string name="action_open_syncLog">Synkronisointi ristiriitoja</string>
     <string name="action_options">Valinnat</string>
     <string name="action_pick_gps">Poimi nykyiset GPS-koordinaatit osoitteeksi</string>
@@ -238,6 +240,7 @@
     <string name="caption_immunization_information">Immunization details</string>
     <string name="caption_new_immunization">New Immunization</string>
     <string name="caption_overwrite_immunization_management_status">Overwrite immunization management status</string>
+    <string name="caption_searchCase">Search case</string>
     <string name="confirmation_action">Haluatko varmasti tehdä tämän?</string>
     <string name="confirmation_delete">Oletko varma, että haluat poistaa tämän tietueen?</string>
     <string name="confirmation_pick_gps">Oletteko tässä paikassa juuri nyt?</string>
@@ -394,6 +397,7 @@
     <string name="heading_campaign_form_data_summary">Campaign Data Summary</string>
     <string name="heading_campaign_form_meta_select">Select Campaign Form</string>
     <string name="heading_case_place_of_stay">Place of stay</string>
+    <string name="heading_search_for_case">Search specific case</string>
     <string name="hint_add_to_empty_list">Lisää uusi merkintä painamalla \"+\" symbolia oikeassa yläkulmassa.</string>
     <string name="hint_clear">Tyhjennä</string>
     <string name="hint_create_pin">Valitse neljänumeroinen PIN jota käytät vahvistamaan itsesi, kun avaat SORMAS-sovelluksen.</string>
