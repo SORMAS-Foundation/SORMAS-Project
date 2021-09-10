@@ -80,6 +80,8 @@
     <string name="action_open_prescription">Apri prescrizione</string>
     <string name="action_open_resulting_case">Apri caso risultato</string>
     <string name="action_open_source_case">Aprire il caso originale</string>
+    <string name="action_open_linked_case">Open Linked Case</string>
+    <string name="action_link_case">Link Case</string>
     <string name="action_open_syncLog">Conflitti di sincronizzazione</string>
     <string name="action_options">Opzioni</string>
     <string name="action_pick_gps">Registrare le coordinate GPS per questo indirizzo</string>
@@ -238,6 +240,7 @@
     <string name="caption_immunization_information">Immunization details</string>
     <string name="caption_new_immunization">New Immunization</string>
     <string name="caption_overwrite_immunization_management_status">Overwrite immunization management status</string>
+    <string name="caption_searchCase">Search case</string>
     <string name="confirmation_action">Sei sicuro?</string>
     <string name="confirmation_delete">Vuoi davvero cancellare questa registrazione?</string>
     <string name="confirmation_pick_gps">Siete in questo posto in questo momento?</string>
@@ -394,6 +397,7 @@
     <string name="heading_campaign_form_data_summary">Campaign Data Summary</string>
     <string name="heading_campaign_form_meta_select">Select Campaign Form</string>
     <string name="heading_case_place_of_stay">Place of stay</string>
+    <string name="heading_search_for_case">Search specific case</string>
     <string name="hint_add_to_empty_list">Aggiungi una nuova voce premendo il simbolo \"+\" in alto a destra.</string>
     <string name="hint_clear">Elimina tutto</string>
     <string name="hint_create_pin">Scegli un PIN a quattro cifre che utilizzerai per autenticarti ogni volta che apri l\'app SORMAS.</string>
