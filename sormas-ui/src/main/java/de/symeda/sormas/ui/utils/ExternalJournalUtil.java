@@ -104,8 +104,7 @@ public class ExternalJournalUtil {
 		};
 		// TODO: implement cancel for PIA
 		Button.ClickListener cancelListener = clickEvent -> {
-			VaadinUiUtil.showWarningPopup(I18nProperties.getString(Strings.messageDeletionUnsupportedByExternalJournalWarning));
-			ediaryButton.setPopupVisible(false);
+			showForceDeletionPrompt(I18nProperties.getString(Strings.messageDeletionUnsupportedByExternalJournalWarning), person);
 		};
 		Button cancelButton =
 			ButtonHelper.createButton(I18nProperties.getCaption(Captions.cancelExternalFollowUpButton), cancelListener, ValoTheme.BUTTON_PRIMARY);
@@ -234,7 +233,7 @@ public class ExternalJournalUtil {
 			showPatientDiaryResultPopup(result, I18nProperties.getCaption(Captions.patientDiaryCancelError));
 			SormasUI.refreshView();
 		} else {
-			showForceDeletionPrompt(result, personDto);
+			showForceDeletionPrompt(result.getMessage(), personDto);
 		}
 	}
 
@@ -307,9 +306,9 @@ public class ExternalJournalUtil {
 		popupWindow.setWidth(400, Sizeable.Unit.PIXELS);
 	}
 
-	private static void showForceDeletionPrompt(PatientDiaryResult result, PersonDto person) {
+	private static void showForceDeletionPrompt(String errorMessage, PersonDto person) {
 
-		HorizontalLayout errorLayout = VaadinUiUtil.createErrorComponent(result.getMessage());
+		HorizontalLayout errorLayout = VaadinUiUtil.createErrorComponent(errorMessage);
 		Label forceDeletionQuestion = new Label(I18nProperties.getString(Strings.promptExternalJournalForceDeletion));
 		forceDeletionQuestion.setWidth(500, Sizeable.Unit.PIXELS);
 		errorLayout.addComponent(forceDeletionQuestion);
