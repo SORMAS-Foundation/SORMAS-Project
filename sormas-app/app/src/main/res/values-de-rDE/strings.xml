@@ -80,6 +80,8 @@
     <string name="action_open_prescription">Öffne Verschreibung</string>
     <string name="action_open_resulting_case">Resultierenden Fall öffnen</string>
     <string name="action_open_source_case">Indexfall öffnen</string>
+    <string name="action_open_linked_case">Verknüpften Fall öffnen</string>
+    <string name="action_link_case">Fall verknüpfen</string>
     <string name="action_open_syncLog">Synchronisierungskonflikte</string>
     <string name="action_options">Optionen</string>
     <string name="action_pick_gps">Aktuelle GPS-Position als Adresse wählen</string>
@@ -238,6 +240,7 @@
     <string name="caption_immunization_information">Immunisierungsdetails</string>
     <string name="caption_new_immunization">Neue Immunisierung</string>
     <string name="caption_overwrite_immunization_management_status">Immunisierungs-Management-Status überschreiben</string>
+    <string name="caption_searchCase">Fall suchen</string>
     <string name="confirmation_action">Sind Sie sicher, dass Sie dies tun wollen?</string>
     <string name="confirmation_delete">Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?</string>
     <string name="confirmation_pick_gps">Sind Sie gerade an diesem Ort?</string>
@@ -394,6 +397,7 @@
     <string name="heading_campaign_form_data_summary">Zusammenfassung der Kampagnendaten</string>
     <string name="heading_campaign_form_meta_select">Kampagnenformular auswählen</string>
     <string name="heading_case_place_of_stay">Aufenthaltsort</string>
+    <string name="heading_search_for_case">Spezifischen Fall suchen</string>
     <string name="hint_add_to_empty_list">Fügen Sie einen neuen Eintrag hinzu, indem Sie das \"+\" Symbol oben rechts drücken.</string>
     <string name="hint_clear">Löschen</string>
     <string name="hint_create_pin">Bitte wählen Sie eine vierstellige PIN aus, mit der Sie sich bei jedem Öffnen der SORMAS-App authentifizieren werden.</string>
