@@ -19,6 +19,11 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MAX;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MIN;
 
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +46,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
-public class SormasToSormasCasePreview implements HasUuid, Serializable {
+public class SormasToSormasCasePreview extends PseudonymizableDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -5346989433141136006L;
 	public static final String I18N_PREFIX = "CaseData";
@@ -65,11 +70,9 @@ public class SormasToSormasCasePreview implements HasUuid, Serializable {
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 
-	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
-	@Size(min = COLUMN_LENGTH_UUID_MIN, max = COLUMN_LENGTH_UUID_MAX, message = Validations.textSizeNotInRange)
-	private String uuid;
 	private Date reportDate;
 	private Disease disease;
+	@SensitiveData
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
@@ -80,28 +83,32 @@ public class SormasToSormasCasePreview implements HasUuid, Serializable {
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@PersonalData
+	@SensitiveData
 	private CommunityReferenceDto community;
 	private FacilityType facilityType;
+	@PersonalData
+	@SensitiveData
 	private FacilityReferenceDto healthFacility;
+	@PersonalData
+	@SensitiveData
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
+	@PersonalData
+	@SensitiveData
 	private PointOfEntryReferenceDto pointOfEntry;
+	@PersonalData
+	@SensitiveData
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String pointOfEntryDetails;
 
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	@Valid
 	private SormasToSormasPersonPreview person;
 
 	@Valid
 	private List<SormasToSormasContactPreview> contacts;
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 
 	public Date getReportDate() {
 		return reportDate;
