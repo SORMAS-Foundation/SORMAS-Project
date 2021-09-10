@@ -2365,13 +2365,14 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	public List<String> deleteCases(List<String> caseUuids) {
+		if (!userService.hasRight(UserRight.CASE_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
+		}
 		List<String> deletedCasesUuids = new ArrayList<>();
 		for (String caseUuid : caseUuids) {
 			try {
 				deleteCase(caseUuid);
-				if (isDeleted(caseUuid)) {
-					deletedCasesUuids.add(caseUuid);
-				}
+				deletedCasesUuids.add(caseUuid);
 			} catch (ExternalSurveillanceToolException e) {
 				logger.error("The case with uuid:" + caseUuid + "could not be deleted");
 			}
