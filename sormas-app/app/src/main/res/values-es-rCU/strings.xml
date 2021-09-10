@@ -80,6 +80,8 @@
     <string name="action_open_prescription">Abrir prescripción</string>
     <string name="action_open_resulting_case">Abrir caso resultante</string>
     <string name="action_open_source_case">Abrir caso de origen</string>
+    <string name="action_open_linked_case">Abrir caso vinculado</string>
+    <string name="action_link_case">Vincular caso</string>
     <string name="action_open_syncLog">Conflictos de sincronización</string>
     <string name="action_options">Opciones</string>
     <string name="action_pick_gps">Elija el GPS actual para la dirección</string>
@@ -238,6 +240,7 @@
     <string name="caption_immunization_information">Detalles de inmunización</string>
     <string name="caption_new_immunization">Nueva inmunización</string>
     <string name="caption_overwrite_immunization_management_status">Sobrescribir el estado de gestión de inmunización</string>
+    <string name="caption_searchCase">Buscar caso</string>
     <string name="confirmation_action">¿Está seguro de que quiere hacer esto?</string>
     <string name="confirmation_delete">¿Está seguro de que desea eliminar este registro?</string>
     <string name="confirmation_pick_gps">¿Se encuentra en este lugar ahora?</string>
@@ -394,6 +397,7 @@
     <string name="heading_campaign_form_data_summary">Resumen de datos de campaña</string>
     <string name="heading_campaign_form_meta_select">Seleccionar formulario de campaña</string>
     <string name="heading_case_place_of_stay">Lugar de estancia</string>
+    <string name="heading_search_for_case">Buscar caso específico</string>
     <string name="hint_add_to_empty_list">Añada una nueva entrada pulsando el símbolo \"+\" en la parte superior derecha.</string>
     <string name="hint_clear">Limpiar</string>
     <string name="hint_create_pin">Por favor, elija un PIN de cuatro dígitos que utilizará para autenticarse cada vez que abra la aplicación SORMAS.</string>
