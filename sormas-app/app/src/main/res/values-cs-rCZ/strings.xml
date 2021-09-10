@@ -80,6 +80,8 @@
     <string name="action_open_prescription">Otevřít předpis</string>
     <string name="action_open_resulting_case">Otevřít výsledný případ</string>
     <string name="action_open_source_case">Otevřít zdroj případu</string>
+    <string name="action_open_linked_case">Otevřít propojený případ</string>
+    <string name="action_link_case">Propojený Případ</string>
     <string name="action_open_syncLog">Konflikty synchronizace</string>
     <string name="action_options">Možnosti</string>
     <string name="action_pick_gps">Vybrat aktuální GPS pro adresu</string>
@@ -238,6 +240,7 @@
     <string name="caption_immunization_information">Detaily imunizace</string>
     <string name="caption_new_immunization">Nová imunizace</string>
     <string name="caption_overwrite_immunization_management_status">Přepsání stavu správy imunizace</string>
+    <string name="caption_searchCase">Hledat případ</string>
     <string name="confirmation_action">Opravdu to chcete udělat?</string>
     <string name="confirmation_delete">Opravdu chcete vymazat tento záznam?</string>
     <string name="confirmation_pick_gps">Jste právě na tomto místě?</string>
@@ -394,6 +397,7 @@
     <string name="heading_campaign_form_data_summary">Shrnutí dat kampaně</string>
     <string name="heading_campaign_form_meta_select">Vybrat formulář kampaně</string>
     <string name="heading_case_place_of_stay">Místo pobytu</string>
+    <string name="heading_search_for_case">Hledat konkrétní případ</string>
     <string name="hint_add_to_empty_list">Přidejte nový záznam stisknutím symbolu \"+\" v pravém horním rohu.</string>
     <string name="hint_clear">Vymazat</string>
     <string name="hint_create_pin">Vyberte si prosím čtyřmístný PIN kód, který budete používat k ověření při každém otevření aplikace SORMAS.</string>
