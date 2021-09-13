@@ -230,7 +230,7 @@ public class ExternalJournalUtil {
 	private static void cancelPatientDiaryFollowUp(PersonDto personDto) {
 		PatientDiaryResult result = externalJournalFacade.cancelPatientDiaryFollowUp(personDto);
 		if (result.isSuccess()) {
-			showPatientDiaryResultPopup(result, I18nProperties.getCaption(Captions.patientDiaryCancelError));
+			showPatientDiaryResultPopup(result, null);
 			SormasUI.refreshView();
 		} else {
 			showForceDeletionPrompt(result.getMessage(), personDto);
