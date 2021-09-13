@@ -100,4 +100,13 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+
+	@Override
+	public ImmunizationListEntryDto clone() {
+		try {
+			return (ImmunizationListEntryDto) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }
