@@ -6,7 +6,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
-public class ImmunizationSimilarityCriteria extends BaseCriteria implements Cloneable {
+public final class ImmunizationSimilarityCriteria extends BaseCriteria implements Cloneable {
 
 	private String immunizationUuid;
 	private Disease disease;
@@ -14,45 +14,6 @@ public class ImmunizationSimilarityCriteria extends BaseCriteria implements Clon
 	private Date endDate;
 	private String personUuid;
 	private MeansOfImmunization meansOfImmunization;
-
-	public ImmunizationSimilarityCriteria(Builder builder) {
-		this.immunizationUuid = builder.immunizationUuid;
-		this.disease = builder.disease;
-		this.startDate = builder.startDate;
-		this.endDate = builder.endDate;
-		this.personUuid = builder.personUuid;
-		this.meansOfImmunization = builder.meansOfImmunization;
-	}
-
-	@IgnoreForUrl
-	public MeansOfImmunization getMeansOfImmunization() {
-		return meansOfImmunization;
-	}
-
-	@IgnoreForUrl
-	public String getImmunizationUuid() {
-		return immunizationUuid;
-	}
-
-	@IgnoreForUrl
-	public Disease getDisease() {
-		return disease;
-	}
-
-	@IgnoreForUrl
-	public Date getStartDate() {
-		return startDate;
-	}
-
-	@IgnoreForUrl
-	public Date getEndDate() {
-		return endDate;
-	}
-
-	@IgnoreForUrl
-	public String getPersonUuid() {
-		return personUuid;
-	}
 
 	public static class Builder {
 
@@ -96,5 +57,44 @@ public class ImmunizationSimilarityCriteria extends BaseCriteria implements Clon
 		public ImmunizationSimilarityCriteria build() {
 			return new ImmunizationSimilarityCriteria(this);
 		}
+	}
+
+	private ImmunizationSimilarityCriteria(Builder builder) {
+		this.immunizationUuid = builder.immunizationUuid;
+		this.disease = builder.disease;
+		this.startDate = builder.startDate;
+		this.endDate = builder.endDate;
+		this.personUuid = builder.personUuid;
+		this.meansOfImmunization = builder.meansOfImmunization;
+	}
+
+	@IgnoreForUrl
+	public MeansOfImmunization getMeansOfImmunization() {
+		return meansOfImmunization;
+	}
+
+	@IgnoreForUrl
+	public String getImmunizationUuid() {
+		return immunizationUuid;
+	}
+
+	@IgnoreForUrl
+	public Disease getDisease() {
+		return disease;
+	}
+
+	@IgnoreForUrl
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	@IgnoreForUrl
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	@IgnoreForUrl
+	public String getPersonUuid() {
+		return personUuid;
 	}
 }
