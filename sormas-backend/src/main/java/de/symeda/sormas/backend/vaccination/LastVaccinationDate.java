@@ -14,14 +14,14 @@ import org.hibernate.annotations.Synchronize;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 
 @Entity
-@Subselect("SELECT immunization_id, MAX(vaccinationdate) lastVaccinationDate FROM vaccination GROUP BY immunization_id")
+@Subselect("SELECT immunization_id, MAX(vaccinationdate) lastVaccinationDateValue FROM vaccination GROUP BY immunization_id")
 @Synchronize("vaccination")
 public class LastVaccinationDate implements Serializable {
 
-	public static final String VACCINATION_DATE = "lastVaccinationDate";
+	public static final String VACCINATION_DATE = "lastVaccinationDateValue";
 
 	private Immunization immunization;
-	private Date lastVaccinationDate;
+	private Date lastVaccinationDateValue;
 
 	@Id
 	@OneToOne
@@ -34,11 +34,11 @@ public class LastVaccinationDate implements Serializable {
 		this.immunization = immunization;
 	}
 
-	public Date getLastVaccinationDate() {
-		return lastVaccinationDate;
+	public Date getLastVaccinationDateValue() {
+		return lastVaccinationDateValue;
 	}
 
-	public void setLastVaccinationDate(Date vaccinationDate) {
-		this.lastVaccinationDate = vaccinationDate;
+	public void setLastVaccinationDateValue(Date vaccinationDate) {
+		this.lastVaccinationDateValue = vaccinationDate;
 	}
 }
