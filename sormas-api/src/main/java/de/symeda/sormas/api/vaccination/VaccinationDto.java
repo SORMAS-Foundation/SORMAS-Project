@@ -46,10 +46,8 @@ public class VaccinationDto extends PseudonymizableDto {
 	public static final String VACCINATION_DATE = "vaccinationDate";
 	public static final String VACCINE_NAME = "vaccineName";
 	public static final String OTHER_VACCINE_NAME = "otherVaccineName";
-	public static final String VACCINE_NAME_DETAILS = "vaccineNameDetails";
 	public static final String VACCINE_MANUFACTURER = "vaccineManufacturer";
 	public static final String OTHER_VACCINE_MANUFACTURER = "otherVaccineManufacturer";
-	public static final String VACCINE_MANUFACTURER_DETAILS = "vaccineManufacturerDetails";
 	public static final String VACCINE_TYPE = "vaccineType";
 	public static final String VACCINE_DOSE = "vaccineDose";
 	public static final String VACCINE_INN = "vaccineInn";
@@ -73,16 +71,10 @@ public class VaccinationDto extends PseudonymizableDto {
 	@SensitiveData
 	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String otherVaccineName;
-	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
-	private String vaccineNameDetails;
 	private VaccineManufacturer vaccineManufacturer;
 	@SensitiveData
 	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String otherVaccineManufacturer;
-	@SensitiveData
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
-	private String vaccineManufacturerDetails;
 	@SensitiveData
 	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
 	private String vaccineType;
@@ -171,14 +163,6 @@ public class VaccinationDto extends PseudonymizableDto {
 		this.otherVaccineName = otherVaccineName;
 	}
 
-	public String getVaccineNameDetails() {
-		return vaccineNameDetails;
-	}
-
-	public void setVaccineNameDetails(String vaccineNameDetails) {
-		this.vaccineNameDetails = vaccineNameDetails;
-	}
-
 	public VaccineManufacturer getVaccineManufacturer() {
 		return vaccineManufacturer;
 	}
@@ -193,14 +177,6 @@ public class VaccinationDto extends PseudonymizableDto {
 
 	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
 		this.otherVaccineManufacturer = otherVaccineManufacturer;
-	}
-
-	public String getVaccineManufacturerDetails() {
-		return vaccineManufacturerDetails;
-	}
-
-	public void setVaccineManufacturerDetails(String vaccineManufacturerDetails) {
-		this.vaccineManufacturerDetails = vaccineManufacturerDetails;
 	}
 
 	public String getVaccineType() {

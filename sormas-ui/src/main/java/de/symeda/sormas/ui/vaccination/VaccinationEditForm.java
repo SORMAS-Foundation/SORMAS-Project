@@ -25,6 +25,8 @@ import java.util.Date;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.DateField;
 
+import com.vaadin.v7.ui.Field;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.i18n.Captions;
@@ -39,32 +41,12 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 
-//	Report date (required)
-//	Reporting user (read only)
-//	Vaccination date
-//	Vaccine name
-//	Vaccine name details (when "Other" vaccine name is selected)
-//	Manufacturer
-//	Manufacturer details (when "Other" manufacturer is selected)
-//	Vaccine type
-//	Vaccination info source
-//			Dose
-//	INN
-//	Batch number
-//	UNII code
-//	ATC code
-//	Pregnant
-//			Trimester
-//	Health conditions form
-
 	private static final String REPORT_DATE_LOC = "REPORT_DATE_LOC";
 
 	private static final String HTML_LAYOUT = fluidRowLocs(REPORT_DATE_LOC, VaccinationDto.REPORTING_USER)
 		+ fluidRow(oneOfTwoCol(VaccinationDto.VACCINATION_DATE))
 		+ fluidRowLocs(VaccinationDto.VACCINE_NAME, VaccinationDto.OTHER_VACCINE_NAME)
-		+ fluidRow(oneOfTwoCol(VaccinationDto.VACCINE_NAME_DETAILS))
 		+ fluidRowLocs(VaccinationDto.VACCINE_MANUFACTURER, VaccinationDto.OTHER_VACCINE_MANUFACTURER)
-		+ fluidRow(oneOfTwoCol(VaccinationDto.VACCINE_MANUFACTURER_DETAILS))
 		+ fluidRowLocs(VaccinationDto.VACCINE_TYPE, VaccinationDto.VACCINATION_INFO_SOURCE)
 		+ fluidRow(oneOfTwoCol(VaccinationDto.VACCINE_DOSE))
 		+ fluidRowLocs(VaccinationDto.VACCINE_INN, VaccinationDto.VACCINE_UNII_CODE)
@@ -96,12 +78,17 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 		addField(VaccinationDto.REPORTING_USER).setReadOnly(true);
 
 		addField(VaccinationDto.VACCINATION_DATE);
-		addField(VaccinationDto.VACCINE_NAME);
-		addField(VaccinationDto.VACCINE_NAME_DETAILS);
+		Field vaccineName = addField(VaccinationDto.VACCINE_NAME);
 		addField(VaccinationDto.OTHER_VACCINE_NAME);
-		addField(VaccinationDto.VACCINE_MANUFACTURER);
+		Field vaccineManufacturer = addField(VaccinationDto.VACCINE_MANUFACTURER);
 		addField(VaccinationDto.OTHER_VACCINE_MANUFACTURER);
-		addField(VaccinationDto.VACCINE_MANUFACTURER_DETAILS);
+		addField(CaseDataDto.VACCINE_MANUFACTURER);
+		vaccineName.addValueChangeListener(e -> {
+			Vaccine vaccine = (Vaccine) e.getProperty().getValue();
+			if (vaccine != null) {
+				vaccineManufacturer.setValue(vaccine.getManufacturer());
+			}
+		});
 		addField(VaccinationDto.VACCINE_TYPE);
 		addField(VaccinationDto.VACCINATION_INFO_SOURCE);
 		addField(VaccinationDto.VACCINE_DOSE);
