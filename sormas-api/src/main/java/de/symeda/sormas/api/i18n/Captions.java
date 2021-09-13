@@ -35,6 +35,7 @@ public interface Captions {
 	String Action_reply = "Action.reply";
 	String Action_title = "Action.title";
 	String actionAccept = "actionAccept";
+	String actionAdjustChanges = "actionAdjustChanges";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionApplyFilters = "actionApplyFilters";
 	String actionArchive = "actionArchive";

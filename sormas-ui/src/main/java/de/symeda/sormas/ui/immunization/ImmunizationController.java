@@ -123,11 +123,11 @@ public class ImmunizationController {
 				ImmunizationDto immunizationDtoValue = immunizationDataForm.getValue();
 				List<ImmunizationDto> similarImmunizations = findSimilarImmunizations(immunizationDtoValue);
 				if (similarImmunizations.isEmpty()) {
-					FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
-					Notification.show(I18nProperties.getString(Strings.messageImmunizationSaved), Notification.Type.WARNING_MESSAGE);
-					SormasUI.refreshView();
+					saveImmunization(immunizationDtoValue);
 				} else {
-					showSimilarImmunizationPopup(immunizationDtoValue, similarImmunizations.get(0));
+					showSimilarImmunizationPopup(immunizationDtoValue, similarImmunizations.get(0), (immunization) -> {
+						saveImmunization(immunization);
+					});
 				}
 			}
 		});
@@ -153,6 +153,12 @@ public class ImmunizationController {
 		}
 
 		return editComponent;
+	}
+
+	private void saveImmunization(ImmunizationDto immunizationDtoValue) {
+		FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
+		Notification.show(I18nProperties.getString(Strings.messageImmunizationSaved), Notification.Type.WARNING_MESSAGE);
+		SormasUI.refreshView();
 	}
 
 	public MainHeaderLayout getImmunizationMainHeaderLayout(String uuid) {
@@ -259,13 +265,16 @@ public class ImmunizationController {
 		return FacadeProvider.getImmunizationFacade().getSimilarImmunizations(criteria);
 	}
 
-	private void showSimilarImmunizationPopup(ImmunizationDto immunizationDto, ImmunizationDto similarImmunization) {
+	private void showSimilarImmunizationPopup(ImmunizationDto immunizationDto, ImmunizationDto similarImmunization, Consumer<ImmunizationDto> callback) {
 		SimilarImmunizationPopup similarImmunizationPopup = new SimilarImmunizationPopup(immunizationDto, similarImmunization);
 		similarImmunizationPopup.setWidth(1280, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<SimilarImmunizationPopup> component = new CommitDiscardWrapperComponent<>(similarImmunizationPopup);
-		component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionOkay));
-		component.getDiscardButton().setVisible(false);
+		component.getCommitButton().addClickListener(clickEvent -> {
+			callback.accept(immunizationDto);
+		});
+		component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionSaveChanges));
+		component.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionAdjustChanges));
 
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSimilarImmunization));
 	}
