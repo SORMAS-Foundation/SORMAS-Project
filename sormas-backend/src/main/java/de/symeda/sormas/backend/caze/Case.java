@@ -1034,7 +1034,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		return new CaseReferenceDto(getUuid(), person.getFirstName(), person.getLastName());
 	}
 
-	@OneToMany(cascade = {}, mappedBy = Task.CAZE)
+	@OneToMany(cascade = {}, mappedBy = Task.CAZE, fetch = FetchType.LAZY)
 	public List<Task> getTasks() {
 		return tasks;
 	}
@@ -1062,7 +1062,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.samples = samples;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = EventParticipant.RESULTING_CASE)
+	@OneToMany(cascade = {}, mappedBy = EventParticipant.RESULTING_CASE, fetch = FetchType.LAZY)
 	public Set<EventParticipant> getEventParticipants() {
 		return eventParticipants;
 	}

@@ -36,6 +36,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -109,6 +110,13 @@ public class ContinentFacadeEjb implements ContinentFacade {
 		final Country country = countryService.getByUuid(countryReferenceDto.getUuid());
 		final Subcontinent subcontinent = country.getSubcontinent();
 		return subcontinent != null ? toReferenceDto(subcontinent.getContinent()) : null;
+	}
+
+	@Override
+	public Page<ContinentIndexDto> getIndexPage(ContinentCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<ContinentIndexDto> continentIndexList = getIndexList(criteria, offset, size, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(continentIndexList, offset, size, totalElementCount);
 	}
 
 	@Override
@@ -275,16 +283,13 @@ public class ContinentFacadeEjb implements ContinentFacade {
 
 	public List<ContinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
 		return continentService.getByExternalId(externalId, includeArchived)
-				.stream()
-				.map(ContinentFacadeEjb::toReferenceDto)
-				.collect(Collectors.toList());
+			.stream()
+			.map(ContinentFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	public List<ContinentReferenceDto> getReferencesByName(String name, boolean includeArchived) {
-		return continentService.getByDefaultName(name, includeArchived)
-				.stream()
-				.map(ContinentFacadeEjb::toReferenceDto)
-				.collect(Collectors.toList());
+		return continentService.getByDefaultName(name, includeArchived).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	private Continent fillOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate) {
