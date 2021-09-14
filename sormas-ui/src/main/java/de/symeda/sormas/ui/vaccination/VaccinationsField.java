@@ -36,6 +36,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -43,6 +44,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -117,15 +119,14 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 		Table table = super.createTable();
 
 
-		Table.ColumnGenerator uuidColumnGenerator = new Table.ColumnGenerator() {
-			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
-				Label textField = new Label(DataHelper.getShortUuid(((EntityDto) itemId).getUuid()));
-				return textField;
-			}
-		};
-
-		table.addGeneratedColumn(VaccinationDto.UUID, uuidColumnGenerator);
+		table.addGeneratedColumn(VaccinationDto.UUID, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			Label textField = new Label(DataHelper.getShortUuid(((EntityDto) itemId).getUuid()));
+			return textField;
+		});
+		table.addGeneratedColumn(VaccinationDto.VACCINATION_DATE, (Table.ColumnGenerator) (source, itemId, columnId) -> {
+			Label textField = new Label(DateFormatHelper.formatDate(((VaccinationDto) itemId).getVaccinationDate()));
+			return textField;
+		});
 
 
 		return table;
@@ -151,8 +152,8 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 			EDIT_COLUMN_ID,
 			VaccinationDto.UUID,
 			VaccinationDto.VACCINATION_DATE,
-			Captions.columnVaccineName,
-			Captions.columnVaccineManufacturer,
+			VaccinationDto.VACCINE_NAME,
+			VaccinationDto.VACCINE_MANUFACTURER,
 			VaccinationDto.VACCINE_TYPE,
 			VaccinationDto.VACCINE_DOSE);
 

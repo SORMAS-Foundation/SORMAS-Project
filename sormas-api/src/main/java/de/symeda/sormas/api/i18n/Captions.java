@@ -2266,6 +2266,8 @@ public interface Captions {
 	String userRights = "userRights";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String Vaccination = "Vaccination";
+	String Vaccination_otherVaccineManufacturer = "Vaccination.otherVaccineManufacturer";
+	String Vaccination_otherVaccineName = "Vaccination.otherVaccineName";
 	String Vaccination_pregnant = "Vaccination.pregnant";
 	String Vaccination_reportDate = "Vaccination.reportDate";
 	String Vaccination_reportingUser = "Vaccination.reportingUser";
@@ -2278,9 +2280,7 @@ public interface Captions {
 	String Vaccination_vaccineDose = "Vaccination.vaccineDose";
 	String Vaccination_vaccineInn = "Vaccination.vaccineInn";
 	String Vaccination_vaccineManufacturer = "Vaccination.vaccineManufacturer";
-	String Vaccination_vaccineManufacturerDetails = "Vaccination.vaccineManufacturerDetails";
 	String Vaccination_vaccineName = "Vaccination.vaccineName";
-	String Vaccination_vaccineNameDetails = "Vaccination.vaccineNameDetails";
 	String Vaccination_vaccineType = "Vaccination.vaccineType";
 	String Vaccination_vaccineUniiCode = "Vaccination.vaccineUniiCode";
 	String VaccinationInfo_firstVaccinationDate = "VaccinationInfo.firstVaccinationDate";
