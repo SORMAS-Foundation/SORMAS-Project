@@ -179,6 +179,8 @@ public class MockProducer {
 	@Specializes
 	public static class MockEtcdCentralClientProducer extends EtcdCentralClientProducer {
 
+		@Override
+		@Produces
 		public EtcdCentralClient etcdCentralClient(ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
 			return etcdCentralClient;
 		}
