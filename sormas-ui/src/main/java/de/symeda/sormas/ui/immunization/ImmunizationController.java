@@ -15,7 +15,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -126,9 +125,7 @@ public class ImmunizationController {
 				if (similarImmunizations.isEmpty()) {
 					saveImmunization(immunizationDtoValue);
 				} else {
-					showSimilarImmunizationPopup(immunizationDtoValue, similarImmunizations.get(0), (immunization) -> {
-						saveImmunization(immunization);
-					});
+					showSimilarImmunizationPopup(immunizationDtoValue, similarImmunizations.get(0), this::saveImmunization);
 				}
 			}
 		});
@@ -266,14 +263,15 @@ public class ImmunizationController {
 		return FacadeProvider.getImmunizationFacade().getSimilarImmunizations(criteria);
 	}
 
-	private void showSimilarImmunizationPopup(ImmunizationDto immunizationDto, ImmunizationDto similarImmunization, Consumer<ImmunizationDto> callback) {
+	private void showSimilarImmunizationPopup(
+		ImmunizationDto immunizationDto,
+		ImmunizationDto similarImmunization,
+		Consumer<ImmunizationDto> callback) {
 		SimilarImmunizationPopup similarImmunizationPopup = new SimilarImmunizationPopup(immunizationDto, similarImmunization);
 		similarImmunizationPopup.setWidth(1280, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<SimilarImmunizationPopup> component = new CommitDiscardWrapperComponent<>(similarImmunizationPopup);
-		component.getCommitButton().addClickListener(clickEvent -> {
-			callback.accept(immunizationDto);
-		});
+		component.getCommitButton().addClickListener(clickEvent -> callback.accept(immunizationDto));
 		component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionSaveChanges));
 		component.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionAdjustChanges));
 
