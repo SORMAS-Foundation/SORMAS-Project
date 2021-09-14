@@ -25,6 +25,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -153,6 +154,13 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 			.stream()
 			.map(PointOfEntryFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public Page<PointOfEntryDto> getIndexPage(PointOfEntryCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<PointOfEntryDto> pointOfEntryList = getIndexList(criteria, offset, size, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(pointOfEntryList, offset, size, totalElementCount);
 	}
 
 	@Override
