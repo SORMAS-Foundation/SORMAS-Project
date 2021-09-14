@@ -41,9 +41,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 
-	private static final String REPORT_DATE_LOC = "REPORT_DATE_LOC";
-
-	private static final String HTML_LAYOUT = fluidRowLocs(REPORT_DATE_LOC, VaccinationDto.REPORTING_USER)
+	private static final String HTML_LAYOUT = fluidRowLocs(VaccinationDto.REPORT_DATE, VaccinationDto.REPORTING_USER)
 		+ fluidRow(oneOfTwoCol(VaccinationDto.VACCINATION_DATE))
 		+ fluidRowLocs(VaccinationDto.VACCINE_NAME, VaccinationDto.OTHER_VACCINE_NAME)
 		+ fluidRowLocs(VaccinationDto.VACCINE_MANUFACTURER, VaccinationDto.OTHER_VACCINE_MANUFACTURER)
@@ -73,7 +71,7 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 
 	@Override
 	protected void addFields() {
-		addCustomField(REPORT_DATE_LOC, Date.class, DateField.class, I18nProperties.getCaption(Captions.Vaccination_reportDate)).setRequired(true);
+		addField(VaccinationDto.REPORT_DATE).setRequired(true);
 
 		addField(VaccinationDto.REPORTING_USER).setReadOnly(true);
 
@@ -82,7 +80,6 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 		addField(VaccinationDto.OTHER_VACCINE_NAME);
 		Field vaccineManufacturer = addField(VaccinationDto.VACCINE_MANUFACTURER);
 		addField(VaccinationDto.OTHER_VACCINE_MANUFACTURER);
-		addField(CaseDataDto.VACCINE_MANUFACTURER);
 		vaccineName.addValueChangeListener(e -> {
 			Vaccine vaccine = (Vaccine) e.getProperty().getValue();
 			if (vaccine != null) {
@@ -117,18 +114,5 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 			.setVisibleWhen(getFieldGroup(), VaccinationDto.TRIMESTER, VaccinationDto.PREGNANT, Collections.singletonList(YesNoUnknown.YES), true);
 
 		addField(VaccinationDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
-	}
-
-	@Override
-	public VaccinationDto getValue() {
-		VaccinationDto vaccinationDto = super.getValue();
-		vaccinationDto.setReportDate((Date) getField(REPORT_DATE_LOC).getValue());
-		return vaccinationDto;
-	}
-
-	@Override
-	public void setValue(VaccinationDto vaccinationDto) throws ReadOnlyException, Converter.ConversionException {
-		super.setValue(vaccinationDto);
-		((DateField) getField(REPORT_DATE_LOC)).setValue(vaccinationDto.getReportDate());
 	}
 }

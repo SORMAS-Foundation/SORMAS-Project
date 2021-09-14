@@ -60,14 +60,10 @@ public class VaccinationEntity extends PseudonymizableAdo {
 	private Vaccine vaccineName;
 	@Column(columnDefinition = "text")
 	private String otherVaccineName;
-	@Column(columnDefinition = "text")
-	private String vaccineNameDetails;
 	@Enumerated(EnumType.STRING)
 	private VaccineManufacturer vaccineManufacturer;
 	@Column(columnDefinition = "text")
 	private String otherVaccineManufacturer;
-	@Column(columnDefinition = "text")
-	private String vaccineManufacturerDetails;
 	@Column(columnDefinition = "text")
 	private String vaccineType;
 	@Column(columnDefinition = "text")
@@ -143,14 +139,6 @@ public class VaccinationEntity extends PseudonymizableAdo {
 		this.otherVaccineName = otherVaccineName;
 	}
 
-	public String getVaccineNameDetails() {
-		return vaccineNameDetails;
-	}
-
-	public void setVaccineNameDetails(String vaccineNameDetails) {
-		this.vaccineNameDetails = vaccineNameDetails;
-	}
-
 	public VaccineManufacturer getVaccineManufacturer() {
 		return vaccineManufacturer;
 	}
@@ -165,14 +153,6 @@ public class VaccinationEntity extends PseudonymizableAdo {
 
 	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
 		this.otherVaccineManufacturer = otherVaccineManufacturer;
-	}
-
-	public String getVaccineManufacturerDetails() {
-		return vaccineManufacturerDetails;
-	}
-
-	public void setVaccineManufacturerDetails(String vaccineManufacturerDetails) {
-		this.vaccineManufacturerDetails = vaccineManufacturerDetails;
 	}
 
 	public String getVaccineType() {

@@ -27,8 +27,6 @@ public class CaseReadHealthConditionsFragment extends BaseReadHealthConditionsFr
 
 	public static final String TAG = CaseReadHealthConditionsFragment.class.getSimpleName();
 
-	private Case caze;
-
 	public static CaseReadHealthConditionsFragment newInstance(Case activityRootData) {
 		return newInstanceWithFieldCheckers(
 			CaseReadHealthConditionsFragment.class,
@@ -41,7 +39,6 @@ public class CaseReadHealthConditionsFragment extends BaseReadHealthConditionsFr
 
 	@Override
 	protected void prepareFragmentData(Bundle savedInstanceState) {
-		caze = getActivityRootData();
-		record = caze.getClinicalCourse().getHealthConditions();
+		record = getActivityRootData().getClinicalCourse().getHealthConditions();
 	}
 }

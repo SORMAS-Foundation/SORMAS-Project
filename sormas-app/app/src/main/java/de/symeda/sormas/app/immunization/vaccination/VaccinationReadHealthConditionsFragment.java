@@ -27,8 +27,6 @@ public class VaccinationReadHealthConditionsFragment extends BaseReadHealthCondi
 
 	public static final String TAG = VaccinationReadHealthConditionsFragment.class.getSimpleName();
 
-	private VaccinationEntity vaccinationEntity;
-
 	public static VaccinationReadHealthConditionsFragment newInstance(VaccinationEntity activityRootData) {
 		return newInstanceWithFieldCheckers(
 			VaccinationReadHealthConditionsFragment.class,
@@ -41,7 +39,6 @@ public class VaccinationReadHealthConditionsFragment extends BaseReadHealthCondi
 
 	@Override
 	protected void prepareFragmentData(Bundle savedInstanceState) {
-		vaccinationEntity = getActivityRootData();
-		record = vaccinationEntity.getHealthConditions();
+		record = getActivityRootData().getHealthConditions();
 	}
 }

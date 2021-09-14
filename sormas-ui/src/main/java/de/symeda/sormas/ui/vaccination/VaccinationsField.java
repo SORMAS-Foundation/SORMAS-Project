@@ -17,10 +17,17 @@ package de.symeda.sormas.ui.vaccination;
 
 import java.util.function.Consumer;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.Table;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.i18n.Captions;
@@ -34,7 +41,9 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class VaccinationsField extends AbstractTableField<VaccinationDto> {
@@ -104,6 +113,25 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 	}
 
 	@Override
+	protected Table createTable() {
+		Table table = super.createTable();
+
+
+		Table.ColumnGenerator uuidColumnGenerator = new Table.ColumnGenerator() {
+			@Override
+			public Object generateCell(Table source, Object itemId, Object columnId) {
+				Label textField = new Label(DataHelper.getShortUuid(((EntityDto) itemId).getUuid()));
+				return textField;
+			}
+		};
+
+		table.addGeneratedColumn(VaccinationDto.UUID, uuidColumnGenerator);
+
+
+		return table;
+	}
+
+	@Override
 	protected void updateColumns() {
 		Table table = getTable();
 
@@ -124,9 +152,7 @@ public class VaccinationsField extends AbstractTableField<VaccinationDto> {
 			VaccinationDto.UUID,
 			VaccinationDto.VACCINATION_DATE,
 			Captions.columnVaccineName,
-			VaccinationDto.VACCINE_NAME_DETAILS,
 			Captions.columnVaccineManufacturer,
-			VaccinationDto.VACCINE_MANUFACTURER_DETAILS,
 			VaccinationDto.VACCINE_TYPE,
 			VaccinationDto.VACCINE_DOSE);
 

@@ -26,8 +26,6 @@ public class CaseEditHealthConditionsFragment extends BaseEditHealthConditionsFr
 
 	public static final String TAG = CaseEditHealthConditionsFragment.class.getSimpleName();
 
-	private Case caze;
-
 	public static CaseEditHealthConditionsFragment newInstance(Case activityRootData) {
 		return newInstanceWithFieldCheckers(
 			CaseEditHealthConditionsFragment.class,
@@ -40,8 +38,6 @@ public class CaseEditHealthConditionsFragment extends BaseEditHealthConditionsFr
 
 	@Override
 	protected void prepareFragmentData() {
-		Case activityRootData = getActivityRootData();
-		caze = activityRootData;
-		record = caze.getClinicalCourse().getHealthConditions();
+		record = getActivityRootData().getClinicalCourse().getHealthConditions();
 	}
 }

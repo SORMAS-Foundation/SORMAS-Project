@@ -110,7 +110,7 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 				updatePageMenu();
 			});
 			break;
-		case VACCINATIONS_INFO:
+		case VACCINATIONS:
 			fragment = ImmunizationEditVaccinationListFragment.newInstance(activityRootData);
 			break;
 		default:
@@ -225,7 +225,7 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 	public void goToNewView() {
 		ImmunizationSection activeSection = ImmunizationSection.fromOrdinal(getActivePage().getPosition());
 
-		if (activeSection == ImmunizationSection.VACCINATIONS_INFO) {
+		if (activeSection == ImmunizationSection.VACCINATIONS) {
 			VaccinationNewActivity.startActivity(getContext(), getRootUuid());
 		}
 	}

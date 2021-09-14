@@ -40,10 +40,6 @@ import de.symeda.sormas.backend.TestDataCreator;
 
 public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
-//	// protected to be used by implementations
-//	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-//	protected EntityManager em;
-
 	private TestDataCreator.RDCF rdcf1;
 	private TestDataCreator.RDCF rdcf2;
 

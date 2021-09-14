@@ -74,7 +74,7 @@ public class ImmunizationReadActivity extends BaseReadActivity<Immunization> {
             case PERSON_INFO:
                 fragment = PersonReadFragment.newInstance(activityRootData);
                 break;
-            case VACCINATIONS_INFO:
+            case VACCINATIONS:
                 fragment = ImmunizationReadVaccinationListFragment.newInstance(activityRootData);
                 break;
             default:

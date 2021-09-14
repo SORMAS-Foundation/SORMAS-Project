@@ -115,7 +115,6 @@
                     style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{vaccinationVaccineName}"
                     app:dependencyParentValue="@{Vaccine.OTHER}"
-                    app:dependencyParentValue2="@{Vaccine.UNKNOWN}"
                     app:required="true"
                     app:value="@{data.vaccineNameDetails}" />
 
@@ -129,7 +128,6 @@
                     style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{vaccinationVaccineManufacturer}"
                     app:dependencyParentValue="@{VaccineManufacturer.OTHER}"
-                    app:dependencyParentValue2="@{VaccineManufacturer.UNKNOWN}"
                     app:required="true"
                     app:value="@{data.vaccineManufacturerDetails}" />
 

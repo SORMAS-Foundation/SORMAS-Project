@@ -119,13 +119,12 @@
                     app:value="@={data.vaccineName}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/vaccination_vaccineNameDetails"
+                    android:id="@+id/vaccination_otherVaccineName"
                     style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{vaccinationVaccineName}"
                     app:dependencyParentValue="@{Vaccine.OTHER}"
-                    app:dependencyParentValue2="@{Vaccine.UNKNOWN}"
                     app:required="true"
-                    app:value="@={data.vaccineNameDetails}" />
+                    app:value="@={data.otherVaccineName}" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/vaccination_vaccineManufacturer"
@@ -133,13 +132,12 @@
                     app:value="@={data.vaccineManufacturer}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/vaccination_vaccineManufacturerDetails"
+                    android:id="@+id/vaccination_otherVaccineManufacturer"
                     style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{vaccinationVaccineManufacturer}"
                     app:dependencyParentValue="@{VaccineManufacturer.OTHER}"
-                    app:dependencyParentValue2="@{VaccineManufacturer.UNKNOWN}"
                     app:required="true"
-                    app:value="@={data.vaccineManufacturerDetails}" />
+                    app:value="@={data.otherVaccineManufacturer}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/vaccination_vaccineType"
