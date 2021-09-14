@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.vaccination;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -40,5 +41,23 @@ public class LastVaccinationDate implements Serializable {
 
 	public void setLastVaccinationDateValue(Date vaccinationDate) {
 		this.lastVaccinationDateValue = vaccinationDate;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (!(o instanceof LastVaccinationDate)) {
+			return false;
+		}
+		LastVaccinationDate lastVaccinationDate = (LastVaccinationDate) o;
+		return Objects.equals(lastVaccinationDate.immunization, immunization)
+			&& Objects.equals(lastVaccinationDate.lastVaccinationDateValue, lastVaccinationDateValue);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(immunization, lastVaccinationDateValue);
 	}
 }
