@@ -253,7 +253,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			from.get(Immunization.START_DATE),
 			from.get(Immunization.END_DATE),
 			from.get(Immunization.RECOVERY_DATE),
-			from.get(Immunization.CHANGE_DATE),
+			from.get(Immunization.CREATION_DATE),
 			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)));
 
 		Predicate filter = createUserFilter(immunizationQueryContext);
@@ -268,8 +268,9 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		Predicate personSimilarityFilter =
 			criteria.getPersonUuid() != null ? cb.equal(joins.getPerson().get(Person.UUID), criteria.getPersonUuid()) : null;
 
-		Predicate meansOfImmunizationFilter =
-			criteria.getMeansOfImmunization() != null ? cb.equal(from.get(Immunization.MEANS_OF_IMMUNIZATION), criteria.getMeansOfImmunization()) : null;
+		Predicate meansOfImmunizationFilter = criteria.getMeansOfImmunization() != null
+			? cb.equal(from.get(Immunization.MEANS_OF_IMMUNIZATION), criteria.getMeansOfImmunization())
+			: null;
 
 		Predicate notDeletedFilter = cb.isFalse(from.get(Immunization.DELETED));
 
@@ -282,7 +283,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		cq.where(filter);
 
-		cq.orderBy(cb.desc(from.get(Immunization.CHANGE_DATE)));
+		cq.orderBy(cb.desc(from.get(Immunization.CREATION_DATE)));
 
 		cq.distinct(true);
 
