@@ -86,6 +86,10 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 	private final PersonReferenceDto personDto;
 	private final Disease disease;
 
+	public ImmunizationCreationForm() {
+		this(null, null);
+	}
+
 	public ImmunizationCreationForm(PersonReferenceDto personDto, Disease disease) {
 		super(
 			ImmunizationDto.class,
