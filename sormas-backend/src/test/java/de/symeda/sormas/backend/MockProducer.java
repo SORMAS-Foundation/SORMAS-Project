@@ -38,6 +38,8 @@ import javax.mail.Session;
 import javax.transaction.UserTransaction;
 
 import de.symeda.sormas.api.utils.InfoProvider;
+import de.symeda.sormas.backend.central.EtcdCentralClient;
+import de.symeda.sormas.backend.central.EtcdCentralClientProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
@@ -61,6 +63,7 @@ public class MockProducer {
 	private static Properties properties = new Properties();
 	private static UserTransaction userTransaction = mock(UserTransaction.class);
 	private static SormasToSormasRestClient s2sRestClient = mock(SormasToSormasRestClient.class);
+	private static final EtcdCentralClient etcdCentralClient = mock(EtcdCentralClient.class);
 	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
@@ -167,6 +170,21 @@ public class MockProducer {
 			ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
 			return s2sRestClient;
 		}
+	}
+
+	public static EtcdCentralClient getEtcdCentralClient() {
+		return etcdCentralClient;
+	}
+
+	@Specializes
+	public static class MockEtcdCentralClientProducer extends EtcdCentralClientProducer {
+
+		@Override
+		@Produces
+		public EtcdCentralClient etcdCentralClient(ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
+			return etcdCentralClient;
+		}
+
 	}
 
 	@Produces
