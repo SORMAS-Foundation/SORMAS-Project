@@ -31,8 +31,6 @@ public class ImmunizationListComponent extends VerticalLayout {
 
 	public static final String IMMUNIZATION_LOC = "immunizations";
 
-	private ImmunizationList immunizationList;
-
 	public ImmunizationListComponent(ImmunizationCriteria immunizationCriteria) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
@@ -44,7 +42,7 @@ public class ImmunizationListComponent extends VerticalLayout {
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		immunizationList = new ImmunizationList(immunizationCriteria);
+		ImmunizationList immunizationList = new ImmunizationList(immunizationCriteria);
 		addComponent(immunizationList);
 		immunizationList.reload();
 
@@ -56,7 +54,8 @@ public class ImmunizationListComponent extends VerticalLayout {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.immunizationNewImmunization));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getImmunizationController().create(immunizationCriteria.getPerson(), immunizationCriteria.getDisease()));
+			createButton.addClickListener(
+				e -> ControllerProvider.getImmunizationController().create(immunizationCriteria.getPerson(), immunizationCriteria.getDisease()));
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}
@@ -88,7 +87,6 @@ public class ImmunizationListComponent extends VerticalLayout {
 		immunizationCriteria.setPerson(personReferenceDto);
 		immunizationCriteria.setDisease(disease);
 		ImmunizationListComponent immunizationList = new ImmunizationListComponent(immunizationCriteria);
-		immunizationList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(new SideComponentLayout(immunizationList), IMMUNIZATION_LOC);
 	}
 }
