@@ -421,6 +421,7 @@ public interface Strings {
 	String headingDearchiveTravelEntry = "headingDearchiveTravelEntry";
 	String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
+	String headingDeleteVaccinations = "headingDeleteVaccinations";
 	String headingDisableLineListing = "headingDisableLineListing";
 	String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
 	String headingDocumentCreated = "headingDocumentCreated";
@@ -900,6 +901,7 @@ public interface Strings {
 	String messageCountryDearchivingNotPossible = "messageCountryDearchivingNotPossible";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
+	String messageDeleteImmunizationVaccinations = "messageDeleteImmunizationVaccinations";
 	String messageDeletionUnsupportedByExternalJournalWarning = "messageDeletionUnsupportedByExternalJournalWarning";
 	String messageDistrictArchived = "messageDistrictArchived";
 	String messageDistrictArchivingNotPossible = "messageDistrictArchivingNotPossible";
