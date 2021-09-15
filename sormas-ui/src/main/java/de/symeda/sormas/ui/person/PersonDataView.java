@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.person;
 
-import static de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent.IMMUNIZATION_LOC;
 import static de.symeda.sormas.ui.travelentry.travelentrylink.TravelEntryListComponent.TRAVEL_ENTRIES_LOC;
 
 import com.vaadin.navigator.ViewChangeListener;

@@ -32,7 +32,6 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	public static final String PERSON_UUID = "personUuid";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
-	public static final String DISEASE = "disease";
 	public static final String AGE_AND_BIRTH_DATE = "ageAndBirthDate";
 	public static final String SEX = "sex";
 	public static final String DISTRICT = "district";
