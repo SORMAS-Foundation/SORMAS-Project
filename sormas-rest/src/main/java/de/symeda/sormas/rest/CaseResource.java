@@ -172,4 +172,10 @@ public class CaseResource extends EntityDtoResource {
 		return FacadeProvider.getCaseFacade().postUpdate(uuid, caseDataDtoJson);
 	}
 
+	@POST
+	@Path("/delete")
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getCaseFacade().deleteCases(uuids);
+	}
+
 }
