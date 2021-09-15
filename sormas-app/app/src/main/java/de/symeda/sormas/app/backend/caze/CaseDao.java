@@ -39,7 +39,9 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.text.Html;
 import android.util.Log;
+
 import androidx.core.app.NotificationCompat;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -87,6 +89,7 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
+import de.symeda.sormas.app.util.JurisdictionHelper;
 import de.symeda.sormas.app.util.LocationService;
 
 public class CaseDao extends AbstractAdoDao<Case> {
@@ -494,6 +497,14 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
 				for (Task task : DatabaseHelper.getTaskDao().queryByCase(existingCase)) {
 					if (task.getTaskStatus() != TaskStatus.PENDING) {
+						continue;
+					}
+
+					User assigneeUser = task.getAssigneeUser();
+					if (assigneeUser != null
+						&& CaseJurisdictionBooleanValidator
+							.of(JurisdictionHelper.createCaseJurisdictionDto(changedCase), JurisdictionHelper.createUserJurisdiction(assigneeUser))
+							.isInJurisdiction()) {
 						continue;
 					}
 
