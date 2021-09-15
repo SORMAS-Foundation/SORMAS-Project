@@ -18,7 +18,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.immunization.ImmunizationCriteria;
+import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -31,7 +31,7 @@ public class ImmunizationListComponent extends VerticalLayout {
 
 	public static final String IMMUNIZATION_LOC = "immunizations";
 
-	public ImmunizationListComponent(ImmunizationCriteria immunizationCriteria) {
+	public ImmunizationListComponent(ImmunizationListCriteria immunizationListCriteria) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -42,10 +42,6 @@ public class ImmunizationListComponent extends VerticalLayout {
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		ImmunizationList immunizationList = new ImmunizationList(immunizationCriteria);
-		addComponent(immunizationList);
-		immunizationList.reload();
-
 		Label immunizationHeader = new Label(I18nProperties.getString(Strings.entityImmunization));
 		immunizationHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(immunizationHeader);
@@ -55,11 +51,15 @@ public class ImmunizationListComponent extends VerticalLayout {
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
 			createButton.addClickListener(
-				e -> ControllerProvider.getImmunizationController().create(immunizationCriteria.getPerson(), immunizationCriteria.getDisease()));
+				e -> ControllerProvider.getImmunizationController()
+					.create(immunizationListCriteria.getPerson(), immunizationListCriteria.getDisease()));
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}
 
+		ImmunizationList immunizationList = new ImmunizationList(immunizationListCriteria);
+		addComponent(immunizationList);
+		immunizationList.reload();
 	}
 
 	public static void addImmunizationListComponent(CustomLayout layout, PersonReferenceDto personReferenceDto) {
@@ -83,10 +83,9 @@ public class ImmunizationListComponent extends VerticalLayout {
 	}
 
 	private static void addImmunizationListComponent(CustomLayout layout, PersonReferenceDto personReferenceDto, Disease disease) {
-		final ImmunizationCriteria immunizationCriteria = new ImmunizationCriteria();
-		immunizationCriteria.setPerson(personReferenceDto);
-		immunizationCriteria.setDisease(disease);
-		ImmunizationListComponent immunizationList = new ImmunizationListComponent(immunizationCriteria);
+		final ImmunizationListCriteria immunizationListCriteria =
+			new ImmunizationListCriteria.Builder(personReferenceDto).wihDisease(disease).build();
+		ImmunizationListComponent immunizationList = new ImmunizationListComponent(immunizationListCriteria);
 		layout.addComponent(new SideComponentLayout(immunizationList), IMMUNIZATION_LOC);
 	}
 }

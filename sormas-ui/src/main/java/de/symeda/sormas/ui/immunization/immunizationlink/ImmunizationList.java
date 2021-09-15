@@ -8,7 +8,7 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.immunization.ImmunizationCriteria;
+import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
@@ -17,9 +17,9 @@ public class ImmunizationList extends PaginationList<ImmunizationListEntryDto> {
 
 	private static final int MAX_DISPLAYED_ENTRIES = 5;
 
-	private final ImmunizationCriteria immunizationCriteria;
+	private final ImmunizationListCriteria immunizationCriteria;
 
-	public ImmunizationList(ImmunizationCriteria immunizationCriteria) {
+	public ImmunizationList(ImmunizationListCriteria immunizationCriteria) {
 		super(MAX_DISPLAYED_ENTRIES);
 		this.immunizationCriteria = immunizationCriteria;
 	}

@@ -8,12 +8,12 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public final class ImmunizationSimilarityCriteria extends BaseCriteria implements Cloneable {
 
-	private String immunizationUuid;
-	private Disease disease;
-	private Date startDate;
-	private Date endDate;
-	private String personUuid;
-	private MeansOfImmunization meansOfImmunization;
+	private final String immunizationUuid;
+	private final Disease disease;
+	private final Date startDate;
+	private final Date endDate;
+	private final String personUuid;
+	private final MeansOfImmunization meansOfImmunization;
 
 	public static class Builder {
 
