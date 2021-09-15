@@ -102,6 +102,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -124,7 +125,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -149,12 +149,10 @@ import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.importexport.ExportHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -162,9 +160,14 @@ import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -187,9 +190,7 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
-import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfo;
-import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb;
-import de.symeda.sormas.backend.vaccinationinfo.VaccinationInfoFacadeEjb.VaccinationInfoFacadeEjbLocal;
+import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -245,8 +246,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	private EventService eventService;
 	@EJB
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
-	@EJB
-	private VaccinationInfoFacadeEjbLocal vaccinationInfoFacade;
 	@EJB
 	private SampleService sampleService;
 	@EJB
@@ -586,19 +585,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			joins.getEpiData().get(EpiData.ID),
 			joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
 			contact.get(Contact.RETURNING_TRAVELER),
-			joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION),
-			joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION_DOSES),
-			joins.getVaccinationInfo().get(VaccinationInfo.VACCINATION_INFO_SOURCE),
-			joins.getVaccinationInfo().get(VaccinationInfo.FIRST_VACCINATION_DATE),
-			joins.getVaccinationInfo().get(VaccinationInfo.LAST_VACCINATION_DATE),
-			joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_NAME),
-			joins.getVaccinationInfo().get(VaccinationInfo.OTHER_VACCINE_NAME),
-			joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_MANUFACTURER),
-			joins.getVaccinationInfo().get(VaccinationInfo.OTHER_VACCINE_MANUFACTURER),
-			joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_INN),
-			joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_BATCH_NUMBER),
-			joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_UNII_CODE),
-			joins.getVaccinationInfo().get(VaccinationInfo.VACCINE_ATC_CODE),
+			contact.get(Contact.VACCINATION_STATUS),
 			contact.get(Contact.EXTERNAL_ID),
 			contact.get(Contact.EXTERNAL_TOKEN),
 			contact.get(Contact.INTERNAL_TOKEN),
@@ -675,6 +662,24 @@ public class ContactFacadeEjb implements ContactFacade {
 				exposures = exposureList.stream().collect(Collectors.groupingBy(e -> e.getEpiData().getId()));
 			}
 
+			Map<Long, List<Immunization>> immunizations = null;
+			if (shouldExportFields(exportConfiguration, ExportHelper.getVaccinationExportProperties())) {
+				List<Immunization> immunizationList;
+				CriteriaQuery<Immunization> immunizationsCq = cb.createQuery(Immunization.class);
+				Root<Immunization> immunizationsCqRoot = immunizationsCq.from(Immunization.class);
+				Join<Immunization, Person> personJoin = immunizationsCqRoot.join(Immunization.PERSON, JoinType.LEFT);
+				Expression<String> personIdsExpr = personJoin.get(Person.ID);
+				immunizationsCq.where(
+					CriteriaBuilderHelper.and(
+						cb,
+						cb.or(
+							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION),
+							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION_RECOVERY)),
+						personIdsExpr.in(exportContacts.stream().map(ContactExportDto::getPersonId).collect(Collectors.toList()))));
+				immunizationList = em.createQuery(immunizationsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				immunizations = immunizationList.stream().collect(Collectors.groupingBy(i -> i.getPerson().getId()));
+			}
+
 			Map<String, List<ContactEventSummaryDetails>> eventSummaries = null;
 			if (shouldExportFields(
 				exportConfiguration,
@@ -740,6 +745,39 @@ public class ContactFacadeEjb implements ContactFacade {
 							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length());
 						}
 						exportContact.setTravelHistory(travelHistoryBuilder.toString());
+					});
+				}
+
+				if (immunizations != null) {
+					Optional.ofNullable(immunizations.get(exportContact.getPersonId())).ifPresent(contactImmunizations -> {
+						List<Immunization> filteredImmunizations =
+							contactImmunizations.stream().filter(i -> i.getDisease() == exportContact.getDisease()).collect(Collectors.toList());
+						if (filteredImmunizations.size() > 0) {
+							filteredImmunizations.sort(Comparator.comparing(ImmunizationEntityHelper::getDateForComparison));
+							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
+							exportContact.setVaccinationDoses(String.valueOf(mostRecentImmunization.getNumberOfDoses()));
+
+							if (CollectionUtils.isNotEmpty(mostRecentImmunization.getVaccinations())) {
+								List<Vaccination> sortedVaccinations = mostRecentImmunization.getVaccinations()
+									.stream()
+									.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
+									.collect(Collectors.toList());
+								Vaccination firstVaccination = sortedVaccinations.get(0);
+								Vaccination lastVaccination = sortedVaccinations.get(sortedVaccinations.size() - 1);
+
+								exportContact.setFirstVaccinationDate(firstVaccination.getVaccinationDate());
+								exportContact.setLastVaccinationDate(lastVaccination.getVaccinationDate());
+								exportContact.setVaccineName(lastVaccination.getVaccineName());
+								exportContact.setOtherVaccineName(lastVaccination.getOtherVaccineName());
+								exportContact.setVaccineManufacturer(lastVaccination.getVaccineManufacturer());
+								exportContact.setOtherVaccineManufacturer(lastVaccination.getOtherVaccineManufacturer());
+								exportContact.setVaccinationInfoSource(lastVaccination.getVaccinationInfoSource());
+								exportContact.setVaccineAtcCode(lastVaccination.getVaccineAtcCode());
+								exportContact.setVaccineBatchNumber(lastVaccination.getVaccineBatchNumber());
+								exportContact.setVaccineUniiCode(lastVaccination.getVaccineUniiCode());
+								exportContact.setVaccineInn(lastVaccination.getVaccineInn());
+							}
+						}
 					});
 				}
 
@@ -1279,16 +1317,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
 
 		target.setReportingDistrict(districtService.getByReferenceDto(source.getReportingDistrict()));
-
-		// create new vaccination info in case it is created in the mobile app
-		// TODO [vaccination info] no VaccinationInfoDto.build() will be needed after integrating vaccination info into the app
-		VaccinationInfoDto vaccinationInfo = source.getVaccinationInfo();
-		if (vaccinationInfo == null && target.getVaccinationInfo() == null) {
-			vaccinationInfo = VaccinationInfoDto.build();
-		}
-		if (vaccinationInfo != null) {
-			target.setVaccinationInfo(vaccinationInfoFacade.fromDto(vaccinationInfo, checkChangeDate));
-		}
+		target.setVaccinationStatus(source.getVaccinationStatus());
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
@@ -1550,7 +1579,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getShareInfoContacts().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
-		target.setVaccinationInfo(VaccinationInfoFacadeEjb.toDto(source.getVaccinationInfo()));
+		target.setVaccinationStatus(source.getVaccinationStatus());
 		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
 		if (source.getFollowUpStatusChangeUser() != null) {
 			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());

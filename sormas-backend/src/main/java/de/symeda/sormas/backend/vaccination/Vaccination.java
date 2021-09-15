@@ -41,9 +41,11 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.user.User;
 
-@Entity(name = "vaccination")
+@Entity
 @Audited
-public class VaccinationEntity extends AbstractDomainObject {
+public class Vaccination extends AbstractDomainObject {
+
+	private static final long serialVersionUID = 5143588610408312351L;
 
 	public static final String IMMUNIZATION = "immunization";
 	public static final String HEALTH_CONDITIONS = "healthConditions";

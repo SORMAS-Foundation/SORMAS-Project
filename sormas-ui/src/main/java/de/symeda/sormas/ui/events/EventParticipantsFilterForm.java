@@ -59,12 +59,7 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 				180),
 			ComboBox.class);
 
-		addField(
-			FieldConfiguration.withCaptionAndPixelSized(
-				EventParticipantCriteria.VACCINATION,
-				I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus),
-				140),
-			ComboBox.class);
+		addField(FieldConfiguration.pixelSized(EventParticipantCriteria.VACCINATION, 140), ComboBox.class);
 
 		TextField searchField = addField(
 			FieldConfiguration

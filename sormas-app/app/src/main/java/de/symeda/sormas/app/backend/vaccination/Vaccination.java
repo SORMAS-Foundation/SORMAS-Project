@@ -37,10 +37,10 @@ import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.user.User;
 
-@Entity(name = VaccinationEntity.TABLE_NAME)
-@DatabaseTable(tableName = VaccinationEntity.TABLE_NAME)
+@Entity(name = Vaccination.TABLE_NAME)
+@DatabaseTable(tableName = Vaccination.TABLE_NAME)
 @EmbeddedAdo
-public class VaccinationEntity extends PseudonymizableAdo {
+public class Vaccination extends PseudonymizableAdo {
 
 	public static final String TABLE_NAME = "vaccination";
 	public static final String I18N_PREFIX = "vaccination";

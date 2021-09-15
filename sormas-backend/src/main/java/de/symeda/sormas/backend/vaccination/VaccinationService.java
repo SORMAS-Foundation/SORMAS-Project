@@ -22,9 +22,9 @@ import de.symeda.sormas.backend.common.BaseAdoService;
 
 @Stateless
 @LocalBean
-public class VaccinationService extends BaseAdoService<VaccinationEntity> {
+public class VaccinationService extends BaseAdoService<Vaccination> {
 
 	public VaccinationService() {
-		super(VaccinationEntity.class);
+		super(Vaccination.class);
 	}
 }

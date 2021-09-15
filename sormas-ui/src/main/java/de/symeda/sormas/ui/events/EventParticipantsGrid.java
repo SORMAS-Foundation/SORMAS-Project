@@ -98,7 +98,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			EventParticipantIndexDto.CONTACT_COUNT,
 			SampleIndexDto.PATHOGEN_TEST_RESULT,
 			SampleIndexDto.SAMPLE_DATE_TIME,
-			EventParticipantIndexDto.VACCINATION);
+			EventParticipantIndexDto.VACCINATION_STATUS);
 		((Column<EventParticipantIndexDto, Date>) getColumn(SampleIndexDto.SAMPLE_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.UUID)).setRenderer(new UuidRenderer());
@@ -115,7 +115,6 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			.setCaption(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.PATHOGEN_TEST_RESULT));
 		getColumn(SampleIndexDto.SAMPLE_DATE_TIME)
 			.setCaption(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.SAMPLE_DATE_TIME));
-		getColumn(EventParticipantIndexDto.VACCINATION).setCaption(I18nProperties.getCaption(Captions.VaccinationInfo_vaccinationStatus));
 
 		addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {
 			if (e.getCaseUuid() != null) {

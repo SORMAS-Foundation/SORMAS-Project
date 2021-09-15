@@ -32,6 +32,7 @@ public interface Strings {
 	String classificationGeneratedFor = "classificationGeneratedFor";
 	String classificationInfoNumberText = "classificationInfoNumberText";
 	String classificationInfoText = "classificationInfoText";
+	String classificationLastVaccinationDateWithin = "classificationLastVaccinationDateWithin";
 	String classificationNoneOf = "classificationNoneOf";
 	String classificationNotACase = "classificationNotACase";
 	String classificationNotWithin = "classificationNotWithin";

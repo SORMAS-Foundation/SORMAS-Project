@@ -19,20 +19,20 @@ import com.j256.ormlite.dao.Dao;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 
-public class VaccinationDao extends AbstractAdoDao<VaccinationEntity> {
+public class VaccinationDao extends AbstractAdoDao<Vaccination> {
 
-	public VaccinationDao(Dao<VaccinationEntity, Long> innerDao) {
+	public VaccinationDao(Dao<Vaccination, Long> innerDao) {
 		super(innerDao);
 	}
 
 	@Override
-	protected Class<VaccinationEntity> getAdoClass() {
-		return VaccinationEntity.class;
+	protected Class<Vaccination> getAdoClass() {
+		return Vaccination.class;
 	}
 
 	@Override
 	public String getTableName() {
-		return VaccinationEntity.TABLE_NAME;
+		return Vaccination.TABLE_NAME;
 	}
 
 }

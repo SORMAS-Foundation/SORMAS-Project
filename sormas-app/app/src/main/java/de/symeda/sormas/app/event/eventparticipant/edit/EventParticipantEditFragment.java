@@ -19,6 +19,7 @@ import static android.view.View.GONE;
 
 import android.view.View;
 
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -101,6 +102,7 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
 		setUpControlListeners(contentBinding);
 
 		contentBinding.setData(record);
+		contentBinding.setVaccinationStatusClass(VaccinationStatus.class);
 	}
 
 	@Override

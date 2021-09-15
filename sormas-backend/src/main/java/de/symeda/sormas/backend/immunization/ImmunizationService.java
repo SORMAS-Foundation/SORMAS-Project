@@ -32,9 +32,11 @@ import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -43,14 +45,17 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
-import de.symeda.sormas.backend.immunization.tramsformers.ImmunizationListEntryDtoTransformer;
+import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryDtoTransformer;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
-import de.symeda.sormas.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
+import de.symeda.sormas.backend.vaccination.Vaccination;
 
 @Stateless
 @LocalBean
@@ -123,7 +128,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Immunization> immunization, Timestamp date) {
-		Join<Immunization, VaccinationEntity> vaccinations = immunization.join(Immunization.VACCINATIONS, JoinType.LEFT);
+		Join<Immunization, Vaccination> vaccinations = immunization.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
 		return new ChangeDateFilterBuilder(cb, date).add(immunization).add(vaccinations).build();
 	}
@@ -274,6 +279,29 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	/**
+	 * Retrieves the date of the last vaccination of any immunization associated with the person defined by personUuid
+	 * and of the given disease that lies before the given referenceDate.
+	 */
+	public Date getLastVaccinationDateBefore(String personUuid, Disease disease, Date referenceDate) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Date> cq = cb.createQuery(Date.class);
+		Root<DirectoryImmunization> root = cq.from(DirectoryImmunization.class);
+		Path lastVaccinationPath = root.join(DirectoryImmunization.LAST_VACCINATION_DATE, JoinType.LEFT).get(LastVaccinationDate.VACCINATION_DATE);
+
+		cq.where(
+			cb.and(
+				cb.equal(root.get(Immunization.PERSON).get(Person.UUID), personUuid),
+				cb.equal(root.get(Immunization.DISEASE), disease),
+				cb.lessThanOrEqualTo(lastVaccinationPath, referenceDate)));
+
+		cq.select(lastVaccinationPath);
+		cq.orderBy(cb.desc(lastVaccinationPath));
+		cq.distinct(true);
+
+		return QueryHelper.getFirstResult(em, cq);
+	}
+
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void updateImmunizationStatuses() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -321,4 +349,5 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		return dateFilter;
 	}
+
 }

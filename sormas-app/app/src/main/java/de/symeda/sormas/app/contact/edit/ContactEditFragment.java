@@ -24,6 +24,7 @@ import java.util.List;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -195,6 +196,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contentBinding.setData(record);
 		contentBinding.setCaze(sourceCase);
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
+		contentBinding.setVaccinationStatusClass(VaccinationStatus.class);
 
 		InfrastructureFieldsDependencyHandler.instance.initializeRegionFields(
 			contentBinding.contactRegion,

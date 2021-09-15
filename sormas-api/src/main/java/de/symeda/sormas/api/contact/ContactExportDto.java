@@ -26,17 +26,18 @@ import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportType;
-import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.importexport.ExportTarget;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
@@ -55,7 +56,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
-import de.symeda.sormas.api.vaccinationinfo.VaccinationInfoDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 public class ContactExportDto implements Serializable {
 
@@ -189,7 +190,7 @@ public class ContactExportDto implements Serializable {
 
 	private YesNoUnknown returningTraveler;
 
-	private Vaccination vaccination;
+	private VaccinationStatus vaccinationStatus;
 	private String vaccinationDoses;
 	private VaccinationInfoSource vaccinationInfoSource;
 	private Date firstVaccinationDate;
@@ -249,12 +250,7 @@ public class ContactExportDto implements Serializable {
 							String phone, String phoneOwner, String emailAddress, String otherContactDetails, OccupationType occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType,
 							String region, String district, String community,
 							long epiDataId, YesNoUnknown contactWithSourceCaseKnown, YesNoUnknown returningTraveler,
-							// vaccination info
-							Vaccination vaccination, String vaccinationDoses, VaccinationInfoSource vaccinationInfoSource, Date firstVaccinationDate, Date lastVaccinationDate,
-							Vaccine vaccineName, String otherVaccineName, VaccineManufacturer vaccineManufacturer, String otherVaccineManufacturer,
-							String vaccineInn, String vaccineBatchNumber, String vaccineUniiCode, String vaccineAtcCode,
-
-							String externalID, String externalToken, String internalToken,
+							VaccinationStatus vaccinationStatus, String externalID, String externalToken, String internalToken,
 							String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 							String reportingDistrict,
 							SymptomJournalStatus symptomJournalStatus,
@@ -338,20 +334,7 @@ public class ContactExportDto implements Serializable {
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 		this.returningTraveler = returningTraveler;
 
-		this.vaccination = vaccination;
-		this.vaccinationDoses = vaccinationDoses;
-		this.vaccinationInfoSource = vaccinationInfoSource;
-		this.firstVaccinationDate = firstVaccinationDate;
-		this.lastVaccinationDate = lastVaccinationDate;
-		this.vaccineName = vaccineName;
-		this.otherVaccineName = otherVaccineName;
-		this.vaccineManufacturer = vaccineManufacturer;
-		this.otherVaccineManufacturer = otherVaccineManufacturer;
-		this.vaccineInn = vaccineInn;
-		this.vaccineBatchNumber = vaccineBatchNumber;
-		this.vaccineUniiCode = vaccineUniiCode;
-		this.vaccineAtcCode = vaccineAtcCode;
-
+		this.vaccinationStatus = vaccinationStatus;
 		this.externalID = externalID;
 		this.externalToken = externalToken;
 		this.internalToken = internalToken;
@@ -1008,117 +991,91 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(92)
-	@ExportProperty({
-		ContactDto.VACCINATION_INFO,
-		VaccinationInfoDto.VACCINATION })
+	@ExportProperty(ContactDto.VACCINATION_STATUS)
 	@ExportGroup(ExportGroupType.VACCINATION)
-	public Vaccination getVaccination() {
-		return vaccination;
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
 	}
 
 	@Order(93)
-	@ExportProperty({
-		ContactDto.VACCINATION_INFO,
-		VaccinationInfoDto.VACCINATION_DOSES })
+	@ExportProperty(ImmunizationDto.NUMBER_OF_DOSES)
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getVaccinationDoses() {
 		return vaccinationDoses;
 	}
 
 	@Order(94)
-	@ExportProperty({
-		ContactDto.VACCINATION_INFO,
-		VaccinationInfoDto.VACCINATION_INFO_SOURCE })
+	@ExportProperty(VaccinationDto.VACCINATION_INFO_SOURCE)
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public VaccinationInfoSource getVaccinationInfoSource() {
 		return vaccinationInfoSource;
 	}
 
 	@Order(95)
-	@ExportProperty({
-		ContactDto.VACCINATION_INFO,
-		VaccinationInfoDto.FIRST_VACCINATION_DATE })
+	@ExportProperty(ImmunizationDto.FIRST_VACCINATION_DATE)
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public Date getFirstVaccinationDate() {
 		return firstVaccinationDate;
 	}
 
 	@Order(96)
-	@ExportProperty({
-		ContactDto.VACCINATION_INFO,
-		VaccinationInfoDto.LAST_VACCINATION_DATE })
+	@ExportProperty(ImmunizationDto.LAST_VACCINATION_DATE)
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public Date getLastVaccinationDate() {
 		return lastVaccinationDate;
 	}
 
 	@Order(97)
-	@ExportProperty({
-		ContactDto.VACCINATION_INFO,
-		VaccinationInfoDto.VACCINE_NAME })
+	@ExportProperty(VaccinationDto.VACCINE_NAME)
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public Vaccine getVaccineName() {
 		return vaccineName;
 	}
 
 	@Order(98)
-	@ExportProperty({
-		ContactDto.VACCINATION_INFO,
-		VaccinationInfoDto.OTHER_VACCINE_NAME })
+	@ExportProperty(VaccinationDto.OTHER_VACCINE_NAME)
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getOtherVaccineName() {
 		return otherVaccineName;
 	}
 
 	@Order(99)
-	@ExportProperty({
-		ContactDto.VACCINATION_INFO,
-		VaccinationInfoDto.VACCINE_MANUFACTURER })
+	@ExportProperty(VaccinationDto.VACCINE_MANUFACTURER)
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public VaccineManufacturer getVaccineManufacturer() {
 		return vaccineManufacturer;
 	}
 
 	@Order(100)
-	@ExportProperty({
-		ContactDto.VACCINATION_INFO,
-		VaccinationInfoDto.OTHER_VACCINE_MANUFACTURER })
+	@ExportProperty(VaccinationDto.OTHER_VACCINE_MANUFACTURER)
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getOtherVaccineManufacturer() {
 		return otherVaccineManufacturer;
 	}
 
 	@Order(101)
-	@ExportProperty({
-		ContactDto.VACCINATION_INFO,
-		VaccinationInfoDto.VACCINE_INN })
+	@ExportProperty(VaccinationDto.VACCINE_INN)
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getVaccineInn() {
 		return vaccineInn;
 	}
 
 	@Order(102)
-	@ExportProperty({
-		ContactDto.VACCINATION_INFO,
-		VaccinationInfoDto.VACCINE_BATCH_NUMBER })
+	@ExportProperty(VaccinationDto.VACCINE_BATCH_NUMBER)
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getVaccineBatchNumber() {
 		return vaccineBatchNumber;
 	}
 
 	@Order(103)
-	@ExportProperty({
-		ContactDto.VACCINATION_INFO,
-		VaccinationInfoDto.VACCINE_UNII_CODE })
+	@ExportProperty(VaccinationDto.VACCINE_UNII_CODE)
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getVaccineUniiCode() {
 		return vaccineUniiCode;
 	}
 
 	@Order(104)
-	@ExportProperty({
-		ContactDto.VACCINATION_INFO,
-		VaccinationInfoDto.VACCINE_ATC_CODE })
+	@ExportProperty(VaccinationDto.VACCINE_ATC_CODE)
 	@ExportGroup(ExportGroupType.VACCINATION)
 	public String getVaccineAtcCode() {
 		return vaccineAtcCode;
@@ -1432,5 +1389,53 @@ public class ContactExportDto implements Serializable {
 
 	public Boolean getInJurisdiction() {
 		return isInJurisdiction;
+	}
+
+	public void setVaccinationDoses(String vaccinationDoses) {
+		this.vaccinationDoses = vaccinationDoses;
+	}
+
+	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
+		this.vaccinationInfoSource = vaccinationInfoSource;
+	}
+
+	public void setFirstVaccinationDate(Date firstVaccinationDate) {
+		this.firstVaccinationDate = firstVaccinationDate;
+	}
+
+	public void setLastVaccinationDate(Date lastVaccinationDate) {
+		this.lastVaccinationDate = lastVaccinationDate;
+	}
+
+	public void setVaccineName(Vaccine vaccineName) {
+		this.vaccineName = vaccineName;
+	}
+
+	public void setOtherVaccineName(String otherVaccineName) {
+		this.otherVaccineName = otherVaccineName;
+	}
+
+	public void setVaccineManufacturer(VaccineManufacturer vaccineManufacturer) {
+		this.vaccineManufacturer = vaccineManufacturer;
+	}
+
+	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
+		this.otherVaccineManufacturer = otherVaccineManufacturer;
+	}
+
+	public void setVaccineInn(String vaccineInn) {
+		this.vaccineInn = vaccineInn;
+	}
+
+	public void setVaccineBatchNumber(String vaccineBatchNumber) {
+		this.vaccineBatchNumber = vaccineBatchNumber;
+	}
+
+	public void setVaccineUniiCode(String vaccineUniiCode) {
+		this.vaccineUniiCode = vaccineUniiCode;
+	}
+
+	public void setVaccineAtcCode(String vaccineAtcCode) {
+		this.vaccineAtcCode = vaccineAtcCode;
 	}
 }

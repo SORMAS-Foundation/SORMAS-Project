@@ -44,6 +44,7 @@ public class VaccinationDto extends PseudonymizableDto {
 	public static final String OTHER_VACCINE_NAME = "otherVaccineName";
 	public static final String VACCINE_NAME_DETAILS = "vaccineNameDetails";
 	public static final String VACCINE_MANUFACTURER = "vaccineManufacturer";
+	public static final String OTHER_VACCINE_MANUFACTURER = "otherVaccineManufacturer";
 	public static final String VACCINE_MANUFACTURER_DETAILS = "vaccineManufacturerDetails";
 	public static final String VACCINE_TYPE = "vaccineType";
 	public static final String VACCINE_DOSE = "vaccineDose";

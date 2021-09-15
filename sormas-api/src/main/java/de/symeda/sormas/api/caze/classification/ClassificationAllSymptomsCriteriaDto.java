@@ -1,13 +1,10 @@
 package de.symeda.sormas.api.caze.classification;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import org.apache.commons.lang3.ArrayUtils;
-
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -16,9 +13,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.HideForCountries;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
 public class ClassificationAllSymptomsCriteriaDto extends ClassificationCriteriaDto {
 
@@ -31,14 +26,12 @@ public class ClassificationAllSymptomsCriteriaDto extends ClassificationCriteria
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events, Date lastVaccinationDate) {
 
 		for (Field field : SymptomsDto.class.getDeclaredFields()) {
 
 			SymptomsDto symptomsDto = caze.getSymptoms();
-			if (field.getType() == SymptomState.class
-				&& fieldVisibilityCheckers.isVisible(SymptomsDto.class, field.getName()))
-			{
+			if (field.getType() == SymptomState.class && fieldVisibilityCheckers.isVisible(SymptomsDto.class, field.getName())) {
 				field.setAccessible(true);
 				try {
 					boolean matchedFieldState = field.get(symptomsDto) == symptomState;
@@ -68,9 +61,8 @@ public class ClassificationAllSymptomsCriteriaDto extends ClassificationCriteria
 		}
 
 		for (Field field : SymptomsDto.class.getDeclaredFields()) {
-			if (field.getType() == SymptomState.class
-					&& fieldVisibilityCheckers.isVisible(SymptomsDto.class, field.getName())) {
-				stringBuilder.append(I18nProperties.getPrefixCaption( SymptomsDto.I18N_PREFIX,field.getName())).append("; ");
+			if (field.getType() == SymptomState.class && fieldVisibilityCheckers.isVisible(SymptomsDto.class, field.getName())) {
+				stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, field.getName())).append("; ");
 			}
 		}
 		return stringBuilder.toString();

@@ -49,44 +49,35 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "Immunization";
 
-	public static final String REPORT_DATE = "reportDate";
-	public static final String EXTERNAL_ID = "externalId";
-
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String COUNTRY = "country";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-
-	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
-	public static final String MEANS_OF_IMMUNIZATION_DETAILS = "meansOfImmunizationDetails";
-	public static final String MANAGEMENT_STATUS = "managementStatus";
-	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
-
-	public static final String RESPONSIBLE_REGION = "responsibleRegion";
-	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
-	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
-
+	public static final String END_DATE = "endDate";
+	public static final String EXTERNAL_ID = "externalId";
 	public static final String FACILITY_TYPE = "facilityType";
+	public static final String FIRST_VACCINATION_DATE = "firstVaccinationDate";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
-
-	public static final String START_DATE = "startDate";
-	public static final String END_DATE = "endDate";
-
-	public static final String NUMBER_OF_DOSES = "numberOfDoses";
-
-	public static final String REPORTING_USER = "reportingUser";
-	public static final String PREVIOUS_INFECTION = "previousInfection";
+	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
 	public static final String LAST_INFECTION_DATE = "lastInfectionDate";
-	public static final String ADDITIONAL_DETAILS = "additionalDetails";
-
+	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
+	public static final String MANAGEMENT_STATUS = "managementStatus";
+	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
+	public static final String MEANS_OF_IMMUNIZATION_DETAILS = "meansOfImmunizationDetails";
+	public static final String NUMBER_OF_DOSES = "numberOfDoses";
+	public static final String PERSON = "person";
 	public static final String POSITIVE_TEST_RESULT_DATE = "positiveTestResultDate";
+	public static final String PREVIOUS_INFECTION = "previousInfection";
 	public static final String RECOVERY_DATE = "recoveryDate";
-
+	public static final String REPORTING_USER = "reportingUser";
+	public static final String REPORT_DATE = "reportDate";
+	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
+	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
+	public static final String RESPONSIBLE_REGION = "responsibleRegion";
+	public static final String START_DATE = "startDate";
 	public static final String VALID_FROM = "validFrom";
 	public static final String VALID_UNTIL = "validUntil";
-
-	public static final String COUNTRY = "country";
-
-	public static final String PERSON = "person";
 
 	@Outbreaks
 	@Required
@@ -154,6 +145,10 @@ public class ImmunizationDto extends PseudonymizableDto {
 		immunizationDto.setReportDate(new Date());
 
 		return immunizationDto;
+	}
+
+	public ImmunizationReferenceDto toReference() {
+		return new ImmunizationReferenceDto(getUuid(), toString(), getExternalId());
 	}
 
 	public Disease getDisease() {

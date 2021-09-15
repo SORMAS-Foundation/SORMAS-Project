@@ -13,18 +13,31 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.vaccinationinfo;
+package de.symeda.sormas.backend.importexport;
 
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 
-import de.symeda.sormas.backend.common.BaseAdoService;
+public final class ExportHelper {
 
-@Stateless
-@LocalBean
-public class VaccinationInfoService extends BaseAdoService<VaccinationInfo> {
+	private ExportHelper() {
 
-	public VaccinationInfoService() {
-		super(VaccinationInfo.class);
 	}
+
+	public static String[] getVaccinationExportProperties() {
+		return new String[] {
+			ImmunizationDto.NUMBER_OF_DOSES,
+			ImmunizationDto.FIRST_VACCINATION_DATE,
+			ImmunizationDto.LAST_VACCINATION_DATE,
+			VaccinationDto.VACCINATION_INFO_SOURCE,
+			VaccinationDto.VACCINE_NAME,
+			VaccinationDto.OTHER_VACCINE_NAME,
+			VaccinationDto.OTHER_VACCINE_MANUFACTURER,
+			VaccinationDto.OTHER_VACCINE_MANUFACTURER,
+			VaccinationDto.VACCINE_INN,
+			VaccinationDto.VACCINE_BATCH_NUMBER,
+			VaccinationDto.VACCINE_UNII_CODE,
+			VaccinationDto.VACCINE_ATC_CODE };
+	}
+
 }
