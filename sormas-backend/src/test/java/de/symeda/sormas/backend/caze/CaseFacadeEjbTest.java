@@ -361,7 +361,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		RDCFEntities newRDCF = creator.createRDCFEntities("New Region", "New District", "New Community", "New Facility");
 		UserDto user = useSurveillanceOfficerLogin(rdcf);
-		UserDto taskUser = useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
@@ -374,7 +373,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 		UserDto caseOfficer = creator
 			.createUser(newRDCF.region.getUuid(), newRDCF.district.getUuid(), newRDCF.facility.getUuid(), "Case", "Officer", UserRole.CASE_OFFICER);
-		TaskDto pendingTask1 = creator.createTask(
+		TaskDto pendingTask = creator.createTask(
 			TaskContext.CASE,
 			TaskType.CASE_INVESTIGATION,
 			TaskStatus.PENDING,
@@ -383,15 +382,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			null,
 			new Date(),
 			user.toReference());
-		TaskDto pendingTask2 = creator.createTask(
-			TaskContext.CASE,
-			TaskType.CASE_INVESTIGATION,
-			TaskStatus.PENDING,
-			caze.toReference(),
-			null,
-			null,
-			new Date(),
-			taskUser.toReference());
 		TaskDto doneTask = creator.createTask(
 			TaskContext.CASE,
 			TaskType.CASE_INVESTIGATION,
@@ -400,7 +390,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null,
 			new Date(),
-			taskUser.toReference());
+			user.toReference());
 
 		caze.setResponsibleRegion(new RegionReferenceDto(newRDCF.region.getUuid(), null, null));
 		caze.setResponsibleDistrict(new DistrictReferenceDto(newRDCF.district.getUuid(), null, null));
@@ -417,8 +407,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().saveCase(caze);
 
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-		pendingTask1 = getTaskFacade().getByUuid(pendingTask1.getUuid());
-		pendingTask2 = getTaskFacade().getByUuid(pendingTask2.getUuid());
+		pendingTask = getTaskFacade().getByUuid(pendingTask.getUuid());
 		doneTask = getTaskFacade().getByUuid(doneTask.getUuid());
 
 		// Case should have the new region, district, community and facility set
@@ -427,12 +416,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(caze.getCommunity().getUuid(), newRDCF.community.getUuid());
 		assertEquals(caze.getHealthFacility().getUuid(), newRDCF.facility.getUuid());
 
-		// Pending task 1 is not reassigned, since the case is still accessible to the reporting user
-		// Pending task 2 is reassigned to the case officer
-		// Done task should is not reassigned
-		assertEquals(pendingTask1.getAssigneeUser().getUuid(), caseOfficer.getUuid());
-		assertEquals(pendingTask2.getAssigneeUser().getUuid(), caseOfficer.getUuid());
-		assertEquals(doneTask.getAssigneeUser().getUuid(), taskUser.getUuid());
+		// Pending task is reassigned to the case officer
+		// Done task is not reassigned
+		assertEquals(pendingTask.getAssigneeUser().getUuid(), caseOfficer.getUuid());
+		assertEquals(doneTask.getAssigneeUser().getUuid(), user.getUuid());
 
 		// A previous hospitalization with the former facility should have been created
 		List<PreviousHospitalizationDto> previousHospitalizations = caze.getHospitalization().getPreviousHospitalizations();
