@@ -12,6 +12,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -59,6 +60,7 @@ import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.vaccination.VaccinationsField;
 
+@SuppressWarnings("deprecation")
 public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 	private static final String OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS = "overwriteImmunizationManagementStatus";
@@ -169,7 +171,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		facilityTypeGroup.setId("typeGroup");
 		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
-		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
+		facilityTypeGroup.addItems(FacilityTypeGroup.values());
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
 		ComboBox facilityType = addField(ImmunizationDto.FACILITY_TYPE);
 		ComboBox facilityCombo = addInfrastructureField(ImmunizationDto.HEALTH_FACILITY);
@@ -231,7 +233,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.DISEASE, ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.START_DATE);
+		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.DISEASE, ImmunizationDto.MEANS_OF_IMMUNIZATION);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -346,7 +348,11 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		});
 
 		facilityTypeGroup.addValueChangeListener(e -> {
-			FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
+			FieldHelper.updateEnumData(
+				facilityType,
+				facilityTypeGroup.getValue() != null
+					? FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroup.getValue())
+					: Arrays.stream(FacilityType.values()).collect(Collectors.toList()));
 		});
 		facilityType.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facilityCombo);

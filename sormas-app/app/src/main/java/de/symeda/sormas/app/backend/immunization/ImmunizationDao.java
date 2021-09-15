@@ -15,18 +15,16 @@
 
 package de.symeda.sormas.app.backend.immunization;
 
-import static de.symeda.sormas.app.backend.immunization.ImmunizationDaoHelper.overlappingDateRangeImmunizations;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
-import android.util.Log;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
@@ -38,6 +36,8 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
+
+import static de.symeda.sormas.app.backend.immunization.ImmunizationDaoHelper.overlappingDateRangeImmunizations;
 
 public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 
@@ -176,6 +176,9 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 			where.and().eq(Immunization.DISEASE, immunizationCriteria.getDisease());
 			if (criteria.getPersonUuid() != null) {
 				where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
+			}
+			if (immunizationCriteria.getMeansOfImmunization() != null) {
+				where.and().eq(Immunization.MEANS_OF_IMMUNIZATION, immunizationCriteria.getMeansOfImmunization());
 			}
 			queryBuilder.setWhere(where);
 			queryBuilder = queryBuilder.leftJoin(personQueryBuilder);

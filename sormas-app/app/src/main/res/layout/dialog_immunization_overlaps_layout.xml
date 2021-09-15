@@ -33,10 +33,16 @@
 
         <import type="de.symeda.sormas.api.i18n.I18nProperties" />
 
+        <import type="de.symeda.sormas.api.i18n.Captions" />
+
         <import type="de.symeda.sormas.api.i18n.Strings" />
 
         <variable
             name="dismissCallback"
+            type="de.symeda.sormas.app.util.Callback" />
+
+        <variable
+            name="saveCallback"
             type="de.symeda.sormas.app.util.Callback" />
 
     </data>
@@ -130,21 +136,39 @@
             android:layout_gravity="bottom"
             android:orientation="vertical">
 
-            <ImageView style="@style/FullHorizontalDividerStyleNoDefaultMargin" />
-
-            <de.symeda.sormas.app.component.controls.ControlButton
-                android:id="@+id/button_dismiss"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginTop="@dimen/simple_dialog_button_margin"
-                android:layout_marginEnd="@dimen/simple_dialog_button_horizontal_padding"
-                android:layout_marginBottom="@dimen/simple_dialog_button_margin"
-                android:onClickListener="@{(view) -> dismissCallback.call()}"
-                android:text="@string/action_ok"
-                app:buttonType="@{ControlButtonType.PRIMARY}"
-                app:iconStart="@drawable/ic_clear_black_24dp"
-                app:slim="true" />
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+                android:paddingRight="@dimen/rowListItemHorizontalMargin">
+
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/button_adjust"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_toStartOf="@+id/button_save"
+                    android:onClickListener="@{(view) -> dismissCallback.call()}"
+                    android:text="@{I18nProperties.getCaption(Captions.actionAdjustChanges)}"
+                    app:buttonType="@{ControlButtonType.PRIMARY}"
+                    app:iconStart="@drawable/ic_clear_black_24dp"
+                    app:slim="true" />
+
+                <de.symeda.sormas.app.component.controls.ControlButton
+                    android:id="@+id/button_save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_gravity="right"
+                    android:layout_marginStart="@dimen/control_spacing_slim"
+                    android:onClickListener="@{(view) -> saveCallback.call()}"
+                    android:text="@{I18nProperties.getCaption(Captions.actionSaveChanges)}"
+                    app:buttonType="@{ControlButtonType.PRIMARY}"
+                    app:iconStart="@drawable/ic_done_black_24dp"
+                    app:slim="true" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

@@ -52,7 +52,7 @@ public abstract class AbstractDialog implements NotificationContext {
 	private AlertDialog.Builder builder;
 	private AlertDialog dialog;
 	private DialogRootLayoutBinding rootBinding;
-	private ViewDataBinding contentBinding;
+	protected ViewDataBinding contentBinding;
 	private ViewDataBinding buttonPanelBinding;
 	private int contentLayoutResourceId;
 	private int buttonPanelLayoutResourceId;

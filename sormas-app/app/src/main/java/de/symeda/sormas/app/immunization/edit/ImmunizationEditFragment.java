@@ -15,15 +15,13 @@
 
 package de.symeda.sormas.app.immunization.edit;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import android.text.Html;
 import android.view.View;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
@@ -70,7 +68,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	private List<Item> initialDistricts;
 	private List<Item> initialCommunities;
 	private List<Item> initialFacilities;
-	private List<Item> facilityOrHomeList;
+	private List<Item> facilityTypeList;
 	private List<Item> facilityTypeGroupList;
 	private List<Item> countries;
 	private Consumer<MeansOfImmunization> meansOfImmunizationChange;
@@ -124,8 +122,9 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		initialFacilities =
 			InfrastructureDaoHelper.loadFacilities(record.getResponsibleDistrict(), record.getResponsibleCommunity(), record.getFacilityType());
 
-		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.FOR_CASES, true);
-		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
+		facilityTypeGroupList = DataUtils.toItems(Arrays.asList(FacilityTypeGroup.values()), true);
+		facilityTypeList =
+			record.getFacilityType() != null ? DataUtils.toItems(FacilityType.getTypes(record.getFacilityType().getFacilityTypeGroup())) : null;
 	}
 
 	@Override
@@ -147,20 +146,16 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			initialCommunities,
 			record.getResponsibleCommunity(),
 			null,
-			facilityOrHomeList,
+			null,
 			contentBinding.facilityTypeGroup,
 			facilityTypeGroupList,
 			contentBinding.immunizationFacilityType,
-			null,
+			facilityTypeList,
 			contentBinding.immunizationHealthFacility,
 			initialFacilities,
 			record.getHealthFacility(),
 			contentBinding.immunizationHealthFacilityDetails,
-			null,
-			null,
-			null,
-			false,
-			() -> false);
+			false);
 	}
 
 	@Override
@@ -244,6 +239,12 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
 			}
 		}
+//
+//		contentBinding.facilityTypeGroup.addValueChangedListener(e -> {
+//			contentBinding.immunizationFacilityType.setSpinnerData(				e.getValue() != null
+//					? FacilityType.getTypes((FacilityTypeGroup) e.getValue())
+//					: Arrays.stream(FacilityType.values()).collect(Collectors.toList()));
+//		});
 	}
 
 	@Override
@@ -269,59 +270,62 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		contentBinding.openLinkedCase.setOnClickListener(v -> CaseReadActivity.startActivity(getActivity(), record.getRelatedCase().getUuid(), true));
 	}
 
-	private void linkRecoveryImmunizationToCaseSearchCaseIncluded(Immunization immunization){
+	private void linkRecoveryImmunizationToCaseSearchCaseIncluded(Immunization immunization) {
 
 		ImmunizationSearchCaseDialog.searchCaseToLinkImmunization(ImmunizationEditActivity.getActiveActivity(), caseSearchField -> {
-					CaseCriteria criteria = new CaseCriteria();
-					criteria.setPerson(immunization.getPerson());
-					criteria.setDisease(immunization.getDisease());
-					criteria.setOutcome(CaseOutcome.RECOVERED);
+			CaseCriteria criteria = new CaseCriteria();
+			criteria.setPerson(immunization.getPerson());
+			criteria.setDisease(immunization.getDisease());
+			criteria.setOutcome(CaseOutcome.RECOVERED);
 
-					criteria.setTextFilter(caseSearchField);
+			criteria.setTextFilter(caseSearchField);
 
-					List<Case> cases = DatabaseHelper.getCaseDao().queryByCriteria(criteria, 0, 1);
+			List<Case> cases = DatabaseHelper.getCaseDao().queryByCriteria(criteria, 0, 1);
 
-					if (cases != null && !cases.isEmpty() && cases.get(0)!= null){
-					Case foundCase = cases.get(0);
-						immunization.setRelatedCase(foundCase);
-						List<Sample> samples = DatabaseHelper.getSampleDao().queryByCase(foundCase);
-						PathogenTest relevantPathogenTest = null;
-						for (Sample sample : samples) {
-							List<PathogenTest> pathogenTests = DatabaseHelper.getSampleTestDao().queryBySample(sample);
+			if (cases != null && !cases.isEmpty() && cases.get(0) != null) {
+				Case foundCase = cases.get(0);
+				immunization.setRelatedCase(foundCase);
+				List<Sample> samples = DatabaseHelper.getSampleDao().queryByCase(foundCase);
+				PathogenTest relevantPathogenTest = null;
+				for (Sample sample : samples) {
+					List<PathogenTest> pathogenTests = DatabaseHelper.getSampleTestDao().queryBySample(sample);
 
-							for (PathogenTest pathogenTest : pathogenTests) {
-								if (pathogenTest.getTestedDisease().equals(foundCase.getDisease()) && PathogenTestResultType.POSITIVE.equals(pathogenTest.getTestResult())) {
-									if (relevantPathogenTest == null) {
-										relevantPathogenTest = pathogenTest;
-									} else if (relevantPathogenTest.getTestDateTime().before(pathogenTest.getTestDateTime())) {
-										relevantPathogenTest = pathogenTest;
-									}
-								}
+					for (PathogenTest pathogenTest : pathogenTests) {
+						if (pathogenTest.getTestedDisease().equals(foundCase.getDisease())
+							&& PathogenTestResultType.POSITIVE.equals(pathogenTest.getTestResult())) {
+							if (relevantPathogenTest == null) {
+								relevantPathogenTest = pathogenTest;
+							} else if (relevantPathogenTest.getTestDateTime().before(pathogenTest.getTestDateTime())) {
+								relevantPathogenTest = pathogenTest;
 							}
 						}
-						if (relevantPathogenTest != null) {
-							Date latestPositiveTestResultDate = relevantPathogenTest.getTestDateTime();
-
-							if (latestPositiveTestResultDate != null) {
-								immunization.setPositiveTestResultDate(latestPositiveTestResultDate);
-							}
-
-							Date onsetDate = foundCase.getSymptoms().getOnsetDate();
-							if (onsetDate != null) {
-								immunization.setLastInfectionDate(onsetDate);
-							}
-
-							Date outcomeDate = foundCase.getOutcomeDate();
-							if (outcomeDate != null) {
-								immunization.setRecoveryDate(outcomeDate);
-							}
-						}
-						final ImmunizationEditActivity activity = (ImmunizationEditActivity) ImmunizationEditFragment.this.getActivity();
-						activity.saveData();
-					}else {
-						NotificationHelper.showNotification(ImmunizationEditActivity.getActiveActivity(), NotificationType.WARNING, I18nProperties.getString(Strings.messageNoCaseFoundToLinkImmunization));
 					}
 				}
-		);
+				if (relevantPathogenTest != null) {
+					Date latestPositiveTestResultDate = relevantPathogenTest.getTestDateTime();
+
+					if (latestPositiveTestResultDate != null) {
+						immunization.setPositiveTestResultDate(latestPositiveTestResultDate);
+					}
+
+					Date onsetDate = foundCase.getSymptoms().getOnsetDate();
+					if (onsetDate != null) {
+						immunization.setLastInfectionDate(onsetDate);
+					}
+
+					Date outcomeDate = foundCase.getOutcomeDate();
+					if (outcomeDate != null) {
+						immunization.setRecoveryDate(outcomeDate);
+					}
+				}
+				final ImmunizationEditActivity activity = (ImmunizationEditActivity) ImmunizationEditFragment.this.getActivity();
+				activity.saveData();
+			} else {
+				NotificationHelper.showNotification(
+					ImmunizationEditActivity.getActiveActivity(),
+					NotificationType.WARNING,
+					I18nProperties.getString(Strings.messageNoCaseFoundToLinkImmunization));
+			}
+		});
 	}
 }
