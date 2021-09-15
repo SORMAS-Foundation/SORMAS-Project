@@ -90,8 +90,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			immunization.get(Immunization.START_DATE),
 			immunization.get(Immunization.END_DATE),
 			immunization.get(Immunization.CHANGE_DATE),
-			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)),
-			immunization.get(Immunization.DISEASE));
+			JurisdictionHelper.booleanSelector(cb, createUserFilter(immunizationQueryContext)));
 
 		if (criteria != null) {
 			final Predicate criteriaFilter = buildCriteriaFilter(criteria, immunizationQueryContext);
