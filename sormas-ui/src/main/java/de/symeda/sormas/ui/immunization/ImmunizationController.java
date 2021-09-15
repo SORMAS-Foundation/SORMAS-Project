@@ -241,7 +241,7 @@ public class ImmunizationController {
 
 	private void selectOrCreateimmunizationForPerson(ImmunizationDto dto, PersonReferenceDto selectedPerson) {
 		dto.setPerson(selectedPerson);
-		selectOrCreateImmunization(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+		selectOrCreateImmunization(dto, selectedPerson, uuid -> {
 			if (uuid == null) {
 				return;
 			}
@@ -254,7 +254,10 @@ public class ImmunizationController {
 		});
 	}
 
-	private void selectOrCreateImmunization(ImmunizationDto immunizationDto, PersonDto person, Consumer<String> selectedImmunizationUuidConsumer) {
+	private void selectOrCreateImmunization(
+		ImmunizationDto immunizationDto,
+		PersonReferenceDto person,
+		Consumer<String> selectedImmunizationUuidConsumer) {
 		ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria.Builder().withDisease(immunizationDto.getDisease())
 			.withStartDate(immunizationDto.getStartDate())
 			.withEndDate(immunizationDto.getEndDate())
