@@ -478,8 +478,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
-		return caseService.getUuidByUuidEpidNumberOrExternalId(searchTerm);
+	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria) {
+		return caseService.getUuidByUuidEpidNumberOrExternalId(searchTerm, caseCriteria);
 	}
 
 	@Override
@@ -2414,6 +2414,22 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		caseService.delete(caze);
+	}
+
+	public List<String> deleteCases(List<String> caseUuids) {
+		if (!userService.hasRight(UserRight.CASE_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
+		}
+		List<String> deletedCasesUuids = new ArrayList<>();
+		for (String caseUuid : caseUuids) {
+			try {
+				deleteCase(caseUuid);
+				deletedCasesUuids.add(caseUuid);
+			} catch (ExternalSurveillanceToolException e) {
+				logger.error("The case with uuid:" + caseUuid + "could not be deleted");
+			}
+		}
+		return deletedCasesUuids;
 	}
 
 	@Override

@@ -279,6 +279,7 @@ public interface Strings {
 	String errorReadingTemplate = "errorReadingTemplate";
 	String errorSetFeverRequired = "errorSetFeverRequired";
 	String errorSormasToSormasAccept = "errorSormasToSormasAccept";
+	String errorSormasToSormasAcceptNotPending = "errorSormasToSormasAcceptNotPending";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
@@ -287,6 +288,7 @@ public interface Strings {
 	String errorSormasToSormasInvalidRequestMethod = "errorSormasToSormasInvalidRequestMethod";
 	String errorSormasToSormasLoadShares = "errorSormasToSormasLoadShares";
 	String errorSormasToSormasOwnershipAlreadyHandedOver = "errorSormasToSormasOwnershipAlreadyHandedOver";
+	String errorSormasToSormasRejectNotPending = "errorSormasToSormasRejectNotPending";
 	String errorSormasToSormasRequestToken = "errorSormasToSormasRequestToken";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
 	String errorSormasToSormasRevokeNotPending = "errorSormasToSormasRevokeNotPending";
@@ -339,6 +341,7 @@ public interface Strings {
 	String headingCaseConversion = "headingCaseConversion";
 	String headingCaseData = "headingCaseData";
 	String headingCaseFatalityRate = "headingCaseFatalityRate";
+	String headingCaseFound = "headingCaseFound";
 	String headingCaseImport = "headingCaseImport";
 	String headingCaseResponsibleJurisidction = "headingCaseResponsibleJurisidction";
 	String headingCasesArchived = "headingCasesArchived";
@@ -628,6 +631,8 @@ public interface Strings {
 	String headingVisitsDeleted = "headingVisitsDeleted";
 	String headingVisualization = "headingVisualization";
 	String headingWrongFileType = "headingWrongFileType";
+	String immunizationRecoveryHeading = "immunizationRecoveryHeading";
+	String immunizationVaccinationHeading = "immunizationVaccinationHeading";
 	String inactive = "inactive";
 	String inColumn = "inColumn";
 	String infoActivityAsCaseInvestigation = "infoActivityAsCaseInvestigation";
@@ -830,6 +835,8 @@ public interface Strings {
 	String messageCaseDearchived = "messageCaseDearchived";
 	String messageCaseDuplicateDeleted = "messageCaseDuplicateDeleted";
 	String messageCaseExternalTokenWarning = "messageCaseExternalTokenWarning";
+	String messageCaseFound = "messageCaseFound";
+	String messageCaseFoundNoValidPathogenTest = "messageCaseFoundNoValidPathogenTest";
 	String messageCaseIncidenceUnsupportedAgeGroup = "messageCaseIncidenceUnsupportedAgeGroup";
 	String messageCaseReferredFromPoe = "messageCaseReferredFromPoe";
 	String messageCaseRelationToEventWithoutDisease = "messageCaseRelationToEventWithoutDisease";
@@ -985,6 +992,7 @@ public interface Strings {
 	String messageMissingDateFilter = "messageMissingDateFilter";
 	String messageMissingEpiWeekFilter = "messageMissingEpiWeekFilter";
 	String messageNoCaseFound = "messageNoCaseFound";
+	String messageNoCaseFoundToLinkImmunization = "messageNoCaseFoundToLinkImmunization";
 	String messageNoCasesSelected = "messageNoCasesSelected";
 	String messageNoClinicalVisitsSelected = "messageNoClinicalVisitsSelected";
 	String messageNoContactsSelected = "messageNoContactsSelected";
@@ -1120,6 +1128,7 @@ public interface Strings {
 	String notificationTaskAssociatedCaseLink = "notificationTaskAssociatedCaseLink";
 	String notificationTaskAssociatedContactLink = "notificationTaskAssociatedContactLink";
 	String notificationTaskAssociatedEventLink = "notificationTaskAssociatedEventLink";
+	String notificationTaskAssociatedTravelEntryLink = "notificationTaskAssociatedTravelEntryLink";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";
 	String notificationTaskStartGeneral = "notificationTaskStartGeneral";
@@ -1200,6 +1209,10 @@ public interface Strings {
 	String promptImmunizationDateType = "promptImmunizationDateType";
 	String promptImmunizationEpiWeekFrom = "promptImmunizationEpiWeekFrom";
 	String promptImmunizationEpiWeekTo = "promptImmunizationEpiWeekTo";
+	String promptImmunizationPositiveTestResultDateFrom = "promptImmunizationPositiveTestResultDateFrom";
+	String promptImmunizationRecoveryDateFrom = "promptImmunizationRecoveryDateFrom";
+	String promptImmunizationStartDateFrom = "promptImmunizationStartDateFrom";
+	String promptImmunizationValidFrom = "promptImmunizationValidFrom";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPersonDuplicateSearchIdExternalId = "promptPersonDuplicateSearchIdExternalId";

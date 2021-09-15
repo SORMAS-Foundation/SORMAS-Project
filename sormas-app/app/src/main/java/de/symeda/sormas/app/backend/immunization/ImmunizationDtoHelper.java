@@ -26,6 +26,8 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.Community;
@@ -76,6 +78,7 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 	@Override
 	protected void fillInnerFromDto(Immunization target, ImmunizationDto source) {
 		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
@@ -88,9 +91,14 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 		target.setResponsibleRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getResponsibleRegion()));
 		target.setResponsibleDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getResponsibleDistrict()));
 		target.setResponsibleCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getResponsibleCommunity()));
+		target.setFacilityType(source.getFacilityType());
+		target.setHealthFacility(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getHealthFacility()));
+		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setCountry(DatabaseHelper.getCountryDao().getByReferenceDto(source.getCountry()));
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
+		target.setValidFrom(source.getValidFrom());
+		target.setValidUntil(source.getValidUntil());
 		target.setNumberOfDoses(source.getNumberOfDoses());
 		target.setPreviousInfection(source.getPreviousInfection());
 		target.setLastInfectionDate(source.getLastInfectionDate());
@@ -113,6 +121,7 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 	@Override
 	protected void fillInnerFromAdo(ImmunizationDto target, Immunization source) {
 		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
 		if (source.getPerson() != null) {
 			Person person = DatabaseHelper.getPersonDao().queryForId(source.getPerson().getId());
 			target.setPerson(PersonDtoHelper.toReferenceDto(person));
@@ -146,8 +155,19 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 			Country country = DatabaseHelper.getCountryDao().queryForId(source.getCountry().getId());
 			target.setCountry(CountryDtoHelper.toReferenceDto(country));
 		}
+
+		target.setFacilityType(source.getFacilityType());
+		if (source.getHealthFacility() != null) {
+			Facility facility = DatabaseHelper.getFacilityDao().queryForId(source.getHealthFacility().getId());
+			target.setHealthFacility(FacilityDtoHelper.toReferenceDto(facility));
+		} else {
+			target.setHealthFacility(null);
+		}
+		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setStartDate(source.getStartDate());
 		target.setEndDate(source.getEndDate());
+		target.setValidFrom(source.getValidFrom());
+		target.setValidUntil(source.getValidUntil());
 		target.setNumberOfDoses(source.getNumberOfDoses());
 		target.setPreviousInfection(source.getPreviousInfection());
 		target.setLastInfectionDate(source.getLastInfectionDate());

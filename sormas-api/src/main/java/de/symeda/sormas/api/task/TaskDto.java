@@ -29,6 +29,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -59,6 +60,7 @@ public class TaskDto extends EntityDto {
 	public static final String CONTEXT_REFERENCE = "contextReference";
 	public static final String CLOSED_LAT = "closedLat";
 	public static final String CLOSED_LON = "closedLon";
+	public static final String TRAVEL_ENTRY = "travelEntry";
 
 	@Required
 	private TaskContext taskContext;
@@ -71,6 +73,10 @@ public class TaskDto extends EntityDto {
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
 	private ContactReferenceDto contact;
+
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	private TravelEntryReferenceDto travelEntry;
 
 	@Required
 	private TaskType taskType;
@@ -118,6 +124,9 @@ public class TaskDto extends EntityDto {
 			task.setEvent((EventReferenceDto) entityRef);
 			break;
 		case GENERAL:
+			break;
+		case TRAVEL_ENTRY:
+			task.setTravelEntry((TravelEntryReferenceDto) entityRef);
 			break;
 		}
 		return task;
@@ -270,6 +279,8 @@ public class TaskDto extends EntityDto {
 			return getEvent();
 		case GENERAL:
 			return null;
+		case TRAVEL_ENTRY:
+			return getTravelEntry();
 		default:
 			throw new IndexOutOfBoundsException(taskContext.toString());
 		}
@@ -281,5 +292,13 @@ public class TaskDto extends EntityDto {
 
 	public void setClosedLatLonAccuracy(Float closedLatLonAccuracy) {
 		this.closedLatLonAccuracy = closedLatLonAccuracy;
+	}
+
+	public TravelEntryReferenceDto getTravelEntry() {
+		return travelEntry;
+	}
+
+	public void setTravelEntry(TravelEntryReferenceDto travelEntry) {
+		this.travelEntry = travelEntry;
 	}
 }

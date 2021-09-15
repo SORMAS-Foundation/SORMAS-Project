@@ -45,6 +45,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
@@ -323,6 +324,12 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			.stream()
 			.map(f -> toReferenceDto(f))
 			.collect(Collectors.toList());
+	}
+
+	public Page<FacilityIndexDto> getIndexPage(FacilityCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<FacilityIndexDto> facilityIndexList = getIndexList(criteria, offset, size, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(facilityIndexList, offset, size, totalElementCount);
 	}
 
 	@Override

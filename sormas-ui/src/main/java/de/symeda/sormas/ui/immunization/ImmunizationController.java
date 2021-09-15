@@ -13,7 +13,9 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -44,7 +46,14 @@ public class ImmunizationController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<ImmunizationCreationForm> immunizationCreateComponent = getImmunizationCreateComponent();
+		CommitDiscardWrapperComponent<ImmunizationCreationForm> immunizationCreateComponent = getImmunizationCreateComponent(null, null);
+		if (immunizationCreateComponent != null) {
+			VaadinUiUtil.showModalPopupWindow(immunizationCreateComponent, I18nProperties.getString(Strings.headingCreateNewImmunization));
+		}
+	}
+
+	public void create(PersonReferenceDto person, Disease disease) {
+		CommitDiscardWrapperComponent<ImmunizationCreationForm> immunizationCreateComponent = getImmunizationCreateComponent(person, disease);
 		if (immunizationCreateComponent != null) {
 			VaadinUiUtil.showModalPopupWindow(immunizationCreateComponent, I18nProperties.getString(Strings.headingCreateNewImmunization));
 		}
@@ -55,11 +64,12 @@ public class ImmunizationController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	private CommitDiscardWrapperComponent<ImmunizationCreationForm> getImmunizationCreateComponent() {
+	private CommitDiscardWrapperComponent<ImmunizationCreationForm> getImmunizationCreateComponent(PersonReferenceDto personDto, Disease disease) {
 		UserProvider currentUserProvider = UserProvider.getCurrent();
 		if (currentUserProvider != null) {
-			ImmunizationCreationForm createForm = new ImmunizationCreationForm();
-			ImmunizationDto immunization = ImmunizationDto.build(null);
+			ImmunizationCreationForm createForm = new ImmunizationCreationForm(personDto, disease);
+			ImmunizationDto immunization = ImmunizationDto.build(personDto);
+			immunization.setDisease(disease);
 			immunization.setReportingUser(currentUserProvider.getUserReference());
 			createForm.setValue(immunization);
 			final CommitDiscardWrapperComponent<ImmunizationCreationForm> viewComponent = new CommitDiscardWrapperComponent<>(
@@ -100,7 +110,7 @@ public class ImmunizationController {
 
 		ImmunizationDto immunizationDto = findImmunization(immunizationUuid);
 
-		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(immunizationDto.isPseudonymized());
+		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(immunizationDto.isPseudonymized(), immunizationDto.getRelatedCase());
 		immunizationDataForm.setValue(immunizationDto);
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();

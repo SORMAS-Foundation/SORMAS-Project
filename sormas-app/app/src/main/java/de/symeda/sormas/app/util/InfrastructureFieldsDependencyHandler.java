@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -572,12 +572,19 @@ public class InfrastructureFieldsDependencyHandler {
 				District selectedDistrict = (District) districtField.getValue();
 
 				if (selectedType != null && !isEmptyDistrict(selectedDistrict)) {
-					facilityField.setSpinnerData(
-						addUnknownItem(loadFacilities(selectedDistrict, (Community) communityField.getValue(), selectedType), unknownFacility));
+					List<Item> newFacilities = loadFacilities(selectedDistrict, (Community) communityField.getValue(), selectedType);
+					if (facilityItem != null && !newFacilities.contains(facilityItem)) {
+						newFacilities.add(facilityItem);
+					}
+					facilityField.setSpinnerData(addUnknownItem(newFacilities, unknownFacility));
 				} else if (facilityField.getValue() != null) {
 					Facility noneFacility = DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID);
 					if (!facilityField.getValue().equals(noneFacility)) {
-						facilityField.setSpinnerData(addUnknownItem(itemsWithEmpty(), unknownFacility));
+						List<Item> newFacilities = itemsWithEmpty();
+						if (facilityItem != null) {
+							newFacilities.add(facilityItem);
+						}
+						facilityField.setSpinnerData(addUnknownItem(newFacilities, unknownFacility));
 					}
 				}
 			});

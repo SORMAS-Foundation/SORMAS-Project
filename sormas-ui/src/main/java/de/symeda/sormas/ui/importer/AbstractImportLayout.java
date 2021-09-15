@@ -49,6 +49,7 @@ public class AbstractImportLayout extends VerticalLayout {
 		currentUI = UI.getCurrent();
 		setSpacing(false);
 		setMargin(true);
+		createSeparatorComboBox();
 	}
 
 	protected void addDownloadResourcesComponent(int step, ClassResource importGuideResource) {
@@ -103,7 +104,7 @@ public class AbstractImportLayout extends VerticalLayout {
 		ImportLayoutComponent importCsvComponent = new ImportLayoutComponent(step, headline, infoText, null, null);
 		CssStyles.style(importCsvComponent, CssStyles.VSPACE_3);
 		addComponent(importCsvComponent);
-		addComponent(createSeparatorComboBox());
+		addComponent(separator);
 		upload = new Upload("", receiver);
 		upload.setButtonCaption(I18nProperties.getCaption(Captions.importImportData));
 		CssStyles.style(upload, CssStyles.VSPACE_2);
@@ -117,7 +118,17 @@ public class AbstractImportLayout extends VerticalLayout {
 		comboBox.setCaption(I18nProperties.getCaption(Captions.importValueSeparator));
 		comboBox.setItems(ValueSeparator.values());
 		comboBox.setValue(ValueSeparator.DEFAULT);
-		comboBox.setItemCaptionGenerator(item -> I18nProperties.getEnumCaption(ValueSeparator.valueOf(item.toString())));
+		comboBox.setEmptySelectionAllowed(false);
+		comboBox.setItemCaptionGenerator(item -> {
+			if (ValueSeparator.DEFAULT.equals(ValueSeparator.valueOf(item.toString()))) {
+				ValueSeparator defaultSeparator = ValueSeparator.get(ValueSeparator.getSeparator(ValueSeparator.DEFAULT));
+				return String.format(
+					I18nProperties.getEnumCaption(ValueSeparator.valueOf(item.toString())),
+					defaultSeparator == null ? ValueSeparator.getSeparator(ValueSeparator.DEFAULT) : I18nProperties.getEnumCaption(defaultSeparator));
+			} else {
+				return I18nProperties.getEnumCaption(ValueSeparator.valueOf(item.toString()));
+			}
+		});
 		separator = comboBox;
 		return comboBox;
 	}
@@ -145,7 +156,7 @@ public class AbstractImportLayout extends VerticalLayout {
 		checkboxBar.addComponent(labelInfo);
 		CssStyles.style(checkboxBar, CssStyles.VSPACE_3);
 		addComponent(checkboxBar);
-		addComponent(createSeparatorComboBox());
+		addComponent(separator);
 		addComponent(upload);
 
 		allowOverwrite.addValueChangeListener(e -> {

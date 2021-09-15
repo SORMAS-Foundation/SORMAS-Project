@@ -1279,12 +1279,12 @@ public interface Captions {
 	String Immunization_firstVaccinationDate = "Immunization.firstVaccinationDate";
 	String Immunization_healthFacility = "Immunization.healthFacility";
 	String Immunization_healthFacilityDetails = "Immunization.healthFacilityDetails";
+	String Immunization_immunizationManagementStatus = "Immunization.immunizationManagementStatus";
 	String Immunization_immunizationPeriod = "Immunization.immunizationPeriod";
 	String Immunization_immunizationStatus = "Immunization.immunizationStatus";
 	String Immunization_lastInfectionDate = "Immunization.lastInfectionDate";
 	String Immunization_lastVaccinationDate = "Immunization.lastVaccinationDate";
 	String Immunization_lastVaccineType = "Immunization.lastVaccineType";
-	String Immunization_managementStatus = "Immunization.managementStatus";
 	String Immunization_meansOfImmunization = "Immunization.meansOfImmunization";
 	String Immunization_meansOfImmunizationDetails = "Immunization.meansOfImmunizationDetails";
 	String Immunization_numberOfDoses = "Immunization.numberOfDoses";
@@ -1377,6 +1377,7 @@ public interface Captions {
 	String lineListingSharedInformation = "lineListingSharedInformation";
 	String linkEvent = "linkEvent";
 	String linkEventGroup = "linkEventGroup";
+	String linkImmunizationToCaseButton = "linkImmunizationToCaseButton";
 	String Location = "Location";
 	String Location_additionalInformation = "Location.additionalInformation";
 	String Location_addressType = "Location.addressType";
@@ -1468,6 +1469,7 @@ public interface Captions {
 	String numberOfCharacters = "numberOfCharacters";
 	String openInPatientDiaryButton = "openInPatientDiaryButton";
 	String openInSymptomJournalButton = "openInSymptomJournalButton";
+	String openLinkedCaseToImmunizationButton = "openLinkedCaseToImmunizationButton";
 	String options = "options";
 	String outbreakAffectedDistricts = "outbreakAffectedDistricts";
 	String outbreakNoOutbreak = "outbreakNoOutbreak";
@@ -2124,6 +2126,7 @@ public interface Captions {
 	String Task_taskPriority = "Task.taskPriority";
 	String Task_taskStatus = "Task.taskStatus";
 	String Task_taskType = "Task.taskType";
+	String Task_travelEntry = "Task.travelEntry";
 	String taskActiveTasks = "taskActiveTasks";
 	String taskAllTasks = "taskAllTasks";
 	String taskArchivedTasks = "taskArchivedTasks";

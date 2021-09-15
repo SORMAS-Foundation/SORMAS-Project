@@ -18,6 +18,7 @@ package de.symeda.sormas.api.immunization;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -32,6 +33,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	public static final String PERSON_UUID = "personUuid";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
+	public static final String DISEASE = "disease";
 	public static final String AGE_AND_BIRTH_DATE = "ageAndBirthDate";
 	public static final String SEX = "sex";
 	public static final String DISTRICT = "district";
@@ -42,6 +44,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	public static final String END_DATE = "endDate";
 	public static final String LAST_VACCINE_TYPE = "lastVaccineType";
 	public static final String RECOVERY_DATE = "recoveryDate";
+	public static final String IMMUNIZATION_PERIOD = "immunizationPeriod";
 
 	private String uuid;
 
@@ -62,6 +65,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	private Date endDate;
 	private String lastVaccineType;
 	private Date recoveryDate;
+	private Disease disease;
 
 	public ImmunizationIndexDto(
 		String uuid,
@@ -93,6 +97,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		this.endDate = endDate;
 		this.lastVaccineType = lastVaccineType;
 		this.recoveryDate = recoveryDate;
+		this.disease = disease;
 	}
 
 	public String getUuid() {
@@ -205,5 +210,13 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 
 	public void setRecoveryDate(Date recoveryDate) {
 		this.recoveryDate = recoveryDate;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 }

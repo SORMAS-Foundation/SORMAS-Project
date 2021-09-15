@@ -15,6 +15,19 @@ public enum ValueSeparator {
 		this.separator = separator;
 	}
 
+	public static ValueSeparator get(char separator) {
+		switch (separator) {
+		case ',':
+			return COMMA;
+		case ';':
+			return SEMICOLON;
+		case '\t':
+			return TAB;
+		default:
+			return null;
+		}
+	}
+
 	private char getSeparator() {
 		return separator;
 	}

@@ -88,29 +88,37 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Required
 	@EmbeddedPersonalData
 	private PersonReferenceDto person;
+	@Required
 	private Date reportDate;
 	private UserReferenceDto reportingUser;
 	private boolean archived;
+	@Required
 	private ImmunizationStatus immunizationStatus;
+	@Required
 	private MeansOfImmunization meansOfImmunization;
 	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@SensitiveData(mandatoryField = true)
 	private String meansOfImmunizationDetails;
 	private ImmunizationManagementStatus immunizationManagementStatus;
 	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@SensitiveData(mandatoryField = true)
 	private String externalId;
 
+	@Required
 	private RegionReferenceDto responsibleRegion;
+	@Required
 	private DistrictReferenceDto responsibleDistrict;
+	@PersonalData
+	@SensitiveData
 	private CommunityReferenceDto responsibleCommunity;
 	private CountryReferenceDto country;
 
-	@PersonalData(mandatoryField = true)
-	@SensitiveData(mandatoryField = true)
+	@PersonalData
+	@SensitiveData
 	private FacilityType facilityType;
 	@Outbreaks
-	@Required
-	@PersonalData(mandatoryField = true)
-	@SensitiveData(mandatoryField = true)
+	@PersonalData
+	@SensitiveData
 	private FacilityReferenceDto healthFacility;
 	@Outbreaks
 	@PersonalData
@@ -118,6 +126,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 
+	@Required
 	private Date startDate;
 	private Date endDate;
 	private Integer numberOfDoses;
@@ -125,6 +134,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	private Date lastInfectionDate;
 	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@SensitiveData
 	private String additionalDetails;
 
 	private Date positiveTestResultDate;
@@ -143,6 +153,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 		immunizationDto.setUuid(DataHelper.createUuid());
 		immunizationDto.setPerson(person);
 		immunizationDto.setReportDate(new Date());
+		immunizationDto.setImmunizationManagementStatus(ImmunizationManagementStatus.SCHEDULED);
 
 		return immunizationDto;
 	}

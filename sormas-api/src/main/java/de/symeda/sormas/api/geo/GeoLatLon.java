@@ -23,19 +23,19 @@ public class GeoLatLon implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 6016397482506424761L;
 
-	private final double lat;
-	private final double lon;
+	private final Double lat;
+	private final Double lon;
 
-	public GeoLatLon(double lat, double lon) {
+	public GeoLatLon(Double lat, Double lon) {
 		this.lat = lat;
 		this.lon = lon;
 	}
 
-	public double getLat() {
+	public Double getLat() {
 		return lat;
 	}
 
-	public double getLon() {
+	public Double getLon() {
 		return lon;
 	}
 

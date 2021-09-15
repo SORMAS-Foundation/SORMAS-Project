@@ -106,7 +106,7 @@ public interface CaseFacade {
 
 	CaseDataDto getByUuid(String uuid);
 
-	String getUuidByUuidEpidNumberOrExternalId(String searchTerm);
+	String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria);
 
 	List<MapCaseDto> getCasesForMap(
 		RegionReferenceDto regionRef,
@@ -129,6 +129,8 @@ public interface CaseFacade {
 	List<CaseDataDto> getAllCasesOfPerson(String personUuid);
 
 	void deleteCase(String caseUuid) throws ExternalSurveillanceToolException;
+
+	List<String> deleteCases(List<String> caseUuids);
 
 	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException;
 

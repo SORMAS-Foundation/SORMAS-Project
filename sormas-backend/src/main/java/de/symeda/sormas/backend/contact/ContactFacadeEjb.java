@@ -1068,17 +1068,18 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
-			resultMap.values().stream().forEach(contactFollowUpDto -> {
+			for (ContactFollowUpDto contactFollowUpDto : resultMap.values()) {
 				contactFollowUpDto.initVisitSize(interval + 1);
 
 				boolean isInJurisdiction = contactFollowUpDto.getInJurisdiction();
 				pseudonymizer.pseudonymizeDto(ContactFollowUpDto.class, contactFollowUpDto, isInJurisdiction, null);
-			});
-			visits.stream().forEach(v -> {
+			}
+
+			for (Object[] v : visits) {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
-				VisitResultDto result = getVisitResult((VisitStatus) v[2], (VisitOrigin) v[3], (boolean) v[4]);
+				VisitResultDto result = getVisitResult((VisitStatus) v[2], (VisitOrigin) v[3], (Boolean) v[4]);
 				resultMap.get(v[0]).getVisitResults()[day - 1] = result;
-			});
+			}
 		}
 
 		return resultList;
