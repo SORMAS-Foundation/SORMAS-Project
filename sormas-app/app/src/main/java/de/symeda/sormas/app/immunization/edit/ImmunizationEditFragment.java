@@ -233,12 +233,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
 			}
 		}
-//
-//		contentBinding.facilityTypeGroup.addValueChangedListener(e -> {
-//			contentBinding.immunizationFacilityType.setSpinnerData(				e.getValue() != null
-//					? FacilityType.getTypes((FacilityTypeGroup) e.getValue())
-//					: Arrays.stream(FacilityType.values()).collect(Collectors.toList()));
-//		});
 	}
 
 	@Override
