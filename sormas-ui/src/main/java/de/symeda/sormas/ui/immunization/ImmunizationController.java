@@ -83,18 +83,7 @@ public class ImmunizationController {
 					ControllerProvider.getPersonController()
 						.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForImmunization), selectedPerson -> {
 							if (selectedPerson != null) {
-								dto.setPerson(selectedPerson);
-								selectOrCreateImmunization(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
-									if (uuid == null) {
-										return;
-									}
-									if (!uuid.equals(dto.getUuid())) {
-										dto.setUuid(uuid);
-										dto.setChangeDate(new Date());
-									}
-									FacadeProvider.getImmunizationFacade().save(dto);
-									navigateToImmunization(uuid);
-								});
+								selectOrCreateimmunizationForPerson(dto, selectedPerson);
 							}
 						}, true);
 				}
@@ -123,18 +112,7 @@ public class ImmunizationController {
 				if (!createForm.getFieldGroup().isModified()) {
 
 					final ImmunizationDto dto = createForm.getValue();
-					dto.setPerson(personReferenceDto);
-					selectOrCreateImmunization(dto, FacadeProvider.getPersonFacade().getPersonByUuid(personReferenceDto.getUuid()), uuid -> {
-						if (uuid == null) {
-							return;
-						}
-						if (!uuid.equals(dto.getUuid())) {
-							dto.setUuid(uuid);
-							dto.setChangeDate(new Date());
-						}
-						FacadeProvider.getImmunizationFacade().save(dto);
-						navigateToImmunization(uuid);
-					});
+					selectOrCreateimmunizationForPerson(dto, personReferenceDto);
 				}
 			});
 			return viewComponent;
@@ -259,6 +237,21 @@ public class ImmunizationController {
 					}
 				});
 		}
+	}
+
+	private void selectOrCreateimmunizationForPerson(ImmunizationDto dto, PersonReferenceDto selectedPerson) {
+		dto.setPerson(selectedPerson);
+		selectOrCreateImmunization(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+			if (uuid == null) {
+				return;
+			}
+			if (!uuid.equals(dto.getUuid())) {
+				dto.setUuid(uuid);
+				dto.setChangeDate(new Date());
+			}
+			FacadeProvider.getImmunizationFacade().save(dto);
+			navigateToImmunization(uuid);
+		});
 	}
 
 	private void selectOrCreateImmunization(ImmunizationDto immunizationDto, PersonDto person, Consumer<String> selectedImmunizationUuidConsumer) {
