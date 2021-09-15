@@ -1,12 +1,17 @@
 package de.symeda.sormas.backend.central;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import com.google.protobuf.ByteString;
 
+import com.ibm.etcd.api.KeyValue;
+import com.ibm.etcd.api.RangeResponse;
 import com.ibm.etcd.client.EtcdClient;
 import com.ibm.etcd.client.KvStoreClient;
 import com.ibm.etcd.client.kv.KvClient;
-
 
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
@@ -27,13 +32,16 @@ public class EtcdCentralClient {
 
 	private final ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
+	private final ObjectMapper mapper = new ObjectMapper();
+
 	public EtcdCentralClient(ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb) {
 		this.configFacadeEjb = configFacadeEjb;
+		mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+		mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 	}
 
 	private KvStoreClient createEtcdClient() throws IOException {
 		String[] hostPort = configFacadeEjb.getCentralEtcdHost().split(":");
-
 
 		URL truststorePath;
 		try {
@@ -58,7 +66,26 @@ public class EtcdCentralClient {
 		return client;
 	}
 
-	public List<KeyValue> getWithPrefix(String path) throws IOException {
+	public <T> T get(String key, Class<T> clazz) throws IOException {
+		// use resource auto-close
+		try (KvStoreClient etcdClient = createEtcdClient()) {
+			KvClient etcd = etcdClient.getKvClient();
+
+			if (etcd == null) {
+				LOGGER.error("Could not create an etcd KV client.");
+				return null;
+			}
+
+			RangeResponse range = etcd.get(ByteString.copyFromUtf8(key)).sync();
+			if (range.getCount() == 0) {
+				LOGGER.error("There is no value available for key {}", key);
+				return null;
+			}
+			return deserialize(range.getKvs(0), clazz);
+		}
+	}
+
+	public <T> List<T> getWithPrefix(String path, Class<T> clazz) throws IOException {
 		// use resource auto-close
 		try (KvStoreClient etcdClient = createEtcdClient()) {
 			KvClient etcd = etcdClient.getKvClient();
@@ -67,33 +94,26 @@ public class EtcdCentralClient {
 				LOGGER.error("Could not create an etcd KV client.");
 				return Collections.emptyList();
 			}
-			return etcd.get(ByteString.copyFromUtf8(path)).asPrefix().sync().getKvsList().stream().map(KeyValue::new).collect(Collectors.toList());
+			return etcd.get(ByteString.copyFromUtf8(path))
+				.asPrefix()
+				.sync()
+				.getKvsList()
+				.stream()
+				.map(kv -> deserialize(kv, clazz))
+				.collect(Collectors.toList());
 
 		}
-
 	}
 
-	public static class KeyValue {
+	private <T> T deserialize(KeyValue kv, Class<T> clazz) {
 
-		String key;
-		String value;
-
-		public KeyValue(String key, String value) {
-			this.key = key;
-			this.value = value;
-		}
-
-		KeyValue(com.ibm.etcd.api.KeyValue keyValue) {
-			this.key = keyValue.getKey().toStringUtf8();
-			this.value = keyValue.getValue().toStringUtf8();
-		}
-
-		public String getKey() {
-			return key;
-		}
-
-		public String getValue() {
-			return value;
+		final String content = kv.getValue().toStringUtf8();
+		try {
+			return mapper.readValue(content, clazz);
+		} catch (JsonProcessingException e) {
+			LOGGER.error("Could not serialize value {} into object of type {}: %s ", content, clazz.getSimpleName(), e);
+			return null;
 		}
 	}
+
 }
