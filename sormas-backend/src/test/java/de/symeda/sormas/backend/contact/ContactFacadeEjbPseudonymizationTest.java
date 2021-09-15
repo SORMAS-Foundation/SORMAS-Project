@@ -63,6 +63,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
 	private UserDto user2;
+	private UserDto observerUser;
 
 	@Override
 	public void init() {
@@ -76,6 +77,8 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		user2 = creator
 			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+
+		observerUser = creator.createUser(null, null, null, null, "National", "Observer", UserRole.NATIONAL_OBSERVER);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -280,19 +283,11 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testUpdateContactOutsideJurisdiction() {
-		CaseDataDto caze = createCase(user1, rdcf1);
-		ContactDto contact = createContact(user1, caze, rdcf1);
-		// contact of case on other jurisdiction --> should be pseudonymized
-		creator.createContact(
-			user1.toReference(),
-			null,
-			createPerson().toReference(),
-			getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid()),
-			new Date(),
-			new Date(),
-			Disease.CORONAVIRUS,
-			rdcf2);
+	public void testUpdatePseudonymizedContact() {
+		CaseDataDto caze = createCase(user2, rdcf2);
+		ContactDto contact = createContact(user2, caze, rdcf2);
+
+		loginWith(observerUser);
 
 		contact.setReportingUser(null);
 		contact.setContactOfficer(null);
@@ -305,8 +300,8 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		Contact updatedContact = getContactService().getByUuid(contact.getUuid());
 
-		assertThat(updatedContact.getReportingUser().getUuid(), is(user1.getUuid()));
-		assertThat(updatedContact.getContactOfficer().getUuid(), is(user1.getUuid()));
+		assertThat(updatedContact.getReportingUser().getUuid(), is(user2.getUuid()));
+		assertThat(updatedContact.getContactOfficer().getUuid(), is(user2.getUuid()));
 		assertThat(updatedContact.getResultingCaseUser(), is(nullValue()));
 
 		assertThat(updatedContact.getReportLat(), is(46.432));

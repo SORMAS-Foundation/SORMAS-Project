@@ -43,6 +43,7 @@ import com.vaadin.v7.ui.AbstractField;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -115,6 +116,7 @@ public class SormasErrorHandler implements ErrorHandler {
 	 */
 	public static ErrorMessage getErrorMessageForException(Throwable t) {
 
+		t.printStackTrace();
 		//return AbstractErrorMessage.getErrorMessageForException(t)
 		if (null == t) {
 			return null;
@@ -141,23 +143,27 @@ public class SormasErrorHandler implements ErrorHandler {
 		} else {
 			Throwable rootCause = ExceptionUtils.getRootCause(t);
 			if (rootCause instanceof ValidationRuntimeException) {
-				LocalUserError error;
+				final LocalUserError error;
 				if (rootCause instanceof OutdatedEntityException) {
 					error = new LocalUserError(I18nProperties.getString(Strings.errorEntityOutdated), ContentMode.HTML, ErrorLevel.WARNING);
+				} else if (rootCause instanceof AccessDeniedException) {
+					error = new LocalUserError(
+						rootCause.getMessage() + "<br>" + I18nProperties.getString(Strings.reloadPageToSeeChanges),
+						ContentMode.HTML,
+						ErrorLevel.WARNING);
+				} else if (((ValidationRuntimeException) rootCause).getPropertyErrors() != null) {
+					error = new LocalUserError(
+						((ValidationRuntimeException) rootCause).getPropertyErrors()
+							.entrySet()
+							.stream()
+							.map(e -> String.join(".", e.getKey()) + ": " + e.getValue())
+							.collect(Collectors.joining("<br>")),
+						ContentMode.HTML,
+						ErrorLevel.WARNING);
 				} else {
-					if (((ValidationRuntimeException) rootCause).getPropertyErrors() != null) {
-						error = new LocalUserError(
-							((ValidationRuntimeException) rootCause).getPropertyErrors()
-								.entrySet()
-								.stream()
-								.map(e -> String.join(".", e.getKey()) + ": " + e.getValue())
-								.collect(Collectors.joining("<br>")),
-							ContentMode.HTML,
-							ErrorLevel.WARNING);
-					} else {
-						error = new LocalUserError(rootCause.getMessage(), ContentMode.HTML, ErrorLevel.WARNING);
-					}
+					error = new LocalUserError(rootCause.getMessage(), ContentMode.HTML, ErrorLevel.WARNING);
 				}
+
 				return error;
 			} else {
 				String message = t.getMessage();
