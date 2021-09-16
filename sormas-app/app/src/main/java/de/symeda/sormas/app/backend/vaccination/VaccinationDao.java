@@ -45,6 +45,12 @@ public class VaccinationDao extends AbstractAdoDao<VaccinationEntity> {
 		return VaccinationEntity.TABLE_NAME;
 	}
 
+	public List<VaccinationEntity> getByImmunization(Immunization immunization) {
+		if (immunization.isSnapshot()) {
+			return querySnapshotsForEq(VaccinationEntity.IMMUNIZATION + "_id", immunization, VaccinationEntity.CHANGE_DATE, false);
+		}
+		return queryForEq(VaccinationEntity.IMMUNIZATION + "_id", immunization, VaccinationEntity.CHANGE_DATE, false);
+	}
 
 	public long countByCriteria(VaccinationCriteria criteria) {
 		try {
@@ -64,7 +70,6 @@ public class VaccinationDao extends AbstractAdoDao<VaccinationEntity> {
 		}
 	}
 
-
 	private QueryBuilder<VaccinationEntity, Long> buildQueryBuilder(VaccinationCriteria criteria) throws SQLException {
 		QueryBuilder<VaccinationEntity, Long> queryBuilder = queryBuilder();
 		Where<VaccinationEntity, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
@@ -76,8 +81,6 @@ public class VaccinationDao extends AbstractAdoDao<VaccinationEntity> {
 		queryBuilder.setWhere(where);
 		return queryBuilder;
 	}
-
-
 
 	@Override
 	public VaccinationEntity build() {

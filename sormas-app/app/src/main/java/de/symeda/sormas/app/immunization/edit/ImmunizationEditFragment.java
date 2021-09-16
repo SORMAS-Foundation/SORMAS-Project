@@ -15,11 +15,12 @@
 
 package de.symeda.sormas.app.immunization.edit;
 
+import android.view.View;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import android.view.View;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -48,8 +49,8 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentImmunizationEditLayoutBinding;
-import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.immunization.read.ImmunizationSearchCaseDialog;
+import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
@@ -125,6 +126,8 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		facilityTypeGroupList = DataUtils.toItems(Arrays.asList(FacilityTypeGroup.values()), true);
 		facilityTypeList =
 			record.getFacilityType() != null ? DataUtils.toItems(FacilityType.getTypes(record.getFacilityType().getFacilityTypeGroup())) : null;
+
+		DatabaseHelper.getImmunizationDao().initVaccinations(record);
 	}
 
 	@Override

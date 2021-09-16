@@ -27,6 +27,8 @@ import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.databinding.FragmentVaccinationEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -69,6 +71,21 @@ public class VaccinationEditFragment extends BaseEditFragment<FragmentVaccinatio
 	public void onLayoutBinding(FragmentVaccinationEditLayoutBinding contentBinding) {
 		contentBinding.setData(record);
 		contentBinding.setTrimesterClass(Trimester.class);
+
+		contentBinding.vaccinationVaccineName.addValueChangedListener(new ValueChangeListener() {
+
+			private Vaccine currentVaccine = record.getVaccineName();
+
+			@Override
+			public void onChange(ControlPropertyField e) {
+				Vaccine vaccine = (Vaccine) e.getValue();
+
+				if (currentVaccine != vaccine) {
+					contentBinding.vaccinationVaccineManufacturer.setValue(vaccine != null ? vaccine.getManufacturer() : null);
+					currentVaccine = vaccine;
+				}
+			}
+		});
 	}
 
 	@Override
