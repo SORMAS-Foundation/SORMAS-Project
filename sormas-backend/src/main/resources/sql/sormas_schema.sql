@@ -8273,4 +8273,12 @@ UPDATE featureconfiguration SET enabled = true, changedate = now() WHERE feature
 /* End of vaccination refactoring */
 
 INSERT INTO schema_version (version_number, comment) VALUES (406, 'Vaccination refactoring #5909');
+
+-- 2021-09-16 - Make Person.sex required #6673
+UPDATE person SET sex = 'UNKNOWN' WHERE sex IS NULL;
+ALTER TABLE person ALTER COLUMN sex DROP DEFAULT;
+ALTER TABLE person ALTER COLUMN sex SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (407, 'Make Person.sex required #6673');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
