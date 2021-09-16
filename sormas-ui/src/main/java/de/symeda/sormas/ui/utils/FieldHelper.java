@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -243,7 +244,7 @@ public final class FieldHelper {
 
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(
-		Field sourceField,
+		Field sourceField, 
 		List<? extends Field<?>> targetFields,
 		Function<Field, Boolean> isVisibleFunction,
 		boolean clearOnHidden) {
@@ -464,6 +465,20 @@ public final class FieldHelper {
 		}
 	}
 
+	public static void setEnabledWhen(
+		FieldGroup fieldGroup,
+		String sourceFieldId,
+		Object sourceValue,
+		String targetPropertyId,
+		boolean clearOnDisabled) {
+
+		final Field<?> sourceField = fieldGroup.getField(sourceFieldId);
+		final List<Object> sourceValues = Collections.singletonList(sourceValue);
+		final List<Field<?>> targetFields = Collections.singletonList(fieldGroup.getField(targetPropertyId));
+
+		setEnabledWhen(sourceField, sourceValues, targetFields, clearOnDisabled);
+	}
+	
 	/**
 	 * Sets the target fields to enabled when the source field has a value that's
 	 * contained in the sourceValues list.
