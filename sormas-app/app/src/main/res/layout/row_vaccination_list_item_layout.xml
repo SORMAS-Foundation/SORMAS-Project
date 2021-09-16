@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
-  ~ Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~ Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -20,37 +21,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
-        <variable
-            name="data"
-            type="de.symeda.sormas.app.backend.vaccination.VaccinationEntity" />
-
-        <variable
-            name="testResultMessage"
-            type="String" />
+        <variable name="data" type="de.symeda.sormas.app.backend.vaccination.VaccinationEntity" />
 
         <import type="de.symeda.sormas.app.util.DateFormatHelper" />
-
     </data>
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="fill"
         android:layout_weight="1"
-        android:background="@drawable/selector_list_activity_row_background"
-        android:orientation="vertical"
+        android:layout_gravity="fill"
         android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-        android:paddingRight="@dimen/rowListItemHorizontalMargin">
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:background="@drawable/selector_list_activity_row_background"
+        >
 
+        <!---->
         <LinearLayout
             android:id="@+id/row_item"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_list_activity_row"
-            android:orientation="vertical"
+            android:gravity="fill"
+            android:layout_gravity="fill"
             android:paddingTop="@dimen/rowListItemVerticalPadding"
-            android:paddingBottom="@dimen/rowListItemVerticalPadding">
+            android:paddingBottom="@dimen/rowListItemVerticalPadding"
+            android:background="@drawable/background_list_activity_row"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -82,36 +80,90 @@
             </LinearLayout>
 
             <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/txtVaccineName"
-                    android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="fill"
+                android:layout_gravity="fill">
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
-                    android:textColor="@color/listActivityRowTertiaryText"
-                    android:textSize="@dimen/row_entry_secondary_text_size"
-                    app:value="@{data.vaccineName}" />
-
-                <TextView
-                    android:id="@+id/txtVaccineManufacturer"
                     android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
-                    android:gravity="right"
-                    android:textColor="@color/listActivityRowLeastText"
-                    android:textSize="@dimen/row_entry_secondary_text_size"
-                    app:value="@{data.vaccineManufacturer}" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtVaccineName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/listActivityRowPrimaryTextSize"
+                        android:textColor="@color/listActivityRowPrimaryText"
+                        android:fontFamily="sans-serif-medium"
+                        android:scrollHorizontally="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        app:value="@{data.vaccineName}"
+                        app:defaultValue='@{@string/value_task_type_unknown}'
+                        />
+
+                    <TextView
+                        android:id="@+id/txtVaccineManufacturer"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:layout_marginBottom="@dimen/listActivityRowSecondaryTextVerticalMargin"
+                        android:textSize="@dimen/row_entry_secondary_text_size"
+                        android:textColor="@color/row_entry_secondary_text"
+                        android:scrollHorizontally="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        app:value="@{data.vaccineManufacturer}"
+                        app:defaultValue='@{@string/value_person_unknown}'
+                        />
+
+                </LinearLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="24dp"
+                    >
+
+                    <ImageView
+                        android:id="@+id/imgSyncIcon"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:tint="@color/syncIconListActivityRowItem"
+                        android:scaleType="fitEnd"
+                        android:layout_alignParentTop="false"
+                        android:layout_alignParentBottom="false"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
+                        />
+
+                </RelativeLayout>
+
+
+                <ImageView
+                    android:id="@+id/img_open_entry"
+                    android:layout_width="@dimen/listGoToIconWidth"
+                    android:layout_height="@dimen/listGoToIconHeight"
+                    android:layout_gravity="center_vertical"
+                    android:scaleType="fitEnd"
+                    android:src="@drawable/ic_go_to_read_view_24dp"
+                    />
 
             </LinearLayout>
 
+
             <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginRight="@dimen/listItemConentIndentRight"
+                >
 
                 <TextView
                     android:id="@+id/txtVaccineType"
@@ -135,40 +187,6 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="fill"
-                android:gravity="right"
-                android:orientation="horizontal">
-
-                <RelativeLayout
-                    android:layout_width="100dp"
-                    android:layout_height="match_parent"
-                    android:paddingLeft="24dp">
-
-                    <ImageView
-                        android:id="@+id/imgSyncIcon"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentTop="false"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentBottom="false"
-                        android:layout_centerVertical="true"
-                        android:scaleType="fitEnd"
-                        android:tint="@color/syncIconListActivityRowItem" />
-                </RelativeLayout>
-
-                <ImageView
-                    android:id="@+id/img_open_entry"
-                    android:layout_width="@dimen/listGoToIconWidth"
-                    android:layout_height="@dimen/listGoToIconHeight"
-                    android:layout_gravity="center_vertical"
-                    android:scaleType="fitEnd"
-                    android:src="@drawable/ic_go_to_read_view_24dp" />
-
-            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </layout>
