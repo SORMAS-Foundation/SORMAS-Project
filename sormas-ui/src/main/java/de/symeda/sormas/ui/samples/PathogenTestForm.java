@@ -109,8 +109,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		addDateField(PathogenTestDto.REPORT_DATE, DateField.class, 0);
 		addField(PathogenTestDto.VIA_LIMS);
-		TextField externalIdField = addField(PathogenTestDto.EXTERNAL_ID, TextField.class);
-		externalIdField.setEnabled(false);
+		addField(PathogenTestDto.EXTERNAL_ID);
 		ComboBox testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
 		ComboBox pcrTestSpecification = addField(PathogenTestDto.PCR_TEST_SPECIFICATION, ComboBox.class);
 		TextField testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
