@@ -71,4 +71,17 @@ public class ImmunizationHelper {
             .path(IMMUNIZATIONS_PATH + POST_PATH)
             .build());
   }
+
+  @SneakyThrows
+  public void createMultipleImmunizations(List<Immunization> immunizationsList) {
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    List<Immunization> immunizationsBody = immunizationsList;
+    objectMapper.writeValue(out, immunizationsBody);
+    restAssuredClient.sendRequest(
+        Request.builder()
+            .method(Method.POST)
+            .body(out.toString())
+            .path(IMMUNIZATIONS_PATH + POST_PATH)
+            .build());
+  }
 }

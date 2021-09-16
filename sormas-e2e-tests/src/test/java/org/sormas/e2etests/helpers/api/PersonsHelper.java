@@ -72,6 +72,19 @@ public class PersonsHelper {
             .build());
   }
 
+  @SneakyThrows
+  public void createMultiplePersons(List<Person> personList) {
+    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    List<Person> personBody = personList;
+    objectMapper.writeValue(out, personBody);
+    restAssuredClient.sendRequest(
+        Request.builder()
+            .method(Method.POST)
+            .body(out.toString())
+            .path(PERSONS_PATH + POST_PATH)
+            .build());
+  }
+
   // TODO remove this duplicated code and refactor its usage within framework !
   public void pushPerson(String specificPath, String jsonBody) {
     final String json = jsonBody;
