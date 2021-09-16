@@ -32,7 +32,7 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 			EventParticipantCriteria.BIRTHDATE_DD,
 			EventParticipantCriteria.FREE_TEXT,
 			EventParticipantCriteria.PATHOGENTESTRESULT,
-			EventParticipantCriteria.VACCINATION,
+			EventParticipantCriteria.VACCINATION_STATUS,
 			EventParticipantCriteria.ONLY_COUNT_CONTACT_WITH_SOURCE_CASE_IN_EVENT };
 	}
 
@@ -59,7 +59,7 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 				180),
 			ComboBox.class);
 
-		addField(FieldConfiguration.pixelSized(EventParticipantCriteria.VACCINATION, 140), ComboBox.class);
+		addField(FieldConfiguration.pixelSized(EventParticipantCriteria.VACCINATION_STATUS, 140), ComboBox.class);
 
 		TextField searchField = addField(
 			FieldConfiguration

@@ -21,7 +21,7 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	public static final String ONLY_COUNT_CONTACT_WITH_SOURCE_CASE_IN_EVENT = "onlyCountContactsWithSourceCaseInEvent";
 	public static final String DISEASE = "disease";
 	public static final String PATHOGENTESTRESULT = "pathogenTestResult";
-	public static final String VACCINATION = "vaccination";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	private EventReferenceDto event;
 	private PersonReferenceDto person;

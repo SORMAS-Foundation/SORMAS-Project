@@ -51,7 +51,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
-	public static final String VACCINATION_STATUS = "VaccinationStatus";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String RELATION_TO_CASE = "relationToCase";
 	public static final String QUARANTINE_TYPE = "quarantineType";
 	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";

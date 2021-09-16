@@ -7952,7 +7952,7 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
         cases.creationdate, cases.firstvaccinationdate, cases.lastvaccinationdate, CAST(NULLIF(cases.vaccinationdoses, '') AS int) AS vaccinationdoses,
         CASE
             WHEN
-                cases.vaccinename IS NOT NULL
+                (cases.vaccinename IS NOT NULL OR cases.vaccine IS NULL)
                 THEN
                 vaccinename
             ELSE
@@ -7961,7 +7961,7 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
             AS vaccinename,
         CASE
             WHEN
-                    cases.vaccinename = 'OTHER'
+                cases.vaccinename = 'OTHER'
                 THEN
                 cases.othervaccinename
             ELSE
