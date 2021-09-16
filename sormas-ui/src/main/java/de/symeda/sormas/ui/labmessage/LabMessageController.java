@@ -747,6 +747,7 @@ public class LabMessageController {
 			pathogenTestDto.setTestDateTime(testReportDto.getTestDateTime());
 			pathogenTestDto.setTestResultText(testReportDto.getTestResultText());
 			pathogenTestDto.setTypingId(testReportDto.getTypingId());
+			pathogenTestDto.setExternalId(testReportDto.getExternalId());
 		}
 
 		pathogenTestDto.setTestedDisease(labMessageDto.getTestedDisease());
