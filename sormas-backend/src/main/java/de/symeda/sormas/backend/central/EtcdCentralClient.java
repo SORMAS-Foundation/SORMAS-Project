@@ -40,7 +40,7 @@ public class EtcdCentralClient {
 		mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 	}
 
-	private KvStoreClient createEtcdClient() throws IOException {
+	private KvStoreClient createEtcdClient() {
 		String[] hostPort = configFacadeEjb.getCentralEtcdHost().split(":");
 
 		URL truststorePath;
@@ -48,7 +48,7 @@ public class EtcdCentralClient {
 			truststorePath = Paths.get(configFacadeEjb.getCentralEtcdCaPath()).toUri().toURL();
 		} catch (MalformedURLException e) {
 			LOGGER.error("Etcd Url is malformed: %s", e);
-			throw e;
+			return null;
 		}
 
 		KvStoreClient client;
@@ -59,7 +59,7 @@ public class EtcdCentralClient {
 				.build();
 		} catch (IOException e) {
 			LOGGER.error("Could not load Etcd CA cert: %s", e);
-			throw e;
+			return null;
 		}
 
 		LOGGER.info("Etcd client created successfully.");
@@ -69,6 +69,10 @@ public class EtcdCentralClient {
 	public <T> T get(String key, Class<T> clazz) throws IOException {
 		// use resource auto-close
 		try (KvStoreClient etcdClient = createEtcdClient()) {
+			if (etcdClient == null) {
+				LOGGER.error("Etcd could not be accessed.");
+				return null;
+			}
 			KvClient etcd = etcdClient.getKvClient();
 
 			if (etcd == null) {
@@ -88,12 +92,17 @@ public class EtcdCentralClient {
 	public <T> List<T> getWithPrefix(String path, Class<T> clazz) throws IOException {
 		// use resource auto-close
 		try (KvStoreClient etcdClient = createEtcdClient()) {
+			if (etcdClient == null) {
+				LOGGER.error("Etcd could not be accessed.");
+				return Collections.emptyList();
+			}
 			KvClient etcd = etcdClient.getKvClient();
 
 			if (etcd == null) {
 				LOGGER.error("Could not create an etcd KV client.");
 				return Collections.emptyList();
 			}
+
 			return etcd.get(ByteString.copyFromUtf8(path))
 				.asPrefix()
 				.sync()
@@ -101,7 +110,6 @@ public class EtcdCentralClient {
 				.stream()
 				.map(kv -> deserialize(kv, clazz))
 				.collect(Collectors.toList());
-
 		}
 	}
 
