@@ -7949,7 +7949,7 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
     SELECT DISTINCT ON (person.id, cases.disease)
         person.id AS person_id, cases.disease, cases.id AS case_id, cases.reportdate AS reportdate, cases.diseasedetails, cases.reportinguser_id,
         cases.responsibleregion_id AS responsibleregion_id, cases.responsibledistrict_id AS responsibledistrict_id, cases.responsiblecommunity_id AS responsiblecommunity_id,
-        cases.creationdate, cases.firstvaccinationdate, cases.lastvaccinationdate, CAST(NULLIF(cases.vaccinationdoses, '') AS int) AS vaccinationdoses,
+        cases.firstvaccinationdate, cases.lastvaccinationdate, CAST(NULLIF(cases.vaccinationdoses, '') AS int) AS vaccinationdoses,
         CASE
             WHEN
                 (cases.vaccinename IS NOT NULL OR cases.vaccine IS NULL)
@@ -7969,12 +7969,14 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
             END
             AS othervaccinename,
         cases.vaccinemanufacturer, cases.othervaccinemanufacturer, cases.vaccinationinfosource, cases.vaccineinn, cases.vaccinebatchnumber,
-        cases.vaccineuniicode, cases.vaccineatccode, cases.pregnant AS pregnant, cases.trimester AS trimester, clinicalcourse.healthconditions_id AS healthconditions_id
+        cases.vaccineuniicode, cases.vaccineatccode, cases.pregnant AS pregnant, cases.trimester AS trimester, clinicalcourse.healthconditions_id AS healthconditions_id,
+        coalesce(symptoms.onsetdate, cases.reportdate) AS relevancedate
     FROM person
              LEFT JOIN cases ON cases.person_id = person.id
              LEFT JOIN clinicalcourse ON cases.clinicalcourse_id = clinicalcourse.id
-    WHERE cases.vaccination = 'VACCINATED'
-    ORDER BY person.id, cases.disease, cases.creationdate DESC
+             LEFT JOIN symptoms ON cases.symptoms_id = symptoms.id
+    WHERE cases.vaccination = 'VACCINATED' AND cases.deleted = false
+    ORDER BY person.id, cases.disease, relevancedate DESC
 )
 UNION
 (
@@ -8007,16 +8009,17 @@ UNION
                 cases.responsiblecommunity_id
             END
                   AS responsiblecommunity_id,
-        contact.creationdate, vaccinationinfo.firstvaccinationdate, vaccinationinfo.lastvaccinationdate, CAST(NULLIF(vaccinationinfo.vaccinationdoses, '') AS int) AS vaccinationdoses,
+        vaccinationinfo.firstvaccinationdate, vaccinationinfo.lastvaccinationdate, CAST(NULLIF(vaccinationinfo.vaccinationdoses, '') AS int) AS vaccinationdoses,
         vaccinationinfo.vaccinename AS vaccinename, vaccinationinfo.othervaccinename AS othervaccinename, vaccinationinfo.vaccinemanufacturer,
         vaccinationinfo.othervaccinemanufacturer, vaccinationinfo.vaccinationinfosource, vaccinationinfo.vaccineinn, vaccinationinfo.vaccinebatchnumber,
-        vaccinationinfo.vaccineuniicode, vaccinationinfo.vaccineatccode, null AS pregnant, null AS trimester, contact.healthconditions_id AS healthconditions_id
+        vaccinationinfo.vaccineuniicode, vaccinationinfo.vaccineatccode, null AS pregnant, null AS trimester, contact.healthconditions_id AS healthconditions_id,
+        coalesce(contact.lastcontactdate, contact.reportdatetime) AS relevancedate
     FROM person
              LEFT JOIN contact ON contact.person_id = person.id
              LEFT JOIN cases ON contact.caze_id = cases.id
              LEFT JOIN vaccinationinfo ON contact.vaccinationinfo_id = vaccinationinfo.id
-    WHERE vaccinationinfo.vaccination = 'VACCINATED'
-    ORDER BY person.id, contact.disease, contact.creationdate DESC
+    WHERE vaccinationinfo.vaccination = 'VACCINATED' AND contact.deleted = false
+    ORDER BY person.id, contact.disease, relevancedate DESC
 )
 UNION
 (
@@ -8040,28 +8043,29 @@ UNION
                 location.district_id
             END
                   AS responsibledistrict_id,
-        location.community_id AS responsiblecommunity, eventparticipant.creationdate, vaccinationinfo.firstvaccinationdate, vaccinationinfo.lastvaccinationdate,
+        location.community_id AS responsiblecommunity, vaccinationinfo.firstvaccinationdate, vaccinationinfo.lastvaccinationdate,
         CAST(NULLIF(vaccinationinfo.vaccinationdoses, '') AS int) AS vaccinationdoses, vaccinationinfo.vaccinename AS vaccinename, vaccinationinfo.othervaccinename AS othervaccinename,
         vaccinationinfo.vaccinemanufacturer, vaccinationinfo.othervaccinemanufacturer, vaccinationinfo.vaccinationinfosource, vaccinationinfo.vaccineinn,
-        vaccinationinfo.vaccinebatchnumber, vaccinationinfo.vaccineuniicode, vaccinationinfo.vaccineatccode, null AS pregnant, null AS trimester, null AS healthconditions_id
+        vaccinationinfo.vaccinebatchnumber, vaccinationinfo.vaccineuniicode, vaccinationinfo.vaccineatccode, null AS pregnant, null AS trimester, null AS healthconditions_id,
+        coalesce(events.startdate, events.enddate, events.reportdatetime) AS relevancedate
     FROM person
              LEFT JOIN eventparticipant ON eventparticipant.person_id = person.id
              LEFT JOIN events ON eventparticipant.event_id = events.id
              LEFT JOIN location ON events.eventlocation_id = location.id
              LEFT JOIN vaccinationinfo ON eventparticipant.vaccinationinfo_id = vaccinationinfo.id
-    WHERE vaccinationinfo.vaccination = 'VACCINATED'
-    ORDER BY person.id, events.disease, eventparticipant.creationdate DESC
+    WHERE vaccinationinfo.vaccination = 'VACCINATED' AND eventparticipant.deleted = false
+    ORDER BY person.id, events.disease, relevancedate DESC
 );
 
 DROP TABLE IF EXISTS tmp_vaccinated_persons;
 CREATE TEMP TABLE tmp_vaccinated_persons AS
 SELECT DISTINCT ON (person_id, disease) person_id,
-                                        disease, diseasedetails, creationdate, reportdate, reportinguser_id, responsibleregion_id, responsibledistrict_id, responsiblecommunity_id,
+                                        disease, diseasedetails, reportdate, reportinguser_id, responsibleregion_id, responsibledistrict_id, responsiblecommunity_id,
                                         firstvaccinationdate, lastvaccinationdate, vaccinationdoses, vaccinename, othervaccinename, vaccinemanufacturer, othervaccinemanufacturer,
                                         vaccinationinfosource, vaccineinn, vaccinebatchnumber, vaccineuniicode, vaccineatccode, pregnant, trimester, healthconditions_id,
-                                        case_id, nextval('entity_seq') AS immunization_id
+                                        case_id, nextval('entity_seq') AS immunization_id, relevancedate
 FROM tmp_vaccinated_entities
-ORDER BY person_id, disease, creationdate DESC;
+ORDER BY person_id, disease, relevancedate DESC;
 
 /* Step 2: Create a new immunization entity for each person-disease combination */
 INSERT INTO immunization
