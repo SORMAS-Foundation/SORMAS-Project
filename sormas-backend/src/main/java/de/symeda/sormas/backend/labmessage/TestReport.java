@@ -21,6 +21,7 @@ import java.util.Date;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_SMALL;
 
 @Entity(name = TestReport.TABLE_NAME)
 @Audited
@@ -54,6 +55,7 @@ public class TestReport extends CoreAdo {
 	private Boolean testResultVerified;
 	private String testResultText;
 	private String typingId;
+	private String externalId;
 
 	private PathogenTest pathogenTest;
 
@@ -157,11 +159,21 @@ public class TestReport extends CoreAdo {
 		this.pathogenTest = pathogenTest;
 	}
 
+	@Column(length = COLUMN_LENGTH_SMALL)
 	public String getTypingId() {
 		return typingId;
 	}
 
 	public void setTypingId(String typingId) {
 		this.typingId = typingId;
+	}
+
+	@Column(length = COLUMN_LENGTH_SMALL)
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 }

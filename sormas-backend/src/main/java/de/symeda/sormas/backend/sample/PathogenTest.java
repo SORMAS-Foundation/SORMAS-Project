@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.sample;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_SMALL;
 
 import java.util.Date;
 
@@ -93,6 +94,7 @@ public class PathogenTest extends CoreAdo {
 	private Float cqValue;
 	private Date reportDate;
 	private boolean viaLims;
+	private String externalId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
@@ -279,6 +281,15 @@ public class PathogenTest extends CoreAdo {
 
 	public void setViaLims(boolean viaLims) {
 		this.viaLims = viaLims;
+	}
+
+	@Column(length = COLUMN_LENGTH_SMALL)
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
 	public PathogenTestReferenceDto toReference() {

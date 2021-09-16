@@ -62,6 +62,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String CQ_VALUE = "cqValue";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String VIA_LIMS = "viaLims";
+	public static final String EXTERNAL_ID = "externalId";
 
 	@Required
 	private SampleReferenceDto sample;
@@ -105,6 +106,9 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private Date reportDate;
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private boolean viaLims;
+	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	private String externalId;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -299,5 +303,13 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setViaLims(boolean viaLims) {
 		this.viaLims = viaLims;
+	}
+
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 }

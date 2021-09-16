@@ -7940,4 +7940,13 @@ ALTER TABLE task_history ADD COLUMN travelentry_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (404, 'Add TravelEntries to tasks #5844');
 
+-- 2021-09-16 - Add PathogenTest.externalId and transfer it from lab messages #5713
+ALTER TABLE pathogentest ADD COLUMN externalid varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN externalid varchar(255);
+
+ALTER TABLE testreport ADD COLUMN externalid varchar(255);
+ALTER TABLE testreport_history ADD COLUMN externalid varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (405, 'Add PathogenTest.externalId and transfer it from lab messages #5713');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

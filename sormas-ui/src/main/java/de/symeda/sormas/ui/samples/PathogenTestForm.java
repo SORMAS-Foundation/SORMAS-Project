@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import static de.symeda.sormas.ui.utils.CssStyles.TEXTFIELD_ROW;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_4;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
@@ -63,7 +64,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
-			fluidRowLocs(PathogenTestDto.REPORT_DATE, PathogenTestDto.VIA_LIMS) +
+			fluidRowLocs(6, PathogenTestDto.REPORT_DATE, 3, PathogenTestDto.EXTERNAL_ID, 3, PathogenTestDto.VIA_LIMS) +
 			fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.PCR_TEST_SPECIFICATION) +
 			fluidRowLocs(PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TESTED_DISEASE_VARIANT) +
 			fluidRowLocs("", PathogenTestDto.TYPING_ID) +
@@ -108,6 +109,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		addDateField(PathogenTestDto.REPORT_DATE, DateField.class, 0);
 		addField(PathogenTestDto.VIA_LIMS);
+		TextField externalIdField = addField(PathogenTestDto.EXTERNAL_ID, TextField.class);
+		externalIdField.setEnabled(false);
 		ComboBox testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
 		ComboBox pcrTestSpecification = addField(PathogenTestDto.PCR_TEST_SPECIFICATION, ComboBox.class);
 		TextField testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
