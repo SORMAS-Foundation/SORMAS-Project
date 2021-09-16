@@ -60,7 +60,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
 import de.symeda.sormas.api.user.UserSyncResult;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DefaultUserHelper;
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
@@ -589,15 +589,15 @@ public class UserFacadeEjb implements UserFacade {
 			// a list of all users with a default password is returned
 			return userService.getAllDefaultUsers()
 				.stream()
-				.filter(user -> DefaultUserHelper.usesDefaultPassword(user.getUserName(), user.getPassword(), user.getSeed()))
+				.filter(user -> DefaultEntityHelper.usesDefaultPassword(user.getUserName(), user.getPassword(), user.getSeed()))
 				.map(UserFacadeEjb::toDto)
 				.collect(Collectors.toList());
 
 		} else {
 			// user has only access to himself
 			// the list will include him/her or will be empty
-			if (DefaultUserHelper.isDefaultUser(currentUser.getUserName())
-				&& DefaultUserHelper.usesDefaultPassword(currentUser.getUserName(), currentUser.getPassword(), currentUser.getSeed())) {
+			if (DefaultEntityHelper.isDefaultUser(currentUser.getUserName())
+				&& DefaultEntityHelper.usesDefaultPassword(currentUser.getUserName(), currentUser.getPassword(), currentUser.getSeed())) {
 				return Collections.singletonList(UserFacadeEjb.toDto(currentUser));
 			} else {
 				return Collections.emptyList();

@@ -24,7 +24,7 @@ import java.util.Set;
 
 import de.symeda.sormas.api.user.UserDto;
 
-public class DefaultUserHelper {
+public class DefaultEntityHelper {
 
 	// default usernames and passwords
 	public static final DataHelper.Pair<String, String> ADMIN_USERNAME_AND_PASSWORD = new DataHelper.Pair<>("admin", "sadmin");
@@ -59,6 +59,14 @@ public class DefaultUserHelper {
 			HOSP_INF_USERNAME_AND_PASSWORD,
 			COMM_OFF_USERNAME_AND_PASSWORD,
 			POE_INF_USERNAME_AND_PASSWORD);
+	}
+
+	public enum Infrastructure {
+		REGION,
+		DISTRICT,
+		COMMUNITY,
+		FACILITY,
+		POINT_OF_ENTRY
 	}
 
 	public static boolean isDefaultUser(String username) {
