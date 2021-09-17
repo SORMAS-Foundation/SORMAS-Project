@@ -133,6 +133,7 @@ import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
@@ -175,6 +176,7 @@ import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -1552,45 +1554,50 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	private CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate) throws ValidationRuntimeException {
-
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate) {
 		return saveCase(dto, handleChanges, checkChangeDate, true);
 	}
 
-	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean syncShares)
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal)
 		throws ValidationRuntimeException {
 
-		Case caze = caseService.getByUuid(dto.getUuid());
-		CaseDataDto existingCaseDto = handleChanges ? toDto(caze) : null;
+		Case existingCase = caseService.getByUuid(dto.getUuid());
 
-		return caseSave(dto, handleChanges, caze, existingCaseDto, checkChangeDate, syncShares);
+		if (internal && existingCase != null && !caseService.isCaseEditAllowed(existingCase)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
+		}
+
+		CaseDataDto existingCaseDto = handleChanges ? toDto(existingCase) : null;
+
+		return caseSave(dto, handleChanges, existingCase, existingCaseDto, checkChangeDate, internal);
 	}
 
 	private CaseDataDto caseSave(
 		@Valid CaseDataDto dto,
 		boolean handleChanges,
-		Case caze,
+		Case existingCaze,
 		CaseDataDto existingCaseDto,
 		boolean checkChangeDate,
-		boolean syncShares) {
+		boolean syncShares)
+		throws ValidationRuntimeException {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
-		restorePseudonymizedDto(dto, caze, existingCaseDto);
+		restorePseudonymizedDto(dto, existingCaze, existingCaseDto);
 
 		validate(dto);
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(dto.getPerson());
 
-		caze = fillOrBuildEntity(dto, caze, checkChangeDate);
+		existingCaze = fillOrBuildEntity(dto, existingCaze, checkChangeDate);
 
 		// Set version number on a new case
-		if (caze.getCreationDate() == null && StringUtils.isEmpty(dto.getCreationVersion())) {
-			caze.setCreationVersion(InfoProvider.get().getVersion());
+		if (existingCaze.getCreationDate() == null && StringUtils.isEmpty(dto.getCreationVersion())) {
+			existingCaze.setCreationVersion(InfoProvider.get().getVersion());
 		}
 
-		doSave(caze, handleChanges, existingCaseDto, syncShares);
+		doSave(existingCaze, handleChanges, existingCaseDto, syncShares);
 
-		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(existingCaze, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	public void syncSharesAsync(ShareTreeCriteria criteria) {
