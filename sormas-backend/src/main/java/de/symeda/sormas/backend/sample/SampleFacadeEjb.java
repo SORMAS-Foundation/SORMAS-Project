@@ -79,6 +79,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -103,20 +104,19 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.infrastructure.community.Community;
-import de.symeda.sormas.backend.infrastructure.district.District;
-import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -176,8 +176,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
-	@EJB
-	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -325,9 +323,14 @@ public class SampleFacadeEjb implements SampleFacade {
 		return saveSample(dto, true, true, true);
 	}
 
-	public SampleDto saveSample(@Valid SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean syncShares) {
+	public SampleDto saveSample(@Valid SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal) {
 
 		Sample existingSample = sampleService.getByUuid(dto.getUuid());
+
+		if (internal && existingSample != null && !sampleService.isSampleEditAllowed(existingSample)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorSampleNotEditable));
+		}
+
 		SampleDto existingSampleDto = toDto(existingSample);
 
 		restorePseudonymizedDto(dto, existingSample, existingSampleDto);
@@ -345,7 +348,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		sampleService.ensurePersisted(sample);
 
 		if (handleChanges) {
-			onSampleChanged(existingSampleDto, sample, syncShares);
+			onSampleChanged(existingSampleDto, sample, internal);
 		}
 
 		return toDto(sample);
@@ -1189,10 +1192,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	public Boolean isSampleEditAllowed(String sampleUuid) {
 		Sample sample = sampleService.getByUuid(sampleUuid);
 
-		if (sample.getSormasToSormasOriginInfo() != null && !sample.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return false;
-		}
-
-		return sampleService.inJurisdictionOrOwned(sample).getInJurisdiction() && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);
+		return sampleService.isSampleEditAllowed(sample);
 	}
 }

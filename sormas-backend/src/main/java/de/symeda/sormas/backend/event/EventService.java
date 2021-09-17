@@ -67,13 +67,13 @@ import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonQueryContext;
-import de.symeda.sormas.backend.infrastructure.community.Community;
-import de.symeda.sormas.backend.infrastructure.district.District;
-import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
@@ -591,7 +591,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 		if (eventCriteria.getResponsibleUser() != null) {
 			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(joins.getReportingUser().get(User.UUID), eventCriteria.getResponsibleUser().getUuid()));
+				.and(cb, filter, cb.equal(joins.getResponsibleUser().get(User.UUID), eventCriteria.getResponsibleUser().getUuid()));
 		}
 		if (StringUtils.isNotEmpty(eventCriteria.getFreeText())) {
 			String[] textFilters = eventCriteria.getFreeText().split("\\s+");

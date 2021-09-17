@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.app.immunization.edit;
 
-import android.view.View;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -167,7 +166,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			initialFacilities,
 			record.getHealthFacility(),
 			contentBinding.immunizationHealthFacilityDetails,
-			false);
+			true);
 	}
 
 	@Override

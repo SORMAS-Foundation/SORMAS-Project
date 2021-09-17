@@ -124,7 +124,8 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 			InfrastructureDaoHelper.loadFacilities(record.getResponsibleDistrict(), record.getResponsibleCommunity(), record.getFacilityType());
 
 		facilityTypeGroupList = DataUtils.toItems(Arrays.asList(FacilityTypeGroup.values()), true);
-		facilityTypeList = record.getFacilityType() != null ? DataUtils.toItems(FacilityType.getTypes(record.getFacilityType().getFacilityTypeGroup())) : null;
+		facilityTypeList =
+			record.getFacilityType() != null ? DataUtils.toItems(FacilityType.getTypes(record.getFacilityType().getFacilityTypeGroup())) : null;
 	}
 
 	@Override
@@ -135,27 +136,27 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
 		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
-				record,
-				contentBinding.immunizationResponsibleRegion,
-				initialResponsibleRegions,
-				record.getResponsibleRegion(),
-				contentBinding.immunizationResponsibleDistrict,
-				initialResponsibleDistricts,
-				record.getResponsibleDistrict(),
-				contentBinding.immunizationResponsibleCommunity,
-				initialResponsibleCommunities,
-				record.getResponsibleCommunity(),
-				null,
-				null,
-				contentBinding.facilityTypeGroup,
-				facilityTypeGroupList,
-				contentBinding.immunizationFacilityType,
-				facilityTypeList,
-				contentBinding.immunizationHealthFacility,
-				initialFacilities,
-				record.getHealthFacility(),
-				contentBinding.immunizationHealthFacilityDetails,
-				false);
+			record,
+			contentBinding.immunizationResponsibleRegion,
+			initialResponsibleRegions,
+			record.getResponsibleRegion(),
+			contentBinding.immunizationResponsibleDistrict,
+			initialResponsibleDistricts,
+			record.getResponsibleDistrict(),
+			contentBinding.immunizationResponsibleCommunity,
+			initialResponsibleCommunities,
+			record.getResponsibleCommunity(),
+			null,
+			null,
+			contentBinding.facilityTypeGroup,
+			facilityTypeGroupList,
+			contentBinding.immunizationFacilityType,
+			facilityTypeList,
+			contentBinding.immunizationHealthFacility,
+			initialFacilities,
+			record.getHealthFacility(),
+			contentBinding.immunizationHealthFacilityDetails,
+			true);
 
 		// Initialize ControlSpinnerFields
 		contentBinding.immunizationDisease.initializeSpinner(diseaseList);
