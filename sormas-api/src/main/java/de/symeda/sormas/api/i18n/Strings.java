@@ -245,15 +245,19 @@ public interface Strings {
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
+	String errorCaseNotEditable = "errorCaseNotEditable";
 	String errorConstraintViolation = "errorConstraintViolation";
 	String errorContactDuplicateDeletion = "errorContactDuplicateDeletion";
 	String errorContactMerging = "errorContactMerging";
+	String errorContactNotEditable = "errorContactNotEditable";
 	String errorCreatingTemplateDirectory = "errorCreatingTemplateDirectory";
 	String errorDeletingDocument = "errorDeletingDocument";
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
 	String errorEntityOutdated = "errorEntityOutdated";
 	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
+	String errorEventNotEditable = "errorEventNotEditable";
+	String errorEventParticipantNotEditable = "errorEventParticipantNotEditable";
 	String errorEventUnlinkEventGroupFromAnotherJurisdiction = "errorEventUnlinkEventGroupFromAnotherJurisdiction";
 	String errorExternalSurveillanceToolCaseNotSharable = "errorExternalSurveillanceToolCaseNotSharable";
 	String errorExternalSurveillanceToolEventNotOwned = "errorExternalSurveillanceToolEventNotOwned";
@@ -277,6 +281,7 @@ public interface Strings {
 	String errorQuarantineOnlySupportedEntities = "errorQuarantineOnlySupportedEntities";
 	String errorReadingDocument = "errorReadingDocument";
 	String errorReadingTemplate = "errorReadingTemplate";
+	String errorSampleNotEditable = "errorSampleNotEditable";
 	String errorSetFeverRequired = "errorSetFeverRequired";
 	String errorSormasToSormasAccept = "errorSormasToSormasAccept";
 	String errorSormasToSormasAcceptNotPending = "errorSormasToSormasAcceptNotPending";
@@ -1203,6 +1208,7 @@ public interface Strings {
 	String promptEventsSearchFieldEventGroups = "promptEventsSearchFieldEventGroups";
 	String promptEventsSearchFieldEventParticipants = "promptEventsSearchFieldEventParticipants";
 	String promptExternalIdExternalSurveillanceTool = "promptExternalIdExternalSurveillanceTool";
+	String promptExternalJournalForceDeletion = "promptExternalJournalForceDeletion";
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptImmunizationDateFrom = "promptImmunizationDateFrom";
 	String promptImmunizationDateTo = "promptImmunizationDateTo";
@@ -1241,6 +1247,7 @@ public interface Strings {
 	String pseudonymizedEntitiesSelectedWarning = "pseudonymizedEntitiesSelectedWarning";
 	String quarantineEnd = "quarantineEnd";
 	String quarterShort = "quarterShort";
+	String reloadPageToSeeChanges = "reloadPageToSeeChanges";
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
 	String setTo = "setTo";

@@ -81,6 +81,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -241,8 +242,13 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return saveEventParticipant(dto, true, true);
 	}
 
-	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean syncShares) {
+	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? eventParticipantService.getByUuid(dto.getUuid()) : null;
+
+		if (internal && existingParticipant != null && !eventParticipantService.isEventParticipantEditAllowed(existingParticipant)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventParticipantNotEditable));
+		}
+
 		EventParticipantDto existingDto = toDto(existingParticipant);
 
 		User user = userService.getCurrentUser();
@@ -271,7 +277,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			notifyEventResponsibleUsersOfCommonEventParticipant(entity, event);
 		}
 
-		onEventParticipantChanged(EventFacadeEjbLocal.toDto(entity.getEvent()), syncShares);
+		onEventParticipantChanged(EventFacadeEjbLocal.toDto(entity.getEvent()), internal);
 
 		return convertToDto(entity, pseudonymizer);
 	}

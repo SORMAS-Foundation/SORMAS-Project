@@ -598,8 +598,12 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			new Date(),
 			new Date(),
-			null);
-		updateContactJurisdictionAndCase(contactSameJurisdictionDiffUserNoCase.getUuid(), regionReferenceDto, districtReferenceDto, null);
+			null,
+			null,
+			c -> {
+				c.setRegion(regionReferenceDto);
+				c.setDistrict(districtReferenceDto);
+			});
 
 		// 5) contact created by different user, jurisdiction different from main user, no case linked
 		PersonDto contactPersonDiffJurisdictionDiffUserNoCase = creator.createPerson("contactDiffJurisdictionDiffUserNoCase", "Person5");
@@ -622,12 +626,11 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			new Date(),
 			new Date(),
-			null);
-		updateContactJurisdictionAndCase(
-			contactDiffJurisdictionDiffUserCaseSameJurisdiction.getUuid(),
 			null,
 			null,
-			new CaseReferenceDto(caze.getUuid()));
+			c -> {
+				c.setCaze(new CaseReferenceDto(caze.getUuid()));
+			});
 
 		// includeContactsFromOtherJurisdictionsFilter = false - return 1, 3, 4, 6
 		// includeContactsFromOtherJurisdictionsFilter = true - return 1, 2, 3, 4, 6

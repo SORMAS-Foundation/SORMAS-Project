@@ -917,6 +917,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.RESPONSIBLE_REGION,
 			CaseDataDto.RESPONSIBLE_DISTRICT,
 			CaseDataDto.RESPONSIBLE_COMMUNITY,
+			DIFFERENT_PLACE_OF_STAY_JURISDICTION,
 			CaseDataDto.REGION,
 			CaseDataDto.DISTRICT,
 			CaseDataDto.COMMUNITY,
