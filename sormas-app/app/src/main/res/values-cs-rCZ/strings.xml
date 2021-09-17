@@ -241,6 +241,14 @@
     <string name="caption_new_immunization">Nová imunizace</string>
     <string name="caption_overwrite_immunization_management_status">Přepsání stavu správy imunizace</string>
     <string name="caption_searchCase">Hledat případ</string>
+    <string name="caption_aggregate_new_cases">New cases</string>
+    <string name="caption_aggregate_lab_confirmations">Lab confirmations</string>
+    <string name="caption_aggregate_deaths">Deaths</string>
+    <string name="caption_aggregate_new_cases_abbr">C</string>
+    <string name="caption_aggregate_lab_confirmations_abbr">L</string>
+    <string name="caption_aggregate_deaths_abbr">D</string>
+    <string name="caption_start_date_existing">Existing start date</string>
+    <string name="caption_end_date_existing">Existing end date</string>
     <string name="confirmation_action">Opravdu to chcete udělat?</string>
     <string name="confirmation_delete">Opravdu chcete vymazat tento záznam?</string>
     <string name="confirmation_pick_gps">Jste právě na tomto místě?</string>
