@@ -418,8 +418,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		validate(source);
 
 		if (existingPerson != null && existingPerson.isEnrolledInExternalJournal()) {
-			if (SymptomJournalStatus.REGISTERED.equals(source.getSymptomJournalStatus())
-				|| SymptomJournalStatus.ACCEPTED.equals(source.getSymptomJournalStatus())) {
+			if (source.isEnrolledInExternalJournal()) {
 				externalJournalService.validateExternalJournalPerson(source);
 			}
 			externalJournalService.handleExternalJournalPersonUpdateAsync(source.toReference());
