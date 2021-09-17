@@ -241,6 +241,14 @@
     <string name="caption_new_immunization">New Immunization</string>
     <string name="caption_overwrite_immunization_management_status">Overwrite immunization management status</string>
     <string name="caption_searchCase">Search case</string>
+    <string name="caption_aggregate_new_cases">New cases</string>
+    <string name="caption_aggregate_lab_confirmations">Lab confirmations</string>
+    <string name="caption_aggregate_deaths">Deaths</string>
+    <string name="caption_aggregate_new_cases_abbr">C</string>
+    <string name="caption_aggregate_lab_confirmations_abbr">L</string>
+    <string name="caption_aggregate_deaths_abbr">D</string>
+    <string name="caption_start_date_existing">Existing start date</string>
+    <string name="caption_end_date_existing">Existing end date</string>
     <string name="confirmation_action">Êtes-vous sûr de vouloir faire cela ?</string>
     <string name="confirmation_delete">Voulez-vous vraiment supprimer cet enregistrement ?</string>
     <string name="confirmation_pick_gps">Êtes-vous dans cet endroit maintenant?</string>
