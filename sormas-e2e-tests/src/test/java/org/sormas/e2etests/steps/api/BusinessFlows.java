@@ -57,7 +57,7 @@ public class BusinessFlows implements En {
         () -> {
           List<Case> caseList = new ArrayList<>();
           String uuid = UUID.randomUUID().toString();
-          Person person = personApiService.buildGeneratedPerson();
+          Person person = personApiService.buildSimpleGeneratedPerson();
           person = person.toBuilder().firstName(person.getFirstName() + uuid).build();
           for (int i = 0; i < number; i++) {
             person =
@@ -86,7 +86,7 @@ public class BusinessFlows implements En {
         () -> {
           List<Sample> sampleList = new ArrayList<>();
           String uuid = UUID.randomUUID().toString();
-          Person person = personApiService.buildGeneratedPerson();
+          Person person = personApiService.buildSimpleGeneratedPerson();
           person = person.toBuilder().firstName(person.getFirstName() + uuid).build();
           for (int i = 0; i < number; i++) {
             person =
