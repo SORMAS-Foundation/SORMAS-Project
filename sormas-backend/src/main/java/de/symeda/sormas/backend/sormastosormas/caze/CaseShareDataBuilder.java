@@ -98,13 +98,14 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 
 	@Override
 	public ShareData<Case, SormasToSormasCasePreview> buildShareDataPreview(Case caze, User user, SormasToSormasOptionsDto options) {
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(options.isPseudonymizePersonalData(), options.isPseudonymizeSensitiveData());
 
-		SormasToSormasCasePreview cazePreview = getCasePreview(caze);
+		SormasToSormasCasePreview cazePreview = getCasePreview(caze, pseudonymizer);
 
 		List<Contact> associatedContacts = Collections.emptyList();
 		if (options.isWithAssociatedContacts()) {
 			associatedContacts = contactService.findBy(new ContactCriteria().caze(caze.toReference()), user);
-			cazePreview.setContacts(getContactPreviews(associatedContacts));
+			cazePreview.setContacts(getContactPreviews(associatedContacts, pseudonymizer));
 		}
 
 		List<Sample> samples = Collections.emptyList();
@@ -196,7 +197,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 		}).collect(Collectors.toList());
 	}
 
-	private SormasToSormasCasePreview getCasePreview(Case caze) {
+	private SormasToSormasCasePreview getCasePreview(Case caze, Pseudonymizer pseudonymizer) {
 		SormasToSormasCasePreview casePreview = new SormasToSormasCasePreview();
 
 		casePreview.setUuid(caze.getUuid());
@@ -219,11 +220,13 @@ public class CaseShareDataBuilder implements ShareDataBuilder<Case, SormasToSorm
 
 		casePreview.setPerson(dataBuilderHelper.getPersonPreview(caze.getPerson()));
 
+		pseudonymizer.pseudonymizeDto(SormasToSormasCasePreview.class, casePreview, false, null);
+
 		return casePreview;
 	}
 
-	private List<SormasToSormasContactPreview> getContactPreviews(List<Contact> contacts) {
-		return contacts.stream().map(c -> dataBuilderHelper.getContactPreview(c)).collect(Collectors.toList());
+	private List<SormasToSormasContactPreview> getContactPreviews(List<Contact> contacts, Pseudonymizer pseudonymizer) {
+		return contacts.stream().map(c -> dataBuilderHelper.getContactPreview(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	private List<Sample> getAssociatedSamples(CaseReferenceDto caseReferenceDto, List<Contact> associatedContacts, User user) {
