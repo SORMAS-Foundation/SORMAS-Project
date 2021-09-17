@@ -8,12 +8,14 @@ import de.symeda.sormas.ui.immunization.components.filter.ImmunizationFilterForm
 
 public class FilterFormLayout extends VerticalLayout {
 
+	private static final float PERCENTAGE_WIDTH = 100;
+
 	private final ImmunizationFilterForm filterForm;
 
 	public FilterFormLayout() {
 		setSpacing(false);
 		setMargin(false);
-		setWidth(100, Unit.PERCENTAGE);
+		setWidth(PERCENTAGE_WIDTH, Unit.PERCENTAGE);
 
 		filterForm = new ImmunizationFilterForm();
 		addComponent(filterForm);

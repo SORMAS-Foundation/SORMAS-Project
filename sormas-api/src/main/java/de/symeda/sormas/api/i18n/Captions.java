@@ -35,6 +35,7 @@ public interface Captions {
 	String Action_reply = "Action.reply";
 	String Action_title = "Action.title";
 	String actionAccept = "actionAccept";
+	String actionAdjustChanges = "actionAdjustChanges";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionApplyFilters = "actionApplyFilters";
 	String actionArchive = "actionArchive";
@@ -1314,6 +1315,7 @@ public interface Captions {
 	String Immunization_uuid = "Immunization.uuid";
 	String Immunization_validFrom = "Immunization.validFrom";
 	String Immunization_validUntil = "Immunization.validUntil";
+	String immunizationCreateNewImmunization = "immunizationCreateNewImmunization";
 	String immunizationImmunizationsList = "immunizationImmunizationsList";
 	String immunizationKeepImmunization = "immunizationKeepImmunization";
 	String immunizationNewImmunization = "immunizationNewImmunization";
