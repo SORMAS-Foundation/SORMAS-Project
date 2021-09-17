@@ -919,6 +919,23 @@ public class SampleFacadeEjb implements SampleFacade {
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
 	}
 
+	public List<String> deleteSamples(List<String> sampleUuids) {
+		User user = userService.getCurrentUser();
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
+			.contains(UserRight.SAMPLE_DELETE)) {
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
+		}
+		List<String> deletedSampleUuids = new ArrayList<>();
+		sampleUuids.forEach(sampleUuid -> {
+			Sample sample = sampleService.getByUuid(sampleUuid);
+			if (sample != null && !sample.isDeleted()) {
+				sampleService.delete(sample);
+				deletedSampleUuids.add(sampleUuid);
+			}
+		});
+		return deletedSampleUuids;
+	}
+
 	@Override
 	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
 		return sampleService.getNewTestResultCountByResultType(caseIds);

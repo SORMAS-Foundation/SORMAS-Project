@@ -59,6 +59,8 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -124,6 +126,8 @@ import de.symeda.sormas.utils.EventJoins;
 
 @Stateless(name = "EventFacade")
 public class EventFacadeEjb implements EventFacade {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -263,13 +267,15 @@ public class EventFacadeEjb implements EventFacade {
 
 	@Override
 	public void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException {
-
 		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
 		}
 
 		Event event = eventService.getByUuid(eventUuid);
+		deleteEvent(event);
+	}
 
+	private void deleteEvent(Event event) throws ExternalSurveillanceToolException {
 		if (event.getEventStatus() == EventStatus.CLUSTER
 			&& externalSurveillanceToolFacade.isFeatureEnabled()
 			&& externalShareInfoService.isEventShared(event.getId())) {
@@ -277,6 +283,25 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		eventService.delete(event);
+	}
+
+	public List<String> deleteEvents(List<String> eventUuids) {
+		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
+		}
+		List<String> deletedEventUuids = new ArrayList<>();
+		eventUuids.forEach(eventUuid -> {
+			Event event = eventService.getByUuid(eventUuid);
+			if (event != null && !event.isDeleted()) {
+				try {
+					deleteEvent(event);
+					deletedEventUuids.add(eventUuid);
+				} catch (ExternalSurveillanceToolException e) {
+					logger.error("The event with uuid:" + eventUuid + "could not be deleted");
+				}
+			}
+		});
+		return deletedEventUuids;
 	}
 
 	@Override

@@ -102,4 +102,11 @@ public class SampleResource extends EntityDtoResource {
 		return FacadeProvider.getSampleFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
+
+	@POST
+	@Path("/delete")
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getSampleFacade().deleteSamples(uuids);
+	}
+
 }

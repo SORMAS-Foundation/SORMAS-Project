@@ -2359,7 +2359,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		Case caze = caseService.getByUuid(caseUuid);
+		deleteCase(caze);
+	}
 
+	private void deleteCase(Case caze) throws ExternalSurveillanceToolException {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
 			List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());
@@ -2377,11 +2380,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 		List<String> deletedCasesUuids = new ArrayList<>();
 		for (String caseUuid : caseUuids) {
-			try {
-				deleteCase(caseUuid);
-				deletedCasesUuids.add(caseUuid);
-			} catch (ExternalSurveillanceToolException e) {
-				logger.error("The case with uuid:" + caseUuid + "could not be deleted");
+			Case caze = caseService.getByUuid(caseUuid);
+			if (caze != null && !caze.isDeleted()) {
+				try {
+					deleteCase(caze);
+					deletedCasesUuids.add(caseUuid);
+				} catch (ExternalSurveillanceToolException e) {
+					logger.error("The case with uuid:" + caseUuid + "could not be deleted");
+				}
 			}
 		}
 		return deletedCasesUuids;

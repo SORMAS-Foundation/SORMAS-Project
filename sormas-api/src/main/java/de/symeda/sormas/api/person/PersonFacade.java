@@ -83,6 +83,8 @@ public interface PersonFacade {
 
 	Page<PersonIndexDto> getIndexPage(PersonCriteria personCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
+	List<String> deletePersons(List<String> personUuids);
+
 	long count(PersonCriteria criteria);
 
 	boolean exists(String uuid);

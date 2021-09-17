@@ -492,14 +492,31 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		Contact contact = contactService.getByUuid(contactUuid);
+		deleteContact(contact);
+	}
 
+	private void deleteContact(Contact contact) {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
-
 		contactService.delete(contact);
-
 		if (contact.getCaze() != null) {
 			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(contact.getCaze()), contact.getCaze());
 		}
+	}
+
+	public List<String> deleteContacts(List<String> contactUuids) {
+		if (!userService.hasRight(UserRight.CONTACT_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete contacts.");
+		}
+		List<String> deletedContactUuids = new ArrayList<>();
+		contactUuids.forEach(contactUuid -> {
+			Contact contact = contactService.getByUuid(contactUuid);
+			if (contact != null && !contact.isDeleted()) {
+				deleteContact(contact);
+				deletedContactUuids.add(contactUuid);
+			}
+		});
+		return deletedContactUuids;
+
 	}
 
 	@Override

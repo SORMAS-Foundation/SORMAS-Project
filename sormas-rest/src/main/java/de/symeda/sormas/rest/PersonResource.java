@@ -116,4 +116,10 @@ public class PersonResource extends EntityDtoResource {
 		}
 	}
 
+	@POST
+	@Path("/delete")
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getPersonFacade().deletePersons(uuids);
+	}
+
 }

@@ -77,6 +77,8 @@ public interface UserFacade {
 
 	List<UserDto> getByUuids(List<String> uuids);
 
+	List<String> deleteUsers(List<String> userUuids);
+
 	UserDto getCurrentUser();
 
 	UserReferenceDto getCurrentUserAsReference();
