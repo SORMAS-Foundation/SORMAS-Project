@@ -54,7 +54,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="24dp"
             android:layout_marginBottom="64dp">
 
             <LinearLayout
@@ -114,11 +114,13 @@
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/immunization_startDateExisting"
                         style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:caption="@string/caption_start_date_existing"
                         app:value="@{data.startDateExisting}" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/immunization_endDateExisting"
                         style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:caption="@string/caption_end_date_existing"
                         app:value="@{data.endDateExisting}" />
 
                 </LinearLayout>
@@ -139,7 +141,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-                android:paddingRight="@dimen/rowListItemHorizontalMargin">
+                android:paddingRight="@dimen/rowListItemHorizontalMargin"
+                android:layout_marginBottom="24dp">
 
                 <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/button_adjust"
@@ -151,7 +154,7 @@
                     android:text="@{I18nProperties.getCaption(Captions.actionAdjustChanges)}"
                     app:buttonType="@{ControlButtonType.PRIMARY}"
                     app:iconStart="@drawable/ic_clear_black_24dp"
-                    app:slim="true" />
+                    app:slim="false" />
 
                 <de.symeda.sormas.app.component.controls.ControlButton
                     android:id="@+id/button_save"
@@ -164,7 +167,7 @@
                     android:text="@{I18nProperties.getCaption(Captions.actionSaveChanges)}"
                     app:buttonType="@{ControlButtonType.PRIMARY}"
                     app:iconStart="@drawable/ic_done_black_24dp"
-                    app:slim="true" />
+                    app:slim="false" />
 
             </LinearLayout>
 

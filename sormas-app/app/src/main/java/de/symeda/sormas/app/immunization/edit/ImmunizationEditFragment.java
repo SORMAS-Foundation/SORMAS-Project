@@ -151,7 +151,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			initialFacilities,
 			record.getHealthFacility(),
 			contentBinding.immunizationHealthFacilityDetails,
-			false);
+			true);
 	}
 
 	@Override
