@@ -23,16 +23,16 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -122,6 +122,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntilTo;
 	private Date followUpUntilFrom;
+	private Integer followUpInterval;
 	private SymptomJournalStatus symptomJournalStatus;
 	private Vaccination vaccination;
 	private Date reportDateTo;
@@ -684,5 +685,13 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public void setOnlyShowCasesWithFulfilledReferenceDefinition(Boolean onlyShowCasesWithFulfilledReferenceDefinition) {
 		this.onlyShowCasesWithFulfilledReferenceDefinition = onlyShowCasesWithFulfilledReferenceDefinition;
+	}
+
+	public Integer getFollowUpInterval() {
+		return followUpInterval;
+	}
+
+	public void setFollowUpInterval(Integer followUpInterval) {
+		this.followUpInterval = followUpInterval;
 	}
 }
