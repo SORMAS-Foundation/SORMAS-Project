@@ -157,19 +157,19 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testImmunizationCreatedByDistrictUserIsVisibleToThatUser(){
+	public void testImmunizationCreatedByDistrictUserIsVisibleToThatUser() {
 		loginWith(districtUser1);
 
 		final PersonDto person = creator.createPerson("John", "Doe");
 
 		final ImmunizationDto immunization = creator.createImmunization(
-				Disease.ANTHRAX,
-				person.toReference(),
-				nationalUser.toReference(),
-				ImmunizationStatus.ACQUIRED,
-				MeansOfImmunization.VACCINATION,
-				ImmunizationManagementStatus.COMPLETED,
-				rdcf1);
+			Disease.ANTHRAX,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
 
 		final Date yesterday = new DateTime(new Date()).minusDays(1).toDate();
 		final List<ImmunizationDto> allImmunizations = getImmunizationFacade().getAllAfter(yesterday);
@@ -271,6 +271,8 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			getImmunizationFacade().getByUuid(acquiredImmunizationNoLongerValid.getUuid()).getImmunizationStatus());
 	}
 
+	// This is currently not executed because modifying immunizations leads to the entity not being attached to the persistence context anymore.
+	// This problem does not seem to occur on an actual server. See #6694
 //	@Test
 //	public void testUpdateVaccinationStatuses() {
 //		loginWith(nationalUser);

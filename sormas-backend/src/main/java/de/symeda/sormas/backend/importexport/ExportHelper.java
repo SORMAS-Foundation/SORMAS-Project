@@ -15,7 +15,11 @@
 
 package de.symeda.sormas.backend.importexport;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
 public final class ExportHelper {
@@ -38,6 +42,10 @@ public final class ExportHelper {
 			VaccinationDto.VACCINE_BATCH_NUMBER,
 			VaccinationDto.VACCINE_UNII_CODE,
 			VaccinationDto.VACCINE_ATC_CODE };
+	}
+
+	public static boolean shouldExportFields(ExportConfigurationDto exportConfiguration, String... fields) {
+		return exportConfiguration == null || !Collections.disjoint(exportConfiguration.getProperties(), Arrays.asList(fields));
 	}
 
 }

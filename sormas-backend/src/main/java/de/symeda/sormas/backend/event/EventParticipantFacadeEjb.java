@@ -55,6 +55,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
+import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventDto;
@@ -79,6 +80,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -643,26 +645,31 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 				eventParticipantCriteria);
 
 			Map<Long, Location> personAddresses = null;
-			List<Location> personAddressesList = null;
-			CriteriaQuery<Location> personAddressesCq = cb.createQuery(Location.class);
-			Root<Location> personAddressesRoot = personAddressesCq.from(Location.class);
-			Expression<String> personAddressesIdsExpr = personAddressesRoot.get(Location.ID);
-			personAddressesCq.where(
-				personAddressesIdsExpr
-					.in(eventParticipantResultList.stream().map(EventParticipantExportDto::getPersonAddressId).collect(Collectors.toList())));
-			personAddressesList = em.createQuery(personAddressesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-			personAddresses = personAddressesList.stream().collect(Collectors.toMap(Location::getId, Function.identity()));
+			if (ExportHelper.shouldExportFields(exportConfiguration, PersonDto.ADDRESS, CaseExportDto.ADDRESS_GPS_COORDINATES)) {
+				CriteriaQuery<Location> personAddressesCq = cb.createQuery(Location.class);
+				Root<Location> personAddressesRoot = personAddressesCq.from(Location.class);
+				Expression<String> personAddressesIdsExpr = personAddressesRoot.get(Location.ID);
+				personAddressesCq.where(
+					personAddressesIdsExpr
+						.in(eventParticipantResultList.stream().map(EventParticipantExportDto::getPersonAddressId).collect(Collectors.toList())));
+				List<Location> personAddressesList =
+					em.createQuery(personAddressesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				personAddresses = personAddressesList.stream().collect(Collectors.toMap(Location::getId, Function.identity()));
+			}
 
 			Map<Long, List<Sample>> samples = null;
-			List<Sample> samplesList = null;
-			CriteriaQuery<Sample> samplesCq = cb.createQuery(Sample.class);
-			Root<Sample> samplesRoot = samplesCq.from(Sample.class);
-			Join<Sample, EventParticipant> samplesEventParticipantJoin = samplesRoot.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
-			Expression<String> eventParticipantIdsExpr = samplesEventParticipantJoin.get(EventParticipant.ID);
-			samplesCq.where(
-				eventParticipantIdsExpr.in(eventParticipantResultList.stream().map(EventParticipantExportDto::getId).collect(Collectors.toList())));
-			samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-			samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedEventParticipant().getId()));
+			if (ExportHelper.shouldExportFields(exportConfiguration, EventParticipantExportDto.SAMPLE_INFORMATION)) {
+				List<Sample> samplesList = null;
+				CriteriaQuery<Sample> samplesCq = cb.createQuery(Sample.class);
+				Root<Sample> samplesRoot = samplesCq.from(Sample.class);
+				Join<Sample, EventParticipant> samplesEventParticipantJoin = samplesRoot.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
+				Expression<String> eventParticipantIdsExpr = samplesEventParticipantJoin.get(EventParticipant.ID);
+				samplesCq.where(
+					eventParticipantIdsExpr
+						.in(eventParticipantResultList.stream().map(EventParticipantExportDto::getId).collect(Collectors.toList())));
+				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedEventParticipant().getId()));
+			}
 
 			Map<Long, List<Immunization>> immunizations = null;
 			if (exportConfiguration == null

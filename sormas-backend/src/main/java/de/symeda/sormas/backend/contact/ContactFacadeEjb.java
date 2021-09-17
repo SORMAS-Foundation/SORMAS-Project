@@ -625,7 +625,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			List<Long> exportContactIds = exportContacts.stream().map(e -> e.getId()).collect(Collectors.toList());
 
 			List<VisitSummaryExportDetails> visitSummaries = null;
-			if (shouldExportFields(
+			if (ExportHelper.shouldExportFields(
 				exportConfiguration,
 				ContactExportDto.NUMBER_OF_VISITS,
 				ContactExportDto.LAST_COOPERATIVE_VISIT_DATE,
@@ -649,7 +649,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 
 			Map<Long, List<Exposure>> exposures = null;
-			if (shouldExportFields(
+			if (ExportHelper.shouldExportFields(
 				exportConfiguration,
 				ContactExportDto.TRAVELED,
 				ContactExportDto.TRAVEL_HISTORY,
@@ -670,7 +670,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 
 			Map<Long, List<Immunization>> immunizations = null;
-			if (shouldExportFields(exportConfiguration, ExportHelper.getVaccinationExportProperties())) {
+			if (ExportHelper.shouldExportFields(exportConfiguration, ExportHelper.getVaccinationExportProperties())) {
 				List<Immunization> immunizationList;
 				CriteriaQuery<Immunization> immunizationsCq = cb.createQuery(Immunization.class);
 				Root<Immunization> immunizationsCqRoot = immunizationsCq.from(Immunization.class);
@@ -688,7 +688,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 
 			Map<String, List<ContactEventSummaryDetails>> eventSummaries = null;
-			if (shouldExportFields(
+			if (ExportHelper.shouldExportFields(
 				exportConfiguration,
 				ContactExportDto.EVENT_COUNT,
 				ContactExportDto.LATEST_EVENT_ID,
@@ -1790,10 +1790,6 @@ public class ContactFacadeEjb implements ContactFacade {
 				cb.equal(contactRoot.get(Contact.EXTERNAL_TOKEN), externalToken),
 				cb.notEqual(contactRoot.get(Contact.UUID), contactUuid),
 				cb.notEqual(contactRoot.get(Contact.DELETED), Boolean.TRUE)));
-	}
-
-	private boolean shouldExportFields(ExportConfigurationDto exportConfiguration, String... fields) {
-		return exportConfiguration == null || !Collections.disjoint(exportConfiguration.getProperties(), Arrays.asList(fields));
 	}
 
 	@LocalBean

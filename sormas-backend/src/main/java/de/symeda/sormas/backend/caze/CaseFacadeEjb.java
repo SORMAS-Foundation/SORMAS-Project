@@ -771,7 +771,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		if (!resultList.isEmpty()) {
 			Map<Long, Symptoms> symptoms = null;
-			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseDataDto.SYMPTOMS)) {
+			if (ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS)) {
 				List<Symptoms> symptomsList = null;
 				CriteriaQuery<Symptoms> symptomsCq = cb.createQuery(Symptoms.class);
 				Root<Symptoms> symptomsRoot = symptomsCq.from(Symptoms.class);
@@ -782,16 +782,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			Map<Long, Location> personAddresses = null;
-			if (exportConfiguration == null
-				|| exportConfiguration.getProperties().contains(PersonDto.ADDRESS)
-				|| exportConfiguration.getProperties().contains(CaseExportDto.ADDRESS_GPS_COORDINATES)) {
-				List<Location> personAddressesList = null;
+			if (ExportHelper.shouldExportFields(exportConfiguration, PersonDto.ADDRESS, CaseExportDto.ADDRESS_GPS_COORDINATES)) {
 				CriteriaQuery<Location> personAddressesCq = cb.createQuery(Location.class);
 				Root<Location> personAddressesRoot = personAddressesCq.from(Location.class);
 				Expression<String> personAddressesIdsExpr = personAddressesRoot.get(Location.ID);
 				personAddressesCq
 					.where(personAddressesIdsExpr.in(resultList.stream().map(CaseExportDto::getPersonAddressId).collect(Collectors.toList())));
-				personAddressesList = em.createQuery(personAddressesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				List<Location> personAddressesList =
+					em.createQuery(personAddressesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 				personAddresses = personAddressesList.stream().collect(Collectors.toMap(Location::getId, Function.identity()));
 			}
 
@@ -800,22 +798,22 @@ public class CaseFacadeEjb implements CaseFacade {
 			Map<Long, Integer> clinicalVisitCounts = null;
 			Map<Long, HealthConditions> healthConditions = null;
 			if (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT) {
-				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_PRESCRIPTIONS)) {
+				if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_PRESCRIPTIONS)) {
 					prescriptionCounts = prescriptionService.getPrescriptionCountByCases(resultCaseIds)
 						.stream()
 						.collect(Collectors.toMap(e -> (Long) e[0], e -> ((Long) e[1]).intValue()));
 				}
-				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_TREATMENTS)) {
+				if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_TREATMENTS)) {
 					treatmentCounts = treatmentService.getTreatmentCountByCases(resultCaseIds)
 						.stream()
 						.collect(Collectors.toMap(e -> (Long) e[0], e -> ((Long) e[1]).intValue()));
 				}
-				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_CLINICAL_VISITS)) {
+				if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_CLINICAL_VISITS)) {
 					clinicalVisitCounts = clinicalVisitService.getClinicalVisitCountByCases(resultCaseIds)
 						.stream()
 						.collect(Collectors.toMap(e -> (Long) e[0], e -> ((Long) e[1]).intValue()));
 				}
-				if (exportConfiguration == null || exportConfiguration.getProperties().contains(ClinicalCourseDto.HEALTH_CONDITIONS)) {
+				if (ExportHelper.shouldExportFields(exportConfiguration, ClinicalCourseDto.HEALTH_CONDITIONS)) {
 					List<HealthConditions> healthConditionsList = null;
 					CriteriaQuery<HealthConditions> healthConditionsCq = cb.createQuery(HealthConditions.class);
 					Root<HealthConditions> healthConditionsRoot = healthConditionsCq.from(HealthConditions.class);
@@ -828,7 +826,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			Map<Long, PreviousHospitalization> firstPreviousHospitalizations = null;
-			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.INITIAL_DETECTION_PLACE)) {
+			if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.INITIAL_DETECTION_PLACE)) {
 				List<PreviousHospitalization> prevHospsList = null;
 				CriteriaQuery<PreviousHospitalization> prevHospsCq = cb.createQuery(PreviousHospitalization.class);
 				Root<PreviousHospitalization> prevHospsRoot = prevHospsCq.from(PreviousHospitalization.class);
@@ -846,7 +844,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			Map<Long, CaseClassification> sourceCaseClassifications = null;
-			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.MAX_SOURCE_CASE_CLASSIFICATION)) {
+			if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.MAX_SOURCE_CASE_CLASSIFICATION)) {
 				sourceCaseClassifications = contactService.getSourceCaseClassifications(resultCaseIds)
 					.stream()
 					.collect(
@@ -855,16 +853,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			List<Long> caseIdsWithOutbreak = null;
-			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.ASSOCIATED_WITH_OUTBREAK)) {
+			if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.ASSOCIATED_WITH_OUTBREAK)) {
 				caseIdsWithOutbreak = outbreakService.getCaseIdsWithOutbreak(resultCaseIds);
 			}
 
 			Map<Long, List<Exposure>> exposures = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
-				&& (exportConfiguration == null
-					|| exportConfiguration.getProperties().contains(CaseExportDto.TRAVELED)
-					|| exportConfiguration.getProperties().contains(CaseExportDto.TRAVEL_HISTORY)
-					|| exportConfiguration.getProperties().contains(CaseExportDto.BURIAL_ATTENDED))) {
+				&& ExportHelper
+					.shouldExportFields(exportConfiguration, CaseExportDto.TRAVELED, CaseExportDto.TRAVEL_HISTORY, CaseExportDto.BURIAL_ATTENDED)) {
 				CriteriaQuery<Exposure> exposuresCq = cb.createQuery(Exposure.class);
 				Root<Exposure> exposuresRoot = exposuresCq.from(Exposure.class);
 				Join<Exposure, EpiData> exposuresEpiDataJoin = exposuresRoot.join(Exposure.EPI_DATA, JoinType.LEFT);
@@ -882,7 +878,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			Map<Long, List<Sample>> samples = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
-				&& (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.SAMPLE_INFORMATION))) {
+				&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.SAMPLE_INFORMATION)) {
 				List<Sample> samplesList = null;
 				CriteriaQuery<Sample> samplesCq = cb.createQuery(Sample.class);
 				Root<Sample> samplesRoot = samplesCq.from(Sample.class);
@@ -895,11 +891,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			List<VisitSummaryExportDetails> visitSummaries = null;
 			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.CASE_FOLLOWUP)
-				&& (exportConfiguration == null
-					|| exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_VISITS)
-					|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_DATE)
-					|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC)
-					|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS))) {
+				&& ExportHelper.shouldExportFields(
+					exportConfiguration,
+					CaseExportDto.NUMBER_OF_VISITS,
+					CaseExportDto.LAST_COOPERATIVE_VISIT_DATE,
+					CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC,
+					CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)) {
 				CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
 				Root<Case> visitsCqRoot = visitsCq.from(Case.class);
 				Join<Case, Visit> visitsJoin = visitsCqRoot.join(Case.VISITS, JoinType.LEFT);
@@ -944,10 +941,11 @@ public class CaseFacadeEjb implements CaseFacade {
 			// Adding a second query here is not perfect, but selecting the last event with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
 			List<EventSummaryDetails> eventSummaries = null;
-			if (exportConfiguration == null
-				|| exportConfiguration.getProperties().contains(CaseExportDto.LATEST_EVENT_ID)
-				|| exportConfiguration.getProperties().contains(CaseExportDto.LATEST_EVENT_STATUS)
-				|| exportConfiguration.getProperties().contains(CaseExportDto.LATEST_EVENT_TITLE)) {
+			if (ExportHelper.shouldExportFields(
+				exportConfiguration,
+				CaseExportDto.LATEST_EVENT_ID,
+				CaseExportDto.LATEST_EVENT_STATUS,
+				CaseExportDto.LATEST_EVENT_TITLE)) {
 
 				eventSummaries = eventService.getEventSummaryDetailsByCases(resultCaseIds);
 			}

@@ -8229,6 +8229,7 @@ DROP FUNCTION IF EXISTS create_vaccination(bigint, bigint, timestamp, bigint, ti
 /* Step 4: Clean up cases, contacts and event participants */
 ALTER TABLE cases RENAME COLUMN vaccination TO vaccinationstatus;
 ALTER TABLE cases_history RENAME COLUMN vaccination TO vaccinationstatus;
+-- last vaccination date has been moved to the vaccination entity, but still has to be used for Monkeypox
 ALTER TABLE cases RENAME COLUMN lastvaccinationdate TO smallpoxlastvaccinationdate;
 ALTER TABLE cases_history RENAME COLUMN lastvaccinationdate TO smallpoxlastvaccinationdate;
 UPDATE cases SET smallpoxlastvaccinationdate = null WHERE disease != 'MONKEYPOX';

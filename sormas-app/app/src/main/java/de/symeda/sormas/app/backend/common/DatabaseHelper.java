@@ -2834,6 +2834,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 319:
 				currentVersion = 319;
 				migrateVaccinationInfo();
+				// Last vaccination date has been moved to the vaccination entity, but still has to be used for Monkeypox
 				getDao(Case.class).executeRaw("UPDATE cases SET vaccinationDate = null WHERE disease != 'MONKEYPOX';");
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN vaccinationStatus varchar(255);");
 				getDao(EventParticipant.class).executeRaw("ALTER TABLE eventParticipants ADD COLUMN vaccinationStatus varchar(255);");
@@ -2871,7 +2872,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	private void migrateVaccinationInfo() throws SQLException {
-		// Retrieve all new and unsynchronized cases with vaccinationStatus == VACCINATED from the database
+		// Retrieve all new unsynchronized cases with vaccinationStatus == VACCINATED from the database
 		GenericRawResults<Object[]> caseInfoResult = getDao(Case.class).queryRaw(
 			"SELECT cases.id, person_id, disease, diseaseDetails, reportDate, reportingUser_id, responsibleRegion_id, responsibleDistrict_id, "
 				+ "responsibleCommunity_id, COALESCE(symptoms.onsetDate, cases.reportDate), firstVaccinationDate, vaccinationDate, vaccinationDoses, vaccineName, otherVaccineName, vaccine, "
@@ -2879,32 +2880,32 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ "pregnant, trimester, healthConditions_id FROM cases LEFT JOIN clinicalCourse ON cases.clinicalCourse_id = clinicalCourse.id "
 				+ "LEFT JOIN symptoms ON cases.symptoms_id = symptoms.id WHERE cases.snapshot = 0 AND cases.changeDate = 0 AND vaccination = 'VACCINATED';",
 			new DataType[] {
-				DataType.BIG_INTEGER,
-				DataType.BIG_INTEGER,
-				DataType.ENUM_STRING,
-				DataType.STRING,
-				DataType.DATE_LONG,
-				DataType.BIG_INTEGER,
-				DataType.BIG_INTEGER,
-				DataType.BIG_INTEGER,
-				DataType.BIG_INTEGER,
-				DataType.DATE_LONG,
-				DataType.DATE_LONG,
-				DataType.DATE_LONG,
-				DataType.STRING,
-				DataType.ENUM_STRING,
-				DataType.STRING,
-				DataType.STRING,
-				DataType.ENUM_STRING,
-				DataType.STRING,
-				DataType.ENUM_STRING,
-				DataType.STRING,
-				DataType.STRING,
-				DataType.STRING,
-				DataType.STRING,
-				DataType.ENUM_STRING,
-				DataType.ENUM_STRING,
-				DataType.BIG_INTEGER });
+				DataType.BIG_INTEGER, 	// 0: cases.id
+				DataType.BIG_INTEGER, 	// 1: person_id
+				DataType.ENUM_STRING, 	// 2: disease
+				DataType.STRING,		// 3: diseaseDetails
+				DataType.DATE_LONG,		// 4: reportDate
+				DataType.BIG_INTEGER,	// 5: reportingUser_id
+				DataType.BIG_INTEGER,	// 6: responsibleRegion_id
+				DataType.BIG_INTEGER,	// 7: responsibleDistrict_id
+				DataType.BIG_INTEGER,	// 8: responsibleCommunity_id
+				DataType.DATE_LONG,		// 9: symptoms.onsetDate OR cases.reportDate
+				DataType.DATE_LONG,		// 10: firstVaccinationDate
+				DataType.DATE_LONG,		// 11: vaccinationDate
+				DataType.STRING,		// 12: vaccinationDoses
+				DataType.ENUM_STRING,	// 13: vaccineName
+				DataType.STRING,		// 14: otherVaccineName
+				DataType.STRING,		// 15: vaccine
+				DataType.ENUM_STRING,	// 16: vaccineManufacturer
+				DataType.STRING,		// 17: otherVaccineManufacturer
+				DataType.ENUM_STRING,	// 18: vaccinationInfoSource
+				DataType.STRING,		// 19: vaccineInn
+				DataType.STRING,		// 20: vaccineBatchNumber
+				DataType.STRING,		// 21: vaccineUniiCode
+				DataType.STRING,		// 22: vaccineAtcCode
+				DataType.ENUM_STRING,	// 23: pregnant
+				DataType.ENUM_STRING,	// 24: trimester
+				DataType.BIG_INTEGER });// 25: healthConditions_id
 
 		List<Object[]> caseInfoList = caseInfoResult.getResults();
 
