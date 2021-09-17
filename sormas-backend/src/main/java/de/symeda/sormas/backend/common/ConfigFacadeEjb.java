@@ -126,6 +126,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String CENTRAL_OIDC_URL = "central.oidc.url";
 	private static final String CENTRAL_ETCD_HOST = "central.etcd.host";
+	private static final String CENTRAL_ETCD_CLIENT_NAME = "central.etcd.clientName";
+	private static final String CENTRAL_ETCD_CLIENT_PASSWORD = "central.etcd.clientPassword";
 	private static final String CENTRAL_ETCD_CA_PATH = "central.etcd.caPath";
 
 	public static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
@@ -140,8 +142,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SORMAS2SORMAS_OIDC_CLIENT_ID = "sormas2sormas.oidc.clientId";
 	private static final String SORMAS2SORMAS_OIDC_CLIENT_SECRET = "sormas2sormas.oidc.clientSecret";
 
-	private static final String SORMAS2SORMAS_ETCD_CLIENT_NAME = "sormas2sormas.etcd.clientName";
-	private static final String SORMAS2SORMAS_ETCD_CLIENT_PASSWORD = "sormas2sormas.etcd.clientPassword";
 	private static final String SORMAS2SORMAS_ETCD_KEY_PREFIX = "sormas2sormas.etcd.keyPrefix";
 
 	private static final String SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN = "sormas2sormas.retainCaseExternalToken";
@@ -518,8 +518,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setRootCaAlias(getProperty(SORMAS2SORMAS_ROOT_CA_ALIAS, null));
 		config.setRetainCaseExternalToken(getBoolean(SORMAS2SORMAS_RETAIN_CASE_EXTERNAL_TOKEN, true));
 		config.setId(getProperty(SORMAS2SORMAS_ID, null));
-		config.setEtcdClientName(getProperty(SORMAS2SORMAS_ETCD_CLIENT_NAME, null));
-		config.setEtcdClientPassword(getProperty(SORMAS2SORMAS_ETCD_CLIENT_PASSWORD, null));
 		config.setOidcServer(getProperty(CENTRAL_OIDC_URL, null));
 		config.setOidcRealm(getProperty(SORMAS2SORMAS_OIDC_REALM, null));
 		config.setOidcClientId(getProperty(SORMAS2SORMAS_OIDC_CLIENT_ID, null));
@@ -643,6 +641,14 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public String getCentralEtcdHost() {
 		return getProperty(CENTRAL_ETCD_HOST, null);
+	}
+
+	public String getCentralEtcdClientName() {
+		return getProperty(CENTRAL_ETCD_CLIENT_NAME, null);
+	}
+
+	public String getCentralEtcdClientPassword() {
+		return getProperty(CENTRAL_ETCD_CLIENT_PASSWORD, null);
 	}
 
 	public String getCentralEtcdCaPath() {

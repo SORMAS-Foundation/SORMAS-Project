@@ -119,6 +119,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -334,9 +335,15 @@ public class ContactFacadeEjb implements ContactFacade {
 		return saveContact(dto, handleChanges, handleCaseChanges, true, true);
 	}
 
-	public ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean syncShares) {
+	public ContactDto saveContact(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean internal) {
 		final Contact existingContact = dto.getUuid() != null ? contactService.getByUuid(dto.getUuid()) : null;
+
+		if (internal && existingContact != null && !contactService.isContactEditAllowed(existingContact)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorContactNotEditable));
+		}
+
 		final ContactDto existingContactDto = toDto(existingContact);
+
 		restorePseudonymizedDto(dto, existingContact, existingContactDto);
 
 		validate(dto);
@@ -384,10 +391,10 @@ public class ContactFacadeEjb implements ContactFacade {
 			contactService.udpateContactStatus(entity);
 
 			if (handleCaseChanges && entity.getCaze() != null) {
-				caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze(), syncShares);
+				caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(entity.getCaze()), entity.getCaze(), internal);
 			}
 
-			onContactChanged(toDto(entity), syncShares);
+			onContactChanged(toDto(entity), internal);
 		}
 
 		return toDto(entity);

@@ -79,15 +79,15 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -115,8 +115,8 @@ import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
@@ -590,8 +590,12 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			new Date(),
 			new Date(),
-			null);
-		updateContactJurisdictionAndCase(contactSameJurisdictionDiffUserNoCase.getUuid(), regionReferenceDto, districtReferenceDto, null);
+			null,
+			null,
+			c -> {
+				c.setRegion(regionReferenceDto);
+				c.setDistrict(districtReferenceDto);
+			});
 
 		// 5) contact created by different user, jurisdiction different from main user, no case linked
 		PersonDto contactPersonDiffJurisdictionDiffUserNoCase = creator.createPerson("contactDiffJurisdictionDiffUserNoCase", "Person5");
@@ -614,12 +618,11 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			new Date(),
 			new Date(),
-			null);
-		updateContactJurisdictionAndCase(
-			contactDiffJurisdictionDiffUserCaseSameJurisdiction.getUuid(),
 			null,
 			null,
-			new CaseReferenceDto(caze.getUuid()));
+			c -> {
+				c.setCaze(new CaseReferenceDto(caze.getUuid()));
+			});
 
 		// includeContactsFromOtherJurisdictionsFilter = false - return 1, 3, 4, 6
 		// includeContactsFromOtherJurisdictionsFilter = true - return 1, 2, 3, 4, 6
