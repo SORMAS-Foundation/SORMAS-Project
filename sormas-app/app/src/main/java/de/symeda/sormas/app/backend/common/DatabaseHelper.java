@@ -2955,7 +2955,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), " + caseInfo[1] + ", " + caseInfo[0] + ", '" + caseInfo[2] + "', "
 				+ caseInfo[3] + ", " + caseInfo[4] + ", " + caseInfo[5] + ", '" + ImmunizationStatus.ACQUIRED.name() + "', '"
 				+ MeansOfImmunization.VACCINATION.name() + "', '" + ImmunizationManagementStatus.COMPLETED.name() + "', " + caseInfo[6] + ", "
-				+ caseInfo[7] + ", " + caseInfo[8] + ", " + caseInfo[10] + ", " + caseInfo[11] + ", " + caseInfo[12] + ", 0, 0, 0);";
+				+ caseInfo[7] + ", " + caseInfo[8] + ", " + caseInfo[10] + ", " + caseInfo[11] + ", " + caseInfo[12] + ", 0, 1, 0);";
 			getDao(Immunization.class).executeRaw(immunizationInsertQuery);
 
 			// Create vaccinations
@@ -3023,7 +3023,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), " + immunizationId + ", " + healthConditionsId + ", "
 				+ caseInfo[4] + ", " + caseInfo[5] + ", " + vaccinationDate + ", " + vaccineNameString + ", " + otherVaccineName + ", "
 				+ vaccineManufacturerString + ", " + caseInfo[17] + ", " + caseInfo[18] + ", " + caseInfo[19] + ", " + caseInfo[20] + ", "
-				+ caseInfo[21] + ", " + caseInfo[22] + ", " + caseInfo[23] + ", " + caseInfo[24] + ", 0, 0, 0);";
+				+ caseInfo[21] + ", " + caseInfo[22] + ", " + caseInfo[23] + ", " + caseInfo[24] + ", 0, 1, 0);";
 		getDao(Vaccination.class).executeRaw(vaccinationInsertQuery);
 	}
 
