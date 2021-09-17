@@ -49,6 +49,7 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
 	private UserDto user2;
+	private UserDto observerUser;
 
 	@Override
 	public void init() {
@@ -62,6 +63,8 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 		user2 = creator
 			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
 
+		observerUser = creator.createUser(null, null, null, null, "National", "Observer", UserRole.NATIONAL_OBSERVER);
+
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
 
@@ -74,21 +77,26 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 	}
 
 	@Test
-	public void testClinicalVisitOutsideJurisdiction() {
-		CaseDataDto caze = createCase(user1, rdcf1);
-		// create contact ro have access to @case1
-		creator.createContact(user2.toReference(), caze.getPerson(), caze);
+	public void testPseudonymizeClinicalVisit() {
+		CaseDataDto caze = createCase(user2, rdcf2);
 		ClinicalVisitDto visit = createClinicalVisit(caze);
+		// create contact to have access to @case1
+		creator.createContact(user2.toReference(), caze.getPerson(), caze);
+
+		loginWith(user1);
 
 		assertPseudonymized(getClinicalVisitFacade().getClinicalVisitByUuid(visit.getUuid()));
 	}
 
 	@Test
 	public void testGetVisitsAfter() {
+		loginWith(user1);
 		CaseDataDto case1 = createCase(user1, rdcf1);
-		// create contact ro have access to @case1
-		creator.createContact(user2.toReference(), case1.getPerson(), case1);
 		ClinicalVisitDto visit1 = createClinicalVisit(case1);
+		// create contact to have access to @case1
+		creator.createContact(user2.toReference(), case1.getPerson(), case1);
+
+		loginWith(user2);
 
 		CaseDataDto case2 = createCase(user2, rdcf2);
 		ClinicalVisitDto visit2 = createClinicalVisit(case2);
@@ -101,10 +109,14 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 
 	@Test
 	public void testPseudonymizeIndexList() {
+		loginWith(user1);
+
 		CaseDataDto case1 = createCase(user1, rdcf1);
-		// create contact ro have access to @case1
-		creator.createContact(user2.toReference(), case1.getPerson(), case1);
 		ClinicalVisitDto visit1 = createClinicalVisit(case1);
+		// create contact to have access to @case1
+		creator.createContact(user2.toReference(), case1.getPerson(), case1);
+
+		loginWith(user2);
 
 		CaseDataDto case2 = createCase(user2, rdcf2);
 		ClinicalVisitDto visit2 = createClinicalVisit(case2);
@@ -122,10 +134,13 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 
 	@Test
 	public void testPseudonymizeExportList() {
+		loginWith(user1);
 		CaseDataDto case1 = createCase(user1, rdcf1);
-		// create contact ro have access to @case1
-		creator.createContact(user2.toReference(), case1.getPerson(), case1);
 		createClinicalVisit(case1);
+		// create contact to have access to @case1
+		creator.createContact(user2.toReference(), case1.getPerson(), case1);
+
+		loginWith(user2);
 
 		CaseDataDto case2 = createCase(user2, rdcf2);
 		createClinicalVisit(case2);
@@ -144,11 +159,11 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 	}
 
 	@Test
-	public void testUpdateOutsideJurisdiction() {
-		CaseDataDto caze = createCase(user1, rdcf1);
-		// create contact ro have access to @case1
-		creator.createContact(user2.toReference(), caze.getPerson(), caze);
+	public void testUpdatePseudonymized() {
+		CaseDataDto caze = createCase(user2, rdcf2);
 		ClinicalVisitDto visit = createClinicalVisit(caze);
+
+		loginWith(observerUser);
 
 		visit.setVisitRemarks(null);
 		visit.setVisitingPerson(null);

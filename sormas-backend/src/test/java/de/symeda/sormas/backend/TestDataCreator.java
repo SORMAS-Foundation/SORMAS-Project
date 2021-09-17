@@ -78,7 +78,7 @@ import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
-import de.symeda.sormas.api.infrastructure.PopulationDataDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.labmessage.TestReportDto;
@@ -546,6 +546,14 @@ public class TestDataCreator {
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Disease disease) {
 		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease, null);
+	}
+
+	public ContactDto createContact(
+		UserReferenceDto reportingUser,
+		PersonReferenceDto contactPerson,
+		Disease disease,
+		Consumer<ContactDto> customConfig) {
+		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease, null, customConfig);
 	}
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Date reportDateTime) {
