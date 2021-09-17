@@ -89,8 +89,23 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                android:background="@color/formListSectionBackground"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding">
+
+                <de.symeda.sormas.app.component.controls.ControlRadioGroupField
+                    android:id="@+id/immunization_duplicate_options"
+                    style="@style/ControlSingleColumnStyle"
+                    app:required="true" />
+
+            </LinearLayout>
         </LinearLayout>
 
     </ScrollView>
-
 </layout>

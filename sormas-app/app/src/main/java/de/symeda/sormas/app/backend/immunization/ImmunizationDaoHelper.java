@@ -31,24 +31,22 @@ public class ImmunizationDaoHelper {
 			final Date immunizationEndDate = immunization.getEndDate();
 			final Date immunizationStartDate = immunization.getStartDate();
 			if (startDate != null && endDate != null) {
-				final boolean endDateNull = immunizationEndDate == null && DateHelper.isBetween(immunizationStartDate, startDate, endDate);
-				final boolean startDateNull = immunizationStartDate == null && DateHelper.isBetween(immunizationEndDate, startDate, endDate);
+				final boolean endDateNull =
+					immunizationEndDate == null && immunizationStartDate != null && DateHelper.isBetween(immunizationStartDate, startDate, endDate);
+				final boolean startDateNull =
+					immunizationStartDate == null && immunizationEndDate != null && DateHelper.isBetween(immunizationEndDate, startDate, endDate);
 				final boolean between = (immunizationEndDate == null || startDate.equals(immunizationEndDate) || immunizationEndDate.after(startDate))
 					&& (immunizationStartDate == null || endDate.equals(immunizationStartDate) || immunizationStartDate.before(endDate));
 
-				return endDateNull || startDateNull || between;
-			} else if (startDate != null) {
-				return (immunizationEndDate == null && (immunizationStartDate.equals(startDate) || startDate.after(immunizationStartDate)))
-					|| (immunizationStartDate == null && (immunizationEndDate.equals(startDate) || startDate.before(immunizationEndDate)))
-					|| (immunizationStartDate != null
-						&& immunizationEndDate != null
-						&& DateHelper.isBetween(startDate, immunizationStartDate, immunizationEndDate));
-			} else if (endDate != null) {
-				return (immunizationStartDate == null && (immunizationEndDate.equals(endDate) || endDate.before(immunizationEndDate)))
-					|| (immunizationEndDate == null && (immunizationStartDate.equals(endDate) || endDate.after(immunizationStartDate)))
-					|| (immunizationStartDate != null
-						&& immunizationEndDate != null
-						&& DateHelper.isBetween(endDate, immunizationStartDate, immunizationEndDate));
+				return endDateNull || startDateNull || between || (immunizationStartDate == null && immunizationEndDate == null);
+			} else if (startDate != null && endDate == null) {
+				return (immunizationEndDate == null)
+					|| (immunizationEndDate != null && (immunizationEndDate.equals(startDate) || startDate.before(immunizationEndDate)))
+					|| (immunizationStartDate == null && immunizationEndDate == null);
+			} else if (endDate != null && startDate == null) {
+				return (immunizationStartDate == null)
+						|| (immunizationStartDate != null && (immunizationStartDate.equals(endDate) || endDate.after(immunizationStartDate)))
+						|| (immunizationStartDate == null && immunizationEndDate == null);
 			}
 			return true;
 		}).collect(Collectors.toList());

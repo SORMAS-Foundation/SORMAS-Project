@@ -33,7 +33,6 @@ import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.immunization.ImmunizationCriteria;
 import de.symeda.sormas.app.backend.immunization.ImmunizationEditAuthorization;
 import de.symeda.sormas.app.backend.immunization.ImmunizationSimilarityCriteria;
-import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
@@ -113,6 +112,7 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 			immunizationCriteria.setResponsibleRegion(changedImmunization.getResponsibleRegion());
 			final Disease disease = changedImmunization.getDisease();
 			immunizationCriteria.setDisease(disease);
+			immunizationCriteria.setMeansOfImmunization(changedImmunization.getMeansOfImmunization());
 			final ImmunizationSimilarityCriteria criteria = new ImmunizationSimilarityCriteria();
 			criteria.setImmunizationCriteria(immunizationCriteria);
 			criteria.setImmunizationUuid(changedImmunization.getUuid());
@@ -122,7 +122,7 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 
 			List<Immunization> similarImmunizations = DatabaseHelper.getImmunizationDao().getSimilarImmunizations(criteria);
 
-			if (!similarImmunizations.isEmpty()) {
+			if (!similarImmunizations.isEmpty() && getActivePage().getPosition() == ImmunizationSection.IMMUNIZATION_INFO.ordinal()) {
 				final ImmunizationOverlapsDto immunizationOverlapsDto = new ImmunizationOverlapsDto();
 				immunizationOverlapsDto.setStartDate(changedImmunization.getStartDate());
 				immunizationOverlapsDto.setEndDate(changedImmunization.getEndDate());
@@ -131,52 +131,59 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 				immunizationOverlapsDto.setEndDateExisting(existingSimilarImmunization.getEndDate());
 				immunizationOverlapsDto.setDisease(disease);
 
-				InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_immunization_overlaps_layout, immunizationOverlapsDto);
-				infoDialog.show();
+				final ImmunizationEditOverrideDialog immunizationEditOverrideDialog = new ImmunizationEditOverrideDialog(
+					getContext(),
+					R.layout.dialog_immunization_overlaps_layout,
+					immunizationOverlapsDto,
+					() -> saveImmunization(changedImmunization));
+				immunizationEditOverrideDialog.show();
 			} else {
-
-				try {
-					FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
-				} catch (ValidationException e) {
-					NotificationHelper.showNotification(this, ERROR, e.getMessage());
-					return;
-				}
-
-				saveTask = new SavingAsyncTask(getRootView(), changedImmunization) {
-
-					@Override
-					protected void onPreExecute() {
-						showPreloader();
-					}
-
-					@Override
-					protected void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-						synchronized (ImmunizationEditActivity.this) {
-							DatabaseHelper.getPersonDao().saveAndSnapshot(changedImmunization.getPerson());
-							DatabaseHelper.getImmunizationDao().saveAndSnapshot(changedImmunization);
-						}
-					}
-
-					@Override
-					protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-						hidePreloader();
-						super.onPostExecute(taskResult);
-						if (taskResult.getResultStatus().isSuccess()) {
-							if (getActivePage().getPosition() == ImmunizationSection.PERSON_INFO.ordinal()) {
-								finish();
-							} else {
-								goToNextPage();
-							}
-						} else {
-							onResume(); // reload data
-						}
-						saveTask = null;
-					}
-				}.executeOnThreadPool();
+				saveImmunization(changedImmunization);
 			}
 		} else {
 			NotificationHelper.showNotification(this, WARNING, getString(R.string.message_edit_forbidden));
 		}
+	}
+
+	private void saveImmunization(Immunization changedImmunization) {
+		try {
+			FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
+		} catch (ValidationException e) {
+			NotificationHelper.showNotification(this, ERROR, e.getMessage());
+			return;
+		}
+
+		saveTask = new SavingAsyncTask(getRootView(), changedImmunization) {
+
+			@Override
+			protected void onPreExecute() {
+				showPreloader();
+			}
+
+			@Override
+			protected void doInBackground(TaskResultHolder resultHolder) throws DaoException {
+				synchronized (ImmunizationEditActivity.this) {
+					DatabaseHelper.getPersonDao().saveAndSnapshot(changedImmunization.getPerson());
+					DatabaseHelper.getImmunizationDao().saveAndSnapshot(changedImmunization);
+				}
+			}
+
+			@Override
+			protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+				hidePreloader();
+				super.onPostExecute(taskResult);
+				if (taskResult.getResultStatus().isSuccess()) {
+					if (getActivePage().getPosition() == ImmunizationSection.PERSON_INFO.ordinal()) {
+						finish();
+					} else {
+						goToNextPage();
+					}
+				} else {
+					onResume(); // reload data
+				}
+				saveTask = null;
+			}
+		}.executeOnThreadPool();
 	}
 
 	@Override

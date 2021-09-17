@@ -91,7 +91,7 @@ public class ImmunizationListEntry extends HorizontalLayout {
 	public void addEditListener(Button.ClickListener editClickListener) {
 		if (editButton == null) {
 			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-travelEntry-" + immunization.getUuid(),
+				"edit-immunization-" + immunization.getUuid(),
 				null,
 				VaadinIcons.PENCIL,
 				editClickListener,
