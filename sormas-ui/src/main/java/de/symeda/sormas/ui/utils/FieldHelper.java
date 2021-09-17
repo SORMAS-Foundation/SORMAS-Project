@@ -465,6 +465,41 @@ public final class FieldHelper {
 		}
 	}
 
+	public static <T> void setValueWhen(
+			FieldGroup fieldGroup,
+			String sourceFieldId,
+			Object sourceValue,
+			String targetPropertyId,
+			T targetValue
+	) {
+		final Field<?> sourceField = fieldGroup.getField(sourceFieldId);
+		final List<Object> sourceValues = Collections.singletonList(sourceValue);
+		final Field<T> targetFields = (Field<T>) fieldGroup.getField(targetPropertyId);
+
+		setValueWhen(sourceField, sourceValues, targetFields, targetValue);
+	}
+
+	public static <T> void setValueWhen(Field<?> sourceField, final List<?> sourceValues, Field<T> targetField,
+									  T targetValue) {
+
+		if (sourceField instanceof AbstractField<?>) {
+			((AbstractField<?>) sourceField).setImmediate(true);
+		}
+
+		// initialize
+		{
+			if (sourceValues.contains(getNullableSourceFieldValue(sourceField))) {
+				targetField.setValue(targetValue);
+			}
+		}
+
+		sourceField.addValueChangeListener(event -> {
+			if(sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())))) {
+				targetField.setValue(targetValue);
+			}
+		});
+	}
+
 	public static void setEnabledWhen(
 		FieldGroup fieldGroup,
 		String sourceFieldId,

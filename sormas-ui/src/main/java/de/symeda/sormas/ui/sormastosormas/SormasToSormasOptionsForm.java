@@ -56,15 +56,24 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	public static SormasToSormasOptionsForm forCase(List<String> excludedOrganizationIds) {
 		return new SormasToSormasOptionsForm(
-			excludedOrganizationIds,
-			true,
-			Arrays.asList(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, SormasToSormasOptionsDto.WITH_SAMPLES),
-			(form) -> FieldHelper.setEnabledWhen(
-				form.getFieldGroup(),
-				SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
-				Boolean.TRUE,
-				SormasToSormasOptionsDto.WITH_SAMPLES,
-				false));
+				excludedOrganizationIds,
+				true,
+				Arrays.asList(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, SormasToSormasOptionsDto.WITH_SAMPLES),
+				(form) -> {
+					FieldHelper.setEnabledWhen(
+							form.getFieldGroup(),
+							SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+							Boolean.FALSE,
+							SormasToSormasOptionsDto.WITH_SAMPLES,
+							false);
+
+					FieldHelper.setValueWhen(
+							form.getFieldGroup(),
+							SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+							Boolean.TRUE,
+							SormasToSormasOptionsDto.WITH_SAMPLES,
+							Boolean.TRUE);
+				});
 	}
 
 	public static SormasToSormasOptionsForm forContact(List<String> excludedOrganizationIds) {
