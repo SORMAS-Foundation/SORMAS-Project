@@ -15,21 +15,6 @@
 
 package de.symeda.sormas.app.backend.common;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -43,6 +28,21 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -2874,9 +2874,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		// Retrieve all new and unsynchronized cases with vaccinationStatus == VACCINATED from the database
 		GenericRawResults<Object[]> caseInfoResult = getDao(Case.class).queryRaw(
 			"SELECT cases.id, person_id, disease, diseaseDetails, reportDate, reportingUser_id, responsibleRegion_id, responsibleDistrict_id, "
-				+ "responsibleCommunity_id, cases.creationDate, firstVaccinationDate, vaccinationDate, vaccinationDoses, vaccineName, otherVaccineName, vaccine"
+				+ "responsibleCommunity_id, COALESCE(symptoms.onsetDate, cases.reportDate), firstVaccinationDate, vaccinationDate, vaccinationDoses, vaccineName, otherVaccineName, vaccine, "
 				+ "vaccineManufacturer, otherVaccineManufacturer, vaccinationInfoSource, vaccineInn, vaccineBatchNumber, vaccineUniiCode, vaccineAtcCode,"
-				+ "pregnant, trimester, healthConditions_id FROM cases LEFT JOIN clinicalCourse ON cases.clinicalCourse_id = clinicalcourse.id WHERE snapshot = 0 AND changeDate = 0 AND vaccination = 'VACCINATED';",
+				+ "pregnant, trimester, healthConditions_id FROM cases LEFT JOIN clinicalCourse ON cases.clinicalCourse_id = clinicalCourse.id "
+				+ "LEFT JOIN symptoms ON cases.symptoms_id = symptoms.id WHERE cases.snapshot = 0 AND cases.changeDate = 0 AND vaccination = 'VACCINATED';",
 			new DataType[] {
 				DataType.BIG_INTEGER,
 				DataType.BIG_INTEGER,
@@ -2905,13 +2906,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				DataType.ENUM_STRING,
 				DataType.BIG_INTEGER });
 
-		for (Object[] caseInfo : caseInfoResult) {
-			formatRawResultString(caseInfo, 2, false);
+		List<Object[]> caseInfoList = caseInfoResult.getResults();
+
+		for (Object[] caseInfo : caseInfoList) {
 			formatRawResultString(caseInfo, 3, true);
 			formatRawResultString(caseInfo, 12, true);
 			formatRawResultString(caseInfo, 14, true);
 			formatRawResultString(caseInfo, 15, true);
-			formatRawResultString(caseInfo, 16, false);
 			formatRawResultString(caseInfo, 17, true);
 			formatRawResultString(caseInfo, 18, false);
 			formatRawResultString(caseInfo, 19, true);
@@ -2928,15 +2929,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		// Retrieve the latest case of each person for each disease
 		List<Object[]> filteredCaseInfo = new ArrayList<>();
-		Map<Disease, List<Object[]>> caseInfoByDisease = caseInfoResult.getResults().stream().collect(Collectors.groupingBy(c -> (Disease) c[2]));
+		Map<Disease, List<Object[]>> caseInfoByDisease = caseInfoList.stream().collect(Collectors.groupingBy(c -> Disease.valueOf((String) c[2])));
 		caseInfoByDisease.keySet().forEach(d -> {
 			filteredCaseInfo.addAll(
 				caseInfoByDisease.get(d)
 					.stream()
-					.sorted((c1, c2) -> ((Date) c1[9]).compareTo((Date) c2[9]))
+					.sorted((c1, c2) -> new Date((Long) c1[9]).compareTo(new Date((Long) c2[9])))
 					.collect(
 						Collectors.collectingAndThen(
-							Collectors.toMap(c -> ((Long) c[1]), Function.identity(), (c1, c2) -> ((Date) c1[9]).after((Date) c2[9]) ? c1 : c2),
+							Collectors.toMap(
+								c -> ((BigInteger) c[1]),
+								Function.identity(),
+								(c1, c2) -> new Date((Long) c1[9]).after(new Date((Long) c2[9])) ? c1 : c2),
 							r -> new ArrayList<>(r.values()))));
 		});
 
@@ -2948,10 +2952,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ "responsibleRegion_id, responsibleDistrict_id, responsibleCommunity_id, startDate, endDate, numberOfDoses, pseudonymized,"
 				+ "modified, snapshot) VALUES ('" + DataHelper.createUuid()
 				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), " + caseInfo[1] + ", " + caseInfo[0] + ", " + caseInfo[2] + ", "
+				+ "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), " + caseInfo[1] + ", " + caseInfo[0] + ", '" + caseInfo[2] + "', "
 				+ caseInfo[3] + ", " + caseInfo[4] + ", " + caseInfo[5] + ", '" + ImmunizationStatus.ACQUIRED.name() + "', '"
-				+ MeansOfImmunization.VACCINATION.name() + "', '" + ImmunizationManagementStatus.COMPLETED + "', " + caseInfo[6] + ", " + caseInfo[7]
-				+ ", " + caseInfo[8] + ", " + caseInfo[10] + ", " + caseInfo[11] + ", 0, 0, 0);";
+				+ MeansOfImmunization.VACCINATION.name() + "', '" + ImmunizationManagementStatus.COMPLETED.name() + "', " + caseInfo[6] + ", "
+				+ caseInfo[7] + ", " + caseInfo[8] + ", " + caseInfo[10] + ", " + caseInfo[11] + ", " + caseInfo[12] + ", 0, 0, 0);";
 			getDao(Immunization.class).executeRaw(immunizationInsertQuery);
 
 			// Create vaccinations
@@ -2959,38 +2963,43 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			if (caseInfo[10] != null || caseInfo[11] == null) {
 				cloneHealthConditions(caseInfo[25]);
 				Vaccine vaccineName = caseInfo[13] != null
-					? (caseInfo[13] == "ASTRA_ZENECA_COMIRNATY" || caseInfo[13] == "ASTRA_ZENECA_MRNA_1273")
+					? (caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY") || caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273"))
 						? Vaccine.OXFORD_ASTRA_ZENECA
 						: Vaccine.valueOf((String) caseInfo[13])
-					: Vaccine.OTHER;
-				String otherVaccineName = vaccineName == Vaccine.OTHER ? (String) caseInfo[14] : (String) caseInfo[15];
-				VaccineManufacturer vaccineManufacturer = (caseInfo[13] == "ASTRA_ZENECA_COMIRNATY" || caseInfo[13] == "ASTRA_ZENECA_MRNA_1273")
-					? VaccineManufacturer.ASTRA_ZENECA
-					: VaccineManufacturer.valueOf((String) caseInfo[16]);
+					: (caseInfo[15] != null ? Vaccine.OTHER : null);
+				String otherVaccineName = vaccineName == Vaccine.OTHER && caseInfo[15] == null ? (String) caseInfo[14] : (String) caseInfo[15];
+				VaccineManufacturer vaccineManufacturer =
+					("ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13]) || "ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))
+						? VaccineManufacturer.ASTRA_ZENECA
+						: (caseInfo[16] != null ? VaccineManufacturer.valueOf((String) caseInfo[16]) : null);
 				insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[10]);
 			}
 
 			// Last vaccination
-			if (caseInfo[11] != null || (caseInfo[13] == "ASTRA_ZENECA_COMIRNATY" || caseInfo[13] == "ASTRA_ZENECA_MRNA_1273")) {
+			if (caseInfo[11] != null || ("ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13]) || "ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))) {
 				cloneHealthConditions(caseInfo[25]);
 				Vaccine vaccineName = caseInfo[13] != null
-					? (caseInfo[13] == "ASTRA_ZENECA_COMIRNATY"
+					? (caseInfo[13].equals("ASTRA_ZENECA_COMIRNATY")
 						? Vaccine.COMIRNATY
-						: (caseInfo[13] == "ASTRA_ZENECA_MRNA_1273") ? Vaccine.MRNA_1273 : Vaccine.valueOf((String) caseInfo[13]))
+						: (caseInfo[13].equals("ASTRA_ZENECA_MRNA_1273")) ? Vaccine.MRNA_1273 : Vaccine.valueOf((String) caseInfo[13]))
 					: Vaccine.OTHER;
 				String otherVaccineName = vaccineName == Vaccine.OTHER ? (String) caseInfo[14] : (String) caseInfo[15];
-				VaccineManufacturer vaccineManufacturer = caseInfo[13] == "ASTRA_ZENECA_COMIRNATY"
+				VaccineManufacturer vaccineManufacturer = "ASTRA_ZENECA_COMIRNATY".equals(caseInfo[13])
 					? VaccineManufacturer.BIONTECH_PFIZER
-					: (caseInfo[13] == "ASTRA_ZENECA_MRNA_1273") ? VaccineManufacturer.MODERNA : VaccineManufacturer.valueOf((String) caseInfo[16]);
+					: ("ASTRA_ZENECA_MRNA_1273".equals(caseInfo[13]))
+						? VaccineManufacturer.MODERNA
+						: VaccineManufacturer.valueOf((String) caseInfo[16]);
 				insertVaccination(caseInfo, vaccineName, otherVaccineName, vaccineManufacturer, caseInfo[11]);
 			}
 		}
 	}
 
 	private void cloneHealthConditions(Object healthConditionsId) throws SQLException {
-		String healthConditionsInsertQuery = "CREATE TEMPORARY TABLE tmp AS SELECT * FROM healthConditions WHERE id = " + healthConditionsId
-			+ "; UPDATE tmp SET id = NULL, uuid = '" + DataHelper.createUuid() + "'; INSERT INTO healthConditions SELECT * FROM tmp; DROP TABLE tmp;";
-		getDao(HealthConditions.class).executeRaw(healthConditionsInsertQuery);
+		getDao(HealthConditions.class)
+			.executeRaw("CREATE TEMPORARY TABLE tmp AS SELECT * FROM healthConditions WHERE id = " + healthConditionsId + ";");
+		getDao(HealthConditions.class).executeRaw("UPDATE tmp SET id = NULL, uuid = '" + DataHelper.createUuid() + "';");
+		getDao(HealthConditions.class).executeRaw("INSERT INTO healthConditions SELECT * FROM tmp;");
+		getDao(HealthConditions.class).executeRaw("DROP TABLE tmp;");
 	}
 
 	private void insertVaccination(
@@ -3000,16 +3009,21 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		VaccineManufacturer vaccineManufacturer,
 		Object vaccinationDate)
 		throws SQLException {
+
+		long immunizationId = getDao(Immunization.class).queryRawValue("SELECT MAX(id) FROM immunization;");
+		long healthConditionsId = getDao(HealthConditions.class).queryRawValue("SELECT MAX(id) FROM healthConditions;");
+		String vaccineNameString = vaccineName != null ? "'" + vaccineName.name() + "'" : null;
+		String vaccineManufacturerString = vaccineManufacturer != null ? "'" + vaccineManufacturer.name() + "'" : null;
 		String vaccinationInsertQuery =
 			"INSERT INTO vaccination(uuid, changeDate, localChangeDate, creationDate, immunization_id, healthConditions_id, "
 				+ "reportDate, reportingUser_id, vaccinationDate, vaccineName, otherVaccineName, vaccineManufacturer, otherVaccineManufacturer, "
 				+ "vaccinationInfoSource, vaccineInn, vaccineBatchNumber, vaccineUniiCode, vaccineAtcCode, pregnant, trimester, pseudonymized, "
 				+ "modified, snapshot) VALUES ('" + DataHelper.createUuid()
 				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), SELECT MAX(id) FROM immunization, SELECT MAX(id) FROM healthConditions, "
-				+ caseInfo[4] + ", " + caseInfo[5] + ", " + vaccinationDate + ", '" + vaccineName + "', " + otherVaccineName + ", '"
-				+ vaccineManufacturer + "', " + caseInfo[17] + ", " + caseInfo[18] + ", " + caseInfo[19] + ", " + caseInfo[20] + ", " + caseInfo[21]
-				+ ", " + caseInfo[22] + ", " + caseInfo[23] + ", " + caseInfo[24] + ", 0, 0, 0);";
+				+ "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), " + immunizationId + ", " + healthConditionsId + ", "
+				+ caseInfo[4] + ", " + caseInfo[5] + ", " + vaccinationDate + ", " + vaccineNameString + ", " + otherVaccineName + ", "
+				+ vaccineManufacturerString + ", " + caseInfo[17] + ", " + caseInfo[18] + ", " + caseInfo[19] + ", " + caseInfo[20] + ", "
+				+ caseInfo[21] + ", " + caseInfo[22] + ", " + caseInfo[23] + ", " + caseInfo[24] + ", 0, 0, 0);";
 		getDao(Vaccination.class).executeRaw(vaccinationInsertQuery);
 	}
 
