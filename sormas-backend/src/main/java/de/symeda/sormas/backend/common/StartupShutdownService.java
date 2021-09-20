@@ -229,7 +229,7 @@ public class StartupShutdownService {
 		Region region = null;
 		if (regionService.count() == 0) {
 			region = new Region();
-			region.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.Infrastructure.REGION.ordinal()));
+			region.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION.ordinal()));
 			region.setName(I18nProperties.getCaption(Captions.defaultRegion, "Default Region"));
 			region.setEpidCode("DEF-REG");
 			region.setDistricts(new ArrayList<District>());
@@ -240,7 +240,7 @@ public class StartupShutdownService {
 		District district = null;
 		if (districtService.count() == 0) {
 			district = new District();
-			district.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.Infrastructure.DISTRICT.ordinal()));
+			district.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.DISTRICT.ordinal()));
 			district.setName(I18nProperties.getCaption(Captions.defaultDistrict, "Default District"));
 			if (region == null) {
 				region = regionService.getAll().get(0);
@@ -256,7 +256,7 @@ public class StartupShutdownService {
 		Community community = null;
 		if (communityService.count() == 0) {
 			community = new Community();
-			community.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.Infrastructure.COMMUNITY.ordinal()));
+			community.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.COMMUNITY.ordinal()));
 			community.setName(I18nProperties.getCaption(Captions.defaultCommunity, "Default Community"));
 			if (district == null) {
 				district = districtService.getAll().get(0);
@@ -351,7 +351,8 @@ public class StartupShutdownService {
 				return;
 			}
 
-			Region region = regionService.getByUuid(DataHelper.createConstantUuid(DefaultEntityHelper.Infrastructure.REGION.ordinal()));
+			Region region =
+				regionService.getByUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION.ordinal()));
 			District district = region.getDistricts().get(0);
 			Community community = district.getCommunities().get(0);
 			List<Facility> healthFacilities = facilityService.getActiveFacilitiesByCommunityAndType(community, FacilityType.HOSPITAL, false, false);

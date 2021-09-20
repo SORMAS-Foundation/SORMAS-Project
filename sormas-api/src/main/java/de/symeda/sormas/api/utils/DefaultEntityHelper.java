@@ -61,7 +61,7 @@ public class DefaultEntityHelper {
 			POE_INF_USERNAME_AND_PASSWORD);
 	}
 
-	public enum Infrastructure {
+	public enum DefaultInfrastructureUuidSeed {
 		REGION,
 		DISTRICT,
 		COMMUNITY,
