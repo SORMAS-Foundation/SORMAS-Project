@@ -2948,15 +2948,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		// Create immunizations and vaccinations for each case
 		for (Object[] caseInfo : filteredCaseInfo) {
 			// Create immunization
-			String immunizationInsertQuery = "INSERT INTO immunization(uuid, changeDate, localChangeDate, creationDate, person_id, relatedCase_id,"
+			String immunizationInsertQuery = "INSERT INTO immunization(uuid, changeDate, localChangeDate, creationDate, person_id,"
 				+ "disease, diseaseDetails, reportDate, reportingUser_id, immunizationStatus, meansOfImmunization, immunizationManagementStatus,"
 				+ "responsibleRegion_id, responsibleDistrict_id, responsibleCommunity_id, startDate, endDate, numberOfDoses, pseudonymized,"
 				+ "modified, snapshot) VALUES ('" + DataHelper.createUuid()
 				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), " + caseInfo[1] + ", " + caseInfo[0] + ", '" + caseInfo[2] + "', "
-				+ caseInfo[3] + ", " + caseInfo[4] + ", " + caseInfo[5] + ", '" + ImmunizationStatus.ACQUIRED.name() + "', '"
-				+ MeansOfImmunization.VACCINATION.name() + "', '" + ImmunizationManagementStatus.COMPLETED.name() + "', " + caseInfo[6] + ", "
-				+ caseInfo[7] + ", " + caseInfo[8] + ", " + caseInfo[10] + ", " + caseInfo[11] + ", " + caseInfo[12] + ", 0, 1, 0);";
+				+ "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), " + caseInfo[1] + ", '" + caseInfo[2] + "', " + caseInfo[3] + ", "
+				+ caseInfo[4] + ", " + caseInfo[5] + ", '" + ImmunizationStatus.ACQUIRED.name() + "', '" + MeansOfImmunization.VACCINATION.name()
+				+ "', '" + ImmunizationManagementStatus.COMPLETED.name() + "', " + caseInfo[6] + ", " + caseInfo[7] + ", " + caseInfo[8] + ", "
+				+ caseInfo[10] + ", " + caseInfo[11] + ", " + caseInfo[12] + ", 0, 1, 0);";
 			getDao(Immunization.class).executeRaw(immunizationInsertQuery);
 
 			// Create vaccinations

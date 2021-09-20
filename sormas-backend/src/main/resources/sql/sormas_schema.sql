@@ -7947,7 +7947,7 @@ DROP TABLE IF EXISTS tmp_vaccinated_entities;
 CREATE TEMP TABLE tmp_vaccinated_entities AS
 (
     SELECT DISTINCT ON (person.id, cases.disease)
-        person.id AS person_id, cases.disease, cases.id AS case_id, cases.reportdate AS reportdate, cases.diseasedetails, cases.reportinguser_id,
+        person.id AS person_id, cases.disease, cases.reportdate AS reportdate, cases.diseasedetails, cases.reportinguser_id,
         cases.responsibleregion_id AS responsibleregion_id, cases.responsibledistrict_id AS responsibledistrict_id, cases.responsiblecommunity_id AS responsiblecommunity_id,
         cases.firstvaccinationdate, cases.lastvaccinationdate, CAST(NULLIF(cases.vaccinationdoses, '') AS int) AS vaccinationdoses,
         CASE
@@ -7981,7 +7981,7 @@ CREATE TEMP TABLE tmp_vaccinated_entities AS
 UNION
 (
     SELECT DISTINCT ON (person.id, contact.disease)
-        person.id AS person_id, contact.disease, null AS case_id, contact.reportdatetime AS reportdate, contact.diseasedetails, contact.reportinguser_id,
+        person.id AS person_id, contact.disease, contact.reportdatetime AS reportdate, contact.diseasedetails, contact.reportinguser_id,
         CASE
             WHEN
                 contact.region_id IS NOT NULL
@@ -8024,7 +8024,7 @@ UNION
 UNION
 (
     SELECT DISTINCT ON (person.id, events.disease)
-        person.id AS person_id, events.disease, null AS case_id, events.reportdatetime AS reportdate, events.diseasedetails, eventparticipant.reportinguser_id,
+        person.id AS person_id, events.disease, events.reportdatetime AS reportdate, events.diseasedetails, eventparticipant.reportinguser_id,
         CASE
             WHEN
                 eventparticipant.region_id IS NOT NULL
@@ -8063,7 +8063,7 @@ SELECT DISTINCT ON (person_id, disease) person_id,
                                         disease, diseasedetails, reportdate, reportinguser_id, responsibleregion_id, responsibledistrict_id, responsiblecommunity_id,
                                         firstvaccinationdate, lastvaccinationdate, vaccinationdoses, vaccinename, othervaccinename, vaccinemanufacturer, othervaccinemanufacturer,
                                         vaccinationinfosource, vaccineinn, vaccinebatchnumber, vaccineuniicode, vaccineatccode, pregnant, trimester, healthconditions_id,
-                                        case_id, nextval('entity_seq') AS immunization_id, relevancedate
+                                        nextval('entity_seq') AS immunization_id, relevancedate
 FROM tmp_vaccinated_entities
 ORDER BY person_id, disease, relevancedate DESC;
 
@@ -8071,12 +8071,11 @@ ORDER BY person_id, disease, relevancedate DESC;
 INSERT INTO immunization
 (
     id, uuid, disease, diseasedetails, person_id, reportdate, reportinguser_id, immunizationstatus, meansofimmunization, immunizationmanagementstatus, responsibleregion_id,
-    responsibledistrict_id, responsiblecommunity_id, startdate, enddate, numberofdoses, relatedcase_id, changedate, creationdate
+    responsibledistrict_id, responsiblecommunity_id, startdate, enddate, numberofdoses, changedate, creationdate
 )
 SELECT
     immunization_id, generate_base32_uuid(), disease, diseasedetails, person_id, reportdate, reportinguser_id, 'ACQUIRED', 'VACCINATION', 'COMPLETED',
-    responsibleregion_id, responsibledistrict_id, responsiblecommunity_id, firstvaccinationdate, lastvaccinationdate, vaccinationdoses,
-    case_id, now(), now()
+    responsibleregion_id, responsibledistrict_id, responsiblecommunity_id, firstvaccinationdate, lastvaccinationdate, vaccinationdoses, now(), now()
 FROM tmp_vaccinated_persons;
 
 /* Step 3: Create a new vaccination entity for each immunization start and date (or for each immunization without a start or end date) */
