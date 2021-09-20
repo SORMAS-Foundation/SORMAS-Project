@@ -28,11 +28,11 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
@@ -93,6 +93,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private Date followUpUntilFrom;
 	private Date followUpUntilTo;
+	private Integer followUpInterval;
 	private Boolean followUpUntilToPrecise;
 	/**
 	 * If yes, the followUpUntilTo filter will search for strict matches instead of a period,
@@ -339,6 +340,14 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public Date getFollowUpUntilTo() {
 		return followUpUntilTo;
+	}
+
+	public Integer getFollowUpInterval() {
+		return followUpInterval;
+	}
+
+	public void setFollowUpInterval(Integer followUpInterval) {
+		this.followUpInterval = followUpInterval;
 	}
 
 	public SymptomJournalStatus getSymptomJournalStatus() {
