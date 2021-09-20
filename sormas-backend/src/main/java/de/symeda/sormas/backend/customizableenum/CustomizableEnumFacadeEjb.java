@@ -32,7 +32,6 @@ import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.utils.InvalidCustomizationException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -44,6 +43,7 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumValueDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.InvalidCustomizationException;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -53,16 +53,16 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 	/**
 	 * Maps a customizable enum type to all enum value entities of that type in the database.
 	 */
-	private final Map<CustomizableEnumType, List<CustomizableEnumValue>> enumValueEntities = new EnumMap(CustomizableEnumType.class);
+	private final EnumMap<CustomizableEnumType, List<CustomizableEnumValue>> enumValueEntities = new EnumMap<>(CustomizableEnumType.class);
 	/**
 	 * Maps a customizable enum type to all enum value strings of that type in the database.
 	 */
-	private final Map<CustomizableEnumType, List<String>> enumValues = new EnumMap(CustomizableEnumType.class);
+	private final EnumMap<CustomizableEnumType, List<String>> enumValues = new EnumMap<>(CustomizableEnumType.class);
 	/**
 	 * Maps a customizable enum type to a map with all enum values of this type as its keys and the properties defined for these
 	 * enum values as its values.
 	 */
-	private final Map<CustomizableEnumType, Map<String, Map<String, Object>>> enumProperties = new EnumMap(CustomizableEnumType.class);
+	private final EnumMap<CustomizableEnumType, Map<String, Map<String, Object>>> enumProperties = new EnumMap<>(CustomizableEnumType.class);
 	/**
 	 * Maps a customizable enum type (defined by its class) to a map which in turn maps all languages for which translations exist to
 	 * the possible enum values of this type, which then finally map to their translated captions.
@@ -82,13 +82,13 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 	@Lock(LockType.READ)
 	@Override
 	public List<CustomizableEnumValueDto> getAllAfter(Date date) {
-		return service.getAllAfter(date, null).stream().map(CustomizableEnumFacadeEjb::toDto).collect(Collectors.toList());
+		return service.getAllAfter(date, null).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Lock(LockType.READ)
 	@Override
 	public List<CustomizableEnumValueDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(CustomizableEnumFacadeEjb::toDto).collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Lock(LockType.READ)
@@ -97,6 +97,9 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		return service.getAllUuids();
 	}
 
+	/**
+	 * Using LockType.READ to provide concurrent locks to multiple clients.
+	 */
 	@Lock(LockType.READ)
 	@Override
 	@SuppressWarnings("unchecked")
@@ -168,14 +171,13 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 	@SuppressWarnings("unchecked")
 	private <T extends CustomizableEnum> void initCaches(CustomizableEnumType type, Language language) {
 		Class<T> enumClass = (Class<T>) type.getEnumClass();
-		if (enumValuesByLanguage.containsKey(enumClass)
-			&& enumValuesByLanguage.get(enumClass).containsKey(language)) {
+		if (enumValuesByLanguage.containsKey(enumClass) && enumValuesByLanguage.get(enumClass).containsKey(language)) {
 			return;
 		}
 
 		// Build caches according to language with no disease association if they're not initialized
-		enumValuesByLanguage.putIfAbsent(enumClass, new EnumMap(Language.class));
-		enumValuesByDisease.putIfAbsent(enumClass, new EnumMap(Disease.class));
+		enumValuesByLanguage.putIfAbsent(enumClass, new HashMap<>()); // can't use EnumMap here - we need null values
+		enumValuesByDisease.putIfAbsent(enumClass, new HashMap<>());
 
 		if (!enumValuesByLanguage.get(enumClass).containsKey(language)) {
 			enumValuesByLanguage.get(enumClass).put(language, new HashMap<>());
@@ -195,9 +197,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 						.filter(t -> t.getLanguageCode().equals(language.getLocale().toString()))
 						.findFirst();
 					if (translation.isPresent()) {
-						enumValuesByLanguage.get(enumClass)
-							.get(language)
-							.putIfAbsent(customizableEnumValue.getValue(), translation.get().getValue());
+						enumValuesByLanguage.get(enumClass).get(language).putIfAbsent(customizableEnumValue.getValue(), translation.get().getValue());
 					} else {
 						enumValuesByLanguage.get(enumClass)
 							.get(language)
@@ -228,16 +228,16 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 			enumValueEntities.get(enumType).add(customizableEnumValue);
 			String value = customizableEnumValue.getValue();
 			if (enumValues.get(enumType).contains(value)) {
-				throw new InvalidCustomizationException("Enum value " + value + " for customizable enum type " + enumType.toString() + " is not unique");
+				throw new InvalidCustomizationException(
+					"Enum value " + value + " for customizable enum type " + enumType.toString() + " is not unique");
 			}
 			enumValues.get(enumType).add(value);
 			enumProperties.putIfAbsent(enumType, new HashMap<>());
-			enumProperties.get(enumType)
-				.putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getProperties());
+			enumProperties.get(enumType).putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getProperties());
 		}
 	}
 
-	private static CustomizableEnumValueDto toDto(CustomizableEnumValue source) {
+	private CustomizableEnumValueDto toDto(CustomizableEnumValue source) {
 
 		if (source == null) {
 			return null;
