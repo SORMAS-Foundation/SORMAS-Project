@@ -19,6 +19,11 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MAX;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MIN;
 
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -37,7 +42,7 @@ import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
-public class SormasToSormasContactPreview implements HasUuid, Serializable {
+public class SormasToSormasContactPreview extends PseudonymizableDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 6624342608405520944L;
 
@@ -56,11 +61,9 @@ public class SormasToSormasContactPreview implements HasUuid, Serializable {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 
-	@Pattern(regexp = UUID_REGEX, message = Validations.patternNotMatching)
-	@Size(min = COLUMN_LENGTH_UUID_MIN, max = COLUMN_LENGTH_UUID_MAX, message = Validations.textSizeNotInRange)
-	private String uuid;
 	private Date reportDateTime;
 	private Disease disease;
+	@SensitiveData
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	private Date lastContactDate;
@@ -70,20 +73,17 @@ public class SormasToSormasContactPreview implements HasUuid, Serializable {
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@PersonalData
+	@SensitiveData
 	private CommunityReferenceDto community;
 
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	@Valid
 	private SormasToSormasPersonPreview person;
 
+	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 
 	public Date getReportDateTime() {
 		return reportDateTime;

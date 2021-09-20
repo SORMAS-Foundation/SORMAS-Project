@@ -83,7 +83,7 @@ public class InfrastructureFieldsDependencyHandler {
 		List<Item> facilities,
 		Facility initialFacility,
 		final ControlTextEditField facilityDetailsField,
-		boolean withLaboratory) {
+		boolean showAllFacilityTypeGroups) {
 		initializeFacilityFields(
 			entity,
 			regionField,
@@ -108,7 +108,7 @@ public class InfrastructureFieldsDependencyHandler {
 			null,
 			null,
 			null,
-			withLaboratory);
+			showAllFacilityTypeGroups);
 	}
 
 	public void initializeFacilityFields(
@@ -135,7 +135,7 @@ public class InfrastructureFieldsDependencyHandler {
 		final ControlSpinnerField pointOfEntryField,
 		List<Item> pointsOfEntry,
 		PointOfEntry initialPointOfEntry,
-		boolean withLaboratory) {
+		boolean showAllFacilityTypeGroups) {
 		initializeFacilityFields(
 			entity,
 			regionField,
@@ -160,7 +160,7 @@ public class InfrastructureFieldsDependencyHandler {
 			pointOfEntryField,
 			pointsOfEntry,
 			initialPointOfEntry,
-			withLaboratory,
+			showAllFacilityTypeGroups,
 			null);
 	}
 
@@ -194,7 +194,7 @@ public class InfrastructureFieldsDependencyHandler {
 		List<Item> facilities,
 		Facility initialFacility,
 		final ControlTextEditField facilityDetailsField,
-		boolean withLaboratory) {
+		boolean showAllFacilityTypeGroups) {
 
 		Item continentItem = initialContinent != null ? DataUtils.toItem(initialContinent) : null;
 		if (continentItem != null && !continents.contains(continentItem)) {
@@ -308,7 +308,7 @@ public class InfrastructureFieldsDependencyHandler {
 			null,
 			null,
 			null,
-			withLaboratory);
+			showAllFacilityTypeGroups);
 	}
 
 	public void initializeFacilityFields(
@@ -335,7 +335,7 @@ public class InfrastructureFieldsDependencyHandler {
 		final ControlSpinnerField pointOfEntryField,
 		List<Item> pointsOfEntry,
 		PointOfEntry initialPointOfEntry,
-		boolean withLaboratory,
+		boolean showAllFacilityTypeGroups,
 		Supplier<Boolean> skipRegionListeners) {
 
 		final Case caze = entity != null && entity.getClass().isAssignableFrom(Case.class) ? (Case) entity : null;
@@ -403,7 +403,7 @@ public class InfrastructureFieldsDependencyHandler {
 		if (typeGroupField != null) {
 			typeGroupField.initializeSpinner(typeGroups, field -> {
 				FacilityTypeGroup selectedGroup = (FacilityTypeGroup) field.getValue();
-				if (selectedGroup != null && withLaboratory) {
+				if (selectedGroup != null && showAllFacilityTypeGroups) {
 					typeField.setSpinnerData(DataUtils.toItems(FacilityType.getTypes(selectedGroup), true));
 				} else if (selectedGroup != null) {
 					typeField.setSpinnerData(DataUtils.toItems(FacilityType.getAccommodationTypes(selectedGroup), true));
