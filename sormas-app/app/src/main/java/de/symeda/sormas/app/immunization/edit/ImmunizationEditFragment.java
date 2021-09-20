@@ -16,6 +16,8 @@
 package de.symeda.sormas.app.immunization.edit;
 
 
+import android.view.View;
+
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.ArrayList;
@@ -207,26 +209,26 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 						contentBinding.immunizationImmunizationManagementStatus.setEnabled(false);
 
 						removeVaccinationsConfirmation();
-						if (meansOfImmunization == MeansOfImmunization.VACCINATION || meansOfImmunization == MeansOfImmunization.VACCINATION_RECOVERY) {
-							contentBinding.immunizationVaccinationLayout.setVisibility(View.VISIBLE);
-							contentBinding.immunizationNumberOfDoses.setEnabled(true);
-						} else {
-							contentBinding.immunizationVaccinationLayout.setVisibility(View.GONE);
-						}
-						if (meansOfImmunization == MeansOfImmunization.RECOVERY || meansOfImmunization == MeansOfImmunization.VACCINATION_RECOVERY) {
-							contentBinding.immunizationRecoveryLayout.setVisibility(View.VISIBLE);
-							contentBinding.immunizationRecoveryDate.setEnabled(true);
-							contentBinding.immunizationPositiveTestResultDate.setEnabled(true);
+					}
+					if (meansOfImmunization == MeansOfImmunization.VACCINATION || meansOfImmunization == MeansOfImmunization.VACCINATION_RECOVERY) {
+						contentBinding.immunizationVaccinationLayout.setVisibility(View.VISIBLE);
+						contentBinding.immunizationNumberOfDoses.setEnabled(true);
+					} else {
+						contentBinding.immunizationVaccinationLayout.setVisibility(View.GONE);
+					}
+					if (meansOfImmunization == MeansOfImmunization.RECOVERY || meansOfImmunization == MeansOfImmunization.VACCINATION_RECOVERY) {
+						contentBinding.immunizationRecoveryLayout.setVisibility(View.VISIBLE);
+						contentBinding.immunizationRecoveryDate.setEnabled(true);
+						contentBinding.immunizationPositiveTestResultDate.setEnabled(true);
 
-							if (record.getRelatedCase() != null) {
-								contentBinding.linkCase.setVisibility(View.GONE);
-							} else {
-								contentBinding.openLinkedCase.setVisibility(View.GONE);
-							}
-
+						if (record.getRelatedCase() != null) {
+							contentBinding.linkCase.setVisibility(View.GONE);
 						} else {
-							contentBinding.immunizationRecoveryLayout.setVisibility(View.GONE);
+							contentBinding.openLinkedCase.setVisibility(View.GONE);
 						}
+
+					} else {
+						contentBinding.immunizationRecoveryLayout.setVisibility(View.GONE);
 					}
 				}
 				meansOfImmunizationChange.accept(meansOfImmunization);

@@ -14,7 +14,6 @@ public final class ImmunizationSimilarityCriteria extends BaseCriteria implement
 	private final Date endDate;
 	private final String personUuid;
 	private final MeansOfImmunization meansOfImmunization;
-	private MeansOfImmunization meansOfImmunization;
 
 	public static class Builder {
 

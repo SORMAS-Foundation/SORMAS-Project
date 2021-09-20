@@ -133,7 +133,6 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		contentBinding.setData(record);
 
 		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
-		contentBinding.setYesNoUnknownClass(YesNoUnknown.class);
 
 		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			record,

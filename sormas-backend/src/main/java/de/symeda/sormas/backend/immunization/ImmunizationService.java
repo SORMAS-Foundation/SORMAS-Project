@@ -37,6 +37,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.immunization.ImmunizationDateType;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.utils.DateHelper;

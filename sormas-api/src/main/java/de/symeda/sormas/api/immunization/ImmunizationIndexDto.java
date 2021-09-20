@@ -18,6 +18,7 @@ package de.symeda.sormas.api.immunization;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
