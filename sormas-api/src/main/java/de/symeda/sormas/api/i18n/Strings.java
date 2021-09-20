@@ -1207,6 +1207,7 @@ public interface Strings {
 	String promptEventsSearchFieldEventGroups = "promptEventsSearchFieldEventGroups";
 	String promptEventsSearchFieldEventParticipants = "promptEventsSearchFieldEventParticipants";
 	String promptExternalIdExternalSurveillanceTool = "promptExternalIdExternalSurveillanceTool";
+	String promptExternalJournalForceDeletion = "promptExternalJournalForceDeletion";
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptImmunizationDateFrom = "promptImmunizationDateFrom";
 	String promptImmunizationDateTo = "promptImmunizationDateTo";

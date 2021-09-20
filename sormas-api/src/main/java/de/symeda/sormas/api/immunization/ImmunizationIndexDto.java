@@ -55,6 +55,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	@PersonalData
 	@SensitiveData
 	private String personLastName;
+	private Disease disease;
 	private AgeAndBirthDateDto ageAndBirthDate;
 	private Sex sex;
 	private String district;
@@ -65,13 +66,13 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	private Date endDate;
 	private String lastVaccineType;
 	private Date recoveryDate;
-	private Disease disease;
 
 	public ImmunizationIndexDto(
 		String uuid,
 		String personUuid,
 		String personFirstName,
 		String personLastName,
+		Disease disease,
 		AgeAndBirthDateDto ageAndBirthDate,
 		Sex sex,
 		String district,
@@ -87,6 +88,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		this.personUuid = personUuid;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
+		this.disease = disease;
 		this.ageAndBirthDate = ageAndBirthDate;
 		this.sex = sex;
 		this.district = district;
@@ -97,7 +99,6 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		this.endDate = endDate;
 		this.lastVaccineType = lastVaccineType;
 		this.recoveryDate = recoveryDate;
-		this.disease = disease;
 	}
 
 	public String getUuid() {
@@ -130,6 +131,14 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 
 	public void setPersonLastName(String personLastName) {
 		this.personLastName = personLastName;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 
 	public AgeAndBirthDateDto getAgeAndBirthDate() {
@@ -210,13 +219,5 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 
 	public void setRecoveryDate(Date recoveryDate) {
 		this.recoveryDate = recoveryDate;
-	}
-
-	public Disease getDisease() {
-		return disease;
-	}
-
-	public void setDisease(Disease disease) {
-		this.disease = disease;
 	}
 }

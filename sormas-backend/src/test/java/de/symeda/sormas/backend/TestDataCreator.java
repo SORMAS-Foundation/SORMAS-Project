@@ -437,7 +437,7 @@ public class TestDataCreator {
 	}
 
 	@NotNull
-	private ImmunizationDto createImmunizationDto(
+	public ImmunizationDto createImmunizationDto(
 		Disease disease,
 		PersonReferenceDto person,
 		UserReferenceDto reportingUser,

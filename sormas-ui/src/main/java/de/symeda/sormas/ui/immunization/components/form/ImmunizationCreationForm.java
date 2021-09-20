@@ -10,7 +10,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
@@ -84,8 +83,12 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 	//@formatter:on
 
 	private ComboBox birthDateDay;
-	private PersonReferenceDto personDto;
-	private Disease disease;
+	private final PersonReferenceDto personDto;
+	private final Disease disease;
+
+	public ImmunizationCreationForm() {
+		this(null, null);
+	}
 
 	public ImmunizationCreationForm(PersonReferenceDto personDto, Disease disease) {
 		super(
@@ -237,16 +240,19 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.MEANS_OF_IMMUNIZATION, ImmunizationDto.START_DATE);
+		setRequired(true, ImmunizationDto.REPORT_DATE, ImmunizationDto.MEANS_OF_IMMUNIZATION);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Arrays.asList(ImmunizationDto.DISEASE_DETAILS),
+			Collections.singletonList(ImmunizationDto.DISEASE_DETAILS),
 			ImmunizationDto.DISEASE,
-			Arrays.asList(Disease.OTHER),
+			Collections.singletonList(Disease.OTHER),
 			true);
-		FieldHelper
-			.setRequiredWhen(getFieldGroup(), ImmunizationDto.DISEASE, Arrays.asList(ImmunizationDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			ImmunizationDto.DISEASE,
+			Collections.singletonList(ImmunizationDto.DISEASE_DETAILS),
+			Collections.singletonList(Disease.OTHER));
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
