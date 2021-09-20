@@ -27,8 +27,9 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
+import javax.ejb.Singleton;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.utils.InvalidCustomizationException;
@@ -46,7 +47,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 
-@Stateless(name = "CustomizableEnumFacade")
+@Singleton(name = "CustomizableEnumFacade")
 public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 
 	/**
@@ -78,21 +79,25 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
+	@Lock(LockType.READ)
 	@Override
 	public List<CustomizableEnumValueDto> getAllAfter(Date date) {
-		return service.getAllAfter(date, null).stream().map(this::toDto).collect(Collectors.toList());
+		return service.getAllAfter(date, null).stream().map(CustomizableEnumFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
+	@Lock(LockType.READ)
 	@Override
 	public List<CustomizableEnumValueDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(CustomizableEnumFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
+	@Lock(LockType.READ)
 	@Override
 	public List<String> getAllUuids() {
 		return service.getAllUuids();
 	}
 
+	@Lock(LockType.READ)
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, String value) {
@@ -116,6 +121,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		}
 	}
 
+	@Lock(LockType.READ)
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease) {
@@ -153,6 +159,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 			.collect(Collectors.toList());
 	}
 
+	@Lock(LockType.READ)
 	@Override
 	public boolean hasEnumValues(CustomizableEnumType type, Disease disease) {
 		return !getEnumValues(type, disease).isEmpty();
@@ -230,7 +237,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		}
 	}
 
-	public CustomizableEnumValueDto toDto(CustomizableEnumValue source) {
+	private static CustomizableEnumValueDto toDto(CustomizableEnumValue source) {
 
 		if (source == null) {
 			return null;
@@ -251,7 +258,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		return target;
 	}
 
-	public CustomizableEnumValue fromDto(@NotNull CustomizableEnumValueDto source, boolean checkChangeDate) {
+	private CustomizableEnumValue fromDto(@NotNull CustomizableEnumValueDto source, boolean checkChangeDate) {
 
 		CustomizableEnumValue target =
 			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), CustomizableEnumValue::new, checkChangeDate);
@@ -277,11 +284,4 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 			.collect(Collectors.toList());
 		enumValuesByDisease.get(enumClass).get(disease).addAll(filteredEnumValues);
 	}
-
-	@LocalBean
-	@Stateless
-	public static class CustomizableEnumFacadeEjbLocal extends CustomizableEnumFacadeEjb {
-
-	}
-
 }
