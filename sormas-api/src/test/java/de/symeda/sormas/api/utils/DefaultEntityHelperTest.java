@@ -32,7 +32,7 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.user.UserDto;
 
-public class DefaultUserHelperTest {
+public class DefaultEntityHelperTest {
 
 	private static final String DEFAULT_ADMIN_USERNAME = "admin";
 	private static final String DEFAULT_ADMIN_PASS = "sadmin";
@@ -71,22 +71,22 @@ public class DefaultUserHelperTest {
 	@Test
 	public void testIsDefaultUser() {
 		for (String defaultUser : DEFAULT_USERS.keySet()) {
-			assertTrue(DefaultUserHelper.isDefaultUser(defaultUser));
+			assertTrue(DefaultEntityHelper.isDefaultUser(defaultUser));
 		}
 	}
 
 	@Test
 	public void testGetDefaultPassword() {
 		for (String defaultUser : DEFAULT_USERS.keySet()) {
-			assertEquals(DEFAULT_USERS.get(defaultUser), DefaultUserHelper.getDefaultPassword(defaultUser));
+			assertEquals(DEFAULT_USERS.get(defaultUser), DefaultEntityHelper.getDefaultPassword(defaultUser));
 		}
 	}
 
 	private void testUsesDefaultPasswordHelper(String username, String defaultPassword) {
 		String seed = UUID.randomUUID().toString();
 		String randomPass = UUID.randomUUID().toString();
-		assertTrue(DefaultUserHelper.usesDefaultPassword(username, PasswordHelper.encodePassword(defaultPassword, seed), seed));
-		assertFalse(DefaultUserHelper.usesDefaultPassword(username, PasswordHelper.encodePassword(randomPass, seed), seed));
+		assertTrue(DefaultEntityHelper.usesDefaultPassword(username, PasswordHelper.encodePassword(defaultPassword, seed), seed));
+		assertFalse(DefaultEntityHelper.usesDefaultPassword(username, PasswordHelper.encodePassword(randomPass, seed), seed));
 	}
 
 	@Test
@@ -105,10 +105,10 @@ public class DefaultUserHelperTest {
 		UserDto randomUser = new UserDto();
 		randomUser.setUserName(UUID.randomUUID().toString());
 
-		assertTrue(DefaultUserHelper.currentUserUsesDefaultPassword(defaultDtos, admin));
-		assertFalse(DefaultUserHelper.currentUserUsesDefaultPassword(defaultDtos, randomUser));
+		assertTrue(DefaultEntityHelper.currentUserUsesDefaultPassword(defaultDtos, admin));
+		assertFalse(DefaultEntityHelper.currentUserUsesDefaultPassword(defaultDtos, randomUser));
 		defaultDtos.remove(admin);
-		assertFalse(DefaultUserHelper.currentUserUsesDefaultPassword(defaultDtos, admin));
+		assertFalse(DefaultEntityHelper.currentUserUsesDefaultPassword(defaultDtos, admin));
 	}
 
 	@Test
@@ -120,18 +120,18 @@ public class DefaultUserHelperTest {
 		UserDto randomUser = new UserDto();
 		randomUser.setUserName(UUID.randomUUID().toString());
 
-		assertTrue(DefaultUserHelper.otherUsersUseDefaultPassword(defaultDtos, randomUser));
-		assertFalse(DefaultUserHelper.otherUsersUseDefaultPassword(defaultDtos, admin));
+		assertTrue(DefaultEntityHelper.otherUsersUseDefaultPassword(defaultDtos, randomUser));
+		assertFalse(DefaultEntityHelper.otherUsersUseDefaultPassword(defaultDtos, admin));
 		defaultDtos.add(randomUser);
-		assertTrue(DefaultUserHelper.otherUsersUseDefaultPassword(defaultDtos, admin));
-		assertTrue(DefaultUserHelper.otherUsersUseDefaultPassword(defaultDtos, randomUser));
-		assertFalse(DefaultUserHelper.otherUsersUseDefaultPassword(new ArrayList<UserDto>(), admin));
+		assertTrue(DefaultEntityHelper.otherUsersUseDefaultPassword(defaultDtos, admin));
+		assertTrue(DefaultEntityHelper.otherUsersUseDefaultPassword(defaultDtos, randomUser));
+		assertFalse(DefaultEntityHelper.otherUsersUseDefaultPassword(new ArrayList<UserDto>(), admin));
 	}
 
 	@Test
 	public void getDefaultUserNames() {
-		assertEquals(DEFAULT_USERS.size(), DefaultUserHelper.getDefaultUserNames().size());
-		Set<String> result = DefaultUserHelper.getDefaultUserNames();
+		assertEquals(DEFAULT_USERS.size(), DefaultEntityHelper.getDefaultUserNames().size());
+		Set<String> result = DefaultEntityHelper.getDefaultUserNames();
 		for (String defaultUser : DEFAULT_USERS.keySet()) {
 			assertTrue(result.contains(defaultUser));
 		}
