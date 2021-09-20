@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +66,6 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedData;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
@@ -115,8 +115,6 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb;
-	@EJB
-	protected SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 	@EJB
 	private SormasToSormasShareInfoFacadeEjbLocal shareInfoFacade;
 	@EJB
@@ -177,6 +175,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		if (options.isHandOverOwnership()) {
 			validateOwnership(entities);
+			ensureConsistentOptions(options);
 		}
 
 		validateEntitiesBeforeShare(entities, options.isHandOverOwnership());
@@ -198,6 +197,17 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			.post(options.getOrganization().getId(), requestEndpoint, new ShareRequestData<>(requestUuid, previewsToSend, originInfo), null);
 
 		saveNewShareInfo(currentUser.toReference(), options, requestUuid, ShareRequestStatus.PENDING, entities, associatedEntities);
+	}
+
+	protected void ensureConsistentOptions(SormasToSormasOptionsDto options) {
+		if (options.isHandOverOwnership()) {
+			options.setPseudonymizePersonalData(false);
+			options.setPseudonymizeSensitiveData(false);
+
+			if (SormasToSormasCaseDto[].class.isAssignableFrom(getShareDataClass())) {
+				options.setWithSamples(true);
+			}
+		}
 	}
 
 	@Override
@@ -313,6 +323,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		List<ADO> entities = getEntityService().getByUuids(entityUuids);
 
 		validateEntitiesBeforeShare(entities, options.isHandOverOwnership());
+		ensureConsistentOptions(options);
 
 		List<S> entitiesToSend = new ArrayList<>();
 		List<AssociatedEntityWrapper<?>> associatedEntities = new ArrayList<>();
