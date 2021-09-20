@@ -108,7 +108,7 @@
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.controls.ControlDateTimeField
+                <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/vaccination_vaccinationDate"
                     style="@style/ControlSingleColumnStyle"
                     app:value="@={data.vaccinationDate}" />
