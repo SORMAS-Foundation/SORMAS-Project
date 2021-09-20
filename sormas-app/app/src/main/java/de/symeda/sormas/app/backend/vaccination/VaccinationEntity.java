@@ -39,7 +39,7 @@ import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name = VaccinationEntity.TABLE_NAME)
 @DatabaseTable(tableName = VaccinationEntity.TABLE_NAME)
-@EmbeddedAdo
+@EmbeddedAdo(parentAccessor = VaccinationEntity.IMMUNIZATION, updateParent = true)
 public class VaccinationEntity extends PseudonymizableAdo {
 
 	public static final String TABLE_NAME = "vaccination";

@@ -18,6 +18,9 @@ package de.symeda.sormas.app.backend.common;
 import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.googlecode.openbeans.BeanInfo;
+import com.googlecode.openbeans.IntrospectionException;
+import com.googlecode.openbeans.Introspector;
 import com.googlecode.openbeans.PropertyDescriptor;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
@@ -381,6 +384,17 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 			EmbeddedAdo annotation = ado.getClass().getAnnotation(EmbeddedAdo.class);
 			String parentProperty = annotation != null ? annotation.parentAccessor() : "";
 
+			// update parent entity
+			if (annotation != null && annotation.updateParent() && !parentProperty.isEmpty()) {
+				BeanInfo beanInfo = Introspector.getBeanInfo(ado.getClass());
+				for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
+					if (pd.getName().equals(parentProperty)) {
+						final AbstractDomainObject parentAdo = (AbstractDomainObject) pd.getReadMethod().invoke(ado);
+						DatabaseHelper.getAdoDao(parentAdo.getClass()).saveAndSnapshotWithCast(parentAdo);
+					}
+				}
+			}
+
 			// go through all embedded entities and saveAndSnapshot them
 			Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getEmbeddedAdoProperties(ado.getClass());
 			while (propertyIterator.hasNext()) {
@@ -438,6 +452,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		} catch (InvocationTargetException e) {
 			throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		} catch (IntrospectionException e) {
 			throw new RuntimeException(e);
 		}
 	}
