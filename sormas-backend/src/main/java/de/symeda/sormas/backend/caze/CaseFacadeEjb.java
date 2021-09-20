@@ -2153,33 +2153,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			User taskAssignee = task.getAssigneeUser();
-			boolean mismatch = false;
 
-			if (taskAssignee == null) {
-				// no one is assigned so we skip detailed checks and go directly to reassignment.
-				mismatch = true;
-			} else if (!forceReassignment) {
-				boolean responsibleRegionMismatch = !DataHelper.isSame(taskAssignee.getRegion(), caze.getResponsibleRegion());
-				boolean regionMismatch = !DataHelper.isSame(taskAssignee.getRegion(), caze.getRegion());
-
-				boolean responsibleDistrictMismatch = !DataHelper.isSame(taskAssignee.getDistrict(), caze.getResponsibleDistrict());
-				boolean districtMismatch = !DataHelper.isSame(taskAssignee.getDistrict(), caze.getDistrict());
-
-				boolean responsibleCommunityMismatch = !DataHelper.isSame(taskAssignee.getCommunity(), caze.getResponsibleCommunity());
-				boolean communityMismatch = !DataHelper.isSame(taskAssignee.getCommunity(), caze.getCommunity());
-
-				boolean facilityMismatch = !DataHelper.isSame(taskAssignee.getHealthFacility(), caze.getHealthFacility());
-
-				mismatch = responsibleRegionMismatch
-					|| responsibleDistrictMismatch
-					|| responsibleCommunityMismatch
-					|| regionMismatch
-					|| districtMismatch
-					|| communityMismatch
-					|| facilityMismatch;
-			}
-
-			if (forceReassignment || mismatch) {
+			if (forceReassignment || taskAssignee == null || !caseService.inJurisdiction(caze, taskAssignee)) {
 				// if there is any mismatch between the jurisdiction of the case and the assigned user,
 				// we need to reassign the tasks
 				assignOfficerOrSupervisorToTask(caze, task);
