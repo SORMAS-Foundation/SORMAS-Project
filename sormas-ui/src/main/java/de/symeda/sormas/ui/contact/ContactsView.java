@@ -386,7 +386,7 @@ public class ContactsView extends AbstractView {
 			// Follow-up overview scrolling
 			if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 				filterLayout.setWidth(100, Unit.PERCENTAGE);
-				HorizontalLayout scrollLayout = buildScrollLayout();
+				HorizontalLayout scrollLayout = dateRangeFollowUpVisitsFilterLayout();
 				actionButtonsLayout.addComponent(scrollLayout);
 			}
 		}
@@ -642,7 +642,7 @@ public class ContactsView extends AbstractView {
 				|| FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser());
 	}
 
-	private HorizontalLayout buildScrollLayout() {
+	private HorizontalLayout dateRangeFollowUpVisitsFilterLayout() {
 		HorizontalLayout scrollLayout = new HorizontalLayout();
 		scrollLayout.setMargin(false);
 
