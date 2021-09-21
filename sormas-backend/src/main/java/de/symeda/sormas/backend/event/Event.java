@@ -14,8 +14,8 @@
  */
 package de.symeda.sormas.backend.event;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -282,7 +282,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.eventPersons = eventPersons;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalId() {
 		return externalId;
 	}
@@ -291,7 +291,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.externalId = externalId;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalToken() {
 		return externalToken;
 	}
@@ -300,7 +300,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.externalToken = externalToken;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
+	@Column(length = CHARACTER_LIMIT_DEFAULT, nullable = false)
 	public String getEventTitle() {
 		return eventTitle;
 	}
@@ -309,7 +309,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.eventTitle = eventTitle;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getEventDesc() {
 		return eventDesc;
 	}
@@ -421,7 +421,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.meansOfTransportDetails = meansOfTransportDetails;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getConnectionNumber() {
 		return connectionNumber;
 	}
@@ -465,7 +465,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcInstitutionalPartnerType = srcInstitutionalPartnerType;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcInstitutionalPartnerTypeDetails() {
 		return srcInstitutionalPartnerTypeDetails;
 	}
@@ -474,7 +474,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcInstitutionalPartnerTypeDetails = srcInstitutionalPartnerTypeDetails;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcFirstName() {
 		return srcFirstName;
 	}
@@ -483,7 +483,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcFirstName = srcFirstName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcLastName() {
 		return srcLastName;
 	}
@@ -492,7 +492,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcLastName = srcLastName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcTelNo() {
 		return srcTelNo;
 	}
@@ -501,7 +501,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcTelNo = srcTelNo;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcEmail() {
 		return srcEmail;
 	}
@@ -510,7 +510,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcEmail = srcEmail;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcMediaWebsite() {
 		return srcMediaWebsite;
 	}
@@ -519,7 +519,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcMediaWebsite = srcMediaWebsite;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getSrcMediaName() {
 		return srcMediaName;
 	}
@@ -528,7 +528,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.srcMediaName = srcMediaName;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getSrcMediaDetails() {
 		return srcMediaDetails;
 	}
@@ -556,7 +556,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.diseaseVariant = diseaseVariant;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
@@ -574,7 +574,7 @@ public class Event extends CoreAdo implements SormasToSormasEntity, HasExternalD
 		this.responsibleUser = responsibleUser;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getTypeOfPlaceText() {
 		return typeOfPlaceText;
 	}

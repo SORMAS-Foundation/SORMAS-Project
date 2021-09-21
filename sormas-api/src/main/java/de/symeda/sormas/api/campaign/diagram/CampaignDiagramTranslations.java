@@ -1,7 +1,7 @@
 package de.symeda.sormas.api.campaign.diagram;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_SMALL;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,9 +15,9 @@ import de.symeda.sormas.api.i18n.Validations;
 
 public class CampaignDiagramTranslations implements Serializable {
 
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String languageCode;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diagramCaption;
 	@Valid
 	private List<TranslationElement> stackCaptions;

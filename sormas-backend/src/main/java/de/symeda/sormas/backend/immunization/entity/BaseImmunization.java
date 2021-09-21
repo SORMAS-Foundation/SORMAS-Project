@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.immunization.entity;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -90,7 +90,7 @@ public class BaseImmunization extends CoreAdo {
 		this.disease = disease;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
@@ -156,7 +156,7 @@ public class BaseImmunization extends CoreAdo {
 		this.immunizationStatus = immunizationStatus;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalId() {
 		return externalId;
 	}
@@ -210,7 +210,7 @@ public class BaseImmunization extends CoreAdo {
 		this.healthFacility = healthFacility;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getHealthFacilityDetails() {
 		return healthFacilityDetails;
 	}

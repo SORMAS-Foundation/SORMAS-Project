@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.infrastructure.area;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +20,7 @@ public class Area extends InfrastructureAdo {
 	private String name;
 	private String externalId;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getName() {
 		return name;
 	}
@@ -29,7 +29,7 @@ public class Area extends InfrastructureAdo {
 		this.name = name;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalId() {
 		return externalId;
 	}

@@ -57,6 +57,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
@@ -209,7 +210,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	@Outbreaks
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	@Diseases({
 		Disease.PLAGUE })
@@ -230,7 +231,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@HideForCountries(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String epidNumber;
 	@Outbreaks
 	@Required
@@ -255,7 +256,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private Date classificationDate;
 	@Outbreaks
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String classificationComment;
 
 	private YesNoUnknown clinicalConfirmation;
@@ -273,7 +274,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private Date outcomeDate;
 	private YesNoUnknown sequelae;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String sequelaeDetails;
 
 	private RegionReferenceDto responsibleRegion;
@@ -304,7 +305,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@Outbreaks
 	@PersonalData
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 	private YesNoUnknown pregnant;
 	@Diseases({
@@ -334,13 +335,13 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@SensitiveData
 	private UserReferenceDto surveillanceOfficer;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String clinicianName;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String clinicianPhone;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String clinicianEmail;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
@@ -348,7 +349,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String notifyingClinicDetails;
 	@Deprecated
 	@SensitiveData
@@ -387,19 +388,19 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private PointOfEntryReferenceDto pointOfEntry;
 	@PersonalData
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String pointOfEntryDetails;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String additionalDetails;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 	private boolean sharedToCountry;
 	@HideForCountriesExcept
@@ -408,12 +409,12 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private InfectionSetting infectionSetting;
 	private QuarantineType quarantine;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHelpNeeded;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
@@ -435,13 +436,13 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private YesNoUnknown quarantineHomePossible;
 	@HideForCountriesExcept
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHomePossibleComment;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
 	private boolean quarantineReduced;
@@ -456,7 +457,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 	private FollowUpStatus followUpStatus;
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
@@ -476,13 +477,13 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private QuarantineReason quarantineReasonBeforeIsolation;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineReasonBeforeIsolationDetails;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private EndOfIsolationReason endOfIsolationReason;
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String endOfIsolationReasonDetails;
 
 	@HideForCountriesExcept
@@ -517,7 +518,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	private boolean notACaseReasonOther;
 
 	@HideForCountriesExcept
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String notACaseReasonDetails;
 	private Date followUpStatusChangeDate;
 	private UserReferenceDto followUpStatusChangeUser;

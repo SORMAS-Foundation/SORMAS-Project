@@ -24,6 +24,7 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 /**
  * Data Transfer Object corresponding to the CustomizableEnumValue entity, primarily used to exchange data with the mobile app.
@@ -35,14 +36,14 @@ public class CustomizableEnumValueDto extends EntityDto {
 	private static final long serialVersionUID = 4360662500289404985L;
 
 	private CustomizableEnumType dataType;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String value;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String caption;
 	@Valid
 	private List<CustomizableEnumTranslation> translations;
 	private List<Disease> diseases;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String description;
 	@Valid
 	private List<CustomizableEnumTranslation> descriptionTranslations;

@@ -8,12 +8,13 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class CampaignDiagramDefinitionDto extends EntityDto {
 
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diagramId;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diagramCaption;
 	private DiagramType diagramType;
 	@Valid
