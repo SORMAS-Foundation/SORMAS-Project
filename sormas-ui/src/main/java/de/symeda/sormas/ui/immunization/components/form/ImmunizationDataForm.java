@@ -10,11 +10,11 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import com.vaadin.v7.data.util.converter.Converter;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Button;
@@ -22,7 +22,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.util.converter.StringToIntegerConverter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -272,8 +271,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 				MeansOfImmunization meansOfImmunization = (MeansOfImmunization) valueChangeEvent.getProperty().getValue();
 				if (MeansOfImmunization.RECOVERY.equals(meansOfImmunization) || MeansOfImmunization.OTHER.equals(meansOfImmunization)) {
 					managementStatusField.setValue(ImmunizationManagementStatus.COMPLETED);
-					final ImmunizationDto immunizationDto = getValue();
-					if (CollectionUtils.isNotEmpty(immunizationDto.getVaccinations())) {
+					if (CollectionUtils.isNotEmpty(vaccinationsField.getValue())) {
 
 						VaadinUiUtil.showConfirmationPopup(
 							I18nProperties.getString(Strings.headingDeleteVaccinations),
