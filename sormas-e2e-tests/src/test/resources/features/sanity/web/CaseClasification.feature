@@ -5,6 +5,8 @@ Feature: Case Classification functionality
     Given API: I create a new person
     And API: I create a new case
     And I log in with the user
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     And I click on the Cases button from navbar
     And I open the last created Case via API
     And I navigate to symptoms tab

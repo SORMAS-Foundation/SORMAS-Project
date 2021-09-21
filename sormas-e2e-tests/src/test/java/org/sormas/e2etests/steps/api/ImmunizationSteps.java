@@ -18,7 +18,6 @@
 package org.sormas.e2etests.steps.api;
 
 import com.github.javafaker.Faker;
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,19 +74,5 @@ public class ImmunizationSteps implements En {
         });
 
     When("API: I receive all immunizations ids", immunizationHelper::getAllImmunizationsUUIDs);
-
-    Then(
-        "API: I check that POST immunization call body is {string}",
-        (String expectedBody) -> {
-          String responseBody = apiState.getResponse().getBody().asString();
-          Truth.assertThat(expectedBody.equals(String.valueOf(responseBody)));
-        });
-
-    Then(
-        "API: I check that POST immunization call status code is {int}",
-        (Integer expectedStatus) -> {
-          int responseStatusCode = apiState.getResponse().getStatusCode();
-          Truth.assertThat(expectedStatus).isEqualTo(responseStatusCode);
-        });
   }
 }

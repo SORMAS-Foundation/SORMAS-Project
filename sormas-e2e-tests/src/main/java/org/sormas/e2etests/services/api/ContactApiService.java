@@ -43,7 +43,7 @@ public class ContactApiService {
         .relationToCase("")
         .contactClassification("UNCONFIRMED")
         .followUpStatus("FOLLOW_UP")
-        .person(person)
+        .person(Person.builder().uuid(person.getUuid()).build())
         .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
         .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
         .vaccinationInfo(VaccinationInfo.builder().uuid(UUID.randomUUID().toString()).build())

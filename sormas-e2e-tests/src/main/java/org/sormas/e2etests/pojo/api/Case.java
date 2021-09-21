@@ -45,7 +45,7 @@ public class Case {
   Hospitalization hospitalization;
   Therapy therapy;
   Community community;
-  Long followUpUntil;
+  Date followUpUntil;
   Symptoms symptoms;
   EpiData epiData;
   Boolean pseudonymized;
@@ -58,4 +58,20 @@ public class Case {
   HealthFacility healthFacility;
   MaternalHistory maternalHistory;
   String facilityType;
+  String pointOfEntryDetails;
+  Boolean sharedToCountry;
+  Boolean nosocomialOutbreak;
+  Boolean quarantineOrderedVerbally;
+  Boolean quarantineOrderedOfficialDocument;
+  Boolean quarantineExtended;
+  Boolean quarantineReduced;
+  Boolean quarantineOfficialOrderSent;
+  Boolean overwriteFollowUpUntil;
+  Boolean ownershipHandedOver;
+  Boolean notACaseReasonNegativeTest;
+  Boolean notACaseReasonPhysicianInformation;
+  Boolean notACaseReasonDifferentPathogen;
+  Boolean notACaseReasonOther;
+  Boolean dontShareWithReportingTool;
+  String caseReferenceDefinition;
 }

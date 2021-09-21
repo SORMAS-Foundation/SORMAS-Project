@@ -18,7 +18,6 @@
 package org.sormas.e2etests.steps.api;
 
 import com.github.javafaker.Faker;
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,19 +62,5 @@ public class PersonSteps implements En {
         });
 
     When("API: I receive all person ids", personsHelper::getAllPersonUuid);
-
-    Then(
-        "API: I check that POST person call body is {string}",
-        (String expectedBody) -> {
-          String responseBody = apiState.getResponse().getBody().asString();
-          Truth.assertThat(expectedBody.equals(String.valueOf(responseBody)));
-        });
-
-    Then(
-        "API: I check that POST person call status code is {int}",
-        (Integer expectedStatus) -> {
-          int responseStatusCode = apiState.getResponse().getStatusCode();
-          Truth.assertThat(expectedStatus).isEqualTo(responseStatusCode);
-        });
   }
 }
