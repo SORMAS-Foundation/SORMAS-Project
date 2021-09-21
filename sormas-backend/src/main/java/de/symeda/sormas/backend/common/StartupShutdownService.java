@@ -53,6 +53,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.backend.central.EtcdCentralClient;
+import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,12 +157,16 @@ public class StartupShutdownService {
 	private CountryService countryService;
 	@EJB
 	private SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal sormasToSormasFacadeEjb;
-
+	@EJB
+	private CentralInfraSyncFacade centralInfraSyncFacade;
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
 
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
+
+	@Inject
+	private EtcdCentralClient centralClient;
 
 	static boolean isBlankOrSqlComment(String sqlLine) {
 		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
@@ -190,6 +196,8 @@ public class StartupShutdownService {
 		I18nProperties.setDefaultLanguage(Language.fromLocaleString(configFacade.getCountryLocale()));
 
 		createDefaultInfrastructureData();
+
+		syncWithCentral();
 
 		facilityService.createConstantFacilities();
 
@@ -329,6 +337,14 @@ public class StartupShutdownService {
 			pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);
 			pointOfEntryService.ensurePersisted(pointOfEntry);
 		}
+	}
+
+	private void syncWithCentral() {
+		if (!configFacade.isCentralLocationSync()) {
+			logger.info("Skipping synchronization with central as feature is disabled.");
+			return;
+		}
+		centralInfraSyncFacade.loadAndStoreAll();
 	}
 
 	private void createDefaultUsers() {

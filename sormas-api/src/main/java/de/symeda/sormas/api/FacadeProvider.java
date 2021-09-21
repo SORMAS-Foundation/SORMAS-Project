@@ -48,7 +48,7 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
-import de.symeda.sormas.api.infrastructure.InfrastructureSyncFacade;
+import de.symeda.sormas.api.infrastructure.MobileAppInfrastructureSyncFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geocoding.GeocodingFacade;
@@ -318,8 +318,8 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(PopulationDataFacade.class);
 	}
 
-	public static InfrastructureSyncFacade getInfrastructureSyncFacade() {
-		return get().lookupEjbRemote(InfrastructureSyncFacade.class);
+	public static MobileAppInfrastructureSyncFacade getInfrastructureSyncFacade() {
+		return get().lookupEjbRemote(MobileAppInfrastructureSyncFacade.class);
 	}
 
 	public static FeatureConfigurationFacade getFeatureConfigurationFacade() {
