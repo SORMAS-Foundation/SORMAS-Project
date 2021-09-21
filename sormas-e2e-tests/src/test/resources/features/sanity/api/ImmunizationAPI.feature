@@ -1,7 +1,6 @@
 @Sanity @Person @API
 Feature: Create person and attach immunizations via API requests
 
-  @ignore
   Scenario Outline: Create Person and attach <numberOfImmunizations> immunizations
     Given API: I create a new person
     Then API: I check that POST person call body is "OK"
@@ -23,7 +22,7 @@ Feature: Create person and attach immunizations via API requests
     Given API: I receive all person ids
     Given API: I receive all immunizations ids
 
-
+#Once we're done with populating the DB with persons, remove this tag and cleanup the class
   @PersonsAndImmunizations
   Scenario: Create multiple Person and attach immunizations to them
     When API: I create 100 persons

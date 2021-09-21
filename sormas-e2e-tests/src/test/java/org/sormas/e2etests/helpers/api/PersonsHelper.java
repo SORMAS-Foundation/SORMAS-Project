@@ -84,11 +84,4 @@ public class PersonsHelper {
             .path(PERSONS_PATH + POST_PATH)
             .build());
   }
-
-  // TODO remove this duplicated code and refactor its usage within framework !
-  public void pushPerson(String specificPath, String jsonBody) {
-    final String json = jsonBody;
-    restAssuredClient.sendRequest(
-        Request.builder().method(Method.POST).path(PERSONS_PATH + specificPath).body(json).build());
-  }
 }
