@@ -6,6 +6,6 @@ Feature: Case view tests
     Given API: I create a new person
     When API: I create a new case
     Given I click on the Cases button from navbar
-    When I click on the DETAILED radiobutton from Case directory
+    When I click on the DETAILED button from Case directory
     And I filter by CaseID on Case directory page
     And I am checking if all the fields are correctly displayed in the Case directory Detailed table

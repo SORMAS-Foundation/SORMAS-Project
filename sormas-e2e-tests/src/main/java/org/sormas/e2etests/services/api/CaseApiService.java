@@ -21,6 +21,8 @@ package org.sormas.e2etests.services.api;
 import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.pojo.api.*;
 
 public class CaseApiService {
@@ -30,7 +32,7 @@ public class CaseApiService {
 
   public Case buildGeneratedCase(Person person) {
     return Case.builder()
-        .disease("CORONAVIRUS")
+        .disease(DiseasesValues.getRandomDiseaseName())
         .diseaseDetails("Test Disease")
         .pseudonymized(false)
         .uuid(UUID.randomUUID().toString())
@@ -60,7 +62,7 @@ public class CaseApiService {
                     HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
                 .build())
         .surveillanceOfficer(
-            SurveillanceOfficer.builder().uuid("Q2IYCN-TNYTOY-4OAYCA-DW662MTA").build())
+            SurveillanceOfficer.builder().uuid(TestDataUser.SURVEILLANCE_OFFICER.getUuid()).build())
         .healthFacilityDetails("Details")
         .caseOrigin("IN_COUNTRY")
         .facilityType("HOSPITAL")
