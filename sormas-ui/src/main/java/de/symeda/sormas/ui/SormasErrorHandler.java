@@ -150,15 +150,6 @@ public class SormasErrorHandler implements ErrorHandler {
 						rootCause.getMessage() + "<br>" + I18nProperties.getString(Strings.reloadPageToSeeChanges),
 						ContentMode.HTML,
 						ErrorLevel.WARNING);
-				} else if (((ValidationRuntimeException) rootCause).getPropertyErrors() != null) {
-					error = new LocalUserError(
-						((ValidationRuntimeException) rootCause).getPropertyErrors()
-							.entrySet()
-							.stream()
-							.map(e -> String.join(".", e.getKey()) + ": " + e.getValue())
-							.collect(Collectors.joining("<br>")),
-						ContentMode.HTML,
-						ErrorLevel.WARNING);
 				} else {
 					error = new LocalUserError(rootCause.getMessage(), ContentMode.HTML, ErrorLevel.WARNING);
 				}
