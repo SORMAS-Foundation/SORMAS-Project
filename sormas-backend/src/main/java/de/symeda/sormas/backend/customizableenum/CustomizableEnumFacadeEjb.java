@@ -133,7 +133,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 	public <T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease) {
 		Language language = I18nProperties.getUserLanguage();
 		Class<T> enumClass = (Class<T>) type.getEnumClass();
-		Optional<Disease> innerDisease = Optional.of(disease);
+		Optional<Disease> innerDisease = disease != null ? Optional.of(disease) : Optional.empty();
 
 		if (!enumValuesByLanguage.get(enumClass).containsKey(language)) {
 			fillLanguageCache(type, enumClass, language);
@@ -204,7 +204,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 				.stream()
 				.filter(
 					e -> !disease.isPresent() && CollectionUtils.isEmpty(e.getDiseases())
-							|| e.getDiseases() != null && e.getDiseases().contains(disease.get()))
+							|| disease.isPresent() && e.getDiseases() != null && e.getDiseases().contains(disease.get()))
 				.map(CustomizableEnumValue::getValue)
 				.collect(Collectors.toList());
 			enumValuesByDisease.get(enumClass).put(disease, filteredEnumValues);
@@ -223,13 +223,6 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		for (CustomizableEnumType enumType : CustomizableEnumType.values()) {
 			enumValueEntities.putIfAbsent(enumType, new ArrayList<>());
 			enumValues.putIfAbsent(enumType, new ArrayList<>());
-
-			Class<? extends CustomizableEnum> enumClass = enumType.getEnumClass();
-			enumValuesByLanguage.putIfAbsent(enumClass, new ConcurrentHashMap<>()); // access to contains has to be thread-safe
-			enumValuesByDisease.putIfAbsent(enumClass, new ConcurrentHashMap<>());
-
-			// Always add values for no disease because they are relevant in all cases
-			fillDiseaseCache(enumType, enumClass, Optional.empty());
 		}
 
 		// Build list of customizable enums mapped by their enum type; other caches are built on-demand
@@ -244,6 +237,16 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 			enumValues.get(enumType).add(value);
 			enumProperties.putIfAbsent(enumType, new HashMap<>());
 			enumProperties.get(enumType).putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getProperties());
+		}
+
+		for (CustomizableEnumType enumType : CustomizableEnumType.values()) {
+
+			Class<? extends CustomizableEnum> enumClass = enumType.getEnumClass();
+			enumValuesByLanguage.putIfAbsent(enumClass, new ConcurrentHashMap<>()); // access to contains has to be thread-safe
+			enumValuesByDisease.putIfAbsent(enumClass, new ConcurrentHashMap<>());
+
+			// Always add values for no disease because they are relevant in all cases
+			fillDiseaseCache(enumType, enumClass, Optional.empty());
 		}
 	}
 
