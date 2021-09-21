@@ -107,25 +107,19 @@ public class ReceivedCaseProcessor
 
 		ValidationErrors caseValidationErrors = new ValidationErrors();
 
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors = infraValidator.loadLocalInfrastructure(
-			preview.getRegion(),
-			preview.getDistrict(),
-			preview.getCommunity(),
-			preview.getFacilityType(),
-			preview.getHealthFacility(),
-			preview.getHealthFacilityDetails(),
-			preview.getPointOfEntry(),
-			preview.getPointOfEntryDetails());
 
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
-			preview.setRegion(infrastructureData.getRegion());
-			preview.setDistrict(infrastructureData.getDistrict());
-			preview.setCommunity(infrastructureData.getCommunity());
-			preview.setHealthFacility(infrastructureData.getFacility());
-			preview.setHealthFacilityDetails(infrastructureData.getFacilityDetails());
-			preview.setPointOfEntry(infrastructureData.getPointOfEntry());
-			preview.setPointOfEntryDetails(infrastructureData.getPointOfEntryDetails());
-		});
+
+		caseValidationErrors
+			.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.REGION, preview.getRegion(), Captions.CaseData));
+		caseValidationErrors
+			.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.DISTRICT, preview.getDistrict(), Captions.CaseData));
+		caseValidationErrors
+			.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.COMMUNITY, preview.getCommunity(), Captions.CaseData));
+		caseValidationErrors.addAll(
+			infraValidator
+				.processFacility(preview.getHealthFacility(), preview.getFacilityType(), preview.getHealthFacilityDetails(), Captions.CaseData));
+		caseValidationErrors
+			.addAll(infraValidator.processPointOfEntry(preview.getPointOfEntry(), preview.getPointOfEntryDetails(), Captions.CaseData));
 
 		if (caseValidationErrors.hasError()) {
 			validationErrors.add(new ValidationErrors(buildCaseValidationGroupName(preview), caseValidationErrors));
@@ -156,20 +150,22 @@ public class ReceivedCaseProcessor
 		caze.setPerson(person.toReference());
 		dataProcessorHelper.updateReportingUser(caze, existingCaseData);
 
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors = infraValidator.loadLocalInfrastructure(caze);
+		caseValidationErrors
+				.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.REGION, caze.getResponsibleRegion(), Captions.CaseData));
+		caseValidationErrors
+				.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.DISTRICT, caze.getResponsibleDistrict(), Captions.CaseData));
+		caseValidationErrors
+				.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.COMMUNITY, caze.getResponsibleCommunity(), Captions.CaseData));
 
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, caseValidationErrors, infrastructureData -> {
-			caze.setResponsibleRegion(infrastructureData.getResponsibleRegion());
-			caze.setResponsibleDistrict(infrastructureData.getResponsibleDistrict());
-			caze.setResponsibleCommunity(infrastructureData.getResponsibleCommunity());
-			caze.setRegion(infrastructureData.getRegion());
-			caze.setDistrict(infrastructureData.getDistrict());
-			caze.setCommunity(infrastructureData.getCommunity());
-			caze.setHealthFacility(infrastructureData.getFacility());
-			caze.setHealthFacilityDetails(infrastructureData.getFacilityDetails());
-			caze.setPointOfEntry(infrastructureData.getPointOfEntry());
-			caze.setPointOfEntryDetails(infrastructureData.getPointOfEntryDetails());
-		});
+		caseValidationErrors
+			.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.REGION, caze.getRegion(), Captions.CaseData));
+		caseValidationErrors
+			.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.DISTRICT, caze.getDistrict(), Captions.CaseData));
+		caseValidationErrors
+			.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.COMMUNITY, caze.getCommunity(), Captions.CaseData));
+		caseValidationErrors.addAll(
+			infraValidator.processFacility(caze.getHealthFacility(), caze.getFacilityType(), caze.getHealthFacilityDetails(), Captions.CaseData));
+		caseValidationErrors.addAll(infraValidator.processPointOfEntry(caze.getPointOfEntry(), caze.getPointOfEntryDetails(), Captions.CaseData));
 
 		ValidationErrors embeddedObjectErrors = processEmbeddedObjects(caze);
 		caseValidationErrors.addAll(embeddedObjectErrors);
@@ -183,52 +179,52 @@ public class ReceivedCaseProcessor
 		if (caze.getHospitalization() != null) {
 
 			caze.getHospitalization().getPreviousHospitalizations().forEach(ph -> {
+				validationErrors.addAll(
+					infraValidator.processInfrastructure(
+						InfrastructureValidator.CentralInfra.REGION,
+						ph.getRegion(),
+						Captions.CaseHospitalization_previousHospitalizations));
+				validationErrors.addAll(
+					infraValidator.processInfrastructure(
+						InfrastructureValidator.CentralInfra.DISTRICT,
+						ph.getDistrict(),
+						Captions.CaseHospitalization_previousHospitalizations));
+				validationErrors.addAll(
+					infraValidator.processInfrastructure(
+						InfrastructureValidator.CentralInfra.COMMUNITY,
+						ph.getCommunity(),
+						Captions.CaseHospitalization_previousHospitalizations));
+				validationErrors.addAll(
+					infraValidator.processFacility(
+						ph.getHealthFacility(),
+						FacilityType.HOSPITAL,
+						ph.getHealthFacilityDetails(),
+						Captions.CaseHospitalization_previousHospitalizations));
 
-				DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> phInfrastructureAndErrors = infraValidator.loadLocalInfrastructure(
-					ph.getRegion(),
-					ph.getDistrict(),
-					ph.getCommunity(),
-					FacilityType.HOSPITAL,
-					ph.getHealthFacility(),
-					ph.getHealthFacilityDetails(),
-					null,
-					null);
-
-				infraValidator.handleInfraStructure(
-					phInfrastructureAndErrors,
-					Captions.CaseHospitalization_previousHospitalizations,
-					validationErrors,
-					(phInfrastructure) -> {
-						ph.setRegion(phInfrastructure.getRegion());
-						ph.setDistrict(phInfrastructure.getDistrict());
-						ph.setCommunity(phInfrastructure.getCommunity());
-						ph.setHealthFacility(phInfrastructure.getFacility());
-						ph.setHealthFacilityDetails(phInfrastructure.getFacilityDetails());
-					});
 			});
 		}
 
-		MaternalHistoryDto maternalHistory = caze.getMaternalHistory();
-		if (maternalHistory != null) {
+		MaternalHistoryDto mh = caze.getMaternalHistory();
+		if (mh != null) {
 
-			DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> rashExposureInfrastructureAndErrors = infraValidator.loadLocalInfrastructure(
-				maternalHistory.getRashExposureRegion(),
-				maternalHistory.getRashExposureDistrict(),
-				maternalHistory.getRashExposureCommunity());
+			validationErrors.addAll(
+				infraValidator.processInfrastructure(
+					InfrastructureValidator.CentralInfra.REGION,
+					mh.getRashExposureRegion(),
+					Captions.MaternalHistory_rashExposure));
+			validationErrors.addAll(
+				infraValidator.processInfrastructure(
+					InfrastructureValidator.CentralInfra.DISTRICT,
+					mh.getRashExposureDistrict(),
+					Captions.MaternalHistory_rashExposure));
+			validationErrors.addAll(
+				infraValidator.processInfrastructure(
+					InfrastructureValidator.CentralInfra.COMMUNITY,
+					mh.getRashExposureCommunity(),
+					Captions.MaternalHistory_rashExposure));
 
-			infraValidator.handleInfraStructure(
-				rashExposureInfrastructureAndErrors,
-				Captions.MaternalHistory_rashExposure,
-				validationErrors,
-				(rashExposureInfrastructure) -> {
-					maternalHistory.setRashExposureRegion(rashExposureInfrastructure.getRegion());
-					maternalHistory.setRashExposureDistrict(rashExposureInfrastructure.getDistrict());
-					maternalHistory.setRashExposureCommunity(rashExposureInfrastructure.getCommunity());
-				});
+			dataProcessorHelper.processEpiData(caze.getEpiData(), validationErrors);
 		}
-
-		dataProcessorHelper.processEpiData(caze.getEpiData(), validationErrors);
-
 		return validationErrors;
 	}
 

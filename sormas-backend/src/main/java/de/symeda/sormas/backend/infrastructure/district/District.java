@@ -21,6 +21,7 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,12 +31,17 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 
 @Entity
 public class District extends InfrastructureAdo {
+
+	@EJB
+	private RegionFacadeEjb.RegionFacadeEjbLocal regionFacadeEjb;
 
 	private static final long serialVersionUID = -6057113756091470463L;
 

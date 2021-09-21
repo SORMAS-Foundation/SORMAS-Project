@@ -45,7 +45,8 @@ import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, SormasToSormasEventDto, ProcessedEventData, SormasToSormasEventPreview> {
+public class ReceivedEventProcessor
+	implements ReceivedDataProcessor<EventDto, SormasToSormasEventDto, ProcessedEventData, SormasToSormasEventPreview> {
 
 	@EJB
 	private UserService userService;
@@ -99,7 +100,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 
 		ValidationErrors eventValidationErrors = new ValidationErrors();
 
-		infraValidator.processLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
+		eventValidationErrors.addAll(infraValidator.processLocation(preview.getEventLocation(), Captions.Event));
 
 		if (eventValidationErrors.hasError()) {
 			validationErrors.add(new ValidationErrors(buildEventValidationGroupName(preview), eventValidationErrors));
@@ -129,29 +130,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 		}
 
 		LocationDto eventLocation = event.getEventLocation();
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-				infraValidator.loadLocalInfrastructure(
-				eventLocation.getContinent(),
-				eventLocation.getSubcontinent(),
-				eventLocation.getCountry(),
-				eventLocation.getRegion(),
-				eventLocation.getDistrict(),
-				eventLocation.getCommunity(),
-				eventLocation.getFacilityType(),
-				eventLocation.getFacility(),
-				eventLocation.getFacilityDetails(),
-				null,
-				null);
-
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, validationErrors, infrastructureData -> {
-			eventLocation.setContinent(infrastructureData.getContinent());
-			eventLocation.setSubcontinent(infrastructureData.getSubcontinent());
-			eventLocation.setCountry(infrastructureData.getCountry());
-			eventLocation.setRegion(infrastructureData.getRegion());
-			eventLocation.setDistrict(infrastructureData.getDistrict());
-			eventLocation.setCommunity(infrastructureData.getCommunity());
-			eventLocation.setFacility(infrastructureData.getFacility());
-		});
+		validationErrors.addAll(infraValidator.processLocation(eventLocation, Captions.CaseData));
 
 		return validationErrors;
 	}
@@ -165,12 +144,12 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 			ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(eventParticipant.getPerson());
 			validationErrors.addAll(personValidationErrors);
 
-			DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-					infraValidator.loadLocalInfrastructure(eventParticipant.getRegion(), eventParticipant.getDistrict(), null);
-			infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.EventParticipant, validationErrors, (infrastructureData -> {
-				eventParticipant.setRegion(infrastructureData.getRegion());
-				eventParticipant.setDistrict(infrastructureData.getDistrict());
-			}));
+			validationErrors.addAll(
+				infraValidator
+					.processInfrastructure(InfrastructureValidator.CentralInfra.REGION, eventParticipant.getRegion(), Captions.EventParticipant));
+			validationErrors.addAll(
+				infraValidator
+					.processInfrastructure(InfrastructureValidator.CentralInfra.DISTRICT, eventParticipant.getDistrict(), Captions.EventParticipant));
 
 			if (validationErrors.hasError()) {
 				errors.add(new ValidationErrors(buildEventParticipantValidationGroupName(eventParticipant), validationErrors));

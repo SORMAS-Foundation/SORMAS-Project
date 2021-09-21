@@ -62,7 +62,7 @@ import de.symeda.sormas.backend.util.ClientHelper;
  */
 public class SormasToSormasRestClient {
 
-	public static final String SORMAS_REST_URL_TEMPLATE = "https://%s" + SORMAS_REST_PATH + "%s";
+	public static final String SORMAS_REST_URL_TEMPLATE = "http://%s" + SORMAS_REST_PATH + "%s";
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasRestClient.class);
 
 	private final SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
@@ -86,7 +86,6 @@ public class SormasToSormasRestClient {
 
 	public <T> T post(String receiverId, String endpoint, Object body, Class<T> responseType) throws SormasToSormasException {
 		return sendRequest(receiverId, endpoint, body, responseType, HttpMethod.POST);
-
 	}
 
 	public <T> T put(String receiverId, String endpoint, Object body, Class<T> responseType) throws SormasToSormasException {

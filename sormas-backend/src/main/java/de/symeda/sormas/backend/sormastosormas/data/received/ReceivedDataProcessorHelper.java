@@ -86,7 +86,7 @@ public class ReceivedDataProcessorHelper {
 	private SampleFacadeEjbLocal sampleFacade;
 	@EJB
 	private InfrastructureValidator infraValidator;
-	
+
 	public ValidationErrors processOriginInfo(SormasToSormasOriginInfoDto originInfo, String validationGroupCaption) {
 		if (originInfo == null) {
 			return ValidationErrors
@@ -116,36 +116,26 @@ public class ReceivedDataProcessorHelper {
 	public ValidationErrors processPerson(PersonDto person) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		infraValidator.processLocation(person.getAddress(), Captions.Person, validationErrors);
+		validationErrors.addAll(infraValidator.processLocation(person.getAddress(), Captions.Person));
 
 		person.getAddresses().forEach(address -> {
-			infraValidator.processLocation(address, Captions.Person, validationErrors);
+			validationErrors.addAll(infraValidator.processLocation(address, Captions.Person));
 		});
 
-		CountryReferenceDto birthCountry = processCountry(person.getBirthCountry(), Captions.Person_birthCountry, validationErrors);
-		person.setBirthCountry(birthCountry);
+		validationErrors.addAll(
+			infraValidator
+				.processInfrastructure(InfrastructureValidator.CentralInfra.COUNTRY, person.getBirthCountry(), Captions.Person_birthCountry));
 
-		CountryReferenceDto citizenship = processCountry(person.getCitizenship(), Captions.Person_citizenship, validationErrors);
-		person.setCitizenship(citizenship);
+		validationErrors.addAll(
+			infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.COUNTRY, person.getCitizenship(), Captions.Person_citizenship));
 
 		return validationErrors;
 	}
 
 	public ValidationErrors processPersonPreview(SormasToSormasPersonPreview person) {
 		ValidationErrors validationErrors = new ValidationErrors();
-
-		infraValidator.processLocation(person.getAddress(), Captions.Person, validationErrors);
-
+		validationErrors.addAll(infraValidator.processLocation(person.getAddress(), Captions.Person));
 		return validationErrors;
-	}
-
-	private CountryReferenceDto processCountry(CountryReferenceDto country, String errorCaption, ValidationErrors validationErrors) {
-		CountryReferenceDto localCountry = infraValidator.loadLocalCountry(country);
-		if (country != null && localCountry == null) {
-			validationErrors
-				.add(new ValidationErrorGroup(errorCaption), new ValidationErrorMessage(Validations.sormasToSormasCountry, country.getCaption()));
-		}
-		return localCountry;
 	}
 
 	public List<ValidationErrors> processSamples(List<SormasToSormasSampleDto> samples) {
@@ -162,34 +152,20 @@ public class ReceivedDataProcessorHelper {
 
 			updateReportingUser(sample, existingSamplesMap.get(sample.getUuid()));
 
-			DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-					infraValidator.loadLocalInfrastructure(null, null, null, null, sample.getLab(), sample.getLabDetails(), null, null);
-
-			infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Sample_lab, sampleErrors, (infrastructureData -> {
-				sample.setLab(infrastructureData.getFacility());
-				sample.setLabDetails(infrastructureData.getFacilityDetails());
-			}));
+			sampleErrors
+				.addAll(infraValidator.processFacility(sample.getLab(), FacilityType.LABORATORY, sample.getLabDetails(), Captions.Sample_lab));
 
 			if (sampleErrors.hasError()) {
 				validationErrors.add(new ValidationErrors(buildSampleValidationGroupName(sample), sampleErrors));
 			}
 
 			sormasToSormasSample.getPathogenTests().forEach(pathogenTest -> {
-				DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> ptInfrastructureAndErrors = infraValidator.loadLocalInfrastructure(
-					null,
-					null,
-					null,
-					FacilityType.LABORATORY,
-					pathogenTest.getLab(),
-					pathogenTest.getLabDetails(),
-					null,
-					null);
 
 				ValidationErrors pathogenTestErrors = new ValidationErrors();
-				infraValidator.handleInfraStructure(ptInfrastructureAndErrors, Captions.PathogenTest_lab, pathogenTestErrors, (infrastructureData -> {
-					pathogenTest.setLab(infrastructureData.getFacility());
-					pathogenTest.setLabDetails(infrastructureData.getFacilityDetails());
-				}));
+
+				pathogenTestErrors.addAll(
+					infraValidator
+						.processFacility(pathogenTest.getLab(), FacilityType.LABORATORY, pathogenTest.getLabDetails(), Captions.Sample_lab));
 
 				if (pathogenTestErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(buildPathogenTestValidationGroupName(pathogenTest), pathogenTestErrors));
@@ -208,15 +184,12 @@ public class ReceivedDataProcessorHelper {
 
 		contact.setPerson(person.toReference());
 		updateReportingUser(contact, existingContact);
-
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-				infraValidator.loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
-
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
-			contact.setRegion(infrastructure.getRegion());
-			contact.setDistrict(infrastructure.getDistrict());
-			contact.setCommunity(infrastructure.getCommunity());
-		}));
+		validationErrors
+			.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.REGION, contact.getRegion(), Captions.Contact));
+		validationErrors
+			.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.DISTRICT, contact.getDistrict(), Captions.Contact));
+		validationErrors
+			.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.COMMUNITY, contact.getCommunity(), Captions.Contact));
 
 		processEpiData(contact.getEpiData(), validationErrors);
 
@@ -226,30 +199,29 @@ public class ReceivedDataProcessorHelper {
 	public ValidationErrors processContactPreview(SormasToSormasContactPreview contact) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-				infraValidator.loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
-
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
-			contact.setRegion(infrastructure.getRegion());
-			contact.setDistrict(infrastructure.getDistrict());
-			contact.setCommunity(infrastructure.getCommunity());
-		}));
+		validationErrors
+				.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.REGION, contact.getRegion(), Captions.Contact));
+		validationErrors
+				.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.DISTRICT, contact.getDistrict(), Captions.Contact));
+		validationErrors
+				.addAll(infraValidator.processInfrastructure(InfrastructureValidator.CentralInfra.COMMUNITY, contact.getCommunity(), Captions.Contact));
 
 		return validationErrors;
 	}
 
 	public void processEpiData(EpiDataDto epiData, ValidationErrors validationErrors) {
+		// todo this should return validationErrors
 		if (epiData != null) {
 			epiData.getExposures().forEach(exposure -> {
 				LocationDto exposureLocation = exposure.getLocation();
 				if (exposureLocation != null) {
-					infraValidator.processLocation(exposureLocation, Captions.EpiData_exposures, validationErrors);
+					validationErrors.addAll(infraValidator.processLocation(exposureLocation, Captions.EpiData_exposures));
 				}
 			});
 			epiData.getActivitiesAsCase().forEach(activity -> {
 				LocationDto activityLocation = activity.getLocation();
 				if (activityLocation != null) {
-					infraValidator.processLocation(activityLocation, Captions.EpiData_activitiesAsCase, validationErrors);
+					validationErrors.addAll(infraValidator.processLocation(activityLocation, Captions.EpiData_activitiesAsCase));
 				}
 			});
 		}
@@ -257,7 +229,6 @@ public class ReceivedDataProcessorHelper {
 
 	public void updateReportingUser(SormasToSormasEntityDto entity, SormasToSormasEntityDto originalEntiy) {
 		UserReferenceDto reportingUser = originalEntiy == null ? userService.getCurrentUser().toReference() : originalEntiy.getReportingUser();
-
 		entity.setReportingUser(reportingUser);
 	}
 
