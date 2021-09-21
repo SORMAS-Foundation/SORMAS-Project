@@ -99,7 +99,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 
 		ValidationErrors eventValidationErrors = new ValidationErrors();
 
-		infraValidator.processLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
+		infraValidator.validateLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
 
 		if (eventValidationErrors.hasError()) {
 			validationErrors.add(new ValidationErrors(buildEventValidationGroupName(preview), eventValidationErrors));
@@ -130,7 +130,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 
 		LocationDto eventLocation = event.getEventLocation();
 		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-				infraValidator.loadLocalInfrastructure(
+				infraValidator.validateInfrastructure(
 				eventLocation.getContinent(),
 				eventLocation.getSubcontinent(),
 				eventLocation.getCountry(),
@@ -166,7 +166,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 			validationErrors.addAll(personValidationErrors);
 
 			DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-					infraValidator.loadLocalInfrastructure(eventParticipant.getRegion(), eventParticipant.getDistrict(), null);
+					infraValidator.validateInfrastructure(eventParticipant.getRegion(), eventParticipant.getDistrict(), null);
 			infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.EventParticipant, validationErrors, (infrastructureData -> {
 				eventParticipant.setRegion(infrastructureData.getRegion());
 				eventParticipant.setDistrict(infrastructureData.getDistrict());

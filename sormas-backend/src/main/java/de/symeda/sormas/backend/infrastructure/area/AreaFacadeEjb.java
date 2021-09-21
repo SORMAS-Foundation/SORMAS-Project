@@ -212,6 +212,11 @@ public class AreaFacadeEjb implements AreaFacade {
 		return dto;
 	}
 
+	@Override
+	public List<AreaReferenceDto> getReferencesByName(String name, boolean includeArchived) {
+		return getByName(name, includeArchived);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class AreaFacadeEjbLocal extends AreaFacadeEjb {

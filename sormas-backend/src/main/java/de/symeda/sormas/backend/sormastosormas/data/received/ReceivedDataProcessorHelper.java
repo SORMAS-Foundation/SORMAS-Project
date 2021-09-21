@@ -86,7 +86,7 @@ public class ReceivedDataProcessorHelper {
 	private SampleFacadeEjbLocal sampleFacade;
 	@EJB
 	private InfrastructureValidator infraValidator;
-	
+
 	public ValidationErrors processOriginInfo(SormasToSormasOriginInfoDto originInfo, String validationGroupCaption) {
 		if (originInfo == null) {
 			return ValidationErrors
@@ -116,10 +116,10 @@ public class ReceivedDataProcessorHelper {
 	public ValidationErrors processPerson(PersonDto person) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		infraValidator.processLocation(person.getAddress(), Captions.Person, validationErrors);
+		infraValidator.validateLocation(person.getAddress(), Captions.Person, validationErrors);
 
 		person.getAddresses().forEach(address -> {
-			infraValidator.processLocation(address, Captions.Person, validationErrors);
+			infraValidator.validateLocation(address, Captions.Person, validationErrors);
 		});
 
 		CountryReferenceDto birthCountry = processCountry(person.getBirthCountry(), Captions.Person_birthCountry, validationErrors);
@@ -134,13 +134,13 @@ public class ReceivedDataProcessorHelper {
 	public ValidationErrors processPersonPreview(SormasToSormasPersonPreview person) {
 		ValidationErrors validationErrors = new ValidationErrors();
 
-		infraValidator.processLocation(person.getAddress(), Captions.Person, validationErrors);
+		infraValidator.validateLocation(person.getAddress(), Captions.Person, validationErrors);
 
 		return validationErrors;
 	}
 
 	private CountryReferenceDto processCountry(CountryReferenceDto country, String errorCaption, ValidationErrors validationErrors) {
-		CountryReferenceDto localCountry = infraValidator.loadLocalCountry(country);
+		CountryReferenceDto localCountry = infraValidator.lookupLocalCountry(country);
 		if (country != null && localCountry == null) {
 			validationErrors
 				.add(new ValidationErrorGroup(errorCaption), new ValidationErrorMessage(Validations.sormasToSormasCountry, country.getCaption()));
@@ -163,7 +163,18 @@ public class ReceivedDataProcessorHelper {
 			updateReportingUser(sample, existingSamplesMap.get(sample.getUuid()));
 
 			DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-					infraValidator.loadLocalInfrastructure(null, null, null, null, sample.getLab(), sample.getLabDetails(), null, null);
+				infraValidator.validateInfrastructure(
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					FacilityType.LABORATORY,
+					sample.getLab(),
+					sample.getLabDetails(),
+					null,
+					null);
 
 			infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Sample_lab, sampleErrors, (infrastructureData -> {
 				sample.setLab(infrastructureData.getFacility());
@@ -175,15 +186,19 @@ public class ReceivedDataProcessorHelper {
 			}
 
 			sormasToSormasSample.getPathogenTests().forEach(pathogenTest -> {
-				DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> ptInfrastructureAndErrors = infraValidator.loadLocalInfrastructure(
-					null,
-					null,
-					null,
-					FacilityType.LABORATORY,
-					pathogenTest.getLab(),
-					pathogenTest.getLabDetails(),
-					null,
-					null);
+				DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> ptInfrastructureAndErrors =
+					infraValidator.validateInfrastructure(
+						null,
+						null,
+						null,
+						null,
+						null,
+						null,
+						FacilityType.LABORATORY,
+						pathogenTest.getLab(),
+						pathogenTest.getLabDetails(),
+						null,
+						null);
 
 				ValidationErrors pathogenTestErrors = new ValidationErrors();
 				infraValidator.handleInfraStructure(ptInfrastructureAndErrors, Captions.PathogenTest_lab, pathogenTestErrors, (infrastructureData -> {
@@ -210,7 +225,7 @@ public class ReceivedDataProcessorHelper {
 		updateReportingUser(contact, existingContact);
 
 		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-				infraValidator.loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
+			infraValidator.validateInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
 
 		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
 			contact.setRegion(infrastructure.getRegion());
@@ -227,7 +242,7 @@ public class ReceivedDataProcessorHelper {
 		ValidationErrors validationErrors = new ValidationErrors();
 
 		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-				infraValidator.loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
+			infraValidator.validateInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity());
 
 		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.Contact, validationErrors, (infrastructure -> {
 			contact.setRegion(infrastructure.getRegion());
@@ -243,13 +258,13 @@ public class ReceivedDataProcessorHelper {
 			epiData.getExposures().forEach(exposure -> {
 				LocationDto exposureLocation = exposure.getLocation();
 				if (exposureLocation != null) {
-					infraValidator.processLocation(exposureLocation, Captions.EpiData_exposures, validationErrors);
+					infraValidator.validateLocation(exposureLocation, Captions.EpiData_exposures, validationErrors);
 				}
 			});
 			epiData.getActivitiesAsCase().forEach(activity -> {
 				LocationDto activityLocation = activity.getLocation();
 				if (activityLocation != null) {
-					infraValidator.processLocation(activityLocation, Captions.EpiData_activitiesAsCase, validationErrors);
+					infraValidator.validateLocation(activityLocation, Captions.EpiData_activitiesAsCase, validationErrors);
 				}
 			});
 		}
