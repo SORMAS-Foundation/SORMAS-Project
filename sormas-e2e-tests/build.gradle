@@ -73,35 +73,33 @@ task format(type: GoogleJavaFormat) {
 
 tasks.withType(Test) {
 	maxParallelForks = (int) (Runtime.runtime.availableProcessors().intdiv(2) ?: 1)
-	systemProperties = System.getProperties()
+	systemProperties = System.getProperties() as Map<String, ?>
 	systemProperties.remove("java.endorsed.dirs") // needs to be removed from Java 9
 }
 
 task createReportFolderIfNotExist() {
-	// Create a File object representing the folder 'A/B'
 	def folder = new File("allureReports")
-
-	// If it doesn't exist
 	if (!folder.exists()) {
-		// Create all folders up-to and including B
 		folder.mkdirs()
 	}
 }
 
-tasks.register("startTests") {
+task startTests {
 	doLast {
 		println "Starting the test cases"
 	}
 }
 
-task copyGeneratedReport(type: Copy) {
-	dependsOn "createReportFolderIfNotExist"
-
-	from file("$buildDir/reports/allure-report")
-	into file("allureReports")
-}
+//task copyGeneratedReport(type: Copy) {
+//	dependsOn "createReportFolderIfNotExist"
+//
+//	from file("$buildDir/reports/allure-report")
+//	into file("allureReports")
+//}
 
 task copyToGeneratedReport(type: Copy) {
+	dependsOn "createReportFolderIfNotExist"
+
 	from file("allureReports/history")
 	into file("$buildDir/allure-results/history")
 }
@@ -118,12 +116,12 @@ task copyEnvironmentProperties(type: Copy) {
 }
 
 task createAllureReport(type: Exec) {
-	workingDir '.'
+	workingDir "."
 	def isWindows = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("windows")
 	if (isWindows) {
 		commandLine "cmd", "/c", "allure.bat", "generate", "$buildDir/allure-results", "-c", "-o", "./allureReports"
 	} else {
-		commandLine 'allure', 'generate', "$buildDir/allure-results", '-c', '-o', './allureReports'
+		commandLine "allure", "generate", "$buildDir/allure-results", "-c", "-o", "./allureReports"
 	}
 }
 
@@ -142,4 +140,4 @@ startTests.finalizedBy copyToGeneratedReport
 copyToGeneratedReport.finalizedBy test
 test.finalizedBy copyEnvironmentProperties
 copyEnvironmentProperties.finalizedBy createAllureReport
-createAllureReport.finalizedBy copyGeneratedReport
+//createAllureReport.finalizedBy copyGeneratedReport
