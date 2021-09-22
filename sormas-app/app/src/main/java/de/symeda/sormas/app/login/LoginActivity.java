@@ -118,7 +118,7 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 			case Activity.RESULT_OK:
 			case Activity.RESULT_CANCELED:
 			case Activity.RESULT_FIRST_USER:
-				this.finishAffinity();
+				finishAndRemoveTask();
 				break;
 			// Everything else probably is an error
 			default:
