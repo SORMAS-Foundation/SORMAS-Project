@@ -20,10 +20,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
-import android.test.RenamingDelegatingContext;
+import android.content.Context;
 import android.util.Log;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.user.UserRole;
@@ -53,9 +53,10 @@ public class TestHelper {
 
 	public static void initTestEnvironment(boolean setInformantAsActiveUser) {
 		// Initialize a testing context to not operate on the actual database
-		RenamingDelegatingContext context = new RenamingDelegatingContext(InstrumentationRegistry.getTargetContext(), "test_");
+		Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 		// Make sure that no database/user is still set from the last run
 		context.deleteDatabase(DatabaseHelper.DATABASE_NAME);
+
 		ConfigProvider.clearUserLogin();
 		// Initialize the testing database
 		DatabaseHelper.init(context);
@@ -188,6 +189,7 @@ public class TestHelper {
 		facility.setName("Facility");
 		facility.setPublicOwnership(false);
 		facility.setUuid(FACILITY_UUID);
+		facility.setType(FacilityType.HOSPITAL);
 		facility.setRegion(region);
 		facility.setDistrict(district);
 		facility.setCommunity(community);

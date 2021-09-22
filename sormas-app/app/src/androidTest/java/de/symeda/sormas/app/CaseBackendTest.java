@@ -66,6 +66,8 @@ import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.synclog.SyncLogDao;
@@ -272,9 +274,14 @@ public class CaseBackendTest {
 		Task doneTask = TestEntityCreator.createCaseTask(caze, TaskStatus.DONE, user);
 
 		Case existingCase = caseDao.queryUuidWithEmbedded(caze.getUuid());
-		caze.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID));
-		caze.setCommunity(DatabaseHelper.getCommunityDao().queryUuid(TestHelper.SECOND_COMMUNITY_UUID));
+		District secondDistrict = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID);
+		caze.setDistrict(secondDistrict);
+		caze.setResponsibleDistrict(secondDistrict);
+		Community secondCommunity = DatabaseHelper.getCommunityDao().queryUuid(TestHelper.SECOND_COMMUNITY_UUID);
+		caze.setCommunity(secondCommunity);
+		caze.setResponsibleCommunity(secondCommunity);
 		caze.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(TestHelper.SECOND_FACILITY_UUID));
+
 		caseDao.createPreviousHospitalizationAndUpdateHospitalization(caze, existingCase);
 		caseDao.saveAndSnapshot(caze);
 		caze = caseDao.queryUuidWithEmbedded(caze.getUuid());
@@ -420,18 +427,22 @@ public class CaseBackendTest {
 	}
 
 	@Test
-	public void testEditCasePermissionWhenRegionDoesNotMatchAndCaseNotCreatedByUser() throws DaoException, SQLException {
+	public void testEditCasePermissionWhenDistrictDoesNotMatchAndCaseNotCreatedByUser() throws DaoException, SQLException {
 		Case caze = TestEntityCreator.createCase();
-		caze.setRegion(null);
-		caze.setDistrict(null);
+		caze.setRegion(DatabaseHelper.getRegionDao().queryUuid(TestHelper.REGION_UUID));
+		District secondDistrict = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID);
+		caze.setDistrict(secondDistrict);
+		caze.setResponsibleDistrict(secondDistrict);
 		caze.setHealthFacility(null);
 
-		UserRole userRole = UserRole.HOSPITAL_INFORMANT;
+		UserRole userRole = UserRole.SURVEILLANCE_OFFICER;
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 
 		ConfigProvider.getUser().setUserRoles(userRoles);
 		ConfigProvider.getUser().setUuid("");
+
+		User user = ConfigProvider.getUser();
 
 		assertFalse(CaseEditAuthorization.isCaseEditAllowed(caze));
 	}
