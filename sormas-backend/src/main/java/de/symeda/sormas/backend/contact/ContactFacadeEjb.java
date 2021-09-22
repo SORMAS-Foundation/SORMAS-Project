@@ -508,13 +508,15 @@ public class ContactFacadeEjb implements ContactFacade {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete contacts.");
 		}
 		List<String> deletedContactUuids = new ArrayList<>();
-		contactUuids.forEach(contactUuid -> {
-			Contact contact = contactService.getByUuid(contactUuid);
-			if (contact != null && !contact.isDeleted()) {
-				deleteContact(contact);
-				deletedContactUuids.add(contactUuid);
-			}
-		});
+		List<Contact> contactsToBeDeleted = contactService.getByUuids(contactUuids);
+		if (contactsToBeDeleted != null) {
+			contactsToBeDeleted.forEach(contactToBeDeleted -> {
+				if (!contactToBeDeleted.isDeleted()) {
+					deleteContact(contactToBeDeleted);
+					deletedContactUuids.add(contactToBeDeleted.getUuid());
+				}
+			});
+		}
 		return deletedContactUuids;
 
 	}

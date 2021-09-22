@@ -801,13 +801,13 @@ public class TaskFacadeEjb implements TaskFacade {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete tasks.");
 		}
 		List<String> deletedTaskUuids = new ArrayList<>();
-		tasksUuids.forEach(taskUuid -> {
-			Task task = taskService.getByUuid(taskUuid);
-			if (task != null) {
-				taskService.delete(task);
-				deletedTaskUuids.add(taskUuid);
-			}
-		});
+		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
+		if (tasksToBeDeleted != null) {
+			tasksToBeDeleted.forEach(taskToBeDeleted -> {
+				taskService.delete(taskToBeDeleted);
+				deletedTaskUuids.add(taskToBeDeleted.getUuid());
+			});
+		}
 		return deletedTaskUuids;
 	}
 

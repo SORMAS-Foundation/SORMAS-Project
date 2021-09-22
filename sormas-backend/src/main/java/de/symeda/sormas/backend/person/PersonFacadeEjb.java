@@ -105,7 +105,6 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -1511,21 +1510,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 
 		return filter;
-	}
-
-	public List<String> deletePersons(List<String> personUuids) {
-		if (!userService.hasRight(UserRight.PERSON_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete persons.");
-		}
-		List<String> deletedPersonUuids = new ArrayList<>();
-		personUuids.forEach(personUuid -> {
-			Person person = personService.getByUuid(personUuid);
-			if (person != null) {
-				personService.delete(person);
-				deletedPersonUuids.add(personUuid);
-			}
-		});
-		return deletedPersonUuids;
 	}
 
 	public Page<PersonIndexDto> getIndexPage(PersonCriteria personCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {

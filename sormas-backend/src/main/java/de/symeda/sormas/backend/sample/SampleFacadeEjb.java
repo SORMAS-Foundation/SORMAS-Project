@@ -926,13 +926,15 @@ public class SampleFacadeEjb implements SampleFacade {
 			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
 		}
 		List<String> deletedSampleUuids = new ArrayList<>();
-		sampleUuids.forEach(sampleUuid -> {
-			Sample sample = sampleService.getByUuid(sampleUuid);
-			if (sample != null && !sample.isDeleted()) {
-				sampleService.delete(sample);
-				deletedSampleUuids.add(sampleUuid);
-			}
-		});
+		List<Sample> samplesToBeDeleted = sampleService.getByUuids(sampleUuids);
+		if (samplesToBeDeleted != null) {
+			samplesToBeDeleted.forEach(sampleToBeDeleted -> {
+				if (!sampleToBeDeleted.isDeleted()) {
+					sampleService.delete(sampleToBeDeleted);
+					deletedSampleUuids.add(sampleToBeDeleted.getUuid());
+				}
+			});
+		}
 		return deletedSampleUuids;
 	}
 

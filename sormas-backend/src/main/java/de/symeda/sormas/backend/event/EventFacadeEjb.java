@@ -290,17 +290,19 @@ public class EventFacadeEjb implements EventFacade {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
 		}
 		List<String> deletedEventUuids = new ArrayList<>();
-		eventUuids.forEach(eventUuid -> {
-			Event event = eventService.getByUuid(eventUuid);
-			if (event != null && !event.isDeleted()) {
-				try {
-					deleteEvent(event);
-					deletedEventUuids.add(eventUuid);
-				} catch (ExternalSurveillanceToolException e) {
-					logger.error("The event with uuid:" + eventUuid + "could not be deleted");
+		List<Event> eventsToBeDeleted = eventService.getByUuids(eventUuids);
+		if (eventsToBeDeleted != null) {
+			eventsToBeDeleted.forEach(eventToBeDeleted -> {
+				if (!eventToBeDeleted.isDeleted()) {
+					try {
+						deleteEvent(eventToBeDeleted);
+						deletedEventUuids.add(eventToBeDeleted.getUuid());
+					} catch (ExternalSurveillanceToolException e) {
+						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
+					}
 				}
-			}
-		});
+			});
+		}
 		return deletedEventUuids;
 	}
 
