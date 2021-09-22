@@ -90,13 +90,6 @@ task startTests {
 	}
 }
 
-//task copyGeneratedReport(type: Copy) {
-//	dependsOn "createReportFolderIfNotExist"
-//
-//	from file("$buildDir/reports/allure-report")
-//	into file("allureReports")
-//}
-
 task copyToGeneratedReport(type: Copy) {
 	dependsOn "createReportFolderIfNotExist"
 
@@ -115,6 +108,7 @@ task copyAllureFiles(type: Copy) {
 		into file("$buildDir/allure-results")
 	}
 }
+
 task createAllureReport(type: Exec) {
 	workingDir "."
 	def isWindows = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("windows")
@@ -140,4 +134,3 @@ startTests.finalizedBy copyToGeneratedReport
 copyToGeneratedReport.finalizedBy test
 test.finalizedBy copyAllureFiles
 copyAllureFiles.finalizedBy createAllureReport
-//createAllureReport.finalizedBy copyGeneratedReport
