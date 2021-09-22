@@ -94,6 +94,7 @@ import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -562,39 +563,13 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseIndexDto> getEntriesList(CaseCriteria caseCriteria, Integer first, Integer max) {
+	public List<CaseListEntryDto> getEntriesList(CaseCriteria caseCriteria, Integer first, Integer max) {
 
 		CriteriaQuery<CaseIndexDto> cq = listQueryBuilder.buildIndexCriteria(caseCriteria, null);
-
-		List<CaseIndexDto> cases = QueryHelper.getResultList(em, cq, first, max);
-		List<Long> caseIds = cases.stream().map(CaseIndexDto::getId).collect(Collectors.toList());
-
-		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			survToolShareCountAndDates = externalShareInfoService.getCaseShareCountAndLatestDate(caseIds)
-				.stream()
-				.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
-		}
-
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		for (CaseIndexDto caze : cases) {
-			if (survToolShareCountAndDates != null) {
-				ExternalShareInfoCountAndLatestDate survToolShareCountAndDate = survToolShareCountAndDates.get(caze.getUuid());
-
-				if (survToolShareCountAndDate != null) {
-					caze.setSurveillanceToolShareCount(survToolShareCountAndDate.getCount());
-					caze.setSurveillanceToolLastShareDate(survToolShareCountAndDate.getLatestDate());
-					caze.setSurveillanceToolStatus(survToolShareCountAndDate.getLatestStatus());
-				}
-			}
-
-			Boolean isInJurisdiction = caze.getInJurisdiction();
-			pseudonymizer.pseudonymizeDto(CaseIndexDto.class, caze, isInJurisdiction, (c) -> {
-				pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null);
-			});
-		}
-
-		return cases;
+		List<CaseIndexDto> entries = QueryHelper.getResultList(em, cq, first, max);
+		return entries.stream()
+			.map(entry -> new CaseListEntryDto(entry.getUuid(), entry.getReportDate(), entry.getDisease(), entry.getCaseClassification()))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -1229,7 +1204,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> caze = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		filter = CriteriaBuilderHelper.and(cb, filter, caseService.createCriteriaFilter(criteria, caseQueryContext));

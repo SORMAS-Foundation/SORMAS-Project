@@ -8,8 +8,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -19,11 +18,11 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 public class CaseListEntry extends HorizontalLayout {
 
 	public static final String SEPARATOR = ": ";
-	private final CaseIndexDto caseIndexDto;
+	private final CaseListEntryDto caseListEntry;
 	private Button editButton;
 
-	public CaseListEntry(CaseIndexDto caseIndexDto) {
-		this.caseIndexDto = caseIndexDto;
+	public CaseListEntry(CaseListEntryDto caseListEntry) {
+		this.caseListEntry = caseListEntry;
 		setSpacing(true);
 		setWidth(100, Unit.PERCENTAGE);
 		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
@@ -39,14 +38,14 @@ public class CaseListEntry extends HorizontalLayout {
 		uuidReportDateLayout.setMargin(false);
 		uuidReportDateLayout.setSpacing(true);
 
-		Label caseUuidLabel = new Label(DataHelper.toStringNullable(DataHelper.getShortUuid(caseIndexDto.getUuid())));
-		caseUuidLabel.setDescription(caseIndexDto.getUuid());
+		Label caseUuidLabel = new Label(DataHelper.toStringNullable(DataHelper.getShortUuid(caseListEntry.getUuid())));
+		caseUuidLabel.setDescription(caseListEntry.getUuid());
 		uuidReportDateLayout.addComponent(caseUuidLabel);
 
 		Label reportDateLabel = new Label(
-			I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseIndexDto.REPORT_DATE)
+			I18nProperties.getPrefixCaption(CaseListEntryDto.I18N_PREFIX, CaseListEntryDto.REPORT_DATE)
 				+ SEPARATOR
-				+ DateFormatHelper.formatDate(caseIndexDto.getReportDate()));
+				+ DateFormatHelper.formatDate(caseListEntry.getReportDate()));
 		uuidReportDateLayout.addComponent(reportDateLabel);
 
 		uuidReportDateLayout.setWidthFull();
@@ -58,13 +57,13 @@ public class CaseListEntry extends HorizontalLayout {
 		diseaseClassificationLayout.setMargin(false);
 		diseaseClassificationLayout.setSpacing(true);
 
-		Label diseaseLabel = new Label(caseIndexDto.getDisease().toString());
+		Label diseaseLabel = new Label(caseListEntry.getDisease().toString());
 		diseaseLabel.addStyleNames(CssStyles.LABEL_BOLD);
-		diseaseLabel.setDescription(caseIndexDto.getDisease().toString());
+		diseaseLabel.setDescription(caseListEntry.getDisease().toString());
 
-		Label classificationLabel = new Label(caseIndexDto.getCaseClassification().toString());
+		Label classificationLabel = new Label(caseListEntry.getCaseClassification().toString());
 		classificationLabel.addStyleNames(CssStyles.LABEL_BOLD);
-		classificationLabel.setDescription(caseIndexDto.getCaseClassification().toString());
+		classificationLabel.setDescription(caseListEntry.getCaseClassification().toString());
 
 		diseaseClassificationLayout.addComponent(diseaseLabel);
 		diseaseClassificationLayout.addComponent(classificationLabel);
@@ -78,7 +77,7 @@ public class CaseListEntry extends HorizontalLayout {
 	public void addEditListener(int rowIndex, Button.ClickListener editClickListener) {
 		if (editButton == null) {
 			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-participant-" + rowIndex,
+				"edit-case-" + rowIndex,
 				null,
 				VaadinIcons.PENCIL,
 				null,
@@ -93,7 +92,7 @@ public class CaseListEntry extends HorizontalLayout {
 		editButton.addClickListener(editClickListener);
 	}
 
-	public CaseIndexDto getCaseIndexDto() {
-		return caseIndexDto;
+	public CaseListEntryDto getCaseListEntry() {
+		return caseListEntry;
 	}
 }
