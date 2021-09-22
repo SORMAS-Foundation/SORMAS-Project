@@ -29,6 +29,6 @@ Feature: Create person and attach immunizations via API requests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then API: I create 1-5 new immunizations for each person from last created persons list
-    Then API: I check that POST immunization call body is "OK"
-    And API: I check that POST immunization call status code is 200
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
 
