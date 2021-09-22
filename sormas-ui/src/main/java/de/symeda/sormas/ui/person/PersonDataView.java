@@ -26,7 +26,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.components.SideComponentLayout;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 

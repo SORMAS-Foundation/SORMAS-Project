@@ -1,11 +1,7 @@
 package de.symeda.sormas.ui.caze.caselink;
 
-import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -16,23 +12,12 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
-public class CaseListComponent extends VerticalLayout {
+public class CaseListComponent extends SideComponent {
 
 	public CaseListComponent(PersonReferenceDto personReferenceDto) {
-		setWidth(100, Sizeable.Unit.PERCENTAGE);
-		setMargin(false);
-		setSpacing(false);
-
-		HorizontalLayout componentHeader = new HorizontalLayout();
-		componentHeader.setMargin(false);
-		componentHeader.setSpacing(false);
-		componentHeader.setWidth(100, Sizeable.Unit.PERCENTAGE);
-		addComponent(componentHeader);
-
-		Label eventLabel = new Label(I18nProperties.getString(Strings.entityCases));
-		eventLabel.addStyleName(CssStyles.H3);
-		componentHeader.addComponent(eventLabel);
+		super(I18nProperties.getString(Strings.entityCases));
 
 		CaseCriteria caseCriteria = new CaseCriteria().person(personReferenceDto);
 		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);

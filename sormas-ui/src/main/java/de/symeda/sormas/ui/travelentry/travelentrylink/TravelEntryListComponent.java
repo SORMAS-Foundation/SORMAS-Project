@@ -38,7 +38,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.components.SideComponentLayout;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 @SuppressWarnings("serial")
 public class TravelEntryListComponent extends VerticalLayout {
