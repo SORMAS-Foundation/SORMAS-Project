@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.event;
 
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventParticipantValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
 import java.util.ArrayList;
@@ -28,29 +27,27 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
-import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessorHelper;
+import de.symeda.sormas.backend.sormastosormas.data.Sormas2SormasDataValidator;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
-public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, SormasToSormasEventDto, ProcessedEventData, SormasToSormasEventPreview> {
+public class ReceivedEventProcessor
+	implements ReceivedDataProcessor<EventDto, SormasToSormasEventDto, ProcessedEventData, SormasToSormasEventPreview> {
 
 	@EJB
 	private UserService userService;
 	@EJB
-	private ReceivedDataProcessorHelper dataProcessorHelper;
+	private Sormas2SormasDataValidator dataValidator;
 	@EJB
 	private InfrastructureValidator infraValidator;
 
@@ -64,10 +61,10 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 
 		ValidationErrors eventValidationErrors = new ValidationErrors();
 
-		ValidationErrors originInfoErrors = dataProcessorHelper.processOriginInfo(originInfo, Captions.Event);
+		ValidationErrors originInfoErrors = dataValidator.validateOriginInfo(originInfo, Captions.Event);
 		eventValidationErrors.addAll(originInfoErrors);
 
-		ValidationErrors eventErrors = processEventData(event, existingEvent);
+		ValidationErrors eventErrors = dataValidator.validateEventData(event, existingEvent);
 		eventValidationErrors.addAll(eventErrors);
 
 		if (eventValidationErrors.hasError()) {
@@ -76,13 +73,13 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 
 		List<EventParticipantDto> eventParticipants = receivedEvent.getEventParticipants();
 		if (eventParticipants != null && eventParticipants.size() > 0) {
-			List<ValidationErrors> eventParticipantErrors = processEventParticipants(eventParticipants);
+			List<ValidationErrors> eventParticipantErrors = dataValidator.validateEventParticipants(eventParticipants);
 			validationErrors.addAll(eventParticipantErrors);
 		}
 
 		List<SormasToSormasSampleDto> samples = receivedEvent.getSamples();
 		if (samples != null && samples.size() > 0) {
-			List<ValidationErrors> sampleErrors = dataProcessorHelper.processSamples(samples);
+			List<ValidationErrors> sampleErrors = dataValidator.validateSamples(samples);
 			validationErrors.addAll(sampleErrors);
 		}
 
@@ -99,7 +96,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 
 		ValidationErrors eventValidationErrors = new ValidationErrors();
 
-		infraValidator.validateLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
+		dataValidator.validateLocation(preview.getEventLocation(), Captions.Event, eventValidationErrors);
 
 		if (eventValidationErrors.hasError()) {
 			validationErrors.add(new ValidationErrors(buildEventValidationGroupName(preview), eventValidationErrors));
@@ -107,7 +104,7 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 
 		List<SormasToSormasEventParticipantPreview> eventParticipants = preview.getEventParticipants();
 		if (eventParticipants != null && eventParticipants.size() > 0) {
-			List<ValidationErrors> eventParticipantErrors = processEventParticipantPreviews(eventParticipants);
+			List<ValidationErrors> eventParticipantErrors = dataValidator.validateEventParticipantPreviews(eventParticipants);
 			validationErrors.addAll(eventParticipantErrors);
 		}
 
@@ -116,81 +113,5 @@ public class ReceivedEventProcessor implements ReceivedDataProcessor<EventDto, S
 		}
 
 		return preview;
-	}
-
-	private ValidationErrors processEventData(EventDto event, EventDto existingEvent) {
-		ValidationErrors validationErrors = new ValidationErrors();
-
-		dataProcessorHelper.updateReportingUser(event, existingEvent);
-		if (existingEvent == null) {
-			event.setResponsibleUser(userService.getCurrentUser().toReference());
-		} else {
-			event.setResponsibleUser(existingEvent.getResponsibleUser());
-		}
-
-		LocationDto eventLocation = event.getEventLocation();
-		DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-				infraValidator.validateInfrastructure(
-				eventLocation.getContinent(),
-				eventLocation.getSubcontinent(),
-				eventLocation.getCountry(),
-				eventLocation.getRegion(),
-				eventLocation.getDistrict(),
-				eventLocation.getCommunity(),
-				eventLocation.getFacilityType(),
-				eventLocation.getFacility(),
-				eventLocation.getFacilityDetails(),
-				null,
-				null);
-
-		infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.CaseData, validationErrors, infrastructureData -> {
-			eventLocation.setContinent(infrastructureData.getContinent());
-			eventLocation.setSubcontinent(infrastructureData.getSubcontinent());
-			eventLocation.setCountry(infrastructureData.getCountry());
-			eventLocation.setRegion(infrastructureData.getRegion());
-			eventLocation.setDistrict(infrastructureData.getDistrict());
-			eventLocation.setCommunity(infrastructureData.getCommunity());
-			eventLocation.setFacility(infrastructureData.getFacility());
-		});
-
-		return validationErrors;
-	}
-
-	private List<ValidationErrors> processEventParticipants(List<EventParticipantDto> eventParticipants) {
-		List<ValidationErrors> errors = new ArrayList<>();
-
-		eventParticipants.forEach(eventParticipant -> {
-			ValidationErrors validationErrors = new ValidationErrors();
-
-			ValidationErrors personValidationErrors = dataProcessorHelper.processPerson(eventParticipant.getPerson());
-			validationErrors.addAll(personValidationErrors);
-
-			DataHelper.Pair<InfrastructureValidator.InfrastructureData, List<ValidationErrorMessage>> infrastructureAndErrors =
-					infraValidator.validateInfrastructure(eventParticipant.getRegion(), eventParticipant.getDistrict(), null);
-			infraValidator.handleInfraStructure(infrastructureAndErrors, Captions.EventParticipant, validationErrors, (infrastructureData -> {
-				eventParticipant.setRegion(infrastructureData.getRegion());
-				eventParticipant.setDistrict(infrastructureData.getDistrict());
-			}));
-
-			if (validationErrors.hasError()) {
-				errors.add(new ValidationErrors(buildEventParticipantValidationGroupName(eventParticipant), validationErrors));
-			}
-		});
-
-		return errors;
-	}
-
-	private List<ValidationErrors> processEventParticipantPreviews(List<SormasToSormasEventParticipantPreview> eventParticipants) {
-		List<ValidationErrors> errors = new ArrayList<>();
-
-		eventParticipants.forEach(eventParticipant -> {
-			ValidationErrors validationErrors = dataProcessorHelper.processPersonPreview(eventParticipant.getPerson());
-
-			if (validationErrors.hasError()) {
-				errors.add(new ValidationErrors(buildEventParticipantValidationGroupName(eventParticipant), validationErrors));
-			}
-		});
-
-		return errors;
 	}
 }
