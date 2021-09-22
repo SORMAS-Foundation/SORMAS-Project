@@ -25,13 +25,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
-import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -116,6 +116,50 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 			fillLanguageCache(type, enumClass, language);
 		}
 
+		return buildCustomizableEnum(type, value, language, enumClass);
+	}
+
+	/**
+	 * @return Entries are currently not returned in any specific order
+	 */
+	@Lock(LockType.READ)
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease) {
+		Language language = I18nProperties.getUserLanguage();
+		Class<T> enumClass = (Class<T>) type.getEnumClass();
+		Optional<Disease> innerDisease = Optional.ofNullable(disease);
+
+		if (!enumValuesByLanguage.get(enumClass).containsKey(language)) {
+			fillLanguageCache(type, enumClass, language);
+		}
+
+		if (!enumValuesByDisease.get(enumClass).containsKey(innerDisease)) {
+			fillDiseaseCache(type, enumClass, innerDisease);
+		}
+
+		Stream<String> diseaseValuesStream;
+		if (innerDisease.isPresent()) {
+			// combine specific and unspecific values
+			diseaseValuesStream = Stream.concat(
+					enumValuesByDisease.get(enumClass).get(innerDisease).stream(),
+					enumValuesByDisease.get(enumClass).get(Optional.empty()).stream());
+		} else {
+			diseaseValuesStream = enumValuesByDisease.get(enumClass).get(Optional.empty()).stream();
+		}
+
+		return diseaseValuesStream
+				.map(value -> buildCustomizableEnum(type, value, language, enumClass))
+				.collect(Collectors.toList());
+	}
+
+	@Lock(LockType.READ)
+	@Override
+	public boolean hasEnumValues(CustomizableEnumType type, Disease disease) {
+		return !getEnumValues(type, disease).isEmpty();
+	}
+
+	private <T extends CustomizableEnum> T buildCustomizableEnum(CustomizableEnumType type, String value, Language language, Class<T> enumClass) {
 		try {
 			T enumValue = enumClass.getDeclaredConstructor().newInstance();
 			enumValue.setValue(value);
@@ -127,88 +171,59 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		}
 	}
 
-	@Lock(LockType.READ)
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T extends CustomizableEnum> List<T> getEnumValues(CustomizableEnumType type, Disease disease) {
-		Language language = I18nProperties.getUserLanguage();
-		Class<T> enumClass = (Class<T>) type.getEnumClass();
-		Optional<Disease> innerDisease = Optional.of(disease);
-
-		if (!enumValuesByLanguage.get(enumClass).containsKey(language)) {
-			fillLanguageCache(type, enumClass, language);
-		}
-
-		if (!enumValuesByDisease.get(enumClass).containsKey(innerDisease)) {
-			fillDiseaseCache(type, enumClass, innerDisease);
-		}
-
-		List<T> enumValues = new ArrayList<>();
-		enumValuesByLanguage.get(enumClass).get(language).forEach((value, caption) -> {
-			try {
-				T enumValue = enumClass.getDeclaredConstructor().newInstance();
-				enumValue.setValue(value);
-				enumValue.setCaption(caption);
-				enumValue.setProperties(enumProperties.get(type).get(value));
-				enumValues.add(enumValue);
-			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-				throw new RuntimeException(e);
-			}
-		});
-
-		return enumValues.stream()
-			.filter(
-				e -> enumValuesByDisease.get(enumClass).get(innerDisease).contains(e.getValue())
-					|| enumValuesByDisease.get(enumClass).get(Optional.empty()).contains(e.getValue()))
-			.collect(Collectors.toList());
-	}
-
-	@Lock(LockType.READ)
-	@Override
-	public boolean hasEnumValues(CustomizableEnumType type, Disease disease) {
-		return !getEnumValues(type, disease).isEmpty();
-	}
-
 	private synchronized <T extends CustomizableEnum> void fillLanguageCache(CustomizableEnumType type, Class<T> enumClass, Language language) {
 
-		if (!enumValuesByLanguage.get(enumClass).containsKey(language)) {
-			Map<String, String> enumValues = new HashMap<>();
-			for (CustomizableEnumValue customizableEnumValue : enumValueEntities.get(type)) {
-				if (StringUtils.equals(configFacade.getCountryLocale(), language.getLocale().toString())
-					|| CollectionUtils.isEmpty(customizableEnumValue.getTranslations())) {
-					// If the enum value does not have any translations or the user uses the server language,
-					// add the server language to the cache and use the default caption of the enum value
-					enumValues.putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getCaption());
+		// may have already been put by another thread while this one was waiting (synchronized)
+		if (enumValuesByLanguage.get(enumClass).containsKey(language)) {
+			return;
+		}
+
+		boolean isCountryLanguage = StringUtils.equals(configFacade.getCountryLocale(), language.getLocale().toString());
+
+		Map<String, String> languageEnumValues = new HashMap<>();
+		for (CustomizableEnumValue customizableEnumValue : enumValueEntities.get(type)) {
+			// define caption
+			String caption;
+			if (isCountryLanguage || CollectionUtils.isEmpty(customizableEnumValue.getTranslations())) {
+				// If the enum value does not have any translations or the user uses the server language,
+				// add the server language to the cache and use the default caption of the enum value
+				caption = customizableEnumValue.getCaption();
+			} else {
+				// Check whether the list of translations contains the user language; if yes, add that language
+				// to the cache and use its translation; if not, fall back to the default caption of the enum value
+				Optional<CustomizableEnumTranslation> translation = customizableEnumValue.getTranslations()
+					.stream()
+					.filter(t -> t.getLanguageCode().equals(language.getLocale().toString()))
+					.findFirst();
+				if (translation.isPresent()) {
+					caption = translation.get().getValue();
 				} else {
-					// Check whether the list of translations contains the user language; if yes, add that language
-					// to the cache and use its translation; if not, fall back to the default caption of the enum value
-					Optional<CustomizableEnumTranslation> translation = customizableEnumValue.getTranslations()
-						.stream()
-						.filter(t -> t.getLanguageCode().equals(language.getLocale().toString()))
-						.findFirst();
-					if (translation.isPresent()) {
-						enumValues.putIfAbsent(customizableEnumValue.getValue(), translation.get().getValue());
-					} else {
-						enumValues.putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getCaption());
-					}
+					caption = customizableEnumValue.getCaption();
 				}
 			}
-			enumValuesByLanguage.get(enumClass).put(language, enumValues); // has to be put into the actual hash map last
+			languageEnumValues.put(customizableEnumValue.getValue(), caption);
 		}
+		enumValuesByLanguage.get(enumClass).put(language, languageEnumValues); // has to be put into the actual hash map last
 	}
 
-	private synchronized <T extends CustomizableEnum> void fillDiseaseCache(CustomizableEnumType type, Class<T> enumClass, Optional<Disease> disease) {
+	private synchronized <T extends CustomizableEnum> void fillDiseaseCache(
+		CustomizableEnumType type,
+		Class<T> enumClass,
+		Optional<Disease> disease) {
 
-		if (!enumValuesByDisease.get(enumClass).containsKey(disease)) {
-			List<String> filteredEnumValues = enumValueEntities.get(type)
-				.stream()
-				.filter(
-					e -> !disease.isPresent() && CollectionUtils.isEmpty(e.getDiseases())
-							|| e.getDiseases() != null && e.getDiseases().contains(disease.get()))
-				.map(CustomizableEnumValue::getValue)
-				.collect(Collectors.toList());
-			enumValuesByDisease.get(enumClass).put(disease, filteredEnumValues);
+		// may have already been put by another thread while this one was waiting (synchronized)
+		if (enumValuesByDisease.get(enumClass).containsKey(disease)) {
+			return;
 		}
+
+		List<String> diseaseEnumValues = enumValueEntities.get(type).stream().filter(e -> {
+			if (!disease.isPresent()) {
+				return CollectionUtils.isEmpty(e.getDiseases());
+			} else {
+				return e.getDiseases() != null && e.getDiseases().contains(disease.get());
+			}
+		}).map(CustomizableEnumValue::getValue).collect(Collectors.toList());
+		enumValuesByDisease.get(enumClass).put(disease, diseaseEnumValues);
 	}
 
 	@PostConstruct
@@ -223,13 +238,6 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		for (CustomizableEnumType enumType : CustomizableEnumType.values()) {
 			enumValueEntities.putIfAbsent(enumType, new ArrayList<>());
 			enumValues.putIfAbsent(enumType, new ArrayList<>());
-
-			Class<? extends CustomizableEnum> enumClass = enumType.getEnumClass();
-			enumValuesByLanguage.putIfAbsent(enumClass, new ConcurrentHashMap<>()); // access to contains has to be thread-safe
-			enumValuesByDisease.putIfAbsent(enumClass, new ConcurrentHashMap<>());
-
-			// Always add values for no disease because they are relevant in all cases
-			fillDiseaseCache(enumType, enumClass, Optional.empty());
 		}
 
 		// Build list of customizable enums mapped by their enum type; other caches are built on-demand
@@ -245,6 +253,16 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 			enumProperties.putIfAbsent(enumType, new HashMap<>());
 			enumProperties.get(enumType).putIfAbsent(customizableEnumValue.getValue(), customizableEnumValue.getProperties());
 		}
+
+		for (CustomizableEnumType enumType : CustomizableEnumType.values()) {
+
+			Class<? extends CustomizableEnum> enumClass = enumType.getEnumClass();
+			enumValuesByLanguage.putIfAbsent(enumClass, new ConcurrentHashMap<>()); // access to contains has to be thread-safe
+			enumValuesByDisease.putIfAbsent(enumClass, new ConcurrentHashMap<>());
+
+			// Always add values for no disease because they are relevant in all cases
+			fillDiseaseCache(enumType, enumClass, Optional.empty());
+		}
 	}
 
 	private CustomizableEnumValueDto toDto(CustomizableEnumValue source) {
@@ -255,23 +273,6 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 
 		CustomizableEnumValueDto target = new CustomizableEnumValueDto();
 		DtoHelper.fillDto(target, source);
-
-		target.setDataType(source.getDataType());
-		target.setValue(source.getValue());
-		target.setCaption(source.getCaption());
-		target.setTranslations(source.getTranslations());
-		target.setDiseases(source.getDiseases());
-		target.setDescription(source.getDescription());
-		target.setDescriptionTranslations(source.getDescriptionTranslations());
-		target.setProperties(source.getProperties());
-
-		return target;
-	}
-
-	private CustomizableEnumValue fromDto(@NotNull CustomizableEnumValueDto source, boolean checkChangeDate) {
-
-		CustomizableEnumValue target =
-			DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), CustomizableEnumValue::new, checkChangeDate);
 
 		target.setDataType(source.getDataType());
 		target.setValue(source.getValue());
