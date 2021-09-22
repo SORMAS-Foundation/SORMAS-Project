@@ -170,7 +170,8 @@ public class ReceivedDataProcessorHelper {
 					null,
 					null,
 					null,
-					FacilityType.LABORATORY,
+					// todo shouldn't this be FacilityType.LABORATORY?
+					null,
 					sample.getLab(),
 					sample.getLabDetails(),
 					null,
