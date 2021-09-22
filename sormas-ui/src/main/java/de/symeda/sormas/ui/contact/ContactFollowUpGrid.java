@@ -81,8 +81,8 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 	}
 
 	public void setVisitColumns(ContactCriteria criteria) {
-		Date referenceDate = criteria.getFollowUpUntilTo();
-		int interval = criteria.getFollowUpInterval();
+		Date referenceDate = criteria.getFollowUpVisitsTo();
+		int interval = criteria.getFollowUpVisitsInterval();
 
 		setDataProvider(referenceDate, interval - 1);
 		setCriteria(criteria);
