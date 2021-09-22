@@ -946,17 +946,6 @@ public enum UserRight {
 			//			LAB_USER,
 			//			EVENT_OFFICER
 	),
-	USER_DELETE(
-			ADMIN 
-			//			NATIONAL_USER,
-			//			SURVEILLANCE_SUPERVISOR,
-			//          ADMIN_SUPERVISOR,
-			//			CASE_SUPERVISOR,
-			//			CONTACT_SUPERVISOR,
-			//			LAB_USER,
-			//			EVENT_OFFICER,
-			//			SURVEILLANCE_OFFICER
-	),
 	USER_VIEW(
 			ADMIN
 			//			NATIONAL_USER,

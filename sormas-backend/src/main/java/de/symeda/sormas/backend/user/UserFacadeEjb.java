@@ -333,21 +333,6 @@ public class UserFacadeEjb implements UserFacade {
 		return userService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
-	public List<String> deleteUsers(List<String> userUuids) {
-		if (!userService.hasRight(UserRight.USER_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete users.");
-		}
-		List<String> deletedUserUuids = new ArrayList<>();
-		userUuids.forEach(userUuid -> {
-			User user = userService.getByUuid(userUuid);
-			if (user != null) {
-				userService.delete(user);
-				deletedUserUuids.add(userUuid);
-			}
-		});
-		return deletedUserUuids;
-	}
-
 	@Override
 	public List<String> getAllUuids() {
 

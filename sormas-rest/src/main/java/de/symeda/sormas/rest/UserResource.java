@@ -76,10 +76,4 @@ public class UserResource {
 		return FacadeProvider.getUserFacade().getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
-	@POST
-	@Path("/delete")
-	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getUserFacade().deleteUsers(uuids);
-	}
-
 }
