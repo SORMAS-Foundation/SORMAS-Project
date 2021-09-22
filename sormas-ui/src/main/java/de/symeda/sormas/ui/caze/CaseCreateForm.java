@@ -113,6 +113,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox facilityCombo;
 	private ComboBox pointOfEntryDistrictCombo;
 
+	// If a case is created form a TravelEntry, the variable convertedTravelEntry provides the
+	// necessary extra data. This variable is expected to be replaced in the implementation of
+	// issue #5910.
 	private TravelEntryDto convertedTravelEntry;
 
 	//@formatter:off
