@@ -93,7 +93,9 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private Date followUpUntilFrom;
 	private Date followUpUntilTo;
-	private Integer followUpInterval;
+	private Date followUpVisitsFrom;
+	private Date followUpVisitsTo;
+	private Integer followUpVisitsInterval;
 	private Boolean followUpUntilToPrecise;
 	/**
 	 * If yes, the followUpUntilTo filter will search for strict matches instead of a period,
@@ -340,14 +342,6 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public Date getFollowUpUntilTo() {
 		return followUpUntilTo;
-	}
-
-	public Integer getFollowUpInterval() {
-		return followUpInterval;
-	}
-
-	public void setFollowUpInterval(Integer followUpInterval) {
-		this.followUpInterval = followUpInterval;
 	}
 
 	public SymptomJournalStatus getSymptomJournalStatus() {
@@ -674,5 +668,29 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public ContactCriteria reportingUserLike(String reportingUserLike) {
 		this.reportingUserLike = reportingUserLike;
 		return this;
+	}
+
+	public Date getFollowUpVisitsFrom() {
+		return followUpVisitsFrom;
+	}
+
+	public void setFollowUpVisitsFrom(Date followUpVisitsFrom) {
+		this.followUpVisitsFrom = followUpVisitsFrom;
+	}
+
+	public Date getFollowUpVisitsTo() {
+		return followUpVisitsTo;
+	}
+
+	public void setFollowUpVisitsTo(Date followUpVisitsTo) {
+		this.followUpVisitsTo = followUpVisitsTo;
+	}
+
+	public Integer getFollowUpVisitsInterval() {
+		return followUpVisitsInterval;
+	}
+
+	public void setFollowUpVisitsInterval(Integer followUpVisitsInterval) {
+		this.followUpVisitsInterval = followUpVisitsInterval;
 	}
 }
