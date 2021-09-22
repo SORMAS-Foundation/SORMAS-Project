@@ -129,4 +129,11 @@ public class EventResource extends EntityDtoResource {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 	}
+
+	@POST
+	@Path("/delete")
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getEventFacade().deleteEvents(uuids);
+	}
+
 }

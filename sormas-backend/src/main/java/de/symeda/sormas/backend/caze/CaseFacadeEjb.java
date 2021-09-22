@@ -2334,7 +2334,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		Case caze = caseService.getByUuid(caseUuid);
+		deleteCase(caze);
+	}
 
+	private void deleteCase(Case caze) throws ExternalSurveillanceToolException {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
 			List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());
@@ -2351,13 +2354,18 @@ public class CaseFacadeEjb implements CaseFacade {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
 		}
 		List<String> deletedCasesUuids = new ArrayList<>();
-		for (String caseUuid : caseUuids) {
-			try {
-				deleteCase(caseUuid);
-				deletedCasesUuids.add(caseUuid);
-			} catch (ExternalSurveillanceToolException e) {
-				logger.error("The case with uuid:" + caseUuid + "could not be deleted");
-			}
+		List<Case> casesToBeDeleted = caseService.getByUuids(caseUuids);
+		if (casesToBeDeleted != null) {
+			casesToBeDeleted.forEach(caseToBeDeleted -> {
+				if (!caseToBeDeleted.isDeleted()) {
+					try {
+						deleteCase(caseToBeDeleted);
+						deletedCasesUuids.add(caseToBeDeleted.getUuid());
+					} catch (ExternalSurveillanceToolException e) {
+						logger.error("The case with uuid:" + caseToBeDeleted.getUuid() + "could not be deleted");
+					}
+				}
+			});
 		}
 		return deletedCasesUuids;
 	}

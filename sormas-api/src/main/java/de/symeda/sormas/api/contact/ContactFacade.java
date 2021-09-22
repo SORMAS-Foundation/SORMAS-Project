@@ -65,6 +65,8 @@ public interface ContactFacade {
 
 	void deleteContact(String contactUuid);
 
+	List<String> deleteContacts(List<String> contactUuids);
+
 	FollowUpPeriodDto calculateFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite);
 
 	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
