@@ -178,6 +178,13 @@ public abstract class BaseEditActivity<ActivityRootEntity extends AbstractDomain
 		this.storedRootEntity = entity;
 	}
 
+	/**
+	 *
+	 */
+	public void discardStoredRootEntity() {
+		this.storedRootEntity = null;
+	}
+
 	protected String getRootUuid() {
 		if (storedRootEntity != null) {
 			return storedRootEntity.getUuid();

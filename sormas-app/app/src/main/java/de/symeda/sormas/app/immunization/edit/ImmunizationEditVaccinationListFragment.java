@@ -106,6 +106,7 @@ public class ImmunizationEditVaccinationListFragment extends BaseEditFragment<Fr
 	@Override
 	public void onListItemClick(View view, int position, Object item) {
 		VaccinationEntity vaccinationEntity = (VaccinationEntity) item;
+		getBaseEditActivity().discardStoredRootEntity();
 		VaccinationEditActivity.startActivity(getActivity(), vaccinationEntity.getUuid());
 	}
 

@@ -31,6 +31,7 @@ import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -127,7 +128,22 @@ public class VaccinationEditActivity extends BaseEditActivity<VaccinationEntity>
 
             @Override
             public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-                DatabaseHelper.getVaccinationDao().saveAndSnapshot(vaccinationEntity);
+                final VaccinationEntity savedVaccination = DatabaseHelper.getVaccinationDao().saveAndSnapshot(vaccinationEntity);
+                final Immunization immunization = DatabaseHelper.getImmunizationDao().queryUuid(vaccinationEntity.getImmunization().getUuid());
+                final List<VaccinationEntity> vaccinations = immunization.getVaccinations();
+                if (vaccinationEntity.getId() == null) {
+                    vaccinations.add(savedVaccination);
+                } else {
+                    VaccinationEntity vaccinationToReplace = null;
+                    for (VaccinationEntity ve: vaccinations) {
+                        if (ve.getUuid().equals(savedVaccination.getUuid())) {
+                            vaccinationToReplace = ve;
+                        }
+                    }
+                    vaccinations.remove(vaccinationToReplace);
+                    vaccinations.add(savedVaccination);
+                }
+                DatabaseHelper.getImmunizationDao().saveAndSnapshot(immunization);
             }
 
             @Override

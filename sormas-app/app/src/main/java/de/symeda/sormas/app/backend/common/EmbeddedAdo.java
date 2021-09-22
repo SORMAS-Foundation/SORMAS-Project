@@ -29,7 +29,5 @@ public @interface EmbeddedAdo {
 
 	String parentAccessor() default "";
 
-	boolean updateParent() default false;
-
 	boolean nullable() default false;
 }

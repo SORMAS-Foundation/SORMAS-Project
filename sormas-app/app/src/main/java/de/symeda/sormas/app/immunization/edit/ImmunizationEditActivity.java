@@ -233,6 +233,7 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 		ImmunizationSection activeSection = ImmunizationSection.fromOrdinal(getActivePage().getPosition());
 
 		if (activeSection == ImmunizationSection.VACCINATIONS) {
+			discardStoredRootEntity();
 			VaccinationNewActivity.startActivity(getContext(), getRootUuid());
 		}
 	}

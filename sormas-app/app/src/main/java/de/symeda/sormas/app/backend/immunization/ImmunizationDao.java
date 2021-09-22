@@ -232,11 +232,6 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 	public Immunization saveAndSnapshot(final Immunization immunization) throws DaoException {
 
 		Immunization snapshot = super.saveAndSnapshot(immunization);
-		DatabaseHelper.getVaccinationDao()
-			.saveCollectionWithSnapshot(
-				DatabaseHelper.getVaccinationDao().getByImmunization(immunization),
-				immunization.getVaccinations(),
-				immunization);
 
 		return snapshot;
 	}
