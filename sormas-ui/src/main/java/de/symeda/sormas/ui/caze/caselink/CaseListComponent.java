@@ -19,18 +19,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class CaseListComponent extends VerticalLayout {
 
-	private CaseList list;
-
 	public CaseListComponent(PersonReferenceDto personReferenceDto) {
-		CaseCriteria caseCriteria = new CaseCriteria().person(personReferenceDto);
-		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
-		createCaseListComponent(
-			new CaseList(personReferenceDto),
-			I18nProperties.getString(Strings.entityCases),
-			clickEvent -> ControllerProvider.getCaseController().navigateTo(caseCriteria));
-	}
-
-	private void createCaseListComponent(CaseList caseList, String heading, Button.ClickListener clickListener) {
 		setWidth(100, Sizeable.Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -41,18 +30,20 @@ public class CaseListComponent extends VerticalLayout {
 		componentHeader.setWidth(100, Sizeable.Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		Label eventLabel = new Label(heading);
+		Label eventLabel = new Label(I18nProperties.getString(Strings.entityCases));
 		eventLabel.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(eventLabel);
 
-		list = caseList;
-		addComponent(list);
-		list.reload();
+		CaseCriteria caseCriteria = new CaseCriteria().person(personReferenceDto);
+		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
+		CaseList caseList = new CaseList(personReferenceDto);
+		addComponent(caseList);
+		caseList.reload();
 
-		if (!list.isEmpty()) {
+		if (!caseList.isEmpty()) {
 			final Button seeCases = ButtonHelper.createButton(I18nProperties.getCaption(Captions.personLinkToCases));
 			CssStyles.style(seeCases, ValoTheme.BUTTON_PRIMARY);
-			seeCases.addClickListener(clickListener);
+			seeCases.addClickListener(clickEvent -> ControllerProvider.getCaseController().navigateTo(caseCriteria));
 			addComponent(seeCases);
 			setComponentAlignment(seeCases, Alignment.MIDDLE_LEFT);
 		}
