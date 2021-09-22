@@ -92,10 +92,6 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
@@ -104,11 +100,15 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
@@ -130,7 +130,7 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
-import de.symeda.sormas.ui.utils.NumberValidator;
+import de.symeda.sormas.ui.utils.NumberNumericValueValidator;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -816,7 +816,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.VACCINATION);
 		Field vaccinationDoseField = addField(CaseDataDto.VACCINATION_DOSES);
-		vaccinationDoseField.addValidator(new NumberValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
+		vaccinationDoseField
+			.addValidator(new NumberNumericValueValidator(I18nProperties.getValidationError(Validations.vaccineDosesFormat), 1, 10, false));
 		vaccinationDoseField.addValueChangeListener(e -> {
 			if (vaccinationDoseField.getValue() != null) {
 				String value = vaccinationDoseField.getValue().toString();
@@ -901,11 +902,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		jurisdictionHeadingLabel.addStyleName(H3);
 		getContent().addComponent(jurisdictionHeadingLabel, RESPONSIBLE_JURISDICTION_HEADING_LOC);
 
-		ComboBox responsibleRegion = addField(CaseDataDto.RESPONSIBLE_REGION);
+		ComboBox responsibleRegion = addInfrastructureField(CaseDataDto.RESPONSIBLE_REGION);
 		responsibleRegion.setRequired(true);
-		responsibleDistrict = addField(CaseDataDto.RESPONSIBLE_DISTRICT);
+		responsibleDistrict = addInfrastructureField(CaseDataDto.RESPONSIBLE_DISTRICT);
 		responsibleDistrict.setRequired(true);
-		responsibleCommunity = addField(CaseDataDto.RESPONSIBLE_COMMUNITY);
+		responsibleCommunity = addInfrastructureField(CaseDataDto.RESPONSIBLE_COMMUNITY);
 		responsibleCommunity.setNullSelectionAllowed(true);
 		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 
@@ -975,6 +976,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.RESPONSIBLE_REGION,
 			CaseDataDto.RESPONSIBLE_DISTRICT,
 			CaseDataDto.RESPONSIBLE_COMMUNITY,
+			DIFFERENT_PLACE_OF_STAY_JURISDICTION,
 			CaseDataDto.REGION,
 			CaseDataDto.DISTRICT,
 			CaseDataDto.COMMUNITY,
@@ -1629,7 +1631,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		if (newFieldValue.getRegion() != null || newFieldValue.getDistrict() != null || newFieldValue.getCommunity() != null) {
+			boolean readOnly = differentPlaceOfStayJurisdiction.isReadOnly();
+			differentPlaceOfStayJurisdiction.setReadOnly(false);
 			differentPlaceOfStayJurisdiction.setValue(Boolean.TRUE);
+			differentPlaceOfStayJurisdiction.setReadOnly(readOnly);
 		}
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
@@ -1668,7 +1673,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			if (TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
 				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
 				facilityCombo.addItem(noFacilityRef);
+				boolean readOnly = facilityCombo.isReadOnly();
+				facilityCombo.setReadOnly(false);
 				facilityCombo.setValue(noFacilityRef);
+				facilityCombo.setReadOnly(readOnly);
 			} else {
 				FieldHelper.removeItems(facilityCombo);
 			}

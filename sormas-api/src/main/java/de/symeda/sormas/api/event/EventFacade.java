@@ -97,5 +97,5 @@ public interface EventFacade {
 
 	Set<RegionReferenceDto> getAllRegionsRelatedToEventUuids(List<String> uuids);
 
-	void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
+	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 }

@@ -40,7 +40,6 @@ public class TaskService {
         .assignedTo("Surveillance OFFICER - Surveillance Officer")
         .priority("Normal")
         .commentsOnTask(currentTimeMillis + "Comment on task")
-        .commentsOnExecution(currentTimeMillis + "Comment on execution")
         .taskStatus("PENDING")
         .build();
   }
@@ -57,7 +56,6 @@ public class TaskService {
         .assignedTo("Surveillance OFFICER - Surveillance Officer")
         .priority("High")
         .commentsOnTask(currentTimeMillis + "Comment on task")
-        .commentsOnExecution(currentTimeMillis + "Comment on execution")
         .taskStatus("DONE")
         .build();
   }

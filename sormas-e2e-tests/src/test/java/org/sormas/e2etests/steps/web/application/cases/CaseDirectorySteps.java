@@ -83,6 +83,8 @@ public class CaseDirectorySteps implements En {
           String caseUUID = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
           By caseLocator = By.cssSelector(String.format(CASE_RESULTS_UUID_LOCATOR, caseUUID));
+          assertHelpers.assertWithPoll15Second(
+              () -> Truth.assertThat(webDriverHelpers.isElementVisibleWithTimeout(caseLocator, 5)));
           webDriverHelpers.clickOnWebElementBySelector(caseLocator);
         });
 

@@ -99,15 +99,15 @@ import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -413,7 +413,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return QueryHelper.getFirstResult(query);
 	}
 
-	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
+	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria) {
 
 		if (StringUtils.isEmpty(searchTerm)) {
 			return null;
@@ -423,12 +423,22 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> root = cq.from(Case.class);
 
-		Predicate filter = cb.or(
-			cb.equal(cb.lower(root.get(Case.UUID)), searchTerm.toLowerCase()),
-			cb.equal(cb.lower(root.get(Case.EPID_NUMBER)), searchTerm.toLowerCase()),
-			cb.equal(cb.lower(root.get(Case.EXTERNAL_TOKEN)), searchTerm.toLowerCase()),
-			cb.equal(cb.lower(root.get(Case.INTERNAL_TOKEN)), searchTerm.toLowerCase()),
-			cb.equal(cb.lower(root.get(Case.EXTERNAL_ID)), searchTerm.toLowerCase()));
+		Predicate filter = null;
+		if (caseCriteria != null) {
+			final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
+			filter = createCriteriaFilter(caseCriteria, caseQueryContext);
+			// Userfilter
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria()));
+		}
+
+		filter = cb.and(
+			filter,
+			cb.or(
+				cb.equal(cb.lower(root.get(Case.UUID)), searchTerm.toLowerCase()),
+				cb.equal(cb.lower(root.get(Case.EPID_NUMBER)), searchTerm.toLowerCase()),
+				cb.equal(cb.lower(root.get(Case.EXTERNAL_TOKEN)), searchTerm.toLowerCase()),
+				cb.equal(cb.lower(root.get(Case.INTERNAL_TOKEN)), searchTerm.toLowerCase()),
+				cb.equal(cb.lower(root.get(Case.EXTERNAL_ID)), searchTerm.toLowerCase())));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(root.get(Case.REPORT_DATE)));
@@ -1256,6 +1266,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		return inJurisdictionOrOwned(caze) && !sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze);
+	}
+
+	public boolean inJurisdiction(Case caze, User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
+		Root<Case> root = cq.from(Case.class);
+		Predicate inJurisdiction = CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, root), user).inJurisdiction();
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, inJurisdiction));
+		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public boolean inJurisdictionOrOwned(Case caze) {

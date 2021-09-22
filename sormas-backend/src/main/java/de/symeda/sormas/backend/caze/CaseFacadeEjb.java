@@ -127,18 +127,23 @@ import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
@@ -148,10 +153,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -175,6 +176,7 @@ import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -228,25 +230,12 @@ import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.HospitalizationFacadeEjb.HospitalizationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.outbreak.OutbreakService;
-import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
@@ -256,9 +245,22 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.outbreak.OutbreakService;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.AdditionalTest;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTest;
@@ -271,9 +273,9 @@ import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb.SormasToSormasCaseFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoCase;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
@@ -472,8 +474,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm) {
-		return caseService.getUuidByUuidEpidNumberOrExternalId(searchTerm);
+	public String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria) {
+		return caseService.getUuidByUuidEpidNumberOrExternalId(searchTerm, caseCriteria);
 	}
 
 	@Override
@@ -965,12 +967,17 @@ public class CaseFacadeEjb implements CaseFacade {
 				}
 				if (firstPreviousHospitalizations != null) {
 					Optional.ofNullable(firstPreviousHospitalizations.get(exportDto.getHospitalizationId()))
-						.ifPresent(
-							firstPreviousHospitalization -> exportDto.setInitialDetectionPlace(
-								FacilityHelper.buildFacilityString(
-									firstPreviousHospitalization.getHealthFacility().getUuid(),
-									firstPreviousHospitalization.getHealthFacility().getName(),
-									firstPreviousHospitalization.getHealthFacilityDetails())));
+						.ifPresent(firstPreviousHospitalization -> {
+							if (firstPreviousHospitalization.getHealthFacility() != null) {
+								exportDto.setInitialDetectionPlace(
+									FacilityHelper.buildFacilityString(
+										firstPreviousHospitalization.getHealthFacility().getUuid(),
+										firstPreviousHospitalization.getHealthFacility().getName(),
+										firstPreviousHospitalization.getHealthFacilityDetails()));
+							} else {
+								exportDto.setInitialDetectionPlace(I18nProperties.getCaption(Captions.unknown));
+							}
+						});
 					if (StringUtils.isEmpty(exportDto.getInitialDetectionPlace())) {
 						if (!StringUtils.isEmpty(exportDto.getHealthFacility())) {
 							exportDto.setInitialDetectionPlace(exportDto.getHealthFacility());
@@ -1056,7 +1063,10 @@ public class CaseFacadeEjb implements CaseFacade {
 						pseudonymizer.pseudonymizeDto(SymptomsDto.class, visitSymptoms, inJurisdiction, null);
 
 						exportDto.setLastCooperativeVisitSymptoms(SymptomsHelper.buildSymptomsHumanString(visitSymptoms, true, userLanguage));
-						exportDto.setLastCooperativeVisitSymptomatic(visitSymptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+						exportDto.setLastCooperativeVisitSymptomatic(
+							visitSymptoms.getSymptomatic() == null
+								? YesNoUnknown.UNKNOWN
+								: (visitSymptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO));
 					}
 				}
 
@@ -1437,7 +1447,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	public void saveBulkCase(
 		List<String> caseUuidList,
-		CaseBulkEditData updatedCaseBulkEditData,
+		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
 		boolean classificationChange,
 		boolean investigationStatusChange,
@@ -1463,7 +1473,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	public void saveBulkEditWithFacilities(
 		List<String> caseUuidList,
-		CaseBulkEditData updatedCaseBulkEditData,
+		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
 		boolean classificationChange,
 		boolean investigationStatusChange,
@@ -1544,45 +1554,50 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges, boolean checkChangeDate) throws ValidationRuntimeException {
-
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate) {
 		return saveCase(dto, handleChanges, checkChangeDate, true);
 	}
 
-	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean syncShares)
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal)
 		throws ValidationRuntimeException {
 
-		Case caze = caseService.getByUuid(dto.getUuid());
-		CaseDataDto existingCaseDto = handleChanges ? toDto(caze) : null;
+		Case existingCase = caseService.getByUuid(dto.getUuid());
 
-		return caseSave(dto, handleChanges, caze, existingCaseDto, checkChangeDate, syncShares);
+		if (internal && existingCase != null && !caseService.isCaseEditAllowed(existingCase)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
+		}
+
+		CaseDataDto existingCaseDto = handleChanges ? toDto(existingCase) : null;
+
+		return caseSave(dto, handleChanges, existingCase, existingCaseDto, checkChangeDate, internal);
 	}
 
 	private CaseDataDto caseSave(
-		CaseDataDto dto,
+		@Valid CaseDataDto dto,
 		boolean handleChanges,
-		Case caze,
+		Case existingCaze,
 		CaseDataDto existingCaseDto,
 		boolean checkChangeDate,
-		boolean syncShares) {
+		boolean syncShares)
+		throws ValidationRuntimeException {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
-		restorePseudonymizedDto(dto, caze, existingCaseDto);
+		restorePseudonymizedDto(dto, existingCaze, existingCaseDto);
 
 		validate(dto);
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(dto.getPerson());
 
-		caze = fillOrBuildEntity(dto, caze, checkChangeDate);
+		existingCaze = fillOrBuildEntity(dto, existingCaze, checkChangeDate);
 
 		// Set version number on a new case
-		if (caze.getCreationDate() == null && StringUtils.isEmpty(dto.getCreationVersion())) {
-			caze.setCreationVersion(InfoProvider.get().getVersion());
+		if (existingCaze.getCreationDate() == null && StringUtils.isEmpty(dto.getCreationVersion())) {
+			existingCaze.setCreationVersion(InfoProvider.get().getVersion());
 		}
 
-		doSave(caze, handleChanges, existingCaseDto, syncShares);
+		doSave(existingCaze, handleChanges, existingCaseDto, syncShares);
 
-		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(existingCaze, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	public void syncSharesAsync(ShareTreeCriteria criteria) {
@@ -2138,33 +2153,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			User taskAssignee = task.getAssigneeUser();
-			boolean mismatch = false;
 
-			if (taskAssignee == null) {
-				// no one is assigned so we skip detailed checks and go directly to reassignment.
-				mismatch = true;
-			} else if (!forceReassignment) {
-				boolean responsibleRegionMismatch = !DataHelper.isSame(taskAssignee.getRegion(), caze.getResponsibleRegion());
-				boolean regionMismatch = !DataHelper.isSame(taskAssignee.getRegion(), caze.getRegion());
-
-				boolean responsibleDistrictMismatch = !DataHelper.isSame(taskAssignee.getDistrict(), caze.getResponsibleDistrict());
-				boolean districtMismatch = !DataHelper.isSame(taskAssignee.getDistrict(), caze.getDistrict());
-
-				boolean responsibleCommunityMismatch = !DataHelper.isSame(taskAssignee.getCommunity(), caze.getResponsibleCommunity());
-				boolean communityMismatch = !DataHelper.isSame(taskAssignee.getCommunity(), caze.getCommunity());
-
-				boolean facilityMismatch = !DataHelper.isSame(taskAssignee.getHealthFacility(), caze.getHealthFacility());
-
-				mismatch = responsibleRegionMismatch
-					|| responsibleDistrictMismatch
-					|| responsibleCommunityMismatch
-					|| regionMismatch
-					|| districtMismatch
-					|| communityMismatch
-					|| facilityMismatch;
-			}
-
-			if (forceReassignment || mismatch) {
+			if (forceReassignment || taskAssignee == null || !caseService.inJurisdiction(caze, taskAssignee)) {
 				// if there is any mismatch between the jurisdiction of the case and the assigned user,
 				// we need to reassign the tasks
 				assignOfficerOrSupervisorToTask(caze, task);
@@ -2354,6 +2344,22 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		caseService.delete(caze);
+	}
+
+	public List<String> deleteCases(List<String> caseUuids) {
+		if (!userService.hasRight(UserRight.CASE_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
+		}
+		List<String> deletedCasesUuids = new ArrayList<>();
+		for (String caseUuid : caseUuids) {
+			try {
+				deleteCase(caseUuid);
+				deletedCasesUuids.add(caseUuid);
+			} catch (ExternalSurveillanceToolException e) {
+				logger.error("The case with uuid:" + caseUuid + "could not be deleted");
+			}
+		}
+		return deletedCasesUuids;
 	}
 
 	@Override
@@ -3608,17 +3614,16 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
-			resultMap.values().stream().forEach(caseFollowUpDto -> {
+			for (CaseFollowUpDto caseFollowUpDto : resultMap.values()) {
 				caseFollowUpDto.initVisitSize(interval + 1);
-
 				pseudonymizer.pseudonymizeDto(CaseFollowUpDto.class, caseFollowUpDto, caseFollowUpDto.getInJurisdiction(), null);
-			});
+			}
 
-			visits.stream().forEach(v -> {
+			for (Object[] v : visits) {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
-				VisitResultDto result = getVisitResult((VisitStatus) v[2], (VisitOrigin) v[3], (boolean) v[4]);
+				VisitResultDto result = getVisitResult((VisitStatus) v[2], (VisitOrigin) v[3], (Boolean) v[4]);
 				resultMap.get(v[0]).getVisitResults()[day - 1] = result;
-			});
+			}
 		}
 
 		return resultList;
@@ -3737,7 +3742,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	 * @return list of duplicate cases
 	 */
 	@Override
-	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson, int reportDateThreshold) {
+	public List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson, int reportDateThreshold) {
 
 		CaseDataDto searchCaze = casePerson.getCaze();
 		PersonDto searchPerson = casePerson.getPerson();
@@ -3856,7 +3861,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CasePersonDto> getDuplicates(CasePersonDto casePerson) {
+	public List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson) {
 		return getDuplicates(casePerson, 0);
 	}
 
@@ -3872,7 +3877,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		caseService.updateExternalData(externalData);
 	}
 

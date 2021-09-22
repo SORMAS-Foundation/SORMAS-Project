@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.infrastructure.continent;
 
 import java.util.ArrayList;
@@ -18,8 +33,11 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.continent.ContinentCriteria;
@@ -31,6 +49,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
@@ -51,6 +70,8 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	private CountryService countryService;
 	@EJB
 	private SubcontinentService subcontinentService;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfiguration;
 
 	public static ContinentReferenceDto toReferenceDto(Continent entity) {
 		if (entity == null) {
@@ -89,6 +110,13 @@ public class ContinentFacadeEjb implements ContinentFacade {
 		final Country country = countryService.getByUuid(countryReferenceDto.getUuid());
 		final Subcontinent subcontinent = country.getSubcontinent();
 		return subcontinent != null ? toReferenceDto(subcontinent.getContinent()) : null;
+	}
+
+	@Override
+	public Page<ContinentIndexDto> getIndexPage(ContinentCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<ContinentIndexDto> continentIndexList = getIndexList(criteria, offset, size, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(continentIndexList, offset, size, totalElementCount);
 	}
 
 	@Override
@@ -145,6 +173,11 @@ public class ContinentFacadeEjb implements ContinentFacade {
 
 	@Override
 	public void dearchive(String uuid) {
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
+
 		Continent continent = continentService.getByUuid(uuid);
 		if (continent != null) {
 			continent.setArchived(false);
@@ -180,12 +213,16 @@ public class ContinentFacadeEjb implements ContinentFacade {
 	}
 
 	@Override
-	public ContinentDto save(ContinentDto dto) {
+	public ContinentDto save(@Valid ContinentDto dto) {
 		return save(dto, false);
 	}
 
 	@Override
-	public ContinentDto save(ContinentDto dto, boolean allowMerge) {
+	public ContinentDto save(@Valid ContinentDto dto, boolean allowMerge) {
+
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
 
 		Continent continent = continentService.getByUuid(dto.getUuid());
 
@@ -246,16 +283,13 @@ public class ContinentFacadeEjb implements ContinentFacade {
 
 	public List<ContinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
 		return continentService.getByExternalId(externalId, includeArchived)
-				.stream()
-				.map(ContinentFacadeEjb::toReferenceDto)
-				.collect(Collectors.toList());
+			.stream()
+			.map(ContinentFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
 	}
 
 	public List<ContinentReferenceDto> getReferencesByName(String name, boolean includeArchived) {
-		return continentService.getByDefaultName(name, includeArchived)
-				.stream()
-				.map(ContinentFacadeEjb::toReferenceDto)
-				.collect(Collectors.toList());
+		return continentService.getByDefaultName(name, includeArchived).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	private Continent fillOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate) {

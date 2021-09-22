@@ -77,9 +77,14 @@
 		<class>de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent</class>
 		<class>de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequest</class>
 		<class>de.symeda.sormas.backend.customizableenum.CustomizableEnumValue</class>
-		<class>de.symeda.sormas.backend.immunization.Immunization</class>
+		<class>de.symeda.sormas.backend.immunization.entity.BaseImmunization</class>
+		<class>de.symeda.sormas.backend.immunization.entity.Immunization</class>
+		<class>de.symeda.sormas.backend.immunization.entity.DirectoryImmunization</class>
 		<class>de.symeda.sormas.backend.travelentry.TravelEntry</class>
 		<class>de.symeda.sormas.backend.vaccination.VaccinationEntity</class>
+		<class>de.symeda.sormas.backend.vaccination.LastVaccineType</class>
+		<class>de.symeda.sormas.backend.vaccination.LastVaccinationDate</class>
+		<class>de.symeda.sormas.backend.vaccination.FirstVaccinationDate</class>
 		<class>de.symeda.sormas.backend.labmessage.TestReport</class>
 
 

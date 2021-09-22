@@ -20,6 +20,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -91,7 +92,11 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 		if (entity == null) {
 			return null;
 		}
-		return new TravelEntryReferenceDto(entity.getUuid(), entity.getPerson().getFirstName(), entity.getExternalId());
+		return new TravelEntryReferenceDto(
+			entity.getUuid(),
+			entity.getExternalId(),
+			entity.getPerson().getFirstName(),
+			entity.getPerson().getLastName());
 	}
 
 	@Override
@@ -240,7 +245,7 @@ public class TravelEntryFacadeEjb implements TravelEntryFacade {
 	}
 
 	@Override
-	public TravelEntryDto save(TravelEntryDto dto) {
+	public TravelEntryDto save(@Valid TravelEntryDto dto) {
 		TravelEntry existingTravelEntry = dto.getUuid() != null ? travelEntryService.getByUuid(dto.getUuid()) : null;
 		TravelEntryDto existingDto = toDto(existingTravelEntry);
 

@@ -28,11 +28,11 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
@@ -93,6 +93,9 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private Date followUpUntilFrom;
 	private Date followUpUntilTo;
+	private Date followUpVisitsFrom;
+	private Date followUpVisitsTo;
+	private Integer followUpVisitsInterval;
 	private Boolean followUpUntilToPrecise;
 	/**
 	 * If yes, the followUpUntilTo filter will search for strict matches instead of a period,
@@ -665,5 +668,29 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public ContactCriteria reportingUserLike(String reportingUserLike) {
 		this.reportingUserLike = reportingUserLike;
 		return this;
+	}
+
+	public Date getFollowUpVisitsFrom() {
+		return followUpVisitsFrom;
+	}
+
+	public void setFollowUpVisitsFrom(Date followUpVisitsFrom) {
+		this.followUpVisitsFrom = followUpVisitsFrom;
+	}
+
+	public Date getFollowUpVisitsTo() {
+		return followUpVisitsTo;
+	}
+
+	public void setFollowUpVisitsTo(Date followUpVisitsTo) {
+		this.followUpVisitsTo = followUpVisitsTo;
+	}
+
+	public Integer getFollowUpVisitsInterval() {
+		return followUpVisitsInterval;
+	}
+
+	public void setFollowUpVisitsInterval(Integer followUpVisitsInterval) {
+		this.followUpVisitsInterval = followUpVisitsInterval;
 	}
 }

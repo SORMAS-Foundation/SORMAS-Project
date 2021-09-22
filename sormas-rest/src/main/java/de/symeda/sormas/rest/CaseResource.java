@@ -145,7 +145,7 @@ public class CaseResource extends EntityDtoResource {
 
 	@POST
 	@Path("/externalData")
-	public Response updateExternalData(List<ExternalDataDto> externalData) {
+	public Response updateExternalData(@Valid List<ExternalDataDto> externalData) {
 		try {
 			FacadeProvider.getCaseFacade().updateExternalData(externalData);
 			return Response.status(Response.Status.OK).build();
@@ -170,6 +170,12 @@ public class CaseResource extends EntityDtoResource {
 	@Experimental
 	public CaseDataDto postUpdate(@PathParam("uuid") String uuid, JsonNode caseDataDtoJson) throws Exception {
 		return FacadeProvider.getCaseFacade().postUpdate(uuid, caseDataDtoJson);
+	}
+
+	@POST
+	@Path("/delete")
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getCaseFacade().deleteCases(uuids);
 	}
 
 }

@@ -76,14 +76,16 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
@@ -91,16 +93,19 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.location.LocationFacadeEjb;
-import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
@@ -222,10 +227,15 @@ public class EventFacadeEjb implements EventFacade {
 		return saveEvent(dto, true, true);
 	}
 
-	public EventDto saveEvent(@NotNull EventDto dto, boolean checkChangeDate, boolean syncShares) {
+	public EventDto saveEvent(@NotNull EventDto dto, boolean checkChangeDate, boolean internal) {
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
+
+		if (internal && existingEvent != null && !eventService.isEventEditAllowed(existingEvent)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventNotEditable));
+		}
+
 		EventDto existingDto = toDto(existingEvent);
 
 		restorePseudonymizedDto(dto, existingEvent, existingDto, pseudonymizer);
@@ -237,7 +247,7 @@ public class EventFacadeEjb implements EventFacade {
 		Event event = fromDto(dto, checkChangeDate);
 		eventService.ensurePersisted(event);
 
-		onEventChange(toDto(event), syncShares);
+		onEventChange(toDto(event), internal);
 
 		return convertToDto(event, pseudonymizer);
 	}
@@ -1235,7 +1245,7 @@ public class EventFacadeEjb implements EventFacade {
 	}
 
 	@Override
-	public void updateExternalData(List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
+	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		eventService.updateExternalData(externalData);
 	}
 

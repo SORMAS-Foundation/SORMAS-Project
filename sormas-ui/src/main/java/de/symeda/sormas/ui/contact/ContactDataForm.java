@@ -231,7 +231,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		initContactDateValidation(firstContactDate, lastContactDate, multiDayContact);
 
 		DateField reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
-		((ComboBox) addField(ContactDto.REPORTING_DISTRICT)).addItems(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
+		addInfrastructureField(ContactDto.REPORTING_DISTRICT).addItems(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
 		addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE, ComboBox.class);
 		TextField contactIdentificationSourceDetails = addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, TextField.class);
 		contactIdentificationSourceDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
@@ -565,6 +565,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			ContactDto.OVERWRITE_FOLLOW_UP_UTIL,
 			Arrays.asList(ContactDto.FOLLOW_UP_UNTIL),
 			Arrays.asList(Boolean.TRUE));
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(ContactDto.FOLLOW_UP_UNTIL, ContactDto.OVERWRITE_FOLLOW_UP_UTIL),
+			ContactDto.FOLLOW_UP_STATUS,
+			Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.COMPLETED, FollowUpStatus.FOLLOW_UP, FollowUpStatus.LOST),
+			true);
 
 		initializeVisibilitiesAndAllowedVisibilities();
 
@@ -711,6 +717,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		boolean followUpVisible = getValue() != null && statusField.isVisible();
 		if (followUpVisible && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
 			FollowUpStatus followUpStatus = statusField.getValue();
+			tfExpectedFollowUpUntilDate.setVisible(followUpStatus != FollowUpStatus.NO_FOLLOW_UP);
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 
 				Button cancelButton = ButtonHelper.createButton(Captions.contactCancelFollowUp, event -> {

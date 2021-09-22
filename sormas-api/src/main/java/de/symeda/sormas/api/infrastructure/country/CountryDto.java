@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -19,11 +20,13 @@ public class CountryDto extends EntityDto {
 	public static final String UNO_CODE = "unoCode";
 	public static final String SUBCONTINENT = "subcontinent";
 
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String defaultName;
+	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
 	private String externalId;
-	@Size(min = 2, max = 3)
+	@Size(min = 2, max = 3, message = Validations.textSizeNotInRange)
 	private String isoCode;
-	@Size(min = 1, max = 3)
+	@Size(min = 1, max = 3, message = Validations.textSizeNotInRange)
 	private String unoCode;
 	private boolean archived;
 	private SubcontinentReferenceDto subcontinent;

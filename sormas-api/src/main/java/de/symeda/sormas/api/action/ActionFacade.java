@@ -23,6 +23,7 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -47,9 +48,17 @@ public interface ActionFacade {
 
 	List<ActionDto> getActionList(ActionCriteria criteria, Integer first, Integer max);
 
+	List<ActionDto> getActionList(ActionCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
 	List<EventActionIndexDto> getEventActionList(EventCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	Page<EventActionIndexDto> getEventActionIndexPage(EventCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties);
+
+	Page<ActionDto> getActionPage(ActionCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	List<EventActionExportDto> getEventActionExportList(EventCriteria criteria, Integer first, Integer max);
 
-	long countEventAction(EventCriteria criteria);
+	long countEventActions(EventCriteria criteria);
+
+	long countActions(ActionCriteria criteria);
 }

@@ -119,11 +119,11 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			cbRegion.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 				if (Objects.nonNull(region)) {
-					cbArea.setValue(FacadeProvider.getRegionFacade().getRegionByUuid(region.getUuid()).getArea());
+					cbArea.setValue(FacadeProvider.getRegionFacade().getByUuid(region.getUuid()).getArea());
 				}
 			});
 			if (currentUserRegion != null) {
-				final AreaReferenceDto area = FacadeProvider.getRegionFacade().getRegionByUuid(currentUserRegion.getUuid()).getArea();
+				final AreaReferenceDto area = FacadeProvider.getRegionFacade().getByUuid(currentUserRegion.getUuid()).getArea();
 				cbArea.setValue(area);
 				if (currentUserRegion != null) {
 					cbArea.setEnabled(false);

@@ -20,25 +20,27 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
@@ -70,9 +72,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 			return null;
 		}
 
-		PointOfEntryReferenceDto ref =
-			new PointOfEntryReferenceDto(entity.getUuid(), entity.toString(), entity.getPointOfEntryType(), entity.getExternalID());
-		return ref;
+		return new PointOfEntryReferenceDto(entity.getUuid(), entity.toString(), entity.getPointOfEntryType(), entity.getExternalID());
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 		return service.getAllByDistrict(district, includeOthers)
 			.stream()
 			.filter(p -> !p.isArchived())
-			.map(p -> toReferenceDto(p))
+			.map(PointOfEntryFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -145,7 +145,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 	@Override
 	public List<PointOfEntryDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -157,6 +157,13 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	@Override
+	public Page<PointOfEntryDto> getIndexPage(PointOfEntryCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<PointOfEntryDto> pointOfEntryList = getIndexList(criteria, offset, size, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(pointOfEntryList, offset, size, totalElementCount);
+	}
+
+	@Override
 	public List<PointOfEntryReferenceDto> getByExternalId(String name, boolean includeArchivedEntities) {
 		return service.getByExternalId(name, includeArchivedEntities)
 			.stream()
@@ -165,12 +172,12 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 	}
 
 	@Override
-	public void save(PointOfEntryDto dto) throws ValidationRuntimeException {
-		save(dto, false);
+	public PointOfEntryDto save(@Valid PointOfEntryDto dto) throws ValidationRuntimeException {
+		return save(dto, false);
 	}
 
 	@Override
-	public void save(PointOfEntryDto dto, boolean allowMerge) throws ValidationRuntimeException {
+	public PointOfEntryDto save(@Valid PointOfEntryDto dto, boolean allowMerge) throws ValidationRuntimeException {
 
 		validate(dto);
 
@@ -195,6 +202,7 @@ public class PointOfEntryFacadeEjb implements PointOfEntryFacade {
 
 		pointOfEntry = fillOrBuildEntity(dto, pointOfEntry, true);
 		service.ensurePersisted(pointOfEntry);
+		return toDto(pointOfEntry);
 	}
 
 	@Override

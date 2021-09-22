@@ -58,7 +58,7 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 		FacilityDto facility = FacilityDto.build();
 		facility.setName("facility");
 		facility.setType(FacilityType.LABORATORY); // only lab can be saved without region
-		getFacilityFacade().saveFacility(facility);
+		getFacilityFacade().save(facility);
 		getFacilityService().doFlush();
 
 		Date date = new Date();
@@ -72,7 +72,7 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 		facility = FacilityDto.build();
 		facility.setName(facilityName);
 		facility.setType(FacilityType.LABORATORY);
-		getFacilityFacade().saveFacility(facility);
+		getFacilityFacade().save(facility);
 		results = getFacilityFacade().getAllWithoutRegionAfter(date);
 
 		// List should have one entry
@@ -124,11 +124,11 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 		getFacilityFacade().archive(f1.getUuid());
 		f1 = getFacilityFacade().getByUuid(f1.getUuid());
 		f1.setType(FacilityType.LABORATORY);
-		getFacilityFacade().saveFacility(f1);
+		getFacilityFacade().save(f1);
 		FacilityDto f2 = creator.createFacility("f2", rdcf.region, rdcf.district, rdcf.community);
 		f2 = getFacilityFacade().getByUuid(f2.getUuid());
 		f2.setType(FacilityType.LABORATORY);
-		getFacilityFacade().saveFacility(f2);
+		getFacilityFacade().save(f2);
 
 		assertEquals(1, getFacilityFacade().getAllActiveLaboratories(false).size());
 	}
