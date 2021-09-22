@@ -12,11 +12,11 @@ repositories {
 }
 
 dependencies {
-	implementation("io.qameta.allure:allure-cucumber4-jvm:$allureCucumber4JvmVersion")
-    implementation "org.junit.jupiter:junit-jupiter:5.4.2"
-    testImplementation("io.qameta.allure:allure-java-commons:$allureJavaCommonsVersion")
-	testImplementation("io.qameta.allure:allure-rest-assured:$allureRestAssureVersion")
-	testImplementation("ru.yandex.qatools.allure:allure-java-adaptor-api:$allureVersion")
+	implementation "org.junit.jupiter:junit-jupiter:5.4.2"
+	implementation("io.qameta.allure:allure-cucumber4-jvm:$allureVersion")
+    testImplementation("io.qameta.allure:allure-java-commons:$allureVersion")
+	testImplementation("io.qameta.allure:allure-rest-assured:$allureVersion")
+	testImplementation("ru.yandex.qatools.allure:allure-java-adaptor-api:$allureJavaAdapterVersion")
 
 	implementation("io.github.prashant-ramcharan:courgette-jvm:$ioGithubPrashantRamcharan") {
 		exclude group: "org.testng", module: "testng"
