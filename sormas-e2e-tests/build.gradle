@@ -104,17 +104,17 @@ task copyToGeneratedReport(type: Copy) {
 	into file("$buildDir/allure-results/history")
 }
 
-task copyCategoriesJson(type: Copy) {
-	from file("src/test/resources/allurefiles/categories.json")
-	into file("$buildDir/allure-results")
-}
-task copyEnvironmentProperties(type: Copy) {
-	dependsOn "copyCategoriesJson"
+task copyAllureFiles(type: Copy) {
+	copy {
+		from file("src/test/resources/allurefiles/categories.json")
+		into file("$buildDir/allure-results")
+	}
 
-	from file("$buildDir/resources/test/allurefiles/environment.properties")
-	into file("$buildDir/allure-results")
+	copy {
+		from file("$buildDir/resources/test/allurefiles/environment.properties")
+		into file("$buildDir/allure-results")
+	}
 }
-
 task createAllureReport(type: Exec) {
 	workingDir "."
 	def isWindows = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("windows")
@@ -138,6 +138,6 @@ test {
 compileJava.dependsOn format
 startTests.finalizedBy copyToGeneratedReport
 copyToGeneratedReport.finalizedBy test
-test.finalizedBy copyEnvironmentProperties
-copyEnvironmentProperties.finalizedBy createAllureReport
+test.finalizedBy copyAllureFiles
+copyAllureFiles.finalizedBy createAllureReport
 //createAllureReport.finalizedBy copyGeneratedReport
