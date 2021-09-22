@@ -1829,6 +1829,7 @@ public interface Captions {
 	String SormasToSormasShareRequest_dataType = "SormasToSormasShareRequest.dataType";
 	String SormasToSormasShareRequest_events = "SormasToSormasShareRequest.events";
 	String SormasToSormasShareRequest_organizationName = "SormasToSormasShareRequest.organizationName";
+	String SormasToSormasShareRequest_ownershipHandedOver = "SormasToSormasShareRequest.ownershipHandedOver";
 	String SormasToSormasShareRequest_senderName = "SormasToSormasShareRequest.senderName";
 	String SormasToSormasShareRequest_status = "SormasToSormasShareRequest.status";
 	String SormasToSormasShareRequest_uuid = "SormasToSormasShareRequest.uuid";

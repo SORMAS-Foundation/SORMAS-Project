@@ -404,7 +404,6 @@ public class TestDataCreator {
 		return caze;
 	}
 
-
 	public ImmunizationDto createImmunization(
 		Disease disease,
 		PersonReferenceDto person,
@@ -438,7 +437,14 @@ public class TestDataCreator {
 	}
 
 	@NotNull
-	private ImmunizationDto createImmunizationDto(Disease disease, PersonReferenceDto person, UserReferenceDto reportingUser, ImmunizationStatus immunizationStatus, MeansOfImmunization meansOfImmunization, ImmunizationManagementStatus immunizationManagementStatus, RDCF rdcf) {
+	private ImmunizationDto createImmunizationDto(
+		Disease disease,
+		PersonReferenceDto person,
+		UserReferenceDto reportingUser,
+		ImmunizationStatus immunizationStatus,
+		MeansOfImmunization meansOfImmunization,
+		ImmunizationManagementStatus immunizationManagementStatus,
+		RDCF rdcf) {
 		ImmunizationDto immunization = new ImmunizationDto();
 		immunization.setUuid(DataHelper.createUuid());
 		immunization.setDisease(disease);
@@ -546,6 +552,14 @@ public class TestDataCreator {
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Disease disease) {
 		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease, null);
+	}
+
+	public ContactDto createContact(
+		UserReferenceDto reportingUser,
+		PersonReferenceDto contactPerson,
+		Disease disease,
+		Consumer<ContactDto> customConfig) {
+		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease, null, customConfig);
 	}
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Date reportDateTime) {

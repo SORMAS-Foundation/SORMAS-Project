@@ -15,6 +15,11 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -28,7 +33,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
-public class SormasToSormasContactPreview implements HasUuid, Serializable {
+public class SormasToSormasContactPreview extends PseudonymizableDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = 6624342608405520944L;
 
@@ -47,7 +52,6 @@ public class SormasToSormasContactPreview implements HasUuid, Serializable {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 
-	private String uuid;
 	private Date reportDateTime;
 	private Disease disease;
 	private String diseaseDetails;
@@ -58,19 +62,16 @@ public class SormasToSormasContactPreview implements HasUuid, Serializable {
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@PersonalData
+	@SensitiveData
 	private CommunityReferenceDto community;
 
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private SormasToSormasPersonPreview person;
 
+	@EmbeddedPersonalData
 	private CaseReferenceDto caze;
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 
 	public Date getReportDateTime() {
 		return reportDateTime;

@@ -50,6 +50,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
+import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
@@ -65,7 +66,6 @@ import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
-import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
@@ -100,8 +100,6 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb;
-	@EJB
-	protected SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 	@EJB
 	private SormasToSormasShareInfoFacadeEjbLocal shareInfoFacade;
 	@EJB
@@ -162,6 +160,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		if (options.isHandOverOwnership()) {
 			validateOwnership(entities);
+			ensureConsistentOptions(options);
 		}
 
 		validateEntitiesBeforeShare(entities, options.isHandOverOwnership());
@@ -183,6 +182,17 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			.post(options.getOrganization().getId(), requestEndpoint, new ShareRequestData<>(requestUuid, previewsToSend, originInfo), null);
 
 		saveNewShareInfo(currentUser.toReference(), options, requestUuid, ShareRequestStatus.PENDING, entities, associatedEntities);
+	}
+
+	protected void ensureConsistentOptions(SormasToSormasOptionsDto options) {
+		if (options.isHandOverOwnership()) {
+			options.setPseudonymizePersonalData(false);
+			options.setPseudonymizeSensitiveData(false);
+
+			if (SormasToSormasCaseDto[].class.isAssignableFrom(getShareDataClass())) {
+				options.setWithSamples(true);
+			}
+		}
 	}
 
 	@Override
@@ -225,6 +235,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	public void sendRejectShareRequest(String uuid) throws SormasToSormasException {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
 
+		if (shareRequest.getStatus() != ShareRequestStatus.PENDING) {
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRejectNotPending);
+		}
+
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
 		sormasToSormasRestClient.post(organizationId, requestRejectEndpoint, uuid, null);
 
@@ -239,6 +253,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	public void rejectShareRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException {
 		String requestUuid = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedRequestUuid, String.class);
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByRequestUuid(requestUuid);
+
+		if (shareInfo.getRequestStatus() != ShareRequestStatus.PENDING) {
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRejectNotPending);
+		}
+
 		shareInfo.setRequestStatus(ShareRequestStatus.REJECTED);
 		shareInfo.setOwnershipHandedOver(false);
 		shareInfoService.ensurePersisted(shareInfo);
@@ -249,6 +268,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		Exception.class })
 	public void acceptShareRequest(String uuid) throws SormasToSormasException, SormasToSormasValidationException {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
+
+		if (shareRequest.getStatus() != ShareRequestStatus.PENDING) {
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasAcceptNotPending);
+		}
+
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
 
 		SormasToSormasEncryptedDataDto encryptedData =
@@ -284,6 +308,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		List<ADO> entities = getEntityService().getByUuids(entityUuids);
 
 		validateEntitiesBeforeShare(entities, options.isHandOverOwnership());
+		ensureConsistentOptions(options);
 
 		List<S> entitiesToSend = new ArrayList<>();
 		List<AssociatedEntityWrapper<?>> associatedEntities = new ArrayList<>();
@@ -660,6 +685,12 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		List<SormasToSormasShareTree> shares = new ArrayList<>();
 		List<SormasToSormasShareTree> reShareTrees = new ArrayList<>();
 
+		LOGGER.info(
+			"Get shares for {} from {} by {}",
+			criteria.getEntityUuid(),
+			ownOrganizationId,
+			criteria.getOriginInfo() != null ? criteria.getOriginInfo().getOrganizationId() : ownOrganizationId);
+
 		walkShareTree(criteria, (entity, originInfo, parentCriteria) -> {
 			try {
 				SormasToSormasEncryptedDataDto encryptedShares = sormasToSormasRestClient
@@ -724,9 +755,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		}
 
 		for (SormasToSormasShareInfo s : entityShares) {
-			boolean noForward =
-				(s.getRequestStatus() != null && s.getRequestStatus() != ShareRequestStatus.ACCEPTED)
-					|| s.getOrganizationId().equals(criteria.getExceptedOrganizationId());
+			boolean noForward = (s.getRequestStatus() != null && s.getRequestStatus() != ShareRequestStatus.ACCEPTED)
+				|| s.getOrganizationId().equals(criteria.getExceptedOrganizationId());
 			if (originInfo != null) {
 				noForward = noForward || s.getOrganizationId().equals(originInfo.getOrganizationId());
 			}

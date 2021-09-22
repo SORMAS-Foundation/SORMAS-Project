@@ -154,7 +154,7 @@ public class ShareDataBuilderHelper {
 		return personPreview;
 	}
 
-	public SormasToSormasContactPreview getContactPreview(Contact contact) {
+	public SormasToSormasContactPreview getContactPreview(Contact contact, Pseudonymizer pseudonymizer) {
 		SormasToSormasContactPreview contactPreview = new SormasToSormasContactPreview();
 
 		contactPreview.setUuid(contact.getUuid());
@@ -173,6 +173,8 @@ public class ShareDataBuilderHelper {
 		contactPreview.setPerson(getPersonPreview(contact.getPerson()));
 
 		contactPreview.setCaze(CaseFacadeEjb.toReferenceDto(contact.getCaze()));
+
+		pseudonymizer.pseudonymizeDto(SormasToSormasContactPreview.class, contactPreview, false, null);
 
 		return contactPreview;
 	}

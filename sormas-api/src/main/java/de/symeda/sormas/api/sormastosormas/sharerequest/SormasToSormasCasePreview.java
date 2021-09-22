@@ -15,6 +15,11 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +37,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 
-public class SormasToSormasCasePreview implements HasUuid, Serializable {
+public class SormasToSormasCasePreview extends PseudonymizableDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -5346989433141136006L;
 	public static final String I18N_PREFIX = "CaseData";
@@ -56,9 +61,9 @@ public class SormasToSormasCasePreview implements HasUuid, Serializable {
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 
-	private String uuid;
 	private Date reportDate;
 	private Disease disease;
+	@SensitiveData
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
 	private CaseClassification caseClassification;
@@ -68,24 +73,28 @@ public class SormasToSormasCasePreview implements HasUuid, Serializable {
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@PersonalData
+	@SensitiveData
 	private CommunityReferenceDto community;
 	private FacilityType facilityType;
+	@PersonalData
+	@SensitiveData
 	private FacilityReferenceDto healthFacility;
+	@PersonalData
+	@SensitiveData
 	private String healthFacilityDetails;
+	@PersonalData
+	@SensitiveData
 	private PointOfEntryReferenceDto pointOfEntry;
+	@PersonalData
+	@SensitiveData
 	private String pointOfEntryDetails;
 
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private SormasToSormasPersonPreview person;
 
 	private List<SormasToSormasContactPreview> contacts;
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 
 	public Date getReportDate() {
 		return reportDate;

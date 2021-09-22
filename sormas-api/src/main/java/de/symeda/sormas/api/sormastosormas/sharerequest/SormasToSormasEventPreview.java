@@ -15,6 +15,11 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +28,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.location.LocationDto;
 
-public class SormasToSormasEventPreview implements HasUuid, Serializable {
+public class SormasToSormasEventPreview extends PseudonymizableDto implements HasUuid, Serializable {
 
 	private static final long serialVersionUID = -8084434633554426724L;
 
@@ -37,23 +42,19 @@ public class SormasToSormasEventPreview implements HasUuid, Serializable {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String EVENT_LOCATION = "eventLocation";
 
-	private String uuid;
 	private Date reportDateTime;
+	@SensitiveData
 	private String eventTitle;
+	@SensitiveData
 	private String eventDesc;
 	private Disease disease;
+	@SensitiveData
 	private String diseaseDetails;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private LocationDto eventLocation;
 
 	private List<SormasToSormasEventParticipantPreview> eventParticipants;
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 
 	public Date getReportDateTime() {
 		return reportDateTime;

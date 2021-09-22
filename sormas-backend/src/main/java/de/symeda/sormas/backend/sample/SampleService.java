@@ -77,6 +77,7 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sormastosormas.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -102,6 +103,8 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	private PathogenTestService pathogenTestService;
 	@EJB
 	private AdditionalTestService additionalTestService;
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	public SampleService() {
 		super(Sample.class);
@@ -715,4 +718,13 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Sample> root) {
 		return cb.isFalse(root.get(Sample.DELETED));
 	}
+
+	public Boolean isSampleEditAllowed(Sample sample) {
+		if (sample.getSormasToSormasOriginInfo() != null && !sample.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
+			return false;
+		}
+
+		return inJurisdictionOrOwned(sample).getInJurisdiction() && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);
+	}
+
 }

@@ -77,6 +77,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -92,11 +93,6 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonFacadeEjb;
-import de.symeda.sormas.backend.person.PersonQueryContext;
-import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.Country;
 import de.symeda.sormas.backend.region.District;
@@ -105,6 +101,11 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
+import de.symeda.sormas.backend.person.PersonQueryContext;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.shareinfo.ShareInfoHelper;
@@ -238,8 +239,13 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return saveEventParticipant(dto, true, true);
 	}
 
-	public EventParticipantDto saveEventParticipant(EventParticipantDto dto, boolean checkChangeDate, boolean syncShares) {
+	public EventParticipantDto saveEventParticipant(EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? eventParticipantService.getByUuid(dto.getUuid()) : null;
+
+		if (internal && existingParticipant != null && !eventParticipantService.isEventParticipantEditAllowed(existingParticipant)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventParticipantNotEditable));
+		}
+
 		EventParticipantDto existingDto = toDto(existingParticipant);
 
 		User user = userService.getCurrentUser();
@@ -268,7 +274,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			notifyEventResponsibleUsersOfCommonEventParticipant(entity, event);
 		}
 
-		onEventParticipantChanged(EventFacadeEjbLocal.toDto(entity.getEvent()), syncShares);
+		onEventParticipantChanged(EventFacadeEjbLocal.toDto(entity.getEvent()), internal);
 
 		return convertToDto(entity, pseudonymizer);
 	}
