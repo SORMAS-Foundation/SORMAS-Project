@@ -32,7 +32,7 @@ public class CaseApiService {
 
   public Case buildGeneratedCase(Person person) {
     return Case.builder()
-        .disease(DiseasesValues.getRandomDiseaseName())
+        .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .diseaseDetails("Test Disease")
         .pseudonymized(false)
         .uuid(UUID.randomUUID().toString())
