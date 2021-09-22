@@ -19,8 +19,6 @@ public class CaseListComponent extends SideComponent {
 	public CaseListComponent(PersonReferenceDto personReferenceDto) {
 		super(I18nProperties.getString(Strings.entityCases));
 
-		CaseCriteria caseCriteria = new CaseCriteria().person(personReferenceDto);
-		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
 		CaseList caseList = new CaseList(personReferenceDto);
 		addComponent(caseList);
 		caseList.reload();
@@ -28,6 +26,8 @@ public class CaseListComponent extends SideComponent {
 		if (!caseList.isEmpty()) {
 			final Button seeCases = ButtonHelper.createButton(I18nProperties.getCaption(Captions.personLinkToCases));
 			CssStyles.style(seeCases, ValoTheme.BUTTON_PRIMARY);
+			CaseCriteria caseCriteria = new CaseCriteria().person(personReferenceDto);
+			caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
 			seeCases.addClickListener(clickEvent -> ControllerProvider.getCaseController().navigateTo(caseCriteria));
 			addComponent(seeCases);
 			setComponentAlignment(seeCases, Alignment.MIDDLE_LEFT);

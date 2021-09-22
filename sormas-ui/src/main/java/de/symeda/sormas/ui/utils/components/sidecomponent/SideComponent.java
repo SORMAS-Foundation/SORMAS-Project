@@ -1,6 +1,8 @@
 package de.symeda.sormas.ui.utils.components.sidecomponent;
 
 import com.vaadin.server.Sizeable;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -9,12 +11,14 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SideComponent extends VerticalLayout {
 
+	private final HorizontalLayout componentHeader;
+
 	public SideComponent(String heading) {
 		setWidth(100, Sizeable.Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
 
-		HorizontalLayout componentHeader = new HorizontalLayout();
+		componentHeader = new HorizontalLayout();
 		componentHeader.setMargin(false);
 		componentHeader.setSpacing(false);
 		componentHeader.setWidth(100, Sizeable.Unit.PERCENTAGE);
@@ -23,5 +27,10 @@ public class SideComponent extends VerticalLayout {
 		Label headingLabel = new Label(heading);
 		headingLabel.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(headingLabel);
+	}
+
+	protected void addComponentToHeader(Component component) {
+		componentHeader.addComponent(component);
+		componentHeader.setComponentAlignment(component, Alignment.MIDDLE_RIGHT);
 	}
 }
