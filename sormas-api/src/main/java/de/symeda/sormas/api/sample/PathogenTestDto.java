@@ -106,17 +106,6 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@HideForCountriesExcept(countries = CountryHelper.COUNTRY_CODE_GERMANY)
 	private boolean viaLims;
 
-//	public PathogenTestDto() {
-//	}
-//
-//	public PathogenTestDto(String uuid, String sampleUuid) {
-//		this.setUuid(uuid);
-//
-//		if (sampleUuid != null) {
-//			this.sample = new SampleReferenceDto(sampleUuid);
-//		}
-//	}
-
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
 		PathogenTestDto pathogenTest = new PathogenTestDto();

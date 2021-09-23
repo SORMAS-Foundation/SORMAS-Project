@@ -71,17 +71,6 @@ public class AdditionalTestDto extends EntityDto {
 		return additionalTest;
 	}
 
-	public AdditionalTestDto() {
-	}
-
-	public AdditionalTestDto(String uuid, String sampleUuid) {
-		this.setUuid(uuid);
-
-		if (sampleUuid != null) {
-			this.sample = new SampleReferenceDto(sampleUuid);
-		}
-	}
-
 	public boolean hasArterialVenousGasValue() {
 		return arterialVenousGasPH != null || arterialVenousGasPco2 != null || arterialVenousGasPao2 != null || arterialVenousGasHco3 != null;
 	}
