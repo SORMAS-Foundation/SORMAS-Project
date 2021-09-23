@@ -35,7 +35,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.immunization.ImmunizationDateType;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -344,19 +343,5 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(from.get(Immunization.DELETED)));
 
 		return filter;
-	}
-
-	private String getDateFieldFromDateType(ImmunizationDateType immunizationDateType) {
-		switch (immunizationDateType) {
-		case REPORT_DATE:
-			return Immunization.REPORT_DATE;
-		case IMMUNIZATION_END:
-			return Immunization.END_DATE;
-		case VALID_UNTIL:
-			return Immunization.VALID_UNTIL;
-		case RECOVERY_DATE:
-			return Immunization.RECOVERY_DATE;
-		}
-		return null;
 	}
 }
