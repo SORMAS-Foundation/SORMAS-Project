@@ -3,6 +3,7 @@ package de.symeda.sormas.api.infrastructure.area;
 import de.symeda.sormas.api.ReferenceDto;
 
 public class AreaReferenceDto extends ReferenceDto {
+	// todo should this also extend InfrastructureDataReferenceDto? 
 
 	private static final long serialVersionUID = -6241927331721175673L;
 

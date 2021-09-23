@@ -19,6 +19,7 @@ import java.util.List;
 @Remote
 public interface GeoLocationFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria>
 	extends InfrastructureBaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
+	// todo REF_DTO should be InfrastructureDataReferenceDto
 
 	List<REF_DTO> getReferencesByName(String name, boolean includeArchived);
 }

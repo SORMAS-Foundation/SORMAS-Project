@@ -92,7 +92,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	public String getUuid() {
 
 		if (uuid == null) {
-			/**
+			/*
 			 * New objects should automatically get a UUID.
 			 * This should be returned already before saving via getUuid().
 			 * The generation of UUIDs is relatively time-consuming. Most objects are loaded from the database.
