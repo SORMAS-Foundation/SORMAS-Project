@@ -2827,18 +2827,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" recoveryDate timestamp," +
 						" relatedCase_id bigint REFERENCES cases(id))");
 
-				case 319:
-					currentVersion = 319;
-					GenericRawResults<String[]> tableColumns = getDao(User.class).queryRaw("pragma table_info(users)");
-					int nameColumnIndex = Arrays.asList(tableColumns.getColumnNames()).indexOf("name");
-					boolean columnAssociatedOfficeIdNotExists = tableColumns.getResults().stream().noneMatch(columnRowData -> "associatedOfficer_id".equals(columnRowData[nameColumnIndex]));
-
-					if (columnAssociatedOfficeIdNotExists) {
-						getDao(User.class).executeRaw("ALTER TABLE users ADD COLUMN associatedOfficer_id bigint REFERENCES users(id);");
-					}
-
-				//@formatter:on
-
 			case 319:
 				currentVersion = 319;
 				migrateVaccinationInfo();
@@ -2847,6 +2835,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN vaccinationStatus varchar(255);");
 				getDao(EventParticipant.class).executeRaw("ALTER TABLE eventParticipants ADD COLUMN vaccinationStatus varchar(255);");
 
+			case 320:
+				currentVersion = 320;
+				GenericRawResults<String[]> tableColumns = getDao(User.class).queryRaw("pragma table_info(users)");
+				int nameColumnIndex = Arrays.asList(tableColumns.getColumnNames()).indexOf("name");
+				boolean columnAssociatedOfficeIdNotExists = tableColumns.getResults().stream().noneMatch(columnRowData -> "associatedOfficer_id".equals(columnRowData[nameColumnIndex]));
+
+				if (columnAssociatedOfficeIdNotExists) {
+					getDao(User.class).executeRaw("ALTER TABLE users ADD COLUMN associatedOfficer_id bigint REFERENCES users(id);");
+				}
+
+				//@formatter:on
 				// ATTENTION: break should only be done after last version
 				break;
 
