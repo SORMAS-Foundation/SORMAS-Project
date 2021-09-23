@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
@@ -67,12 +68,15 @@ public class ContactDirectorySteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(CONTACT_DIRECTORY_DETAILED_RADIOBUTTON));
 
     When(
-        "I filter by ContactID",
-        () ->
-            webDriverHelpers.fillAndSubmitInWebElement(
-                CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT,
-                dataOperations.getPartialUuidFromAssociatedLink(
-                    apiState.getCreatedContact().getUuid())));
+        "I filter by Contact uuid",
+        () -> {
+          String contactUuid = apiState.getCreatedContact().getUuid();
+          By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, contactUuid));
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(uuidLocator);
+          Thread.sleep(5000); // mandatory refresh to have the grid refreshed
+        });
     When(
         "^I click on Line Listing button$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING));
