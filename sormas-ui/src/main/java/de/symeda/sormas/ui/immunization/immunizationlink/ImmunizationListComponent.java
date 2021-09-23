@@ -16,8 +16,6 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class ImmunizationListComponent extends SideComponent {
 
-	public static final String IMMUNIZATION_LOC = "immunizations";
-
 	public ImmunizationListComponent(ImmunizationListCriteria immunizationListCriteria) {
 
 		super(I18nProperties.getString(Strings.entityImmunization));
