@@ -20,25 +20,29 @@ package org.sormas.e2etests.services.api;
 
 import java.util.Date;
 import java.util.UUID;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.pojo.api.*;
 
 public class ContactApiService {
 
   public Contact buildGeneratedContact(Person person) {
     return Contact.builder()
-        .disease("CORONAVIRUS")
+        .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .uuid(UUID.randomUUID().toString())
         .reportDateTime(new Date())
-        .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())
+        .reportingUser(ReportingUser.builder().uuid(TestDataUser.REST_AUTOMATION.getUuid()).build())
         .district(
             District.builder()
-                .caption("Voreingestellter Landkreis")
-                .uuid("SZ75BK-5OUMFU-V2DTKG-5BYACHFE")
+                .caption(DistrictsValues.VoreingestellterLandkreis.getName())
+                .uuid(DistrictsValues.VoreingestellterLandkreis.getUuid())
                 .build())
         .region(
             Region.builder()
-                .caption("Voreingestellte Bundesl\u00E4nder")
-                .uuid("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY")
+                .caption(RegionsValues.VoreingestellteBundeslander.getName())
+                .uuid(RegionsValues.VoreingestellteBundeslander.getUuid())
                 .build())
         .relationToCase("")
         .contactClassification("UNCONFIRMED")

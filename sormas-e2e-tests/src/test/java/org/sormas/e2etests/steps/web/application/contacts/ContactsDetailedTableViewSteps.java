@@ -14,6 +14,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.ContactOutcome;
+import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -103,7 +104,7 @@ public class ContactsDetailedTableViewSteps implements En {
               .assertThat(
                   detailedContactDTableRow.get(
                       ContactsDetailedTableViewHeaders.REPORTING_USER.toString()))
-              .containsIgnoringCase("Rest AUTOMATION");
+              .containsIgnoringCase(TestDataUser.REST_AUTOMATION.getUserRole());
           softly.assertAll();
         });
   }
