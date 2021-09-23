@@ -249,6 +249,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		validate(dto);
 
 		existingImmunization = fillOrBuildEntity(dto, existingImmunization);
+		immunizationService.updateImmunizationStatusBasedOnVaccinations(existingImmunization);
 		immunizationService.ensurePersisted(existingImmunization);
 
 		return convertToDto(existingImmunization, pseudonymizer);
@@ -304,7 +305,8 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationListCriteria criteria, Integer first, Integer max) {
-		return immunizationService.getEntriesList(criteria, first, max);
+		Long personId = personService.getIdByUuid(criteria.getPerson().getUuid());
+		return immunizationService.getEntriesList(personId, criteria.getDisease(), first, max);
 	}
 
 	public ImmunizationDto toDto(Immunization entity) {

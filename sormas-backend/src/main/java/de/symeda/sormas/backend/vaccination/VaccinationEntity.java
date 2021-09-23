@@ -72,10 +72,8 @@ public class VaccinationEntity extends AbstractDomainObject {
 	private Date vaccinationDate;
 	private Vaccine vaccineName;
 	private String otherVaccineName;
-	private String vaccineNameDetails;
 	private VaccineManufacturer vaccineManufacturer;
 	private String otherVaccineManufacturer;
-	private String vaccineManufacturerDetails;
 	private String vaccineType;
 	private String vaccineDose;
 	private String vaccineInn;
@@ -153,15 +151,6 @@ public class VaccinationEntity extends AbstractDomainObject {
 		this.otherVaccineName = otherVaccineName;
 	}
 
-	@Column(columnDefinition = "text")
-	public String getVaccineNameDetails() {
-		return vaccineNameDetails;
-	}
-
-	public void setVaccineNameDetails(String vaccineNameDetails) {
-		this.vaccineNameDetails = vaccineNameDetails;
-	}
-
 	@Enumerated(EnumType.STRING)
 	public VaccineManufacturer getVaccineManufacturer() {
 		return vaccineManufacturer;
@@ -178,15 +167,6 @@ public class VaccinationEntity extends AbstractDomainObject {
 
 	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
 		this.otherVaccineManufacturer = otherVaccineManufacturer;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getVaccineManufacturerDetails() {
-		return vaccineManufacturerDetails;
-	}
-
-	public void setVaccineManufacturerDetails(String vaccineManufacturerDetails) {
-		this.vaccineManufacturerDetails = vaccineManufacturerDetails;
 	}
 
 	@Column(columnDefinition = "text")

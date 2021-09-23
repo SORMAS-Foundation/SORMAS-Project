@@ -17,13 +17,16 @@ package de.symeda.sormas.backend.immunization;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
@@ -32,6 +35,7 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -364,5 +368,60 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			.build();
 		final List<ImmunizationDto> similarImmunizations = getImmunizationFacade().getSimilarImmunizations(criteria);
 		assertEquals(size, similarImmunizations.size());
+	}
+
+	@Test
+	public void testUpdateImmunizationStatusBasedOnVaccinationsOngoing(){
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		final ImmunizationDto immunization = creator.createImmunizationDto(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.NOT_ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.SCHEDULED,
+			rdcf1);
+
+		immunization.setNumberOfDoses(2);
+		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));
+		immunization.setVaccinations(Arrays.asList(creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
+		getImmunizationFacade().save(immunization);
+
+		final ImmunizationDto immWithOneVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		Assert.assertEquals(1, immWithOneVac.getVaccinations().size());
+		Assert.assertEquals(ImmunizationManagementStatus.ONGOING, immWithOneVac.getImmunizationManagementStatus());
+		Assert.assertEquals(ImmunizationStatus.PENDING, immWithOneVac.getImmunizationStatus());
+	}
+
+	@Test
+	public void testUpdateImmunizationStatusBasedOnVaccinationsCompleted(){
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		final ImmunizationDto immunization = creator.createImmunizationDto(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.NOT_ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.SCHEDULED,
+			rdcf1);
+
+		immunization.setNumberOfDoses(2);
+		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));
+		immunization.setVaccinations(
+			Arrays.asList(
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto()),
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
+		getImmunizationFacade().save(immunization);
+
+		final ImmunizationDto immWithTwoVac = getImmunizationFacade().getByUuid(immunization.getUuid());
+		Assert.assertEquals(2, immWithTwoVac.getVaccinations().size());
+		Assert.assertEquals(ImmunizationManagementStatus.COMPLETED, immWithTwoVac.getImmunizationManagementStatus());
+		Assert.assertEquals(ImmunizationStatus.ACQUIRED, immWithTwoVac.getImmunizationStatus());
 	}
 }

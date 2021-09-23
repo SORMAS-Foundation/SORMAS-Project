@@ -15,16 +15,16 @@
 
 package de.symeda.sormas.app.backend.vaccination;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
@@ -44,6 +44,7 @@ public class VaccinationEntity extends PseudonymizableAdo {
 
 	public static final String TABLE_NAME = "vaccination";
 	public static final String I18N_PREFIX = "vaccination";
+	public static final String IMMUNIZATION = "immunization";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Immunization immunization;
@@ -59,14 +60,10 @@ public class VaccinationEntity extends PseudonymizableAdo {
 	private Vaccine vaccineName;
 	@Column(columnDefinition = "text")
 	private String otherVaccineName;
-	@Column(columnDefinition = "text")
-	private String vaccineNameDetails;
 	@Enumerated(EnumType.STRING)
 	private VaccineManufacturer vaccineManufacturer;
 	@Column(columnDefinition = "text")
 	private String otherVaccineManufacturer;
-	@Column(columnDefinition = "text")
-	private String vaccineManufacturerDetails;
 	@Column(columnDefinition = "text")
 	private String vaccineType;
 	@Column(columnDefinition = "text")
@@ -142,14 +139,6 @@ public class VaccinationEntity extends PseudonymizableAdo {
 		this.otherVaccineName = otherVaccineName;
 	}
 
-	public String getVaccineNameDetails() {
-		return vaccineNameDetails;
-	}
-
-	public void setVaccineNameDetails(String vaccineNameDetails) {
-		this.vaccineNameDetails = vaccineNameDetails;
-	}
-
 	public VaccineManufacturer getVaccineManufacturer() {
 		return vaccineManufacturer;
 	}
@@ -164,14 +153,6 @@ public class VaccinationEntity extends PseudonymizableAdo {
 
 	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
 		this.otherVaccineManufacturer = otherVaccineManufacturer;
-	}
-
-	public String getVaccineManufacturerDetails() {
-		return vaccineManufacturerDetails;
-	}
-
-	public void setVaccineManufacturerDetails(String vaccineManufacturerDetails) {
-		this.vaccineManufacturerDetails = vaccineManufacturerDetails;
 	}
 
 	public String getVaccineType() {

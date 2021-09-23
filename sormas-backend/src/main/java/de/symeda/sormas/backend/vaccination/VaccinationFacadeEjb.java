@@ -124,10 +124,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		target.setVaccinationDate(source.getVaccinationDate());
 		target.setVaccineName(source.getVaccineName());
 		target.setOtherVaccineName(source.getOtherVaccineName());
-		target.setVaccineNameDetails(source.getVaccineNameDetails());
 		target.setVaccineManufacturer(source.getVaccineManufacturer());
 		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
-		target.setVaccineManufacturerDetails(source.getVaccineManufacturerDetails());
 		target.setVaccineType(source.getVaccineType());
 		target.setVaccineDose(source.getVaccineDose());
 		target.setVaccineInn(source.getVaccineInn());
@@ -154,10 +152,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		dto.setVaccinationDate(entity.getVaccinationDate());
 		dto.setVaccineName(entity.getVaccineName());
 		dto.setOtherVaccineName(entity.getOtherVaccineName());
-		dto.setVaccineNameDetails(entity.getVaccineNameDetails());
 		dto.setVaccineManufacturer(entity.getVaccineManufacturer());
 		dto.setOtherVaccineManufacturer(entity.getOtherVaccineManufacturer());
-		dto.setVaccineManufacturerDetails(entity.getVaccineManufacturerDetails());
 		dto.setVaccineType(entity.getVaccineType());
 		dto.setVaccineDose(entity.getVaccineDose());
 		dto.setVaccineInn(entity.getVaccineInn());

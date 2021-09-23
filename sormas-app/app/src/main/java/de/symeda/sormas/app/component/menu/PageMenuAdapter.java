@@ -15,10 +15,6 @@
 
 package de.symeda.sormas.app.component.menu;
 
-import static android.view.View.GONE;
-
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -28,7 +24,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import de.symeda.sormas.app.R;
+
+import static android.view.View.GONE;
 
 public class PageMenuAdapter extends BaseAdapter {
 
@@ -111,7 +111,7 @@ public class PageMenuAdapter extends BaseAdapter {
 			}
 
 			if (pageMenuItem.getIconResourceId() > 0) {
-				Drawable icon = context.getResources().getDrawable(pageMenuItem.getIconResourceId());
+				Drawable icon = context.getDrawable(pageMenuItem.getIconResourceId());
 				if (pageMenuItem.isActive()) {
 					icon.setTint(context.getResources().getColor(this.iconActiveColor));
 					icon.setAlpha(255);
