@@ -1,7 +1,5 @@
 package de.symeda.sormas.backend.sample;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -12,13 +10,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -28,14 +19,11 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.common.QueryContext;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "AdditionalTestFacade")
 public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
@@ -71,68 +59,13 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		Integer first,
 		Integer max,
 		List<SortProperty> sortProperties) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<AdditionalTestDto> cq = cb.createQuery(AdditionalTestDto.class);
-		Root<AdditionalTest> from = cq.from(AdditionalTest.class);
 
-		QueryContext additionalTestQueryContext = new AdditionalTestQueryContext(cb, cq, from);
-		AdditionalTestJoins<AdditionalTest> joins = (AdditionalTestJoins<AdditionalTest>) additionalTestQueryContext.getJoins();
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
-		List<Selection<?>> selections = new ArrayList<>(Arrays.asList(from.get(AdditionalTest.UUID), joins.getSample().get(Sample.UUID)));
-		cq.multiselect(selections);
-
-		Predicate filter = null;
-		if (additionalTestCriteria != null) {
-			filter = service.buildCriteriaFilter(additionalTestCriteria, cb, from);
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-		cq.orderBy(cb.desc(from.get(AdditionalTest.CHANGE_DATE)));
-		cq.distinct(true);
-
-		List<Order> order = new ArrayList<>();
-		if (sortProperties != null && sortProperties.size() > 0) {
-			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
-				switch (sortProperty.propertyName) {
-				case AdditionalTestDto.UUID:
-				case AdditionalTestDto.SAMPLE:
-				case AdditionalTestDto.TEST_DATE_TIME:
-					expression = from.get(sortProperty.propertyName);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
-				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-			}
-		}
-		order.add(cb.desc(from.get(AdditionalTest.UUID)));
-		cq.orderBy(order);
-
-		return QueryHelper.getResultList(em, cq, first, max);
-	}
-
-	public long count(AdditionalTestCriteria additionalTestCriteria) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<AdditionalTest> additionalTestRoot = cq.from(AdditionalTest.class);
-
-		Predicate filter = null;
-
-		if (additionalTestCriteria != null) {
-			Predicate criteriaFilter = service.buildCriteriaFilter(additionalTestCriteria, cb, additionalTestRoot);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		cq.select(cb.countDistinct(additionalTestRoot));
-		return em.createQuery(cq).getSingleResult();
+		return service.getIndexList(additionalTestCriteria, first, max, sortProperties)
+			.stream()
+			.map(p -> convertToDto(p, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	public Page<AdditionalTestDto> getIndexPage(
@@ -142,7 +75,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		List<SortProperty> sortProperties) {
 
 		List<AdditionalTestDto> additionalTestList = getIndexList(additionalTestCriteria, offset, size, sortProperties);
-		long totalElementCount = count(additionalTestCriteria);
+		long totalElementCount = service.count(additionalTestCriteria);
 		return new Page<>(additionalTestList, offset, size, totalElementCount);
 
 	}

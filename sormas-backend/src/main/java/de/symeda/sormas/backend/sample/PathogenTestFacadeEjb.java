@@ -40,9 +40,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.messaging.MessageType;
+import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -50,6 +52,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -125,6 +128,31 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			.stream()
 			.map(p -> convertToDto(p, pseudonymizer))
 			.collect(Collectors.toList());
+	}
+
+	public List<PathogenTestDto> getIndexList(
+		PathogenTestCriteria pathogenTestCriteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return pathogenTestService.getIndexList(pathogenTestCriteria, first, max, sortProperties)
+			.stream()
+			.map(p -> convertToDto(p, pseudonymizer))
+			.collect(Collectors.toList());
+
+	}
+
+	public Page<PathogenTestDto> getIndexPage(
+		PathogenTestCriteria pathogenTestCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+
+		List<PathogenTestDto> pathogenTestList = getIndexList(pathogenTestCriteria, offset, size, sortProperties);
+		long totalElementCount = pathogenTestService.count(pathogenTestCriteria);
+		return new Page<>(pathogenTestList, offset, size, totalElementCount);
+
 	}
 
 	@Override
