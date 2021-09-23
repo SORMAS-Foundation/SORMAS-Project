@@ -25,7 +25,6 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -53,8 +52,9 @@ import de.symeda.sormas.ui.importer.DocumentUploadFinishedHandler;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
-public class DocumentListComponent extends VerticalLayout {
+public class DocumentListComponent extends SideComponent {
 
 	private final DocumentRelatedEntityType relatedEntityType;
 	private final ReferenceDto entityRef;
@@ -64,20 +64,12 @@ public class DocumentListComponent extends VerticalLayout {
 	private final VerticalLayout listLayout;
 
 	public DocumentListComponent(DocumentRelatedEntityType relatedEntityType, ReferenceDto entityRef, UserRight editRight, boolean pseudonymized) {
-		setWidth(100, Unit.PERCENTAGE);
-		setMargin(false);
-		setSpacing(false);
+		super(I18nProperties.getString(Strings.entityDocuments));
 
 		this.relatedEntityType = relatedEntityType;
 		this.entityRef = entityRef;
 		this.editRight = editRight;
 		this.pseudonymized = pseudonymized;
-
-		HorizontalLayout componentHeader = new HorizontalLayout();
-		componentHeader.setMargin(false);
-		componentHeader.setSpacing(false);
-		componentHeader.setWidth(100, Unit.PERCENTAGE);
-		addComponent(componentHeader);
 
 		listLayout = new VerticalLayout();
 		listLayout.setSpacing(true);
@@ -85,14 +77,9 @@ public class DocumentListComponent extends VerticalLayout {
 		addComponent(listLayout);
 		reload();
 
-		Label documentsHeader = new Label(I18nProperties.getString(Strings.entityDocuments));
-		documentsHeader.addStyleName(CssStyles.H3);
-		componentHeader.addComponent(documentsHeader);
-
 		if (UserProvider.getCurrent().hasUserRight(editRight)) {
 			Button uploadButton = buildUploadButton();
-			componentHeader.addComponent(uploadButton);
-			componentHeader.setComponentAlignment(uploadButton, Alignment.MIDDLE_RIGHT);
+			addCreateButton(uploadButton);
 		}
 	}
 
