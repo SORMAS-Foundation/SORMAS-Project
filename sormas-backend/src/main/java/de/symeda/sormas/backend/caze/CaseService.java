@@ -72,6 +72,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
@@ -1329,7 +1330,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<CaseListEntryDto> getEntriesList(CaseCriteria caseCriteria, Integer first, Integer max) {
+	public List<CaseListEntryDto> getEntriesList(PersonReferenceDto personReferenceDto, Integer first, Integer max) {
+		if (personReferenceDto == null) {
+			return Collections.emptyList();
+		}
+
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Case> caze = cq.from(Case.class);
@@ -1343,11 +1348,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			caze.get(Case.CASE_CLASSIFICATION),
 			caze.get(Case.CHANGE_DATE));
 
-		if (caseCriteria != null) {
-			final Predicate criteriaFilter = createCriteriaFilter(caseCriteria, caseQueryContext);
-			if (criteriaFilter != null) {
-				cq.where(criteriaFilter);
-			}
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setPerson(personReferenceDto);
+		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
+
+		final Predicate criteriaFilter = createCriteriaFilter(caseCriteria, caseQueryContext);
+		if (criteriaFilter != null) {
+			cq.where(criteriaFilter);
 		}
 
 		cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));

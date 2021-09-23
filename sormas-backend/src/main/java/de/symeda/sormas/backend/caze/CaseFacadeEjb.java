@@ -563,8 +563,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseListEntryDto> getEntriesList(CaseCriteria caseCriteria, Integer first, Integer max) {
-		return caseService.getEntriesList(caseCriteria, first, max);
+	public List<CaseListEntryDto> getEntriesList(PersonReferenceDto personReferenceDto, Integer first, Integer max) {
+		return caseService.getEntriesList(personReferenceDto, first, max);
 	}
 
 	@Override
