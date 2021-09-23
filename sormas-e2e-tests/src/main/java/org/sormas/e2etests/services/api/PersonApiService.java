@@ -28,10 +28,10 @@ import org.sormas.e2etests.enums.AreaTypeValues;
 import org.sormas.e2etests.enums.CommunityUUIDs;
 import org.sormas.e2etests.enums.ContinentUUIDs;
 import org.sormas.e2etests.enums.CountryUUIDs;
-import org.sormas.e2etests.enums.DistrictUUIDs;
+import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.FacilityUUIDs;
 import org.sormas.e2etests.enums.GenderValues;
-import org.sormas.e2etests.enums.RegionUUIDs;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.SubcontinentUUIDs;
 import org.sormas.e2etests.pojo.api.Person;
 import org.sormas.e2etests.pojo.api.chunks.Address;
@@ -72,10 +72,10 @@ public class PersonApiService {
                     .externalId(null)
                     .isoCode("DEU")
                     .build())
-            .region(RegionUUIDs.VoreingestellteBundeslander.toString())
+            .region(RegionsValues.VoreingestellteBundeslander.getUuid())
             .continent(ContinentUUIDs.Europe.toString())
             .subcontinent(SubcontinentUUIDs.WesternEurope.toString())
-            .district(DistrictUUIDs.VoreingestellterLandkreis.toString())
+            .district(DistrictsValues.VoreingestellterLandkreis.getUuid())
             .community(CommunityUUIDs.VoreingestellteGemeinde.toString())
             .city(faker.address().cityName())
             .areaType(AreaTypeValues.getRandomAreaType())

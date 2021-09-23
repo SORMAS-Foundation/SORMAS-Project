@@ -70,13 +70,17 @@ Feature: Contacts end to end tests
     Then I check the CHOOSE SOURCE CASE BUTTON is displayed
 
     Scenario: Create Contact and check details in Detailed view table
-      Given I log in with the user
-      When API: I create a new person
-      And API: I create a new contact
-      Given I click on the Contacts button from navbar
-      When I click on the DETAILED button from Case directory
-      And I filter by ContactID
-      And I am checking if all the fields are correctly displayed in the Contacts directory Detailed table
+      Given API: I create a new person
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Then API: I create a new contact
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      When I log in with the user
+      Then I click on the Contacts button from navbar
+      And I click on the DETAILED button from Case directory
+      And I filter by Contact uuid
+      Then I am checking if all the fields are correctly displayed in the Contacts directory Detailed table
 
   Scenario: Edit all fields from Follow-up visits  tab
     Given I log in with the user
