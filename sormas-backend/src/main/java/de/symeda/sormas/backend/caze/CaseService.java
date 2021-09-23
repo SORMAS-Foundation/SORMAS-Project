@@ -55,6 +55,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -83,6 +84,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
+import de.symeda.sormas.backend.caze.transformers.CaseListEntryDtoTransformer;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
@@ -544,9 +546,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		Join<Case, Person> person = joins.getPerson();
 		Join<Case, User> reportingUser = joins.getReportingUser();
-		Join<Case, Region> region = joins.getRegion();
-		Join<Case, District> district = joins.getDistrict();
-		Join<Case, Community> community = joins.getCommunity();
 		Join<Case, Facility> facility = joins.getFacility();
 		Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 
@@ -1328,6 +1327,36 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cq.where(cb.equal(caseRoot.get(Case.EXTERNAL_ID), externalId), cb.equal(caseRoot.get(Case.DELETED), Boolean.FALSE));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public List<CaseListEntryDto> getEntriesList(CaseCriteria caseCriteria, Integer first, Integer max) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final Root<Case> caze = cq.from(Case.class);
+
+		CaseQueryContext<Case> caseQueryContext = new CaseQueryContext<>(cb, cq, caze);
+
+		cq.multiselect(
+			caze.get(Case.UUID),
+			caze.get(Case.REPORT_DATE),
+			caze.get(Case.DISEASE),
+			caze.get(Case.CASE_CLASSIFICATION),
+			caze.get(Case.CHANGE_DATE));
+
+		if (caseCriteria != null) {
+			final Predicate criteriaFilter = createCriteriaFilter(caseCriteria, caseQueryContext);
+			if (criteriaFilter != null) {
+				cq.where(criteriaFilter);
+			}
+		}
+
+		cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
+
+		cq.distinct(true);
+
+		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
+			.setResultTransformer(new CaseListEntryDtoTransformer())
+			.getResultList();
 	}
 
 	@Transactional(rollbackOn = Exception.class)

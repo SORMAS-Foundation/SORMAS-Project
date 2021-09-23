@@ -564,12 +564,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<CaseListEntryDto> getEntriesList(CaseCriteria caseCriteria, Integer first, Integer max) {
-
-		CriteriaQuery<CaseIndexDto> cq = listQueryBuilder.buildIndexCriteria(caseCriteria, null);
-		List<CaseIndexDto> entries = QueryHelper.getResultList(em, cq, first, max);
-		return entries.stream()
-			.map(entry -> new CaseListEntryDto(entry.getUuid(), entry.getReportDate(), entry.getDisease(), entry.getCaseClassification()))
-			.collect(Collectors.toList());
+		return caseService.getEntriesList(caseCriteria, first, max);
 	}
 
 	@Override
