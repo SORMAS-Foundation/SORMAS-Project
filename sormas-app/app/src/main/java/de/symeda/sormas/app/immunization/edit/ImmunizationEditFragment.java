@@ -15,15 +15,14 @@
 
 package de.symeda.sormas.app.immunization.edit;
 
-
-import android.view.View;
-
-import org.apache.commons.collections.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+
+import android.view.View;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -81,10 +80,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 	private List<Item> countries;
 	private Consumer<MeansOfImmunization> meansOfImmunizationChange;
 
-
-	public static ImmunizationEditFragment newInstance(
-		Immunization activityRootData,
-		Consumer<MeansOfImmunization> meansOfImmunizationChange) {
+	public static ImmunizationEditFragment newInstance(Immunization activityRootData, Consumer<MeansOfImmunization> meansOfImmunizationChange) {
 		ImmunizationEditFragment immunizationEditFragment = newInstanceWithFieldCheckers(
 			ImmunizationEditFragment.class,
 			null,
@@ -194,7 +190,6 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 		contentBinding.immunizationValidUntil.initializeDateField(getFragmentManager());
 		contentBinding.immunizationLastInfectionDate.initializeDateField(getFragmentManager());
 
-
 		contentBinding.immunizationMeansOfImmunization.addValueChangedListener(new ValueChangeListener() {
 
 			private MeansOfImmunization currentMeansOfImm = record.getMeansOfImmunization();
@@ -222,9 +217,9 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 						contentBinding.immunizationPositiveTestResultDate.setEnabled(true);
 
 						if (record.getRelatedCase() != null) {
-							contentBinding.linkCase.setVisibility(View.GONE);
+							contentBinding.openLinkedCase.setVisibility(View.VISIBLE);
 						} else {
-							contentBinding.openLinkedCase.setVisibility(View.GONE);
+							contentBinding.linkCase.setVisibility(View.VISIBLE);
 						}
 
 					} else {
@@ -253,7 +248,7 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 				}
 			}
 		});
-		
+
 		contentBinding.overwriteImmunizationManagementStatusCheckBox.addValueChangedListener(e -> {
 			if (Boolean.TRUE.equals(e.getValue())) {
 				contentBinding.immunizationImmunizationManagementStatus.setEnabled(true);
@@ -282,6 +277,19 @@ public class ImmunizationEditFragment extends BaseEditFragment<FragmentImmunizat
 			if (facilityType != null) {
 				contentBinding.facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
 			}
+		}
+
+		if (record.getMeansOfImmunization() == MeansOfImmunization.RECOVERY
+			|| record.getMeansOfImmunization() == MeansOfImmunization.VACCINATION_RECOVERY) {
+			if (record.getRelatedCase() != null) {
+				contentBinding.linkCase.setVisibility(View.GONE);
+			} else {
+				contentBinding.openLinkedCase.setVisibility(View.GONE);
+			}
+		} else {
+			contentBinding.immunizationRecoveryLayout.setVisibility(View.GONE);
+			contentBinding.linkCase.setVisibility(View.GONE);
+			contentBinding.openLinkedCase.setVisibility(View.GONE);
 		}
 	}
 

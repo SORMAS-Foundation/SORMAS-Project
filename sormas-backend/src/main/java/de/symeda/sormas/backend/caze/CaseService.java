@@ -63,6 +63,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -593,8 +594,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter =
 				CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.SYMPTOM_JOURNAL_STATUS), caseCriteria.getSymptomJournalStatus()));
 		}
-		if (caseCriteria.getVaccination() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.VACCINATION), caseCriteria.getVaccination()));
+		if (caseCriteria.getVaccinationStatus() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.VACCINATION_STATUS), caseCriteria.getVaccinationStatus()));
 		}
 		if (caseCriteria.getReportDateTo() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), caseCriteria.getReportDateTo()));
@@ -1363,6 +1364,51 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		em.createQuery(cu).executeUpdate();
 	}
 
+	/**
+	 * Sets the vaccination status of all cases of the specified person and disease with validFrom <= case start date
+	 * and validUntil >= case start date to VACCINATED.
+	 * 
+	 * @param personId
+	 *            The ID of the immunization and case person
+	 * @param disease
+	 *            The disease of the immunization and cases
+	 * @param validFrom
+	 *            The date from which on the person is protected by the immunization
+	 * @param validUntil
+	 *            The date until which the person is protected by the immunization
+	 */
+	public void updateVaccinationStatuses(Long personId, Disease disease, Date validFrom, Date validUntil) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
+		Root<Case> root = cu.from(Case.class);
+
+		Subquery<Symptoms> symptomsSq = cu.subquery(Symptoms.class);
+		Root<Symptoms> symptomsSqRoot = symptomsSq.from(Symptoms.class);
+		symptomsSq.select(symptomsSqRoot.get(Symptoms.ONSET_DATE));
+		symptomsSq.where(cb.equal(symptomsSqRoot, root.get(Case.SYMPTOMS)));
+
+		cu.set(Case.CHANGE_DATE, Timestamp.from(Instant.now()));
+		cu.set(root.get(Case.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
+
+		Predicate validUntilPredicate = validUntil != null
+			? cb.or(
+				cb.and(cb.isNull(symptomsSq.getSelection()), cb.lessThanOrEqualTo(root.get(Case.REPORT_DATE), validUntil)),
+				cb.and(cb.isNotNull(symptomsSq.getSelection()), cb.lessThanOrEqualTo(symptomsSq.getSelection().as(Date.class), validUntil)))
+			: null;
+
+		cu.where(
+			CriteriaBuilderHelper.and(
+				cb,
+				cb.equal(root.get(Case.PERSON), personId),
+				cb.equal(root.get(Case.DISEASE), disease),
+				cb.or(
+					cb.and(cb.isNull(symptomsSq.getSelection()), cb.greaterThanOrEqualTo(root.get(Case.REPORT_DATE), validFrom)),
+					cb.and(cb.isNotNull(symptomsSq.getSelection()), cb.greaterThanOrEqualTo(symptomsSq.getSelection().as(Date.class), validFrom))),
+				validUntilPredicate));
+
+		em.createQuery(cu).executeUpdate();
+	}
+
 	private float calculateCompleteness(Case caze) {
 
 		float completeness = 0f;
@@ -1398,4 +1444,5 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		return completeness;
 	}
+
 }

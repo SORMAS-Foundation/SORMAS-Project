@@ -43,7 +43,7 @@ import de.symeda.sormas.app.backend.region.Country;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.app.backend.vaccination.Vaccination;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
@@ -137,7 +137,7 @@ public class Immunization extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Case relatedCase;
 
-	private List<VaccinationEntity> vaccinations = new ArrayList<>();
+	private List<Vaccination> vaccinations = new ArrayList<>();
 
 	public Disease getDisease() {
 		return disease;
@@ -323,11 +323,11 @@ public class Immunization extends PseudonymizableAdo {
 		this.country = country;
 	}
 
-	public List<VaccinationEntity> getVaccinations() {
+	public List<Vaccination> getVaccinations() {
 		return vaccinations;
 	}
 
-	public void setVaccinations(List<VaccinationEntity> vaccinations) {
+	public void setVaccinations(List<Vaccination> vaccinations) {
 		this.vaccinations = vaccinations;
 	}
 

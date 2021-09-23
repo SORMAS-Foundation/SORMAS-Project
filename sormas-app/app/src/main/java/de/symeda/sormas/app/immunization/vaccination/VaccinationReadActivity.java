@@ -15,20 +15,20 @@
 
 package de.symeda.sormas.app.immunization.vaccination;
 
+import java.util.List;
+
 import android.content.Context;
 import android.view.Menu;
-
-import java.util.List;
 
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.app.backend.vaccination.Vaccination;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 
-public class VaccinationReadActivity extends BaseReadActivity<VaccinationEntity> {
+public class VaccinationReadActivity extends BaseReadActivity<Vaccination> {
 
 	public static void startActivity(Context context, String rootUuid) {
 		BaseReadActivity.startActivity(context, VaccinationReadActivity.class, buildBundle(rootUuid));
@@ -39,7 +39,7 @@ public class VaccinationReadActivity extends BaseReadActivity<VaccinationEntity>
 	}
 
 	@Override
-	protected VaccinationEntity queryRootEntity(String recordUuid) {
+	protected Vaccination queryRootEntity(String recordUuid) {
 		return DatabaseHelper.getVaccinationDao().queryUuid(recordUuid);
 	}
 
@@ -50,7 +50,7 @@ public class VaccinationReadActivity extends BaseReadActivity<VaccinationEntity>
 	}
 
 	@Override
-	protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, VaccinationEntity activityRootData) {
+	protected BaseReadFragment buildReadFragment(PageMenuItem menuItem, Vaccination activityRootData) {
 		final VaccinationSection section = VaccinationSection.fromOrdinal(menuItem.getPosition());
 		BaseReadFragment fragment;
 		switch (section) {

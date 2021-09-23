@@ -15,41 +15,41 @@
 
 package de.symeda.sormas.app.backend.vaccination;
 
-import android.util.Log;
+import java.sql.SQLException;
+import java.util.List;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
-import java.sql.SQLException;
-import java.util.List;
+import android.util.Log;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 
-public class VaccinationDao extends AbstractAdoDao<VaccinationEntity> {
+public class VaccinationDao extends AbstractAdoDao<Vaccination> {
 
-	public VaccinationDao(Dao<VaccinationEntity, Long> innerDao) {
+	public VaccinationDao(Dao<Vaccination, Long> innerDao) {
 		super(innerDao);
 	}
 
 	@Override
-	protected Class<VaccinationEntity> getAdoClass() {
-		return VaccinationEntity.class;
+	protected Class<Vaccination> getAdoClass() {
+		return Vaccination.class;
 	}
 
 	@Override
 	public String getTableName() {
-		return VaccinationEntity.TABLE_NAME;
+		return Vaccination.TABLE_NAME;
 	}
 
-	public List<VaccinationEntity> getByImmunization(Immunization immunization) {
+	public List<Vaccination> getByImmunization(Immunization immunization) {
 		if (immunization.isSnapshot()) {
-			return querySnapshotsForEq(VaccinationEntity.IMMUNIZATION + "_id", immunization, VaccinationEntity.CHANGE_DATE, false);
+			return querySnapshotsForEq(Vaccination.IMMUNIZATION + "_id", immunization, Vaccination.CHANGE_DATE, false);
 		}
-		return queryForEq(VaccinationEntity.IMMUNIZATION + "_id", immunization, VaccinationEntity.CHANGE_DATE, false);
+		return queryForEq(Vaccination.IMMUNIZATION + "_id", immunization, Vaccination.CHANGE_DATE, false);
 	}
 
 	public long countByCriteria(VaccinationCriteria criteria) {
@@ -61,21 +61,21 @@ public class VaccinationDao extends AbstractAdoDao<VaccinationEntity> {
 		}
 	}
 
-	public List<VaccinationEntity> queryByCriteria(VaccinationCriteria criteria, long offset, long limit) {
+	public List<Vaccination> queryByCriteria(VaccinationCriteria criteria, long offset, long limit) {
 		try {
-			return buildQueryBuilder(criteria).orderBy(VaccinationEntity.CREATION_DATE, true).offset(offset).limit(limit).query();
+			return buildQueryBuilder(criteria).orderBy(Vaccination.CREATION_DATE, true).offset(offset).limit(limit).query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform queryByCriteria on Vaccination");
 			throw new RuntimeException(e);
 		}
 	}
 
-	private QueryBuilder<VaccinationEntity, Long> buildQueryBuilder(VaccinationCriteria criteria) throws SQLException {
-		QueryBuilder<VaccinationEntity, Long> queryBuilder = queryBuilder();
-		Where<VaccinationEntity, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+	private QueryBuilder<Vaccination, Long> buildQueryBuilder(VaccinationCriteria criteria) throws SQLException {
+		QueryBuilder<Vaccination, Long> queryBuilder = queryBuilder();
+		Where<Vaccination, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
 
 		if (criteria.getImmunization() != null) {
-			where.and().eq(VaccinationEntity.IMMUNIZATION + "_id", criteria.getImmunization());
+			where.and().eq(Vaccination.IMMUNIZATION + "_id", criteria.getImmunization());
 		}
 
 		queryBuilder.setWhere(where);
@@ -83,14 +83,14 @@ public class VaccinationDao extends AbstractAdoDao<VaccinationEntity> {
 	}
 
 	@Override
-	public VaccinationEntity build() {
+	public Vaccination build() {
 		throw new UnsupportedOperationException();
 	}
 
-	public VaccinationEntity build(Immunization immunization) {
-		VaccinationEntity vaccinationEntity = super.build();
-		vaccinationEntity.setImmunization(immunization);
-		vaccinationEntity.setReportingUser(ConfigProvider.getUser());
-		return vaccinationEntity;
+	public Vaccination build(Immunization immunization) {
+		Vaccination Vaccination = super.build();
+		Vaccination.setImmunization(immunization);
+		Vaccination.setReportingUser(ConfigProvider.getUser());
+		return Vaccination;
 	}
 }

@@ -20,14 +20,14 @@ import android.os.Bundle;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.app.backend.vaccination.Vaccination;
 import de.symeda.sormas.app.databinding.FragmentVaccinationReadLayoutBinding;
 
-public class VaccinationReadFragment extends BaseReadFragment<FragmentVaccinationReadLayoutBinding, VaccinationEntity, VaccinationEntity> {
+public class VaccinationReadFragment extends BaseReadFragment<FragmentVaccinationReadLayoutBinding, Vaccination, Vaccination> {
 
-	private VaccinationEntity record;
+	private Vaccination record;
 
-	public static VaccinationReadFragment newInstance(VaccinationEntity activityRootData) {
+	public static VaccinationReadFragment newInstance(Vaccination activityRootData) {
 		return newInstance(VaccinationReadFragment.class, null, activityRootData);
 	}
 
@@ -49,7 +49,7 @@ public class VaccinationReadFragment extends BaseReadFragment<FragmentVaccinatio
 	}
 
 	@Override
-	public VaccinationEntity getPrimaryData() {
+	public Vaccination getPrimaryData() {
 		return record;
 	}
 

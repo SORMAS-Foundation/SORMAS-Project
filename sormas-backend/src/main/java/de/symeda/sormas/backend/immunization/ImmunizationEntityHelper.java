@@ -13,10 +13,27 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.vaccinationinfo;
+package de.symeda.sormas.backend.immunization;
 
-import javax.ejb.Remote;
+import java.util.Date;
 
-@Remote
-public interface VaccinationInfoFacade {
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.vaccination.Vaccination;
+
+public final class ImmunizationEntityHelper {
+
+	private ImmunizationEntityHelper() {
+
+	}
+
+	public static Date getDateForComparison(Immunization immunization) {
+		return immunization.getEndDate() != null
+			? immunization.getEndDate()
+			: immunization.getStartDate() != null ? immunization.getEndDate() : immunization.getCreationDate();
+	}
+
+	public static Date getVaccinationDateForComparison(Vaccination vaccination) {
+		return vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : vaccination.getCreationDate();
+	}
+
 }
