@@ -25,6 +25,8 @@ import android.view.Menu;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -122,11 +124,11 @@ public class VaccinationNewActivity extends BaseEditActivity<VaccinationEntity> 
             return; // don't save multiple times
         }
 
-        final VaccinationEntity vaccinationEntityToSave = getStoredRootEntity();
+        final VaccinationEntity vaccinationEntity = getStoredRootEntity();
         VaccinationEditFragment fragment = (VaccinationEditFragment) getActiveFragment();
 
-        if (vaccinationEntityToSave.getReportingUser() == null) {
-            vaccinationEntityToSave.setReportingUser(ConfigProvider.getUser());
+        if (vaccinationEntity.getReportingUser() == null) {
+            vaccinationEntity.setReportingUser(ConfigProvider.getUser());
         }
 
         fragment.setLiveValidationDisabled(false);
@@ -138,17 +140,21 @@ public class VaccinationNewActivity extends BaseEditActivity<VaccinationEntity> 
             return;
         }
 
-        saveTask = new SavingAsyncTask(getRootView(), vaccinationEntityToSave) {
+        saveTask = new SavingAsyncTask(getRootView(), vaccinationEntity) {
 
             @Override
             protected void onPreExecute() {
                 showPreloader();
             }
 
-            @Override
-            public void doInBackground(TaskResultHolder resultHolder) throws DaoException, ValidationException {
-                DatabaseHelper.getVaccinationDao().saveAndSnapshot(vaccinationEntityToSave);
-            }
+			@Override
+			public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
+				final VaccinationEntity savedVaccination = DatabaseHelper.getVaccinationDao().saveAndSnapshot(vaccinationEntity);
+				final Immunization immunization = DatabaseHelper.getImmunizationDao().queryUuid(vaccinationEntity.getImmunization().getUuid());
+				final List<VaccinationEntity> vaccinations = immunization.getVaccinations();
+				vaccinations.add(savedVaccination);
+				DatabaseHelper.getImmunizationDao().saveAndSnapshot(immunization);
+			}
 
             @Override
             protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
