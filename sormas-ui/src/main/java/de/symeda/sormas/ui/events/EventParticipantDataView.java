@@ -1,24 +1,20 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent.QUARANTINE_LOC;
-import static de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent.IMMUNIZATION_LOC;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
@@ -27,14 +23,17 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -50,6 +49,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 public class EventParticipantDataView extends AbstractDetailView<EventParticipantReferenceDto> {
 
@@ -60,6 +60,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 	public static final String EDIT_LOC = "edit";
 	public static final String SAMPLES_LOC = "samples";
 	public static final String CONTACTS_LOC = "contacts";
+	public static final String IMMUNIZATION_LOC = "immunizations";
 	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
 	public static final String HTML_LAYOUT = LayoutUtil.fluidRow(
@@ -183,8 +184,14 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
-				&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
-			ImmunizationListComponent.addImmunizationListComponent(layout, eventParticipant);
+			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+			final EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
+			final Disease disease = eventDto.getDisease();
+			if (disease != null) {
+				final ImmunizationListCriteria immunizationListCriteria =
+					new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).wihDisease(disease).build();
+				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
+			}
 		}
 	}
 

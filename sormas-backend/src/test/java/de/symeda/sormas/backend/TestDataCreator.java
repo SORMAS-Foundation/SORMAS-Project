@@ -437,7 +437,7 @@ public class TestDataCreator {
 	}
 
 	@NotNull
-	private ImmunizationDto createImmunizationDto(
+	public ImmunizationDto createImmunizationDto(
 		Disease disease,
 		PersonReferenceDto person,
 		UserReferenceDto reportingUser,
@@ -465,33 +465,24 @@ public class TestDataCreator {
 		UserReferenceDto reportingUser,
 		ImmunizationReferenceDto immunization,
 		HealthConditionsDto healthConditions) {
-		VaccinationDto vaccination = new VaccinationDto();
-		vaccination.setUuid(DataHelper.createUuid());
-		vaccination.setReportingUser(reportingUser);
-		vaccination.setReportDate(new Date());
-
-		vaccination.setImmunization(immunization);
-		vaccination.setHealthConditions(healthConditions);
+		VaccinationDto vaccination = createVaccinationDto(reportingUser, immunization, healthConditions);
 
 		return beanTest.getVaccinationFacade().save(vaccination);
 	}
 
-	public VaccinationDto createVaccinationEntity(
+	@NotNull
+	public VaccinationDto createVaccinationDto(
 		UserReferenceDto reportingUser,
 		ImmunizationReferenceDto immunization,
-		HealthConditionsDto healthConditions,
-		String vaccineType) {
+		HealthConditionsDto healthConditions) {
 		VaccinationDto vaccination = new VaccinationDto();
 		vaccination.setUuid(DataHelper.createUuid());
 		vaccination.setReportingUser(reportingUser);
 		vaccination.setReportDate(new Date());
-		vaccination.setVaccinationDate(new Date());
-		vaccination.setVaccineType(vaccineType);
 
 		vaccination.setImmunization(immunization);
 		vaccination.setHealthConditions(healthConditions);
-
-		return beanTest.getVaccinationFacade().save(vaccination);
+		return vaccination;
 	}
 
 	public TravelEntryDto createTravelEntry(

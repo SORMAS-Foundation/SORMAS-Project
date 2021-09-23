@@ -1,8 +1,7 @@
-## All continents
-"defaultName","externalId","archived"
-"Africa","31000005","FALSE"
-"America","31000006","FALSE"
-"Asia","31000004","FALSE"
-"Australia (Continent)","31000007","FALSE"
-"Europe","31000003","FALSE"
-"Foreign Countries (Unknown)","31099999","FALSE"
+defaultName,externalId,archived,uuid
+Africa,31000005,FALSE,c0e0244d-f0b8-5aa8-a440-07342db1545b
+America,31000006,FALSE,8979aa99-4fe8-5756-8923-5e2255086dac
+Asia,31000004,FALSE,3fab2b69-31cd-5765-91e3-d68826a6dd48
+Australia (Continent),31000007,FALSE,36e1b04c-d1b1-50d1-a0c5-b276d449dbdf
+Europe,31000003,FALSE,9d9b0ea0-7c5e-5223-9a9b-bc2e2f30abc4
+Foreign Countries (Unknown),31099999,FALSE,c927ab01-424b-50c5-b72b-5a4e3a40069c

@@ -23,7 +23,7 @@ import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.utils.DefaultUserHelper;
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
 
 public class DefaultPasswordUIHelper {
 
@@ -53,8 +53,8 @@ public class DefaultPasswordUIHelper {
 				originalLoginListener.loginSuccessful();
 			} else {
 				UserDto currentUser = FacadeProvider.getUserFacade().getCurrentUser();
-				boolean currentUserUsesDefaultPassword = DefaultUserHelper.currentUserUsesDefaultPassword(usersWithDefaultPassword, currentUser);
-				boolean otherUsersWithDefaultPassword = DefaultUserHelper.otherUsersUseDefaultPassword(usersWithDefaultPassword, currentUser);
+				boolean currentUserUsesDefaultPassword = DefaultEntityHelper.currentUserUsesDefaultPassword(usersWithDefaultPassword, currentUser);
+				boolean otherUsersWithDefaultPassword = DefaultEntityHelper.otherUsersUseDefaultPassword(usersWithDefaultPassword, currentUser);
 				if (currentUserUsesDefaultPassword) {
 					vaadinUI.addWindow(new ChangeDefaultUserPasswordWindow(otherUsersWithDefaultPassword ? () -> {
 						vaadinUI.addWindow(

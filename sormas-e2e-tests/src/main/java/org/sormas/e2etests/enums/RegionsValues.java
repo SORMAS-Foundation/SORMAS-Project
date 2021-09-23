@@ -20,17 +20,14 @@ package org.sormas.e2etests.enums;
 import lombok.Getter;
 
 @Getter
-public enum RegionUUIDs {
-  VoreingestellteBundeslander("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY");
+public enum RegionsValues {
+  VoreingestellteBundeslander("Voreingestellte Bundesl\u00E4nder", "RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY");
 
-  private final String option;
+  private final String name;
+  private final String uuid;
 
-  RegionUUIDs(String option) {
-    this.option = option;
-  }
-
-  @Override
-  public String toString() {
-    return this.option;
+  RegionsValues(String name, String uuid) {
+    this.name = name;
+    this.uuid = uuid;
   }
 }

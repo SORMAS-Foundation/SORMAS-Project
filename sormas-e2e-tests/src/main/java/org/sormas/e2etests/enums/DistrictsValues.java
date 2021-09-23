@@ -15,9 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.constants.api;
+package org.sormas.e2etests.enums;
 
-public interface JsonResourcesLocations {
-  String POST_CASES_BASIC_JSON_BODY = "src/test/resources/JsonFiles/PostCase-Basic.json";
-  String POST_PERSON_JSON_BODY = "src/test/resources/JsonFiles/PostPerson-Basic.json";
+import lombok.Getter;
+
+@Getter
+public enum DistrictsValues {
+  VoreingestellterLandkreis("Voreingestellter Landkreis", "SZ75BK-5OUMFU-V2DTKG-5BYACHFE");
+
+  private final String name;
+  private final String uuid;
+
+  DistrictsValues(String name, String uuid) {
+    this.name = name;
+    this.uuid = uuid;
+  }
 }

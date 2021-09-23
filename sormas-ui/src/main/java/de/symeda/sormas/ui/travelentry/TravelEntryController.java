@@ -89,12 +89,13 @@ public class TravelEntryController {
 							if (selectedPerson != null) {
 								dto.setPerson(selectedPerson);
 								FacadeProvider.getTravelEntryFacade().save(dto);
+								navigateToTravelEntry(dto.getUuid());
 							}
 						}, true);
 				} else {
 					FacadeProvider.getTravelEntryFacade().save(dto);
+					navigateToTravelEntry(dto.getUuid());
 				}
-				navigateToTravelEntry(dto.getUuid());
 			}
 		});
 

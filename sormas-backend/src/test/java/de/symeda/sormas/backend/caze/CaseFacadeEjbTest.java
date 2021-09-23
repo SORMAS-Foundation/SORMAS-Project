@@ -392,9 +392,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			user.toReference());
 
+		caze.setResponsibleRegion(new RegionReferenceDto(newRDCF.region.getUuid(), null, null));
+		caze.setResponsibleDistrict(new DistrictReferenceDto(newRDCF.district.getUuid(), null, null));
+		caze.setResponsibleCommunity(new CommunityReferenceDto(newRDCF.community.getUuid(), null, null));
+
 		caze.setRegion(new RegionReferenceDto(newRDCF.region.getUuid(), null, null));
 		caze.setDistrict(new DistrictReferenceDto(newRDCF.district.getUuid(), null, null));
 		caze.setCommunity(new CommunityReferenceDto(newRDCF.community.getUuid(), null, null));
+
 		caze.setHealthFacility(new FacilityReferenceDto(newRDCF.facility.getUuid(), null, null));
 		caze.setSurveillanceOfficer(caseOfficer.toReference());
 		CaseDataDto oldCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -411,8 +416,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(caze.getCommunity().getUuid(), newRDCF.community.getUuid());
 		assertEquals(caze.getHealthFacility().getUuid(), newRDCF.facility.getUuid());
 
-		// Pending task should've been reassigned to the case officer, done task should
-		// still be assigned to the surveillance supervisor
+		// Pending task is reassigned to the case officer
+		// Done task is not reassigned
 		assertEquals(pendingTask.getAssigneeUser().getUuid(), caseOfficer.getUuid());
 		assertEquals(doneTask.getAssigneeUser().getUuid(), user.getUuid());
 

@@ -7940,4 +7940,12 @@ ALTER TABLE task_history ADD COLUMN travelentry_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (404, 'Add TravelEntries to tasks #5844');
 
+-- 2021-09-13 - Vaccination drop details columns #5843
+ALTER TABLE vaccination DROP COLUMN vaccinenamedetails;
+ALTER TABLE vaccination DROP COLUMN vaccinemanufacturerdetails;
+ALTER TABLE vaccination_history DROP COLUMN vaccinenamedetails;
+ALTER TABLE vaccination_history DROP COLUMN vaccinemanufacturerdetails;
+
+INSERT INTO schema_version (version_number, comment) VALUES (405, 'Vaccination drop details columns #5843');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

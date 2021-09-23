@@ -14,7 +14,7 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
-public class DirectoryImmunizationJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
+public final class DirectoryImmunizationJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
 	private final DirectoryImmunizationJoins<?> joins;
 	private final User currentUser;

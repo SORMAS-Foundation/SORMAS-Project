@@ -81,8 +81,6 @@ public class CreateNewTaskSteps implements En {
     selectAssignedTo(task.getAssignedTo());
     selectPriority(task.getPriority());
     fillCommentsOnTask(task.getCommentsOnTask());
-    fillCommentsOnExecution(task.getCommentsOnExecution());
-    selectTaskStatus(task.getTaskStatus());
   }
 
   public void selectTaskType(String taskType) {
@@ -139,7 +137,6 @@ public class CreateNewTaskSteps implements En {
         .assignedTo(getAssignedToWithoutNoTasks())
         .priority(getPriority())
         .commentsOnTask(getCommentsOnTask())
-        .commentsOnExecution(getCommentsOnExecution())
         .taskStatus(getStatus())
         .build();
   }

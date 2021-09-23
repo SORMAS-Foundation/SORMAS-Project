@@ -87,11 +87,11 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -779,6 +779,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		ContactProximity contactProximity = contact.getContactProximity();
 		if (!diseaseConfigurationFacade.hasFollowUp(disease) || (contactProximity != null && !contactProximity.hasFollowUp())) {
 			contact.setFollowUpUntil(null);
+			contact.setOverwriteFollowUpUntil(false);
 			if (changeStatus) {
 				contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
 				statusChangedBySystem = true;

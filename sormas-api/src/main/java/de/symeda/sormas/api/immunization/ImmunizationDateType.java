@@ -11,6 +11,7 @@ public enum ImmunizationDateType {
 	LAST_VACCINATION_DATE,
 	FIRST_VACCINATION_DATE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
