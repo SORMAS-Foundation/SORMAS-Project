@@ -6,6 +6,9 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.utils.SortProperty;
+
 @Remote
 public interface AdditionalTestFacade {
 
@@ -22,4 +25,10 @@ public interface AdditionalTestFacade {
 	List<AdditionalTestDto> getByUuids(List<String> uuids);
 
 	List<String> getAllActiveUuids();
+
+	Page<AdditionalTestDto> getIndexPage(
+		AdditionalTestCriteria additionalTestCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties);
 }

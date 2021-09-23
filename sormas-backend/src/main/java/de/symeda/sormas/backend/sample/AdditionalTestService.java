@@ -17,6 +17,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.sample.AdditionalTestCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -59,6 +60,17 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public Predicate buildCriteriaFilter(AdditionalTestCriteria additionalTestCriteria, CriteriaBuilder cb, Root<AdditionalTest> from) {
+		Predicate filter = createActiveSamplesFilter(cb, from);
+
+		if (additionalTestCriteria.getSample() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.get(AdditionalTest.SAMPLE).get(Sample.UUID), additionalTestCriteria.getSample().getUuid()));
+		}
+
+		return filter;
 	}
 
 	public List<String> getAllActiveUuids(User user) {
