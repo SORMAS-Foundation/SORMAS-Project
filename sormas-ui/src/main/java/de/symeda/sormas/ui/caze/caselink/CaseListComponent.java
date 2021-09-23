@@ -19,7 +19,7 @@ public class CaseListComponent extends SideComponent {
 	public CaseListComponent(PersonReferenceDto personReferenceDto) {
 		super(I18nProperties.getString(Strings.entityCases));
 
-		CaseList caseList = new CaseList(personReferenceDto);
+		CaseList caseList = new CaseList(personReferenceDto.getUuid());
 		addComponent(caseList);
 		caseList.reload();
 

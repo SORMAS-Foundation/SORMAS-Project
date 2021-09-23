@@ -9,7 +9,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -17,18 +16,18 @@ import de.symeda.sormas.ui.utils.PaginationList;
 
 public class CaseList extends PaginationList<CaseListEntryDto> {
 
-	private final PersonReferenceDto personReferenceDto;
+	private final String personUuid;
 	private final Label noCaseLabel;
 
-	public CaseList(PersonReferenceDto personReferenceDto) {
+	public CaseList(String personUuid) {
 		super(5);
-		this.personReferenceDto = personReferenceDto;
+		this.personUuid = personUuid;
 		noCaseLabel = new Label(I18nProperties.getCaption(Captions.personNoCaseLinkedToPerson));
 	}
 
 	@Override
 	public void reload() {
-		List<CaseListEntryDto> casesList = FacadeProvider.getCaseFacade().getEntriesList(personReferenceDto, 0, maxDisplayedEntries * 20);
+		List<CaseListEntryDto> casesList = FacadeProvider.getCaseFacade().getEntriesList(personUuid, 0, maxDisplayedEntries * 20);
 
 		setEntries(casesList);
 		if (!casesList.isEmpty()) {

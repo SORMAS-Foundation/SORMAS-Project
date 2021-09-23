@@ -72,7 +72,6 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
@@ -1330,8 +1329,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<CaseListEntryDto> getEntriesList(PersonReferenceDto personReferenceDto, Integer first, Integer max) {
-		if (personReferenceDto == null) {
+	public List<CaseListEntryDto> getEntriesList(Long personId, Integer first, Integer max) {
+		if (personId == null) {
 			return Collections.emptyList();
 		}
 
@@ -1348,14 +1347,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			caze.get(Case.CASE_CLASSIFICATION),
 			caze.get(Case.CHANGE_DATE));
 
-		CaseCriteria caseCriteria = new CaseCriteria();
-		caseCriteria.setPerson(personReferenceDto);
-		caseCriteria.setIncludeCasesFromOtherJurisdictions(true);
-
-		final Predicate criteriaFilter = createCriteriaFilter(caseCriteria, caseQueryContext);
-		if (criteriaFilter != null) {
-			cq.where(criteriaFilter);
-		}
+		Predicate filter = cb.equal(caze.get(Case.PERSON_ID), personId);
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(caze.get(Case.DELETED)));
+		cq.where(filter);
 
 		cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
 
