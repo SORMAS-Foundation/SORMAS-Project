@@ -777,6 +777,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		ContactProximity contactProximity = contact.getContactProximity();
 		if (!diseaseConfigurationFacade.hasFollowUp(disease) || (contactProximity != null && !contactProximity.hasFollowUp())) {
 			contact.setFollowUpUntil(null);
+			contact.setOverwriteFollowUpUntil(false);
 			if (changeStatus) {
 				contact.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
 				statusChangedBySystem = true;

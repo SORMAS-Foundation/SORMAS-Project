@@ -40,13 +40,10 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 	private List<String> dateColumnIds = new ArrayList<>();
 
 	@SuppressWarnings("unchecked")
-	public <V extends View> ContactFollowUpGrid(ContactCriteria criteria, Date referenceDate, int interval, Class<V> viewClass) {
+	public <V extends View> ContactFollowUpGrid(ContactCriteria criteria, Class<V> viewClass) {
 
 		super(ContactFollowUpDto.class);
 		setSizeFull();
-
-		Date fromDate = DateHelper.subtractDays(referenceDate, interval - 1);
-		criteria.followUpUntilFrom(DateHelper.getStartOfDay(fromDate));
 
 		setColumns(
 			FollowUpDto.UUID,
@@ -58,7 +55,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 			FollowUpDto.FOLLOW_UP_UNTIL,
 			FollowUpDto.SYMPTOM_JOURNAL_STATUS);
 
-		setVisitColumns(referenceDate, interval, criteria);
+		setVisitColumns(criteria);
 
 		((Column<ContactFollowUpDto, String>) getColumn(ContactFollowUpDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.LAST_CONTACT_DATE))
@@ -83,7 +80,9 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 			new ShowDetailsListener<>(ContactFollowUpDto.UUID, e -> ControllerProvider.getContactController().navigateToData(e.getUuid())));
 	}
 
-	public void setVisitColumns(Date referenceDate, int interval, ContactCriteria criteria) {
+	public void setVisitColumns(ContactCriteria criteria) {
+		Date referenceDate = criteria.getFollowUpVisitsTo();
+		int interval = criteria.getFollowUpVisitsInterval();
 
 		setDataProvider(referenceDate, interval - 1);
 		setCriteria(criteria);

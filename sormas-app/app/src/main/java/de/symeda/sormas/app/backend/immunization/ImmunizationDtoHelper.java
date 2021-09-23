@@ -181,6 +181,7 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 		}
 
 		List<VaccinationDto> vaccinationDtos = new ArrayList<>();
+		DatabaseHelper.getImmunizationDao().initVaccinations(source);
 		if (!source.getVaccinations().isEmpty()) {
 			for (Vaccination vaccination : source.getVaccinations()) {
 				VaccinationDto vaccinationDto = vaccinationDtoHelper.adoToDto(vaccination);

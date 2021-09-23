@@ -45,9 +45,9 @@ public enum DiseasesValues {
   private final String diseaseCaption;
   private static Random random = new Random();
 
-  DiseasesValues(String aDisease, String aDiseaseCaption) {
-    diseaseName = aDisease;
-    diseaseCaption = aDiseaseCaption;
+  DiseasesValues(String diseaseName, String diseaseCaption) {
+    this.diseaseName = diseaseName;
+    this.diseaseCaption = diseaseCaption;
   }
 
   /** Returns values used for UI tests */

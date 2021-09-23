@@ -100,7 +100,7 @@ public class Case extends PseudonymizableAdo {
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String REGION = "region";
 	public static final String COMPLETENESS = "completeness";
-	public static final String VACCINATION = "vaccination";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;

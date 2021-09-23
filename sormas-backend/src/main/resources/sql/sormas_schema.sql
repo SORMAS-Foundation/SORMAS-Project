@@ -7940,6 +7940,14 @@ ALTER TABLE task_history ADD COLUMN travelentry_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (404, 'Add TravelEntries to tasks #5844');
 
+-- 2021-09-13 - Vaccination drop details columns #5843
+ALTER TABLE vaccination DROP COLUMN vaccinenamedetails;
+ALTER TABLE vaccination DROP COLUMN vaccinemanufacturerdetails;
+ALTER TABLE vaccination_history DROP COLUMN vaccinenamedetails;
+ALTER TABLE vaccination_history DROP COLUMN vaccinemanufacturerdetails;
+
+INSERT INTO schema_version (version_number, comment) VALUES (405, 'Vaccination drop details columns #5843');
+
 -- 2021-09-03 Vaccination refactoring #5909
 /* Vaccination refactoring */
 /* Step 1: Create a temporary table containing the latest vaccination information for each disease of each person */
@@ -8264,5 +8272,5 @@ UPDATE featureconfiguration SET enabled = true WHERE featuretype = 'IMMUNIZATION
 UPDATE featureconfiguration SET enabled = true WHERE featuretype = 'IMMUNIZATION_STATUS_AUTOMATION';
 /* End of vaccination refactoring */
 
-INSERT INTO schema_version (version_number, comment) VALUES (405, 'Vaccination refactoring #5909');
+INSERT INTO schema_version (version_number, comment) VALUES (406, 'Vaccination refactoring #5909');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

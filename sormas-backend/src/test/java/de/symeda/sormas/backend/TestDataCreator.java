@@ -443,7 +443,7 @@ public class TestDataCreator {
 	}
 
 	@NotNull
-	private ImmunizationDto createImmunizationDto(
+	public ImmunizationDto createImmunizationDto(
 		Disease disease,
 		PersonReferenceDto person,
 		UserReferenceDto reportingUser,
@@ -475,6 +475,21 @@ public class TestDataCreator {
 		return createVaccination(reportingUser, immunization, healthConditions, new Date(), null, null);
 	}
 
+	@NotNull
+	public VaccinationDto createVaccinationDto(
+		UserReferenceDto reportingUser,
+		ImmunizationReferenceDto immunization,
+		HealthConditionsDto healthConditions) {
+		VaccinationDto vaccination = new VaccinationDto();
+		vaccination.setUuid(DataHelper.createUuid());
+		vaccination.setReportingUser(reportingUser);
+		vaccination.setReportDate(new Date());
+
+		vaccination.setImmunization(immunization);
+		vaccination.setHealthConditions(healthConditions);
+		return vaccination;
+	}
+
 	public VaccinationDto createVaccination(
 		UserReferenceDto reportingUser,
 		ImmunizationReferenceDto immunization,
@@ -487,6 +502,10 @@ public class TestDataCreator {
 		vaccination.setUuid(DataHelper.createUuid());
 		vaccination.setReportingUser(reportingUser);
 		vaccination.setReportDate(new Date());
+		vaccination.setVaccinationDate(new Date());
+		vaccination.setVaccineName(vaccine);
+		vaccination.setVaccineManufacturer(vaccineManufacturer);
+
 		vaccination.setVaccinationDate(vaccinationDate);
 		vaccination.setImmunization(immunization);
 		vaccination.setHealthConditions(healthConditions);

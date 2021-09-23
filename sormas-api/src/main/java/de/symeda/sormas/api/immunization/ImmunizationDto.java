@@ -78,6 +78,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	public static final String START_DATE = "startDate";
 	public static final String VALID_FROM = "validFrom";
 	public static final String VALID_UNTIL = "validUntil";
+	public static final String VACCINATIONS = "vaccinations";
 
 	@Outbreaks
 	@Required
@@ -126,7 +127,6 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 
-	@Required
 	private Date startDate;
 	private Date endDate;
 	private Integer numberOfDoses;
@@ -401,4 +401,5 @@ public class ImmunizationDto extends PseudonymizableDto {
 	public void setVaccinations(List<VaccinationDto> vaccinations) {
 		this.vaccinations = vaccinations;
 	}
+
 }

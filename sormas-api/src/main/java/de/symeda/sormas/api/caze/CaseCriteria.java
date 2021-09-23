@@ -122,6 +122,9 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntilTo;
 	private Date followUpUntilFrom;
+	private Date followUpVisitsFrom;
+	private Date followUpVisitsTo;
+	private Integer followUpVisitsInterval;
 	private SymptomJournalStatus symptomJournalStatus;
 	private VaccinationStatus vaccinationStatus;
 	private Date reportDateTo;
@@ -684,5 +687,29 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public void setOnlyShowCasesWithFulfilledReferenceDefinition(Boolean onlyShowCasesWithFulfilledReferenceDefinition) {
 		this.onlyShowCasesWithFulfilledReferenceDefinition = onlyShowCasesWithFulfilledReferenceDefinition;
+	}
+
+	public Date getFollowUpVisitsFrom() {
+		return followUpVisitsFrom;
+	}
+
+	public void setFollowUpVisitsFrom(Date followUpVisitsFrom) {
+		this.followUpVisitsFrom = followUpVisitsFrom;
+	}
+
+	public Date getFollowUpVisitsTo() {
+		return followUpVisitsTo;
+	}
+
+	public void setFollowUpVisitsTo(Date followUpVisitsTo) {
+		this.followUpVisitsTo = followUpVisitsTo;
+	}
+
+	public Integer getFollowUpVisitsInterval() {
+		return followUpVisitsInterval;
+	}
+
+	public void setFollowUpVisitsInterval(Integer followUpVisitsInterval) {
+		this.followUpVisitsInterval = followUpVisitsInterval;
 	}
 }

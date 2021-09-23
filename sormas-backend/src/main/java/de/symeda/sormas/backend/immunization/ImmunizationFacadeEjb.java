@@ -30,7 +30,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -41,6 +40,7 @@ import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationFacade;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
+import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
@@ -48,7 +48,6 @@ import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.user.UserRight;
@@ -105,8 +104,6 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	private CaseService caseService;
 	@EJB
 	private CountryService countryService;
-	@EJB
-	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 	@EJB
 	private VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
@@ -258,6 +255,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		validate(dto);
 
 		existingImmunization = fillOrBuildEntity(dto, existingImmunization);
+		immunizationService.updateImmunizationStatusBasedOnVaccinations(existingImmunization);
 		immunizationService.ensurePersisted(existingImmunization);
 
 		updateVaccinationStatuses(existingImmunization, existingDto);
@@ -314,8 +312,9 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	@Override
-	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationCriteria criteria, Integer first, Integer max) {
-		return immunizationService.getEntriesList(criteria, first, max);
+	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationListCriteria criteria, Integer first, Integer max) {
+		Long personId = personService.getIdByUuid(criteria.getPerson().getUuid());
+		return immunizationService.getEntriesList(personId, criteria.getDisease(), first, max);
 	}
 
 	public static ImmunizationDto toDto(Immunization entity) {
@@ -427,19 +426,18 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 		if (foundCaseUuid != null) {
 			CaseDataDto caseDataDto = caseFacade.getCaseDataByUuid(foundCaseUuid);
-			List<String> samples = sampleFacade
-					.getByCaseUuids(Collections.singletonList(caseDataDto.getUuid()))
-					.stream()
-					.map(EntityDto::getUuid)
-					.collect(Collectors.toList());
+			List<String> samples = sampleFacade.getByCaseUuids(Collections.singletonList(caseDataDto.getUuid()))
+				.stream()
+				.map(EntityDto::getUuid)
+				.collect(Collectors.toList());
 			List<PathogenTestDto> pathogenTestDto = pathogenTestFacade.getBySampleUuids(samples);
 			PathogenTestDto relevantPathogenTest = pathogenTestDto.stream()
-					.filter(
-							pathogenTest -> pathogenTest.getTestedDisease().equals(caseDataDto.getDisease())
-									&& PathogenTestResultType.POSITIVE.equals(pathogenTest.getTestResult()))
-					.sorted(Comparator.comparing(PathogenTestDto::getTestDateTime))
-					.findFirst()
-					.orElse(null);
+				.filter(
+					pathogenTest -> pathogenTest.getTestedDisease().equals(caseDataDto.getDisease())
+						&& PathogenTestResultType.POSITIVE.equals(pathogenTest.getTestResult()))
+				.sorted(Comparator.comparing(PathogenTestDto::getTestDateTime))
+				.findFirst()
+				.orElse(null);
 
 			immunization.setRelatedCase(new CaseReferenceDto(foundCaseUuid));
 			if (relevantPathogenTest != null) {
@@ -466,8 +464,11 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	}
 
 	protected void updateVaccinationStatuses(Immunization updatedImmunization, ImmunizationDto currentImmunization) {
-		if (currentImmunization == null
-			|| (updatedImmunization.getImmunizationStatus() == ImmunizationStatus.ACQUIRED
+		if ((updatedImmunization.getMeansOfImmunization() == MeansOfImmunization.VACCINATION
+			|| updatedImmunization.getMeansOfImmunization() == MeansOfImmunization.VACCINATION_RECOVERY)
+			&& (currentImmunization == null && updatedImmunization.getImmunizationStatus() == ImmunizationStatus.ACQUIRED)
+			|| (currentImmunization != null
+				&& updatedImmunization.getImmunizationStatus() == ImmunizationStatus.ACQUIRED
 				&& currentImmunization.getImmunizationStatus() != ImmunizationStatus.ACQUIRED
 				&& updatedImmunization.getValidFrom() != null)) {
 			caseService.updateVaccinationStatuses(

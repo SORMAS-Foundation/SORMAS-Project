@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import de.symeda.sormas.api.feature.FeatureType;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -42,6 +41,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.document.DocumentDto;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -149,6 +149,7 @@ public class DocumentListComponent extends VerticalLayout {
 
 		// TODO: show content-type and/or size?
 		Label nameLabel = new Label(DataHelper.toStringNullable(document.getName()));
+		nameLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 		res.addComponent(nameLabel);
 		res.setExpandRatio(nameLabel, 1);
 

@@ -2203,33 +2203,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 
 			User taskAssignee = task.getAssigneeUser();
-			boolean mismatch = false;
 
-			if (taskAssignee == null) {
-				// no one is assigned so we skip detailed checks and go directly to reassignment.
-				mismatch = true;
-			} else if (!forceReassignment) {
-				boolean responsibleRegionMismatch = !DataHelper.isSame(taskAssignee.getRegion(), caze.getResponsibleRegion());
-				boolean regionMismatch = !DataHelper.isSame(taskAssignee.getRegion(), caze.getRegion());
-
-				boolean responsibleDistrictMismatch = !DataHelper.isSame(taskAssignee.getDistrict(), caze.getResponsibleDistrict());
-				boolean districtMismatch = !DataHelper.isSame(taskAssignee.getDistrict(), caze.getDistrict());
-
-				boolean responsibleCommunityMismatch = !DataHelper.isSame(taskAssignee.getCommunity(), caze.getResponsibleCommunity());
-				boolean communityMismatch = !DataHelper.isSame(taskAssignee.getCommunity(), caze.getCommunity());
-
-				boolean facilityMismatch = !DataHelper.isSame(taskAssignee.getHealthFacility(), caze.getHealthFacility());
-
-				mismatch = responsibleRegionMismatch
-					|| responsibleDistrictMismatch
-					|| responsibleCommunityMismatch
-					|| regionMismatch
-					|| districtMismatch
-					|| communityMismatch
-					|| facilityMismatch;
-			}
-
-			if (forceReassignment || mismatch) {
+			if (forceReassignment || taskAssignee == null || !caseService.inJurisdiction(caze, taskAssignee)) {
 				// if there is any mismatch between the jurisdiction of the case and the assigned user,
 				// we need to reassign the tasks
 				assignOfficerOrSupervisorToTask(caze, task);
@@ -2409,7 +2384,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		Case caze = caseService.getByUuid(caseUuid);
+		deleteCase(caze);
+	}
 
+	private void deleteCase(Case caze) throws ExternalSurveillanceToolException {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
 			List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());
@@ -2426,13 +2404,18 @@ public class CaseFacadeEjb implements CaseFacade {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
 		}
 		List<String> deletedCasesUuids = new ArrayList<>();
-		for (String caseUuid : caseUuids) {
-			try {
-				deleteCase(caseUuid);
-				deletedCasesUuids.add(caseUuid);
-			} catch (ExternalSurveillanceToolException e) {
-				logger.error("The case with uuid:" + caseUuid + "could not be deleted");
-			}
+		List<Case> casesToBeDeleted = caseService.getByUuids(caseUuids);
+		if (casesToBeDeleted != null) {
+			casesToBeDeleted.forEach(caseToBeDeleted -> {
+				if (!caseToBeDeleted.isDeleted()) {
+					try {
+						deleteCase(caseToBeDeleted);
+						deletedCasesUuids.add(caseToBeDeleted.getUuid());
+					} catch (ExternalSurveillanceToolException e) {
+						logger.error("The case with uuid:" + caseToBeDeleted.getUuid() + "could not be deleted");
+					}
+				}
+			});
 		}
 		return deletedCasesUuids;
 	}

@@ -34,8 +34,6 @@ import retrofit2.Call;
 public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, EventParticipantDto> {
 
 	private PersonDtoHelper personHelper = new PersonDtoHelper();
-	// TODO [vaccination info] integrate vaccination info
-//	private VaccinationInfoDtoHelper vaccinationInfoDtoHelper = new VaccinationInfoDtoHelper();
 
 	private SormasToSormasOriginInfoDtoHelper sormasToSormasOriginInfoDtoHelper = new SormasToSormasOriginInfoDtoHelper();
 

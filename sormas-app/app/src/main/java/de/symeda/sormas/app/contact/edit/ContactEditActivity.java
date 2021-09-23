@@ -43,6 +43,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.epidata.EpidemiologicalDataEditFragment;
+import de.symeda.sormas.app.immunization.edit.ImmunizationNewActivity;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.task.edit.TaskNewActivity;
 import de.symeda.sormas.app.util.Bundler;
@@ -197,6 +198,9 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 			break;
 		case TASKS:
 			TaskNewActivity.startActivityFromContact(getContext(), getRootUuid());
+			break;
+		case IMMUNIZATIONS:
+			ImmunizationNewActivity.startActivityFromContact(getContext(), getRootUuid());
 			break;
 		default:
 			throw new IllegalArgumentException(activeSection.toString());

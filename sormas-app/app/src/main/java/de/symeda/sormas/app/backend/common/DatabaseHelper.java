@@ -2742,10 +2742,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ " vaccinationDate timestamp,"
 						+ " vaccineName varchar(255),"
 						+ " otherVaccineName text,"
-						+ " vaccineNameDetails text,"
 						+ " vaccineManufacturer varchar(255),"
 						+ " otherVaccineManufacturer text,"
-						+ " vaccineManufacturerDetails text,"
 						+ " vaccineInn text,"
 						+ " vaccineBatchNumber text,"
 						+ " vaccineUniiCode text,"
@@ -2838,6 +2836,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Case.class).executeRaw("UPDATE cases SET vaccinationDate = null WHERE disease != 'MONKEYPOX';");
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN vaccinationStatus varchar(255);");
 				getDao(EventParticipant.class).executeRaw("ALTER TABLE eventParticipants ADD COLUMN vaccinationStatus varchar(255);");
+
 				// ATTENTION: break should only be done after last version
 				break;
 

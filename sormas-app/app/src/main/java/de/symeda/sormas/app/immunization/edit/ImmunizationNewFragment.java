@@ -15,14 +15,14 @@
 
 package de.symeda.sormas.app.immunization.edit;
 
+import android.view.View;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import android.view.View;
-
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
@@ -63,7 +63,7 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 	private List<Item> initialResponsibleCommunities;
 
 	private List<Item> initialFacilities;
-	private List<Item> facilityOrHomeList;
+	private List<Item> facilityTypeList;
 	private List<Item> facilityTypeGroupList;
 
 	public static ImmunizationNewFragment newInstance(Immunization activityRootData) {
@@ -123,8 +123,9 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 		initialFacilities =
 			InfrastructureDaoHelper.loadFacilities(record.getResponsibleDistrict(), record.getResponsibleCommunity(), record.getFacilityType());
 
-		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.FOR_CASES, true);
-		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
+		facilityTypeGroupList = DataUtils.toItems(Arrays.asList(FacilityTypeGroup.values()), true);
+		facilityTypeList =
+			record.getFacilityType() != null ? DataUtils.toItems(FacilityType.getTypes(record.getFacilityType().getFacilityTypeGroup())) : null;
 	}
 
 	@Override
@@ -145,20 +146,16 @@ public class ImmunizationNewFragment extends BaseEditFragment<FragmentImmunizati
 			initialResponsibleCommunities,
 			record.getResponsibleCommunity(),
 			null,
-			facilityOrHomeList,
+			null,
 			contentBinding.facilityTypeGroup,
 			facilityTypeGroupList,
 			contentBinding.immunizationFacilityType,
-			null,
+			facilityTypeList,
 			contentBinding.immunizationHealthFacility,
 			initialFacilities,
 			record.getHealthFacility(),
 			contentBinding.immunizationHealthFacilityDetails,
-			null,
-			null,
-			null,
-			false,
-			() -> false);
+			true);
 
 		// Initialize ControlSpinnerFields
 		contentBinding.immunizationDisease.initializeSpinner(diseaseList);

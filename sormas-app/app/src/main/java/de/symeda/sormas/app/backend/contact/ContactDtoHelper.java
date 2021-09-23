@@ -47,8 +47,6 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 	private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
 	private HealthConditionsDtoHelper healthConditionsDtoHelper = new HealthConditionsDtoHelper();
 	private SormasToSormasOriginInfoDtoHelper sormasToSormasOriginInfoDtoHelper = new SormasToSormasOriginInfoDtoHelper();
-	// TODO [vaccination info] integrate vaccination info
-	//	private VaccinationInfoDtoHelper vaccinationInfoDtoHelper = new VaccinationInfoDtoHelper();
 
 	public ContactDtoHelper() {
 	}

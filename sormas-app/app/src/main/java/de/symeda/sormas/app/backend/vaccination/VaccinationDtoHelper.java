@@ -54,10 +54,8 @@ public class VaccinationDtoHelper extends AdoDtoHelper<Vaccination, VaccinationD
 		target.setVaccinationDate(source.getVaccinationDate());
 		target.setVaccineName(source.getVaccineName());
 		target.setOtherVaccineName(source.getOtherVaccineName());
-		target.setVaccineNameDetails(source.getVaccineNameDetails());
 		target.setVaccineManufacturer(source.getVaccineManufacturer());
 		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
-		target.setVaccineManufacturerDetails(source.getVaccineManufacturerDetails());
 		target.setVaccineType(source.getVaccineType());
 		target.setVaccineDose(source.getVaccineDose());
 		target.setVaccineInn(source.getVaccineInn());
@@ -97,10 +95,8 @@ public class VaccinationDtoHelper extends AdoDtoHelper<Vaccination, VaccinationD
 		target.setVaccinationDate(source.getVaccinationDate());
 		target.setVaccineName(source.getVaccineName());
 		target.setOtherVaccineName(source.getOtherVaccineName());
-		target.setVaccineNameDetails(source.getVaccineNameDetails());
 		target.setVaccineManufacturer(source.getVaccineManufacturer());
 		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
-		target.setVaccineManufacturerDetails(source.getVaccineManufacturerDetails());
 		target.setVaccineType(source.getVaccineType());
 		target.setVaccineDose(source.getVaccineDose());
 		target.setVaccineInn(source.getVaccineInn());
