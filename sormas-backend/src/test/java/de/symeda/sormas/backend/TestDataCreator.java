@@ -45,6 +45,8 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.caze.surveillancereport.ReportingType;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
@@ -413,10 +415,14 @@ public class TestDataCreator {
 		ImmunizationManagementStatus immunizationManagementStatus,
 		RDCF rdcf,
 		Date startDate,
+		Date endDate,
+		Date validFromDate,
 		Date validUntilDate) {
 		ImmunizationDto immunization =
 			createImmunizationDto(disease, person, reportingUser, immunizationStatus, meansOfImmunization, immunizationManagementStatus, rdcf);
 		immunization.setStartDate(startDate);
+		immunization.setEndDate(endDate);
+		immunization.setValidFrom(validFromDate);
 		immunization.setValidUntil(validUntilDate);
 
 		return beanTest.getImmunizationFacade().save(immunization);
@@ -461,7 +467,16 @@ public class TestDataCreator {
 		return immunization;
 	}
 
-	public VaccinationDto createVaccinationEntity(
+	public VaccinationDto createVaccination(
+		UserReferenceDto reportingUser,
+		ImmunizationReferenceDto immunization,
+		HealthConditionsDto healthConditions) {
+
+		return createVaccination(reportingUser, immunization, healthConditions, new Date(), null, null);
+	}
+
+	@NotNull
+	public VaccinationDto createVaccinationDto(
 		UserReferenceDto reportingUser,
 		ImmunizationReferenceDto immunization,
 		HealthConditionsDto healthConditions) {
@@ -472,22 +487,26 @@ public class TestDataCreator {
 
 		vaccination.setImmunization(immunization);
 		vaccination.setHealthConditions(healthConditions);
-
-		return beanTest.getVaccinationFacade().save(vaccination);
+		return vaccination;
 	}
 
-	public VaccinationDto createVaccinationEntity(
+	public VaccinationDto createVaccination(
 		UserReferenceDto reportingUser,
 		ImmunizationReferenceDto immunization,
 		HealthConditionsDto healthConditions,
-		String vaccineType) {
+		Date vaccinationDate,
+		Vaccine vaccine,
+		VaccineManufacturer vaccineManufacturer) {
+
 		VaccinationDto vaccination = new VaccinationDto();
 		vaccination.setUuid(DataHelper.createUuid());
 		vaccination.setReportingUser(reportingUser);
 		vaccination.setReportDate(new Date());
 		vaccination.setVaccinationDate(new Date());
-		vaccination.setVaccineType(vaccineType);
+		vaccination.setVaccineName(vaccine);
+		vaccination.setVaccineManufacturer(vaccineManufacturer);
 
+		vaccination.setVaccinationDate(vaccinationDate);
 		vaccination.setImmunization(immunization);
 		vaccination.setHealthConditions(healthConditions);
 
@@ -732,6 +751,24 @@ public class TestDataCreator {
 	public EventDto createEvent(UserReferenceDto reportingUser) {
 
 		return createEvent(reportingUser, new Date());
+	}
+
+	public EventDto createEvent(UserReferenceDto reportingUser, Disease disease) {
+		return createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"title",
+			"description",
+			"firstname",
+			"lastname",
+			null,
+			null,
+			new Date(),
+			new Date(),
+			reportingUser,
+			null,
+			disease,
+			null);
 	}
 
 	public EventDto createEvent(UserReferenceDto reportingUser, Date eventDate) {

@@ -121,22 +121,10 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String MATERNAL_HISTORY = "maternalHistory";
 	public static final String PORT_HEALTH_INFO = "portHealthInfo";
 	public static final String PREGNANT = "pregnant";
-	public static final String VACCINATION = "vaccination";
-	public static final String VACCINATION_DOSES = "vaccinationDoses";
-	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
-	public static final String FIRST_VACCINATION_DATE = "firstVaccinationDate";
-	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
-	public static final String VACCINE_NAME = "vaccineName";
-	public static final String OTHER_VACCINE_NAME = "otherVaccineName";
-	public static final String VACCINE_MANUFACTURER = "vaccineManufacturer";
-	public static final String OTHER_VACCINE_MANUFACTURER = "otherVaccineManufacturer";
-	public static final String VACCINE_INN = "vaccineInn";
-	public static final String VACCINE_BATCH_NUMBER = "vaccineBatchNumber";
-	public static final String VACCINE_UNII_CODE = "vaccineUniiCode";
-	public static final String VACCINE_ATC_CODE = "vaccineAtcCode";
-	public static final String VACCINE = "vaccine";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
 	public static final String SMALLPOX_VACCINATION_RECEIVED = "smallpoxVaccinationReceived";
+	public static final String SMALLPOX_LAST_VACCINATION_DATE = "smallpoxLastVaccinationDate";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -332,150 +320,16 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		Disease.CORONAVIRUS,
 		Disease.OTHER })
 	@Outbreaks
-	private Vaccination vaccination;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.CSM,
-		Disease.YELLOW_FEVER,
-		Disease.RABIES,
-		Disease.UNSPECIFIED_VHF,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	@Outbreaks
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
-	private String vaccinationDoses;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.MONKEYPOX,
-		Disease.UNSPECIFIED_VHF,
-		Disease.RABIES,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	@Outbreaks
-	private Date firstVaccinationDate;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.MONKEYPOX,
-		Disease.UNSPECIFIED_VHF,
-		Disease.RABIES,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	@Outbreaks
-	private Date lastVaccinationDate;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.RABIES,
-		Disease.UNSPECIFIED_VHF,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	private VaccinationInfoSource vaccinationInfoSource;
-	@Diseases({
-		Disease.CORONAVIRUS })
-	private Vaccine vaccineName;
-	@Diseases({
-		Disease.CORONAVIRUS })
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
-	private String otherVaccineName;
-	@Diseases({
-		Disease.CORONAVIRUS, })
-	private VaccineManufacturer vaccineManufacturer;
-	@Diseases({
-		Disease.CORONAVIRUS, })
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
-	private String otherVaccineManufacturer;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.RABIES,
-		Disease.UNSPECIFIED_VHF,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
-	private String vaccineInn;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.RABIES,
-		Disease.UNSPECIFIED_VHF,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
-	private String vaccineBatchNumber;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.RABIES,
-		Disease.UNSPECIFIED_VHF,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
-	private String vaccineUniiCode;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.MEASLES,
-		Disease.POLIO,
-		Disease.YELLOW_FEVER,
-		Disease.CSM,
-		Disease.RABIES,
-		Disease.UNSPECIFIED_VHF,
-		Disease.ANTHRAX,
-		Disease.CORONAVIRUS,
-		Disease.OTHER })
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
-	private String vaccineAtcCode;
-	@Diseases({
-		Disease.AFP,
-		Disease.GUINEA_WORM,
-		Disease.POLIO,
-		Disease.RABIES,
-		Disease.OTHER })
-	@Outbreaks
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
-	private String vaccine;
+	private VaccinationStatus vaccinationStatus;
 	@Diseases({
 		Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationScar;
 	@Diseases({
 		Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationReceived;
+	@Diseases({
+		Disease.MONKEYPOX })
+	private Date smallpoxLastVaccinationDate;
 	@Outbreaks
 	@SensitiveData
 	private UserReferenceDto surveillanceOfficer;
@@ -1143,92 +997,12 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		this.pregnant = pregnant;
 	}
 
-	public Vaccination getVaccination() {
-		return vaccination;
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
 	}
 
-	public void setVaccination(Vaccination vaccination) {
-		this.vaccination = vaccination;
-	}
-
-	public String getVaccinationDoses() {
-		return vaccinationDoses;
-	}
-
-	public void setVaccinationDoses(String vaccinationDoses) {
-		this.vaccinationDoses = vaccinationDoses;
-	}
-
-	public VaccinationInfoSource getVaccinationInfoSource() {
-		return vaccinationInfoSource;
-	}
-
-	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
-		this.vaccinationInfoSource = vaccinationInfoSource;
-	}
-
-	public Vaccine getVaccineName() {
-		return vaccineName;
-	}
-
-	public void setVaccineName(Vaccine vaccineName) {
-		this.vaccineName = vaccineName;
-	}
-
-	public String getOtherVaccineName() {
-		return otherVaccineName;
-	}
-
-	public void setOtherVaccineName(String otherVaccineName) {
-		this.otherVaccineName = otherVaccineName;
-	}
-
-	public VaccineManufacturer getVaccineManufacturer() {
-		return vaccineManufacturer;
-	}
-
-	public void setVaccineManufacturer(VaccineManufacturer vaccineManufacturer) {
-		this.vaccineManufacturer = vaccineManufacturer;
-	}
-
-	public String getOtherVaccineManufacturer() {
-		return otherVaccineManufacturer;
-	}
-
-	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
-		this.otherVaccineManufacturer = otherVaccineManufacturer;
-	}
-
-	public String getVaccineInn() {
-		return vaccineInn;
-	}
-
-	public void setVaccineInn(String vaccineInn) {
-		this.vaccineInn = vaccineInn;
-	}
-
-	public String getVaccineBatchNumber() {
-		return vaccineBatchNumber;
-	}
-
-	public void setVaccineBatchNumber(String vaccineBatchNumber) {
-		this.vaccineBatchNumber = vaccineBatchNumber;
-	}
-
-	public String getVaccineUniiCode() {
-		return vaccineUniiCode;
-	}
-
-	public void setVaccineUniiCode(String vaccineUniiCode) {
-		this.vaccineUniiCode = vaccineUniiCode;
-	}
-
-	public String getVaccineAtcCode() {
-		return vaccineAtcCode;
-	}
-
-	public void setVaccineAtcCode(String vaccineAtcCode) {
-		this.vaccineAtcCode = vaccineAtcCode;
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
 	}
 
 	public YesNoUnknown getSmallpoxVaccinationScar() {
@@ -1247,28 +1021,12 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
 	}
 
-	public Date getFirstVaccinationDate() {
-		return firstVaccinationDate;
+	public Date getSmallpoxLastVaccinationDate() {
+		return smallpoxLastVaccinationDate;
 	}
 
-	public void setFirstVaccinationDate(Date firstVaccinationDate) {
-		this.firstVaccinationDate = firstVaccinationDate;
-	}
-
-	public Date getLastVaccinationDate() {
-		return lastVaccinationDate;
-	}
-
-	public void setLastVaccinationDate(Date lastVaccinationDate) {
-		this.lastVaccinationDate = lastVaccinationDate;
-	}
-
-	public String getVaccine() {
-		return vaccine;
-	}
-
-	public void setVaccine(String vaccine) {
-		this.vaccine = vaccine;
+	public void setSmallpoxLastVaccinationDate(Date smallpoxLastVaccinationDate) {
+		this.smallpoxLastVaccinationDate = smallpoxLastVaccinationDate;
 	}
 
 	public String getEpidNumber() {

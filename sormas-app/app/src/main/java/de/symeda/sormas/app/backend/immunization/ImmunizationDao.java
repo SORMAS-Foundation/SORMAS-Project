@@ -15,29 +15,31 @@
 
 package de.symeda.sormas.app.backend.immunization;
 
-import android.util.Log;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
+import static de.symeda.sormas.app.backend.immunization.ImmunizationDaoHelper.overlappingDateRangeImmunizations;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
+import android.util.Log;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.vaccination.Vaccination;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
-
-import static de.symeda.sormas.app.backend.immunization.ImmunizationDaoHelper.overlappingDateRangeImmunizations;
 
 public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 
@@ -53,6 +55,33 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 	@Override
 	public String getTableName() {
 		return Immunization.TABLE_NAME;
+	}
+
+	@Override
+	public Immunization queryUuid(String uuid) {
+		Immunization immunization = super.queryUuid(uuid);
+		if (immunization != null) {
+			initVaccinations(immunization);
+		}
+		return immunization;
+	}
+
+	@Override
+	public Immunization queryForId(Long id) {
+		Immunization immunization = super.queryForId(id);
+		if (immunization != null) {
+			initVaccinations(immunization);
+		}
+		return immunization;
+	}
+
+	@Override
+	public Immunization querySnapshotByUuid(String uuid) {
+		Immunization immunization = super.querySnapshotByUuid(uuid);
+		if (immunization != null) {
+			initVaccinations(immunization);
+		}
+		return immunization;
 	}
 
 	public List<Immunization> getAll() {
@@ -194,4 +223,34 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 		}
 	}
 
+	public Immunization initVaccinations(Immunization immunization) {
+		immunization.setVaccinations(DatabaseHelper.getVaccinationDao().getByImmunization(immunization));
+		return immunization;
+	}
+
+	@Override
+	public Immunization saveAndSnapshot(final Immunization immunization) throws DaoException {
+
+		Immunization snapshot = super.saveAndSnapshot(immunization);
+
+		return snapshot;
+	}
+
+	@Override
+	public Date getLatestChangeDate() {
+		Date date = super.getLatestChangeDate();
+		if (date == null) {
+			return null;
+		}
+
+		String query = "SELECT MAX(v." + AbstractDomainObject.CHANGE_DATE + ") FROM " + Vaccination.TABLE_NAME + " AS v" + " LEFT JOIN "
+			+ Immunization.TABLE_NAME + " AS i ON i." + AbstractDomainObject.ID + " = v." + Vaccination.IMMUNIZATION + "_ID";
+		Date vaccinationDate = getLatestChangeDateJoinFromQuery(query);
+
+		if (vaccinationDate != null && vaccinationDate.after(date)) {
+			date = vaccinationDate;
+		}
+
+		return date;
+	}
 }

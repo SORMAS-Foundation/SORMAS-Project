@@ -30,6 +30,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactIdentificationSource;
@@ -88,6 +89,7 @@ public class Contact extends PseudonymizableAdo {
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date reportDateTime;
@@ -254,9 +256,8 @@ public class Contact extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User followUpStatusChangeUser;
 
-	// TODO [vaccination info] integrate vaccination info
-//	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-//	private VaccinationInfo vaccinationInfo;
+	@Enumerated(EnumType.STRING)
+	private VaccinationStatus vaccinationStatus;
 
 	public Person getPerson() {
 		return person;
@@ -874,12 +875,11 @@ public class Contact extends PseudonymizableAdo {
 		this.followUpStatusChangeUser = followUpStatusChangeUser;
 	}
 
-	// TODO [vaccination info] integrate vaccination info
-//	public VaccinationInfo getVaccinationInfo() {
-//		return vaccinationInfo;
-//	}
-//
-//	public void setVaccinationInfo(VaccinationInfo vaccinationInfo) {
-//		this.vaccinationInfo = vaccinationInfo;
-//	}
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
+	}
+
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
+	}
 }

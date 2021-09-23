@@ -14,6 +14,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.ContactOutcome;
+import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -63,12 +64,12 @@ public class ContactsDetailedTableViewSteps implements En {
               .assertThat(
                   detailedContactDTableRow.get(
                       ContactsDetailedTableViewHeaders.FIRST_NAME_OF_CONTACT_PERSON.toString()))
-              .containsIgnoringCase(apiState.getCreatedContact().getPerson().getFirstName());
+              .containsIgnoringCase(apiState.getLastCreatedPerson().getFirstName());
           softly
               .assertThat(
                   detailedContactDTableRow.get(
                       ContactsDetailedTableViewHeaders.LAST_NAME_OF_CONTACT_PERSON.toString()))
-              .containsIgnoringCase(apiState.getCreatedContact().getPerson().getLastName());
+              .containsIgnoringCase(apiState.getLastCreatedPerson().getLastName());
           softly
               .assertThat(
                   detailedContactDTableRow.get(
@@ -98,12 +99,12 @@ public class ContactsDetailedTableViewSteps implements En {
               .assertThat(
                   detailedContactDTableRow.get(
                       ContactsDetailedTableViewHeaders.COMPLETENESS.toString()))
-              .containsIgnoringCase("15 %");
+              .containsIgnoringCase("25 %");
           softly
               .assertThat(
                   detailedContactDTableRow.get(
                       ContactsDetailedTableViewHeaders.REPORTING_USER.toString()))
-              .containsIgnoringCase("Rest AUTOMATION");
+              .containsIgnoringCase(TestDataUser.REST_AUTOMATION.getUserRole());
           softly.assertAll();
         });
   }

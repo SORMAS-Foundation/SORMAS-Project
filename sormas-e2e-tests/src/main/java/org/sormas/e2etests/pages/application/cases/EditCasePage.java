@@ -95,4 +95,5 @@ public class EditCasePage {
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By DELETE_BUTTON = By.id("delete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
+  public static final By CASE_SAVED_POPUP = By.xpath("//*[contains(text(), 'Case saved')]");
 }

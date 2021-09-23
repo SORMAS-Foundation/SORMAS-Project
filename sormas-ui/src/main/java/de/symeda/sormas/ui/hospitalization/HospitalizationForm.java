@@ -18,9 +18,6 @@
 package de.symeda.sormas.ui.hospitalization;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
@@ -41,9 +38,6 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -51,6 +45,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -70,6 +67,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final String HOSPITALIZATION_HEADING_LOC = "hospitalizationHeadingLoc";
+	private static final String PREVIOUS_HOSPITALIZATIONS_HEADING_LOC = "previousHospitalizationsHeadingLoc";
 	private static final String HEALTH_FACILITY = Captions.CaseHospitalization_healthFacility;
 	private final CaseDataDto caze;
 	private final ViewMode viewMode;
@@ -90,8 +88,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 							HospitalizationDto.INTENSIVE_CARE_UNIT_END)
 					+ fluidRowLocs(HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE, "")
 					+
-			fluidRow(
-					fluidColumnLocCss(VSPACE_TOP_3, 6, 0, HospitalizationDto.HOSPITALIZED_PREVIOUSLY)) +
+			loc(PREVIOUS_HOSPITALIZATIONS_HEADING_LOC) +
+			fluidRowLocs(HospitalizationDto.HOSPITALIZED_PREVIOUSLY) +
 			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS);
 	//@formatter:on
 
@@ -118,6 +116,10 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		Label hospitalizationHeadingLabel = new Label(I18nProperties.getString(Strings.headingHospitalization));
 		hospitalizationHeadingLabel.addStyleName(H3);
 		getContent().addComponent(hospitalizationHeadingLabel, HOSPITALIZATION_HEADING_LOC);
+
+		Label previousHospitalizationsHeadingLabel = new Label(I18nProperties.getString(Strings.headingPreviousHospitalizations));
+		previousHospitalizationsHeadingLabel.addStyleName(H3);
+		getContent().addComponent(previousHospitalizationsHeadingLabel, PREVIOUS_HOSPITALIZATIONS_HEADING_LOC);
 
 		TextField facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, TextField.class);
 		FacilityReferenceDto healthFacility = caze.getHealthFacility();

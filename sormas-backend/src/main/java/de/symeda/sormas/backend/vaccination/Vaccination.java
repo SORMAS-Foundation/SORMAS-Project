@@ -41,9 +41,11 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.user.User;
 
-@Entity(name = "vaccination")
+@Entity
 @Audited
-public class VaccinationEntity extends AbstractDomainObject {
+public class Vaccination extends AbstractDomainObject {
+
+	private static final long serialVersionUID = 5143588610408312351L;
 
 	public static final String IMMUNIZATION = "immunization";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
@@ -72,10 +74,8 @@ public class VaccinationEntity extends AbstractDomainObject {
 	private Date vaccinationDate;
 	private Vaccine vaccineName;
 	private String otherVaccineName;
-	private String vaccineNameDetails;
 	private VaccineManufacturer vaccineManufacturer;
 	private String otherVaccineManufacturer;
-	private String vaccineManufacturerDetails;
 	private String vaccineType;
 	private String vaccineDose;
 	private String vaccineInn;
@@ -153,15 +153,6 @@ public class VaccinationEntity extends AbstractDomainObject {
 		this.otherVaccineName = otherVaccineName;
 	}
 
-	@Column(columnDefinition = "text")
-	public String getVaccineNameDetails() {
-		return vaccineNameDetails;
-	}
-
-	public void setVaccineNameDetails(String vaccineNameDetails) {
-		this.vaccineNameDetails = vaccineNameDetails;
-	}
-
 	@Enumerated(EnumType.STRING)
 	public VaccineManufacturer getVaccineManufacturer() {
 		return vaccineManufacturer;
@@ -178,15 +169,6 @@ public class VaccinationEntity extends AbstractDomainObject {
 
 	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
 		this.otherVaccineManufacturer = otherVaccineManufacturer;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getVaccineManufacturerDetails() {
-		return vaccineManufacturerDetails;
-	}
-
-	public void setVaccineManufacturerDetails(String vaccineManufacturerDetails) {
-		this.vaccineManufacturerDetails = vaccineManufacturerDetails;
 	}
 
 	@Column(columnDefinition = "text")

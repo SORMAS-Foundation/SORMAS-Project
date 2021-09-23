@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
@@ -21,7 +21,7 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	public static final String ONLY_COUNT_CONTACT_WITH_SOURCE_CASE_IN_EVENT = "onlyCountContactsWithSourceCaseInEvent";
 	public static final String DISEASE = "disease";
 	public static final String PATHOGENTESTRESULT = "pathogenTestResult";
-	public static final String VACCINATION = "vaccination";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	private EventReferenceDto event;
 	private PersonReferenceDto person;
@@ -32,7 +32,7 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	private Boolean onlyCountContactsWithSourceCaseInEvent;
 	private Disease disease;
 	private PathogenTestResultType pathogenTestResult;
-	private Vaccination vaccination;
+	private VaccinationStatus vaccinationStatus;
 	private Date relevantDate;
 	private Boolean excludePseudonymized;
 	private Boolean noResultingCase;
@@ -109,8 +109,8 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 		return this;
 	}
 
-	public EventParticipantCriteria withVaccination(Vaccination vaccination) {
-		this.vaccination = vaccination;
+	public EventParticipantCriteria withVaccination(VaccinationStatus vaccination) {
+		this.vaccinationStatus = vaccination;
 		return this;
 	}
 
@@ -177,12 +177,12 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 		this.pathogenTestResult = pathogenTestResult;
 	}
 
-	public Vaccination getVaccination() {
-		return vaccination;
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
 	}
 
-	public void setVaccination(Vaccination vaccination) {
-		this.vaccination = vaccination;
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
 	}
 
 	public Date getRelevantDate() {
