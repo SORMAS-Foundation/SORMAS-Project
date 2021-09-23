@@ -76,6 +76,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	public static final String START_DATE = "startDate";
 	public static final String VALID_FROM = "validFrom";
 	public static final String VALID_UNTIL = "validUntil";
+	public static final String VACCINATIONS = "vaccinations";
 
 	@Outbreaks
 	@Required
@@ -393,5 +394,9 @@ public class ImmunizationDto extends PseudonymizableDto {
 
 	public void setVaccinations(List<VaccinationDto> vaccinations) {
 		this.vaccinations = vaccinations;
+	}
+
+	public ImmunizationReferenceDto toReference() {
+		return new ImmunizationReferenceDto(getUuid(), getPerson().getFirstName(), getPerson().getLastName());
 	}
 }

@@ -15,12 +15,12 @@
 
 package de.symeda.sormas.app.immunization.edit;
 
+import android.view.View;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-
-import android.view.View;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;

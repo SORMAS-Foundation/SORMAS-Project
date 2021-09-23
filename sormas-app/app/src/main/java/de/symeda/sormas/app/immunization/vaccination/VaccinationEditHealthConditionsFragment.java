@@ -13,31 +13,31 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.caze.edit;
+package de.symeda.sormas.app.immunization.vaccination;
 
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
-import de.symeda.sormas.app.BaseEditHealthConditionsFragment;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.app.BaseEditHealthConditionsFragment;
 
-public class CaseEditHealthConditionsFragment extends BaseEditHealthConditionsFragment<Case> {
+public class VaccinationEditHealthConditionsFragment extends BaseEditHealthConditionsFragment<VaccinationEntity> {
 
-	public static final String TAG = CaseEditHealthConditionsFragment.class.getSimpleName();
+	public static final String TAG = VaccinationEditHealthConditionsFragment.class.getSimpleName();
 
-	public static CaseEditHealthConditionsFragment newInstance(Case activityRootData) {
+	public static VaccinationEditHealthConditionsFragment newInstance(VaccinationEntity activityRootData) {
 		return newInstanceWithFieldCheckers(
-			CaseEditHealthConditionsFragment.class,
+			VaccinationEditHealthConditionsFragment.class,
 			null,
 			activityRootData,
-			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+			FieldVisibilityCheckers.withDisease(activityRootData.getImmunization().getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
 			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
 	@Override
 	protected void prepareFragmentData() {
-		record = getActivityRootData().getClinicalCourse().getHealthConditions();
+		record = getActivityRootData().getHealthConditions();
 	}
 }

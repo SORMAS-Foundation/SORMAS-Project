@@ -37,6 +37,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.immunization.ImmunizationDateType;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -277,6 +278,26 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public void updateImmunizationStatusBasedOnVaccinations(Immunization immunization) {
+		ImmunizationManagementStatus immunizationManagementStatus = immunization.getImmunizationManagementStatus();
+		if (immunizationManagementStatus == ImmunizationManagementStatus.SCHEDULED
+			|| immunizationManagementStatus == ImmunizationManagementStatus.ONGOING) {
+			final Integer numberOfDoses = immunization.getNumberOfDoses();
+			final int vaccinationCount = immunization.getVaccinations().size();
+
+			if (numberOfDoses != null) {
+				final Date startDate = immunization.getStartDate();
+				if (System.currentTimeMillis() > startDate.getTime() && vaccinationCount >= 1 && vaccinationCount < numberOfDoses) {
+					immunization.setImmunizationManagementStatus(ImmunizationManagementStatus.ONGOING);
+					immunization.setImmunizationStatus(ImmunizationStatus.PENDING);
+				} else if (vaccinationCount >= numberOfDoses) {
+					immunization.setImmunizationManagementStatus(ImmunizationManagementStatus.COMPLETED);
+					immunization.setImmunizationStatus(ImmunizationStatus.ACQUIRED);
+				}
+			}
+		}
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

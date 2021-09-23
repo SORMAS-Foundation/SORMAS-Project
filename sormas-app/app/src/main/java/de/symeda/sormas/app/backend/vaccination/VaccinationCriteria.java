@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,27 +13,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.immunization;
+package de.symeda.sormas.app.backend.vaccination;
 
-import de.symeda.sormas.api.ReferenceDto;
+import java.io.Serializable;
 
-public class ImmunizationReferenceDto extends ReferenceDto {
+import de.symeda.sormas.app.backend.immunization.Immunization;
 
-	private String externalId;
+public class VaccinationCriteria implements Serializable {
 
-	public ImmunizationReferenceDto() {
+	private Immunization immunization;
+
+	public VaccinationCriteria immunization(Immunization immunization) {
+		this.immunization = immunization;
+		return this;
 	}
 
-	public ImmunizationReferenceDto(String uuid, String caption, String externalId) {
-		super(uuid, caption);
-		this.externalId = externalId;
-	}
-
-	public String getExternalId() {
-		return externalId;
-	}
-
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
+	public Immunization getImmunization() {
+		return immunization;
 	}
 }
