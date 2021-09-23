@@ -216,7 +216,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<PathogenTest> pathogenTestRoot = cq.from(PathogenTest.class);
 
-		Predicate filter = null;
+		Predicate filter = createDefaultFilter(cb, pathogenTestRoot);
 
 		if (pathogenTestCriteria != null) {
 			Predicate criteriaFilter = buildCriteriaFilter(pathogenTestCriteria, cb, pathogenTestRoot);

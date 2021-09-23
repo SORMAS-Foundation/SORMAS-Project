@@ -126,7 +126,7 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<AdditionalTest> additionalTestRoot = cq.from(getElementClass());
 
-		Predicate filter = null;
+		Predicate filter = createActiveSamplesFilter(cb, additionalTestRoot);
 
 		if (additionalTestCriteria != null) {
 			Predicate criteriaFilter = buildCriteriaFilter(additionalTestCriteria, cb, additionalTestRoot);
