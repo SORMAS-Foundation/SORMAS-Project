@@ -28,6 +28,7 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Array;
@@ -39,6 +40,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Spliterator;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -174,7 +177,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 319;
+	public static final int DATABASE_VERSION = 321;
 
 	private static DatabaseHelper instance = null;
 
@@ -2838,6 +2841,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						" positiveTestResultDate timestamp," +
 						" recoveryDate timestamp," +
 						" relatedCase_id bigint REFERENCES cases(id))");
+
+				case 319:
+					currentVersion = 319;
+					GenericRawResults<String[]> tableColumns = getDao(User.class).queryRaw("pragma table_info(users)");
+					int nameColumnIndex = Arrays.asList(tableColumns.getColumnNames()).indexOf("name");
+					boolean columnAssociatedOfficeIdNotExists = tableColumns.getResults().stream().noneMatch(columnRowData -> "associatedOfficer_id".equals(columnRowData[nameColumnIndex]));
+
+					if (columnAssociatedOfficeIdNotExists) {
+						getDao(User.class).executeRaw("ALTER TABLE users ADD COLUMN associatedOfficer_id bigint REFERENCES users(id);");
+					}
 
 				//@formatter:on
 				// ATTENTION: break should only be done after last version
