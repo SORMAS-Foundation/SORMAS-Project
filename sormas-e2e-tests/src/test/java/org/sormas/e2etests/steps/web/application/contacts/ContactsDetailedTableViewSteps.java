@@ -63,12 +63,12 @@ public class ContactsDetailedTableViewSteps implements En {
               .assertThat(
                   detailedContactDTableRow.get(
                       ContactsDetailedTableViewHeaders.FIRST_NAME_OF_CONTACT_PERSON.toString()))
-              .containsIgnoringCase(apiState.getCreatedContact().getPerson().getFirstName());
+              .containsIgnoringCase(apiState.getLastCreatedPerson().getFirstName());
           softly
               .assertThat(
                   detailedContactDTableRow.get(
                       ContactsDetailedTableViewHeaders.LAST_NAME_OF_CONTACT_PERSON.toString()))
-              .containsIgnoringCase(apiState.getCreatedContact().getPerson().getLastName());
+              .containsIgnoringCase(apiState.getLastCreatedPerson().getLastName());
           softly
               .assertThat(
                   detailedContactDTableRow.get(
@@ -98,7 +98,7 @@ public class ContactsDetailedTableViewSteps implements En {
               .assertThat(
                   detailedContactDTableRow.get(
                       ContactsDetailedTableViewHeaders.COMPLETENESS.toString()))
-              .containsIgnoringCase("15 %");
+              .containsIgnoringCase("25 %");
           softly
               .assertThat(
                   detailedContactDTableRow.get(
