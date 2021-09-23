@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.utils.components;
+package de.symeda.sormas.ui.utils.components.sidecomponent;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
