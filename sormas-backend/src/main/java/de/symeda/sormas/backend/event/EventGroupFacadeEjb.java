@@ -20,7 +20,6 @@ package de.symeda.sormas.backend.event;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,19 +58,20 @@ import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
-import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -443,17 +443,17 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 	@Override
 	public void notifyEventEventGroupCreated(EventGroupReferenceDto eventGroupReference) {
-		notifyModificationOfEventGroup(eventGroupReference, Collections.emptyList(), MessageSubject.EVENT_GROUP_CREATED, MessagingService.CONTENT_EVENT_GROUP_CREATED);
+		notifyModificationOfEventGroup(eventGroupReference, Collections.emptyList(), MessageSubject.EVENT_GROUP_CREATED, MessageContents.CONTENT_EVENT_GROUP_CREATED);
 	}
 
 	@Override
 	public void notifyEventAddedToEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences) {
-		notifyModificationOfEventGroup(eventGroupReference, eventReferences, MessageSubject.EVENT_ADDED_TO_EVENT_GROUP, MessagingService.CONTENT_EVENT_ADDED_TO_EVENT_GROUP);
+		notifyModificationOfEventGroup(eventGroupReference, eventReferences, MessageSubject.EVENT_ADDED_TO_EVENT_GROUP, MessageContents.CONTENT_EVENT_ADDED_TO_EVENT_GROUP);
 	}
 
 	@Override
 	public void notifyEventRemovedFromEventGroup(EventGroupReferenceDto eventGroupReference, List<EventReferenceDto> eventReferences) {
-		notifyModificationOfEventGroup(eventGroupReference, eventReferences, MessageSubject.EVENT_REMOVED_FROM_EVENT_GROUP, MessagingService.CONTENT_EVENT_REMOVED_FROM_EVENT_GROUP);
+		notifyModificationOfEventGroup(eventGroupReference, eventReferences, MessageSubject.EVENT_REMOVED_FROM_EVENT_GROUP, MessageContents.CONTENT_EVENT_REMOVED_FROM_EVENT_GROUP);
 	}
 
 	private void notifyModificationOfEventGroup(
@@ -468,22 +468,21 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		User currentUser = userService.getCurrentUser();
 
-		Set<String> allRemainingEventUuids =
-			getEventReferencesByEventGroupUuid(eventGroupReference.getUuid()).stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet());
-		Set<String> impactedEventUuids = impactedEventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet());
-		Map<String, User> responsibleUserByEventUuid =
-			userService.getResponsibleUsersByEventUuids(new ArrayList<>(Sets.union(allRemainingEventUuids, impactedEventUuids)));
+		try {
+			messagingService.sendMessages(() -> {
 
-		Map<String, User> responsibleUserByRemainingEventUuid = Maps.filterKeys(responsibleUserByEventUuid, allRemainingEventUuids::contains);
-		Map<String, User> responsibleUserByImpactedEventUuid = Maps.filterKeys(responsibleUserByEventUuid, impactedEventUuids::contains);
+				final Set<String> allRemainingEventUuids = getEventReferencesByEventGroupUuid(eventGroupReference.getUuid()).stream()
+					.map(EventReferenceDto::getUuid)
+					.collect(Collectors.toSet());
+				final Set<String> impactedEventUuids = impactedEventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toSet());
+				final Map<String, User> responsibleUserByEventUuid =
+					userService.getResponsibleUsersByEventUuids(new ArrayList<>(Sets.union(allRemainingEventUuids, impactedEventUuids)));
 
-		for (User responsibleUser : new HashSet<>(responsibleUserByEventUuid.values())) {
-			if (responsibleUser == null || responsibleUser.equals(currentUser)) {
-				continue;
-			}
-
-			try {
-				String message;
+				final Map<String, User> responsibleUserByRemainingEventUuid =
+					Maps.filterKeys(responsibleUserByEventUuid, allRemainingEventUuids::contains);
+				final Map<String, User> responsibleUserByImpactedEventUuid =
+					Maps.filterKeys(responsibleUserByEventUuid, impactedEventUuids::contains);
+				final String message;
 				if (impactedEventReferences.isEmpty()) {
 					message = String.format(
 						I18nProperties.getString(contentTemplate),
@@ -500,14 +499,20 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 						buildCaptionForUserInNotification(currentUser),
 						buildEventGroupSummaryForNotification(responsibleUserByRemainingEventUuid));
 				}
-				messagingService.sendMessage(responsibleUser, subject, message, MessageType.EMAIL, MessageType.SMS);
-			} catch (NotificationDeliveryFailedException e) {
-				logger.error(
-					String.format(
-						"NotificationDeliveryFailedException when trying to notify event responsible user about a modification on an EventGroup. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-						responsibleUser.getUuid()));
-			}
+
+				final Map<User, String> mapToReturn = new HashMap<>();
+				responsibleUserByEventUuid.values().forEach(user -> {
+					if (!(user == null || user.equals(currentUser))) {
+						mapToReturn.put(user, message);
+					}
+				});
+				return mapToReturn;
+
+			}, subject, MessageType.EMAIL, MessageType.SMS);
+		} catch (NotificationDeliveryFailedException e) {
+			logger.error(
+				String.format(
+					"NotificationDeliveryFailedException when trying to notify event responsible user about a modification on an EventGroup."));
 		}
 	}
 
