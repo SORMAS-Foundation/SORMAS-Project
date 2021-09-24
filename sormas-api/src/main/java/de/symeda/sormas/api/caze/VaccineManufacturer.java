@@ -16,7 +16,6 @@
 package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
 
 public enum VaccineManufacturer {
 
@@ -26,10 +25,6 @@ public enum VaccineManufacturer {
 	JOHNSON_JOHNSON,
 	NOVAVAX,
 	SANOFI_GSK,
-	@HideForCountriesExcept
-	ASTRA_ZENECA_BIONTECH_PFIZER,
-	@HideForCountriesExcept
-	ASTRA_ZENECA_MODERNA,
 	UNKNOWN,
 	OTHER;
 

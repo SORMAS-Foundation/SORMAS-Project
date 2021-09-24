@@ -51,7 +51,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	public VaccinationDto save(@Valid VaccinationDto dto) {
 
-		VaccinationEntity existingVaccination = dto.getUuid() != null ? vaccinationService.getByUuid(dto.getUuid()) : null;
+		Vaccination existingVaccination = dto.getUuid() != null ? vaccinationService.getByUuid(dto.getUuid()) : null;
 		VaccinationDto existingDto = toDto(existingVaccination);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
@@ -65,7 +65,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return convertToDto(existingVaccination, pseudonymizer);
 	}
 
-	public VaccinationDto convertToDto(VaccinationEntity source, Pseudonymizer pseudonymizer) {
+	public VaccinationDto convertToDto(Vaccination source, Pseudonymizer pseudonymizer) {
 
 		VaccinationDto dto = toDto(source);
 
@@ -74,7 +74,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return dto;
 	}
 
-	private void pseudonymizeDto(VaccinationEntity source, VaccinationDto dto, Pseudonymizer pseudonymizer) {
+	private void pseudonymizeDto(Vaccination source, VaccinationDto dto, Pseudonymizer pseudonymizer) {
 
 		if (dto != null) {
 			boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(source.getImmunization());
@@ -86,7 +86,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
-	private void restorePseudonymizedDto(VaccinationDto dto, VaccinationDto existingDto, VaccinationEntity vaccination, Pseudonymizer pseudonymizer) {
+	private void restorePseudonymizedDto(VaccinationDto dto, VaccinationDto existingDto, Vaccination vaccination, Pseudonymizer pseudonymizer) {
 
 		if (existingDto != null) {
 			final boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(vaccination.getImmunization());
@@ -114,8 +114,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return vaccinationService.getLastVaccinationType();
 	}
 
-	private VaccinationEntity fillOrBuildEntity(@NotNull VaccinationDto source, VaccinationEntity target, boolean checkChangeDate) {
-		target = DtoHelper.fillOrBuildEntity(source, target, VaccinationEntity::new, checkChangeDate);
+	private Vaccination fillOrBuildEntity(@NotNull VaccinationDto source, Vaccination target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Vaccination::new, checkChangeDate);
 
 		target.setImmunization(immunizationService.getByReferenceDto(source.getImmunization()));
 		target.setHealthConditions(clinicalCourseFacade.fromHealthConditionsDto(source.getHealthConditions(), checkChangeDate));
@@ -124,10 +124,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		target.setVaccinationDate(source.getVaccinationDate());
 		target.setVaccineName(source.getVaccineName());
 		target.setOtherVaccineName(source.getOtherVaccineName());
-		target.setVaccineNameDetails(source.getVaccineNameDetails());
 		target.setVaccineManufacturer(source.getVaccineManufacturer());
 		target.setOtherVaccineManufacturer(source.getOtherVaccineManufacturer());
-		target.setVaccineManufacturerDetails(source.getVaccineManufacturerDetails());
 		target.setVaccineType(source.getVaccineType());
 		target.setVaccineDose(source.getVaccineDose());
 		target.setVaccineInn(source.getVaccineInn());
@@ -140,7 +138,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return target;
 	}
 
-	public VaccinationDto toDto(VaccinationEntity entity) {
+	public static VaccinationDto toDto(Vaccination entity) {
 		if (entity == null) {
 			return null;
 		}
@@ -154,10 +152,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		dto.setVaccinationDate(entity.getVaccinationDate());
 		dto.setVaccineName(entity.getVaccineName());
 		dto.setOtherVaccineName(entity.getOtherVaccineName());
-		dto.setVaccineNameDetails(entity.getVaccineNameDetails());
 		dto.setVaccineManufacturer(entity.getVaccineManufacturer());
 		dto.setOtherVaccineManufacturer(entity.getOtherVaccineManufacturer());
-		dto.setVaccineManufacturerDetails(entity.getVaccineManufacturerDetails());
 		dto.setVaccineType(entity.getVaccineType());
 		dto.setVaccineDose(entity.getVaccineDose());
 		dto.setVaccineInn(entity.getVaccineInn());
@@ -170,7 +166,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return dto;
 	}
 
-	public VaccinationEntity fromDto(@NotNull VaccinationDto source, boolean checkChangeDate) {
+	public Vaccination fromDto(@NotNull VaccinationDto source, boolean checkChangeDate) {
 		return fillOrBuildEntity(source, vaccinationService.getByUuid(source.getUuid()), checkChangeDate);
 	}
 

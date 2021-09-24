@@ -33,6 +33,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -134,8 +135,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		createEntitySheet(workbook, EventDto.class, EventDto.I18N_PREFIX);
 		createEntitySheet(workbook, EventParticipantDto.class, EventParticipantDto.I18N_PREFIX);
 		createEntitySheet(workbook, ActionDto.class, ActionDto.I18N_PREFIX);
-		// TODO Add once immunizations can be created
-		//createEntitySheet(workbook, ImmunizationDto.class, ImmunizationDto.I18N_PREFIX);
+		createEntitySheet(workbook, ImmunizationDto.class, ImmunizationDto.I18N_PREFIX);
 		createEntitySheet(workbook, TravelEntryDto.class, TravelEntryDto.I18N_PREFIX);
 		createEntitySheet(workbook, ContinentDto.class, ContinentDto.I18N_PREFIX);
 		createEntitySheet(workbook, SubcontinentDto.class, SubcontinentDto.I18N_PREFIX);

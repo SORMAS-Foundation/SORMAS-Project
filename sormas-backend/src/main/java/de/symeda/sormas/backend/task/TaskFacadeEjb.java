@@ -59,8 +59,8 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
@@ -96,13 +96,13 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationJoins;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.infrastructure.community.Community;
-import de.symeda.sormas.backend.infrastructure.district.District;
-import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryService;
@@ -794,6 +794,21 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Task task = taskService.getByUuid(taskDto.getUuid());
 		taskService.delete(task);
+	}
+
+	public List<String> deleteTasks(List<String> tasksUuids) {
+		if (!userService.hasRight(UserRight.TASK_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete tasks.");
+		}
+		List<String> deletedTaskUuids = new ArrayList<>();
+		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
+		if (tasksToBeDeleted != null) {
+			tasksToBeDeleted.forEach(taskToBeDeleted -> {
+				taskService.delete(taskToBeDeleted);
+				deletedTaskUuids.add(taskToBeDeleted.getUuid());
+			});
+		}
+		return deletedTaskUuids;
 	}
 
 	@Override

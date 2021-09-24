@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.caze.classification;
 
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -13,7 +14,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 public class ClassificationEventClusterCriteriaDto extends ClassificationCriteriaDto {
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests, List<EventDto> events, Date lastVaccinationDate) {
 		for (EventDto eventDto : events) {
 			if (eventDto.getEventStatus() == EventStatus.CLUSTER) {
 				return true;

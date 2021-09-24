@@ -115,5 +115,4 @@ public class PersonResource extends EntityDtoResource {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
 	}
-
 }

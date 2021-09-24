@@ -34,7 +34,7 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.backend.vaccination.Vaccination;
 
 @MappedSuperclass
 public class BaseImmunization extends CoreAdo {
@@ -77,7 +77,7 @@ public class BaseImmunization extends CoreAdo {
 
 	private Country country;
 
-	private List<VaccinationEntity> vaccinations = new ArrayList<>();
+	private List<Vaccination> vaccinations = new ArrayList<>();
 
 	private Long personId;
 
@@ -354,12 +354,12 @@ public class BaseImmunization extends CoreAdo {
 		this.country = country;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = VaccinationEntity.IMMUNIZATION, fetch = FetchType.EAGER)
-	public List<VaccinationEntity> getVaccinations() {
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = Vaccination.IMMUNIZATION, fetch = FetchType.EAGER)
+	public List<Vaccination> getVaccinations() {
 		return vaccinations;
 	}
 
-	public void setVaccinations(List<VaccinationEntity> vaccinations) {
+	public void setVaccinations(List<Vaccination> vaccinations) {
 		this.vaccinations = vaccinations;
 	}
 }

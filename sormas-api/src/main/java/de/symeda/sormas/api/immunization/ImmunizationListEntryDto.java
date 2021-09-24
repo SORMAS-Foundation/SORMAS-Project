@@ -14,7 +14,7 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 	public static final String DISEASE = "disease";
 	public static final String MEANS_OF_IMMUNIZATION = "meansOfImmunization";
 	public static final String IMMUNIZATION_STATUS = "immunizationStatus";
-	public static final String MANAGEMENT_STATUS = "managementStatus";
+	public static final String IMMUNIZATION_MANAGEMENT_STATUS = "immunizationManagementStatus";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 	public static final String IMMUNIZATION_PERIOD = "immunizationPeriod";
@@ -23,7 +23,7 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 	private Disease disease;
 	private MeansOfImmunization meansOfImmunization;
 	private ImmunizationStatus immunizationStatus;
-	private ImmunizationManagementStatus managementStatus;
+	private ImmunizationManagementStatus immunizationManagementStatus;
 	private Date startDate;
 	private Date endDate;
 
@@ -32,7 +32,7 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 		Disease disease,
 		MeansOfImmunization meansOfImmunization,
 		ImmunizationStatus immunizationStatus,
-		ImmunizationManagementStatus managementStatus,
+		ImmunizationManagementStatus immunizationManagementStatus,
 		Date startDate,
 		Date endDate) {
 
@@ -40,7 +40,7 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 		this.disease = disease;
 		this.meansOfImmunization = meansOfImmunization;
 		this.immunizationStatus = immunizationStatus;
-		this.managementStatus = managementStatus;
+		this.immunizationManagementStatus = immunizationManagementStatus;
 		this.startDate = startDate;
 		this.endDate = endDate;
 	}
@@ -77,12 +77,12 @@ public class ImmunizationListEntryDto extends PseudonymizableIndexDto implements
 		this.immunizationStatus = immunizationStatus;
 	}
 
-	public ImmunizationManagementStatus getManagementStatus() {
-		return managementStatus;
+	public ImmunizationManagementStatus getImmunizationManagementStatus() {
+		return immunizationManagementStatus;
 	}
 
-	public void setManagementStatus(ImmunizationManagementStatus managementStatus) {
-		this.managementStatus = managementStatus;
+	public void setImmunizationManagementStatus(ImmunizationManagementStatus immunizationManagementStatus) {
+		this.immunizationManagementStatus = immunizationManagementStatus;
 	}
 
 	public Date getStartDate() {

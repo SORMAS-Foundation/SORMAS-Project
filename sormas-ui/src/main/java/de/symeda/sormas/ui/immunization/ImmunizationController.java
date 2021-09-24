@@ -20,6 +20,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -34,6 +35,7 @@ import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
 import de.symeda.sormas.ui.immunization.components.layout.MainHeaderLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ImmunizationController {
@@ -138,7 +140,16 @@ public class ImmunizationController {
 				ImmunizationDto immunizationDtoValue = immunizationDataForm.getValue();
 				List<ImmunizationDto> similarImmunizations = findSimilarImmunizations(immunizationDtoValue);
 				if (similarImmunizations.isEmpty()) {
-					saveImmunization(immunizationDtoValue);
+					FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
+					if (immunizationDtoValue.getImmunizationStatus() == ImmunizationStatus.ACQUIRED) {
+						NotificationHelper.showNotification(
+							I18nProperties.getString(Strings.messageImmunizationSavedVaccinationStatusUpdated),
+							Notification.Type.WARNING_MESSAGE,
+							-1);
+					} else {
+						Notification.show(I18nProperties.getString(Strings.messageImmunizationSaved), Notification.Type.WARNING_MESSAGE);
+					}
+					SormasUI.refreshView();
 				} else {
 					showSimilarImmunizationPopup(immunizationDtoValue, similarImmunizations.get(0), this::saveImmunization);
 				}

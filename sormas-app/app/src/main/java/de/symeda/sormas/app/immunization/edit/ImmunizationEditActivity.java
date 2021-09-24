@@ -21,6 +21,7 @@ import android.os.AsyncTask;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
@@ -40,6 +41,7 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.immunization.ImmunizationSection;
+import de.symeda.sormas.app.immunization.vaccination.VaccinationNewActivity;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.util.Bundler;
 
@@ -49,6 +51,7 @@ import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 
 	private AsyncTask saveTask;
+	private List<PageMenuItem> pageMenuItems;
 
 	public static void startActivity(Context context, String rootUuid) {
 		BaseEditActivity.startActivity(context, ImmunizationEditActivity.class, buildBundle(rootUuid));
@@ -74,7 +77,21 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
-		return PageMenuItem.fromEnum(ImmunizationSection.values(), getContext());
+		final Immunization storedRootEntity = this.getStoredRootEntity();
+		if (storedRootEntity != null) {
+			return pageMenuItems != null ? pageMenuItems : updatePageMenuItems(storedRootEntity.getMeansOfImmunization());
+		} else {
+			return PageMenuItem.fromEnum(ImmunizationSection.values(), getContext());
+		}
+	}
+
+	private List<PageMenuItem> updatePageMenuItems(MeansOfImmunization meansOfImmunization) {
+		if (meansOfImmunization == MeansOfImmunization.VACCINATION || meansOfImmunization == MeansOfImmunization.VACCINATION_RECOVERY) {
+			pageMenuItems = PageMenuItem.fromEnum(ImmunizationSection.values(), getContext());
+		} else {
+			pageMenuItems = PageMenuItem.fromEnum(getContext(), ImmunizationSection.IMMUNIZATION_INFO, ImmunizationSection.PERSON_INFO);
+		}
+		return pageMenuItems;
 	}
 
 	@Override
@@ -87,7 +104,13 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 			fragment = PersonEditFragment.newInstance(activityRootData);
 			break;
 		case IMMUNIZATION_INFO:
-			fragment = ImmunizationEditFragment.newInstance(activityRootData);
+			fragment = ImmunizationEditFragment.newInstance(activityRootData, meansOfImmunization -> {
+				this.updatePageMenuItems(meansOfImmunization);
+				updatePageMenu();
+			});
+			break;
+		case VACCINATIONS:
+			fragment = ImmunizationEditVaccinationListFragment.newInstance(activityRootData);
 			break;
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
@@ -202,6 +225,16 @@ public class ImmunizationEditActivity extends BaseEditActivity<Immunization> {
 
 		if (saveTask != null && !saveTask.isCancelled()) {
 			saveTask.cancel(true);
+		}
+	}
+
+	@Override
+	public void goToNewView() {
+		ImmunizationSection activeSection = ImmunizationSection.fromOrdinal(getActivePage().getPosition());
+
+		if (activeSection == ImmunizationSection.VACCINATIONS) {
+			discardStoredRootEntity();
+			VaccinationNewActivity.startActivity(getContext(), getRootUuid());
 		}
 	}
 }
