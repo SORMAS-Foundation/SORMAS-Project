@@ -330,7 +330,7 @@ public class StatisticsView extends AbstractStatisticsView {
 					new Notification(I18nProperties.getString(Strings.messageUnknownFilterAttributeForPopulationData), Type.ERROR_MESSAGE);
 			}
 
-			if (showCaseIncidence && visualizationComponent.hasAgeGroupGroupingWithoutPopulationData() || hasUnsupportedPopulationAgeGroupFilter()) {
+			if (showCaseIncidence && (visualizationComponent.hasAgeGroupGroupingWithoutPopulationData() || hasUnsupportedPopulationAgeGroupFilter())) {
 				errorNotification = new Notification(I18nProperties.getString(Strings.messageCaseIncidenceUnsupportedAgeGroup), Type.ERROR_MESSAGE);
 			}
 
