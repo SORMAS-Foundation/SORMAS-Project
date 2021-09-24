@@ -90,6 +90,7 @@ public class CaseContactsView extends AbstractCaseView {
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox officerFilter;
+	private TextField personUuidField;
 	private TextField searchField;
 	private Button resetButton;
 	private Button applyButton;
@@ -176,8 +177,15 @@ public class CaseContactsView extends AbstractCaseView {
 		}
 		topLayout.addComponent(officerFilter);
 
+		personUuidField = new TextField();
+		personUuidField.setWidth(150, Unit.PIXELS);
+		personUuidField.setNullRepresentation("");
+		personUuidField.setInputPrompt(I18nProperties.getString(Strings.promptRelatedPersonUuidField));
+		personUuidField.addTextChangeListener(e -> criteria.setPersonUuid(e.getText()));
+		topLayout.addComponent(personUuidField);
+
 		searchField = new TextField();
-		searchField.setWidth(200, Unit.PIXELS);
+		searchField.setWidth(150, Unit.PIXELS);
 		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getString(Strings.promptContactsSearchField));
 		searchField.addTextChangeListener(e -> criteria.setNameUuidCaseLike(e.getText()));
@@ -199,6 +207,7 @@ public class CaseContactsView extends AbstractCaseView {
 		regionFilter.addValueChangeListener(e -> updateApplyResetButtons());
 		officerFilter.addValueChangeListener(e -> updateApplyResetButtons());
 		districtFilter.addValueChangeListener(e -> updateApplyResetButtons());
+		personUuidField.addValueChangeListener(e -> updateApplyResetButtons());
 		searchField.addValueChangeListener(e -> updateApplyResetButtons());
 
 		return topLayout;
@@ -403,6 +412,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
+		personUuidField.setValue(criteria.getPersonUuid());
 		searchField.setValue(criteria.getNameUuidCaseLike());
 		officerFilter.setValue(criteria.getContactOfficer());
 
@@ -439,6 +449,7 @@ public class CaseContactsView extends AbstractCaseView {
 			|| !regionFilter.isEmpty()
 			|| !districtFilter.isEmpty()
 			|| !officerFilter.isEmpty()
+			|| !personUuidField.isEmpty()
 			|| !searchField.isEmpty();
 	}
 }
