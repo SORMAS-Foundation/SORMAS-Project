@@ -599,6 +599,7 @@ public interface Captions {
 	String Contact_numberOfVisits = "Contact.numberOfVisits";
 	String Contact_overwriteFollowUpUntil = "Contact.overwriteFollowUpUntil";
 	String Contact_person = "Contact.person";
+	String Contact_personUuid = "Contact.personUuid";
 	String Contact_prohibitionToWork = "Contact.prohibitionToWork";
 	String Contact_prohibitionToWorkFrom = "Contact.prohibitionToWorkFrom";
 	String Contact_prohibitionToWorkUntil = "Contact.prohibitionToWorkUntil";

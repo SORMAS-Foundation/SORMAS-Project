@@ -1136,6 +1136,15 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DELETED), contactCriteria.getDeleted()));
 		}
 
+		if (!DataHelper.isNullOrEmpty(contactCriteria.getPersonUuid())) {
+			// We should allow short and long versions of the UUID so let's do a LIKE behaving like a "starts with"
+			Join<Contact, Person> person = joins.getPerson();
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), contactCriteria.getPersonUuid() + "%"));
+		}
+
 		if (contactCriteria.getNameUuidCaseLike() != null) {
 			Join<Contact, Person> person = joins.getPerson();
 			Join<Person, Location> location = joins.getAddress();

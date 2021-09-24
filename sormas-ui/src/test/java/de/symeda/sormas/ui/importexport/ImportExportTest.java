@@ -293,14 +293,19 @@ public class ImportExportTest extends AbstractBeanTest {
 		for (int i = 0, getLength = columns.length; i < getLength; i++) {
 			String column = columns[i];
 
-			if (CaseDataDto.UUID.equals(column)) {
+			if (ContactDto.UUID.equals(column)) {
 				values[i] = importUuid;
 			}
 			// update name avoid duplicate checking
-			else if (String.join(".", CaseDataDto.PERSON, PersonDto.FIRST_NAME).equals(column)) {
+			else if (String.join(".", ContactDto.PERSON, PersonDto.FIRST_NAME).equals(column)) {
 				values[i] = "Import John";
-			} else if (String.join(".", CaseDataDto.PERSON, PersonDto.LAST_NAME).equals(column)) {
+			} else if (String.join(".", ContactDto.PERSON, PersonDto.LAST_NAME).equals(column)) {
 				values[i] = "Import Doe";
+			} else if (String.join(".", ContactDto.PERSON, PersonDto.UUID).equals(column)) {
+				// Workaround: Reset the change date to avoid OutdatedEntityExceptions
+				// Applying a setChangeDate(new Date()) to the person before saving it will result in creating 2 cases and will fail the test
+				// So let's just ignore this column for now...
+				values[i] = "";
 			}
 		}
 

@@ -112,6 +112,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactIndexDto.CASE_CLASSIFICATION,
 			ContactIndexDto.CONTACT_CATEGORY,
 			ContactIndexDto.FOLLOW_UP_STATUS,
+			ContactCriteria.PERSON_UUID,
 			ContactCriteria.NAME_UUID_CASE_LIKE,
 			ContactCriteria.EVENT_LIKE };
 	}
@@ -139,6 +140,11 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		}
 
 		addField(FieldConfiguration.pixelSized(ContactIndexDto.FOLLOW_UP_STATUS, 140));
+
+		TextField personUuidField = addField(
+			FieldConfiguration
+				.withCaptionAndPixelSized(ContactCriteria.PERSON_UUID, I18nProperties.getString(Strings.promptRelatedPersonUuidField), 200));
+		personUuidField.setNullRepresentation("");
 
 		TextField searchField = addField(
 			FieldConfiguration
