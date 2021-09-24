@@ -18,7 +18,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
-import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 
 @Remote
@@ -135,4 +135,8 @@ public interface ConfigFacade {
 	boolean isAuditorAttributeLoggingEnabled();
 
 	int getStepSizeForCsvExport();
+
+	long getDocumentUploadSizeLimitMb();
+
+	long getImportFileSizeLimitMb();
 }

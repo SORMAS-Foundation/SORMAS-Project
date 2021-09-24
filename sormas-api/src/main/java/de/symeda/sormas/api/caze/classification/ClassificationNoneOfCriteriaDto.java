@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.caze.classification;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -47,9 +48,9 @@ public class ClassificationNoneOfCriteriaDto extends ClassificationCriteriaDto i
 	}
 
 	@Override
-	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests, List<EventDto> events) {
+	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests, List<EventDto> events, Date lastVaccinationDate) {
 		for (ClassificationCriteriaDto classificationCriteria : classificationCriteria) {
-			if (classificationCriteria.eval(caze, person, sampleTests, events)) {
+			if (classificationCriteria.eval(caze, person, sampleTests, events, lastVaccinationDate)) {
 				return false;
 			}
 		}

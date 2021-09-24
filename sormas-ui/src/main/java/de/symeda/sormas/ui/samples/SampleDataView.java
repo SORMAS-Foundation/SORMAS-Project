@@ -138,24 +138,8 @@ public class SampleDataView extends AbstractSampleView {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EDIT_LOC);
 
-		Disease finalDisease = disease;
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest = (pathogenTestDto, callback) -> {
-			if (pathogenTestDto != null
-				&& pathogenTestDto.getTestResult() != null
-				&& Boolean.TRUE.equals(pathogenTestDto.getTestResultVerified())
-				&& pathogenTestDto.getTestedDisease() == finalDisease) {
-				SampleDto componentSample = editComponent.getWrappedComponent().getValue();
-				if (pathogenTestDto.getTestResult() != componentSample.getPathogenTestResult()) {
-					ControllerProvider.getSampleController()
-						.showChangePathogenTestResultWindow(editComponent, componentSample.getUuid(), pathogenTestDto.getTestResult(), callback);
-				} else {
-					callback.run();
-				}
-			} else {
-				callback.run();
-			}
-
-			editComponent.getWrappedComponent().fillPathogenTestResult();
+			callback.run();
 		};
 
 		// why? if(sampleDto.getSamplePurpose() !=null && sampleDto.getSamplePurpose().equals(SamplePurpose.EXTERNAL)) {

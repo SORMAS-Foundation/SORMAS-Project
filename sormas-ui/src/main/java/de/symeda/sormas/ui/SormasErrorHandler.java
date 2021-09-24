@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui;
 
 import java.net.SocketException;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -148,6 +149,15 @@ public class SormasErrorHandler implements ErrorHandler {
 				} else if (rootCause instanceof AccessDeniedException) {
 					error = new LocalUserError(
 						rootCause.getMessage() + "<br>" + I18nProperties.getString(Strings.reloadPageToSeeChanges),
+						ContentMode.HTML,
+						ErrorLevel.WARNING);
+				} else if (((ValidationRuntimeException) rootCause).getPropertyErrors() != null) {
+					error = new LocalUserError(
+						((ValidationRuntimeException) rootCause).getPropertyErrors()
+							.entrySet()
+							.stream()
+							.map(e -> String.join(".", e.getKey()) + ": " + e.getValue())
+							.collect(Collectors.joining("<br>")),
 						ContentMode.HTML,
 						ErrorLevel.WARNING);
 				} else {

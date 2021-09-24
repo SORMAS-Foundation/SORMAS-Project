@@ -12,6 +12,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
@@ -33,8 +34,13 @@ public class CampaignFormDataImportLayout extends AbstractImportLayout {
 			resetDownloadErrorReportButton();
 
 			try {
-				CampaignFormDataImporter importer =
-					new CampaignFormDataImporter(file, false, currentUser, campaignForm.getUuid(), campaignReferenceDto);
+				CampaignFormDataImporter importer = new CampaignFormDataImporter(
+					file,
+					false,
+					currentUser,
+					campaignForm.getUuid(),
+					campaignReferenceDto,
+					(ValueSeparator) separator.getValue());
 				importer.startImport(this::extendDownloadErrorReportButton, currentUI, false);
 			} catch (IOException | CsvValidationException e) {
 				new Notification(

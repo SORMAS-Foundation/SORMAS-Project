@@ -1,29 +1,28 @@
-## All subcontinents
-"defaultName","externalId","continent","archived"
-"Northern Africa","31001112","Africa","FALSE"
-"Northeast Africa","41000012","Africa","FALSE"
-"Northwest Africa","41000014","Africa","FALSE"
-"Eastern Africa","31001114","Africa","FALSE"
-"Southern Africa","31001116","Africa","FALSE"
-"Southeast Africa","41000023","Africa","FALSE"
-"Southwest Africa","41000026","Africa","FALSE"
-"Western Africa","31001113","Africa","FALSE"
-"Central Africa","31001115","Africa","FALSE"
-"Central America","31000011","America","FALSE"
-"North America","31000009","America","FALSE"
-"South America","31000013","America","FALSE"
-"Eastern Asia","31002849","Asia","FALSE"
-"Southern Asia","31002851","Asia","FALSE"
-"Southeast Asia","31002850","Asia","FALSE"
-"Southwest Asia","41000027","Asia","FALSE"
-"Middle East","31002852","Asia","FALSE"
-"Central Asia","31002847","Asia","FALSE"
-"Australia (Subcontinent)","41000006","Australia (Continent)","FALSE"
-"Oceania","21000500","Australia (Continent)","FALSE"
-"Central Europe","41000008","Europe","FALSE"
-"Northern Europe","41000011","Europe","FALSE"
-"Northeast Europe","41000013","Europe","FALSE"
-"Eastern Europe","41000017","Europe","FALSE"
-"Southern Europe","41000022","Europe","FALSE"
-"Southeast Europe","41000025","Europe","FALSE"
-"Western Europe","41000030","Europe","FALSE"
+defaultName,externalId,archived,continent,uuid
+Northern Africa,31001112,FALSE,Africa,ef835a1c-59f3-5d4b-a5ce-09dd780f2ea9
+Northeast Africa,41000012,FALSE,Africa,b319752a-27f4-5375-a5e4-7c43b8cd9812
+Northwest Africa,41000014,FALSE,Africa,01ddf3e1-bbe1-5144-aa70-82dd6e1d5f3a
+Eastern Africa,31001114,FALSE,Africa,7fedac5c-b5ea-538e-821c-cdc4d004e459
+Southern Africa,31001116,FALSE,Africa,1e3b5f72-c7cd-5e1f-8ad6-12455aa54764
+Southeast Africa,41000023,FALSE,Africa,56bbaf15-353e-5f35-9b13-cfb14e0ad917
+Southwest Africa,41000026,FALSE,Africa,8118b26f-230f-5d8b-8c76-442e82953264
+Western Africa,31001113,FALSE,Africa,cdc66ec8-f1fb-5a0e-b228-b0a0eaca9792
+Central Africa,31001115,FALSE,Africa,6bac28c9-f5ae-5791-a366-61f62ec18968
+Central America,31000011,FALSE,America,55f98509-307f-51ea-bf85-ec8fa0a25644
+North America,31000009,FALSE,America,924ca0bc-b788-5288-8985-c6150605e394
+South America,31000013,FALSE,America,e5f10544-d3a0-59bf-8476-802249055a06
+Eastern Asia,31002849,FALSE,Asia,18772b13-23d3-5744-9558-06daeb2962f0
+Southern Asia,31002851,FALSE,Asia,18edc0bf-0576-5f7f-83a3-ddd5ebd32e84
+Southeast Asia,31002850,FALSE,Asia,62bf9ca0-1dec-5545-8bee-36dedbfffe2a
+Southwest Asia,41000027,FALSE,Asia,6860af27-f596-5a3b-8730-25c09f733ab5
+Middle East,31002852,FALSE,Asia,9194b955-8edf-52c9-8e81-f6cebed4a3a9
+Central Asia,31002847,FALSE,Asia,c693e111-3bc2-5411-8691-242a45432b74
+Australia (Subcontinent),41000006,FALSE,Australia (Continent),31938cb5-66d5-57d5-a52a-872bb65d80ed
+Oceania,21000500,FALSE,Australia (Continent),e4dbc268-f7ef-5159-b392-7f4e7dca0f7e
+Central Europe,41000008,FALSE,Europe,9cc9598b-5e98-525c-a58b-7669e4314344
+Northern Europe,41000011,FALSE,Europe,da7c878f-c7b1-55f7-9d88-e0db83bae32d
+Northeast Europe,41000013,FALSE,Europe,b89485cc-d3a8-5459-9af5-5b9549d495a8
+Eastern Europe,41000017,FALSE,Europe,b4b305e3-4712-5cdb-a4f0-d6fc1647ea97
+Southern Europe,41000022,FALSE,Europe,f80571da-74db-58b5-b271-db9e33a724c3
+Southeast Europe,41000025,FALSE,Europe,58ec0d1e-4a8e-5ef1-8460-4fd46d030f71
+Western Europe,41000030,FALSE,Europe,ad6da763-1194-5419-be74-f3379d3fd4b3

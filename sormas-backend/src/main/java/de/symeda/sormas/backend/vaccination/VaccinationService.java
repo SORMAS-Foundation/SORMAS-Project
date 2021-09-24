@@ -15,16 +15,30 @@
 
 package de.symeda.sormas.backend.vaccination;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.Query;
 
 import de.symeda.sormas.backend.common.BaseAdoService;
 
 @Stateless
 @LocalBean
-public class VaccinationService extends BaseAdoService<VaccinationEntity> {
+public class VaccinationService extends BaseAdoService<Vaccination> {
 
 	public VaccinationService() {
-		super(VaccinationEntity.class);
+		super(Vaccination.class);
+	}
+
+	public Map<String, String> getLastVaccinationType() {
+		Map<String, String> result = new HashMap<>();
+		String queryString =
+			"select v.immunization_id, vaccinetype from vaccination v inner join (select immunization_id, max(vaccinationdate) maxdate from vaccination group by immunization_id) maxdates on v.immunization_id=maxdates.immunization_id and v.vaccinationdate=maxdates.maxdate";
+		Query query = em.createNativeQuery(queryString);
+		((Stream<Object[]>) query.getResultStream()).forEach(item -> result.put(((Number) item[0]).toString(), (String) item[1]));
+		return result;
 	}
 }

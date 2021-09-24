@@ -20,7 +20,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 
-import de.symeda.sormas.api.region.BaseFacade;
+import de.symeda.sormas.api.BaseFacade;
 
 @Remote
 public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationCriteria> {
@@ -31,5 +31,23 @@ public interface ImmunizationFacade extends BaseFacade<ImmunizationDto, Immuniza
 
 	List<String> getDeletedUuidsSince(Date since);
 
+	boolean exists(String uuid);
+
+	ImmunizationReferenceDto getReferenceByUuid(String uuid);
+
+	void deleteImmunization(String uuid);
+
+	boolean isArchived(String uuid);
+
+	void archiveOrDearchiveImmunization(String uuid, boolean archive);
+
+	boolean isImmunizationEditAllowed(String uuid);
+
+	List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria);
+
 	void updateImmunizationStatuses();
+
+	List<ImmunizationListEntryDto> getEntriesList(ImmunizationListCriteria criteria, Integer first, Integer max);
+
+	Boolean linkRecoveryImmunizationToSearchedCase(String specificCaseSearchValue, ImmunizationDto immunization);
 }

@@ -20,8 +20,8 @@ import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseCriteria;
@@ -145,9 +145,9 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		assertNull(results.get(0).getPopulation());
 
 		PopulationDataDto populationData = PopulationDataDto.build(new Date());
-		RegionDto region = getRegionFacade().getRegionByUuid(rdcf.region.getUuid());
+		RegionDto region = getRegionFacade().getByUuid(rdcf.region.getUuid());
 		region.setGrowthRate(10f);
-		getRegionFacade().saveRegion(region);
+		getRegionFacade().save(region);
 		populationData.setRegion(rdcf.region);
 		populationData.setPopulation(new Integer(10000));
 		getPopulationDataFacade().savePopulationData(Arrays.asList(populationData));

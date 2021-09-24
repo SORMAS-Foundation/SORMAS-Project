@@ -32,6 +32,7 @@ public class AdditionalTestList extends PaginationList<AdditionalTestDto> {
 		if (!additionalTests.isEmpty()) {
 			showPage(1);
 		} else {
+			listLayout.removeAllComponents();
 			updatePaginationLayout();
 			Label noAdditionalTestsLabel = new Label(I18nProperties.getString(Strings.infoNoAdditionalTests));
 			listLayout.addComponent(noAdditionalTestsLabel);

@@ -28,7 +28,7 @@ public interface AdoService<ADO extends AbstractDomainObject> {
 
 	ADO getById(long id);
 
-	ADO getByUuid(@NotNull String uuid);
+	ADO getByUuid(String uuid);
 
 	Boolean exists(@NotNull String uuid);
 

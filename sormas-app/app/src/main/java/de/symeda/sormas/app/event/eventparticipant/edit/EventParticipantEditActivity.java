@@ -15,9 +15,6 @@
 
 package de.symeda.sormas.app.event.eventparticipant.edit;
 
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,13 +22,19 @@ import android.view.Menu;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -39,19 +42,24 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.event.eventparticipant.EventParticipantSection;
+import de.symeda.sormas.app.immunization.edit.ImmunizationNewActivity;
 import de.symeda.sormas.app.util.Bundler;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class EventParticipantEditActivity extends BaseEditActivity<EventParticipant> {
 
 	private AsyncTask saveTask;
 	private String eventUuid;
 
-	public static void startActivity(Context context, String rootUuid, String eventUuid) {
-		BaseEditActivity.startActivity(context, EventParticipantEditActivity.class, buildBundle(rootUuid, eventUuid));
+	public static Bundler buildBundle(String rootUuid, String eventUuid, EventParticipantSection section) {
+		return buildBundle(rootUuid, section.ordinal()).setEventUuid(eventUuid);
 	}
 
-	public static Bundler buildBundle(String rootUuid, String eventUuid) {
-		return buildBundle(rootUuid, 0).setEventUuid(eventUuid);
+	public static void startActivity(Context context, String recordUuid, String eventUuid, EventParticipantSection section) {
+		BaseActivity.startActivity(context, EventParticipantEditActivity.class, buildBundle(recordUuid, eventUuid, section));
 	}
 
 	@Override
@@ -89,8 +97,40 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 	}
 
 	@Override
+	public List<PageMenuItem> getPageMenuData() {
+		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(EventParticipantSection.values(), getContext());
+		if (!ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
+			menuItems.set(EventParticipantSection.IMMUNIZATIONS.ordinal(), null);
+		}
+		return menuItems;
+	}
+
+	@Override
 	protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, EventParticipant activityRootData) {
-		return EventParticipantEditFragment.newInstance(activityRootData);
+
+		EventParticipantSection section = EventParticipantSection.fromOrdinal(menuItem.getPosition());
+		BaseEditFragment fragment;
+		switch (section) {
+
+		case EVENT_PARTICIPANT_INFO:
+			fragment = EventParticipantEditFragment.newInstance(activityRootData);
+			break;
+		case IMMUNIZATIONS:
+			fragment = EventParticipantEditImmunizationListFragment.newInstance(activityRootData);
+			break;
+		default:
+			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
+		}
+		return fragment;
+	}
+
+	@Override
+	public void goToNewView() {
+		EventParticipantSection activeSection = EventParticipantSection.fromOrdinal(getActivePage().getPosition());
+
+		if (activeSection == EventParticipantSection.IMMUNIZATIONS) {
+			ImmunizationNewActivity.startActivityFromCase(getContext(), getRootUuid());
+		}
 	}
 
 	@Override

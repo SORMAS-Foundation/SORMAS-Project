@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -22,6 +24,10 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import java.io.Serializable;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
+
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.Sex;
 
@@ -38,9 +44,11 @@ public class SormasToSormasPersonPreview extends PseudonymizableDto implements S
 
 	@PersonalData
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String firstName;
 	@PersonalData
 	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String lastName;
 	@PersonalData
 	@SensitiveData
@@ -50,6 +58,7 @@ public class SormasToSormasPersonPreview extends PseudonymizableDto implements S
 	private Sex sex;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Valid
 	private LocationDto address;
 
 	public String getFirstName() {

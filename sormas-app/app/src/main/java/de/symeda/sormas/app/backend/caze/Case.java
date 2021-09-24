@@ -48,14 +48,11 @@ import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
-import de.symeda.sormas.api.caze.Vaccination;
-import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.caze.Vaccine;
-import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
@@ -98,10 +95,12 @@ public class Case extends PseudonymizableAdo {
 	public static final String HEALTH_FACILITY = "healthFacility_id";
 	public static final String OUTCOME = "outcome";
 	public static final String EPID_NUMBER = "epidNumber";
+	public static final String EXTERNAL_ID = "externalID";
 	public static final String CASE_ORIGIN = "caseOrigin";
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String REGION = "region";
 	public static final String COMPLETENESS = "completeness";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
@@ -216,16 +215,8 @@ public class Case extends PseudonymizableAdo {
 	private YesNoUnknown pregnant;
 
 	@Enumerated(EnumType.STRING)
-	private Vaccination vaccination;
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String vaccine;
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String vaccinationDoses;
-
-	@Enumerated(EnumType.STRING)
-	private VaccinationInfoSource vaccinationInfoSource;
+	@DatabaseField(columnName = "vaccination")
+	private VaccinationStatus vaccinationStatus;
 
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown smallpoxVaccinationScar;
@@ -233,39 +224,8 @@ public class Case extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown smallpoxVaccinationReceived;
 
-	@DatabaseField(dataType = DataType.DATE_LONG)
-	private Date firstVaccinationDate;
-
 	@DatabaseField(columnName = "vaccinationDate", dataType = DataType.DATE_LONG)
-	private Date lastVaccinationDate;
-
-	@Enumerated(EnumType.STRING)
-	private Vaccine vaccineName;
-
-	@Column(columnDefinition = "text")
-	private String otherVaccineName;
-
-	@Enumerated(EnumType.STRING)
-	private VaccineManufacturer vaccineManufacturer;
-
-	@Column(columnDefinition = "text")
-	private String otherVaccineManufacturer;
-
-	@Column(columnDefinition = "text")
-	private String vaccineInn;
-
-	@Column(columnDefinition = "text")
-	private String vaccineBatchNumber;
-
-	@Column(columnDefinition = "text")
-	private String vaccineUniiCode;
-
-	@Column(columnDefinition = "text")
-	private String vaccineAtcCode;
-
-	@Deprecated
-	@DatabaseField(dataType = DataType.DATE_LONG)
-	private Date smallpoxVaccinationDate;
+	private Date smallpoxLastVaccinationDate;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String epidNumber;
@@ -691,36 +651,12 @@ public class Case extends PseudonymizableAdo {
 		this.pregnant = pregnant;
 	}
 
-	public Vaccination getVaccination() {
-		return vaccination;
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
 	}
 
-	public void setVaccination(Vaccination vaccination) {
-		this.vaccination = vaccination;
-	}
-
-	public String getVaccine() {
-		return vaccine;
-	}
-
-	public void setVaccine(String vaccine) {
-		this.vaccine = vaccine;
-	}
-
-	public String getVaccinationDoses() {
-		return vaccinationDoses;
-	}
-
-	public void setVaccinationDoses(String vaccinationDoses) {
-		this.vaccinationDoses = vaccinationDoses;
-	}
-
-	public VaccinationInfoSource getVaccinationInfoSource() {
-		return vaccinationInfoSource;
-	}
-
-	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
-		this.vaccinationInfoSource = vaccinationInfoSource;
+	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
+		this.vaccinationStatus = vaccinationStatus;
 	}
 
 	public YesNoUnknown getSmallpoxVaccinationScar() {
@@ -739,84 +675,12 @@ public class Case extends PseudonymizableAdo {
 		this.smallpoxVaccinationReceived = smallpoxVaccinationReceived;
 	}
 
-	public Date getFirstVaccinationDate() {
-		return firstVaccinationDate;
+	public Date getSmallpoxLastVaccinationDate() {
+		return smallpoxLastVaccinationDate;
 	}
 
-	public void setFirstVaccinationDate(Date firstVaccinationDate) {
-		this.firstVaccinationDate = firstVaccinationDate;
-	}
-
-	public Date getLastVaccinationDate() {
-		return lastVaccinationDate;
-	}
-
-	public void setLastVaccinationDate(Date lastVaccinationDate) {
-		this.lastVaccinationDate = lastVaccinationDate;
-	}
-
-	public Vaccine getVaccineName() {
-		return vaccineName;
-	}
-
-	public void setVaccineName(Vaccine vaccineName) {
-		this.vaccineName = vaccineName;
-	}
-
-	public String getOtherVaccineName() {
-		return otherVaccineName;
-	}
-
-	public void setOtherVaccineName(String otherVaccineName) {
-		this.otherVaccineName = otherVaccineName;
-	}
-
-	public VaccineManufacturer getVaccineManufacturer() {
-		return vaccineManufacturer;
-	}
-
-	public void setVaccineManufacturer(VaccineManufacturer vaccineManufacturer) {
-		this.vaccineManufacturer = vaccineManufacturer;
-	}
-
-	public String getOtherVaccineManufacturer() {
-		return otherVaccineManufacturer;
-	}
-
-	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
-		this.otherVaccineManufacturer = otherVaccineManufacturer;
-	}
-
-	public String getVaccineInn() {
-		return vaccineInn;
-	}
-
-	public void setVaccineInn(String vaccineInn) {
-		this.vaccineInn = vaccineInn;
-	}
-
-	public String getVaccineBatchNumber() {
-		return vaccineBatchNumber;
-	}
-
-	public void setVaccineBatchNumber(String vaccineBatchNumber) {
-		this.vaccineBatchNumber = vaccineBatchNumber;
-	}
-
-	public String getVaccineUniiCode() {
-		return vaccineUniiCode;
-	}
-
-	public void setVaccineUniiCode(String vaccineUniiCode) {
-		this.vaccineUniiCode = vaccineUniiCode;
-	}
-
-	public String getVaccineAtcCode() {
-		return vaccineAtcCode;
-	}
-
-	public void setVaccineAtcCode(String vaccineAtcCode) {
-		this.vaccineAtcCode = vaccineAtcCode;
+	public void setSmallpoxLastVaccinationDate(Date smallpoxLastVaccinationDate) {
+		this.smallpoxLastVaccinationDate = smallpoxLastVaccinationDate;
 	}
 
 	public String getEpidNumber() {

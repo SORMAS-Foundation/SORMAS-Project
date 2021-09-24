@@ -16,8 +16,8 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.components.linelisting.CaseSelector;
@@ -37,21 +37,23 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 
 	public SharedInfoField(CaseReferenceDto caseReferenceDto, Disease initialDiseaseValue) {
 		caseSelector = caseReferenceDto != null
-				? new CaseSelector(caseReferenceDto)
-				: new CaseSelector(I18nProperties.getString(Strings.infoNoSourceCaseSelectedLineListing));
+			? new CaseSelector(caseReferenceDto)
+			: new CaseSelector(I18nProperties.getString(Strings.infoNoSourceCaseSelectedLineListing));
 		disease = new ComboBox<>(I18nProperties.getCaption(Captions.lineListingDiseaseOfSourceCase));
 		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
 		district = new ComboBox<>(I18nProperties.getCaption(Captions.district));
 
-		this.initialDiseaseValue  = initialDiseaseValue;
+		this.initialDiseaseValue = initialDiseaseValue;
 	}
 
 	public SharedInfoField(CaseDataDto caseDataDto) {
-		this(caseDataDto == null ? null : caseDataDto.toReference(), caseDataDto == null ? null : caseDataDto.getDisease());
+		this(
+			caseDataDto == null ? null : caseDataDto.toReference(),
+			caseDataDto == null ? FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease() : caseDataDto.getDisease());
 	}
 
 	public SharedInfoField(EventDto eventDto) {
-		this(null, eventDto == null ? null : eventDto.getDisease());
+		this(null, eventDto == null ? FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease() : eventDto.getDisease());
 	}
 
 	@Override

@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MAX;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MIN;
+
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -23,15 +27,20 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
 public class SormasToSormasContactPreview extends PseudonymizableDto implements HasUuid, Serializable {
 
@@ -54,6 +63,8 @@ public class SormasToSormasContactPreview extends PseudonymizableDto implements 
 
 	private Date reportDateTime;
 	private Disease disease;
+	@SensitiveData
+	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	private Date lastContactDate;
 	private ContactClassification contactClassification;
@@ -68,6 +79,7 @@ public class SormasToSormasContactPreview extends PseudonymizableDto implements 
 
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Valid
 	private SormasToSormasPersonPreview person;
 
 	@EmbeddedPersonalData

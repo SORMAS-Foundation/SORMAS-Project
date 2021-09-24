@@ -17,30 +17,25 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
-import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.vaccination.VaccinationInfoForm;
 
 public class EventParticipantEditForm extends AbstractEditForm<EventParticipantDto> {
 
@@ -53,15 +48,13 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		+ fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION)
 		+ fluidRowLocs(EventParticipantDto.PERSON)
 		+ loc(MEDICAL_INFORMATION_LOC)
-		+ fluidRowLocs(EventParticipantDto.VACCINATION_INFO);
+		+ fluidRowLocs(EventParticipantDto.VACCINATION_STATUS);
 
 	private final EventDto event;
 
 	private final boolean isPseudonymized;
 
 	private final boolean isPersonPseudonymized;
-
-	private VaccinationInfoForm vaccinationForm;
 
 	public EventParticipantEditForm(EventDto event, boolean isPseudonymized, boolean isPersonPseudonymized) {
 		super(
@@ -118,12 +111,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
-		vaccinationForm = addField(ContactDto.VACCINATION_INFO, VaccinationInfoForm.class);
-		if (vaccinationForm.isVisibleAllowed()) {
-			Label medicalInformationCaptionLabel = new Label(I18nProperties.getString(Strings.headingMedicalInformation));
-			medicalInformationCaptionLabel.addStyleName(H3);
-			getContent().addComponent(medicalInformationCaptionLabel, MEDICAL_INFORMATION_LOC);
-		}
+		addField(EventParticipantDto.VACCINATION_STATUS);
 	}
 
 	public String getPersonFirstName() {

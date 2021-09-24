@@ -23,13 +23,15 @@ package de.symeda.sormas.api.campaign.data;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -47,8 +49,10 @@ public class CampaignFormDataDto extends EntityDto {
 	public static final String COMMUNITY = "community";
 	public static final String CREATING_USER = "creatingUser";
 
+	@Valid
 	private List<CampaignFormDataEntry> formValues;
 	private CampaignReferenceDto campaign;
+	@Valid
 	private CampaignFormMetaReferenceDto campaignFormMeta;
 	private Date formDate;
 	private RegionReferenceDto region;

@@ -111,13 +111,19 @@ public class ContactResource extends EntityDtoResource {
 
 	@POST
 	@Path("/externalData")
-	public Response updateExternalData(List<ExternalDataDto> externalData) {
+	public Response updateExternalData(@Valid List<ExternalDataDto> externalData) {
 		try {
 			FacadeProvider.getContactFacade().updateExternalData(externalData);
 			return Response.status(Response.Status.OK).build();
 		} catch (ExternalDataUpdateException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
+	}
+
+	@POST
+	@Path("/delete")
+	public List<String> delete(List<String> uuids) {
+		return FacadeProvider.getContactFacade().deleteContacts(uuids);
 	}
 
 }

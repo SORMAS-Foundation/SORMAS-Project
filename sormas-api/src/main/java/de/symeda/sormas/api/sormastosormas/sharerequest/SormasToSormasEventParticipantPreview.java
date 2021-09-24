@@ -15,12 +15,20 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MAX;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MIN;
+
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import java.io.Serializable;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.i18n.Validations;
 
 public class SormasToSormasEventParticipantPreview extends PseudonymizableDto implements HasUuid, Serializable {
 
@@ -32,6 +40,7 @@ public class SormasToSormasEventParticipantPreview extends PseudonymizableDto im
 
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Valid
 	private SormasToSormasPersonPreview person;
 
 	public SormasToSormasPersonPreview getPerson() {

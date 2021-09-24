@@ -59,8 +59,8 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
@@ -70,6 +70,7 @@ import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskJurisdictionFlagsDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -95,13 +96,16 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
-import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationJoins;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.travelentry.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
@@ -137,6 +141,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	private MessagingService messagingService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private TravelEntryService travelEntryService;
 
 	public Task fromDto(TaskDto source, boolean checkChangeDate) {
 
@@ -174,21 +180,31 @@ public class TaskFacadeEjb implements TaskFacade {
 				target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 				target.setContact(null);
 				target.setEvent(null);
+				target.setTravelEntry(null);
 				break;
 			case CONTACT:
 				target.setCaze(null);
 				target.setContact(contactService.getByReferenceDto(source.getContact()));
 				target.setEvent(null);
+				target.setTravelEntry(null);
 				break;
 			case EVENT:
 				target.setCaze(null);
 				target.setContact(null);
 				target.setEvent(eventService.getByReferenceDto(source.getEvent()));
+				target.setTravelEntry(null);
+				break;
+			case TRAVEL_ENTRY:
+				target.setCaze(null);
+				target.setContact(null);
+				target.setEvent(null);
+				target.setTravelEntry(travelEntryService.getByReferenceDto(source.getTravelEntry()));
 				break;
 			case GENERAL:
 				target.setCaze(null);
 				target.setContact(null);
 				target.setEvent(null);
+				target.setTravelEntry(null);
 				break;
 			default:
 				throw new UnsupportedOperationException(source.getTaskContext() + " is not implemented");
@@ -227,6 +243,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setContact(ContactFacadeEjb.toReferenceDto(source.getContact()));
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
+		target.setTravelEntry(TravelEntryFacadeEjb.toReferenceDto(source.getTravelEntry()));
 
 		target.setClosedLat(source.getClosedLat());
 		target.setClosedLon(source.getClosedLon());
@@ -247,7 +264,15 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 
 			if (source.getEvent() != null) {
-				pseudonymizer.pseudonymizeDto(EventReferenceDto.class, target.getEvent(), taskJurisdictionFlagsDto.getEvenInJurisdiction(), null);
+				pseudonymizer.pseudonymizeDto(EventReferenceDto.class, target.getEvent(), taskJurisdictionFlagsDto.getEventInJurisdiction(), null);
+			}
+
+			if (source.getTravelEntry() != null) {
+				pseudonymizer.pseudonymizeDto(
+					TravelEntryReferenceDto.class,
+					target.getTravelEntry(),
+					taskJurisdictionFlagsDto.getTravelEntryInJurisdiction(),
+					null);
 			}
 		});
 
@@ -372,21 +397,30 @@ public class TaskFacadeEjb implements TaskFacade {
 			.otherwise(
 				cb.selectCase()
 					.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.NAME))
-					.otherwise(joins.getEventRegion().get(District.NAME)));
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(joins.getEventRegion()), joins.getEventRegion().get(Region.NAME))
+							.otherwise(joins.getTravelEntryResponsibleRegion().get(Region.NAME))));
 
 		Expression<Object> district = cb.selectCase()
 			.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(District.NAME))
 			.otherwise(
 				cb.selectCase()
 					.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.NAME))
-					.otherwise(joins.getEventDistrict().get(District.NAME)));
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(joins.getEventDistrict()), joins.getEventDistrict().get(District.NAME))
+							.otherwise(joins.getTravelEntryResponsibleDistrict().get(District.NAME))));
 
 		Expression<Object> community = cb.selectCase()
 			.when(cb.isNotNull(joins.getCaseCommunity()), joins.getCaseCommunity().get(Community.NAME))
 			.otherwise(
 				cb.selectCase()
 					.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.NAME))
-					.otherwise(joins.getEventCommunity().get(Community.NAME)));
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(joins.getEventCommunity()), joins.getEventCommunity().get(Community.NAME))
+							.otherwise(joins.getTravelEntryResponsibleCommunity().get(Community.NAME))));
 
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(
@@ -407,6 +441,10 @@ public class TaskFacadeEjb implements TaskFacade {
 				joins.getContactPerson().get(Person.LAST_NAME),
 				joins.getContactCasePerson().get(Person.FIRST_NAME),
 				joins.getContactCasePerson().get(Person.LAST_NAME),
+				joins.getTravelEntry().get(TravelEntry.UUID),
+				joins.getTravelEntry().get(TravelEntry.EXTERNAL_ID),
+				joins.getTravelEntryPerson().get(Person.FIRST_NAME),
+				joins.getTravelEntryPerson().get(Person.LAST_NAME),
 				task.get(Task.TASK_TYPE),
 				task.get(Task.PRIORITY),
 				task.get(Task.DUE_DATE),
@@ -534,7 +572,15 @@ public class TaskFacadeEjb implements TaskFacade {
 
 					if (t.getEvent() != null) {
 						emptyValuePseudonymizer
-							.pseudonymizeDto(EventReferenceDto.class, t.getEvent(), taskJurisdictionFlagsDto.getEvenInJurisdiction(), null);
+							.pseudonymizeDto(EventReferenceDto.class, t.getEvent(), taskJurisdictionFlagsDto.getEventInJurisdiction(), null);
+					}
+
+					if (t.getTravelEntry() != null) {
+						emptyValuePseudonymizer.pseudonymizeDto(
+							TravelEntryReferenceDto.class,
+							t.getTravelEntry(),
+							taskJurisdictionFlagsDto.getTravelEntryInJurisdiction(),
+							null);
 					}
 				}, true);
 		}
@@ -748,6 +794,21 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Task task = taskService.getByUuid(taskDto.getUuid());
 		taskService.delete(task);
+	}
+
+	public List<String> deleteTasks(List<String> tasksUuids) {
+		if (!userService.hasRight(UserRight.TASK_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete tasks.");
+		}
+		List<String> deletedTaskUuids = new ArrayList<>();
+		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
+		if (tasksToBeDeleted != null) {
+			tasksToBeDeleted.forEach(taskToBeDeleted -> {
+				taskService.delete(taskToBeDeleted);
+				deletedTaskUuids.add(taskToBeDeleted.getUuid());
+			});
+		}
+		return deletedTaskUuids;
 	}
 
 	@Override
