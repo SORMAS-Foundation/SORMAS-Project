@@ -8268,8 +8268,8 @@ DROP TABLE IF EXISTS vaccinationinfo;
 
 UPDATE exportconfiguration SET propertiesstring = replace(propertiesstring, 'vaccination,', 'vaccinationstatus,');
 
-UPDATE featureconfiguration SET enabled = true WHERE featuretype = 'IMMUNIZATION_MANAGEMENT';
-UPDATE featureconfiguration SET enabled = true WHERE featuretype = 'IMMUNIZATION_STATUS_AUTOMATION';
+UPDATE featureconfiguration SET enabled = true, changedate = now() WHERE featuretype = 'IMMUNIZATION_MANAGEMENT';
+UPDATE featureconfiguration SET enabled = true, changedate = now() WHERE featuretype = 'IMMUNIZATION_STATUS_AUTOMATION';
 /* End of vaccination refactoring */
 
 INSERT INTO schema_version (version_number, comment) VALUES (406, 'Vaccination refactoring #5909');
