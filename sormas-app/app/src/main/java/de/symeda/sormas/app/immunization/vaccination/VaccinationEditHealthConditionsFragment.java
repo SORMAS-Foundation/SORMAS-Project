@@ -18,15 +18,15 @@ package de.symeda.sormas.app.immunization.vaccination;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
 import de.symeda.sormas.app.BaseEditHealthConditionsFragment;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.vaccination.Vaccination;
 
-public class VaccinationEditHealthConditionsFragment extends BaseEditHealthConditionsFragment<VaccinationEntity> {
+public class VaccinationEditHealthConditionsFragment extends BaseEditHealthConditionsFragment<Vaccination> {
 
 	public static final String TAG = VaccinationEditHealthConditionsFragment.class.getSimpleName();
 
-	public static VaccinationEditHealthConditionsFragment newInstance(VaccinationEntity activityRootData) {
+	public static VaccinationEditHealthConditionsFragment newInstance(Vaccination activityRootData) {
 		return newInstanceWithFieldCheckers(
 			VaccinationEditHealthConditionsFragment.class,
 			null,

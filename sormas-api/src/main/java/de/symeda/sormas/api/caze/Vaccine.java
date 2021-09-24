@@ -18,7 +18,6 @@ package de.symeda.sormas.api.caze;
 import javax.annotation.Nullable;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
 
 public enum Vaccine {
 
@@ -28,10 +27,6 @@ public enum Vaccine {
 	AD26_COV2_S(VaccineManufacturer.JOHNSON_JOHNSON),
 	NVX_COV_2373(VaccineManufacturer.NOVAVAX),
 	SANOFI_GSK(VaccineManufacturer.SANOFI_GSK),
-	@HideForCountriesExcept
-	ASTRA_ZENECA_COMIRNATY(VaccineManufacturer.ASTRA_ZENECA_BIONTECH_PFIZER),
-	@HideForCountriesExcept
-	ASTRA_ZENECA_MRNA_1273(VaccineManufacturer.ASTRA_ZENECA_MODERNA),
 	UNKNOWN,
 	OTHER;
 

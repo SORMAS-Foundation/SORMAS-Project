@@ -61,10 +61,7 @@ import de.symeda.sormas.api.caze.QuarantineReason;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
-import de.symeda.sormas.api.caze.Vaccination;
-import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.caze.Vaccine;
-import de.symeda.sormas.api.caze.VaccineManufacturer;
+import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -80,13 +77,13 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
@@ -145,21 +142,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String MATERNAL_HISTORY = "maternalHistory";
 	public static final String PORT_HEALTH_INFO = "portHealthInfo";
 	public static final String PREGNANT = "pregnant";
-	public static final String VACCINATION = "vaccination";
-	public static final String VACCINATION_DOSES = "vaccinationDoses";
-	public static final String VACCINATION_INFO_SOURCE = "vaccinationInfoSource";
-	public static final String FIRST_VACCINATION_DATE = "firstVaccinationDate";
-	public static final String LAST_VACCINATION_DATE = "lastVaccinationDate";
-	public static final String VACCINE_NAME = "vaccineName";
-	public static final String OTHER_VACCINE_NAME = "otherVaccineName";
-	public static final String VACCINE_MANUFACTURER = "vaccineManufacturer";
-	public static final String OTHER_VACCINE_MANUFACTURER = "otherVaccineManufacturer";
-	public static final String VACCINE_INN = "vaccineInn";
-	public static final String VACCINE_BATCH_NUMBER = "vaccineBatchNumber";
-	public static final String VACCINE_UNII_CODE = "vaccineUniiCode";
-	public static final String VACCINE_ATC_CODE = "vaccineAtcCode";
-	public static final String WHICH_VACCINE = "whichVaccine";
-	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
+	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -304,22 +287,10 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 
 	private YesNoUnknown pregnant;
 
-	private Vaccination vaccination;
-	private String vaccinationDoses;
-	private VaccinationInfoSource vaccinationInfoSource;
-	private Date firstVaccinationDate;
-	private Date lastVaccinationDate;
-	private Vaccine vaccineName;
-	private String otherVaccineName;
-	private VaccineManufacturer vaccineManufacturer;
-	private String otherVaccineManufacturer;
-	private String vaccineInn;
-	private String vaccineBatchNumber;
-	private String vaccineUniiCode;
-	private String vaccineAtcCode;
-	private String vaccine;
+	private VaccinationStatus vaccinationStatus;
 	private YesNoUnknown smallpoxVaccinationScar;
 	private YesNoUnknown smallpoxVaccinationReceived;
+	private Date smallpoxLastVaccinationDate;
 
 	private String epidNumber;
 
@@ -872,39 +843,12 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	}
 
 	@Enumerated(EnumType.STRING)
-	public Vaccination getVaccination() {
-		return vaccination;
+	public VaccinationStatus getVaccinationStatus() {
+		return vaccinationStatus;
 	}
 
-	public void setVaccination(Vaccination vaccination) {
-		this.vaccination = vaccination;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getVaccinationDoses() {
-		return vaccinationDoses;
-	}
-
-	public void setVaccinationDoses(String vaccinationDoses) {
-		this.vaccinationDoses = vaccinationDoses;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public VaccinationInfoSource getVaccinationInfoSource() {
-		return vaccinationInfoSource;
-	}
-
-	public void setVaccinationInfoSource(VaccinationInfoSource vaccinationInfoSource) {
-		this.vaccinationInfoSource = vaccinationInfoSource;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getVaccine() {
-		return vaccine;
-	}
-
-	public void setVaccine(String vaccine) {
-		this.vaccine = vaccine;
+	public void setVaccinationStatus(VaccinationStatus vaccination) {
+		this.vaccinationStatus = vaccination;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -926,93 +870,12 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	public Date getFirstVaccinationDate() {
-		return firstVaccinationDate;
+	public Date getSmallpoxLastVaccinationDate() {
+		return smallpoxLastVaccinationDate;
 	}
 
-	public void setFirstVaccinationDate(Date firstVaccinationDate) {
-		this.firstVaccinationDate = firstVaccinationDate;
-	}
-
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date getLastVaccinationDate() {
-		return lastVaccinationDate;
-	}
-
-	public void setLastVaccinationDate(Date vaccinationDate) {
-		this.lastVaccinationDate = vaccinationDate;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public Vaccine getVaccineName() {
-		return vaccineName;
-	}
-
-	public void setVaccineName(Vaccine vaccineName) {
-		this.vaccineName = vaccineName;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getOtherVaccineName() {
-		return otherVaccineName;
-	}
-
-	public void setOtherVaccineName(String otherVaccineName) {
-		this.otherVaccineName = otherVaccineName;
-	}
-
-	@Enumerated(EnumType.STRING)
-	public VaccineManufacturer getVaccineManufacturer() {
-		return vaccineManufacturer;
-	}
-
-	public void setVaccineManufacturer(VaccineManufacturer vaccineManufacturer) {
-		this.vaccineManufacturer = vaccineManufacturer;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getOtherVaccineManufacturer() {
-		return otherVaccineManufacturer;
-	}
-
-	public void setOtherVaccineManufacturer(String otherVaccineManufacturer) {
-		this.otherVaccineManufacturer = otherVaccineManufacturer;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getVaccineInn() {
-		return vaccineInn;
-	}
-
-	public void setVaccineInn(String vaccineInn) {
-		this.vaccineInn = vaccineInn;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getVaccineBatchNumber() {
-		return vaccineBatchNumber;
-	}
-
-	public void setVaccineBatchNumber(String vaccineBatchNumber) {
-		this.vaccineBatchNumber = vaccineBatchNumber;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getVaccineUniiCode() {
-		return vaccineUniiCode;
-	}
-
-	public void setVaccineUniiCode(String vaccineUniiCode) {
-		this.vaccineUniiCode = vaccineUniiCode;
-	}
-
-	@Column(columnDefinition = "text")
-	public String getVaccineAtcCode() {
-		return vaccineAtcCode;
-	}
-
-	public void setVaccineAtcCode(String vaccineAtcCode) {
-		this.vaccineAtcCode = vaccineAtcCode;
+	public void setSmallpoxLastVaccinationDate(Date smallpoxLastVaccinationDate) {
+		this.smallpoxLastVaccinationDate = smallpoxLastVaccinationDate;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)

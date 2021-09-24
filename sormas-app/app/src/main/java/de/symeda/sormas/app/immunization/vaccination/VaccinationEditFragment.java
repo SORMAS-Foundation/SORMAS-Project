@@ -25,18 +25,18 @@ import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.app.backend.vaccination.Vaccination;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.databinding.FragmentVaccinationEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 
-public class VaccinationEditFragment extends BaseEditFragment<FragmentVaccinationEditLayoutBinding, VaccinationEntity, VaccinationEntity> {
+public class VaccinationEditFragment extends BaseEditFragment<FragmentVaccinationEditLayoutBinding, Vaccination, Vaccination> {
 
 	public static final String TAG = VaccinationEditFragment.class.getSimpleName();
 
-	private VaccinationEntity record;
+	private Vaccination record;
 
 	// Enum lists
 
@@ -44,7 +44,7 @@ public class VaccinationEditFragment extends BaseEditFragment<FragmentVaccinatio
 	private List<Item> vaccineList;
 	private List<Item> vaccineInfoSourceList;
 
-	public static VaccinationEditFragment newInstance(VaccinationEntity activityRootData) {
+	public static VaccinationEditFragment newInstance(Vaccination activityRootData) {
 		return newInstanceWithFieldCheckers(
 			VaccinationEditFragment.class,
 			null,
@@ -54,7 +54,7 @@ public class VaccinationEditFragment extends BaseEditFragment<FragmentVaccinatio
 	}
 
 	@Override
-	public VaccinationEntity getPrimaryData() {
+	public Vaccination getPrimaryData() {
 		return record;
 	}
 

@@ -119,6 +119,8 @@
     <string name="action_kex_lbds">Échange de clés LBDS</string>
     <string name="action_sync_person_lbds">Personnes Synchro LBDS</string>
     <string name="action_sync_case_lbds">Cas de synchronisation LBDS</string>
+    <string name="action_save_vaccination">Save Vaccination</string>
+    <string name="action_edit_vaccination">Edit Vaccination</string>
     <string name="caption_address">Adresse</string>
     <string name="caption_age">Age</string>
     <string name="caption_attended_by">Participé par</string>
@@ -238,6 +240,8 @@
     <string name="caption_latest_submission">Dernière soumission: %1$s</string>
     <string name="caption_settings_debug_url_lbds">URL de débogage du serveur LBDS</string>
     <string name="caption_immunization_information">Immunization details</string>
+    <string name="caption_immunization_vaccinations">Vaccinations</string>
+    <string name="caption_vaccination_information">Vaccination Information</string>
     <string name="caption_new_immunization">New Immunization</string>
     <string name="caption_overwrite_immunization_management_status">Overwrite immunization management status</string>
     <string name="caption_searchCase">Search case</string>
@@ -405,6 +409,9 @@
     <string name="heading_campaign_form_data_summary">Résumé des données de la campagne</string>
     <string name="heading_campaign_form_meta_select">Sélectionnez le formulaire de campagne</string>
     <string name="heading_case_place_of_stay">Lieu du séjour</string>
+    <string name="heading_vaccination">Vaccination</string>
+    <string name="heading_vaccination_edit">Edit Vaccination</string>
+    <string name="heading_vaccination_new">New Vaccination</string>
     <string name="heading_search_for_case">Search specific case</string>
     <string name="hint_add_to_empty_list">Ajouter une nouvelle entrée en appuyant sur \"+\" en haut à droite.</string>
     <string name="hint_clear">Supprimer</string>
@@ -635,4 +642,5 @@
     <string name="scan_field_sample_id">Scannez l\'id du champ d\'échantillon</string>
     <string name="caption_facility_type_group">Catégorie d\'établissement</string>
     <string name="caption_facility_type">Type d\'établissement</string>
+    <string name="value_vaccine_date_unknown">Vaccination Date N/A</string>
 </resources>

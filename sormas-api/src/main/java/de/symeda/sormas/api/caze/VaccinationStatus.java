@@ -19,7 +19,7 @@ package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum Vaccination {
+public enum VaccinationStatus {
 
 	VACCINATED,
 	UNVACCINATED,

@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.immunization.edit;
 
+import java.util.List;
+
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,20 +28,18 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
-
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.immunization.Immunization;
-import de.symeda.sormas.app.backend.vaccination.VaccinationEntity;
+import de.symeda.sormas.app.backend.vaccination.Vaccination;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
 import de.symeda.sormas.app.immunization.vaccination.VaccinationEditActivity;
 import de.symeda.sormas.app.immunization.vaccination.VaccinationListAdapter;
 import de.symeda.sormas.app.immunization.vaccination.VaccinationListViewModel;
 
-public class ImmunizationEditVaccinationListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<VaccinationEntity>, Immunization>
+public class ImmunizationEditVaccinationListFragment extends BaseEditFragment<FragmentFormListLayoutBinding, List<Vaccination>, Immunization>
 	implements OnListItemClickListener {
 
 	private VaccinationListAdapter adapter;
@@ -77,7 +77,7 @@ public class ImmunizationEditVaccinationListFragment extends BaseEditFragment<Fr
 	}
 
 	@Override
-	public List<VaccinationEntity> getPrimaryData() {
+	public List<Vaccination> getPrimaryData() {
 		throw new UnsupportedOperationException("Sub list fragments don't hold their data");
 	}
 
@@ -105,9 +105,9 @@ public class ImmunizationEditVaccinationListFragment extends BaseEditFragment<Fr
 
 	@Override
 	public void onListItemClick(View view, int position, Object item) {
-		VaccinationEntity vaccinationEntity = (VaccinationEntity) item;
+		Vaccination Vaccination = (Vaccination) item;
 		getBaseEditActivity().discardStoredRootEntity();
-		VaccinationEditActivity.startActivity(getActivity(), vaccinationEntity.getUuid());
+		VaccinationEditActivity.startActivity(getActivity(), Vaccination.getUuid());
 	}
 
 	@Override

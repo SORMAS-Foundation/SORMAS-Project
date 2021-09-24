@@ -187,7 +187,7 @@ public class CaseBackendTest {
 		Case caze = TestEntityCreator.createCase();
 		assertThat(caze.isModified(), is(false));
 
-		caze.setVaccination(Vaccination.VACCINATED);
+		caze.setVaccinationStatus(Vaccination.VACCINATED);
 
 		DatabaseHelper.getCaseDao().saveAndSnapshot(caze);
 		caze = DatabaseHelper.getCaseDao().queryUuidWithEmbedded(caze.getUuid());
