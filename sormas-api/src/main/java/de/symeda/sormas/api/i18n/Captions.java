@@ -326,6 +326,7 @@ public interface Captions {
 	String CaseData_person = "CaseData.person";
 	String CaseData_personFirstName = "CaseData.personFirstName";
 	String CaseData_personLastName = "CaseData.personLastName";
+	String CaseData_personUuid = "CaseData.personUuid";
 	String CaseData_plagueType = "CaseData.plagueType";
 	String CaseData_pointOfEntry = "CaseData.pointOfEntry";
 	String CaseData_pointOfEntryDetails = "CaseData.pointOfEntryDetails";

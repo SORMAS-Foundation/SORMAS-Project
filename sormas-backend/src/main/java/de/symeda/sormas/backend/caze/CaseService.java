@@ -710,6 +710,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getDeleted() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DELETED), caseCriteria.getDeleted()));
 		}
+		if (!DataHelper.isNullOrEmpty(caseCriteria.getPersonUuid())) {
+			// We should allow short and long versions of the UUID so let's do a LIKE behaving like a "starts with"
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), caseCriteria.getPersonUuid() + "%"));
+		}
 		if (!DataHelper.isNullOrEmpty(caseCriteria.getNameUuidEpidNumberLike())) {
 			Predicate likeFilters = CriteriaBuilderHelper.buildFreeTextSearchPredicate(
 				cb,

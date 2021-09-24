@@ -122,6 +122,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseDataDto.DISEASE_VARIANT,
 			CaseDataDto.CASE_CLASSIFICATION,
 			CaseDataDto.FOLLOW_UP_STATUS,
+			CaseCriteria.PERSON_UUID,
 			CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE,
 			CaseCriteria.EVENT_LIKE };
 	}
@@ -149,6 +150,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			caseClassification.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
 		}
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.FOLLOW_UP_STATUS, 140));
+
+		TextField personUuidField = addField(
+			FieldConfiguration
+				.withCaptionAndPixelSized(CaseCriteria.PERSON_UUID, I18nProperties.getString(Strings.promptRelatedPersonUuidField), 200));
+		personUuidField.setNullRepresentation("");
 
 		TextField searchField = addField(
 			FieldConfiguration

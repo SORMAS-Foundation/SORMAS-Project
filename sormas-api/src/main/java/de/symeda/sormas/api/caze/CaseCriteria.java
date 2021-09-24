@@ -79,6 +79,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		"onlyEntitiesChangedSinceLastSharedWithExternalSurvTool";
 	public static final String ONLY_CASES_WITH_DONT_SHARE_WITH_EXTERNAL_SURV_TOOL = "onlyCasesWithDontShareWithExternalSurvTool";
 	public static final String ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION = "onlyShowCasesWithFulfilledReferenceDefinition";
+	public static final String PERSON_UUID = "personUuid";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
@@ -138,6 +139,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean onlyEntitiesChangedSinceLastSharedWithExternalSurvTool;
 	private Boolean onlyCasesWithDontShareWithExternalSurvTool;
 	private Boolean onlyShowCasesWithFulfilledReferenceDefinition;
+	private String personUuid;
 
 	public CaseCriteria() {
 		super(NewCaseDateType.class);
@@ -711,5 +713,13 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public void setFollowUpVisitsInterval(Integer followUpVisitsInterval) {
 		this.followUpVisitsInterval = followUpVisitsInterval;
+	}
+
+	public String getPersonUuid() {
+		return personUuid;
+	}
+
+	public void setPersonUuid(String personUuid) {
+		this.personUuid = personUuid;
 	}
 }

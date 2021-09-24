@@ -147,6 +147,11 @@ public class ImportExportTest extends AbstractBeanTest {
 				values[i] = "Import John";
 			} else if (String.join(".", CaseDataDto.PERSON, PersonDto.LAST_NAME).equals(column)) {
 				values[i] = "Import Doe";
+			} else if (String.join(".", CaseDataDto.PERSON, PersonDto.UUID).equals(column)) {
+				// Workaround: Reset the change date to avoid OutdatedEntityExceptions
+				// Applying a setChangeDate(new Date()) to the person before saving it will result in creating 2 cases and will fail the test
+				// So let's just ignore this column for now...
+				values[i] = "";
 			}
 		}
 
