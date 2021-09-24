@@ -31,29 +31,29 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb.ContinentFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb.SubcontinentFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
@@ -152,12 +152,12 @@ public class ReceivedDataProcessorHelper {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 
 		Map<String, SampleDto> existingSamplesMap =
-			sampleFacade.getByUuids(samples.stream().map(s -> s.getSample().getUuid()).collect(Collectors.toList()))
+			sampleFacade.getByUuids(samples.stream().map(s -> s.getEntity().getUuid()).collect(Collectors.toList()))
 				.stream()
 				.collect(Collectors.toMap(SampleDto::getUuid, Function.identity()));
 
 		samples.forEach(sormasToSormasSample -> {
-			SampleDto sample = sormasToSormasSample.getSample();
+			SampleDto sample = sormasToSormasSample.getEntity();
 			ValidationErrors sampleErrors = new ValidationErrors();
 
 			updateReportingUser(sample, existingSamplesMap.get(sample.getUuid()));

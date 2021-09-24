@@ -105,9 +105,6 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.location.LocationFacadeEjb;
-import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
@@ -1058,7 +1055,7 @@ public class EventFacadeEjb implements EventFacade {
 		target.setInternalToken(source.getInternalToken());
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getShareInfoEvents().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		target.setEventIdentificationSource(source.getEventIdentificationSource());
 

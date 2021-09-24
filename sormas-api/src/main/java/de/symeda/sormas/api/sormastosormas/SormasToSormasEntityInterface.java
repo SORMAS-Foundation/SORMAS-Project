@@ -27,8 +27,6 @@ public interface SormasToSormasEntityInterface {
 
 	void share(List<String> entityUuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException;
 
-	void sendShareRequest(List<String> entityUuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException;
-
 	void saveShareRequest(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
 
 	void sendRejectShareRequest(String uuid) throws SormasToSormasException;
@@ -52,7 +50,7 @@ public interface SormasToSormasEntityInterface {
 
 	void saveSyncedEntity(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
 
-	List<SormasToSormasShareTree> getAllShares(String uuid) throws SormasToSormasException;
+	List<SormasToSormasShareTree> getAllShares(String uuid);
 
 	SormasToSormasEncryptedDataDto getShareTrees(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException;
 

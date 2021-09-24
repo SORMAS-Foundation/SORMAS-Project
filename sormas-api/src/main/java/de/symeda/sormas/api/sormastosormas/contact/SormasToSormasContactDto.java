@@ -15,43 +15,28 @@
 
 package de.symeda.sormas.api.sormastosormas.contact;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 
-public class SormasToSormasContactDto extends SormasToSormasDto<ContactDto> {
+public class SormasToSormasContactDto extends SormasToSormasEntityDto<ContactDto> {
 
 	private static final long serialVersionUID = 7414547678077858460L;
 
 	@Valid
 	private PersonDto person;
 
-	@Valid
-	private List<SormasToSormasSampleDto> samples;
-
 	public SormasToSormasContactDto() {
 	}
 
-	public SormasToSormasContactDto(PersonDto person, ContactDto contact, SormasToSormasOriginInfoDto originInfo) {
-		super(contact, originInfo);
+	public SormasToSormasContactDto(PersonDto person, ContactDto contact) {
+		super(contact);
 		this.person = person;
 	}
 
 	public PersonDto getPerson() {
 		return person;
-	}
-
-	public List<SormasToSormasSampleDto> getSamples() {
-		return samples;
-	}
-
-	public void setSamples(List<SormasToSormasSampleDto> samples) {
-		this.samples = samples;
 	}
 }

@@ -71,7 +71,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntity;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoContact;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
@@ -255,7 +255,7 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 	private User followUpStatusChangeUser;
 
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
-	private List<ShareInfoContact> shareInfoContacts = new ArrayList<>(0);
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
 	private Contact duplicateOf;
 
@@ -942,13 +942,15 @@ public class Contact extends CoreAdo implements SormasToSormasEntity, HasExterna
 		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(mappedBy = ShareInfoContact.CONTACT, fetch = FetchType.LAZY)
-	public List<ShareInfoContact> getShareInfoContacts() {
-		return shareInfoContacts;
+	@Override
+	@OneToMany(fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
 	}
 
-	public void setShareInfoContacts(List<ShareInfoContact> shareInfoContacts) {
-		this.shareInfoContacts = shareInfoContacts;
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
 	}
 
 	@Enumerated(EnumType.STRING)

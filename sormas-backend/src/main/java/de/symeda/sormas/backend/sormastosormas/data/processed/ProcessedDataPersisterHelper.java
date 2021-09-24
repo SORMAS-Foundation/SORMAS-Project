@@ -15,32 +15,16 @@
 
 package de.symeda.sormas.backend.sormastosormas.data.processed;
 
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildPathogenTestValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildSampleValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
-
-import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.HasUuid;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.sample.AdditionalTestDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoFacade;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.utils.SormasToSormasEntityDto;
-import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
-import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
@@ -50,44 +34,10 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasSha
 public class ProcessedDataPersisterHelper {
 
 	@EJB
-	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
-	@EJB
-	private PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal pathogenTestFacade;
-	@EJB
-	private AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal additionalTestFacade;
-
-	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal oriInfoFacade;
 
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
-
-	public void persistSamples(List<SormasToSormasSampleDto> samples, Consumer<SampleDto> beforeSaveSample) throws SormasToSormasValidationException {
-
-		for (SormasToSormasSampleDto sormasToSormasSample : samples) {
-			SampleDto sample = sormasToSormasSample.getSample();
-
-			if (beforeSaveSample != null) {
-				beforeSaveSample.accept(sample);
-			}
-
-			handleValidationError(() -> sampleFacade.saveSample(sample, true, false, false), Captions.Sample, buildSampleValidationGroupName(sample));
-
-			for (PathogenTestDto pathogenTest : sormasToSormasSample.getPathogenTests()) {
-				handleValidationError(
-					() -> pathogenTestFacade.savePathogenTest(pathogenTest, false, false),
-					Captions.PathogenTest,
-					buildPathogenTestValidationGroupName(pathogenTest));
-			}
-
-			for (AdditionalTestDto additionalTest : sormasToSormasSample.getAdditionalTests()) {
-				handleValidationError(
-					() -> additionalTestFacade.saveAdditionalTest(additionalTest, false),
-					Captions.AdditionalTest,
-					buildValidationGroupName(Captions.AdditionalTest, additionalTest));
-			}
-		}
-	}
 
 	public <T extends SormasToSormasEntityDto, U extends SormasToSormasEntityDto> void sharedAssociatedEntityCallback(U parent, T entity) {
 		entity.setSormasToSormasOriginInfo(parent.getSormasToSormasOriginInfo());

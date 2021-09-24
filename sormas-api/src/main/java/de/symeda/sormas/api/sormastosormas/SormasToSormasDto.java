@@ -16,31 +16,78 @@
 package de.symeda.sormas.api.sormastosormas;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.validation.Valid;
 
-public class SormasToSormasDto<T> implements Serializable {
+import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
+import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 
-	private static final long serialVersionUID = -1142043326721172412L;
+public class SormasToSormasDto implements Serializable {
 
-	private T entity;
+	private static final long serialVersionUID = 3226296154450214227L;
 
 	@Valid
 	private SormasToSormasOriginInfoDto originInfo;
 
-	public SormasToSormasDto() {
-	}
-
-	public SormasToSormasDto(T entity, SormasToSormasOriginInfoDto originInfo) {
-		this.entity = entity;
-		this.originInfo = originInfo;
-	}
-
-	public T getEntity() {
-		return entity;
-	}
+	@Valid
+	private List<SormasToSormasCaseDto> cases;
+	@Valid
+	private List<SormasToSormasContactDto> contacts;
+	@Valid
+	private List<SormasToSormasSampleDto> samples;
+	@Valid
+	private List<SormasToSormasEventDto> events;
+	@Valid
+	private List<SormasToSormasEventParticipantDto> eventParticipants;
 
 	public SormasToSormasOriginInfoDto getOriginInfo() {
 		return originInfo;
+	}
+
+	public void setOriginInfo(SormasToSormasOriginInfoDto originInfo) {
+		this.originInfo = originInfo;
+	}
+
+	public List<SormasToSormasCaseDto> getCases() {
+		return cases;
+	}
+
+	public void setCases(List<SormasToSormasCaseDto> cases) {
+		this.cases = cases;
+	}
+
+	public List<SormasToSormasContactDto> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(List<SormasToSormasContactDto> contacts) {
+		this.contacts = contacts;
+	}
+
+	public List<SormasToSormasSampleDto> getSamples() {
+		return samples;
+	}
+
+	public void setSamples(List<SormasToSormasSampleDto> samples) {
+		this.samples = samples;
+	}
+
+	public List<SormasToSormasEventDto> getEvents() {
+		return events;
+	}
+
+	public void setEvents(List<SormasToSormasEventDto> events) {
+		this.events = events;
+	}
+
+	public List<SormasToSormasEventParticipantDto> getEventParticipants() {
+		return eventParticipants;
+	}
+
+	public void setEventParticipants(List<SormasToSormasEventParticipantDto> eventParticipants) {
+		this.eventParticipants = eventParticipants;
 	}
 }

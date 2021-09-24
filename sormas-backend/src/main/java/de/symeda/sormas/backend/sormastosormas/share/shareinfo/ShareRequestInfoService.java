@@ -13,39 +13,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.share;
+package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
 
-import de.symeda.sormas.backend.sormastosormas.entities.AssociatedEntityWrapper;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Predicate;
 
-import java.util.ArrayList;
-import java.util.List;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 
-public class ShareData<T, DTO> {
+@Stateless
+@LocalBean
+public class ShareRequestInfoService extends AdoServiceWithUserFilter<ShareRequestInfo> {
 
-	private final DTO dto;
-
-	private final T entity;
-	private final List<AssociatedEntityWrapper<?>> associatedEntities;
-
-	public ShareData(T entity, DTO dto) {
-		this.dto = dto;
-		this.entity = entity;
-		this.associatedEntities = new ArrayList<>();
+	public ShareRequestInfoService() {
+		super(ShareRequestInfo.class);
 	}
 
-	public DTO getDto() {
-		return dto;
-	}
-
-	public T getEntity() {
-		return entity;
-	}
-
-	public void addAssociatedEntities(List<AssociatedEntityWrapper<?>> entities) {
-		this.associatedEntities.addAll(entities);
-	}
-
-	public List<AssociatedEntityWrapper<?>> getAssociatedEntities() {
-		return associatedEntities;
+	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ShareRequestInfo> from) {
+		// no user filter needed right now
+		return null;
 	}
 }

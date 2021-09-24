@@ -1874,6 +1874,7 @@ public interface Captions {
 	String SormasToSormasShareRequest_status = "SormasToSormasShareRequest.status";
 	String SormasToSormasShareRequest_uuid = "SormasToSormasShareRequest.uuid";
 	String sormasToSormasSync = "sormasToSormasSync";
+	String sormasToSormasOriginInfo = "sormasToSormasOriginInfo";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
 	String statisticsAttributeSelect = "statisticsAttributeSelect";

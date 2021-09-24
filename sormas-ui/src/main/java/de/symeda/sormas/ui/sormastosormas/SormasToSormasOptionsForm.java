@@ -20,8 +20,12 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -30,11 +34,13 @@ import com.vaadin.v7.ui.TextArea;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareTree;
+import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-import org.apache.commons.collections4.CollectionUtils;
 
 public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOptionsDto> {
 
@@ -49,17 +55,22 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	private final List<String> customOptions;
 
-	private List<String> excludedOrganizationIds;
+	private List<SormasToSormasShareTree> currentShares;
 
 	private final boolean hasOptions;
 
+	private final BiConsumer<SormasToSormasOptionsForm, SormasToSormasShareInfoDto> updateCustomOptionssByPreviousShare;
 	private final Consumer<SormasToSormasOptionsForm> customFieldDependencies;
 
-	public static SormasToSormasOptionsForm forCase(List<String> excludedOrganizationIds) {
+	public static SormasToSormasOptionsForm forCase(List<SormasToSormasShareTree> currentShares) {
 		return new SormasToSormasOptionsForm(
-				excludedOrganizationIds,
-				true,
-				Arrays.asList(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, SormasToSormasOptionsDto.WITH_SAMPLES),
+			currentShares,
+			true,
+			Arrays.asList(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, SormasToSormasOptionsDto.WITH_SAMPLES),
+			(f, s) -> {
+				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS)).setValue(s.isWithAssociatedContacts());
+				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_SAMPLES)).setValue(s.isWithSamples());
+			},
 				(form) -> {
 					FieldHelper.setEnabledWhen(
 							form.getFieldGroup(),
@@ -77,15 +88,21 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				});
 	}
 
-	public static SormasToSormasOptionsForm forContact(List<String> excludedOrganizationIds) {
-		return new SormasToSormasOptionsForm(excludedOrganizationIds, true, Collections.singletonList(SormasToSormasOptionsDto.WITH_SAMPLES), null);
+	public static SormasToSormasOptionsForm forContact(List<SormasToSormasShareTree> currentShares) {
+		return new SormasToSormasOptionsForm(currentShares, true, Collections.singletonList(SormasToSormasOptionsDto.WITH_SAMPLES), (f, s) -> {
+			((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_SAMPLES)).setValue(s.isWithSamples());
+		}, null);
 	}
 
-	public static SormasToSormasOptionsForm forEvent(List<String> excludedOrganizationIds) {
+	public static SormasToSormasOptionsForm forEvent(List<SormasToSormasShareTree> currentShares) {
 		return new SormasToSormasOptionsForm(
-			excludedOrganizationIds,
+			currentShares,
 			true,
 			Arrays.asList(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS, SormasToSormasOptionsDto.WITH_SAMPLES),
+			(f, s) -> {
+				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS)).setValue(s.isWithEvenParticipants());
+				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_SAMPLES)).setValue(s.isWithSamples());
+			},
 			(form) -> FieldHelper.setVisibleWhen(
 				form.getFieldGroup(),
 				SormasToSormasOptionsDto.WITH_SAMPLES,
@@ -95,18 +112,20 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 	}
 
 	public static SormasToSormasOptionsForm withoutOptions() {
-		return new SormasToSormasOptionsForm(null, false, null, null);
+		return new SormasToSormasOptionsForm(null, false, null, null, null);
 	}
 
 	private SormasToSormasOptionsForm(
-		List<String> excludedOrganizationIds,
+		List<SormasToSormasShareTree> currentShares,
 		boolean hasOptions,
 		List<String> customOptions,
+		BiConsumer<SormasToSormasOptionsForm, SormasToSormasShareInfoDto> updateCustomOptionssByPreviousShare,
 		Consumer<SormasToSormasOptionsForm> customFieldDependencies) {
 		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX, false);
 
 		this.customOptions = customOptions == null ? Collections.emptyList() : customOptions;
-		this.excludedOrganizationIds = excludedOrganizationIds == null ? Collections.emptyList() : excludedOrganizationIds;
+		this.currentShares = currentShares == null ? Collections.emptyList() : currentShares;
+		this.updateCustomOptionssByPreviousShare = updateCustomOptionssByPreviousShare;
 		this.customFieldDependencies = customFieldDependencies;
 		this.hasOptions = hasOptions;
 
@@ -125,22 +144,42 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	@Override
 	protected void addFields() {
-		ComboBox availableServersBox = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
-		availableServersBox.setRequired(true);
+		ComboBox availableServersCombo = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
+		availableServersCombo.setRequired(true);
 		List<SormasServerDescriptor> availableServers = FacadeProvider.getSormasToSormasFacade().getAllAvailableServers();
-		availableServersBox.addItems(availableServers.stream().filter(o -> !excludedOrganizationIds.contains(o.getId())).collect(Collectors.toList()));
+		availableServersCombo.addItems(availableServers);
 
 		if (hasOptions) {
 
 			CheckBox handoverOwnership = addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
 			CheckBox pseudonimyzePersonalData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA);
 			CheckBox pseudonymizeSensitiveData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA);
-			
+
+			pseudonymizeSensitiveData.addStyleNames(CssStyles.VSPACE_3);
+
+			availableServersCombo.addValueChangeListener(e -> {
+				SormasServerDescriptor selectedServer = (SormasServerDescriptor) e.getProperty().getValue();
+
+				Optional<SormasToSormasShareInfoDto> previousShare = findShareByOrganization(currentShares, selectedServer.getId());
+
+				previousShare.ifPresent(s -> {
+					if (s.getRequestStatus() != ShareRequestStatus.ACCEPTED) {
+						handoverOwnership.setValue(s.isOwnershipHandedOver());
+					}
+					pseudonimyzePersonalData.setValue(s.isPseudonymizedPersonalData());
+					pseudonimyzePersonalData.setValue(s.isPseudonymizedSensitiveData());
+
+					if (updateCustomOptionssByPreviousShare != null) {
+						updateCustomOptionssByPreviousShare.accept(this, s);
+					}
+				});
+			});
+
 			handoverOwnership.addValueChangeListener(e -> {
 				boolean ownershipHandedOver = (boolean) e.getProperty().getValue();
 				pseudonimyzePersonalData.setEnabled(!ownershipHandedOver);
 				pseudonymizeSensitiveData.setEnabled(!ownershipHandedOver);
-				
+
 				if (ownershipHandedOver) {
 					pseudonimyzePersonalData.setValue(false);
 					pseudonymizeSensitiveData.setValue(false);
@@ -190,5 +229,21 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				f.setEnabled(false);
 			}
 		});
+	}
+
+	private static Optional<SormasToSormasShareInfoDto> findShareByOrganization(List<SormasToSormasShareTree> shares, String organizationId) {
+		for (SormasToSormasShareTree share : shares) {
+			if (share.getShare().getTargetDescriptor().getId().equals(organizationId)) {
+				return Optional.of(share.getShare());
+			} else if (share.getReShares() != null) {
+				Optional<SormasToSormasShareInfoDto> reShare = findShareByOrganization(share.getReShares(), organizationId);
+
+				if (reShare.isPresent()) {
+					return reShare;
+				}
+			}
+		}
+
+		return Optional.empty();
 	}
 }

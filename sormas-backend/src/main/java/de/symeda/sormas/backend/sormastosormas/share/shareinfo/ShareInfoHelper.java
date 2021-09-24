@@ -15,16 +15,35 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
 
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
+
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class ShareInfoHelper {
 
 	private ShareInfoHelper() {
 	}
 
-	public static boolean isOwnerShipHandedOver(ShareInfoEntity shareInfoEntity) {
-		SormasToSormasShareInfo shareInfo = shareInfoEntity.getShareInfo();
+	public static boolean isOwnerShipHandedOver(SormasToSormasShareInfo shareInfo) {
+		return shareInfo.isOwnershipHandedOver()
+			&& shareInfo.getRequests().stream().anyMatch(r -> r.getRequestStatus() == ShareRequestStatus.ACCEPTED);
+	}
 
-		return shareInfo.isOwnershipHandedOver() && shareInfo.getRequestStatus() == ShareRequestStatus.ACCEPTED;
+	public static <T> SormasToSormasShareInfo createShareInfo(String organizationId, T entity, BiConsumer<SormasToSormasShareInfo, T> setEntity) {
+		SormasToSormasShareInfo shareInfo = new SormasToSormasShareInfo();
+		shareInfo.setUuid(DataHelper.createUuid());
+		shareInfo.setOrganizationId(organizationId);
+
+		setEntity.accept(shareInfo, entity);
+
+		return shareInfo;
+	}
+
+	public static Optional<ShareRequestInfo> getLatestRequest(Stream<ShareRequestInfo> requests) {
+		return requests.max(Comparator.comparing(ShareRequestInfo::getCreationDate));
 	}
 }

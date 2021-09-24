@@ -1604,7 +1604,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getShareInfoContacts().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		target.setVaccinationStatus(source.getVaccinationStatus());
 		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());

@@ -13,20 +13,27 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.sormastosormas.entities.caze;
+package de.symeda.sormas.api.sormastosormas;
 
-import java.util.List;
+import java.io.Serializable;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
-import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
+import javax.validation.Valid;
 
-public class CaseShareRequestData extends ShareRequestData<SormasToSormasCasePreview> {
+public class SormasToSormasEntityDto<T> implements Serializable {
 
-	public CaseShareRequestData() {
+	private static final long serialVersionUID = -1142043326721172412L;
+
+	@Valid
+	private T entity;
+
+	public SormasToSormasEntityDto() {
 	}
 
-	public CaseShareRequestData(String requestUud, List<SormasToSormasCasePreview> previews, SormasToSormasOriginInfoDto originInfo) {
-		super(requestUud, previews, originInfo);
+	public SormasToSormasEntityDto(T entity) {
+		this.entity = entity;
+	}
+
+	public T getEntity() {
+		return entity;
 	}
 }

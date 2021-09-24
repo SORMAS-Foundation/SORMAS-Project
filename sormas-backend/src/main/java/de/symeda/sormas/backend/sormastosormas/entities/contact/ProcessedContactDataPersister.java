@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.sormastosormas.entities.contact;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javax.ejb.EJB;
@@ -28,23 +27,22 @@ import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersisterHelper;
-import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersisterHelper.ReturnedAssociatedEntityCallback;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 
 @Stateless
 @LocalBean
-public class ProcessedContactDataPersister implements ProcessedDataPersister<ProcessedContactData> {
+public class ProcessedContactDataPersister implements ProcessedDataPersister<SormasToSormasContactDto> {
 
 	@EJB
 	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
@@ -57,36 +55,32 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
+	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistSharedData(ProcessedContactData processedData) throws SormasToSormasValidationException {
-		persistProcessedData(processedData, null, dataPersisterHelper::sharedAssociatedEntityCallback, true);
+	public void persistSharedData(SormasToSormasContactDto processedData) throws SormasToSormasValidationException {
+		persistProcessedData(processedData, null, true);
 	}
 
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistReturnedData(ProcessedContactData processedData, SormasToSormasOriginInfoDto originInfo)
+	public void persistReturnedData(SormasToSormasContactDto processedData, SormasToSormasOriginInfoDto originInfo)
 		throws SormasToSormasValidationException {
-
-		ReturnedAssociatedEntityCallback callback = dataPersisterHelper.createReturnedAssociatedEntityCallback(originInfo);
 
 		persistProcessedData(processedData, contact -> {
 			SormasToSormasShareInfo contactShareInfo =
 				shareInfoService.getByContactAndOrganization(contact.getUuid(), originInfo.getOrganizationId());
 			contactShareInfo.setOwnershipHandedOver(false);
 			shareInfoService.persist(contactShareInfo);
-		}, (contact, sample) -> {
-			callback.apply(sample, shareInfoService::getBySampleAndOrganization);
 		}, false);
 	}
 
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	public void persistSyncData(ProcessedContactData processedData, ShareTreeCriteria shareTreeCriteria) throws SormasToSormasValidationException {
-		SormasToSormasOriginInfoDto originInfo = processedData.getOriginInfo();
-
+	public void persistSyncData(SormasToSormasContactDto processedData, SormasToSormasOriginInfoDto originInfo, ShareTreeCriteria shareTreeCriteria)
+		throws SormasToSormasValidationException {
 		ProcessedDataPersisterHelper.SyncedAssociatedEntityCallback associatedEntityCallback =
 			new ProcessedDataPersisterHelper.SyncedAssociatedEntityCallback(originInfo, originInfoFacade);
 
@@ -103,18 +97,12 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 
 				shareInfoService.ensurePersisted(shareInfo);
 			}
-		}, (contact, sample) -> {
-			associatedEntityCallback.apply(sample, shareInfoService::getBySampleAndOrganization);
 		}, false);
 
 		contactFacade.syncSharesAsync(shareTreeCriteria);
 	}
 
-	private void persistProcessedData(
-		ProcessedContactData processedData,
-		Consumer<ContactDto> afterSaveContact,
-		BiConsumer<ContactDto, SampleDto> beforeSaveContact,
-		boolean isCreate)
+	private void persistProcessedData(SormasToSormasContactDto processedData, Consumer<ContactDto> afterSaveContact, boolean isCreate)
 		throws SormasToSormasValidationException {
 
 		ValidationErrorGroup contactValidationGroupName = buildContactValidationGroupName(processedData.getEntity());
@@ -144,12 +132,6 @@ public class ProcessedContactDataPersister implements ProcessedDataPersister<Pro
 
 		if (afterSaveContact != null) {
 			afterSaveContact.accept(savedContact);
-		}
-
-		if (processedData.getSamples() != null) {
-			dataPersisterHelper.persistSamples(
-				processedData.getSamples(),
-				beforeSaveContact != null ? (sample) -> beforeSaveContact.accept(savedContact, sample) : null);
 		}
 	}
 }

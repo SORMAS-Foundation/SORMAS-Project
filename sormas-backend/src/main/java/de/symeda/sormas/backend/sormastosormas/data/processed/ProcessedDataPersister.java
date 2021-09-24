@@ -25,5 +25,6 @@ public interface ProcessedDataPersister<P> {
 
 	void persistReturnedData(P processedData, SormasToSormasOriginInfoDto originInfo) throws SormasToSormasValidationException;
 
-	void persistSyncData(P processedData, ShareTreeCriteria shareTreeCriteria) throws SormasToSormasValidationException;
+	void persistSyncData(P processedData, SormasToSormasOriginInfoDto originInfo, ShareTreeCriteria shareTreeCriteria)
+		throws SormasToSormasValidationException;
 }

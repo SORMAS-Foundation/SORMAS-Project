@@ -21,7 +21,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSampleDto;
-import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedData;
 
 public class ProcessedCaseData extends ProcessedData<CaseDataDto> {
@@ -29,28 +28,17 @@ public class ProcessedCaseData extends ProcessedData<CaseDataDto> {
 	private static final long serialVersionUID = -437052876440284140L;
 
 	private final PersonDto person;
-	private final List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts;
 	private final List<SormasToSormasSampleDto> samples;
 
-	public ProcessedCaseData(
-		PersonDto person,
-		CaseDataDto caze,
-		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts,
-		List<SormasToSormasSampleDto> samples,
-		SormasToSormasOriginInfoDto originInfo) {
+	public ProcessedCaseData(PersonDto person, CaseDataDto caze, List<SormasToSormasSampleDto> samples, SormasToSormasOriginInfoDto originInfo) {
 		super(caze, originInfo);
 
 		this.person = person;
-		this.associatedContacts = associatedContacts;
 		this.samples = samples;
 	}
 
 	public PersonDto getPerson() {
 		return person;
-	}
-
-	public List<SormasToSormasCaseDto.AssociatedContactDto> getAssociatedContacts() {
-		return associatedContacts;
 	}
 
 	public List<SormasToSormasSampleDto> getSamples() {

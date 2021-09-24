@@ -15,28 +15,20 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MAX;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_UUID_MIN;
-
-import de.symeda.sormas.api.utils.EmbeddedPersonalData;
-import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
-import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 public class SormasToSormasEventPreview extends PseudonymizableDto implements HasUuid, Serializable {
 
@@ -67,9 +59,6 @@ public class SormasToSormasEventPreview extends PseudonymizableDto implements Ha
 	@EmbeddedSensitiveData
 	@Valid
 	private LocationDto eventLocation;
-
-	@Valid
-	private List<SormasToSormasEventParticipantPreview> eventParticipants;
 
 	public Date getReportDateTime() {
 		return reportDateTime;
@@ -117,13 +106,5 @@ public class SormasToSormasEventPreview extends PseudonymizableDto implements Ha
 
 	public void setEventLocation(LocationDto eventLocation) {
 		this.eventLocation = eventLocation;
-	}
-
-	public List<SormasToSormasEventParticipantPreview> getEventParticipants() {
-		return eventParticipants;
-	}
-
-	public void setEventParticipants(List<SormasToSormasEventParticipantPreview> eventParticipants) {
-		this.eventParticipants = eventParticipants;
 	}
 }
