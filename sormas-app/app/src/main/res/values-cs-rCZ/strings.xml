@@ -119,6 +119,8 @@
     <string name="action_kex_lbds">LBDS Key Exchange</string>
     <string name="action_sync_person_lbds">LBDS Sync Persons</string>
     <string name="action_sync_case_lbds">LBDS Sync Cases</string>
+    <string name="action_save_vaccination">Uložit vakcínu</string>
+    <string name="action_edit_vaccination">Upravit vakcínu</string>
     <string name="caption_address">Adresa</string>
     <string name="caption_age">Věk</string>
     <string name="caption_attended_by">Zúčastnil se</string>
@@ -238,11 +240,13 @@
     <string name="caption_latest_submission">Poslední příspěvek: %1$s</string>
     <string name="caption_settings_debug_url_lbds">URL pro ladění LBDS serveru</string>
     <string name="caption_immunization_information">Detaily imunizace</string>
+    <string name="caption_immunization_vaccinations">Očkování</string>
+    <string name="caption_vaccination_information">Informace o očkování</string>
     <string name="caption_new_immunization">Nová imunizace</string>
     <string name="caption_overwrite_immunization_management_status">Přepsání stavu správy imunizace</string>
     <string name="caption_searchCase">Hledat případ</string>
-    <string name="caption_aggregate_new_cases">New cases</string>
-    <string name="caption_aggregate_lab_confirmations">Lab confirmations</string>
+    <string name="caption_aggregate_new_cases">Nové případy</string>
+    <string name="caption_aggregate_lab_confirmations">Potvrzení laboratoře</string>
     <string name="caption_aggregate_deaths">Úmrtí</string>
     <string name="caption_aggregate_new_cases_abbr">C</string>
     <string name="caption_aggregate_lab_confirmations_abbr">L</string>
@@ -405,6 +409,9 @@
     <string name="heading_campaign_form_data_summary">Shrnutí dat kampaně</string>
     <string name="heading_campaign_form_meta_select">Vybrat formulář kampaně</string>
     <string name="heading_case_place_of_stay">Místo pobytu</string>
+    <string name="heading_vaccination">Očkování</string>
+    <string name="heading_vaccination_edit">Upravit očkování</string>
+    <string name="heading_vaccination_new">Nové očkování</string>
     <string name="heading_search_for_case">Hledat konkrétní případ</string>
     <string name="hint_add_to_empty_list">Přidejte nový záznam stisknutím symbolu \"+\" v pravém horním rohu.</string>
     <string name="hint_clear">Vymazat</string>
@@ -635,4 +642,5 @@
     <string name="scan_field_sample_id">Skenovat pole Id vzorku</string>
     <string name="caption_facility_type_group">Kategorie zařízení</string>
     <string name="caption_facility_type">Typ zařízení</string>
+    <string name="value_vaccine_date_unknown">Datum očkování N/A</string>
 </resources>
