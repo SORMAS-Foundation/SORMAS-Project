@@ -100,8 +100,8 @@ public class ContactService {
         .immunosuppressiveTherapy("NO")
         .activeInCare("NO")
         .cancelFollowUp(true)
-        .overwriteFollowUp("Overwrite follow-up until date")
-        // commented code until issue=5634 is fixed
+        // TODO enable it back once 6803 is fixed
+        // .overwriteFollowUp("Overwrite follow-up until date")
         // .dateOfFollowUpUntil(LocalDate.now().plusDays(15))
         .followUpStatusComment("dummy comment will resume, ofc")
         .responsibleContactOfficer("")

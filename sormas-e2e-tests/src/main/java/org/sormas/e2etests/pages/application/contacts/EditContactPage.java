@@ -79,7 +79,7 @@ public class EditContactPage {
       By.cssSelector("#cardiovascularDiseaseIncludingHypertension label");
   public static final By ADDITIONAL_RELEVANT_PRE_CONDITIONS_TEXT = By.id("otherConditions");
   public static final By VACCINATION_STATUS_COMBOBOX =
-      By.cssSelector(".v-verticallayout [location='vaccinationInfo'] [role='combobox'] div");
+      By.cssSelector(".v-verticallayout [location='vaccinationStatus'] [role='combobox'] div");
   public static final By IMMUNOSUPPRESSIVE_THERAPY_OPTIONS =
       By.cssSelector("#immunosuppressiveTherapyBasicDisease label");
   public static final By CARE_OVER_60_OPTIONS = By.cssSelector("#careForPeopleOver60 label");

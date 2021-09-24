@@ -13,17 +13,26 @@ Feature: Contacts end to end tests
   Scenario: Delete created contact
     Given I log in with the user
     When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     When I click on the Contacts button from navbar
     Then I open the last created contact
     Then I delete the contact
     And I check that number of displayed contact results is 0
 
   Scenario: Edit a created contact
-    Given I log in with the user
     When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     And API: I create a new contact
-    And I navigate to the last created contact via the url
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with the user
+    When I click on the Contacts button from navbar
+    Then I open the last created contact
     And I change all contact fields and save
     And I navigate to the last created contact via the url
     Then I check the edited data is correctly displayed on Edit Contact page after editing

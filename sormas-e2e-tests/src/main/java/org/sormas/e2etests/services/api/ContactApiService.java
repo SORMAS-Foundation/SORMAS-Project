@@ -50,7 +50,6 @@ public class ContactApiService {
         .person(Person.builder().uuid(person.getUuid()).build())
         .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
         .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
-        .vaccinationInfo(VaccinationInfo.builder().uuid(UUID.randomUUID().toString()).build())
         .relationToCase("SAME_HOUSEHOLD")
         .build();
   }
