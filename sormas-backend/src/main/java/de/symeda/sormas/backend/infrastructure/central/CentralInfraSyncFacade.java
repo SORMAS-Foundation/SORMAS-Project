@@ -16,7 +16,6 @@ import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,7 @@ import java.util.List;
 @Stateless
 public class CentralInfraSyncFacade {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	ContinentFacadeEjb.ContinentFacadeEjbLocal continentFacadeEjb;
@@ -59,13 +58,12 @@ public class CentralInfraSyncFacade {
 		try {
 			dtos = centralClient.getWithPrefix(String.format("/central/location/%s/", type), clazz);
 		} catch (IOException e) {
-			LOGGER.error("Could not load all entities of type {} from central: %s", type, e);
+			logger.error("Could not load all entities of type {} from central: %s", type, e);
 			return;
 		}
-		LOGGER.info("Loaded {} entities of type {}", dtos.size(), type);
-		for (DTO dto : dtos) {
-			facade.save(dto);
-		}
+		logger.info("Loaded {} entities of type {}", dtos.size(), type);
+
+		dtos.stream().parallel().forEach(facade::save);
 	}
 
 	public void loadAndStoreAll() {

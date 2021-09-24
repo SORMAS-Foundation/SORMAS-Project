@@ -53,7 +53,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.backend.central.EtcdCentralClient;
 import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -165,9 +164,6 @@ public class StartupShutdownService {
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
 
-	@Inject
-	private EtcdCentralClient centralClient;
-
 	static boolean isBlankOrSqlComment(String sqlLine) {
 		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
 	}
@@ -240,7 +236,7 @@ public class StartupShutdownService {
 			region.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION.ordinal()));
 			region.setName(I18nProperties.getCaption(Captions.defaultRegion, "Default Region"));
 			region.setEpidCode("DEF-REG");
-			region.setDistricts(new ArrayList<District>());
+			region.setDistricts(new ArrayList<>());
 			regionService.ensurePersisted(region);
 		}
 
@@ -255,7 +251,7 @@ public class StartupShutdownService {
 			}
 			district.setRegion(region);
 			district.setEpidCode("DIS");
-			district.setCommunities(new ArrayList<Community>());
+			district.setCommunities(new ArrayList<>());
 			districtService.ensurePersisted(district);
 			region.getDistricts().add(district);
 		}
@@ -372,9 +368,9 @@ public class StartupShutdownService {
 			District district = region.getDistricts().get(0);
 			Community community = district.getCommunities().get(0);
 			List<Facility> healthFacilities = facilityService.getActiveFacilitiesByCommunityAndType(community, FacilityType.HOSPITAL, false, false);
-			Facility facility = healthFacilities.size() > 0 ? healthFacilities.get(0) : null;
+			Facility facility = !healthFacilities.isEmpty() ? healthFacilities.get(0) : null;
 			List<Facility> laboratories = facilityService.getAllActiveLaboratories(false);
-			Facility laboratory = laboratories.size() > 0 ? laboratories.get(0) : null;
+			Facility laboratory = !laboratories.isEmpty() ? laboratories.get(0) : null;
 			PointOfEntry pointOfEntry = pointOfEntryService.getAllActive().get(0);
 
 			logger.info("Create default users");
