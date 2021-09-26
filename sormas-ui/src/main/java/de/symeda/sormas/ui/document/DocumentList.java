@@ -72,7 +72,7 @@ public class DocumentList extends VerticalLayout {
 
 		// TODO: show content-type and/or size?
 		Label nameLabel = new Label(DataHelper.toStringNullable(document.getName()));
-		nameLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
+		nameLabel.addStyleName(CssStyles.LABEL_CAPTION_TRUNCATED);
 		res.addComponent(nameLabel);
 		res.setExpandRatio(nameLabel, 1);
 
