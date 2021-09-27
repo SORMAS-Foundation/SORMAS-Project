@@ -137,11 +137,6 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 	}
 
 	@Override
-	public void dearchive(String uuid) {
-		super.dearchiveUnchecked(uuid);
-	}
-
-	@Override
 	public boolean isUsedInOtherInfrastructureData(Collection<String> areaUuids) {
 		return service.isUsedInInfrastructureData(areaUuids, Region.AREA, Region.class);
 	}

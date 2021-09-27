@@ -26,6 +26,7 @@ public abstract class AbstractInfrastructureEjb<DTO extends InfrastructureAdo, S
 	@Override
 	public void archive(String uuid) {
 		// todo this should be really in the parent but right now there the setter for archived is not available there
+		checkInfraDataLocked();
 		DTO dto = service.getByUuid(uuid);
 		if (dto != null) {
 			dto.setArchived(true);
@@ -34,14 +35,18 @@ public abstract class AbstractInfrastructureEjb<DTO extends InfrastructureAdo, S
 	}
 
 	public void dearchive(String uuid) {
-		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
-		}
+		checkInfraDataLocked();
 		doDearchive(uuid);
 	}
 
 	protected void dearchiveUnchecked(String uuid) {
 		doDearchive(uuid);
+	}
+
+	private void checkInfraDataLocked() {
+		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
+		}
 	}
 
 	private void doDearchive(String uuid) {
@@ -51,5 +56,4 @@ public abstract class AbstractInfrastructureEjb<DTO extends InfrastructureAdo, S
 			service.ensurePersisted(dto);
 		}
 	}
-
 }
