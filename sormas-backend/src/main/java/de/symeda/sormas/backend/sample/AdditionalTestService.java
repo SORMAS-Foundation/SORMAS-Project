@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.sample;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,12 +12,16 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.sample.AdditionalTestCriteria;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -24,6 +29,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
@@ -59,6 +65,80 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public Predicate buildCriteriaFilter(AdditionalTestCriteria additionalTestCriteria, CriteriaBuilder cb, Root<AdditionalTest> from) {
+		Predicate filter = createActiveSamplesFilter(cb, from);
+
+		if (additionalTestCriteria.getSample() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.get(AdditionalTest.SAMPLE).get(Sample.UUID), additionalTestCriteria.getSample().getUuid()));
+		}
+
+		return filter;
+	}
+
+	public List<AdditionalTest> getIndexList(
+		AdditionalTestCriteria additionalTestCriteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<AdditionalTest> cq = cb.createQuery(getElementClass());
+		Root<AdditionalTest> from = cq.from(getElementClass());
+
+		Predicate filter = null;
+		if (additionalTestCriteria != null) {
+			filter = buildCriteriaFilter(additionalTestCriteria, cb, from);
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.desc(from.get(AdditionalTest.CHANGE_DATE)));
+		cq.distinct(true);
+
+		List<Order> order = new ArrayList<>();
+		if (sortProperties != null && sortProperties.size() > 0) {
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case AdditionalTest.UUID:
+				case AdditionalTest.SAMPLE:
+				case AdditionalTest.TEST_DATE_TIME:
+					expression = from.get(sortProperty.propertyName);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+		}
+		order.add(cb.desc(from.get(AdditionalTest.UUID)));
+		cq.orderBy(order);
+
+		return QueryHelper.getResultList(em, cq, first, max);
+	}
+
+	public long count(AdditionalTestCriteria additionalTestCriteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<AdditionalTest> additionalTestRoot = cq.from(getElementClass());
+
+		Predicate filter = createActiveSamplesFilter(cb, additionalTestRoot);
+
+		if (additionalTestCriteria != null) {
+			Predicate criteriaFilter = buildCriteriaFilter(additionalTestCriteria, cb, additionalTestRoot);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.countDistinct(additionalTestRoot));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public List<String> getAllActiveUuids(User user) {
