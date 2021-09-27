@@ -20,7 +20,9 @@ package de.symeda.sormas.backend.sample;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -56,6 +58,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -489,24 +492,24 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 					newPathogenTest,
 					null,
 					messageRecipients,
-					MessagingService.CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT_NO_DISEASE,
-					MessagingService.CONTENT_LAB_RESULT_SPECIFIED_EVENT_PARTICIPANT_NO_DISEASE,
+					MessageContents.CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT_NO_DISEASE,
+					MessageContents.CONTENT_LAB_RESULT_SPECIFIED_EVENT_PARTICIPANT_NO_DISEASE,
 					DataHelper.getShortUuid(eventParticipant.getUuid()));
 			}
 		}
 
 		if (disease != null) {
 			final String contentLabResultArrived = caze != null
-				? MessagingService.CONTENT_LAB_RESULT_ARRIVED
+				? MessageContents.CONTENT_LAB_RESULT_ARRIVED
 				: contact != null
-					? MessagingService.CONTENT_LAB_RESULT_ARRIVED_CONTACT
-					: MessagingService.CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT;
+					? MessageContents.CONTENT_LAB_RESULT_ARRIVED_CONTACT
+					: MessageContents.CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT;
 
 			final String contentLabResultSpecified = caze != null
-				? MessagingService.CONTENT_LAB_RESULT_SPECIFIED
+				? MessageContents.CONTENT_LAB_RESULT_SPECIFIED
 				: contact != null
-					? MessagingService.CONTENT_LAB_RESULT_SPECIFIED_CONTACT
-					: MessagingService.CONTENT_LAB_RESULT_SPECIFIED_EVENT_PARTICIPANT;
+					? MessageContents.CONTENT_LAB_RESULT_SPECIFIED_CONTACT
+					: MessageContents.CONTENT_LAB_RESULT_SPECIFIED_EVENT_PARTICIPANT;
 			final String shortUuid =
 				DataHelper.getShortUuid(caze != null ? caze.getUuid() : contact != null ? contact.getUuid() : eventParticipant.getUuid());
 			sendMessageOnPathogenTestChanged(
@@ -529,52 +532,45 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		String contentLabResultSpecified,
 		String shortUuid) {
 		if (existingPathogenTest == null && newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(
-						recipient,
-						MessageSubject.LAB_RESULT_ARRIVED,
-						String.format(
-							I18nProperties.getString(contentLabResultArrived),
-							newPathogenTest.getTestResult().toString(),
-							disease,
-							shortUuid,
-							newPathogenTest.getTestType(),
-							newPathogenTest.getTestedDisease()),
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"EmailDeliveryFailedException when trying to notify supervisors " + "about the arrival of a lab result. "
-								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							recipient.getUuid()));
-				}
+			try {
+				messagingService.sendMessages(() -> {
+					final Map<User, String> mapToReturn = new HashMap<>();
+					messageRecipients.forEach(
+						user -> mapToReturn.put(
+							user,
+							String.format(
+								I18nProperties.getString(contentLabResultArrived),
+								newPathogenTest.getTestResult().toString(),
+								disease,
+								shortUuid,
+								newPathogenTest.getTestType(),
+								newPathogenTest.getTestedDisease())));
+					return mapToReturn;
+				}, MessageSubject.LAB_RESULT_ARRIVED, MessageType.EMAIL, MessageType.SMS);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors " + "about the arrival of a lab result."));
 			}
 		} else if (existingPathogenTest != null
 			&& existingPathogenTest.getTestResult() == PathogenTestResultType.PENDING
 			&& newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(
-						recipient,
-						MessageSubject.LAB_RESULT_SPECIFIED,
-						String.format(
-							I18nProperties.getString(contentLabResultSpecified),
-							disease,
-							shortUuid,
-							newPathogenTest.getTestResult().toString(),
-							newPathogenTest.getTestType(),
-							newPathogenTest.getTestedDisease()),
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"EmailDeliveryFailedException when trying to notify supervisors " + "about the specification of a lab result. "
-								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							recipient.getUuid()));
-				}
+			try {
+				messagingService.sendMessages(() -> {
+					final Map<User, String> mapToReturn = new HashMap<>();
+					messageRecipients.forEach(
+						user -> mapToReturn.put(
+							user,
+							String.format(
+								I18nProperties.getString(contentLabResultSpecified),
+								disease,
+								shortUuid,
+								newPathogenTest.getTestResult().toString(),
+								newPathogenTest.getTestType(),
+								newPathogenTest.getTestedDisease())));
+					return mapToReturn;
+				}, MessageSubject.LAB_RESULT_SPECIFIED, MessageType.EMAIL, MessageType.SMS);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(
+					String.format("EmailDeliveryFailedException when trying to notify supervisors " + "about the specification of a lab result"));
 			}
 		}
 	}

@@ -86,6 +86,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.CronService;
+import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -294,29 +295,27 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		if (ado.getTaskType() == TaskType.CONTACT_FOLLOW_UP && ado.getTaskStatus() == TaskStatus.DONE && ado.getContact() != null) {
-			List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
-				JurisdictionHelper.getContactRegions(ado.getContact()),
-				UserRole.SURVEILLANCE_SUPERVISOR,
-				UserRole.CASE_SUPERVISOR,
-				UserRole.CONTACT_SUPERVISOR);
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(
-						recipient,
-						MessageSubject.VISIT_COMPLETED,
-						String.format(
-							I18nProperties.getString(MessagingService.CONTENT_VISIT_COMPLETED),
-							DataHelper.getShortUuid(ado.getContact().getUuid()),
-							DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())),
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
-								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-							recipient.getUuid()));
-				}
+			try {
+				messagingService.sendMessages(() -> {
+					final List<User> messageRecipients = userService.getAllByRegionsAndUserRoles(
+						JurisdictionHelper.getContactRegions(ado.getContact()),
+						UserRole.SURVEILLANCE_SUPERVISOR,
+						UserRole.CASE_SUPERVISOR,
+						UserRole.CONTACT_SUPERVISOR);
+					final Map<User, String> mapToReturn = new HashMap<>();
+					messageRecipients.forEach(
+						user -> mapToReturn.put(
+							user,
+							String.format(
+								I18nProperties.getString(MessageContents.CONTENT_VISIT_COMPLETED),
+								DataHelper.getShortUuid(ado.getContact().getUuid()),
+								DataHelper.getShortUuid(ado.getAssigneeUser().getUuid()))));
+					return mapToReturn;
+				}, MessageSubject.VISIT_COMPLETED, MessageType.EMAIL, MessageType.SMS);
+			} catch (NotificationDeliveryFailedException e) {
+				logger.error(
+					String
+						.format("NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit."));
 			}
 		}
 
@@ -815,72 +814,63 @@ public class TaskFacadeEjb implements TaskFacade {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void sendNewAndDueTaskMessages() {
 
-		Calendar calendar = Calendar.getInstance();
-		Date now = new Date();
+		final Calendar calendar = Calendar.getInstance();
+		final Date now = new Date();
 		calendar.setTime(now);
 		calendar.add(Calendar.MINUTE, CronService.TASK_UPDATE_INTERVAL * -1);
-		Date before = calendar.getTime();
+		final Date before = calendar.getTime();
 
-		List<Task> startingTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).startDateBetween(before, now), true);
-		for (Task task : startingTasks) {
-			TaskContext context = task.getTaskContext();
-			AbstractDomainObject associatedEntity = context == TaskContext.CASE
-				? task.getCaze()
-				: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null) {
-				try {
-					String content = context == TaskContext.GENERAL
-						? String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_GENERAL), task.getTaskType().toString())
-						: String.format(
-							I18nProperties.getString(MessagingService.CONTENT_TASK_START_SPECIFIC),
-							task.getTaskType().toString(),
-							buildAssociatedEntityLinkContent(context, associatedEntity));
-
-					messagingService.sendMessage(
-						userService.getByUuid(task.getAssigneeUser().getUuid()),
-						MessageSubject.TASK_START,
-						content,
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"EmailDeliveryFailedException when trying to notify a user about a starting task. " + "Failed to send "
-								+ e.getMessageType() + " to user with UUID %s.",
-							task.getAssigneeUser().getUuid()));
+		try {
+			messagingService.sendMessages(() -> {
+				final Map<User, String> mapToReturn = new HashMap<>();
+				final List<Task> startingTasks =
+					taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).startDateBetween(before, now), true);
+				for (Task task : startingTasks) {
+					final TaskContext context = task.getTaskContext();
+					final AbstractDomainObject associatedEntity = context == TaskContext.CASE
+						? task.getCaze()
+						: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
+					if (task.getAssigneeUser() != null) {
+						mapToReturn.put(
+							task.getAssigneeUser(),
+							context == TaskContext.GENERAL
+								? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_START_GENERAL), task.getTaskType().toString())
+								: String.format(
+									I18nProperties.getString(MessageContents.CONTENT_TASK_START_SPECIFIC),
+									task.getTaskType().toString(),
+									buildAssociatedEntityLinkContent(context, associatedEntity)));
+					}
 				}
-			}
+				return mapToReturn;
+			}, MessageSubject.TASK_START, MessageType.EMAIL, MessageType.SMS);
+		} catch (NotificationDeliveryFailedException e) {
+			logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a starting task."));
 		}
 
-		List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).dueDateBetween(before, now), true);
-		for (Task task : dueTasks) {
-			TaskContext context = task.getTaskContext();
-			AbstractDomainObject associatedEntity = context == TaskContext.CASE
-				? task.getCaze()
-				: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null) {
-				try {
-					String content = context == TaskContext.GENERAL
-						? String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString())
-						: String.format(
-							I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_SPECIFIC),
-							task.getTaskType().toString(),
-							buildAssociatedEntityLinkContent(context, associatedEntity));
-
-					messagingService.sendMessage(
-						userService.getByUuid(task.getAssigneeUser().getUuid()),
-						MessageSubject.TASK_DUE,
-						content,
-						MessageType.EMAIL,
-						MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format(
-							"EmailDeliveryFailedException when trying to notify a user about a due task. " + "Failed to send " + e.getMessageType()
-								+ " to user with UUID %s.",
-							task.getAssigneeUser().getUuid()));
+		try {
+			messagingService.sendMessages(() -> {
+				final Map<User, String> mapToReturn = new HashMap<>();
+				final List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).dueDateBetween(before, now), true);
+				for (Task task : dueTasks) {
+					final TaskContext context = task.getTaskContext();
+					final AbstractDomainObject associatedEntity = context == TaskContext.CASE
+						? task.getCaze()
+						: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
+					if (task.getAssigneeUser() != null) {
+						mapToReturn.put(
+							task.getAssigneeUser(),
+							context == TaskContext.GENERAL
+								? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString())
+								: String.format(
+									I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_SPECIFIC),
+									task.getTaskType().toString(),
+									buildAssociatedEntityLinkContent(context, associatedEntity)));
+					}
 				}
-			}
+				return mapToReturn;
+			}, MessageSubject.TASK_START, MessageType.EMAIL, MessageType.SMS);
+		} catch (NotificationDeliveryFailedException e) {
+			logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a due task."));
 		}
 	}
 
