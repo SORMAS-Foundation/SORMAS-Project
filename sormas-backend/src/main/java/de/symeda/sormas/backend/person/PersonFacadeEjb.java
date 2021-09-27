@@ -510,11 +510,14 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	public void validate(PersonDto source) throws ValidationRuntimeException {
 
-		if (StringUtils.isEmpty(source.getFirstName())) {
+		if (StringUtils.isBlank(source.getFirstName())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyFirstName));
 		}
-		if (StringUtils.isEmpty(source.getLastName())) {
+		if (StringUtils.isBlank(source.getLastName())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyLastName));
+		}
+		if (source.getSex() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifySex));
 		}
 		if (source.getPersonContactDetails()
 			.stream()

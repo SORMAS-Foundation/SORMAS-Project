@@ -75,7 +75,7 @@ public enum StatisticsCaseAttribute {
 		StatisticsCaseSubAttribute.PERSON_CITY,
 		StatisticsCaseSubAttribute.PERSON_POSTCODE),
 
-	SEX(StatisticsCaseAttributeGroup.PERSON, true, true),
+	SEX(StatisticsCaseAttributeGroup.PERSON, true, false),
 	AGE_INTERVAL_1_YEAR(StatisticsCaseAttributeGroup.PERSON, false, true),
 	AGE_INTERVAL_5_YEARS(StatisticsCaseAttributeGroup.PERSON, false, true),
 	AGE_INTERVAL_CHILDREN_COARSE(StatisticsCaseAttributeGroup.PERSON, false, true),

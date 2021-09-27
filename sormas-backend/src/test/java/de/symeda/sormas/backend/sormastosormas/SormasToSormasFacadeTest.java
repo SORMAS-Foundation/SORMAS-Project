@@ -15,10 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.security.cert.X509Certificate;
@@ -26,8 +23,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
@@ -37,14 +32,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -52,6 +48,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
+import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
@@ -63,10 +60,11 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.user.User;
@@ -105,6 +103,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		PersonDto person = PersonDto.build();
 		person.setFirstName("John");
 		person.setLastName("Smith");
+		person.setSex(Sex.MALE);
 
 		person.getAddress().setDistrict(rdcf.remoteRdcf.district);
 		person.getAddress().setRegion(rdcf.remoteRdcf.region);
@@ -195,7 +194,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 	}
 
 	protected void mockS2Snetwork() throws SormasToSormasException {
-		Mockito.when(MockProducer.getSormasToSormasClient().get(Matchers.anyString(),eq("/sormasToSormas/cert"), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasClient().get(Matchers.anyString(), eq("/sormasToSormas/cert"), Matchers.any()))
 			.thenAnswer(invocation -> {
 				if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ID)) {
 					mockDefaultServerAccess();
