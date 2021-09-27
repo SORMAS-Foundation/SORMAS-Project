@@ -133,9 +133,10 @@ public class CreateNewVisitSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           String uuid = apiState.getCreatedContact().getUuid();
+          webDriverHelpers.clearAndFillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, uuid);
           fillDateFrom(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
           fillDateTo(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
-          webDriverHelpers.clearAndFillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, uuid);
+
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CONTACT_GRID_RESULTS_ROWS);
           softly
@@ -196,7 +197,7 @@ public class CreateNewVisitSteps implements En {
         .otherClinicalSymptoms(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OTHER_CLINICAL_SYMPTOMS))
         .comments(webDriverHelpers.getValueFromWebElement(COMMENTS_INPUT))
-        .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRSTSYMPTOM_COMBOBOX))
+        .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRST_SYMPTOM_COMBOBOX))
         .dateOfSymptomOnset(parsedDateOfSymptomOnset)
         .build();
   }
@@ -230,7 +231,7 @@ public class CreateNewVisitSteps implements En {
   }
 
   public void selectFirstSymptom(String firstSymptom) {
-    webDriverHelpers.selectFromCombobox(FIRSTSYMPTOM_COMBOBOX, firstSymptom);
+    webDriverHelpers.selectFromCombobox(FIRST_SYMPTOM_COMBOBOX, firstSymptom);
   }
 
   public void selectChillsOrSweats(String chillsOrSweats) {

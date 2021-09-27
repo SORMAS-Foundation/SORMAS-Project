@@ -21,7 +21,7 @@ package org.sormas.e2etests.pages.application.contacts;
 import org.openqa.selenium.By;
 
 public class EditContactPage {
-  public static final By UUID_INPUT = By.id("uuid");
+  public static final By UUID_INPUT = By.cssSelector("#uuid");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot.v-slot-h2.v-slot-vspace-top-none.v-slot-primary");
   public static final By REPORT_DATE = By.cssSelector("#reportDateTime input");

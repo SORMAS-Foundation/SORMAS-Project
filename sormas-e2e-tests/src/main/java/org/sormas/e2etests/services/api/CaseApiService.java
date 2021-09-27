@@ -44,7 +44,12 @@ public class CaseApiService {
         .responsibleRegion(Region.builder().uuid("RKVAOM-ZNAAFU-R2KF6Z-6BENKHEY").build())
         .community(Community.builder().uuid("QWK33J-XYN3DE-5CSXFJ-MMFOKNKM").build())
         .followUpStatus("FOLLOW_UP")
-        .person(Person.builder().uuid(person.getUuid()).build())
+        .person(
+            Person.builder()
+                .uuid(person.getUuid())
+                .firstName(person.getFirstName())
+                .lastName(person.getLastName())
+                .build())
         .caseClassification("NOT_CLASSIFIED")
         .investigationStatus("PENDING")
         .outcome("NO_OUTCOME")

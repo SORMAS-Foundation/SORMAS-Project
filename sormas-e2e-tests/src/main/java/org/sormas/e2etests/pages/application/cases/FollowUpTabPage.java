@@ -22,7 +22,7 @@ import org.openqa.selenium.By;
 
 public class FollowUpTabPage {
 
-  public static final By NEW_VISIT_BUTTON = By.cssSelector("[id='visitNewVisit']");
+  public static final By NEW_VISIT_BUTTON = By.id("visitNewVisit");
   public static final By PERSONS_AVAILABLE_OPTIONS =
       By.cssSelector("[id='visitStatus'] [class='v-radiobutton v-select-option']");
   public static final By AVAILABLE_AND_COOPERATIVE =
