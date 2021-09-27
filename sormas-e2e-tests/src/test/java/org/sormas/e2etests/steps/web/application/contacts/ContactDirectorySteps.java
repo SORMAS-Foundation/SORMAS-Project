@@ -54,7 +54,7 @@ public class ContactDirectorySteps implements En {
                   + "/sormas-ui/#!contacts/data/"
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
         });
 
     When(

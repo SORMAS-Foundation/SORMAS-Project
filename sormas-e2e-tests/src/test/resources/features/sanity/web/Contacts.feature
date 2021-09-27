@@ -40,9 +40,17 @@ Feature: Contacts end to end tests
   Scenario: Source case selected for contact
     Given I log in with the user
     Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     And API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     And I navigate to the last created contact via the url
     And I click on the CHOOSE SOURCE CASE button from CONTACT page
     And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
@@ -91,13 +99,17 @@ Feature: Contacts end to end tests
       And I filter by Contact uuid
       Then I am checking if all the fields are correctly displayed in the Contacts directory Detailed table
 
-  Scenario: Edit all fields from Follow-up visits  tab
+  Scenario: Edit all fields from Follow-up visits tab
     Given I log in with the user
     When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     When API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     When I am accessing the Follow-up visits tab using of created contact via api
-    And I create a new Follow-up visit
     Then I click on New visit button from Follow-up visits tab
+    And I create a new Follow-up visit
     And I open the first displayed follow up
     Then I validate recently created follow up is correctly displayed
     And I click on discard button from follow up view
