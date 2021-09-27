@@ -35,6 +35,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
@@ -84,7 +85,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Required
 	private Disease disease;
 	@Outbreaks
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	@Required
 	@EmbeddedPersonalData
@@ -97,11 +98,11 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private ImmunizationStatus immunizationStatus;
 	@Required
 	private MeansOfImmunization meansOfImmunization;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
 	private String meansOfImmunizationDetails;
 	private ImmunizationManagementStatus immunizationManagementStatus;
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	@SensitiveData(mandatoryField = true)
 	private String externalId;
 
@@ -124,7 +125,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	@Outbreaks
 	@PersonalData
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
 
 	private Date startDate;
@@ -133,7 +134,7 @@ public class ImmunizationDto extends PseudonymizableDto {
 	private YesNoUnknown previousInfection;
 
 	private Date lastInfectionDate;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	@SensitiveData
 	private String additionalDetails;
 

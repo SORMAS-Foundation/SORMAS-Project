@@ -46,6 +46,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
@@ -139,13 +140,13 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	public static final String VISITS = "visits";
 
 	private CaseReferenceDto caze;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caseIdExternalSystem;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String caseOrEventInformation;
 	private Disease disease;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diseaseDetails;
 	private DiseaseVariant diseaseVariant;
 
@@ -178,54 +179,54 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	private ContactIdentificationSource contactIdentificationSource;
 	@HideForCountriesExcept
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String contactIdentificationSourceDetails;
 	@HideForCountriesExcept
 	private TracingApp tracingApp;
 	@HideForCountriesExcept
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String tracingAppDetails;
 	private ContactProximity contactProximity;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String contactProximityDetails;
 	private ContactCategory contactCategory;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
 	private ContactRelation relationToCase;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String relationDescription;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
 		COUNTRY_CODE_SWITZERLAND })
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalToken;
-	@Size(max = COLUMN_LENGTH_TEXT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
 	private YesNoUnknown careForPeopleOver60;
 
 	private QuarantineType quarantine;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
@@ -242,7 +243,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	private UserReferenceDto resultingCaseUser;
 
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHelpNeeded;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
@@ -264,13 +265,13 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	private YesNoUnknown quarantineHomePossible;
 	@HideForCountriesExcept
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHomePossibleComment;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
 	private boolean quarantineReduced;
@@ -283,7 +284,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 		COUNTRY_CODE_SWITZERLAND })
 	private Date quarantineOfficialOrderSentDate;
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_BIG, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String additionalDetails;
 	private EpiDataDto epiData;
 	@Valid
@@ -299,7 +300,7 @@ public class ContactDto extends PseudonymizableDto implements SormasToSormasEnti
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_SWITZERLAND })
 	@SensitiveData
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String endOfQuarantineReasonDetails;
 
 	@HideForCountriesExcept

@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.infrastructure.community;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -71,7 +71,7 @@ public class Community extends InfrastructureAdo {
 		this.growthRate = growthRate;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}

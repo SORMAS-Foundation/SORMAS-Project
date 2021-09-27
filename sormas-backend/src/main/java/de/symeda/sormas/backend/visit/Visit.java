@@ -17,7 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.visit;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -134,7 +134,7 @@ public class Visit extends AbstractDomainObject {
 		this.visitStatus = visitStatus;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getVisitRemarks() {
 		return visitRemarks;
 	}

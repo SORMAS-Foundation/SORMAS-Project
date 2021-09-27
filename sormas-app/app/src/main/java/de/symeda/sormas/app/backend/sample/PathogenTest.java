@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.app.backend.sample;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -75,7 +75,7 @@ public class PathogenTest extends PseudonymizableAdo {
 	private String testedDiseaseVariantString;
 	private DiseaseVariant testedDiseaseVariant;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String testedDiseaseDetails;
 
 	@Column
@@ -88,7 +88,7 @@ public class PathogenTest extends PseudonymizableAdo {
 	@Column
 	private Boolean testResultVerified;
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String testResultText;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -97,7 +97,7 @@ public class PathogenTest extends PseudonymizableAdo {
 	@Column
 	private boolean fourFoldIncreaseAntibodyTiter;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String serotype;
 
 	@DatabaseField

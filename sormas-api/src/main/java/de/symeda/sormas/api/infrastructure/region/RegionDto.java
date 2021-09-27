@@ -29,6 +29,7 @@ import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class RegionDto extends EntityDto {
 
@@ -42,13 +43,13 @@ public class RegionDto extends EntityDto {
 	public static final String AREA = "area";
 	public static final String COUNTRY = "country";
 
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
-	@Size(max = COLUMN_LENGTH_SMALL, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String epidCode;
 	private Float growthRate;
 	private boolean archived;
-	@Size(max = COLUMN_LENGTH_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalID;
 	@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
 	private AreaReferenceDto area;

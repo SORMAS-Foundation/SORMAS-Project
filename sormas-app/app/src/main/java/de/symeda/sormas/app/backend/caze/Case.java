@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.app.backend.caze;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
 
@@ -105,7 +105,7 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String description;
 
 	@Enumerated(EnumType.STRING)
@@ -115,7 +115,7 @@ public class Case extends PseudonymizableAdo {
 	private String diseaseVariantString;
 	private DiseaseVariant diseaseVariant;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String diseaseDetails;
 
 	@Enumerated(EnumType.STRING)
@@ -141,7 +141,7 @@ public class Case extends PseudonymizableAdo {
 	private User classificationUser;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date classificationDate;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String classificationComment;
 
 	@Enumerated(EnumType.STRING)
@@ -179,13 +179,13 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility healthFacility;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String healthFacilityDetails;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private PointOfEntry pointOfEntry;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String pointOfEntryDetails;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -202,11 +202,11 @@ public class Case extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User surveillanceOfficer;
-	@Column(length = COLUMN_LENGTH_DEFAULT, name = "clinicianDetails")
+	@Column(length = CHARACTER_LIMIT_DEFAULT, name = "clinicianDetails")
 	private String clinicianName;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String clinicianPhone;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String clinicianEmail;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 1)
 	private User caseOfficer;
@@ -227,7 +227,7 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField(columnName = "vaccinationDate", dataType = DataType.DATE_LONG)
 	private Date smallpoxLastVaccinationDate;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String epidNumber;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -265,11 +265,11 @@ public class Case extends PseudonymizableAdo {
 	private Date outcomeDate;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown sequelae;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String sequelaeDetails;
 	@Enumerated(EnumType.STRING)
 	private HospitalWardType notifyingClinic;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String notifyingClinicDetails;
 
 	@Enumerated(EnumType.STRING)
@@ -282,27 +282,27 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField
 	private Float completeness;
 
-	@Column(length = COLUMN_LENGTH_BIG)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	private String additionalDetails;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String externalID;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String externalToken;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String internalToken;
 
 	@Enumerated(EnumType.STRING)
 	private QuarantineType quarantine;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineTypeDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineFrom;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineTo;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineHelpNeeded;
 	@DatabaseField
 	private boolean quarantineOrderedVerbally;
@@ -318,11 +318,11 @@ public class Case extends PseudonymizableAdo {
 	private boolean quarantineReduced;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomePossible;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineHomePossibleComment;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomeSupplyEnsured;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineHomeSupplyEnsuredComment;
 	@DatabaseField
 	private boolean quarantineOfficialOrderSent;
@@ -342,11 +342,11 @@ public class Case extends PseudonymizableAdo {
 	private YesNoUnknown wasInQuarantineBeforeIsolation;
 	@Enumerated(EnumType.STRING)
 	private QuarantineReason quarantineReasonBeforeIsolation;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String quarantineReasonBeforeIsolationDetails;
 	@Enumerated(EnumType.STRING)
 	private EndOfIsolationReason endOfIsolationReason;
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String endOfIsolationReasonDetails;
 	@DatabaseField
 	private boolean nosocomialOutbreak;
@@ -382,7 +382,7 @@ public class Case extends PseudonymizableAdo {
 	@DatabaseField
 	private boolean notACaseReasonOther;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	private String notACaseReasonDetails;
 	@DatabaseField
 	private Date followUpStatusChangeDate;
